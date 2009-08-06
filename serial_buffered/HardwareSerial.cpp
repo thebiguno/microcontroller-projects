@@ -25,7 +25,7 @@
 //#include "wiring.h"
 //#include "wiring_private.h"
 
-#include "../inc/HardwareSerial.h"
+#include "HardwareSerial.h"
 
 // Define constants and variables for buffering incoming serial data.  We're
 // using a ring buffer (I think), in which rx_buffer_head is the index of the

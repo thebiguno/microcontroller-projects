@@ -1,4 +1,4 @@
-#include "../inc/serial.h"
+#include "serial.h"
 
 /*
  * Initializes the USART with the given parameters.  Valid arguments include:
