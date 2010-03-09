@@ -7,33 +7,34 @@
  *  parity: 0 (no parity bit), 2 (even parity), 3 (odd parity).  0 or 2 recommended.
  *  stopBits: 1 or 2.
  */
-void serial_init(unsigned int baud, unsigned char dataBits, unsigned char parity, unsigned char stopBits){
+void serial_init(unsigned int baud, unsigned char data_bits, unsigned char parity, unsigned char stop_bits){  
 	//Set baud rate
-	unsigned int calculatedBaud = (F_CPU / (16 * baud)) - 1;
-	UBRR0H = (unsigned char) (calculatedBaud >> 8);
-	UBRR0L = (unsigned char) calculatedBaud;
+	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
+	UBRR0H = (unsigned char) (calculated_baud >> 8);
+	UBRR0L = (unsigned char) calculated_baud;
+
 	
 	//Calculate frame format
-	unsigned char frameFormat = 0x0;
+	unsigned char frame_format = 0x0;
 	
 	//Data bits
-	if (dataBits == 9){
+	if (data_bits == 9){
 		//9 bits use an extra bit in register UCSR0B
 		UCSR0B |= (1 << UCSZ02);
-		frameFormat |= (1 << UCSZ01) | (1 << UCSZ00);
+		frame_format |= (1 << UCSZ01) | (1 << UCSZ00);
 	}
 	else {
-		frameFormat |= ((dataBits - 5) << UCSZ00);
+		frame_format |= ((data_bits - 5) << UCSZ00);
 	}
 	
 	//Parity
-	frameFormat |= (parity << UPM00);
+	frame_format |= (parity << UPM00);
 	
 	//Stop Bits
-	frameFormat |= ((stopBits - 1) << USBS0);
+	frame_format |= ((stop_bits - 1) << USBS0);
 	
 	//Set frame format
-	UCSR0C = frameFormat;
+	UCSR0C = frame_format;
 	
 	
 	//Enable Rx / Tx
