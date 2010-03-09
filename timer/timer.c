@@ -12,9 +12,11 @@ void timer_init(){
 	TCCR1A = 0x0;
 	TCCR1B |= (1 << CS10) | (1 << WGM12);
 	
-	//Set compare value to be F_CPU / 1000 (i.e. fire interrupt every millisecond)
+	//Set compare value to be F_CPU / 1000 -- fire interrupt every millisecond
 	OCR1A = F_CPU / 1000;
-	_timer_micro_divisor = F_CPU / 1000 / 1000;
+	
+	//Every _timer_micro_divisor clock ticks is one microsecond.
+	_timer_micro_divisor = F_CPU / 1000000; 
 	
 	//Enable compare interrupt
 	TIMSK1 = (1 << OCIE1A);
@@ -49,5 +51,4 @@ unsigned long long timer_micros(){
  */
 ISR(TIMER1_COMPA_vect){
 	_timer_millis++;
-	
 }
