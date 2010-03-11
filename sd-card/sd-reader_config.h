@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006-2007 by Roland Riegel <feedback@roland-riegel.de>
+ * Copyright (c) 2006-2010 by Roland Riegel <feedback@roland-riegel.de>
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of either the GNU General Public License version 2
@@ -10,6 +10,11 @@
 
 #ifndef SD_READER_CONFIG_H
 #define SD_READER_CONFIG_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /**
  * \addtogroup config Sd-reader configuration
@@ -23,7 +28,7 @@
  *
  * \note This file contains only configuration items relevant to
  * all sd-reader implementation files. For module specific configuration
- * options, please see the files fat16_config.h, partition_config.h
+ * options, please see the files fat_config.h, partition_config.h
  * and sd_raw_config.h.
  */
 
@@ -39,6 +44,10 @@
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
