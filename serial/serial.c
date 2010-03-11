@@ -11,7 +11,7 @@ void serial_init(unsigned int baud, unsigned char data_bits, unsigned char parit
 	//Set baud rate
 	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
 	UBRR0H = (unsigned char) (calculated_baud >> 8);
-	UBRR0L = (unsigned char) calculated_baud;
+	UBRR0L = (unsigned char) calculated_baud & 0xFF;
 
 	
 	//Calculate frame format

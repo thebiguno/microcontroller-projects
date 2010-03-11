@@ -3,7 +3,7 @@
 
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
- * linked with timer0.
+ * linked with timer1.
  */
 void timer_init();
 
