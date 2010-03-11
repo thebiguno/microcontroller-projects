@@ -88,7 +88,8 @@ extern "C"
     #define select_card() PORTB &= ~(1 << PORTB2)
     #define unselect_card() PORTB |= (1 << PORTB2)
 #elif defined(__AVR_ATmega16__) || \
-      defined(__AVR_ATmega32__)
+      defined(__AVR_ATmega32__) || \
+      defined(__AVR_ATmega644__)
     #define configure_pin_mosi() DDRB |= (1 << DDB5)
     #define configure_pin_sck() DDRB |= (1 << DDB7)
     #define configure_pin_ss() DDRB |= (1 << DDB4)
