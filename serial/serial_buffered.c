@@ -4,7 +4,7 @@
 #define BUFFER_SIZE 128
 
 //Circular FIFO buffer, along with head and tail pointers.  When a new character
-// is recieved, it is written to the tail; when a character is read, it is
+// is recieved, it is written to the head; when a character is read, it is
 // read from the tail.
 char buffer[BUFFER_SIZE];
 int head = 0;
