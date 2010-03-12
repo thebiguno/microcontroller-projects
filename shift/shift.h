@@ -1,8 +1,22 @@
 #include <avr/io.h>
 
 /*
- * Send a byte of data to a shift register, by defining the data and clock port / pin combination, as well as the
- * data byte.  Shifts MSB first.
+ * Shift register library - this is designed for 74595 and compatible shift registers.  You 
+ * need three wires to control the register from the AVR: 
+ *  Data Out (74595 pin 14)
+ *  Clock Out (74595 pin 11)
+ *  Latch Out (7495 pin 12)
+ * You need to connect /Shift Register Clear (pin 10) to VCC and /Output Enable (pin 13) to GND
  */
-void shiftOut(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin, uint8_t data);
+
+/*
+ * Initializes the library to use the specified ports and pins for data out, clock, and latch.  You can
+ * call this function again to change to different values.
+ */
+void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin);
+
+/*
+ * Sends one byte of data to the shift register.  Must have called shift_init() first.
+ */
+uint8_t shift_out(uint8_t data);
 
