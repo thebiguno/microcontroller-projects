@@ -94,7 +94,7 @@ void serial_write_s(char* data){
 
 /*
  * Writes a single byte to the serial port.  Blocks until the 
- * data register UDR0 is available, and then popualtes it.
+ * data register UDR0 is available, and then populates it.
  */
 void serial_write_c(char data){
 	while (serial_check_tx_ready() == 0);
