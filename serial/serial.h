@@ -35,7 +35,7 @@ char serial_read();
  * Writes a string to the serial port.  Blocks until the string
  * is written.
  */
-void serial_write_s(char* data);
+void serial_write_s(char *data);
 
 /*
  * Writes a single byte to the serial port.  Blocks until the 

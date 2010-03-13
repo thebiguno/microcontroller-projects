@@ -85,10 +85,9 @@ char serial_read(){
  * Writes a string to the serial port.  Blocks until the string
  * is written.
  */
-void serial_write_s(char* data){
-	int i;
-	for (i = 0; i < strlen(data); i++){
-		serial_write_c(data[i]);
+void serial_write_s(char *data){
+	while (*data){
+		serial_write_c(*data++);
 	}
 }
 
