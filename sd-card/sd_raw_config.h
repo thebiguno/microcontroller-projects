@@ -44,7 +44,7 @@ extern "C"
  *
  * \note This option has no effect when SD_RAW_WRITE_SUPPORT is 0.
  */
-#define SD_RAW_WRITE_BUFFERING 1
+#define SD_RAW_WRITE_BUFFERING 0
 
 /**
  * \ingroup sd_raw_config
@@ -56,7 +56,7 @@ extern "C"
  * \note When SD_RAW_WRITE_SUPPORT is 1, SD_RAW_SAVE_RAM will
  *       be reset to 0.
  */
-#define SD_RAW_SAVE_RAM 1
+#define SD_RAW_SAVE_RAM 0
 
 /**
  * \ingroup sd_raw_config
