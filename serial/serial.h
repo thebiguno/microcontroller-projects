@@ -22,14 +22,14 @@ void serial_init_b(uint16_t baud);
  * Checks if there is any serial data available to read.  Returns 
  * a non-zero if there is anything available, 0 otherwise.
  */
-char serial_check_rx_complete();
+uint8_t serial_check_rx_complete();
 
 /*
  * Checks if the serial data register UDR0 is empty, and ready
  * to be re-populated with another byte.  Returns 0 if this is
  * not ready, non-zero otherwise.
  */
-char serial_check_tx_ready();
+uint8_t serial_check_tx_ready();
 
 /*
  * Reads a single character from the serial port.  Blocks until

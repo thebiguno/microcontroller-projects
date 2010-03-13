@@ -3,12 +3,12 @@
 void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
 	//Set baud rate
 	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
-	UBRR0H = (unsigned char) (calculated_baud >> 8);
-	UBRR0L = (unsigned char) calculated_baud & 0xFF;
+	UBRR0H = calculated_baud >> 8;
+	UBRR0L = calculated_baud & 0xFF;
 
 	
 	//Calculate frame format
-	unsigned char frame_format = 0x0;
+	uint8_t frame_format = 0x0;
 	
 	//Data bits
 	if (data_bits == 9){
@@ -42,7 +42,7 @@ void serial_init_b(uint16_t baud){
 	serial_init(baud, 8, 0, 1);
 }
 
-char serial_check_rx_complete(){
+uint8_t serial_check_rx_complete(){
 	//The RXC0 bit in UCSR0A register is set to 1 when data is
 	// available (has been received over the Serial link) and
 	// it has not yet been read.  When this is set, the Receive
@@ -51,7 +51,7 @@ char serial_check_rx_complete(){
 	return(UCSR0A & (1 << RXC0));
 }
 
-char serial_check_tx_ready(){
+uint8_t serial_check_tx_ready(){
 	//UCRE0 is 'USART Data Register Empty'.  This is set to 1 when 
 	// the UDR0 register is empty, and thus another byte is ready
 	// to be inserted into it.  This data is kept in UCSR0A, at bit
