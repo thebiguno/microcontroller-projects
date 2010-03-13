@@ -1,13 +1,6 @@
 #include "serial.h"
 
-/*
- * Initializes the USART with the given parameters.  Valid arguments include:
- *  baud: Any valid baud rate based on hardware support
- *  dataBits: Between 5 and 9 inclusive.  8 recommended.
- *  parity: 0 (no parity bit), 2 (even parity), 3 (odd parity).  0 or 2 recommended.
- *  stopBits: 1 or 2.
- */
-void serial_init(unsigned int baud, unsigned char data_bits, unsigned char parity, unsigned char stop_bits){  
+void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
 	//Set baud rate
 	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
 	UBRR0H = (unsigned char) (calculated_baud >> 8);
@@ -45,10 +38,10 @@ void serial_init(unsigned int baud, unsigned char data_bits, unsigned char parit
 //		UCSR0B |= (1 << TXCIE0) | (1 << RXIE0) | (1 << UDRIE0);
 }
 
-/*
- * Checks if there is any serial data available to read.  Returns 
- * a non-zero if there is anything available, 0 otherwise.
- */
+void serial_init_b(uint16_t baud){
+	serial_init(baud, 8, 0, 1);
+}
+
 char serial_check_rx_complete(){
 	//The RXC0 bit in UCSR0A register is set to 1 when data is
 	// available (has been received over the Serial link) and
@@ -58,11 +51,6 @@ char serial_check_rx_complete(){
 	return(UCSR0A & (1 << RXC0));
 }
 
-/*
- * Checks if the serial data register UDR0 is empty, and ready
- * to be re-populated with another byte.  Returns 0 if this is
- * not ready, non-zero otherwise.
- */
 char serial_check_tx_ready(){
 	//UCRE0 is 'USART Data Register Empty'.  This is set to 1 when 
 	// the UDR0 register is empty, and thus another byte is ready
@@ -71,30 +59,18 @@ char serial_check_tx_ready(){
 	return(UCSR0A & (1 << UDRE0));
 }
 
-/*
- * Reads a single character from the serial port if available.  Blocks until
- * data is read.
- */
 char serial_read(){
 	// Nop loop while data is not available for reading
 	while (!serial_check_rx_complete());
 	return UDR0;
 }
 
-/*
- * Writes a string to the serial port.  Blocks until the string
- * is written.
- */
 void serial_write_s(char *data){
 	while (*data){
 		serial_write_c(*data++);
 	}
 }
 
-/*
- * Writes a single byte to the serial port.  Blocks until the 
- * data register UDR0 is available, and then populates it.
- */
 void serial_write_c(char data){
 	while (serial_check_tx_ready() == 0);
 	UDR0 = data;

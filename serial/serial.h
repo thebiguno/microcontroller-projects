@@ -10,7 +10,13 @@
  *  interruptsEnabled: if true, enable interrupts for Rx Complete, Tx Complete, and 
  *       USART Data Register Empty
  */
-void serial_init(unsigned int baud, unsigned char dataBits, unsigned char parity, unsigned char stopBits);
+void serial_init(uint16_t baud, uint8_t data, uint8_t parity, uint8_t stopBits);
+
+/*
+ * Easy init method which only asks for baud, and gives sane defaults for the rest.
+ * Calls serial_init with values baud, 8, 0, 1.
+ */
+void serial_init_b(uint16_t baud);
 
 /*
  * Checks if there is any serial data available to read.  Returns 
