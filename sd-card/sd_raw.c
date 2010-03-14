@@ -196,9 +196,11 @@ uint8_t sd_raw_init()
 
     /* initialization procedure */
     sd_raw_card_type = 0;
-    
+
+#if SD_RAW_RESPECT_CARD_DETECT_PINS    
     if(!sd_raw_available())
         return 0;
+#endif
 
     /* card needs 74 cycles minimum to start up */
     for(uint8_t i = 0; i < 10; ++i)
@@ -338,7 +340,11 @@ uint8_t sd_raw_init()
  */
 uint8_t sd_raw_available()
 {
+#if SD_RAW_RESPECT_CARD_DETECT_PINS
     return get_pin_available() == 0x00;
+#else
+    return 1;
+#endif
 }
 
 /**
@@ -349,7 +355,11 @@ uint8_t sd_raw_available()
  */
 uint8_t sd_raw_locked()
 {
+#if SD_RAW_RESPECT_CARD_DETECT_PINS
     return get_pin_locked() == 0x00;
+#else
+    return 0;
+#endif
 }
 
 /**

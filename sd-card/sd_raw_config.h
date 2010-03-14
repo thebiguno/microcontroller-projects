@@ -68,6 +68,16 @@ extern "C"
 #define SD_RAW_SDHC 0
 
 /**
+ * \ingroup sd_raw_config
+ * Does the card socket have pins for write lock and card detect.
+ *
+ * Set to 1 to require that these pins be used, set to 0
+ * to ignore them.
+ */
+
+#define SD_RAW_RESPECT_CARD_DETECT_PINS 0
+
+/**
  * @}
  */
 
