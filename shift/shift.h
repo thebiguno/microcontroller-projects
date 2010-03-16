@@ -5,7 +5,7 @@
  * need three wires to control the register from the AVR: 
  *  Data Out (74595 pin 14)
  *  Clock Out (74595 pin 11)
- *  Latch Out (7495 pin 12)
+ *  Latch Out (74595 pin 12)
  * You need to connect /Shift Register Clear (pin 10) to VCC and /Output Enable (pin 13) to GND
  */
 
