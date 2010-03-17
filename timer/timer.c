@@ -1,7 +1,7 @@
 #include "timer.h"
 
-unsigned long long _timer_millis;
-unsigned long _timer_micro_divisor;
+uint64_t _timer_millis;
+uint32_t _timer_micro_divisor;
 
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
@@ -22,7 +22,7 @@ void timer_init(){
 	TIMSK1 = (1 << OCIE1A);
 
 	//Reset count variables
-	_timer_millis = 0l;
+	_timer_millis = 0;
 	
 	//Enable interrupts
 	sei();
@@ -32,7 +32,7 @@ void timer_init(){
  * Returns the number of milliseconds which have elapsed since the 
  * last time timer_init() was called.  Overflows after about 49 days.
  */
-unsigned long long timer_millis(){
+uint64_t timer_millis(){
 	return _timer_millis;
 }
 
@@ -40,7 +40,7 @@ unsigned long long timer_millis(){
  * Returns the number of microseconds which have elapsed since the 
  * last time timer_init() was called.  Overflows after about 71 minutes.
  */
-unsigned long long timer_micros(){
+uint64_t timer_micros(){
 	return (_timer_millis * 1000) + (TCNT1 / _timer_micro_divisor);
 }
 
