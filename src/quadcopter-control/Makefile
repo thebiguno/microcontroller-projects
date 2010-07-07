@@ -11,7 +11,7 @@
 PROJECT=Skeleton
 MMCU=atmega168
 F_CPU=20000000
-SOURCES=main.c lib/timer/timer.c
+SOURCES=main.c lib/psx/psx.c
 
 #AVRDude options
 AVRDUDE=/opt/local/bin/avrdude
