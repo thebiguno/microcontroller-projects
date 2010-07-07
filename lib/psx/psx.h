@@ -1,26 +1,3 @@
-/******************************************************************
-*  Super amazing PS2 controller Arduino Library v0.1
-*		details and example sketch: 
-*			http://www.billporter.info/?p=219
-*
-*    Original code by Shutter on Arduino Forums
-*
-*    Revamped, added analog stick support and made into lib by:
-*              Bill Porter
-*              www.billporter.info
-*
-*  Lib version history
-*    0.1 made into library, added analog stick support. 
-*
-*
-*
-*  Future work: add ability to define pins in initializer
-******************************************************************/
-
-
-
-
-
 #ifndef PSX_lib_h
 #define PSX_lib_h
 
@@ -55,23 +32,6 @@
 #define PSS_LX 7
 #define PSS_LY 8
 
-
-/*
-#define SET(x,y) (x|=(1<<y))
-#define CLR(x,y) (x&=(~(1<<y)))
-#define CHK(x,y) (x & (1<<y))
-#define TOG(x,y) (x^=(1<<y))
-*/
-
-/* Returns non-zero if the given button is pressed. */
-uint8_t psx_button(uint16_t);
-
-/* Returns the value of the given analog stick (0-255) */
-uint8_t psx_stick(unsigned int);
-
-/* What in the world does this do?!?! */
-void psx_read_gamepad();
-
 /* Initialize the controller, specifying which port, output, and pins to use.
  * Currently we force you to use the same port for all pins (i.e., PORTB / DDRB),
  * although if you want to change that it is easy enough.  Although we do not check
@@ -82,6 +42,18 @@ void psx_init(volatile uint8_t *psx_port, volatile uint8_t *psx_ddr,
 				uint8_t cmd_pin, 
 				uint8_t att_pin, 
 				uint8_t dat_pin);
+
+/* Returns non-zero if the given button is pressed. */
+uint8_t psx_button(uint16_t);
+
+/* Returns the value of the given analog stick (0-255) */
+uint8_t psx_stick(unsigned int);
+
+/* Updates the current value of the game pad.  This should be called 
+ * in the main loop, as psx_button() and psx_stick depend on values
+ * set here.
+ */
+void psx_read_gamepad();
 
 /* Private functions for internal use */
 uint8_t _psx_gamepad_shiftinout (uint8_t byte);
