@@ -13,8 +13,8 @@ void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	//Data bits
 	if (data_bits == 9){
 		//9 bits use an extra bit in register UCSR0B
-		UCSR0B |= (1 << UCSZ02);
-		frame_format |= (1 << UCSZ01) | (1 << UCSZ00);
+		UCSR0B |= _BV(UCSZ02);
+		frame_format |= _BV(UCSZ01) | _BV(UCSZ00);
 	}
 	else {
 		frame_format |= ((data_bits - 5) << UCSZ00);
@@ -31,11 +31,11 @@ void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	
 	
 	//Enable Rx / Tx
-	UCSR0B |= (1 << TXEN0) | (1 << RXEN0);
+	UCSR0B |= _BV(TXEN0) | _BV(RXEN0);
 	
 	//Enable interrupts if desired
 //	if (enableInterrupts)
-//		UCSR0B |= (1 << TXCIE0) | (1 << RXIE0) | (1 << UDRIE0);
+//		UCSR0B |= _BV(TXCIE0) | _BV(RXIE0) | _BV(UDRIE0);
 }
 
 void serial_init_b(uint16_t baud){
@@ -48,7 +48,7 @@ uint8_t serial_check_rx_complete(){
 	// it has not yet been read.  When this is set, the Receive
 	// Complete Interrupt is generated (if RXCIE0 bit in UCSR0B
 	// is set - this enables the receive interrupts.)
-	return(UCSR0A & (1 << RXC0));
+	return(UCSR0A & _BV(RXC0));
 }
 
 uint8_t serial_check_tx_ready(){
@@ -56,7 +56,7 @@ uint8_t serial_check_tx_ready(){
 	// the UDR0 register is empty, and thus another byte is ready
 	// to be inserted into it.  This data is kept in UCSR0A, at bit
 	// position UDRE0.
-	return(UCSR0A & (1 << UDRE0));
+	return(UCSR0A & _BV(UDRE0));
 }
 
 char serial_read(){
