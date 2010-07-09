@@ -4,8 +4,10 @@
 #define MOTOR_REAR_LEFT = MOTOR_D
 
 uint16_t[] motor_cmd(throttleCommandaxisCommand) {
-    motorCommand[FRONT] = limitRange(transmitterCommand[THROTTLE] + motorAxisCommand[PITCH] + motorAxisCommand[YAW], minCommand, MAXCOMMAND);
-    motorCommand[REAR] = limitRange(transmitterCommand[THROTTLE] - motorAxisCommand[PITCH] + motorAxisCommand[YAW], minCommand, MAXCOMMAND);
-    motorCommand[RIGHT] = limitRange(transmitterCommand[THROTTLE] - motorAxisCommand[ROLL] - motorAxisCommand[YAW], minCommand, MAXCOMMAND);
-    motorCommand[LEFT] = limitRange(transmitterCommand[THROTTLE] + motorAxisCommand[ROLL] - motorAxisCommand[YAW], minCommand, MAXCOMMAND);
+    uint16_t[] motor_cmd = {0,0,0,0};
+    motor_cmd[MOTOR_FRONT_LEFT] = limitRange(throttle_cmd + axis_cmd[PITCH] + axis_command[YAW]);
+    motor_cmd[MOTOR_REAR_RIGHT] = limitRange(throttle_cmd - axis_cmd[PITCH] + axis_command[YAW]);
+    motor_cmd[MOTOR_FRONT_RIGHT] = limitRange(throttle_cmd - axis_cmd[ROLL] - axis_command[YAW]);
+    motor_cmd[MOTOR_REAR_LEFT] = limitRange(throttle_cmd + axis_cmd[ROLL] - axis_command[YAW]);
+    return motor_cmd;
 }
