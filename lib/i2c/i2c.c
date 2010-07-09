@@ -1,49 +1,145 @@
-/* Start an I2C transmission to slave_address, of the given mode.  Mode should be 
- * one of TW_WRITE (logic 0) or TW_READ (logic 1).
+//See http://codinglab.blogspot.com/2008/10/i2c-on-avr-using-bit-banging.html for sample code
+
+// Port for the I2C
+#define I2C_DDR DDRD
+#define I2C_PIN PIND
+#define I2C_PORT PORTD
+
+// Pins to be used in the bit banging
+#define I2C_CLK 0    
+#define I2C_DAT 1
+
+#define I2C_DATA_HI() I2C_DDR &= ~( 1 << I2C_DAT );
+#define I2C_DATA_LO() I2C_DDR |=  ( 1 << I2C_DAT );
+
+#define I2C_CLOCK_HI() I2C_DDR &= ~( 1 << I2C_CLK );
+#define I2C_CLOCK_LO() I2C_DDR |=  ( 1 << I2C_CLK );
+
+/*
+ * Function to set data pin HIGH or LOW (depending on mode)
  */
-uint8_t i2c_start(uint8_t slave_address, uint8_t mode){
-	//Send START condition
-	TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
-
-	//Wait for START condition to be sent
-	while (!(TWCR & _BV(TWINT)))
-		; 
-
-	//Check value of TWI Status Register. Mask prescaler bits. If status different from START return ERROR
-	if ((TWSR & 0xF8) != START)
-		return -1;
-
-	//Load slave address + write into TWDR Register. Clear TWINT bit in TWCR to start transmission of address
-	TWDR = (slave_address << 1) | (mode & 0x1);;
-	TWCR = _BV(TWINT) | _BV(TWEN);
-
-	//Wait for TWINT Flag set. This indicates that the SLA+W has been transmitted, and ACK/NACK has been received.
-	while (!(TWCR & _BV(TWINT))) 
-		;
-
-	//Check value of TWI Status Register. Mask prescaler bits. If status different from MT_SLA_ACK return error.
-	if ((TWSR & 0xF8) != MT_SLA_ACK)
-		return -2;
-}
-
-/* Write the I2C data.  You must call i2c_start() before this to address a certain slave.
- */
-uint8_t i2c_write(uint8_t data){
-	//Load DATA into TWDR Register. Clear TWINT bit in TWCR to start transmission of data
-	TWDR = data;
-	TWCR = _BV(TWINT) | _BV(TWEN);
-
-	//Wait for TWINT Flag set. This indicates that the DATA has been transmitted, and ACK/NACK has been received.
-	while (!(TWCR & _BV(TWINT)))
-		;
-
-	//Check value of TWI Status Register. Mask prescaler bits. If status different from MT_DATA_ACK return error
-	if ((TWSR & 0xF8) != MT_DATA_ACK)
-		return -1;
+void i2c_data(uint8_t mode){
 
 }
 
-uint8_t i2c_stop(){
-	//Transmit STOP condition
-	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO);
+
+
+void I2C_WriteBit( unsigned char c )
+{
+    if ( c > 0 )
+    {
+        I2C_DATA_HI();
+    }
+    else
+    {
+        I2C_DATA_LO();
+    }
+
+    I2C_CLOCK_HI();
+    _delay_ms(1);
+
+    I2C_CLOCK_LO();
+    _delay_ms(1);
+
+    if ( c > 0 )
+    {
+        I2C_DATA_LO();
+    }
+
+    _delay_ms(1);
+   
+}
+
+unsigned char I2C_ReadBit()
+{
+    I2C_DATA_HI();
+
+    I2C_CLOCK_HI();
+    _delay_ms(1);
+
+    unsigned char c = I2C_PIN;
+
+    I2C_CLOCK_LO();
+    _delay_ms(1);
+
+    return ( c >> I2C_DAT ) & 1;
+}
+
+// Inits bitbanging port, must be called before using the functions below
+//
+void I2C_Init()
+{
+    I2C_PORT &= ~( ( 1 << I2C_DAT ) | ( 1 << I2C_CLK ) );
+
+    I2C_CLOCK_HI();
+    I2C_DATA_HI();
+
+    _delay_ms(1);
+}
+
+// Send a START Condition
+//
+void I2C_Start()
+{
+    // set both to high at the same time
+    I2C_DDR &=  ~( ( 1 << I2C_DAT ) | ( 1 << I2C_CLK ) );
+    _delay_ms(1);
+   
+    I2C_DATA_LO();
+    _delay_ms(1);
+
+    I2C_CLOCK_LO();
+    _delay_ms(1);
+}
+
+// Send a STOP Condition
+//
+void I2C_Stop()
+{
+    I2C_CLOCK_HI();
+    _delay_ms(1);
+
+    I2C_DATA_HI();
+    _delay_ms(1);
+}
+
+// write a byte to the I2C slave device
+//
+unsigned char I2C_Write( unsigned char c )
+{
+    for ( char i=0;i<8;i++)
+    {
+        I2C_WriteBit( c & 128 );
+   
+     c<<=1;
+    }
+
+    return I2C_ReadBit();
+}
+
+
+// read a byte from the I2C slave device
+//
+unsigned char I2C_Read( unsigned char ack )
+{
+    unsigned char res = 0;
+
+    for ( char i=0;i<8;i++)
+    {
+        res <<= 1;
+        res |= I2C_ReadBit();  
+    }
+
+    if ( ack > 0)
+    {
+        I2C_WriteBit( 0 );
+    }
+    else
+    {
+        I2C_WriteBit( 1 );
+    }
+
+    _delay_ms(1);
+
+    return res;
 }
