@@ -1,0 +1,34 @@
+sticks
+LY		pitch 0-255, 128±x centre, linear
+LX		roll 0-255, 128±x centre, linear
+RY		throttle 0-255, 128±x centre, linear
+RX		
+L3		
+R3		
+
+mode buttons
+start		throttle cut (only available when throttle is at or near centre)
+select		
+analog		n/a
+
+top buttons
+L1		yaw -42
+L2		yaw -84
+R1		yaw +42
+R2		yaw +84
+
+right buttons
+square		aerobatic / 3d mode
+circle		sport mode
+triangle	
+ex		normal mode
+
+left buttons
+left		pitch hold
+right		
+up		throttle hold (hover)
+down		controlled descent
+
+
+the only possibly important thing missing that a typical rc control has is programmable curves
+	
