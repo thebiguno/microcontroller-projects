@@ -53,4 +53,6 @@ void psx_read_gamepad();
 /* Private functions for internal use */
 uint8_t _psx_gamepad_shift(uint8_t byte);
 
+void _psx_send_command(uint8_t send_data[], uint8_t size);
+
 #endif
