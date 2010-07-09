@@ -5,12 +5,18 @@
 #include <avr/io.h>
 
 int main (void){
-	//Do setup here
+	//Init communication hardware
+
+	//Init control interface
 	
 	
 	//Main program loop
 	while (1){
-		
+		//Read controls
+
+		//Do scaling calculations
+
+		//Send control data
 	}
 }
 
