@@ -7,17 +7,15 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "../control-hardware.h"
+#include "../gyro-hardware.h"
 #include "../../../lib/timer/timer.h"
-#include "../../../lib/psx/psx.h"
 #include "../../../lib/serial/serial.h"
 
 char temp[32];
 
-int16_t pitch, last_pitch = 0;
-int16_t roll, last_roll = 0;
-int16_t yaw, last_yaw = 0;
-int16_t throttle, last_throttle = 0;
+int16_t x, last_x = 0;
+int16_t y, last_y = 0;
+int16_t z, last_z = 0;
 
 
 int main (void){
@@ -26,7 +24,7 @@ int main (void){
 	serial_init(9600, 8, 0, 1);
 	timer_init();
 
-	init_hardware();
+	init_gyro_hardware();
 
 	//Main program loop
 	while (1){
@@ -34,24 +32,20 @@ int main (void){
 		_delay_ms(10);
 
 		
-		pitch = get_pitch();
-		roll = get_roll();
-		yaw = get_yaw();
-		throttle = get_throttle();
+		x = get_gyro_x();
+		y = get_gyro_y();
+		z = get_gyro_z();
 
-		if (pitch != last_pitch || roll != last_roll || yaw != last_yaw || throttle != last_throttle){
-			last_pitch = pitch;
-			last_roll = roll;
-			last_yaw = yaw;
-			last_throttle = throttle;
+		if (x != last_x || y != last_y || z != last_z){
+			last_x = x;
+			last_y = y;
+			last_z = z;
 
-			serial_write_s(itoa(pitch, temp, 16));
+			serial_write_s(itoa(x, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(roll, temp, 16));
+			serial_write_s(itoa(y, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(yaw, temp, 16));
-			serial_write_s(", ");
-			serial_write_s(itoa(throttle, temp, 16));
+			serial_write_s(itoa(z, temp, 16));
 			serial_write_s("\n\r");
 		}
 
