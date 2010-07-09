@@ -32,34 +32,25 @@
 #define PSS_LX 7
 #define PSS_LY 8
 
-/* Initialize the controller, specifying which port, output, and pins to use.
- * Currently we force you to use the same port for all pins (i.e., PORTB / DDRB),
- * although if you want to change that it is easy enough.  Although we do not check
- * this, the output port DDRX should be the same as PORTX.
+/* Initialize the controller, specifying which port, ddr (for data), and pins to use.
+ * Although we don't verify this, data_ddr should correlate with data_port (i.e. DDRB 
+ * and PORTB).
  */
-void psx_init(volatile uint8_t *psx_port, volatile uint8_t *psx_ddr, 
-				uint8_t clk_pin, 	
-				uint8_t cmd_pin, 
-				uint8_t att_pin, 
-				uint8_t dat_pin);
-
+void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile uint8_t *data_ddr, uint8_t data_pin,
+				volatile uint8_t *clock_port, volatile uint8_t *clock_ddr, uint8_t clock_pin,
+				volatile uint8_t *command_port, volatile uint8_t *command_ddr, uint8_t command_pin,
+				volatile uint8_t *attention_port, volatile uint8_t *attention_ddr, uint8_t attention_pin);
+				
 /* Returns non-zero if the given button is pressed. */
 uint8_t psx_button(uint16_t);
 
 /* Returns the value of the given analog stick (0-255) */
 uint8_t psx_stick(unsigned int);
 
-/* Updates the current value of the game pad.  This should be called 
- * in the main loop, as psx_button() and psx_stick depend on values
- * set here.
- */
+/* Updates the current value of the game pad. */
 void psx_read_gamepad();
 
 /* Private functions for internal use */
-uint8_t _psx_gamepad_shiftinout (uint8_t byte);
-void _psx_gamepad_shiftout (uint8_t byte);
-uint8_t _psx_gamepad_shiftin();
-uint8_t _psx_get_gamepad_mode();
-uint8_t get_gamepad_mode();
+uint8_t _psx_gamepad_shift(uint8_t byte);
 
 #endif
