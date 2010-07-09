@@ -1,0 +1,36 @@
+// pid interface
+
+// returns an array of set-point values for x, y, z, pitch, roll, yaw
+uint16_t[] sp();
+// returns an array of process values for x, y, z, pitch, roll, yaw
+uint16_t[] pv();
+// returns an array of error values for x, y, z, pitch, roll, yaw
+int16_t[] e(uint16_t[] sp, uint16_t[] pv);
+// returns an array of manipulated variable values for x, y, z, pitch, roll, yaw
+int16_t[] mv(int16_t[] k, int16_t[] e);
+
+// returns an array of motor commands for left, right, front, back
+uint16_t[] motor(int16_t mv);
+
+
+// xbee interface, called by sp()
+uint16_t sp_pitch();
+uint16_t sp_roll();
+uint16_t sp_throttle();
+uint16_t sp_yaw();
+
+// gyro interface, called by pv()
+uint8_t pv_pitch();
+uint8_t pv_roll();
+uint8_t pv_yaw();
+
+// accelerometer interface, called by pv()
+uint8_t pv_x();
+uint8_t pv_y();
+uint8_t pv_z();
+
+// motor interface (values between 1000 µs and 2000 µs)
+void motor_left(uint16_t cmd);
+void motor_right(uint16_t cmd);
+void motor_front(uint16_t cmd);
+void motor_back(uint16_t cmd);
