@@ -29,32 +29,32 @@ void poll_controller(){
 	}
 }
  
-int16_t get_pitch(){
+uint16_t get_pitch(){
 	poll_controller();
 	
 	uint8_t raw_data = psx_stick(PSS_LY);
 
 	//Perform scaling -- TODO different methods	
-	int16_t scaled_data = (raw_data - 0x7F) << 0x8;
+	int16_t scaled_data = raw_data << 0x8;
 	
 	return scaled_data;
 }
 
-int16_t get_roll(){
+uint16_t get_roll(){
 	poll_controller();
 	
 	uint8_t raw_data = psx_stick(PSS_LX);
 
 	//Perform scaling -- TODO different methods	
-	int16_t scaled_data = (raw_data - 0x7F) << 0x8;
+	int16_t scaled_data = raw_data << 0x8;
 	
 	return scaled_data;
 }
 
-int16_t get_yaw(){
+uint16_t get_yaw(){
 	poll_controller();
 	
-	int16_t scaled_data = 0;
+	int16_t scaled_data = 0x7FFF;
 	
 	uint8_t l1 = psx_button(PSB_L1);
 	uint8_t l2 = psx_button(PSB_L2);
@@ -63,26 +63,26 @@ int16_t get_yaw(){
 	
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
-		if (l1 && l2) scaled_data = -30000;
-		else if (l2) scaled_data = -10000;
-		else if (l1) scaled_data = -2000;
+		if (l1 && l2) scaled_data = 0x0000;
+		else if (l2) scaled_data = 0x2000;
+		else if (l1) scaled_data = 0x6000;
 	}
 	else if (!l1 && !l2){
-		if (r1 && r2) scaled_data = 30000;
-		else if (r2) scaled_data = 10000;
-		else if (r1) scaled_data = 2000;	
+		if (r1 && r2) scaled_data = 0xFFFF;
+		else if (r2) scaled_data = 0xDFFF;
+		else if (r1) scaled_data = 0x9FFF;	
 	}
 	
 	return scaled_data;
 }
 
-int16_t get_throttle(){
+uint16_t get_throttle(){
 	poll_controller();
 	
 	uint8_t raw_data = psx_stick(PSS_RY);
 
 	//Perform scaling -- TODO different methods	
-	int16_t scaled_data = (raw_data - 0x7F) << 0x8;
+	int16_t scaled_data = raw_data << 0x8;
 	
 	return scaled_data;
 }

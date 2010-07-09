@@ -45,14 +45,14 @@ int main (void){
 			last_yaw = yaw;
 			last_throttle = throttle;
 
-			serial_write_s(itoa(pitch, temp, 10));
+			serial_write_s(itoa(pitch, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(roll, temp, 10));
+			serial_write_s(itoa(roll, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(yaw, temp, 10));
+			serial_write_s(itoa(yaw, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(throttle, temp, 10));
-			serial_write_s("\n");
+			serial_write_s(itoa(throttle, temp, 16));
+			serial_write_s("\n\r");
 		}
 
 	}

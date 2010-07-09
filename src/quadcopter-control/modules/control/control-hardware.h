@@ -15,20 +15,20 @@ void init_hardware();
  * Get pitch value -- 0 is level, negative values are 
  * pitching down / forward, positive are pitching up / back
  */
-int16_t get_pitch();
+uint16_t get_pitch();
 
 /*
  * Get roll value -- 0 is level, negative values are 
  * rolling right, positive are rolling left
  */
-int16_t get_roll();
+uint16_t get_roll();
 
 
 /*
  * Get yaw value -- 0 is straight, negative values are 
  * yawing right, positive are yawing left
  */
-int16_t get_yaw();
+uint16_t get_yaw();
 
 
 /*
@@ -36,7 +36,7 @@ int16_t get_yaw();
  * negative thrust (motors running backwards), positive values
  * are positive thrust.
  */
-int16_t get_throttle();
+uint16_t get_throttle();
 
 
 /*
