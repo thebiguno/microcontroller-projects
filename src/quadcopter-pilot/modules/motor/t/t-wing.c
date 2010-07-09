@@ -5,9 +5,9 @@
 
 uint16_t[] motor_cmd(uint16_t throttle_cmd, uint16_t[] axis_cmd) {
     uint16_t[] motor_cmd = {0,0,0,0};
-    motor_cmd[MOTOR_FRONT] = limitRange(throttle_cmd + axis_cmd[PITCH] - axis_command[YAW]);
-    motor_cmd[MOTOR_REAR] = limitRange(throttle_cmd - axis_cmd[PITCH] - axis_command[YAW]);
-    motor_cmd[MOTOR_RIGHT] = limitRange(throttle_cmd + axis_cmd[ROLL] + axis_command[YAW]);
-    motor_cmd[MOTOR_LEFT] = limitRange(throttle_cmd - axis_cmd[ROLL] + axis_command[YAW]);
+    motor_cmd[MOTOR_FRONT] = constrain(throttle_cmd + axis_cmd[PITCH] - axis_command[YAW], MOTOR_MINCOMMAND, MOTOR_MAXCOMMAND);
+    motor_cmd[MOTOR_REAR] = constrain(throttle_cmd - axis_cmd[PITCH] - axis_command[YAW], MOTOR_MINCOMMAND, MOTOR_MAXCOMMAND);
+    motor_cmd[MOTOR_RIGHT] = constrain(throttle_cmd + axis_cmd[ROLL] + axis_command[YAW], MOTOR_MINCOMMAND, MOTOR_MAXCOMMAND);
+    motor_cmd[MOTOR_LEFT] = constrain(throttle_cmd - axis_cmd[ROLL] + axis_command[YAW], MOTOR_MINCOMMAND, MOTOR_MAXCOMMAND);
     return motor_cmd;
 }
