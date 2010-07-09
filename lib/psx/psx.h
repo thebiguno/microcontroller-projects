@@ -21,10 +21,10 @@
 #define PSB_R2          0x0200
 #define PSB_L1          0x0400
 #define PSB_R1          0x0800
-#define PSB_GREEN       0x1000
-#define PSB_RED         0x2000
-#define PSB_BLUE        0x4000
-#define PSB_PINK        0x8000
+#define PSB_TRIANGLE    0x1000
+#define PSB_CIRCLE      0x2000
+#define PSB_CROSS       0x4000
+#define PSB_SQUARE      0x8000
 
 //These are stick values
 #define PSS_RX 5
