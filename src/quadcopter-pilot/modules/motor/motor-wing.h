@@ -1,1 +1,1 @@
-uint16_t[] motor_cmd(uint16_t throttle_cmd, uint16_t[] axis_cmd);
+float[] motor_cmd(float throttle_cmd, float[] axis_cmd);

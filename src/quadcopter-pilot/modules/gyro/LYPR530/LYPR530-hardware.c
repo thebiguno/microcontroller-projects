@@ -2,16 +2,19 @@
  * LYPR530 implementation 
  */
 #include "../gyro-hardware.h"
+#include <math.h>
 
-// scale gyro output (-465 .. +465) to (0 .. 65535)
-uint16_t scale(int8_t x) {
-    // If AREF = 3.3V, then A/D is 931 at 3V and 465 = 1.5V 
+#define M 0.006141921121388
+#define B M_PI * -1
+
+// scale gyro output (0 .. 1023) to (-π .. π)
+float scale(int8_t x) {
+    // TODO this may need to be a non-linear scale dependending on the measured output of the gyro
+    // If AREF = 3.3V, then A/D is 931 at 3V and 465 = 1.5V
     // y = mx + b 
-    // m = (y2 - y1) / (x2 - x1) = (65535 - 0) / (465 - (-465)) = 70.467741935483871;
-    // b = y1 - m * x1 = 0 - 70.467741935483871 * -465 = -32767
-    float m = 70.467741935483871; 
-    float b = -32767;
-    return (uint16_t) m * x + b;
+    // m = (y2 - y1) / (x2 - x1) = (π - -π) / (1023 - 0) = 0.006141921121388
+    // b = y1 - m * x1 = -π - 0.006141921121388 * 0 = -π
+    return M * x + B;
 }
 
 void init_gyro_hardware(){
@@ -19,19 +22,19 @@ void init_gyro_hardware(){
 }
 
 /* Returns the scaled gyroscope data for X axis */
-uint16_t get_gyro_x(){
+float get_gyro_x(){
 	//TODO
     return scale(0x7F);
 }
 
 /* Returns the scaled gyroscope data for Y axis */
-uint16_t get_gyro_y(){
+float get_gyro_y(){
 	//TODO
     return scale(0x7F);
 }
 
 /* Returns the scaled gyroscope data for Z axis */
-uint16_t get_gyro_z(){
+float get_gyro_z(){
     // TODO
     return scale(0x7F);
 }
