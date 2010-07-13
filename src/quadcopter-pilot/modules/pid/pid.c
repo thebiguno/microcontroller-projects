@@ -1,18 +1,18 @@
-double[] kp = {1,1,1};
-double[] ki = {1,1,1};
-double[] kd = {1,1,1};
+float[] kp = {1,1,1};
+float[] ki = {1,1,1};
+float[] kd = {1,1,1};
 
-int16_t[] ei = {0,0,0};
-int16_t[] ed = {0,0,0};
+float[] ei = {0,0,0};
+float[] ed = {0,0,0};
 
-uint16_t[] mv(uint16_t[] sp, uint16_t[] pv) {
+float[] mv(float[] sp, float[] pv) {
     int16_t[] mv = {0,0,0};
     for (int i = 0; i < 3; i++) {
         e = sp[i] - pv[i];
         
-        p = kp[i] * e[i];
-        i = ki[i] * ei[i];
-        d = kd[i] * (pv - ed[i]);
+        float p = kp[i] * e[i];
+        float i = ki[i] * ei[i];
+        float d = kd[i] * (pv - ed[i]);
         
         ei[i] += e;
         ed[i] = e;
