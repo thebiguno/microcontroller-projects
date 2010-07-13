@@ -105,14 +105,6 @@ void i2c_start_transceiver(){
  * block until the last transfer operation is complete, and then copy the result of the
  * last operation into *message (up to message_size).
  */
-/****************************************************************************
-Call this function to read out the requested data from the TWI transceiver buffer. I.e. first call
-TWI_Start_Transceiver to send a request for data to the slave. Then Run this function to collect the
-data when they have arrived. Include a pointer to where to place the data and the number of bytes
-requested (including the address field) in the function call. The function will hold execution (loop)
-until the TWI_ISR has completed with the previous operation, before reading out the data and returning.
-If there was an error in the previous transmission the function will return the TWI error code.
-****************************************************************************/
 uint8_t i2c_get_data_from_transceiver(uint8_t *message, uint8_t message_size){
 	uint8_t i;
 
