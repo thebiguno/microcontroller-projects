@@ -33,16 +33,16 @@ static uint8_t _i2c_status;
 void i2c_master_init(int16_t i2c_clock_frequency){
 	// Calculate bit rate register value given FCPU and desired frequency.  Assume prescaler is 0.
 	TWBR = ((F_CPU / ((i2c_clock_frequency) * 1000)) - 16) / 2;
-	//TWSR = 0x0;                                   // Prescaler
-	TWDR = 0xFF;                                    // Default content = SDA released.
-	TWCR = (1<<TWEN)|                                 // Enable TWI-interface and release TWI pins.
-		(0<<TWIE)|(0<<TWINT)|                      // Disable Interupt.
-		(0<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|           // No Signal requests.
-		(0<<TWWC);                                 //
+	//TWSR = 0x0;									// Prescaler
+	TWDR = 0xFF;									// Default content = SDA released.
+	TWCR = (1<<TWEN)|								// Enable TWI-interface and release TWI pins.
+		(0<<TWIE)|(0<<TWINT)|						// Disable Interupt.
+		(0<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|			// No Signal requests.
+		(0<<TWWC);									//
 		
 	sei();
 }    
-    
+
 /*
  * Checks if the ISR is busy transmitting.  Used internally.
  */
