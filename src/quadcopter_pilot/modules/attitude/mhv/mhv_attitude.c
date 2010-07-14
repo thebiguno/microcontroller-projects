@@ -92,8 +92,8 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     
     // convert quaternion into attitude
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
-    // TODO verify that heading, bank, and attitude are as expected: http://www.euclideanspace.com/maths/standards/index.htm
-    // TODO heading and attitude (i.e. x and y) may be mixed up
+    // TODO verify that heading, bank, and attitude are as expected
+    // TODO heading and attitude (i.e. y and z) are almost certainly reversed according to http://www.euclideanspace.com/maths/standards/index.htm
     
     vector_t result;
     double test = q1.x*q1.y + q1.z*q1.w;
