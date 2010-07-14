@@ -96,23 +96,25 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     // TODO heading and attitude (i.e. y and z) are almost certainly reversed according to http://www.euclideanspace.com/maths/standards/index.htm
     
     vector_t result;
-    double test = q1.x*q1.y + q1.z*q1.w;
+    double test = q.x * q.y + q.z * q.w;
     if (test > 0.499) { // singularity at north pole
-        result.y = 2 * atan2(q1.x,q1.w);
+        result.y = 2 * atan2(q.x, q.w);
         result.z = Math.PI/2;
         result.x = 0;
         return;
     }
     if (test < -0.499) { // singularity at south pole
-        result.y = -2 * atan2(q1.x,q1.w);
+        result.y = -2 * atan2(q.x, q.w);
         result.z = - Math.PI/2;
         result.x = 0;
         return;
     }
-    double sqx = q1.x*q1.x;
-    double sqy = q1.y*q1.y;
-    double sqz = q1.z*q1.z;
-    result.y = atan2(2*q1.y*q1.w-2*q1.x*q1.z , 1 - 2*sqy - 2*sqz);
-    result.z = asin(2*test);
-    result.x = atan2(2*q1.x*q1.w-2*q1.y*q1.z , 1 - 2*sqx - 2*sqz)
+    double sqx = q.x * q.x;
+    double sqy = q.y * q.y;
+    double sqz = q.z * q.z;
+    result.y = atan2(2 * q.y * q.w - 2 * q.x * q.z, 1 - 2 * sqy - 2 * sqz);
+    result.z = asin(2 * test);
+    result.x = atan2(2 * q.x * q.w - 2 * q.y * q.z, 1 - 2 * sqx - 2 * sqz);
+    
+    return result;
 }
