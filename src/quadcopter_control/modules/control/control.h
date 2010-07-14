@@ -1,6 +1,10 @@
+#ifndef CONTROL_H
+#define CONTROL_H
+
 #include <stdlib.h>
 #include <avr/io.h>
 #include <math.h>
+#include "../../main.h"
 
 /*
  * Control hardware must implement these functions
@@ -12,29 +16,22 @@
 void init_control_hardware();
 
 /*
- * Get pitch value in radians -- 0 is level, negative values are 
- * pitching down / forward, positive are pitching up / back
+ * Get the control data struct.  
+ * 
+ * Pitch value is in radians -- 0 is level, negative values are pitching 
+ * down / forward, positive are pitching up / back.
+ * 
+ * Roll value in radians -- 0 is level, negative values are rolling left, 
+ * positive are rolling right.
+ *
+ * Yaw rate in radians / second -- 0 is straight, negative values are 
+ * yawing left, positive are yawing right.
+ * 
+ * Throttle value -- 0 is neutral / stopped, 1 is full throttle, -1 is reverse thrust full throttle.
+ *
  */
-double get_pitch();
 
-/*
- * Get roll value in radians -- 0 is level, negative values are 
- * rolling left, positive are rolling right
- */
-double get_roll();
-
-
-/*
- * Get desired yaw rate in radians / second -- 0 is straight, negative values are 
- * yawing left, positive are yawing right
- */
-double get_yaw();
-
-
-/*
- * Get throttle value -- 0 is stopped, 1 is full throttle, -1 is reverse thrust full throttle.
- */
-double get_throttle();
+control_t get_control();
 
 
 /*
@@ -61,3 +58,5 @@ double get_throttle();
  * Returns the value of all buttons.
  */
 uint16_t get_buttons();
+
+#endif

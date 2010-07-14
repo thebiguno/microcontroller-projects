@@ -4,6 +4,7 @@
 
 #include <avr/io.h>
 
+#include "main.h"
 #include "modules/control.h"
 #include "modules/communication.h"
 
