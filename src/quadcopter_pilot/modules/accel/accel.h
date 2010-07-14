@@ -12,6 +12,6 @@
 void init_accel();
 
 /* Returns the accelerometer data in m/s/s */
-struct vector get_accel();
+vector_t get_accel();
 
 #endif

@@ -11,6 +11,6 @@
 void init_gyro();
 
 /* Returns the gyroscope data in rad/s */
-struct vector get_gyro();
+vector_t get_gyro();
 
 #endif

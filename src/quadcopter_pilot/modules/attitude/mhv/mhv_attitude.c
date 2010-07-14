@@ -7,7 +7,7 @@
 
 float SEq_1 = 1.0f, SEq_2 = 0.0f, SEq_3 = 0.0f, SEq_4 = 0.0f;               // estimated orientation quaternion elements with initial conditions
 
-struct vector attitude(struct vector gyro, struct vector accel, double dt) {
+vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     // Local system variables
     float norm;                                                             // vector norm
     float SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4;   // quaternion derrivative from gyroscopes elements

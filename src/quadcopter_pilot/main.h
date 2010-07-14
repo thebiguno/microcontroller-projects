@@ -1,11 +1,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-struct vector
+typedef struct vector
 {
     double x;
     double y;
     double z;
-};
+} vector_t;
 
 #endif
