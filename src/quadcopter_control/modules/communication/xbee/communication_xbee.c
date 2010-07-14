@@ -8,17 +8,33 @@
 #include "../../../lib/serial/serial.h"
 #include "../communication.h"
 
+union udouble {
+	double d;
+	uint32_t u;
+};
+
 void init_communication(){
 	serial_init(9600, 8, 0, 1);
 }
 
-void communication_send(control_t control, uint8_t mode){
-	uint32_t temp = (uint32_t) control.pitch;
+void _double_to_bytes(double value, uint8_t *buffer){
+	union udouble converter;
+	converter.d = value;
 	
-	serial_write_c((temp >> 24) & 0xFF);
-	serial_write_c((temp >> 16) & 0xFF);
-	serial_write_c((temp >> 8) & 0xFF);
-	serial_write_c(temp & 0xFF);
+	buffer[3] = (converter.u >> 24) & 0xFF;
+	buffer[2] = (converter.u >> 16) & 0xFF;
+	buffer[1] = (converter.u >> 8) & 0xFF;
+	buffer[0] = converter.u & 0xFF;
+}
+
+void communication_send(control_t control, uint8_t mode){
+	uint8_t result[4];
+	_double_to_bytes(control.pitch, result);
+	
+	serial_write_c(result[3]);
+	serial_write_c(result[2]);
+	serial_write_c(result[1]);
+	serial_write_c(result[0]);
 	
 	serial_write_s("\n\rTest\n\r");
 }
