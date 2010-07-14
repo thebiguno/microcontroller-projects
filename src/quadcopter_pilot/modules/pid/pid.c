@@ -1,3 +1,5 @@
+#include "pid.h"
+
 vector_t kp;
 vector_t ki;
 vector_t kd;
@@ -20,26 +22,25 @@ void init_pid() {
     kd.z = 1;
 }
 
+double _mv(double sp, double pv, double kp, double ki, double kd, double *ei, double *ed){
+    double e = sp - pv;
+    double mv = (kp * e) + (ki * *ei) + (kd * (pv - *ed));
+
+    *ei += e;
+    *ed = e;
+    
+    return mv;
+}
+
 vector_t mv(vector_t sp, vector_t pv) {
     vector_t mv;
 
-    e = sp.x - pv.x;
-    mv.x = (kp.x * e.x) + (ki.x * ei.x) + (kd.x * (pv.x - ed.x));
+	mv.x = _mv(sp.x, pv.x, kp.x, ki.x, kd.x, &ei.x, &ed.x);
 
-    ei.x += e;
-    ed.x = e;
-
-    e = sp.y - pv.y;
-    mv.y = (kp.y * e.y) + (ki.y * ei.y) + (kd.y * (pv.y - ed.y));
-
-    ei.y += e;
-    ed.y = e;
-
-    e = sp.z - pv.z;
-    mv.z = (kp.z * e.z) + (ki.z * ei.z) + (kd.z * (pv.z - ed.z));
-
-    ei.z += e;
-    ed.z = e;
+	mv.y = _mv(sp.y, pv.y, kp.y, ki.y, kd.y, &ei.y, &ed.y);
+	
+	mv.z = _mv(sp.z, pv.z, kp.z, ki.z, kd.z, &ei.z, &ed.z);
 
     return mv;
 }
+
