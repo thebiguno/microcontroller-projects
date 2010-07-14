@@ -4,7 +4,7 @@
 #define filterTerm0 = timeConstant / (timeConstant + 0.010)//10ms = ESC update rate
 #define filterTerm1 1 - filterTerm0
 
-#define MAGIG = 57.2957795; // what is this constant??
+#define MAGIC = 57.2957795; // what is this constant??
 
 vector_t previous_attitude;
 
