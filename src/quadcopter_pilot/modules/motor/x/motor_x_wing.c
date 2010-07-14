@@ -1,3 +1,5 @@
+#include "../motor.h"
+
 #define MOTOR_FRONT_LEFT = MOTOR_A
 #define MOTOR_FRONT_RIGHT = MOTOR_B
 #define MOTOR_REAR_RIGHT = MOTOR_C

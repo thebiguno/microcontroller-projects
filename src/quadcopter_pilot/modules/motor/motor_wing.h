@@ -1,1 +1,0 @@
-float[] motor_cmd(float throttle_cmd, float[] axis_cmd);
