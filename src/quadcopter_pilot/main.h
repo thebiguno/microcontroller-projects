@@ -8,6 +8,8 @@ typedef struct vector
     double z;
 } vector_t;
 
+void send_debug_data(uint8_t *data);
+
 #endif
 
 
