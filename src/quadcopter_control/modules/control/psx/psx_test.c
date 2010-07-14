@@ -4,6 +4,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -14,10 +15,10 @@
 
 char temp[32];
 
-int16_t pitch, last_pitch = 0;
-int16_t roll, last_roll = 0;
-int16_t yaw, last_yaw = 0;
-int16_t throttle, last_throttle = 0;
+double pitch, last_pitch = 0;
+double roll, last_roll = 0;
+double yaw, last_yaw = 0;
+double throttle, last_throttle = 0;
 
 
 int main (void){
@@ -26,7 +27,7 @@ int main (void){
 	serial_init(9600, 8, 0, 1);
 	timer_init();
 
-	init_hardware();
+	init_control_hardware();
 
 	//Main program loop
 	while (1){
@@ -45,13 +46,17 @@ int main (void){
 			last_yaw = yaw;
 			last_throttle = throttle;
 
-			serial_write_s(itoa(pitch, temp, 16));
+			sprintf(temp, "%g", pitch);
+			serial_write_s(temp);
 			serial_write_s(", ");
-			serial_write_s(itoa(roll, temp, 16));
+			sprintf(temp, "%g", roll);
+			serial_write_s(temp);
 			serial_write_s(", ");
-			serial_write_s(itoa(yaw, temp, 16));
+			sprintf(temp, "%g", yaw);
+			serial_write_s(temp);
 			serial_write_s(", ");
-			serial_write_s(itoa(throttle, temp, 16));
+			sprintf(temp, "%g", throttle);
+			serial_write_s(temp);
 			serial_write_s("\n\r");
 		}
 
