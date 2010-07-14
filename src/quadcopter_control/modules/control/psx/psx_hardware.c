@@ -3,7 +3,7 @@
  * Written by Wyatt Olson
  */
 
-#include "../control-hardware.h"
+#include "../control_hardware.h"
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/timer/timer.h"
 

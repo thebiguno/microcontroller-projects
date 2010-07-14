@@ -1,7 +1,7 @@
 /*
  * LYPR530 implementation 
  */
-#include "../gyro-hardware.h"
+#include "../gyro_hardware.h"
 #include <math.h>
 
 #define M 0.006141921121388

@@ -7,7 +7,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "../accel-hardware.h"
+#include "../accel_hardware.h"
 #include "../../../lib/timer/timer.h"
 #include "../../../lib/serial/serial.h"
 

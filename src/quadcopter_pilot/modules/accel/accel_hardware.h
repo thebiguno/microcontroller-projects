@@ -8,12 +8,12 @@
 void init_accel_hardware();
 
 /* Returns the scaled accelerometer data for X axis */
-uint16_t get_accel_x();
+float get_accel_x();
 
 /* Returns the scaled accelerometer data for Y axis */
-uint16_t get_accel_y();
+float get_accel_y();
 
 /* Returns the scaled accelerometer data for Z axis */
-uint16_t get_accel_z();
+float get_accel_z();
 
 

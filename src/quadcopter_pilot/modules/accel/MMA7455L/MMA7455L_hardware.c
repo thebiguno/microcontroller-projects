@@ -1,4 +1,4 @@
-#include "../accel-hardware.h"
+#include "../accel_hardware.h"
 /*
  * MMA7455L implementation 
  */
