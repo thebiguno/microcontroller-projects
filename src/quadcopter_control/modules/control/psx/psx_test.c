@@ -9,7 +9,6 @@
 #include <util/delay.h>
 
 #include "../control.h"
-#include "../../../lib/timer/timer.h"
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/serial/serial.h"
 
@@ -21,7 +20,6 @@ int main (void){
 	//Do setup here
 
 	serial_init(9600, 8, 0, 1);
-	timer_init();
 
 	init_control_hardware();
 
