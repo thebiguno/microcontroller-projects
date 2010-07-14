@@ -19,8 +19,8 @@ void init_accel(){
 	//TODO
 }
 
-struct vector get_accel_x() {
-    struct vector result;
+vector_t get_accel_x() {
+    vector_t result;
 	//TODO
     result.x = scale(0);
     result.y = scale(0);

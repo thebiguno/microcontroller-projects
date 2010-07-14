@@ -6,11 +6,10 @@
 
 #define MAGIG = 57.2957795; // what is this constant??
 
-struct vector previous_attitude = {0.0, 0.0, 0.0};
+vector_t previous_attitude;
 
-struct vector attitude(struct vector gyro, struct vector accel, double dt) {
-    
-    struct vector result;
+vector_t attitude(vector_t gyro, vector_t accel, double dt) {
+    vector_t result;
     result.x = (filterTerm0 * (previous_attitude.x + (gyro.x * dt)) + filterTerm1 * (accel.x)) * MAGIC;
     result.y = (filterTerm0 * (previous_attitude.y + (gyro.y * dt)) + filterTerm1 * (accel.y)) * MAGIC;
     result.z = (filterTerm0 * (previous_attitude.x + (gyro.x * dt)) + filterTerm1 * (accel.z)) * MAGIC;

@@ -21,8 +21,8 @@ void init_gyro_hardware(){
 
 }
 
-struct vector get_gyro() {
-    struct vector result;
+vector_t get_gyro() {
+    vector_t result;
 	//TODO
     result.x = scale(0x7F);
     result.y = scale(0x7F);
