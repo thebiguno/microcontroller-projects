@@ -5,24 +5,41 @@
 #define gyroMeasError 3.14159265358979f * (5.0f / 180.0f)                   // gyroscope measurement error in rad/s (shown as 5 deg/s)
 #define beta sqrt(3.0f / 4.0f) * gyroMeasError                              // compute beta
 
-float SEq_1 = 1.0f, SEq_2 = 0.0f, SEq_3 = 0.0f, SEq_4 = 0.0f;               // estimated orientation quaternion elements with initial conditions
+typedef struct quaternion {
+    double w;
+    double x;
+    double y;
+    double z;
+} quaternion_t;
+
+quaternion_t q;
+    
+void init_attitude() {
+    q.w = 1.0;
+    q.x = 0.0;
+    q.y = 0.0;
+    q.w = 0.0;
+}
 
 vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     // Local system variables
-    float norm;                                                             // vector norm
-    float SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4;   // quaternion derrivative from gyroscopes elements
-    float f_1, f_2, f_3;                                                    // objective function elements
-    float J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33;               // objective function Jacobian elements
-    float SEqHatDot_1, SEqHatDot_2, SEqHatDot_3, SEqHatDot_4;               // estimated direction of the gyroscope error
+    double norm;                                                    // vector norm
+    double f_1, f_2, f_3;                                           // objective function elements
+    double J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33;      // objective function Jacobian elements
+    quaternion_t q_dot_omega;                                       // quaternion derrivative from gyroscopes elements
+    quaternion_t q_hat_dot;                                         // estimated direction of the gyroscope error
 
+    quaternion_t half_q;
+    quaternion_t two_q;
+    
     // Axulirary variables to avoid reapeated calcualtions
-    float halfSEq_1 = 0.5f * SEq_1;
-    float halfSEq_2 = 0.5f * SEq_2;
-    float halfSEq_3 = 0.5f * SEq_3;
-    float halfSEq_4 = 0.5f * SEq_4;
-    float twoSEq_1 = 2.0f * SEq_1;
-    float twoSEq_2 = 2.0f * SEq_2;
-    float twoSEq_3 = 2.0f * SEq_3;
+    half_q.w = 0.5 * q.w;
+    half_q.x = 0.5 * q.x;
+    half_q.y = 0.5 * q.y;
+    half_q.z = 0.5 * q.z;
+    two_q.w = 2.0 * q.w;
+    two_q.x = 2.0 * q.x;
+    two_q.y = 2.0 * q.y;
 
     // Normalise the accelerometer measurement 
     norm = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);
@@ -31,47 +48,71 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     accel.z /= norm;
 
     // Compute the objective function and Jacobian
-    f_1 = twoSEq_2 * SEq_4 - twoSEq_1 * SEq_3 - accel.x;
-    f_2 = twoSEq_1 * SEq_2 + twoSEq_3 * SEq_4 - accel.y;
-    f_3 = 1.0f - twoSEq_2 * SEq_2 - twoSEq_3 * SEq_3 - accel.z;
-    J_11or24 = twoSEq_3;                                                    // J_11 negated in matrix multiplication
-    J_12or23 = 2.0f * SEq_4;
-    J_13or22 = twoSEq_1;                                                    // J_12 negated in matrix multiplication
-    J_14or21 = twoSEq_2;
+    f_1 = two_q.x * q.z - two_q.w * SEq.y - accel.x;
+    f_2 = two_q.w * q.x + two_q.y * SEq.z - accel.y;
+    f_3 = 1.0f - two_q.x * SEq.x - two_q.y * SEq.y - accel.z;
+    J_11or24 = two_q.y;                                                    // J_11 negated in matrix multiplication
+    J_12or23 = 2.0f * SEq.z;
+    J_13or22 = two_q.w;                                                    // J_12 negated in matrix multiplication
+    J_14or21 = two_q.x;
     J_32 = 2.0f * J_14or21;                                                 // negated in matrix multiplication
     J_33 = 2.0f * J_11or24;                                                 // negated in matrix multiplication
 
     // Compute the gradient (matrix multiplication)
-    SEqHatDot_1 = J_14or21 * f_2 - J_11or24 * f_1;
-    SEqHatDot_2 = J_12or23 * f_1 + J_13or22 * f_2 - J_32 * f_3;
-    SEqHatDot_3 = J_12or23 * f_2 - J_33 * f_3 - J_13or22 * f_1;
-    SEqHatDot_4 = J_14or21 * f_1 + J_11or24 * f_2;
+    q_hat_dot.w = J_14or21 * f_2 - J_11or24 * f_1;
+    q_hat_dot.x = J_12or23 * f_1 + J_13or22 * f_2 - J_32 * f_3;
+    q_hat_dot.y = J_12or23 * f_2 - J_33 * f_3 - J_13or22 * f_1;
+    q_hat_dot.z = J_14or21 * f_1 + J_11or24 * f_2;
 
     // Normalise the gradient
-    norm = sqrt(SEqHatDot_1 * SEqHatDot_1 + SEqHatDot_2 * SEqHatDot_2 + SEqHatDot_3 * SEqHatDot_3 + SEqHatDot_4 * SEqHatDot_4);
-    SEqHatDot_1 /= norm;
-    SEqHatDot_2 /= norm;
-    SEqHatDot_3 /= norm;
-    SEqHatDot_4 /= norm;
+    norm = sqrt(q_hat_dot.w * q_hat_dot.w + q_hat_dot.x * q_hat_dot.x + q_hat_dot.y * q_hat_dot.y + q_hat_dot.z * q_hat_dot.z);
+    q_hat_dot.w /= norm;
+    q_hat_dot.x /= norm;
+    q_hat_dot.y /= norm;
+    q_hat_dot.z /= norm;
     
     // Compute the quaternion derrivative measured by gyroscopes
-    SEqDot_omega_1 = -halfSEq_2 * gyro.x - halfSEq_3 * gyro.y - halfSEq_4 * gyro.z;
-    SEqDot_omega_2 = halfSEq_1 * gyro.x + halfSEq_3 * gyro.z - halfSEq_4 * gyro.y;
-    SEqDot_omega_3 = halfSEq_1 * gyro.y - halfSEq_2 * gyro.z + halfSEq_4 * gyro.x;
-    SEqDot_omega_4 = halfSEq_1 * gyro.z + halfSEq_2 * gyro.y - halfSEq_3 * gyro.x;
+    q_dot_omega.w = -half_q.x * gyro.x - half_q.y * gyro.y - half_q.z * gyro.z;
+    q_dot_omega.x = half_q.w * gyro.x + half_q.y * gyro.z - half_q.z * gyro.y;
+    q_dot_omega.y = half_q.w * gyro.y - half_q.x * gyro.z + half_q.z * gyro.x;
+    q_dot_omega.z = half_q.w * gyro.z + half_q.x * gyro.y - half_q.y * gyro.x;
     
     // Compute then integrate the estimated quaternion derrivative
-    SEq_1 += (SEqDot_omega_1 - (beta * SEqHatDot_1)) * deltat;
-    SEq_2 += (SEqDot_omega_2 - (beta * SEqHatDot_2)) * deltat;
-    SEq_3 += (SEqDot_omega_3 - (beta * SEqHatDot_3)) * deltat;
-    SEq_4 += (SEqDot_omega_4 - (beta * SEqHatDot_4)) * deltat;
+    SEq.w += (q_dot_omega.w - (beta * q_hat_dot.w)) * deltat;
+    SEq.x += (q_dot_omega.x - (beta * q_hat_dot.x)) * deltat;
+    SEq.y += (q_dot_omega.y - (beta * q_hat_dot.y)) * deltat;
+    SEq.z += (q_dot_omega.z - (beta * q_hat_dot.z)) * deltat;
     
     // Normalise quaternion
-    norm = sqrt(SEq_1 * SEq_1 + SEq_2 * SEq_2 + SEq_3 * SEq_3 + SEq_4 * SEq_4);
-    SEq_1 /= norm;
-    SEq_2 /= norm;
-    SEq_3 /= norm;
-    SEq_4 /= norm;
+    norm = sqrt(SEq.w * SEq.w + SEq.x * SEq.x + SEq.y * SEq.y + SEq.z * SEq.z);
+    SEq.w /= norm;
+    SEq.x /= norm;
+    SEq.y /= norm;
+    SEq.z /= norm;
     
-    // TODO convert quaternion into attitude
+    // convert quaternion into attitude
+    // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+    // TODO verify that heading, bank, and attitude are as expected: http://www.euclideanspace.com/maths/standards/index.htm
+    // TODO heading and attitude (i.e. x and y) may be mixed up
+    
+    vector_t result;
+    double test = q1.x*q1.y + q1.z*q1.w;
+    if (test > 0.499) { // singularity at north pole
+        result.y = 2 * atan2(q1.x,q1.w);
+        result.z = Math.PI/2;
+        result.x = 0;
+        return;
+    }
+    if (test < -0.499) { // singularity at south pole
+        result.y = -2 * atan2(q1.x,q1.w);
+        result.z = - Math.PI/2;
+        result.x = 0;
+        return;
+    }
+    double sqx = q1.x*q1.x;
+    double sqy = q1.y*q1.y;
+    double sqz = q1.z*q1.z;
+    result.y = atan2(2*q1.y*q1.w-2*q1.x*q1.z , 1 - 2*sqy - 2*sqz);
+    result.z = asin(2*test);
+    result.x = atan2(2*q1.x*q1.w-2*q1.y*q1.z , 1 - 2*sqx - 2*sqz)
 }
