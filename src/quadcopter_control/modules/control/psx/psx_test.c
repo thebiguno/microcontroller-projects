@@ -7,7 +7,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "../control-hardware.h"
+#include "../control_hardware.h"
 #include "../../../lib/timer/timer.h"
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/serial/serial.h"
