@@ -20,6 +20,9 @@
 *
 ****************************************************************************/
 
+#ifndef I2C_MASTER_H
+#define I2C_MASTER_H
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -83,3 +86,4 @@ uint8_t i2c_get_data_from_transceiver(uint8_t *msg, uint8_t msgSize);
 #define TWI_NO_STATE               0xF8  // No relevant state information available; TWINT = “0”
 #define TWI_BUS_ERROR              0x00  // Bus error due to an illegal START or STOP condition
 
+#endif

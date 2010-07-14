@@ -1,3 +1,6 @@
+#ifndef SHIFT_H
+#define SHIFT_H
+
 #include <avr/io.h>
 
 /*
@@ -22,3 +25,4 @@ void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t 
  */
 uint8_t shift_out(uint8_t data);
 
+#endif

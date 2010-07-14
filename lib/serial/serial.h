@@ -1,3 +1,6 @@
+#ifndef SERIAL_H
+#define SERIAL_H
+
 #include <avr/io.h>
 #include <string.h>
 
@@ -48,3 +51,5 @@ void serial_write_s(char *data);
  * data register UDR0 is available, and then popualtes it.
  */
 void serial_write_c(char data);
+
+#endif

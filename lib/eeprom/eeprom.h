@@ -1,3 +1,5 @@
+#ifndef EEPROM_H
+#define EEPROM_H
 #include <avr/io.h>
 
 /*
@@ -11,3 +13,4 @@ void eeprom_write_c(uint16_t address, uint8_t data);
  */
 uint8_t eeprom_read_c(uint16_t address);
 
+#endif

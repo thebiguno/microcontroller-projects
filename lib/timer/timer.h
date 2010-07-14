@@ -1,3 +1,6 @@
+#ifndef TIMER_H
+#define TIMER_H
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -18,3 +21,5 @@ uint64_t timer_millis();
  * last time timer_init() was called.  Overflows after about 71 minutes.
  */
 uint64_t timer_micros();
+
+#endif

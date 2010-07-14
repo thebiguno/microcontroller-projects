@@ -1,3 +1,6 @@
+#ifndef SERIAL_BUFFERED_H
+#define SERIAL_BUFFERED_H
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "serial.h"
@@ -14,3 +17,5 @@ char serial_buffered_read_c();
  * character string if there are no unread characters in the buffer.
  */
 char* serial_buffered_read_s();
+
+#endif
