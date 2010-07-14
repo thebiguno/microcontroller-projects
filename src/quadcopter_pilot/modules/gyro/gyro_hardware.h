@@ -6,13 +6,13 @@
 /* Initializes the hardware */
 void init_gyro_hardware();
 
-/* Returns the scaled gyroscope data for X axis */
-uint16_t get_gyro_x();
+/* Returns the gyroscope data for X axis in rad/s */
+double get_gyro_x();
 
-/* Returns the scaled gyroscope data for Y axis */
-uint16_t get_gyro_y();
+/* Returns the gyroscope data for Y axis in rad/s */
+double get_gyro_y();
 
-/* Returns the scaled gyroscope data for Z axis */
-uint16_t get_gyro_z();
+/* Returns the gyroscope data for Z axis in rad/s */
+double get_gyro_z();
 
 

@@ -7,13 +7,13 @@
 /* Initializes the hardware */
 void init_accel_hardware();
 
-/* Returns the scaled accelerometer data for X axis */
-float get_accel_x();
+/* Returns the accelerometer data for X axis in m/s/s */
+double get_accel_x();
 
-/* Returns the scaled accelerometer data for Y axis */
-float get_accel_y();
+/* Returns the accelerometer data for Y axis in m/s/s */
+double get_accel_y();
 
-/* Returns the scaled accelerometer data for Z axis */
-float get_accel_z();
+/* Returns the accelerometer data for Z axis in m/s/s */
+double get_accel_z();
 
 

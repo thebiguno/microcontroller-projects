@@ -8,7 +8,7 @@
 #define B M_PI * -1
 
 // scale gyro output (0 .. 1023) to (-π .. π)
-float scale(int8_t x) {
+double scale(int8_t x) {
     // TODO this may need to be a non-linear scale dependending on the measured output of the gyro
     // If AREF = 3.3V, then A/D is 931 at 3V and 465 = 1.5V
     // y = mx + b 
@@ -22,19 +22,19 @@ void init_gyro_hardware(){
 }
 
 /* Returns the scaled gyroscope data for X axis */
-float get_gyro_x(){
+double get_gyro_x(){
 	//TODO
     return scale(0x7F);
 }
 
 /* Returns the scaled gyroscope data for Y axis */
-float get_gyro_y(){
+double get_gyro_y(){
 	//TODO
     return scale(0x7F);
 }
 
 /* Returns the scaled gyroscope data for Z axis */
-float get_gyro_z(){
+double get_gyro_z(){
     // TODO
     return scale(0x7F);
 }
