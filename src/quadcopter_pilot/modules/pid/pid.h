@@ -9,6 +9,6 @@ void init_pid();
  * Given a vector of setpoints, a vector of process variables, return a vector 
  * of manipulated variables
  */
-vector_t mv(vector_t sp, vector_t pv);
+vector_t pid_mv(vector_t sp, vector_t pv);
 
 #endif

@@ -1,46 +1,27 @@
 #include "pid.h"
 #include <stdio.h>
+#include <math.h>
+
+#define SP M_PI / 2.0
+#define PV M_PI / -2.0
 
 int main(){
-	
-	init_pid();
 
-	vector_t sp, pv, mvr;
+    init_pid();
 
-	sp.x = 0;
-	sp.y = 1;
-	sp.z = 0;
+    vector_t sp, pv, mv;
 
-	pv.x = 0;
-	pv.y = 2;
-	pv.z = 0;
+    sp.x = SP;
+    pv.x = PV;
 
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-	
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
+    int i = 0;
+    while (1) {
+        mv = pid_mv(sp, pv);
+        pv.x += mv.x; // assume that the adjustment perfectly affects the measured value
+        printf("%i: mv=%g, pv=%g\n", i, mv.x, pv.x);
+        
+        if (i > 100 || (pv.x > SP - 0.01 && pv.x < SP + 0.01)) break;
+        i++;
+    }
 
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-
-	mvr = mv(sp, pv);
-	printf("%g, %g, %g\n", mvr.x, mvr.y, mvr.z);
-	pv.y += mvr.y;
-	
 }
