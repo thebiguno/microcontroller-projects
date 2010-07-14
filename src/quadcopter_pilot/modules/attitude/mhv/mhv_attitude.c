@@ -2,16 +2,12 @@
 #include <math.h>
 
 // System constants 
-#define deltat 0.001f                                                       // sampling period in seconds (shown as 1 ms)
 #define gyroMeasError 3.14159265358979f * (5.0f / 180.0f)                   // gyroscope measurement error in rad/s (shown as 5 deg/s)
 #define beta sqrt(3.0f / 4.0f) * gyroMeasError                              // compute beta
 
-// Global system variables
-float a_x, a_y, a_z;                                                        // accelerometer measurements
-float w_x, w_y, w_z;                                                        // gyroscope measurements in rad/s
 float SEq_1 = 1.0f, SEq_2 = 0.0f, SEq_3 = 0.0f, SEq_4 = 0.0f;               // estimated orientation quaternion elements with initial conditions
 
-void filterUpdate(float w_x, float w_y, float w_z, float a_x, float a_y, float a_z) {
+struct vector attitude(struct vector gyro, struct vector accel, double dt) {
     // Local system variables
     float norm;                                                             // vector norm
     float SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4;   // quaternion derrivative from gyroscopes elements
@@ -29,15 +25,15 @@ void filterUpdate(float w_x, float w_y, float w_z, float a_x, float a_y, float a
     float twoSEq_3 = 2.0f * SEq_3;
 
     // Normalise the accelerometer measurement 
-    norm = sqrt(a_x * a_x + a_y * a_y + a_z * a_z);
-    a_x /= norm;
-    a_y /= norm;
-    a_z /= norm;
+    norm = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);
+    accel.x /= norm;
+    accel.y /= norm;
+    accel.z /= norm;
 
     // Compute the objective function and Jacobian
-    f_1 = twoSEq_2 * SEq_4 - twoSEq_1 * SEq_3 - a_x;
-    f_2 = twoSEq_1 * SEq_2 + twoSEq_3 * SEq_4 - a_y;
-    f_3 = 1.0f - twoSEq_2 * SEq_2 - twoSEq_3 * SEq_3 - a_z;
+    f_1 = twoSEq_2 * SEq_4 - twoSEq_1 * SEq_3 - accel.x;
+    f_2 = twoSEq_1 * SEq_2 + twoSEq_3 * SEq_4 - accel.y;
+    f_3 = 1.0f - twoSEq_2 * SEq_2 - twoSEq_3 * SEq_3 - accel.z;
     J_11or24 = twoSEq_3;                                                    // J_11 negated in matrix multiplication
     J_12or23 = 2.0f * SEq_4;
     J_13or22 = twoSEq_1;                                                    // J_12 negated in matrix multiplication
@@ -59,10 +55,10 @@ void filterUpdate(float w_x, float w_y, float w_z, float a_x, float a_y, float a
     SEqHatDot_4 /= norm;
     
     // Compute the quaternion derrivative measured by gyroscopes
-    SEqDot_omega_1 = -halfSEq_2 * w_x - halfSEq_3 * w_y - halfSEq_4 * w_z;
-    SEqDot_omega_2 = halfSEq_1 * w_x + halfSEq_3 * w_z - halfSEq_4 * w_y;
-    SEqDot_omega_3 = halfSEq_1 * w_y - halfSEq_2 * w_z + halfSEq_4 * w_x;
-    SEqDot_omega_4 = halfSEq_1 * w_z + halfSEq_2 * w_y - halfSEq_3 * w_x;
+    SEqDot_omega_1 = -halfSEq_2 * gyro.x - halfSEq_3 * gyro.y - halfSEq_4 * gyro.z;
+    SEqDot_omega_2 = halfSEq_1 * gyro.x + halfSEq_3 * gyro.z - halfSEq_4 * gyro.y;
+    SEqDot_omega_3 = halfSEq_1 * gyro.y - halfSEq_2 * gyro.z + halfSEq_4 * gyro.x;
+    SEqDot_omega_4 = halfSEq_1 * gyro.z + halfSEq_2 * gyro.y - halfSEq_3 * gyro.x;
     
     // Compute then integrate the estimated quaternion derrivative
     SEq_1 += (SEqDot_omega_1 - (beta * SEqHatDot_1)) * deltat;
@@ -76,4 +72,6 @@ void filterUpdate(float w_x, float w_y, float w_z, float a_x, float a_y, float a
     SEq_2 /= norm;
     SEq_3 /= norm;
     SEq_4 /= norm;
+    
+    // TODO convert quaternion into attitude
 }
