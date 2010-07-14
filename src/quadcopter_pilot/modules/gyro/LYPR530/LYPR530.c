@@ -1,7 +1,7 @@
 /*
  * LYPR530 implementation 
  */
-#include "../gyro_hardware.h"
+#include "../gyro.h"
 #include <math.h>
 
 #define M 0.006141921121388
@@ -21,21 +21,11 @@ void init_gyro_hardware(){
 
 }
 
-/* Returns the scaled gyroscope data for X axis */
-double get_gyro_x(){
+struct vector get_gyro() {
+    struct vector result;
 	//TODO
-    return scale(0x7F);
+    result.x = scale(0x7F);
+    result.y = scale(0x7F);
+    result.z = scale(0x7F)
+    return result;
 }
-
-/* Returns the scaled gyroscope data for Y axis */
-double get_gyro_y(){
-	//TODO
-    return scale(0x7F);
-}
-
-/* Returns the scaled gyroscope data for Z axis */
-double get_gyro_z(){
-    // TODO
-    return scale(0x7F);
-}
-

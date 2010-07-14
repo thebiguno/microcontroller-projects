@@ -1,3 +1,0 @@
-/*
- * Main accelerometer code
- */
