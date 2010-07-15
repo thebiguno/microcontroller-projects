@@ -11,6 +11,9 @@
 #define ESC_PIN_2 3
 #define ESC_PIN_3 4
 
+#define PWM_CLOCK_ON _BV(CS12)
+#define PWM_CLOCK_OFF _BV(CS12) | _BV(CS11) | _BV(CS10)
+
 //Current values are here
 static uint16_t esc_value[4] = {0xFF, 0x00, 0x00, 0x00};
 
@@ -25,7 +28,7 @@ void esc_init() {
 
 	//Set up the timer to run at F_CPU (/256 prescaler), in normal mode
 	TCCR1A = 0x0;
-	TCCR1B |= (1 << CS12);
+	TCCR1B |= PWM_CLOCK_ON;
 	
 	//Controls the frequency -- F_CPU / 1000 * PWM_FREQUENCY (i.e. PWM_FREQUENCY milliseconds)
 	OCR1A = (uint16_t) (PWM_CLOCK_BASE * PWM_FREQUENCY / 256);
@@ -61,27 +64,29 @@ void esc_set(uint8_t armed, double speed[]) {
  * The frequency comparison.  When it overflows, we reset the timer to 0.
  */
 ISR(TIMER1_COMPA_vect){
-	TCNT1 = 0;
+	//Turn off clock to avoid timing issues
+	TCCR1B &= ~PWM_CLOCK_OFF;
 	
 	//Set all pins high
 	ESC_PORT |= _BV(ESC_PIN_0) | _BV(ESC_PIN_1) | _BV(ESC_PIN_2) | _BV(ESC_PIN_3);
 
-	//Trigger OCR1B to interrupt soon (if you don't get proper PWM, 
-	// increase this.  200 clock cycles seems to be within reason; 
-	// if you set it too soon, the clock will already have passed, 
-	// and the output will be on the entire time.)
-	//This gives you an effective low limit on the pulse width.  
-	// TCNT1 + 250 works out to about 16µs; given that the lowest 
-	// value for ESCs is going to be about 1000µs, this is perfectly 
-	// fine.
-	OCR1B = TCNT1 + 250;
+	//Trigger OCR1B to interrupt 'Real Soon Now'.  Set this as low as possible while still
+	// retailing stability.
+	OCR1B = 10;
+	
+	//Reset counter
+	TCNT1 = 0;
+	
+	//Re-enable clock
+	TCCR1B |= PWM_CLOCK_ON;
 }
 
 /* 
  * The phase comparison.  When it overflows, we find the next highest value.
  */
 ISR(TIMER1_COMPB_vect){
-	
+	//Turn off clock to avoid timing issues
+	TCCR1B &= ~PWM_CLOCK_OFF;
 
 	//Find the next value to trigger overflow
 	uint16_t value = 0xFFFF;
@@ -96,5 +101,9 @@ ISR(TIMER1_COMPB_vect){
 		}
 	}
 	
+	//Set the timer for the next lowest value
 	OCR1B = (uint16_t) (PWM_CLOCK_BASE * value / 256);
+	
+	//Re-enable clock
+	TCCR1B |= PWM_CLOCK_ON;	
 }
