@@ -9,19 +9,37 @@
 #define MODE_ARMED 0x100
 #define MODE_RESERVED2 0x200 // the select button
 
-#define DEG_30 = M_PI / 6.0;
-#define DEG_60 = M_PI / 3.0;
+#define DEG_30 = M_PI / 6.0
+#define DEG_60 = M_PI / 3.0
+
+#define M 0.636619772367581
+#define B 0.0
 
 double _throttle_cache;
 double _pitch_cache;
 double _roll_cache;
 
-_rad_to_speed(double rad) {
-    
+/*
+ * Translates the manipulated variables (in rad) into throttle adjustments (-1 .. 1)
+ * this is the bridge from pid result to motor input
+ */
+vector_t rad_to_throttle_adjust(vector_t mv) {
+    vector_t result;
+    result.x = scale(mv.x);
+    result.y = scale(mv.y);
+    result.z = scale(mv.z);
+    return result;
+}
+
+double scale(double x) {
+    // y = mx + b 
+    // m = (y2 - y1) / (x2 - x1) = (-1 - 1) / (-1.570796326794897 - 1.570796326794897) = 0.636619772367581
+    // b = y1 - m * x1 = 1 - 0.636619772367581 * 1.570796326794897 = 0
+    return M * x + B;
 }
 
 /*
- * Translates the manipulated variables (in rad) into throttle adjustments (-1 .. 1)
+ * Applies flight control rules to the user set points
  * throttle is percentage (0..1), 
  * throttle may be modified to apply throttle hold
  * mv is in radians and comes from the pid module
