@@ -7,7 +7,7 @@ L3
 R3		
 
 mode buttons
-start		throttle cut (only available when throttle is at or near centre)
+start		throttle cut (only available when throttle is at or near centre ?) -- i.e. armed
 select		
 analog		n/a
 
@@ -25,8 +25,8 @@ ex		normal mode
 
 left buttons
 left		pitch hold
-right		
-up		throttle hold (hover)
+right		roll hold
+up		throttle hold
 down		controlled descent
 
 
