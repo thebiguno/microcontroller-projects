@@ -5,11 +5,20 @@
 #define MOTOR_REAR = MOTOR_C
 #define MOTOR_LEFT = MOTOR_D
 
-float motor_cmd(float[] throttle_cmd, float[] axis_cmd) {
-    float[] motor_cmd = {0,0,0,0};
-    motor_cmd[MOTOR_FRONT] = throttle_cmd + axis_cmd[PITCH] - axis_command[YAW];
-    motor_cmd[MOTOR_REAR] = throttle_cmd - axis_cmd[PITCH] - axis_command[YAW];
-    motor_cmd[MOTOR_RIGHT] = throttle_cmd + axis_cmd[ROLL] + axis_command[YAW];
-    motor_cmd[MOTOR_LEFT] = throttle_cmd - axis_cmd[ROLL] + axis_command[YAW];
-    return motor_cmd;
+double motor_cmd(float throttle, vector_t mv) {
+    double[] result = {0,0,0,0};
+    
+    result[MOTOR_FRONT] = _motor_limit(throttle + mv.y - mv.z);
+    result[MOTOR_REAR] = _motor_limit(throttle - mv.y - mv.z);
+    result[MOTOR_RIGHT] = _motor_limit(throttle + mv.x + mv.z);
+    result[MOTOR_LEFT] = _motor_limit(throttle - mv.x + mv.z);
+    
+    return result;
 }
+
+double _motor_limit(double value) {
+    if (value > 1) return 1;
+    if (value < 0) return 0;
+    return value;
+}
+
