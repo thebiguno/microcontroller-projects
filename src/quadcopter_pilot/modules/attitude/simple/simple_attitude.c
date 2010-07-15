@@ -8,6 +8,10 @@
 
 vector_t previous_attitude;
 
+void attitude_init(vector_t gyro, vector_t accel) {
+    ;
+}
+
 vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     vector_t result;
     result.x = (filterTerm0 * (previous_attitude.x + (gyro.x * dt)) + filterTerm1 * (accel.x)) * MAGIC;

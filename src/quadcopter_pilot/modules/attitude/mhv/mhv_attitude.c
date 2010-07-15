@@ -14,7 +14,7 @@ typedef struct quaternion {
 
 quaternion_t q;
     
-void init_attitude() {
+void attitude_init(vector_t gyro, vector_t accel) {
     q.w = 1.0;
     q.x = 0.0;
     q.y = 0.0;
