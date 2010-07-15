@@ -1,9 +1,9 @@
 #include "../motor.h"
 
-#define MOTOR_FRONT_LEFT = MOTOR_A
-#define MOTOR_FRONT_RIGHT = MOTOR_B
-#define MOTOR_REAR_RIGHT = MOTOR_C
-#define MOTOR_REAR_LEFT = MOTOR_D
+#define MOTOR_FRONT_LEFT 0
+#define MOTOR_FRONT_RIGHT 1
+#define MOTOR_REAR_RIGHT 2
+#define MOTOR_REAR_LEFT 3
 
 double[] motor_cmd(double throttle, vector_t mv) {
     double[] result = {0,0,0,0};
@@ -17,7 +17,7 @@ double[] motor_cmd(double throttle, vector_t mv) {
 }
 
 double _motor_limit(double value) {
-    if (value > 1) return 1;
-    if (value < 0) return 0;
+    if (value > 1.0) return 1.0;
+    if (value < 0.0) return 0.0;
     return value;
 }

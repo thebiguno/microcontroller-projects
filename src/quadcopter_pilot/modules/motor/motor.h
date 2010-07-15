@@ -4,6 +4,6 @@
 #define MOTOR_D = 3
 
 /*
- * given a throttle percentage (0 .. 1) and vector of manipulated variables in rad, calculate the motor power percentage (0..1)
+ * Given a throttle percentage (0 .. 1) and vector of percentage adjustments for each axis (-1 .. 1), calculate the motor power percentage (0..1)
  */
-double[] motor_cmd(double throttle, vector_t mv);
+double[] motor_cmd(double throttle, vector_t adj);
