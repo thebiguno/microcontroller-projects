@@ -3,26 +3,22 @@
 //Macro to convert VALUE (in µs) to a clock tick count.
 #define PWM_US_TO_CLICKS(VALUE) F_CPU /1000000 * VALUE / 256
 
-#define ESC_PIN_0 1
-#define ESC_PIN_1 2
-#define ESC_PIN_2 3
-#define ESC_PIN_3 4
-
+//Commands to turn clock on and off.
 #define PWM_CLOCK_ON TCCR1B = _BV(CS12)
 #define PWM_CLOCK_OFF TCCR1B = 0x00
 
 //Current values are here
-uint16_t _values[8] = {0,0,0,0,0,0,0,0};
+uint16_t _values[PWM_MAX_PINS] = {0,0,0,0,0,0,0,0};
 
 //New values are here, they are copied over at the start of a new waveform
-uint16_t _new_values[8] = {0,0,0,0,0,0,0,0};
+uint16_t _new_values[PWM_MAX_PINS] = {0,0,0,0,0,0,0,0};
 uint8_t _new_value_set = 0; //Set to true when updated values
 
-volatile uint8_t *_ports[8];	//Array of ports used
-volatile uint8_t *_ddrs[8];		//Array of DDRs used
-uint8_t _pins[8];				//Array of pins used
-uint8_t _count;					//How many pins should be used
-uint16_t _period = 0xFFFF;		//PWM period (in clock ticks)
+//Variables used to store config data
+volatile uint8_t *_ports[PWM_MAX_PINS];		//Array of ports used
+volatile uint8_t *_ddrs[PWM_MAX_PINS];		//Array of DDRs used
+uint8_t _pins[PWM_MAX_PINS];				//Array of pins used
+uint8_t _count;								//How many pins should be used
 
 
 
@@ -36,7 +32,7 @@ void pwm_init(volatile uint8_t *ports[],
 	*_ports = *ports;
 	*_ddrs = *ddrs;
 	*_pins = *pins;
-	_count = count;
+	_count = (count <= PWM_MAX_PINS ? count : PWM_MAX_PINS);
 				
 	//Enable all pins for output
 	for (uint8_t i = 0; i < _count; i++){
