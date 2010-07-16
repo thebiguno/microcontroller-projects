@@ -1,21 +1,16 @@
 #include <avr/io.h>
-
+#include <util/delay.h>
 #include "../esc.h"
-
-char temp[32];
-
-int16_t x, last_x = 0;
-int16_t y, last_y = 0;
-int16_t z, last_z = 0;
-
+#include "../../../lib/pwm/pwm.h"
 
 int main (void){
 	//Do setup here
-
 	esc_init();
 
+//	uint16_t value = 5000;
 	//Main program loop
 	while (1){
-
+		//pwm_set(0, value);
+		_delay_ms(1000);
 	}
 }
