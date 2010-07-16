@@ -11,7 +11,6 @@ void esc_init() {
 	uint8_t pins[8];
 	pins[0] = 1;
 	
-	pwm_set(0, 5000);
 	pwm_init(ports, ddrs, pins, 1, 20000);
 }
 
