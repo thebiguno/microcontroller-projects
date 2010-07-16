@@ -1,0 +1,25 @@
+HobbyKing:
+1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8247			$12	$12
+1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=11060		$20	$20
+2x 3S1P 4000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=7634			$20	$40
+3x 3S1P 3000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8851			$18	$54
+6x 3S1P 1600mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6539			$9	$54
+10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
+5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
+5x Motor		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6247			$9	$45
+
+Action Hobbies:
+5x 10x3.8SF Tractor	(Backorder, email donette@actionhobby.ca for details)					$2.79	$14
+5x 10x3.8SFP Pusher												$4.29	$21
+
+NG Hobbies:
+3x Rotors		http://www.nghobbies.com/cart/index.php?main_page=product_info&products_id=268		$7.50	$30
+
+Digikey:
+?x LiPo Battery Connector
+?x Bullet Conector (ESC / Motors)
+
+SparkFun:
+
+
+
