@@ -7,6 +7,7 @@ HobbyKing:
 10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
 5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
 5x Motor		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6247			$9	$45
+1x XT60 Connectors	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572			$4	$4
 
 Action Hobbies:
 5x 10x3.8SF Tractor	(Backorder, email donette@actionhobby.ca for details)					$2.79	$14
