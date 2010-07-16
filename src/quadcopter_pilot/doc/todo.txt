@@ -1,30 +1,39 @@
 FLIGHT REQUIREMENTS
 receive control state: pitch, roll, yaw rate, throttle, buttons
-calibrate gyros and accels, reset attitude -- useful on startup and everytime you land
+calibrate gyros and accels, reset attitude -- useful on startup and every time you land
 F<pitch><roll><yaw><throttle><buttons>
 
 CONFIGURATION REQUIREMENTS
-write all configuration to eeprom
+write all configuration to EEPROM
 reset all configuration to default values
-update PID constants for pitch, roll, yaw
 pulse motors
+send PID tuning params
+receive PID tuning params
+send attitude tuning params (varies with algorithm - S, M, K, C)
+receive attitude tuning params (varies with algorithm)
 
 S
 R
 L
 G
 A
-PP<kp><ki><kd>
-PR<kp><ki><kd>
-PY<kp><ki><kd>
 M<m0><m1><m2><m3>
+PK<kp><ki><kd><kp><ki><kd><kp><ki><kd>
+AKS
+AKC<kx><ky><kz>
+AKK<qax><qay><qaz><qgx><qgy><qgz><rax><ray><raz>
+AKM<beta><gain>
 
 
 TELEMETRY REQUIREMENTS
 receive start / stop telemetry command
-send pitch, roll, yaw for artifical horizon
+send pitch, roll, yaw for artificial horizon
 send armed, throttle hold, flight mode state
 send motor percentages
+receive start / pid data command
+send pid data
 
 T<state>
 T<pitch><roll><yaw><flags><m0><m1><m2><m3>
+PD<state>
+PD<p><i><d><p><i><d><p><i><d>
