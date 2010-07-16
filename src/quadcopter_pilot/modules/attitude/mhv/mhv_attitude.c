@@ -2,9 +2,10 @@
 #include <math.h>
 
 // System constants 
-#define gyroMeasError 3.14159265358979f * (5.0f / 180.0f)                   // gyroscope measurement error in rad/s (shown as 5 deg/s)
-#define beta sqrt(3.0f / 4.0f) * gyroMeasError                              // compute beta
 
+double gain;
+double beta;
+    
 typedef struct quaternion {
     double w;
     double x;
@@ -15,10 +16,15 @@ typedef struct quaternion {
 quaternion_t q;
     
 void attitude_init(vector_t gyro, vector_t accel) {
+    // TODO read these values from EEPROM
+    gain 3.14159265358979f * (5.0f / 180.0f); // gyroscope measurement error in rad/s (shown as 5 deg/s)
+    beta sqrt(3.0f / 4.0f) * gain);           // compute beta
+    
+    
     q.w = 1.0;
     q.x = 0.0;
     q.y = 0.0;
-    q.w = 0.0;
+    q.z = 0.0;
 }
 
 vector_t attitude(vector_t gyro, vector_t accel, double dt) {
