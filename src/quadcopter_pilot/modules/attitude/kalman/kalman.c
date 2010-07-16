@@ -10,6 +10,7 @@ vector_t q_angle;
 vector_t r_angle;
 
 void attitude_init(vector_t gyro, vector_t accel) {
+    // TODO read this from EEPROM
     q_angle.x = 0.001;
     q_angle.y = 0.001;
     q_angle.z = 0.001;
