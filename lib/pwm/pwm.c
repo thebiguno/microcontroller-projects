@@ -1,57 +1,164 @@
 #include "pwm.h"
 
-uint8_t pwm_set(volatile uint8_t *port, volatile uint8_t *ddr, uint8_t pin, uint8_t duty_cycle){
+//Macro to convert VALUE (in µs) to a clock tick count.
+#define PWM_US_TO_CLICKS(VALUE) (uint16_t) ((uint64_t) F_CPU * VALUE / 256 / 1000000)
 
-//This is ugly -- since each AVR chip will have different features, this is 
-// enabled on a per-chip basis :-(  We will start with common chips defined,
-// if the one you are interested in is not defined, you need to add a 
-// definition here.
-#if defined(__AVR_ATmega168__)
-	if (*port == PORTD && pin == 6){ //OC0A
-		//Clear on compare match when up-counting; set when down-counting.
-		TCCR0A |= _BV(COM0A0);
-		TCCR0A &= ~(_BV(COM0A1));
+#define PWM_PERIOD 20000		//20000µs == 20ms == 50Hz
+#define ESC_PIN_0 1
+#define ESC_PIN_1 2
+#define ESC_PIN_2 3
+#define ESC_PIN_3 4
 
-		//Set Fast PWM mode
-		TCCR0A |= _BV(WGM00) | _BV(WGM01);
-		TCCR0B |= _BV(WGM02);
-		
-		//No prescaler
-		TCCR0B |= _BV(CS00);
-		
-		//Enable output mode
-		*ddr |= _BV(pin);
-		
-		OCR0A = duty_cycle;
+#define PWM_CLOCK_ON TCCR1B = _BV(CS12)
+#define PWM_CLOCK_OFF TCCR1B = 0x00
+
+//Current values are here
+uint16_t _values[8] = {0,0,0,0,0,0,0,0};
+
+//New values are here, they are copied over at the start of a new waveform
+uint16_t _new_values[8] = {0,0,0,0,0,0,0,0};
+uint8_t _new_value_set = 0; //Set to true when updated values
+
+volatile uint8_t *_ports[8];	//Array of ports used
+volatile uint8_t *_ddrs[8];		//Array of DDRs used
+uint8_t _pins[8];				//Array of pins used
+uint8_t _count;					//How many pins should be used
+uint16_t _period = 0xFFFF;		//PWM period (in clock ticks)
+
+void pwm_init(volatile uint8_t *ports[],
+				volatile uint8_t *ddrs[],
+				uint8_t pins[],
+				uint8_t count,
+				uint16_t period) {
+			
+//	serial_init(9600, 8, 0, 1);
+				
+	//Store values
+	*_ports = *ports;
+	*_ddrs = *ddrs;
+	*_pins = *pins;
+	_count = count;
+				
+	//Enable all pins for output
+	for (uint8_t i = 0; i < _count; i++){
+		*_ddrs[i] |= _BV(_pins[i]);
 	}
-	else if (*port == PORTD && pin == 5){ //OC0B
-		TCCR0A |= _BV(COM0B1);
-		OCR0B = duty_cycle;
+				
+	//Set up the timer to run at F_CPU / 256 (prescaler), in normal mode.  You can 
+	// change the prescaler to get a different frequency range, but make sure you 
+	// adjust the PWM_US_TO_CLICKS macro as well.
+	TCCR1A = 0x0;
+	PWM_CLOCK_ON;
+	
+	//OCR1A controls the PWM period
+	OCR1A = PWM_US_TO_CLICKS(period);
+	//OCR1B controls the PWM phase.  It is initialized later.
+	
+	//Enable compare interrupt on both channels
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
+	
+	//Enable interrupts
+	sei();
+	
+	//Force interrupt on compare A initially
+	TCCR1C |= _BV(FOC1A);	
+}
+
+/*
+ * Sets the phase of the pin at the given index to the specified value.
+ */
+void pwm_set(uint8_t index, uint16_t phase){
+	if (index < _count){
+		_new_values[index] = phase;
+		_new_value_set = 1;
 	}
-	else if (*port == PORTB && pin == 1){ //OC1A
-		TCCR1A |= _BV(COM1A1);
-		OCR1A = duty_cycle;
-	}
-	else if (*port == PORTB && pin == 2){ //OC1B
-		TCCR1A |= _BV(COM1B1);
-		OCR1B = duty_cycle;
-	}
-	else if (*port == PORTB && pin == 3){ //OC2A
-		TCCR2A |= _BV(COM2A1);
-		OCR2A = duty_cycle;
-	}
-	else if (*port == PORTD && pin == 3){ //OC2B
-		TCCR2A |= _BV(COM2B1);
-		OCR2B = duty_cycle;
-	}
-	else{
-		return 0xFF;
+}
+
+char temp[32];
+
+/* 
+ * The frequency comparison.  When it overflows, we reset the timer to 0.
+ */
+ISR(TIMER1_COMPA_vect){
+	//Turn off clock to avoid timing issues
+	PWM_CLOCK_OFF;
+	
+	//Update values if needed
+	if (_new_value_set){
+		for (uint8_t i = 0; i < _count; i++){
+			_values[i] = _new_values[i];
+		}
+		_new_value_set = 0;
 	}
 	
-	return 0x00;
-//#elif defined(__AVR_ATmega644__)
-#else
-	#error "Unknown AVR chip; PWM hardware cannot be initialized.  Make sure MCPU is set, or add apropriate hardware setup to PWM library."
-#endif
+	//Set pins high
+	for (uint8_t i = 0; i < _count; i++){
+		*_ports[i] |= _BV(_pins[i]);
+	}
+
+	//Trigger OCR1B to interrupt 'Real Soon Now'.  Set this as low as possible while still
+	// retailing stability.  5 seems to be about the lowest number, we leave it at 10
+	// to be sure.
+	OCR1B = 0xA;
 	
+	//Reset counter
+	TCNT1 = 0;
+	
+	//Re-enable clock
+	PWM_CLOCK_ON;
+}
+
+
+/* 
+ * The phase comparison.  When it overflows, we find the next highest value.
+ */
+ISR(TIMER1_COMPB_vect){
+	//Turn off clock to avoid timing issues
+	PWM_CLOCK_OFF;
+	
+	/*
+	serial_write_s("OCR1B: ");	
+	serial_write_s(itoa(OCR1B, temp, 16));
+	serial_write_s("   TCNT1: ");
+	serial_write_s(itoa(TCNT1, temp, 16));
+	serial_write_s("\n\r");
+	*/
+
+	//Find the next value to trigger overflow
+	uint16_t value = PWM_PERIOD;
+	for (uint8_t i = 0; i < _count; i++){
+		//Have we already passed the end of this phase?
+		if (_values[i] <= TCNT1){
+			*_ports[i] &= ~_BV(_pins[i]); //Turn off matching pins
+			/*
+			serial_write_s("Turning off pin... value is ");
+			serial_write_s(itoa(value, temp, 16));
+			serial_write_s("...\n\r");
+			*/
+		}
+		//If not, is it the next lowest available value?
+		else if (_values[i] < value){
+			value = _values[i]; //Find next match
+			/*
+			serial_write_s("Setting value to ");
+			serial_write_s(itoa(value, temp, 16));
+			serial_write_s("...\n\r");
+			*/
+		}
+	}
+	
+	//Set the timer for the next lowest value
+	OCR1B = value;
+	if (OCR1B <= TCNT1 + 1) OCR1B = TCNT1;
+
+	/*
+	serial_write_s("   value: ");		
+	serial_write_s(itoa(value, temp, 16));
+	serial_write_s("   OCR1B: ");		
+	serial_write_s(itoa(OCR1B, temp, 16));
+	serial_write_s("\n\r");	
+	*/
+	
+	//Re-enable clock
+	PWM_CLOCK_ON;	
 }
