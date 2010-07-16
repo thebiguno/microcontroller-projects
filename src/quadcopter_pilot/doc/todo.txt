@@ -1,36 +1,30 @@
-// pid interface
+FLIGHT REQUIREMENTS
+receive control state: pitch, roll, yaw rate, throttle, buttons
+calibrate gyros and accels, reset attitude -- useful on startup and everytime you land
+F<pitch><roll><yaw><throttle><buttons>
 
-// returns an array of set-point values for x, y, z, pitch, roll, yaw
-uint16_t[] sp();
-// returns an array of process values for x, y, z, pitch, roll, yaw
-uint16_t[] pv();
-// returns an array of error values for x, y, z, pitch, roll, yaw
-int16_t[] e(uint16_t[] sp, uint16_t[] pv);
-// returns an array of manipulated variable values for x, y, z, pitch, roll, yaw
-int16_t[] mv(int16_t[] k, int16_t[] e);
+CONFIGURATION REQUIREMENTS
+write all configuration to eeprom
+reset all configuration to default values
+update PID constants for pitch, roll, yaw
+pulse motors
 
-// returns an array of motor commands for left, right, front, back
-uint16_t[] motor(int16_t mv);
+S
+R
+L
+G
+A
+PP<kp><ki><kd>
+PR<kp><ki><kd>
+PY<kp><ki><kd>
+M<m0><m1><m2><m3>
 
 
-// xbee interface, called by sp()
-uint16_t sp_pitch();
-uint16_t sp_roll();
-uint16_t sp_throttle();
-uint16_t sp_yaw();
+TELEMETRY REQUIREMENTS
+receive start / stop telemetry command
+send pitch, roll, yaw for artifical horizon
+send armed, throttle hold, flight mode state
+send motor percentages
 
-// gyro interface, called by pv()
-uint8_t pv_pitch();
-uint8_t pv_roll();
-uint8_t pv_yaw();
-
-// accelerometer interface, called by pv()
-uint8_t pv_x();
-uint8_t pv_y();
-uint8_t pv_z();
-
-// motor interface (values between 1000 µs and 2000 µs)
-void motor_left(uint16_t cmd);
-void motor_right(uint16_t cmd);
-void motor_front(uint16_t cmd);
-void motor_back(uint16_t cmd);
+T<state>
+T<pitch><roll><yaw><flags><m0><m1><m2><m3>

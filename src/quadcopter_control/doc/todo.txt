@@ -1,34 +1,32 @@
 sticks
-LY		pitch 0-255, 128±x centre, linear
-LX		roll 0-255, 128±x centre, linear
-RY		throttle 0-255, 128±x centre, linear
+LY		pitch -90º to +90º
+LX		roll -90º to +90º
+RY		throttle 0 to 100%
 RX		
-L3		
-R3		
+L3		reset attitude (only when disarmed)
+R3		calibrate gyros and accels (only when disarmed)
 
 mode buttons
-start		throttle cut (only available when throttle is at or near centre ?) -- i.e. armed
+start		arm / disarm (safety limits applied to arming, disarm is a kill switch)
 select		
 analog		n/a
 
 top buttons
-L1		yaw -42
-L2		yaw -84
-R1		yaw +42
-R2		yaw +84
+L1		-10º / sec ?
+L2		-20º / sec ?
+R1		+10º / sec ?
+R2		+20º / sec ?
 
 right buttons
-square		aerobatic / 3d mode
-circle		sport mode
+square		aerobatic / 3d mode (no limits on pitch and roll)
+circle		sport mode (roll limited to 30º, roll forward limited to 60º)
 triangle	
-ex		normal mode
+ex		normal mode (pitch and roll limited to 30º)
 
 left buttons
-left		pitch hold
-right		roll hold
-up		throttle hold
+left		
+right		
+up		throttle hold (disables LY, LX, RY sticks)
 down		controlled descent
 
-
-the only possibly important thing missing that a typical rc control has is programmable curves
 	
