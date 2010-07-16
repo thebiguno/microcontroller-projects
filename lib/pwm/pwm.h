@@ -4,9 +4,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include <stdlib.h>
-#include "../serial/serial.h"
-
 void pwm_init(volatile uint8_t *ports[],
 				volatile uint8_t *ddrs[],
 				uint8_t pins[],
