@@ -9,15 +9,15 @@
 #define MODE_ARMED 0x100
 #define MODE_RESERVED2 0x200 // the select button
 
-#define DEG_30 = M_PI / 6.0
-#define DEG_60 = M_PI / 3.0
+// these are just approximations
+#define DEG_5 = 0.1
+#define DEG_10 = 0.2
+#define DEG_30 = 0.5
+#define DEG_45 = 0.8
+#define DEG_60 = 1.0
 
 #define M 0.636619772367581
 #define B 0.0
-
-double _throttle_cache;
-double _pitch_cache;
-double _roll_cache;
 
 /*
  * Translates the manipulated variables (in rad) into throttle adjustments (-1 .. 1)
@@ -50,30 +50,19 @@ double scale(double x) {
 vector_t flight_control(uint16_t flags, double *throttle, vector_t *sp) {
     double _throttle;
     
-    if (mode & PITCH_HOLD = PITCH_HOLD) {
-        if (_throttle_cache == 0.0) _throttle_cache = throttle;
-        throttle* = _throttle_cache;
-    } else {
-        _throttle_cache = 0.0;
-    }
-    if (mode & PITCH_HOLD = PITCH_HOLD) {
-        if (_pitch_cache == 0.0) _pitch_cache = cmd.y;
-        sp*.y = _pitch_cache;
-    } else {
-        _pitch_cache = 0.0;
-    }
-    if (mode & ROLL_HOLD = ROLL_HOLD) {
-        if (_roll_cache == 0.0) _roll_cache = cmd.x;
-        sp*.x = _roll_cache;
-    } else {
-        _roll_cache = 0.0;
-    }
-    
-    if (mode & MODE_NORMAL = MODE_NORMAL) {
-        // normal mode limits the amount that the craft will pitch and roll to no more than 30 degrees
-    } else if (mode & MODE_SPORT = MODE_SPORT) {
+    if (flags & MODE_NORMAL = MODE_NORMAL) {
+        // normal mode limits the amount that the craft will pitch and roll to no more than 5 degrees
+        if (sp.x > DEG_5) sp.x = DEG_5;
+        else if (sp.x < -DEG_5) sp.x = -DEG_5;
+        if (sp.y > DEG_5) sp.y = DEG_5;
+        else if (sp.y < -DEG_5) sp.y = -DEG_5;
+    } else if (flags & MODE_SPORT = MODE_SPORT) {
         // sport mode is for fast flight in the forward direction and will limit roll but allow for a pitch of up to 60 degrees
-    } else if (mode & MODE_ACRO = MODE_ACRO) {
+        if (sp.x > DEG_30) sp.x = DEG_30;
+        else if (sp.x < -DEG_30) sp.x = -DEG_30;
+        if (sp.y > DEG_60) sp.y = DEG_60;
+        else if (sp.y < 0.0) sp.y = 0.0;
+    } else if (flags & MODE_ACRO = MODE_ACRO) {
         // acro mode will allow the craft to pitch and roll the complete 90 degrees which will allow barrel rolls
     }
 }
