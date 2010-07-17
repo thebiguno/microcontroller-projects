@@ -3,31 +3,27 @@
 // in the form of slightly lower frequencies than you would expect.  (From experiments,
 // a 2ms period (which should be 500Hz) registers as 485Hz).
 
-
 #include "pwm.h"
 
 //Macro to convert VALUE (in µs) to a clock tick count with a specified prescaler.
 #define PWM_US_TO_CLICKS(value,prescaler) (F_CPU / 1000000) * (value / prescaler)
 
-#define PWM_MAX_PINS 8
-
 //Current values are here
-uint16_t _values[PWM_MAX_PINS];
+static uint16_t _values[PWM_MAX_PINS];
 
 //New values are here, they are copied over at the start of a new waveform
-uint16_t _new_values[PWM_MAX_PINS];
-uint8_t _new_value_set = 0; //Set to true when updated values
+static uint16_t _new_values[PWM_MAX_PINS];
+static uint8_t _new_value_set = 0; //Set to true when updated values
+static uint32_t _new_period = 0; //New period defined, changed in COMPA interrupt
 
 //Variables used to store config data
-volatile uint8_t *_ports[PWM_MAX_PINS];		//Array of ports used
-volatile uint8_t *_ddrs[PWM_MAX_PINS];		//Array of DDRs used
-uint8_t _pins[PWM_MAX_PINS];				//Array of pins used
-uint8_t _count;								//How many pins should be used
+static volatile uint8_t *_ports[PWM_MAX_PINS];		//Array of ports used
+static volatile uint8_t *_ddrs[PWM_MAX_PINS];		//Array of DDRs used
+static uint8_t _pins[PWM_MAX_PINS];				//Array of pins used
+static uint8_t _count;								//How many pins should be used
 
-uint16_t _prescaler = 0x0;
-uint8_t _prescaler_mask = 0x0;
-
-char temp[32];
+static uint16_t _prescaler = 0x0;
+static uint8_t _prescaler_mask = 0x0;
 
 void pwm_init(volatile uint8_t *ports[],
 				volatile uint8_t *ddrs[],
@@ -100,14 +96,26 @@ void pwm_init(volatile uint8_t *ports[],
 	TCCR1C |= _BV(FOC1A);	
 }
 
-/*
- * Sets the phase of the pin at the given index to the specified value.
- */
-void pwm_set(uint8_t index, uint16_t phase){
+void pwm_start(){
+	TCNT1 = 0;
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
+	TCCR1B |= _prescaler_mask;
+}
+
+void pwm_stop(){
+	TCCR1B = 0x00;
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
+}
+
+void pwm_set_phase(uint8_t index, uint16_t phase){
 	if (index < _count){
 		_new_values[index] = PWM_US_TO_CLICKS(phase, _prescaler);
 		_new_value_set = 1;
 	}
+}
+
+void pwm_set_period(uint32_t period){
+	_new_period = period;
 }
 
 /* 
@@ -123,6 +131,10 @@ ISR(TIMER1_COMPA_vect){
 			_values[i] = _new_values[i];
 		}
 		_new_value_set = 0;
+	}
+	if (_new_period){
+		OCR1A = PWM_US_TO_CLICKS(_new_period, _prescaler);
+		_new_period = 0;
 	}
 	
 	//Set pins high
