@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#define SP M_PI / 2.0
-#define PV M_PI / -2.0
+#define SP -1.04719
+#define PV 1.04719
 
 int main(){
 
