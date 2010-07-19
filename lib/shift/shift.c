@@ -1,12 +1,12 @@
 #include "shift.h"
 
-volatile uint8_t *_data_port = 0;
-volatile uint8_t *_clock_port = 0;
-volatile uint8_t *_latch_port = 0;
+static volatile uint8_t *_data_port = 0;
+static volatile uint8_t *_clock_port = 0;
+static volatile uint8_t *_latch_port = 0;
 
-uint8_t _data_pin = 0;
-uint8_t _clock_pin = 0;
-uint8_t _latch_pin = 0;
+static uint8_t _data_pin = 0;
+static uint8_t _clock_pin = 0;
+static uint8_t _latch_pin = 0;
 
 void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin){
 	_data_port = data_port;
