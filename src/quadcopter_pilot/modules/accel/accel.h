@@ -9,9 +9,9 @@
  */
 
 /* Initializes the hardware */
-void init_accel();
+void accel_init();
 
 /* Returns the accelerometer data in m/s/s */
-vector_t get_accel();
+vector_t accel_get();
 
 #endif

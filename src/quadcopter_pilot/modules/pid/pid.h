@@ -3,7 +3,7 @@
 
 #include "../../main.h"
 
-void init_pid();
+void pid_init();
 
 /*
  * Given a vector of setpoints, a vector of process variables, return a vector 

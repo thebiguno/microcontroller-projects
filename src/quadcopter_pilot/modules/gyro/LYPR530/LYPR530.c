@@ -17,11 +17,11 @@ double scale(int8_t x) {
     return M * x + B;
 }
 
-void init_gyro_hardware(){
+void gyro_init(){
 
 }
 
-vector_t get_gyro() {
+vector_t gyro_get() {
     vector_t result;
 	//TODO
     result.x = scale(0x7F);

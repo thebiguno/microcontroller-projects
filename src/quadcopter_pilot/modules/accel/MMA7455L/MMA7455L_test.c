@@ -13,10 +13,7 @@
 
 char temp[32];
 
-int16_t x, last_x = 0;
-int16_t y, last_y = 0;
-int16_t z, last_z = 0;
-
+vector_t v, last_v;
 
 int main (void){
 	//Do setup here
@@ -24,7 +21,7 @@ int main (void){
 	serial_init(9600, 8, 0, 1);
 	timer_init();
 
-	init_accel_hardware();
+	accel_init();
 
 	//Main program loop
 	while (1){
@@ -32,20 +29,16 @@ int main (void){
 		_delay_ms(10);
 
 		
-		x = get_accel_x();
-		y = get_accel_y();
-		z = get_accel_z();
+        v = accel_get();
 
-		if (x != last_x || y != last_y || z != last_z){
-			last_x = x;
-			last_y = y;
-			last_z = z;
+		if (v.x != last_v.x || v.y != last_v.y || v.z != last_v.z){
+            last = v;
 
-			serial_write_s(itoa(x, temp, 16));
+			serial_write_s(itoa(v.x, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(y, temp, 16));
+			serial_write_s(itoa(v.y, temp, 16));
 			serial_write_s(", ");
-			serial_write_s(itoa(z, temp, 16));
+			serial_write_s(itoa(v.z, temp, 16));
 			serial_write_s("\n\r");
 		}
 

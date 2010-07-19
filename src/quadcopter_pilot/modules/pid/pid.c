@@ -7,7 +7,7 @@ vector_t kd;
 vector_t ei;
 vector_t ed;
 
-void init_pid() {
+void pid_init() {
     // TODO get tuning values K from EEPROM
     kp.x = 0.7;
     kp.y = 0.7;

@@ -8,9 +8,9 @@
  */
 
 /* Initializes the hardware */
-void init_gyro();
+void gyro_init();
 
 /* Returns the gyroscope data in rad/s */
-vector_t get_gyro();
+vector_t gyro_get();
 
 #endif

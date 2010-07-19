@@ -15,11 +15,11 @@ double scale(int16_t x) {
     return M * x + B;
 }
 
-void init_accel(){
+void accel_init(){
 	//TODO
 }
 
-vector_t get_accel_x() {
+vector_t accel_get() {
     vector_t result;
 	//TODO
     result.x = scale(0);
