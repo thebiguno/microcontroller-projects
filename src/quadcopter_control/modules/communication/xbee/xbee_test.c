@@ -12,7 +12,7 @@
 
 int main (void){
 	//Do setup here
-	init_communication();
+	communication_init();
 
 	control_t control;
 	uint8_t mode;

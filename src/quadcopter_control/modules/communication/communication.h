@@ -6,7 +6,7 @@
 /*
  * Initializes communication hardware
  */
-void init_communication();
+void communication_init();
 
 /*
  * Sends a packet to the quadcopter containing control and mode data

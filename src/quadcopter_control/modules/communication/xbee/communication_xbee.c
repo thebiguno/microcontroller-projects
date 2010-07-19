@@ -13,7 +13,7 @@ union udouble {
 	uint32_t u;
 };
 
-void init_communication(){
+void communication_init(){
 	serial_init(9600, 8, 0, 1);
 }
 
