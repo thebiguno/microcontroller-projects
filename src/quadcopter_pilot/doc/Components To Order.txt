@@ -7,6 +7,7 @@ HobbyKing:
 10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
 5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
 5x Motor		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6247			$9	$45
+6x Motor		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=4321			$5.50	$33	
 1x XT60 Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572			$3.50	$3.50
 1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255		$4.50	$4.50
 
