@@ -6,8 +6,8 @@
  */
 #include "timer.h"
 
-uint64_t _timer_millis;
-uint32_t _timer_micro_divisor;
+static volatile uint64_t _timer_millis;
+static volatile uint32_t _timer_micro_divisor;
 
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 

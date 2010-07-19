@@ -39,28 +39,28 @@
 #include "psx.h"
 
 //Define ports used
-volatile uint8_t *_psx_data_port = 0;
-volatile uint8_t *_psx_clock_port = 0;
-volatile uint8_t *_psx_command_port = 0;
-volatile uint8_t *_psx_attention_port = 0;
+static volatile uint8_t *_data_port = 0;
+static volatile uint8_t *_clock_port = 0;
+static volatile uint8_t *_command_port = 0;
+static volatile uint8_t *_attention_port = 0;
 
 //Define the input
-volatile uint8_t *_psx_data_in = 0;
+static volatile uint8_t *_data_in = 0;
 
 //Define ddr used
-volatile uint8_t *_psx_data_ddr = 0;
-volatile uint8_t *_psx_clock_ddr = 0;
-volatile uint8_t *_psx_command_ddr = 0;
-volatile uint8_t *_psx_attention_ddr = 0;
+static volatile uint8_t *_data_ddr = 0;
+static volatile uint8_t *_clock_ddr = 0;
+static volatile uint8_t *_command_ddr = 0;
+static volatile uint8_t *_attention_ddr = 0;
 
 //Define pins to use
-uint8_t _psx_clock_pin = 0;
-uint8_t _psx_command_pin = 0;
-uint8_t _psx_attention_pin = 0;
-uint8_t _psx_data_pin = 0;
+static uint8_t _clock_pin = 0;
+static uint8_t _command_pin = 0;
+static uint8_t _attention_pin = 0;
+static uint8_t _data_pin = 0;
 
 //Common structure for last read data
-uint8_t _psx_data[9];
+static uint8_t _data[9];
 
 /* Initialize the pins, and set the controller up to the correct mode.  This must be called
  * before any other psx_* functions are called.
@@ -73,39 +73,39 @@ void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile u
 				volatile uint8_t *attention_port, volatile uint8_t *attention_ddr, uint8_t attention_pin){
 
 	//Store the ports...
-	_psx_data_port = data_port;
-	_psx_clock_port = clock_port;
-	_psx_command_port = command_port;
-	_psx_attention_port = attention_port;
+	_data_port = data_port;
+	_clock_port = clock_port;
+	_command_port = command_port;
+	_attention_port = attention_port;
 	
 	//... and data in....
-	_psx_data_in = data_in;
+	_data_in = data_in;
 
 	//... and output registers...
-	_psx_data_ddr = data_ddr;
-	_psx_clock_ddr = clock_ddr;
-	_psx_command_ddr = command_ddr;
-	_psx_attention_ddr = attention_ddr;
+	_data_ddr = data_ddr;
+	_clock_ddr = clock_ddr;
+	_command_ddr = command_ddr;
+	_attention_ddr = attention_ddr;
 
 	//... and pin numbers.
-	_psx_clock_pin = clock_pin;
-	_psx_command_pin = command_pin;
-	_psx_attention_pin = attention_pin;
-	_psx_data_pin = data_pin;
+	_clock_pin = clock_pin;
+	_command_pin = command_pin;
+	_attention_pin = attention_pin;
+	_data_pin = data_pin;
 	
 	
 	//Set clock, attention, and command pins to output mode
-	*_psx_clock_ddr |= _BV(_psx_clock_pin);
-	*_psx_attention_ddr |= _BV(_psx_attention_pin);
-	*_psx_command_ddr |= _BV(_psx_command_pin);
+	*_clock_ddr |= _BV(_clock_pin);
+	*_attention_ddr |= _BV(_attention_pin);
+	*_command_ddr |= _BV(_command_pin);
 
 	//Set data pin to input mode, and set pullup resistor
-	*_psx_data_ddr &= ~(_BV(_psx_data_pin));
-	*_psx_data_port |= _BV(_psx_data_pin);
+	*_data_ddr &= ~(_BV(_data_pin));
+	*_data_port |= _BV(_data_pin);
 
 	//Initialize game pad
-	*_psx_clock_port |= _BV(_psx_clock_pin);
-	*_psx_command_port |= _BV(_psx_command_pin);
+	*_clock_port |= _BV(_clock_pin);
+	*_command_port |= _BV(_command_pin);
 	
 	
 	//Init by polling once
@@ -137,25 +137,25 @@ void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile u
 
 
 uint8_t psx_button(uint16_t button) {
-	uint16_t buttons = *(uint16_t*)(_psx_data + 3); //Get 2 bytes, comprising data positions 3 and 4.
+	uint16_t buttons = *(uint16_t*)(_data + 3); //Get 2 bytes, comprising data positions 3 and 4.
 	return ((~buttons & button) > 0);
 }
 
 uint8_t psx_stick(unsigned int stick) {
-	return _psx_data[stick];
+	return _data[stick];
 }
 
 void _psx_send_command(uint8_t send_data[], uint8_t size){
 	//Note: before you submit each command packet, you must set attention low; once
 	// you are done each packet, return it high.  You have to toggle the line before
 	// you submit another command.
-	*_psx_attention_port &= ~(_BV(_psx_attention_pin));
+	*_attention_port &= ~(_BV(_attention_pin));
 	
 	for (uint8_t i = 0; i < size; i++){
 		_psx_gamepad_shift(send_data[i]);
 	}
 	
-	*_psx_attention_port |= _BV(_psx_attention_pin);
+	*_attention_port |= _BV(_attention_pin);
 }
 
 /* The actual serial transfer.  Handles clock.  The PSX controller is full duplex,
@@ -165,34 +165,34 @@ uint8_t _psx_gamepad_shift(uint8_t sent) {
 	uint8_t received = 0;
 	for(uint8_t i = 0; i < 8; i++) {
 		if (sent & (_BV(i))) {
-			*_psx_command_port |= _BV(_psx_command_pin);
+			*_command_port |= _BV(_command_pin);
 		}
 		else {
-			*_psx_command_port &= ~_BV(_psx_command_pin);
+			*_command_port &= ~_BV(_command_pin);
 		}
-		*_psx_clock_port &= ~_BV(_psx_clock_pin);
+		*_clock_port &= ~_BV(_clock_pin);
 		_delay_us(CTRL_CLK);
-		if(*_psx_data_in & _BV(_psx_data_pin)) {
+		if(*_data_in & _BV(_data_pin)) {
 			received |= _BV(i);
 		}
-		*_psx_clock_port |= _BV(_psx_clock_pin);
+		*_clock_port |= _BV(_clock_pin);
 	}
 
-	*_psx_command_port |= _BV(_psx_command_pin);
+	*_command_port |= _BV(_command_pin);
 	_delay_us(CTRL_BYTE_DELAY);
 	return received;
 }
 
 void psx_read_gamepad() {
-	*_psx_command_port |= _BV(_psx_command_pin);
-	*_psx_clock_port |= _BV(_psx_clock_pin);
-	*_psx_attention_port &= ~_BV(_psx_attention_pin); // Get controller attention (pull pin low)
+	*_command_port |= _BV(_command_pin);
+	*_clock_port |= _BV(_clock_pin);
+	*_attention_port &= ~_BV(_attention_pin); // Get controller attention (pull pin low)
 	_delay_us(CTRL_BYTE_DELAY);
 	
 	//Send the command to send button and joystick data;
 	char dword[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	for (uint8_t i = 0; i < 9; i++) {
-		_psx_data[i] = _psx_gamepad_shift(dword[i]);
+		_data[i] = _psx_gamepad_shift(dword[i]);
 	}
-	*_psx_attention_port |= _BV(_psx_attention_pin); // Done communication, return attention high
+	*_attention_port |= _BV(_attention_pin); // Done communication, return attention high
 }

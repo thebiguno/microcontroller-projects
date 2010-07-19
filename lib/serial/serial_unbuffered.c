@@ -1,13 +1,5 @@
 #include "serial.h"
 
-/*
- * TODO Add buffering capability.
- */
-
-#define BUFFER_SIZE 32
-
-static uint8_t buffer[BUFFER_SIZE];
-
 void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
 	//Set baud rate
 	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
