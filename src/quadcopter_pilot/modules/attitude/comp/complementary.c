@@ -3,9 +3,9 @@
  * - http://www.rcgroups.com/forums/showpost.php?p=12082524&postcount=1286
  * - http://www.rcgroups.com/forums/showthread.php?p=11643539#post11643539
  */
-vector_t int_y1;    // output of the first integrator (rad/sec)
-vector_t filter;    // complementary filter output (and output of second integrator), (rad)
-vector_t k;         // tuning paramater -- bandwidth of filter
+static vector_t int_y1;    // output of the first integrator (rad/sec)
+static vector_t filter;    // complementary filter output (and output of second integrator), (rad)
+static vector_t k;         // tuning paramater -- bandwidth of filter
 
 void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM

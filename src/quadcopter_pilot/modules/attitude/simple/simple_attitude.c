@@ -1,12 +1,12 @@
 // TODO read timeConstant from EEPROM
 // TODO try to undestand what these filter terms are for
 #define timeConstant = 0;
-#define filterTerm0 = timeConstant / (timeConstant + 0.010)//10ms = ESC update rate
+#define filterTerm0 = timeConstant / (timeConstant + 0.010) //10ms = ESC update rate
 #define filterTerm1 1 - filterTerm0
 
 #define MAGIC = 57.2957795; // what is this constant??
 
-vector_t previous_attitude;
+static vector_t previous_attitude;
 
 void attitude_init(vector_t gyro, vector_t accel) {
     ;

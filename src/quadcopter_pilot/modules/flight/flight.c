@@ -41,13 +41,11 @@ double scale(double x) {
 /*
  * Applies flight control rules to the user set points
  * throttle is percentage (0..1), 
- * throttle may be modified to apply throttle hold
  * mv is in radians and comes from the pid module
  * sp is in radians for x and y, and radians/s for z and comes from the control receiver module
- * sp values may be modified to apply holds and limits
  * result is percentage (0..1) for consumption by the motor module
  */
-vector_t flight_control(uint16_t flags, double *throttle, vector_t *sp) {
+vector_t flight_control(uint16_t flags, double throttle, vector_t sp) {
     double _throttle;
     
     if (flags & MODE_NORMAL = MODE_NORMAL) {

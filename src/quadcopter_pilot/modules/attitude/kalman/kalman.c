@@ -1,13 +1,13 @@
-vector_t angle;
-vector_t bias;
-vector_t p00;
-vector_t p01;
-vector_t p10;
-vector_t p11;
+static vector_t angle;
+static vector_t bias;
+static vector_t p00;
+static vector_t p01;
+static vector_t p10;
+static vector_t p11;
 
-vector_t q_gyro;
-vector_t q_angle;
-vector_t r_angle;
+static vector_t q_gyro;
+static vector_t q_angle;
+static vector_t r_angle;
 
 void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM

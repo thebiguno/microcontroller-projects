@@ -1,10 +1,8 @@
 // Math library required for ‘sqrt’
 #include <math.h>
 
-// System constants 
-
-double gain;
-double beta;
+static double gain;
+static double beta;
     
 typedef struct quaternion {
     double w;
