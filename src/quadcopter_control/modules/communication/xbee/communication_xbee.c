@@ -4,9 +4,8 @@
  * Written by Wyatt Olson
  */
  
-#include <avr/io.h>
-#include "../../../lib/serial/serial.h"
 #include "../communication.h"
+#include "lib/serial/serial.h"
 
 union udouble {
 	double d;

@@ -1,19 +1,13 @@
-/*
- * Sample skeleton source file.
- */
-
 #include <avr/io.h>
 
 #include "main.h"
-#include "modules/control.h"
-#include "modules/communication.h"
 
 int main (void){
 	//Init communication hardware
-	init_communication();
+	communication_init();
 
 	//Init control interface
-	init_control();
+	control_init();
 	
 	//Main program loop
 	while (1){

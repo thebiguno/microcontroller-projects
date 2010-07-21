@@ -33,7 +33,7 @@
 #define MODE_HOVER_IMPL		 	PSB_TRIANGLE
 
 
-void init_control_hardware(){
+void control_init(){
 	psx_init(&PORTD, &PIND, &DDRD, PORTD6, //Data (Brown)
 			&PORTD, &DDRD, PORTD5, //Clock (Blue)
 			&PORTD, &DDRD, PORTD7, //Command (Orange)

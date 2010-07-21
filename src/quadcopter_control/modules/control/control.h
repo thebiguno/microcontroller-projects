@@ -13,7 +13,7 @@
 /*
  * Initialize hardware (will be called prior to main loop)
  */
-void init_control_hardware();
+void control_init();
 
 /*
  * Get the control data struct.  
