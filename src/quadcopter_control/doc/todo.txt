@@ -8,7 +8,7 @@ R3		calibrate gyros and accels (only when disarmed)
 
 mode buttons
 start		arm / disarm (safety limits applied to arming, disarm is a kill switch)
-select		
+select		Select + mode buttons to activate, select + start to start (safety feature)
 analog		n/a
 
 top buttons
@@ -32,3 +32,5 @@ up
 down		
 
 	
+
+
