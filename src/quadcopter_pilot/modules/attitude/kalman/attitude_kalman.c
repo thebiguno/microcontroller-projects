@@ -11,6 +11,27 @@ static vector_t q_gyro;
 static vector_t q_angle;
 static vector_t r_angle;
 
+void _attitude (double gyro, double accel, double *angle, double *bias, double *p00, double *p01, double *p10, double *p11, double q_gyro, double q_angle, double r_angle, double dt) {
+    *angle += dt * (gyro - *bias);
+    *p00 +=  (-1 * dt) * (*p10 + *p01) + q_angle * dt;
+    *p01 +=  (-1 * dt) * *p11;
+    *p10 +=  (-1 * dt) * *p11;
+    *p11 +=  q_gyro * dt;
+
+    double y = accel - *angle;
+    double s = *p00 + r_angle;
+
+    double k0 = *p00 / s;
+    double k1 = *p10 / s;
+
+    *angle +=  k0 * y;
+    *bias  +=  k1 * y;
+    *p00 -= k0 * *p00;
+    *p01 -= k0 * *p01;
+    *p10 -= k1 * *p00;
+    *p11 -= k1 * *p01;
+}
+
 void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM
     q_angle.x = 0.001;
@@ -29,24 +50,4 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     _attitude(gyro.y, accel.y, &angle.y, &bias.y, &p00.y, &p01.y, &p10.y, &p11.y, q_gyro.y, q_angle.y, r_angle.y, dt);
     _attitude(gyro.z, accel.z, &angle.z, &bias.z, &p00.z, &p01.z, &p10.z, &p11.z, q_gyro.z, q_angle.z, r_angle.z, dt);
     return angle;
-}
-
-void _attitude (double gyro, double accel, double *angle, double *bias, double *p00, double *p01, double *p10, double *p11, double q_gyro, double q_angle, double r_angle, double dt) {
-    *angle += dt * (gyro - *bias);
-    *p00 +=  - dt * (*p10 + *p01) + q_angle * dt;
-    *p01 +=  - dt * P_11;
-    *p10 +=  - dt * P_11;
-    *p11 +=  + q_gyro * dt;
-
-    double y = accel - *angle;
-    double s = *p00 + r_angle;
-    double k0 = *p00 / s;
-    double k1 = *p10 / s;
-
-    *angle +=  k0 * y;
-    x_bias  +=  k1 * y;
-    *p00 -= k0 * *p00;
-    *p01 -= k0 * *p01;
-    *p10 -= k1 * *p00;
-    *p11 -= k1 * *p01;
 }
