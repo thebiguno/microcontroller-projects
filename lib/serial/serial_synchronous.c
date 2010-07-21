@@ -50,8 +50,6 @@ void serial_read_s(char *data, uint8_t length){
 	for (int i = 0; i < length; i++){
 		data[i] = serial_read_c();
 	}
-	
-	return length;
 }
 
 void serial_write_s(char *data){
