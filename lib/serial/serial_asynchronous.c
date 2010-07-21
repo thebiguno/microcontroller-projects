@@ -1,8 +1,8 @@
 #include "serial.h"
 #include <avr/interrupt.h>
 
-#define TX_BUFFER_SIZE 32
-#define RX_BUFFER_SIZE 32
+#define TX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 64
 
 //Circular transmit buffer.  User code writes to (and increments) 
 // tx_end, and interrupts transmit bits located at
