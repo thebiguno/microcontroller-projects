@@ -1,13 +1,4 @@
-#ifndef MAIN_H
-#define MAIN_H
+#include <avr/io.h>
+#include <math.h>
 
-typedef struct vector
-{
-    double x;
-    double y;
-    double z;
-} vector_t;
-
-#endif
-
-
+#include "common.h"

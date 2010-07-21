@@ -2,7 +2,6 @@
  * LYPR530 implementation 
  */
 #include "../gyro.h"
-#include <math.h>
 
 #define M 0.006141921121388
 #define B M_PI * -1
@@ -23,6 +22,6 @@ vector_t gyro_get() {
 	//TODO
     result.x = SCALE_TO_RAD(0x7F);
     result.y = SCALE_TO_RAD(0x7F);
-    result.z = SCALE_TO_RAD(0x7F)
+    result.z = SCALE_TO_RAD(0x7F);
     return result;
 }

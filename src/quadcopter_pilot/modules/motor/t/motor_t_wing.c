@@ -5,20 +5,11 @@
 #define MOTOR_REAR 2
 #define MOTOR_LEFT 3
 
-double motor_cmd(double throttle, vector_t mv) {
-    double[] result = {0,0,0,0};
+#define MOTOR_LIMIT(x) (x > 1.0 ? 1.0 : (x < 0.0 ? 0.0 : x))
 
-    result[MOTOR_FRONT] = _motor_limit(throttle + mv.y - mv.z);
-    result[MOTOR_REAR] = _motor_limit(throttle - mv.y - mv.z);
-    result[MOTOR_RIGHT] = _motor_limit(throttle + mv.x + mv.z);
-    result[MOTOR_LEFT] = _motor_limit(throttle - mv.x + mv.z);
-    
-    return result;
+void motor_cmd(double *result, double throttle, vector_t mv) {
+    result[MOTOR_FRONT] = MOTOR_LIMIT(throttle + mv.y - mv.z);
+    result[MOTOR_REAR] = MOTOR_LIMIT(throttle - mv.y - mv.z);
+    result[MOTOR_RIGHT] = MOTOR_LIMIT(throttle + mv.x + mv.z);
+    result[MOTOR_LEFT] = MOTOR_LIMIT(throttle - mv.x + mv.z);
 }
-
-double _motor_limit(double value) {
-    if (value > 1.0) return 1.0;
-    if (value < 0.0) return 0.0;
-    return value;
-}
-

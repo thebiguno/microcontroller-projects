@@ -1,8 +1,8 @@
 #ifndef GYRO_H
 #define GYRO_H
 
-#include "../main.h"
-#include <avr/io.h>
+#include "../../main.h"
+
 /*
  * Gyroscope hardware interface.  To be implemented on a per-hardware basis.
  */

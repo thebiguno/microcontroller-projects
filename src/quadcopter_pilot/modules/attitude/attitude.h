@@ -1,4 +1,4 @@
-#include "../main.h"
+#include "../../main.h"
 
 /*
  * Initialize the attitude integrator.  Most implementations require the gyro and / or accel data to compensate for initial conditions
