@@ -1,5 +1,4 @@
-// Math library required for ‘sqrt’
-#include <math.h>
+#include "../../main.h"
 
 static double gain;
 static double beta;

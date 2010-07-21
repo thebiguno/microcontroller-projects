@@ -1,1 +1,1 @@
-include modules/attitude/simple/module.mk
+include modules/attitude/mhv/module.mk
