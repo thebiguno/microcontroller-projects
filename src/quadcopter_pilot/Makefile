@@ -1,6 +1,6 @@
 include ../../build/variables.mk
 
-PROJECT=Quadcopter_Pilot
+PROJECT=pilot
 MMCU=atmega168
 F_CPU=20000000
 SOURCES=main.c

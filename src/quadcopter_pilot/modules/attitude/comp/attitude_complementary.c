@@ -1,3 +1,5 @@
+#include "../../../main.h"
+
 /*
  * A complementary filter derived from the following:
  * - http://www.rcgroups.com/forums/showpost.php?p=12082524&postcount=1286
