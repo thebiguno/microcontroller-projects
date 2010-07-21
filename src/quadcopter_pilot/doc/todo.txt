@@ -1,7 +1,7 @@
 FLIGHT REQUIREMENTS
 receive control state: pitch, roll, yaw rate, throttle, buttons
 calibrate gyros and accels, reset attitude -- useful on startup and every time you land
-F<pitch><roll><yaw><throttle><buttons>
+F<pitch><roll><yaw><throttle><state>
 
 CONFIGURATION REQUIREMENTS
 write all configuration to EEPROM

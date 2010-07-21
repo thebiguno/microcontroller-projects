@@ -13,7 +13,6 @@ include modules/accel/module.mk
 include modules/attitude/module.mk
 include modules/communication/module.mk
 include modules/esc/module.mk
-include modules/flight/module.mk
 include modules/gyro/module.mk
 include modules/motor/module.mk
 include modules/pid/module.mk

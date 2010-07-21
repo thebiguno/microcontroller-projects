@@ -15,10 +15,12 @@ typedef struct vector{
 } vector_t;
 
 //Needed to push data out to the modules
+/*
 #include "modules/accel/accel.h"
 #include "modules/attitude/attitude.h"
 #include "modules/gyro/gyro.h"
 #include "modules/motor/motor.h"
 #include "modules/pid/pid.h"
+*/
 
 #endif
