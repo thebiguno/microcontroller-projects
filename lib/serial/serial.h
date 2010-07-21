@@ -2,7 +2,6 @@
 #define SERIAL_H
 
 #include <avr/io.h>
-#include <string.h>
 
 /*
  * Initializes the USART with the given parameters.  Valid arguments include:
@@ -17,28 +16,20 @@ void serial_init(uint16_t baud, uint8_t data, uint8_t parity, uint8_t stopBits);
 
 /*
  * Easy init method which only asks for baud, and gives sane defaults for the rest.
- * Calls serial_init with values baud, 8, 0, 1.
+ * Implementations should call serial_init with values baud, 8, 0, 1.
  */
 void serial_init_b(uint16_t baud);
 
 /*
- * Checks if there is any serial data available to read.  Returns 
- * a non-zero if there is anything available, 0 otherwise.
+ * Reads a single character from the serial port.
  */
-uint8_t serial_check_rx_complete();
+char serial_read_c();
 
 /*
- * Checks if the serial data register UDR0 is empty, and ready
- * to be re-populated with another byte.  Returns 0 if this is
- * not ready, non-zero otherwise.
+ * Reads data into buffer of (at most) the given length.  Returns the number of bytes
+ * which were read.
  */
-uint8_t serial_check_tx_ready();
-
-/*
- * Reads a single character from the serial port.  Blocks until
- * data is read.
- */
-char serial_read();
+void serial_read_s(char *data, uint8_t length);
 
 /*
  * Writes a string to the serial port.  Blocks until the string
