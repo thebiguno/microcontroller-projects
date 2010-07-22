@@ -1,0 +1,29 @@
+Pin	Function
+1	Reset
+2	RX
+3	TX
+4
+5
+6
+7	VCC
+8	GND
+9	OSC
+10	OSC
+11	Shift1
+12	Shift2
+13	Shift3
+14	Shift4
+15	Motor1
+16	Motor2
+17	Motor3
+18	Motor4
+19	
+20	VCC
+21	AREF (3.3v)
+22	GND
+23	GyroX ADC
+24	GyroY ADC
+25	GyroZ ADC
+26	
+27	I2C
+28	I2C
