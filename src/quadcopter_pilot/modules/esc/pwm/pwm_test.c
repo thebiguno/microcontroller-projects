@@ -9,7 +9,7 @@ int main (void){
 
 	pwm_set_phase(0, 100);
 	pwm_set_phase(1, 500);
-	pwm_set_phase(2, 1500);
+	pwm_set_phase(2, 5500);
 	
 	uint32_t period = 20000;
 	
