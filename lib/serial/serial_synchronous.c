@@ -33,25 +33,21 @@ void serial_init_b(uint16_t baud){
 	serial_init(baud, 8, 0, 1);
 }
 
-/*
- * Reads one character from the serial port.  Blocks until the character is read.
- */
-char serial_read_c(){
-	// Nop loop while data is not available for reading
+uint8_t serial_read_c(char *c){
 	while (!(UCSR0A & _BV(RXC0)));
-	return UDR0;
+	*c = UDR0;
+	return 1;
 }
 
-/*
- * Reads exactly length characters from the serial port.  Blocks until all characters
- * are read.
- */
-void serial_read_s(char *data, uint8_t length){
-	for (int i = 0; i < length; i++){
-		data[i] = serial_read_c();
+uint8_t serial_read_s(char *s, uint8_t len){
+	uint8_t count = 0;
+	char data = 0;
+	
+	while (count < len && serial_read_c(&data)){
+		s[count++] = data;
 	}
 	
-	return length;
+	return count;
 }
 
 void serial_write_s(char *data){

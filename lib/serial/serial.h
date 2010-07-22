@@ -15,31 +15,33 @@
 void serial_init(uint16_t baud, uint8_t data, uint8_t parity, uint8_t stopBits);
 
 /*
- * Easy init method which only asks for baud, and gives sane defaults for the rest.
+ * Simplified init method which only asks for baud, and gives sane defaults for the rest.
  * Implementations should call serial_init with values baud, 8, 0, 1.
  */
 void serial_init_b(uint16_t baud);
 
 /*
- * Reads a single character from the serial port.
+ * Reads a single character from the serial port.  Pass in a pointer to a bute, and
+ * the function will write a single byte to that pointer.  If the read was successful,
+ * return 1; otherwise return 0.  Implementations MAY block until a byte is received.
  */
-char serial_read_c();
+uint8_t serial_read_c(char *c);
 
 /*
  * Reads data into buffer of (at most) the given length.  Returns the number of bytes
- * which were read.
+ * which were read.  Implementations MAY block until the entire buffer is filled.
  */
-void serial_read_s(char *data, uint8_t length);
+uint8_t serial_read_s(char *s, uint8_t len);
 
 /*
- * Writes a string to the serial port.  Blocks until the string
- * is written.
+ * Writes a string to the serial port.  Implementations MAY block until
+ * all bytes are written.
  */
 void serial_write_s(char *data);
 
 /*
- * Writes a single byte to the serial port.  Blocks until the 
- * data register UDR0 is available, and then popualtes it.
+ * Writes a single byte to the serial port.  Implementations MAY block until the 
+ * write is completed.
  */
 void serial_write_c(char data);
 

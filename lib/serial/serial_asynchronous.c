@@ -1,22 +1,16 @@
 #include "serial.h"
 #include <avr/interrupt.h>
 
-#define TX_BUFFER_SIZE 64
-#define RX_BUFFER_SIZE 64
+#define BUFFER_SIZE 32
 
-//Circular transmit buffer.  User code writes to (and increments) 
-// tx_end, and interrupts transmit bits located at
-// tx_start one byte at a time until start == end.
-static char tx_buffer[TX_BUFFER_SIZE];
-static uint8_t tx_start = 0;
-static uint8_t tx_end = 0;
+struct ring {
+	uint8_t buffer[BUFFER_SIZE];
+	uint8_t start;
+	uint8_t end;
+};
 
-//Circular receive buffer.  Interrupts receive bytes, and copy to index
-// rx_end.  User code can then read butes from rx_start
-// until start == end.
-static char rx_buffer[RX_BUFFER_SIZE];
-static uint8_t rx_start = 0;
-static uint8_t rx_end = 0;
+static struct ring tx_buffer;
+static struct ring rx_buffer;
 
 void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
 	//Set baud rate
@@ -47,7 +41,7 @@ void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	UCSR0B |= _BV(TXEN0) | _BV(RXEN0);
 	
 	//Enable interrupts
-	UCSR0B |= _BV(TXCIE0) | _BV(RXCIE0); // | _BV(UDRIE0);
+	UCSR0B |= _BV(RXCIE0);// | _BV(UDRIE0) | _BV(TXCIE0);
 	
 	sei();
 }
@@ -56,89 +50,73 @@ void serial_init_b(uint16_t baud){
 	serial_init(baud, 8, 0, 1);
 }
 
-/*
-uint8_t _serial_check_rx_complete(){
-	//The RXC0 bit in UCSR0A register is set to 1 when data is
-	// available (has been received over the Serial link) and
-	// it has not yet been read.  When this is set, the Receive
-	// Complete Interrupt is generated (if RXCIE0 bit in UCSR0B
-	// is set - this enables the receive interrupts.)
-	return(UCSR0A & _BV(RXC0));
-}
-
-uint8_t _serial_check_tx_ready(){
-	//UCRE0 is 'USART Data Register Empty'.  This is set to 1 when 
-	// the UDR0 register is empty, and thus another byte is ready
-	// to be inserted into it.  This data is kept in UCSR0A, at bit
-	// position UDRE0.
-	return(UCSR0A & _BV(UDRE0));
-}
-*/
-
-char serial_read_c(){
-	//Loop to first index if we go past buffer size
-	if (rx_start >= RX_BUFFER_SIZE) rx_start = 0;
+uint8_t serial_read_c(char *c){
+	//Next index, assuming all goes well
+	uint8_t next_start = (rx_buffer.start + 1) % BUFFER_SIZE;
 	
-	//If we have read all available data, we return 0.
-	if (rx_start == rx_end) return 0;
-	
-	//If there is data left to read, we return it and increment the last_read pointer.
-	return rx_buffer[rx_start++];
-}
-
-void serial_read_s(char *data, uint8_t length){
-	int count = 0;
-	
-	for (int i = 0; i < length; i++){
-		data[i] = serial_read_c();
-		if (data[i] != 0) count++;
+	//Return the next byte if we have remaining items in the buffer
+	if (next_start != rx_buffer.end) {
+		rx_buffer.start = next_start;
+		*c = rx_buffer.buffer[next_start];
+		return 1;
+	}
+	else {
+		return 0;
 	}
 }
 
-//The actual worker function for transmitting data.  Called from the TX vector to check 
-// if there is any more data to send, and also called from the serial_write_* 
-// functions to start the data transmitting.
-void _serial_write_data(){
-	//Loop to first index if we go past buffer size
-	if (tx_start >= TX_BUFFER_SIZE) tx_start = 0;
-		
-	//Transmit the next byte if we have remaining items in the buffer, and 
-	// if the last transmission has finished.
-	if (tx_start != tx_end && UCSR0A & _BV(UDRE0)) {
-		UDR0 = tx_buffer[tx_start++];
+uint8_t serial_read_s(char *s, uint8_t len){
+	uint8_t count = 0;
+	char data = 0;
+	
+	while (count < len && serial_read_c(&data)){
+		s[count++] = data;
 	}
+	
+	return count;
 }
 
 void serial_write_s(char *data){
 	while (*data){
-		//Loop if needed
-		if (tx_end >= TX_BUFFER_SIZE) tx_end = 0;
-	
-		//Store data to the buffer for later transmission
-		tx_buffer[tx_end++] = *data++;
+		serial_write_c(*data++);
 	}
-	
-	_serial_write_data();
 }
 
 void serial_write_c(char data){
-	//Loop if needed
-	if (tx_end >= TX_BUFFER_SIZE) tx_end = 0;
-	
-	//Store data to the buffer for later transmission
-	tx_buffer[tx_end++] = data;
-	
-	_serial_write_data();
-}
+	//Next index, assuming all goes well
+	uint8_t next_end = (tx_buffer.end + 1) % BUFFER_SIZE;
 
-ISR(USART_TX_vect){
-	_serial_write_data();
+	//Buffer the next byte if there is room left in the buffer.
+	if (next_end != tx_buffer.start){
+		tx_buffer.buffer[tx_buffer.end] = data;
+		tx_buffer.end = next_end;
+	}
+	
+	//Signal that there is data available; the UDRE interrupt will fire.
+	UCSR0B |= _BV(UDRIE0);
 }
 
 ISR(USART_RX_vect){
-	//Loop to first index if we go past buffer size
-	if (rx_end >= RX_BUFFER_SIZE) rx_end = 0;
-	
-	//Read the next byte into the buffer
-	rx_buffer[rx_end++] = UDR0;
+	//Next index, assuming all goes well
+	uint8_t next_end = (rx_buffer.end + 1) % BUFFER_SIZE;
+
+	//Buffer the next byte if there is room left in the buffer.
+	if (next_end != rx_buffer.start){
+		rx_buffer.buffer[rx_buffer.end] = UDR0;
+		rx_buffer.end = next_end;
+	}
 } 
+
+ISR(USART_UDRE_vect){
+	//Next index, assuming all goes well
+	uint8_t next_start = (tx_buffer.start + 1) % BUFFER_SIZE;
+	
+	//Transmit the next byte if we have remaining items in the buffer
+	if (next_start != tx_buffer.end) {
+		UDR0 = tx_buffer.buffer[next_start];
+		tx_buffer.start = next_start;
+	}
+	else {
+		UCSR0B &= ~_BV(UDRIE0);
+	}
+}
