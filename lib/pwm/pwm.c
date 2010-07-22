@@ -105,6 +105,11 @@ void pwm_start(){
 void pwm_stop(){
 	TCCR1B = 0x00;
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
+	
+	//Set pins low
+	for (uint8_t i = 0; i < _count; i++){
+		*_ports[i] &= ~_BV(_pins[i]);
+	}	
 }
 
 void pwm_set_phase(uint8_t index, uint16_t phase){
