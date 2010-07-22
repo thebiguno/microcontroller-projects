@@ -1,10 +1,15 @@
 #include "serial.h"
 #include <avr/interrupt.h>
 
-#define BUFFER_SIZE 32
+//The buffer size; used for both RX and TX buffers.  Defaults to 64 bytes; you can 
+// change it by redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
+// beside where F_CPU is defined).
+#ifndef SERIAL_BUFFER_SIZE
+#define SERIAL_BUFFER_SIZE 64
+#endif
 
 struct ring {
-	uint8_t buffer[BUFFER_SIZE];
+	uint8_t buffer[SERIAL_BUFFER_SIZE];
 	uint8_t start;
 	uint8_t end;
 };
@@ -52,7 +57,7 @@ void serial_init_b(uint16_t baud){
 
 uint8_t serial_read_c(char *c){
 	//Next index, assuming all goes well
-	uint8_t next_start = (rx_buffer.start + 1) % BUFFER_SIZE;
+	uint8_t next_start = (rx_buffer.start + 1) % SERIAL_BUFFER_SIZE;
 	
 	//Return the next byte if we have remaining items in the buffer
 	if (next_start != rx_buffer.end) {
@@ -84,7 +89,7 @@ void serial_write_s(char *data){
 
 void serial_write_c(char data){
 	//Next index, assuming all goes well
-	uint8_t next_end = (tx_buffer.end + 1) % BUFFER_SIZE;
+	uint8_t next_end = (tx_buffer.end + 1) % SERIAL_BUFFER_SIZE;
 
 	//Buffer the next byte if there is room left in the buffer.
 	if (next_end != tx_buffer.start){
@@ -98,7 +103,7 @@ void serial_write_c(char data){
 
 ISR(USART_RX_vect){
 	//Next index, assuming all goes well
-	uint8_t next_end = (rx_buffer.end + 1) % BUFFER_SIZE;
+	uint8_t next_end = (rx_buffer.end + 1) % SERIAL_BUFFER_SIZE;
 
 	//Buffer the next byte if there is room left in the buffer.
 	if (next_end != rx_buffer.start){
@@ -109,7 +114,7 @@ ISR(USART_RX_vect){
 
 ISR(USART_UDRE_vect){
 	//Next index, assuming all goes well
-	uint8_t next_start = (tx_buffer.start + 1) % BUFFER_SIZE;
+	uint8_t next_start = (tx_buffer.start + 1) % SERIAL_BUFFER_SIZE;
 	
 	//Transmit the next byte if we have remaining items in the buffer
 	if (next_start != tx_buffer.end) {
