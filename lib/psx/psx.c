@@ -85,13 +85,13 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 	_attention_port = attention_port;
 	
 	//... and output registers...
-	_data_ddr = data_port + 0x1;
-	_clock_ddr = clock_port + 0x1;
-	_command_ddr = command_port + 0x1;
-	_attention_ddr = attention_port + 0x1;
+	_data_ddr = data_port - 0x1;
+	_clock_ddr = clock_port - 0x1;
+	_command_ddr = command_port - 0x1;
+	_attention_ddr = attention_port - 0x1;
 
 	//... and data in....
-	_data_in = data_port + 0x2;
+	_data_in = data_port - 0x2;
 
 	//... and pin numbers.
 	_clock_pin = clock_pin;
@@ -129,12 +129,12 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 
 	
 	// Vibration (disabled; need to define vibration pins if you want to enable it)
-//	uint8_t enable_vibration_command[] = {0x01, 0x4D, 0x00, 0x00, 0x01}
-//	_psx_send_command(enable_vibration_command, 5);
+	//uint8_t enable_vibration_command[] = {0x01, 0x4D, 0x00, 0x00, 0x01}
+	//_psx_send_command(enable_vibration_command, 5);
     
 	//Config controller to return all pressure values
-//	uint8_t pressure_values_command[] = {0x01, 0x4F, 0x00, 0xFF, 0xFF, 0x03, 0x00, 0x00, 0x00}
-//	_psx_send_command(pressure_values_command, 9);
+	//uint8_t pressure_values_command[] = {0x01, 0x4F, 0x00, 0xFF, 0xFF, 0x03, 0x00, 0x00, 0x00}
+	//_psx_send_command(pressure_values_command, 9);
 
 	//Exit config mode
 	uint8_t exit_config_command[] = {0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A};

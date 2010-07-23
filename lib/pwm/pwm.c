@@ -42,7 +42,7 @@ void pwm_init(volatile uint8_t *ports[],
 	//Store values
 	for (uint8_t i = 0; i < _count; i++){
 		_ports[i] = ports[i];
-		_ddrs[i] = ports[i] + 0x1;
+		_ddrs[i] = ports[i] - 0x1;
 		_pins[i] = pins[i];
 	}
 	
