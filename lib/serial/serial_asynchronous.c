@@ -1,3 +1,26 @@
+/*
+ * An asynchronous implementation of the serial library.  This will let you submit a bunch
+ * of data to a buffer, and let the AVR send it using interrupts.  This results in shorter
+ * send / receive times (as the write / read methods do not block), but there are downsides.
+ * It a) causes code to be run in interrupts (which may interere with timing-critical code),
+ * b) adds substantially to the total SRAM usede by a program (defaults to two 64 byte 
+ * buffers for transmitting and receiving, although this buffer size can be configured at
+ * compile time), c) introduces the possibility that data will be partially unsent, if 
+ * the program tries to write too much at a time and overflows the buffer, and d) for single
+ * byte messages which are not sent continuously, there is actually a performance decrease 
+ * as there is an extra layer of abstraction (the buffer) in between the hardware and the 
+ * sending program.
+ * 
+ * With the downsides, though, come a definite advantage -- for longer strings (experiments
+ * show this seems to be effective for more than 2 bytes), the speed is much faster.  When
+ * sending 3 bytes, it takes 1215µs (1.2ms) to return from the synchronous implementation;
+ * while taking only 280µs (0.3ms) to return from the asynchronous one.  For longer 
+ * strings the difference is even more pronounced: if you send a 26 character string, it 
+ * will take the synchronous implementation about 25131µs (25ms) to return from the 
+ * write_s function; the asynchronous implementation takes about 669µs (less than 1ms) 
+ * to return.
+ */
+
 #include "serial.h"
 #include <avr/interrupt.h>
 
