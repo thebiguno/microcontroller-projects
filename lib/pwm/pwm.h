@@ -46,7 +46,6 @@
  * you should probably keep it at 1000µs or so (1ms).
  */
 void pwm_init(volatile uint8_t *ports[],
-				volatile uint8_t *ddrs[],
 				uint8_t pins[],
 				uint8_t count,
 				uint32_t period);

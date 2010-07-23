@@ -66,11 +66,17 @@ static uint8_t _data[9];
  * before any other psx_* functions are called.
  * (TODO: separate the config options into optional functions, and call based on flags,
  * to allow calling programs to determine what options to use)
+ *
+ * Note: We extrapolate the DDR and PIN registers based off of the associated PORT 
+ * register.  This assumes that the DDR and PIN registers come directly after the PORT
+ * equivalents, with DDRX at the next address after PORTX and PINX coming at the next
+ * address after DDRX.  This is valid for all the chips I have looked at; however, it is
+ * highly recommended that you check any new chips which you want to use this library with.
  */
-void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile uint8_t *data_ddr, uint8_t data_pin,
-				volatile uint8_t *clock_port, volatile uint8_t *clock_ddr, uint8_t clock_pin,
-				volatile uint8_t *command_port, volatile uint8_t *command_ddr, uint8_t command_pin,
-				volatile uint8_t *attention_port, volatile uint8_t *attention_ddr, uint8_t attention_pin){
+void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
+				volatile uint8_t *clock_port, uint8_t clock_pin,
+				volatile uint8_t *command_port, uint8_t command_pin,
+				volatile uint8_t *attention_port, uint8_t attention_pin){
 
 	//Store the ports...
 	_data_port = data_port;
@@ -78,14 +84,14 @@ void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile u
 	_command_port = command_port;
 	_attention_port = attention_port;
 	
-	//... and data in....
-	_data_in = data_in;
-
 	//... and output registers...
-	_data_ddr = data_ddr;
-	_clock_ddr = clock_ddr;
-	_command_ddr = command_ddr;
-	_attention_ddr = attention_ddr;
+	_data_ddr = data_port + 0x1;
+	_clock_ddr = clock_port + 0x1;
+	_command_ddr = command_port + 0x1;
+	_attention_ddr = attention_port + 0x1;
+
+	//... and data in....
+	_data_in = data_port + 0x2;
 
 	//... and pin numbers.
 	_clock_pin = clock_pin;

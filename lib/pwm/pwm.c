@@ -25,8 +25,14 @@ static uint8_t _count;								//How many pins should be used
 static uint16_t _prescaler = 0x0;
 static uint8_t _prescaler_mask = 0x0;
 
+/*
+ * Note: We extrapolate the DDR registers based off of the associated PORT 
+ * register.  This assumes that the DDR registers come directly after the PORT
+ * equivalents, with DDRX at the next address after PORTX.  This is valid for 
+ * all the chips I have looked at; however, it is highly recommended that you 
+ * check any new chips which you want to use this library with.
+ */
 void pwm_init(volatile uint8_t *ports[],
-				volatile uint8_t *ddrs[],
 				uint8_t pins[],
 				uint8_t count,
 				uint32_t period) {
@@ -36,7 +42,7 @@ void pwm_init(volatile uint8_t *ports[],
 	//Store values
 	for (uint8_t i = 0; i < _count; i++){
 		_ports[i] = ports[i];
-		_ddrs[i] = ddrs[i];
+		_ddrs[i] = ports[i] + 0x1;
 		_pins[i] = pins[i];
 	}
 	
@@ -76,9 +82,7 @@ void pwm_init(volatile uint8_t *ports[],
 		_new_values[i] = 0;
 	}
 				
-	//Set up the timer to run at F_CPU / 256 (prescaler), in normal mode.  You can 
-	// change the prescaler to get a different frequency range, but make sure you 
-	// adjust the PWM_US_TO_CLICKS macro as well.
+	//Set up the timer to run at F_CPU / prescaler, in normal mode.
 	TCCR1A = 0x0;
 	TCCR1B |= _prescaler_mask;
 	

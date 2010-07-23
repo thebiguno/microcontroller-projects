@@ -36,10 +36,10 @@
  * Although we don't verify this, data_ddr should correlate with data_port (i.e. DDRB 
  * and PORTB).
  */
-void psx_init(volatile uint8_t *data_port, volatile uint8_t *data_in, volatile uint8_t *data_ddr, uint8_t data_pin,
-				volatile uint8_t *clock_port, volatile uint8_t *clock_ddr, uint8_t clock_pin,
-				volatile uint8_t *command_port, volatile uint8_t *command_ddr, uint8_t command_pin,
-				volatile uint8_t *attention_port, volatile uint8_t *attention_ddr, uint8_t attention_pin);
+void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
+				volatile uint8_t *clock_port, uint8_t clock_pin,
+				volatile uint8_t *command_port, uint8_t command_pin,
+				volatile uint8_t *attention_port, uint8_t attention_pin);
 				
 /* Returns non-zero if the given button is pressed. */
 uint8_t psx_button(uint16_t);

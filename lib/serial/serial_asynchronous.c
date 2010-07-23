@@ -101,7 +101,18 @@ void serial_write_c(char data){
 	UCSR0B |= _BV(UDRIE0);
 }
 
+
+//Note: These defines are only a small subset of those which are available (and are
+// pretty much only the chips which I personally use).  You can add more chips to 
+// these defines, and as long as you match the correct chips with the correct vector
+// names, it should just work.
+#if defined(__AVR_ATtiny2313__) || \
+    defined(__AVR_ATmega168__)
 ISR(USART_RX_vect){
+#elif defined(__AVR_ATmega644__)
+ISR(USART0_RX_vect){
+#endif
+      
 	//Next index, assuming all goes well
 	uint8_t next_end = (rx_buffer.end + 1) % SERIAL_BUFFER_SIZE;
 
@@ -112,7 +123,14 @@ ISR(USART_RX_vect){
 	}
 } 
 
+
+#if defined(__AVR_ATtiny2313__) || \
+    defined(__AVR_ATmega168__)
 ISR(USART_UDRE_vect){
+#elif defined(__AVR_ATmega644__)
+ISR(USART0_UDRE_vect){
+#endif
+
 	//Next index, assuming all goes well
 	uint8_t next_start = (tx_buffer.start + 1) % SERIAL_BUFFER_SIZE;
 	
