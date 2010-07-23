@@ -14,7 +14,7 @@ static volatile uint32_t _timer_micro_divisor;
  * linked with timer1.
  */
 void timer_init(){
-	//Set up the timer to run at F_CPU
+	//Set up the timer to run at F_CPU in CTC mode
 	TCCR1A = 0x0;
 	TCCR1B |= _BV(CS10) | _BV(WGM12);
 	

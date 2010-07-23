@@ -3,7 +3,7 @@
  * etc.  Clicks approximately every millisecond.  Microseconds are not available, 
  * and any queries to the function will just return milliseconds * 1000.
  * You can use this file when you don't need high resolution timing, and don't care
- * about slight clock drift, inaccuracy, etc.  For timing any human-related activities,
+ * about slight clock drift, inaccuracy, etc.  For timing most human-related activities,
  * though, it should be more than sufficient.
  */
 #include "timer.h"
@@ -15,9 +15,9 @@ static volatile uint64_t _timer_millis;
  * linked with timer0.
  */
 void timer_init(){
-	//Set up the timer to run at F_CPU / 256, in CTC mode
+	//Set up the timer to run at F_CPU / 256, in normal mode (we reset TCNT0 in the ISR)
 	TCCR0A = 0x0;
-	TCCR0B |= _BV(CS02) | _BV(WGM01);
+	TCCR0B |= _BV(CS02);
 	
 	//Set compare value to be F_CPU / 1000 -- fire interrupt every millisecond
 	OCR0A = F_CPU / 256 / 1000;
@@ -30,6 +30,8 @@ void timer_init(){
 	
 	//Enable interrupts
 	sei();
+	
+	DDRB = 0xFF;
 }
 
 /*
@@ -54,5 +56,6 @@ uint64_t timer_micros(){
  * to increment _timer_millis as needed.
  */
 ISR(TIMER0_COMPA_vect){
+	TCNT0 = 0;
 	_timer_millis++;
 }
