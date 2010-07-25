@@ -3,9 +3,10 @@ include ../../../../../build/variables.mk
 PROJECT=MMA7455L_test
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=MMA7455L_test.c MMA7455L_hardware.c ../../../lib/serial/serial.c ../../../lib/timer/timer.c
+SOURCES=MMA7455L_test.c accel_MMA7455L.c ../../../lib/serial/serial_synchronous.c ../../../lib/i2c/i2c_master.c ../../../lib/timer/timer_0.c
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
+CDEFS += -Wl,-u,vfprintf -lprintf_flt -lm 
 
 include ../../../../../build/targets.mk
