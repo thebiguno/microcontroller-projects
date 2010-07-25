@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define DEG_PT5 = 0.00872664626;
+#define DEG_30 = 1.570796326794897;
 /*
  * A complementary filter derived from the following:
  * - http://www.rcgroups.com/forums/showpost.php?p=12082524&postcount=1286
@@ -28,12 +30,12 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     vector_t int_x1; // input to the first integrator (rad/sec/sec)
     vector_t int_x2; // input to the second integrator (rad/sec)
 
-    if (accel.z < 0.5 || filter.x > 30.0 || filter.x < -30.0) {
+    if (accel.z < DEG_PT5 || filter.x > DEG_30 || filter.x < -DEG_30) {
     	double accel_x = filter.x;
     } else {
     	double accel_x = atan(accel.x, accel.z);
     }
-    if (accel.z < 0.5 || filter.y > 30.0 || filter.y < -30.0) {
+    if (accel.z < DEG_PT5 || filter.y > DEG_30 || filter.y < -DEG_30) {
     	double accel_x = filter.y;
     } else {
     	double accel_x = atan(accel.y, accel.z);
@@ -41,7 +43,6 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     
     filter.x = _attitude(gyro.x, accel_x, &int_y1.x, &filter.x, k.x);
     filter.y = _attitude(gyro.y, accel_y, &int_y1.y, &filter.y, k.y);
-    filter.z = _attitude(gyro.z, filter.z, &int_y1.z, &filter.z, k.z);
     
     return filter;
 }
