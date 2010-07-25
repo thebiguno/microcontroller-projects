@@ -9,7 +9,7 @@
 #include <util/delay.h>
 
 #include "../accel.h"
-#include "../../../lib/timer/timer.h"
+//#include "../../../lib/timer/timer.h"
 #include "../../../lib/serial/serial.h"
 
 char temp[32];
@@ -25,16 +25,17 @@ int main (void){
 
 	serial_init(9600, 8, 0, 1);
 
-	timer_init();
+	//timer_init();
 
 	accel_init();
-	//accel_calibrate();
+	accel_calibrate();
 
 	//Main program loop
 	while (1){
-		_delay_ms(10);
+//		_delay_ms(10);
 
-		v = accel_get();
+		int8_t data[3];
+		v = accel_get(data);
 
 		if (v.x != last_v.x || v.y != last_v.y || v.z != last_v.z){
 			last_v = v;

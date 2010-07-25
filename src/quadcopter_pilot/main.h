@@ -14,6 +14,9 @@ typedef struct vector{
     double z;
 } vector_t;
 
+//Common modules which other modules need to interact with
+#include "modules/persist/persist.h"
+
 //Needed to push data out to the modules
 #include "modules/accel/accel.h"
 #include "modules/attitude/attitude.h"
