@@ -7,7 +7,9 @@
 #define ADDRESS 0x1D
 
 #define AVERAGE_SAMPLE_SIZE 0x10
-#define CALIBRATION_SAMPLE_SIZE 0x80
+#define CALIBRATION_SAMPLE_SIZE 0xF0
+
+#define PERSIST_OFFSET 0x00  //The address to store offset calibration data
 
 //Running average of values
 static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
@@ -32,20 +34,20 @@ void accel_init(){
 	i2c_start_transceiver_with_data(message, 3);
 
 	//Reset the offset drift to zero; this can be re-calibrated later.
-	//TODO We read the last calibration from EEPROM; probably won't be 
+	//We read the last calibration from EEPROM; probably won't be 
 	// perfect, but it will be better than 0x00 for everything.
 	
-	uint8_t calibration_data[3];
-	persist_read(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 3);
+	uint8_t calibration_data[6];
+	persist_read(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
 	
 	message[0] = ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x10;
-	message[2] = 0x00; //calibration_data[0];
-	message[3] = 0x00;
-	message[4] = 0x00; //calibration_data[1];
-	message[5] = 0x00;
-	message[6] = 0x00; //calibration_data[2];
-	message[7] = 0x00;
+	message[2] = calibration_data[0];
+	message[3] = calibration_data[1];
+	message[4] = calibration_data[2];
+	message[5] = calibration_data[3];
+	message[6] = calibration_data[4];
+	message[7] = calibration_data[5];
 	i2c_start_transceiver_with_data(message, 8);
 
 	//Read in AVERAGE_SAMPLE_SIZE readings so that our initial average is sane.
@@ -106,22 +108,29 @@ void accel_calibrate(){
 	// readings (to eliminate spurious results), and the multiplication factor is
 	// 2 (or possibly a 'bit more' -- see Freescale Application Note AN3745).
 	//Send the calibration data, starting at register 0x10
+	//TODO: This calibration routine needs to be improved.  First, we currently have
+	// no allowance for negative values.  Second, it is recommended in AN3745 to
+	// use an iterative process to find the actual values, as the first time around
+	// may not be completely accurate.
 	message[0] = ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x10;
-	message[2] = (0x00 - (total[0] / CALIBRATION_SAMPLE_SIZE)) * 2;
+	message[2] = ((0x00 - (total[0] / CALIBRATION_SAMPLE_SIZE)) * 2);
 	message[3] = 0x00;
-	message[4] = (0x00 - (total[1] / CALIBRATION_SAMPLE_SIZE)) * 2;
+	message[4] = ((0x00 - (total[1] / CALIBRATION_SAMPLE_SIZE)) * 2);
 	message[5] = 0x00;
-	message[6] = (0x3F - (total[2] / CALIBRATION_SAMPLE_SIZE)) * 2;
+	message[6] = ((0x3F - (total[2] / CALIBRATION_SAMPLE_SIZE)) * 3);
 	message[7] = 0x00;
 	i2c_start_transceiver_with_data(message, 8);
 
-	//TODO Store calibration bytes to EEPROM
-	uint8_t calibration_data[3];
+	//Store calibration bytes to EEPROM
+	uint8_t calibration_data[6];
 	calibration_data[0] = message[2];
-	calibration_data[1] = message[4];
-	calibration_data[2] = message[6];
-	persist_write(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 3);
+	calibration_data[1] = message[3];
+	calibration_data[2] = message[4];
+	calibration_data[3] = message[4];
+	calibration_data[4] = message[6];
+	calibration_data[5] = message[7];
+	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
 }
 
 vector_t accel_get() {
