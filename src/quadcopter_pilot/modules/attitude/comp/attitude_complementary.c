@@ -41,7 +41,6 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     
     filter.x = _attitude(gyro.x, accel_x, &int_y1.x, &filter.x, k.x);
     filter.y = _attitude(gyro.y, accel_y, &int_y1.y, &filter.y, k.y);
-    filter.z = _attitude(gyro.z, filter.z, &int_y1.z, &filter.z, k.z);
     
     return filter;
 }
