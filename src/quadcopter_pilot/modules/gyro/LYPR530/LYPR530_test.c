@@ -7,7 +7,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "../gyro_hardware.h"
+#include "../gyro.h"
 #include "../../../lib/timer/timer.h"
 #include "../../../lib/serial/serial.h"
 
