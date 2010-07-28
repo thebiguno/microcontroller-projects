@@ -18,11 +18,10 @@ static uint16_t results[3];
 static uint8_t adc_mux = 0;
 
 void gyro_init(){
-	ADMUX = _BV(REFS0);	//Use AREF pin w/ capacitor
-		//MUX by default is 0.
+	ADMUX = 0x00;
 
 	//TODO configure ADPS2::0 (prescaler) to give speed / accuracy tradeoff
-	ADCSRA |= _BV(ADEN) | _BV(ADIE);  	//ADC Enable, ADC Interrupt Enable
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | 4;  	//ADC Enable, ADC Interrupt Enable
 
 	ADCSRB = 0x00;	//Free running mode
 
@@ -43,12 +42,16 @@ vector_t gyro_get() {
     return result;
 }
 
+char temp[32];
 ISR(ADC_vect){
 	//Read last ADC value
-	results[adc_mux] = ADLAR;
+	results[adc_mux] = ADC;
 
 	//Increment to next pin and start again
 	adc_mux = (adc_mux + 1) % 3;
 	ADMUX = ((ADMUX) & 0xF0) | adc_mux;
+
+	//Start ADC again
+	ADCSRA |= _BV(ADSC);
 }
 

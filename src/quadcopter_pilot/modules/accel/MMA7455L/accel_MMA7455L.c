@@ -114,11 +114,11 @@ void accel_calibrate(){
 	// may not be completely accurate.
 	message[0] = ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x10;
-	message[2] = ((0x00 - (total[0] / CALIBRATION_SAMPLE_SIZE)) * 2);
+	message[2] = 0x00; //((0x00 - (total[0] / CALIBRATION_SAMPLE_SIZE)) * 2);
 	message[3] = 0x00;
-	message[4] = ((0x00 - (total[1] / CALIBRATION_SAMPLE_SIZE)) * 2);
+	message[4] = 0x00; //((0x00 - (total[1] / CALIBRATION_SAMPLE_SIZE)) * 2);
 	message[5] = 0x00;
-	message[6] = ((0x3F - (total[2] / CALIBRATION_SAMPLE_SIZE)) * 3);
+	message[6] = 0x00; //((0x3F - (total[2] / CALIBRATION_SAMPLE_SIZE)) * 3);
 	message[7] = 0x00;
 	i2c_start_transceiver_with_data(message, 8);
 
@@ -130,7 +130,7 @@ void accel_calibrate(){
 	calibration_data[3] = message[4];
 	calibration_data[4] = message[6];
 	calibration_data[5] = message[7];
-	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
+//	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
 }
 
 vector_t accel_get() {
