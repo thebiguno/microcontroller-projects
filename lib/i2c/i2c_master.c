@@ -39,8 +39,11 @@ void i2c_master_init(int16_t i2c_clock_frequency){
 		(0<<TWIE)|(0<<TWINT)|						// Disable Interupt.
 		(0<<TWEA)|(0<<TWSTA)|(0<<TWSTO)|			// No Signal requests.
 		(0<<TWWC);									//
-		
+	
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
 	sei();
+#endif
 }    
 
 /*

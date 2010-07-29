@@ -28,8 +28,10 @@ void timer_init(){
 	//Reset count variables
 	_timer_millis = 0;
 	
-	//Enable interrupts
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
 	sei();
+#endif
 	
 	DDRB = 0xFF;
 }
