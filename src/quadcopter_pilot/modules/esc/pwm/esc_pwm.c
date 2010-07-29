@@ -7,19 +7,12 @@ void esc_init() {
 	ports[1] = &PORTB;
 	ports[2] = &PORTB;
 	
-	volatile uint8_t *ddrs[8];
-	ddrs[0] = &DDRB;
-	ddrs[1] = &DDRB;
-	ddrs[2] = &DDRB;
-	
 	uint8_t pins[8];
 	pins[0] = 2;
 	pins[1] = 1;
 	pins[2] = 3;
 	
-//	DDRB = 0xFF;
-	
-	pwm_init(ports, ddrs, pins, 3, 20000);
+	pwm_init(ports, pins, 3, 20000);
 }
 
 /*
