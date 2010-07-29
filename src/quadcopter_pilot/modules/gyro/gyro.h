@@ -10,6 +10,9 @@
 /* Initializes the hardware */
 void gyro_init();
 
+/* Start calibration routines.  The aircraft should be level when this is called. */
+void gyro_calibrate();
+
 /* Returns the gyroscope data in rad/s */
 vector_t gyro_get();
 
