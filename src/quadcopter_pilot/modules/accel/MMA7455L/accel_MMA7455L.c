@@ -19,7 +19,7 @@ uint8_t message[8]; //Temporary array used for i2c communications
 
 void accel_init(){
 	//Init i2c
-	i2c_master_init(100);
+	i2c_master_init(400);
 
 	//Enable accelerometer in 2g measurement mode
 	message[0] = ADDRESS << 1 | I2C_WRITE;

@@ -3,6 +3,7 @@
  */
 #include "../gyro.h"
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #define M 0.006141921121388
 #define B M_PI * -1
@@ -30,6 +31,13 @@ void gyro_init(){
 
 	//Start ADC conversions
 	ADCSRA |= _BV(ADSC);
+
+	//Send HP reset for a few ms
+	DDRC |= _BV(PIN3);
+	PORTC |= _BV(PIN3);
+	_delay_ms(10);
+	PORTC &= ~_BV(PIN3);
+	DDRC &= ~_BV(PIN3);
 
 	sei();
 }

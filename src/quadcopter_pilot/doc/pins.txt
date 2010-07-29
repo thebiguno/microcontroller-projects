@@ -24,6 +24,6 @@ Pin	Function
 23	GyroX ADC
 24	GyroY ADC
 25	GyroZ ADC
-26	
+26	Gyro HP Reset
 27	I2C
 28	I2C
