@@ -93,8 +93,10 @@ void pwm_init(volatile uint8_t *ports[],
 	//Enable compare interrupt on both channels
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
 	
-	//Enable interrupts
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
 	sei();
+#endif
 	
 	//Force interrupt on compare A initially
 	TCCR1C |= _BV(FOC1A);	
