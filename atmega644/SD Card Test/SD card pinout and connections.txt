@@ -1,0 +1,19 @@
+
+AVR								SD
+8		SCK		3.3 	Out		
+7		MISO	5		In
+6		MOSI	3.3		Out
+5		SS		3.3		Out
+
+
+SD Card Pinout 				AVR 	Pin (ATMega644)
+
+___    8 NC	
+___    7 DO					MISO	7
+___    6 GND
+___    5 SCK				SCK		8
+___    4 VCC (3.3v)			
+___    3 GND
+___    2 DI					MOSI	6
+___    1 CS					SS		5
+  ___   9 NC
