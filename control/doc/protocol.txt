@@ -1,0 +1,128 @@
+Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
+
+CONTROL -> PILOT
+
+FLIGHT
+frame start	1 byte	(0x7e)
+length		1 byte	(0x11)
+cmd		1 byte	(0x46)
+throttle	4 bytes
+pitch		4 bytes
+roll		4 bytes
+yaw		4 bytes
+flags		1 byte
+checksum	1 byte
+
+flags are:
+0		armed
+1		gyro calibrate
+2		accel calibrate
+3		attitude reset
+4		RTS pid
+5		RTS telemetry
+6		(reserved for future RTS raw sensor data)
+7		write EEPROM
+
+PID
+frame start	1 byte	(0x7e)
+length		1 byte	(0x25)
+cmd		1 byte	(0x50)
+p x		4 bytes
+i x		4 bytes
+d x		4 bytes
+p y		4 bytes
+i y		4 bytes
+d y		4 bytes
+p z		4 bytes
+i z		4 bytes
+d z		4 bytes
+checksum	1 byte
+
+KALMAN TUNING
+frame start	1 byte	(0x7e)
+length		1 byte	(0x19)
+cmd		1 byte	(0x54)
+q angle x	4 bytes
+q angle y	4 bytes
+q gyro x	4 bytes
+q gyro y	4 bytes
+r angle x	4 bytes
+r angle y	4 bytes
+checksum	1 byte
+
+COMPLEMENTARY TUNING
+frame start	1 byte	(0x7e)
+length		1 byte	(0x0d)
+cmd		1 byte	(0x54)
+x		4 bytes
+y		4 bytes
+z		4 bytes
+checksum	1 byte
+
+MHV TUNING
+TODO
+
+PILOT -> CONTROL
+
+TELEMETRY
+frame start	1 byte	(0x7e)
+length		1 byte	(0x1e)
+cmd		1 byte	(0x54)
+pitch		4 bytes
+roll		4 bytes
+yaw		4 bytes
+motor a		4 bytes
+motor b		4 bytes
+motor c		4 bytes
+motor d		4 bytes
+flags		1 byte
+checksum	1 byte
+
+flags are:
+0		armed
+
+PID
+frame start	1 byte	(0x7e)
+length		1 byte	(0x25)
+cmd		1 byte	(0x50)
+p x		4 bytes
+i x		4 bytes
+d x		4 bytes
+p y		4 bytes
+i y		4 bytes
+d y		4 bytes
+p z		4 bytes
+i z		4 bytes
+d z		4 bytes
+checksum	1 byte
+
+Checksum
+To calculate: Not including frame delimiters and length, add all bytes keeping only the lowest 8 bits of the result and subtract from 0xFF.
+To verify: Add all bytes (include checksum, but not the delimiter and length). If the checksum is correct, the sum will equal 0xFF.
+
+Bytes to be escaped:
+0x7e	frame start
+0x7d	escape
+0x11	xon	(reserved for future flow control)
+0x13	xoff	(reserved for future flow control)
+To escape a character, insert a 0x7d and follow it with the byte to be escaped xor'd with 0x20.
+
+RANDOM NOTES:
+The framing, checksum, and escape mechanism are inspired by the Xbee API mode.
+
+The ideal crystal we should be using for this project i think is 16 MHz.  This matches the XBee clock speed and allows communication at any baud rate without error (the Xbee uses a 16 MHz crystal).  For a link with the PC the rate of 76800 would be the most reliable.  If faster clock speeds on the AVR are beneficial, then 19.6608 MHz or 20.8896 MHz are ideal with a baud rate of 76800.
+
+Setting ATRO=1 with a baud rate of 76800 will mean packetization of messages will happen on a delay of ~0.13 ms.
+Setting ATMM=1 (802.15.4 no acks) reduces header size and completely eliminates packet retries at both the 802 layer and the digi layer
+The XBee has a packet size of 100 bytes in transparent mode and does not perform any checksum -- so we should definitely add checksums to our messages
+After laying out all the packet formats, I can see that combining all messages from a given command loop will not exceed 100 bytes.
+100 characters / (76800 / 8) = ~ 13 ms (doesn't account for 802.15.4 headers (18 bytes??) or energy scan retries)
+Any time the control requests to send telemetry or pid it should ensure that it does not send more frequently than every 10ms to allow for the return message to be sent.  (I'm assuming that in the field tuning and operation via PC are desirable over the wireless link -- which i think I'd like to have).
+
+comm library requirements
+
+a buffer for the control loop to accumulate outgoing data into
+
+a mailbox slot for each type of incoming message
+when a new message is fully received, it is placed into the appropriate slot
+the control loop reads values from the slot -- there is no harm in duplicate reads
