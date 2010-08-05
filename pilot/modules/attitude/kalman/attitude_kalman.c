@@ -15,13 +15,10 @@ void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM
     q_angle.x = 0.001;
     q_angle.y = 0.001;
-    q_angle.z = 0.001;
     q_gyro.x = 0.003;
     q_gyro.y = 0.003;
-    q_gyro.z = 0.003;
     r_angle.x = 0.03;
     r_angle.y = 0.03;
-    r_angle.z = 0.03;
 }
 
 vector_t attitude(vector_t gyro, vector_t accel, double dt) {
