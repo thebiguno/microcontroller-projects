@@ -9,6 +9,7 @@ typedef struct control_t {
     double roll;
     double yaw;
     double throttle;
+    uint8_t flags;
 } control_t;
 
 #include "modules/control/control.h"
