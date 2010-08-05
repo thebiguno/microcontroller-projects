@@ -1,6 +1,6 @@
 sticks
-LY		pitch -90º to +90º (limited by mode)
-LX		roll -90º to +90º (limited by mode)
+LY		pitch -90 deg to +90 deg (limited by mode)
+LX		roll -90 deg to +90 deg (limited by mode)
 RY		throttle 0 to 100%
 RX		
 L3		reset attitude (only when disarmed)
@@ -12,18 +12,18 @@ select
 analog		n/a
 
 top buttons
-L1		-5º / sec
-L2		-15º / sec
-L1+L2		-45º / sec
-R1		+5º / sec
-R2		+15º / sec
-R1+R2		+45º / sec
+L1		-5 deg / sec
+L2		-15 deg / sec
+L1+L2		-45 deg / sec
+R1		+5 deg / sec
+R2		+15 deg / sec
+R1+R2		+45 deg / sec
 
 right buttons
 square		aerobatic / 3d mode (no limits on pitch and roll)
-triangle	sport mode (roll limited to 30º, pitch forward limited to 45º, no pitch backwards)
+triangle	sport mode (roll limited to 30 deg, pitch forward limited to 45 deg, no pitch backwards)
 circle		
-ex		normal mode (pitch and roll limited to 5º)
+ex		normal mode (pitch and roll limited to 5 deg)
 
 left buttons
 left		
