@@ -1,6 +1,6 @@
 Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
 
-CONTROL -> PILOT
+CONTROLLER -> PILOT
 
 FLIGHT
 frame start	1 byte	(0x7e)
@@ -15,13 +15,33 @@ checksum	1 byte
 
 flags are:
 0		armed
-1		gyro calibrate
-2		accel calibrate
-3		attitude reset
-4		RTS pid
-5		RTS telemetry
-6		(reserved for future RTS raw sensor data)
-7		write EEPROM
+1		reset attitude
+2		calibrate gyros
+3		calibrate accelerometers
+
+PC -> PILOT
+
+COMMAND
+frame start	1 byte	(0x7e)
+length		1 byte
+cmd		1 byte	(0x43)
+motor F		4 bytes
+motor B		4 bytes
+motor L		4 bytes
+motor R		4 bytes
+flags		2 bytes
+checksum	1 byte
+
+flags are:
+0		armed
+1		reset attitude
+2		calibrate gyros
+3		calibrate accelerometers
+4		calibrate escs
+8		RTS pid
+9		RTS telemetry
+10		(reserved for future RTS raw sensor data)
+15		write EEPROM
 
 PID
 frame start	1 byte	(0x7e)
@@ -62,7 +82,7 @@ checksum	1 byte
 MHV TUNING
 TODO
 
-PILOT -> CONTROL
+PILOT -> PC
 
 TELEMETRY
 frame start	1 byte	(0x7e)
@@ -71,15 +91,18 @@ cmd		1 byte	(0x54)
 pitch		4 bytes
 roll		4 bytes
 yaw		4 bytes
-motor a		4 bytes
-motor b		4 bytes
-motor c		4 bytes
-motor d		4 bytes
+motor F		4 bytes
+motor B		4 bytes
+motor L		4 bytes
+motor R		4 bytes
 flags		1 byte
 checksum	1 byte
 
 flags are:
 0		armed
+1		comp filter
+2		kalman filter
+3		mhv filter
 
 PID
 frame start	1 byte	(0x7e)
