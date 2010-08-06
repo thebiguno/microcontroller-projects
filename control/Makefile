@@ -9,7 +9,7 @@ SOURCES=main.c
 # the definitions in variables.mk
 
 #Include each module
-include modules/communication/module.mk
+include modules/comm/module.mk
 include modules/control/module.mk
 
 include ../../build/targets.mk
