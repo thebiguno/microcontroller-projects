@@ -26,7 +26,7 @@ void attitude_init(vector_t gyro, vector_t accel) {
     int_y1.z = -gyro.z;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, double dt) {
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     vector_t int_x1; // input to the first integrator (rad/sec/sec)
     vector_t int_x2; // input to the second integrator (rad/sec)
 
@@ -45,6 +45,12 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
     filter.y = _attitude(gyro.y, accel_y, &int_y1.y, &filter.y, k.y);
     
     return filter;
+}
+
+void attitude_reset() {
+    filter.x = 0;
+    filter.y = 0;
+    filter.z = 0;
 }
 
 double _attitude(double gyro, double accel, double *_int_y1, double *_filter double k) {

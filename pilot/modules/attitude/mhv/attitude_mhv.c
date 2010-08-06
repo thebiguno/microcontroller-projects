@@ -24,7 +24,7 @@ void attitude_init(vector_t gyro, vector_t accel) {
     q.z = 0.0;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, double dt) {
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     // Local system variables
     double norm;                                                    // vector norm
     double f_1, f_2, f_3;                                           // objective function elements

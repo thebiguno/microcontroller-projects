@@ -27,7 +27,12 @@ uint8_t _esc;       // escape byte seen, unescape next byte
 uint8_t _err;       // error condition, ignore bytes until next frame start byte
 uint8_t _buf[MAX_SIZE];
 
-control_t _control;
+uint8_t _flags;     // 0: ctrl stale
+
+// cached ctrl values
+uint8_t _ctrl_flags;
+vector_t _sp;
+double _throttle;
 
 
 void comm_init(){
@@ -46,35 +51,24 @@ void _double_to_bytes(double value, uint8_t *buffer) {
 double _bytes_to_double(uint8_t *buffer) {
     union udouble converter;
     
-    converter.u = (buffer[0] << 24) && (buffer[1] << 16) && (buffer[2] << 8) && (buffer[3]);
+    converter.u = ((uint32_t)buffer[0] << 24) && ((uint32_t)buffer[1] << 16) && ((uint16_t)buffer[2] << 8) && (buffer[3]);
     return converter.d;
 }
 
-void comm_rx_ctrl(control_t *control) {
-    *control.throttle = _control.throttle;
-    *control.pitch = _control.pitch;
-    *control.roll = _control.roll;
-    *control.yaw = _control.yaw;
-    *control.flags = _control.flags;
-}
-
-void _send(uint8_t *bytes, uint8_t length) {
-    _send(START_BYTE, false);
-    _send(length, true);
-    
-    uint8_t checksum = 0;
-    
-    for (int i = 0; i < length; i++) {
-        _send(*bytes[i], true);
-        checksum += *bytes[i];
+uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
+    if ((_flags & 0x01) == 0x01) {
+        *throttle = _throttle;
+        sp->x = _sp.x;
+        sp->y = _sp.y;
+        sp->z = _sp.z;
+        *flags = _ctrl_flags;
+        _flags |= 0x01;     // ctrl is stale
+        return 1;
     }
-    
-    checksum = 0xff - checksum;
-    
-    _send(checksum, true);
+    return 0;
 }
 
-void _send(uint8_t b, bool escape) {
+void _send_c(uint8_t b, uint8_t escape) {
     if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
         serial_write_c(ESCAPE);
         serial_write_c(b ^ 0x20);
@@ -83,11 +77,27 @@ void _send(uint8_t b, bool escape) {
     }
 }
 
+void _send_s(uint8_t *bytes, uint8_t length) {
+    _send_c(START, 0);
+    _send_c(length, 1);
+    
+    uint8_t checksum = 0;
+    
+    for (int i = 0; i < length; i++) {
+        _send_c(bytes[i], 1);
+        checksum += bytes[i];
+    }
+    
+    checksum = 0xff - checksum;
+    
+    _send_c(checksum, 1);
+}
+
 // fills a buffer with a packet
 // when the packet is complete, parses it into the appropriate structure
 void _read() {
     uint8_t b;
-    while (serial_read(b)) {
+    while (serial_read_c(&b)) {
         if (_err > 0 && b == START) {
             // recover from error condition
             _err = 0;
@@ -133,11 +143,12 @@ void _read() {
                     if ((_chk & 0xff) == 0xff) {
                         switch(_api) {
                             case 0x46:
-                                _control.throttle = _bytes_to_double(_buf[0]);
-                                _control.pitch = _bytes_to_double(_buf[4]);
-                                _control.roll = _bytes_to_double(_buf[8]);
-                                _control.yaw = _bytes_to_double(_buf[12]);
-                                _control.flags = _buf[16];
+                                _throttle = _bytes_to_double(&_buf[0]);
+                                _sp.y = _bytes_to_double(&_buf[4]);
+                                _sp.x = _bytes_to_double(&_buf[8]);
+                                _sp.z = _bytes_to_double(&_buf[12]);
+                                _ctrl_flags = _buf[16];
+                                _flags &= 0xFE; // ctrl is fresh
                         }
                     } else {
                         _err = 1;

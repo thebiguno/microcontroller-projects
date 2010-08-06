@@ -9,36 +9,38 @@
 void comm_init();
 
 /*
- * Returns > 0 when control is available.
- */
-uint8_t comm_rx_ctrl_available();
-
-/*
  * Receives flight control from the controller.
- * Calling this when comm_rx_ctrl_available() == 0 will return the same values as the previous call.
+ * Returns 0 when the control values are repeat values since the last read.
  */
-void comm_rx_ctrl(control_t *control, uint8_t flags);
+uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags);
 
 /*
- * Returns > 0 when pid tuning is available.
+ * Receives explicit motor controls from the configuration software.
+ * Returns 0 if no motor commands are available.
  */
-uint8_t comm_rx_pid_available();
+uint8_t comm_rx_motor(double cmd[], uint16_t flags);
 
 /*
- * Receives pid tuning values from the controller.
- * Calling this when comm_rx_pid_available() == 0 will return the same values as the previous call.
+ * Receives attitude tuning values from the configuration software.
+ * Returns 0 if no attitude tuning value values were available. 
  */
-void comm_rx_pid(vector_t *p, vector_t *i, vector_t *d);
+uint8_t comm_rx_params(double params[]);
+
+/*
+ * Receives pid tuning values from the configuration software.
+ * Returns 0 if no PID values were available. 
+ */
+uint8_t comm_rx_pid(vector_t p, vector_t i, vector_t d);
 
 /*
  * Sends telemetry to the controller.
  */
-void comm_tx_tm(vector_t vector, double motor_a, double motor_b, double motor_c, double motor_d, uint8_t flags);
+void comm_tx_tm(vector_t vector, double motor[], uint8_t *flags);
 
 /*
  * Sends pid values to the controller.
  */
-void comm_tx_pid(vector_t *p, vector_t *i, vector_t *d);
+void comm_tx_pid(vector_t p, vector_t i, vector_t d);
 
 
 #endif

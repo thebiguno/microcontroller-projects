@@ -11,6 +11,6 @@
 /*
  * Given a throttle percentage (0 .. 1) and vector of percentage adjustments for each axis (-1 .. 1), calculate the motor power percentage (0..1)
  */
-void motor_cmd(double *result, double throttle, vector_t adj);
+void motor_percent(double throttle, vector_t mv, double result[]);
 
 #endif

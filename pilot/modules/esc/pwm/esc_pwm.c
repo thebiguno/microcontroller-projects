@@ -32,3 +32,7 @@ void esc_set(uint8_t armed, double speed[]) {
     }
     */
 }
+
+void esc_calibrate() {
+
+}

@@ -21,7 +21,7 @@ void attitude_init(vector_t gyro, vector_t accel) {
     r_angle.y = 0.03;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, double dt) {
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     _attitude(gyro.x, accel.x, &angle.x, &bias.x, &p00.x, &p01.x, &p10.x, &p11.x, q_gyro.x, q_angle.x, r_angle.x, dt);
     _attitude(gyro.y, accel.y, &angle.y, &bias.y, &p00.y, &p01.y, &p10.y, &p11.y, q_gyro.y, q_angle.y, r_angle.y, dt);
     return angle;

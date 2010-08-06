@@ -8,15 +8,21 @@
 
 #define MAGIC 57.2957795 // what is this constant??
 
-static vector_t previous_attitude;
+static vector_t pv;
 
 void attitude_init(vector_t gyro, vector_t accel) {
     ;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, double dt) {
+void attitude_reset() {
+    pv.x = 0;
+    pv.y = 0;
+    pv.z = 0;
+}
+
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     vector_t result;
-    result.x = (filterTerm0 * (previous_attitude.x + (gyro.x * dt)) + filterTerm1 * (accel.x)) * MAGIC;
-    result.y = (filterTerm0 * (previous_attitude.y + (gyro.y * dt)) + filterTerm1 * (accel.y)) * MAGIC;
+    result.x = (filterTerm0 * (pv.x + (gyro.x * dt)) + filterTerm1 * (accel.x)) * MAGIC;
+    result.y = (filterTerm0 * (pv.y + (gyro.y * dt)) + filterTerm1 * (accel.y)) * MAGIC;
     return result;
 }
