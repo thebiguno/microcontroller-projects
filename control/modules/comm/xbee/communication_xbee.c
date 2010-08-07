@@ -42,34 +42,7 @@ void _double_to_bytes(double value, uint8_t *buffer){
 	buffer[0] = converter.u & 0xFF;
 }
 
-void comm_tx_ctrl(control_t control, uint8_t mode){
-	uint8_t packet[18];
-    packet[0] = 0x46;
-	_double_to_bytes(control.throttle, result[1]);
-    _double_to_bytes(control.pitch, result[5]);
-    _double_to_bytes(control.roll, result[9]);
-    _double_to_bytes(control.yaw, result[13]);
-    packet[17] = control.flags;
-    _send(packet, 18);
-}
-
-void _send(uint8_t *bytes, uint8_t length) {
-    _send(START_BYTE, false);
-    _send(length, true);
-    
-    uint8_t checksum = 0;
-    
-    for (int i = 0; i < length; i++) {
-        _send(*bytes[i], true);
-        checksum += *bytes[i];
-    }
-    
-    checksum = 0xff - checksum;
-    
-    _send(checksum, true);
-}
-
-void _send(uint8_t b, bool escape) {
+void _send_byte(uint8_t b, uint8_t escape) {
     if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
         serial_write_c(ESCAPE);
         serial_write_c(b ^ 0x20);
@@ -77,3 +50,31 @@ void _send(uint8_t b, bool escape) {
         serial_write_c(b);
     }
 }
+
+void _send_bytes(uint8_t *bytes, uint8_t length) {
+    _send_byte(START, 0);
+    _send_byte(length, 1);
+    
+    uint8_t checksum = 0;
+    
+    for (int i = 0; i < length; i++) {
+        _send_byte(bytes[i], 1);
+        checksum += bytes[i];
+    }
+    
+    checksum = 0xff - checksum;
+    
+    _send_byte(checksum, 1);
+}
+
+void comm_tx_ctrl(control_t control, uint8_t mode){
+	uint8_t packet[18];
+    packet[0] = 0x46;
+	_double_to_bytes(control.throttle, &packet[1]);
+    _double_to_bytes(control.roll, &packet[5]);
+    _double_to_bytes(control.pitch, &packet[9]);
+    _double_to_bytes(control.yaw, &packet[13]);
+    packet[17] = control.flags;
+    _send_bytes(packet, 18);
+}
+
