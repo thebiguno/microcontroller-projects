@@ -16,7 +16,7 @@ uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags);
 
 /*
  * Receives explicit motor controls from the configuration software.
- * Returns 0 if no motor commands are available.
+ * Returns 0 if the control values are repeat values since the last read.
  */
 uint8_t comm_rx_motor(double cmd[], uint16_t flags);
 
