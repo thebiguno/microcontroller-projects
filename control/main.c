@@ -4,7 +4,7 @@
 
 int main (void){
 	//Init communication hardware
-	communication_init();
+	comm_init();
 
 	//Init control interface
 	control_init();
