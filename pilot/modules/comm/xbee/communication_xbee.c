@@ -55,6 +55,31 @@ double _bytes_to_double(uint8_t *buffer) {
     return converter.d;
 }
 
+void _send_byte(uint8_t b, uint8_t escape) {
+    if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
+        serial_write_c(ESCAPE);
+        serial_write_c(b ^ 0x20);
+    } else {
+        serial_write_c(b);
+    }
+}
+
+void _send_bytes(uint8_t *bytes, uint8_t length) {
+    _send_byte(START, 0);
+    _send_byte(length, 1);
+    
+    uint8_t checksum = 0;
+    
+    for (int i = 0; i < length; i++) {
+        _send_byte(bytes[i], 1);
+        checksum += bytes[i];
+    }
+    
+    checksum = 0xff - checksum;
+    
+    _send_byte(checksum, 1);
+}
+
 uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
     if ((_flags & 0x01) == 0x01) {
         *throttle = _throttle;
@@ -68,36 +93,11 @@ uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
     return 0;
 }
 
-void _send_c(uint8_t b, uint8_t escape) {
-    if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
-        serial_write_c(ESCAPE);
-        serial_write_c(b ^ 0x20);
-    } else {
-        serial_write_c(b);
-    }
-}
-
-void _send_s(uint8_t *bytes, uint8_t length) {
-    _send_c(START, 0);
-    _send_c(length, 1);
-    
-    uint8_t checksum = 0;
-    
-    for (int i = 0; i < length; i++) {
-        _send_c(bytes[i], 1);
-        checksum += bytes[i];
-    }
-    
-    checksum = 0xff - checksum;
-    
-    _send_c(checksum, 1);
-}
-
 // fills a buffer with a packet
 // when the packet is complete, parses it into the appropriate structure
 void _read() {
     uint8_t b;
-    while (serial_read_c(&b)) {
+    while (serial_available() && serial_read_c((char *) &b)) {
         if (_err > 0 && b == START) {
             // recover from error condition
             _err = 0;
@@ -144,8 +144,8 @@ void _read() {
                         switch(_api) {
                             case 0x46:
                                 _throttle = _bytes_to_double(&_buf[0]);
-                                _sp.y = _bytes_to_double(&_buf[4]);
-                                _sp.x = _bytes_to_double(&_buf[8]);
+                                _sp.x = _bytes_to_double(&_buf[4]);
+                                _sp.y = _bytes_to_double(&_buf[8]);
                                 _sp.z = _bytes_to_double(&_buf[12]);
                                 _ctrl_flags = _buf[16];
                                 _flags &= 0xFE; // ctrl is fresh
