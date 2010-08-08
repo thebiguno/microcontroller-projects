@@ -7,9 +7,9 @@ frame start	1 byte	(0x7e)
 length		1 byte	(0x11)
 cmd		1 byte	(0x46)
 throttle	4 bytes
-pitch		4 bytes
-roll		4 bytes
-yaw		4 bytes
+roll (x)	4 bytes
+pitch (y)	4 bytes
+yaw (z)		4 bytes
 flags		1 byte
 checksum	1 byte
 
@@ -42,6 +42,8 @@ flags are:
 9		RTS telemetry
 10		(reserved for future RTS raw sensor data)
 15		write EEPROM
+
+// DECISION: if the PC always sends flight in addition to motor, then only one byte of flags would be required
 
 PID
 frame start	1 byte	(0x7e)
@@ -88,9 +90,9 @@ TELEMETRY
 frame start	1 byte	(0x7e)
 length		1 byte	(0x1e)
 cmd		1 byte	(0x54)
-pitch		4 bytes
-roll		4 bytes
-yaw		4 bytes
+roll (x)	4 bytes
+pitch (y)	4 bytes
+yaw (z)		4 bytes
 motor F		4 bytes
 motor B		4 bytes
 motor L		4 bytes
@@ -149,3 +151,4 @@ a buffer for the control loop to accumulate outgoing data into
 a mailbox slot for each type of incoming message
 when a new message is fully received, it is placed into the appropriate slot
 the control loop reads values from the slot -- there is no harm in duplicate reads
+

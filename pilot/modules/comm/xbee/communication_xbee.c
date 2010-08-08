@@ -33,6 +33,8 @@ uint8_t _flags;     // 0: ctrl stale
 uint8_t _ctrl_flags;
 vector_t _sp;
 double _throttle;
+double _motor[4];
+uint8_t _motor_flags;
 
 
 void comm_init(){
@@ -149,6 +151,15 @@ void _read() {
                                 _sp.z = _bytes_to_double(&_buf[12]);
                                 _ctrl_flags = _buf[16];
                                 _flags &= 0xFE; // ctrl is fresh
+                            case 0x43:
+                                motor[0] = _bytes_to_double(&buf[0]);
+                                motor[1] = _bytes_to_double(&buf[4]);
+                                motor[2] = _bytes_to_double(&buf[8]);
+                                motor[3] = _bytes_to_double(&buf[12]);
+                                _motor_flags = _buf[16];
+                                _motor_flags << 8;
+                                _motor_flags |= _buf[17];
+                                _flags &= 0xFD; // motor is fresh
                         }
                     } else {
                         _err = 1;

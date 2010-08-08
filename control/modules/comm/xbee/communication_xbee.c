@@ -67,14 +67,14 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(checksum, 1);
 }
 
-void comm_tx_ctrl(control_t control, uint8_t mode){
+void comm_tx_ctrl(control_t control, uint8_t flags){
 	uint8_t packet[18];
     packet[0] = 0x46;
 	_double_to_bytes(control.throttle, &packet[1]);
     _double_to_bytes(control.roll, &packet[5]);
     _double_to_bytes(control.pitch, &packet[9]);
     _double_to_bytes(control.yaw, &packet[13]);
-    packet[17] = control.flags;
+    packet[17] = flags;
     _send_bytes(packet, 18);
 }
 
