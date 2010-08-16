@@ -61,3 +61,7 @@ void serial_write_c(char data){
 	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = data;
 }
+
+uint8_t serial_available() {
+    return UCSR0A & _BV(RXC0);
+}

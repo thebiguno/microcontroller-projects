@@ -21,7 +21,7 @@ void serial_init(uint16_t baud, uint8_t data, uint8_t parity, uint8_t stopBits);
 void serial_init_b(uint16_t baud);
 
 /*
- * Reads a single character from the serial port.  Pass in a pointer to a bute, and
+ * Reads a single character from the serial port.  Pass in a pointer to a byte, and
  * the function will write a single byte to that pointer.  If the read was successful,
  * return 1; otherwise return 0.  Implementations MAY block until a byte is received.
  */
@@ -44,5 +44,10 @@ void serial_write_s(char *data);
  * write is completed.
  */
 void serial_write_c(char data);
+
+/*
+ * Checks if any bytes are available for read.  Returns 0 when no bytes are available.  Implementations MUST NOT block.
+ */
+uint8_t serial_available();
 
 #endif

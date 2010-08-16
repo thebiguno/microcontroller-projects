@@ -127,6 +127,9 @@ void serial_write_c(char data){
 	UCSR0B |= _BV(UDRIE0);
 }
 
+uint8_t serial_available() {
+    return UCSR0A & _BV(RXC0);
+}
 
 //Note: These defines are only a small subset of those which are available (and are
 // pretty much only the chips which I personally use).  You can add more chips to 
@@ -169,3 +172,4 @@ ISR(USART0_UDRE_vect){
 		UCSR0B &= ~_BV(UDRIE0);
 	}
 }
+
