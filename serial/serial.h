@@ -3,8 +3,6 @@
 
 #include <avr/io.h>
 
-test();
-
 /*
  * Initializes the USART with the given parameters.  Valid arguments include:
  *  baud: Any valid baud rate based on hardware support
