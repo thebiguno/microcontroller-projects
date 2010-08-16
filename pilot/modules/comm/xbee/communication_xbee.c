@@ -27,7 +27,8 @@ uint8_t _esc;       // escape byte seen, unescape next byte
 uint8_t _err;       // error condition, ignore bytes until next frame start byte
 uint8_t _buf[MAX_SIZE];
 
-uint8_t _flags;     // 0: ctrl stale
+uint8_t _ctrl_ct = 0;
+uint8_t _motor_ct = 0;
 
 // cached ctrl values
 uint8_t _ctrl_flags;
@@ -83,16 +84,27 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
 }
 
 uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
-    if ((_flags & 0x01) == 0x01) {
+    if (_flags & 0x01) {
+        // only copy values if the data has changed
         *throttle = _throttle;
         sp->x = _sp.x;
         sp->y = _sp.y;
         sp->z = _sp.z;
         *flags = _ctrl_flags;
-        _flags |= 0x01;     // ctrl is stale
-        return 1;
     }
-    return 0;
+    return _ctrl_ct++;
+}
+
+uint8_t comm_rx_motor(double[] cmd, uint8_t *flags) {
+    if (_flags & 0x02) {
+        // only copy values if the data has changed
+        cmd[0] = _motor[0];
+        cmd[1] = _motor[1];
+        cmd[2] = _motor[2];
+        cmd[3] = _motor[3];
+        *flags = _motor_flags;
+    }
+    return _motor_ct++;
 }
 
 // fills a buffer with a packet
@@ -150,16 +162,14 @@ void _read() {
                                 _sp.y = _bytes_to_double(&_buf[8]);
                                 _sp.z = _bytes_to_double(&_buf[12]);
                                 _ctrl_flags = _buf[16];
-                                _flags &= 0xFE; // ctrl is fresh
+                                _ctrl_ct = 0;
                             case 0x43:
                                 motor[0] = _bytes_to_double(&buf[0]);
                                 motor[1] = _bytes_to_double(&buf[4]);
                                 motor[2] = _bytes_to_double(&buf[8]);
                                 motor[3] = _bytes_to_double(&buf[12]);
                                 _motor_flags = _buf[16];
-                                _motor_flags << 8;
-                                _motor_flags |= _buf[17];
-                                _flags &= 0xFD; // motor is fresh
+                                _motor_ct = 0;
                         }
                     } else {
                         _err = 1;

@@ -29,21 +29,15 @@ motor F		4 bytes
 motor B		4 bytes
 motor L		4 bytes
 motor R		4 bytes
-flags		2 bytes
+flags		1 byte
 checksum	1 byte
 
 flags are:
-0		armed
-1		reset attitude
-2		calibrate gyros
-3		calibrate accelerometers
-4		calibrate escs
-8		RTS pid
-9		RTS telemetry
-10		(reserved for future RTS raw sensor data)
-15		write EEPROM
-
-// DECISION: if the PC always sends flight in addition to motor, then only one byte of flags would be required
+0		calibrate escs
+1		RTS pid
+2		RTS telemetry
+3		(reserved for future RTS raw sensor data)
+7		write EEPROM
 
 PID
 frame start	1 byte	(0x7e)

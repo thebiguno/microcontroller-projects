@@ -10,13 +10,13 @@ void comm_init();
 
 /*
  * Receives flight control from the controller.
- * Returns 0 when the control values are repeat values since the last read.
+ * Returns the repeat count of the message, or 0 for a fresh message.
  */
 uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags);
 
 /*
  * Receives explicit motor controls from the configuration software.
- * Returns 0 if the control values are repeat values since the last read.
+ * Returns the repeat count of the message, or 0 for a fresh message.
  */
 uint8_t comm_rx_motor(double cmd[], uint16_t flags);
 
