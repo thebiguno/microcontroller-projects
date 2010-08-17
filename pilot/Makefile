@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include ../build/variables.mk
 
 PROJECT=pilot
 MMCU=atmega168
@@ -20,4 +20,4 @@ include modules/motor/module.mk
 include modules/persist/module.mk
 include modules/pid/module.mk
 
-include ../../build/targets.mk
+include ../build/targets.mk
