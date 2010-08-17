@@ -1,4 +1,4 @@
-include ../../../variables.mk
+include ../../variables.mk
 
 PROJECT=Skeleton
 MMCU=attiny13
@@ -10,4 +10,4 @@ SOURCES=main.c
 
 AVRDUDE_PROGRAMMER=usbtiny
 
-include ../../../targets.mk
+include ../../targets.mk

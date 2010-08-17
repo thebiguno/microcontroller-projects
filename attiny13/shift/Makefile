@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../build/variables.mk
 
 PROJECT=Blinkenlights
 MMCU=attiny13
@@ -10,5 +10,5 @@ SOURCES=main.c lib/shift/shift.c
 
 AVRDUDE_PROGRAMMER=usbtiny
 
-include ../../../build/targets.mk
+include ../../build/targets.mk
 

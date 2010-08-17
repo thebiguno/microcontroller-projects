@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../build/variables.mk
 
 PROJECT=Oscilloscope
 MMCU=atmega644
@@ -10,5 +10,5 @@ SOURCES=main.c lib/timer/timer.c lib/serial/serial.c lib/sd-card/sd_raw.c
 
 AVRDUDE_PROGRAMMER=usbtiny
 
-include ../../../build/targets.mk
+include ../../build/targets.mk
 
