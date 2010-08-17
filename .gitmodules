@@ -1,6 +1,3 @@
-[submodule "control/lib"]
-	path = control/lib
-	url = ssh://digitalcave.ca/home/git/avr/lib.git
-[submodule "pilot/lib"]
-	path = pilot/lib
-	url = ssh://digitalcave.ca/home/git/avr/lib.git
+[submodule "lib"]
+	path = lib
+	url = ssh://git@digitalcave.ca/~/avr/lib.git
