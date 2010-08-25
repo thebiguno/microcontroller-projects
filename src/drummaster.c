@@ -60,19 +60,21 @@
 #define DEBUG
 
 //Analog Pins offset and count, used for setting ADMUX register
-#define A_OFFSET 0
-#define A_COUNT 4
+//#define A_OFFSET 0
+//#define A_COUNT 4
 
 //Trigger Pins offset; count is the same as Analog
-#define T_OFFSET 2
+//#define T_OFFSET 2
+#define READ_TRIGGER(offset) (PIND & _BV(PIND2 + offset) >> (PIND2 + offset))
 
 //Digital Pins offset; count is 1.
-#define D_OFFSET 6
+//#define D_OFFSET 6
+#define READ_DIGITAL() (PIND & _BV(PIND6) >> PIND6)
 
 //Multiplexer selector pins.	S2 is MSB; S0 is LSB.
-#define S0 10
-#define S1 9
-#define S2 8
+//#define S0 10
+//#define S1 9
+//#define S2 8
 
 //How long to wait after selecting a new sensor in a bank (us).
 //#define SELECTION_DELAY 2
@@ -213,6 +215,10 @@ int get_velocity(int pin){
 	return max_val;
 }
 
+void send_data(uint8_t channel, uint16_t data){
+
+}
+
 
 //Setup method is called once at the beginning of execution.
 void setup() {
@@ -236,14 +242,11 @@ void setup() {
 
 	//Initialize array counters
 	for (i = 0; i < BUFFER_SIZE; i++){
-		//Initialize data buffer to all -1's
-		data_buffer[i] = -1; //-1 is the marker for 'no data', since it is possible that the data be '0'. 
-
 		//Initialize the active consecutive reads counter
 		consecutive_reads[i] = 0;
 
-		//Reset the active channels to all false
-		active_channel[i] = false;
+		//Reset the active channels to all 0
+		active_channel[i] = 0;
 	}
 }
 
@@ -251,12 +254,12 @@ void setup() {
 void loop() {
 	//We cache the current time to avoid needing to call timer_millis() each time throughout the loop.
 	time = timer_millis();
-	read_data_this_loop = false;
+	read_data_this_loop = 0;
 
 	//If ACTIVE_CHANNEL_MIN_POLL_INTERVAL ms have passed since the last time we read active channels,
 	// go ahead and read them now.
 	if (time - last_read_active_channels > MIN_ACTIVE_CHANNEL_POLL_INTERVAL){
-		read_active_channels = true;
+		read_active_channels = 1;
 		last_read_active_channels = time;
 	}
 
@@ -270,14 +273,14 @@ void loop() {
 		set_mux_selectors(i);
 
 		//Read the analog pins
-		for (j = 0; j < A_COUNT; j++){ // j == bank
+		for (j = 0; j < 4; j++){ // j == bank
 			s = get_channel(j, i);			
 
 			//If the channel is defined to be 'active' (i.e., connected to a device which always
 			// reports its state, such as a hi hat pedal, rather than a device which only reports
 			// state when struck, like a piezo), then we poll less frequently.
 			if (consecutive_reads[s] > MIN_ACTIVE_CHANNEL_POLL_COUNT && !active_channel[s]){
-				active_channel[s] = true;
+				active_channel[s] = 1;
 #ifdef DEBUG
 				serial_write_s("Switching channel ");
 				serial_write_s(itoa(s, temp, 10));
@@ -293,8 +296,8 @@ void loop() {
 			// analog pin.
 //			if (!active_channel[s] || read_active_channels){
 				if (time - last_read_time[s] > ANALOG_BOUNCE_PERIOD){
-					if (digitalRead(j + T_OFFSET) || active_channel[s]){
-						v = get_velocity(j + A_OFFSET);
+					if (READ_TRIGGER(j) || active_channel[s]){
+						v = get_velocity(j);
 						if (!active_channel[s] 
 									|| abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE
 									|| (active_channel[s] && time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL)){
@@ -310,13 +313,16 @@ void loop() {
 							if (start_data_packet_time == -1)
 								start_data_packet_time = time;
 
-							if (data_buffer[s] < v){
-								data_buffer[s] = v;
-								last_value[s] = v;
-							}
+							//Write data
+							send_data(s, v);
+							//TODO
+//							if (data_buffer[s] < v){
+//								data_buffer[s] = v;
+//								last_value[s] = v;
+//							}
 							last_read_time[s] = time;
 							bank_last_read_time[i] = time;
-							read_data_this_loop = true;
+							read_data_this_loop = 1;
 
 							//Only bother incrementing consecutive reads for channels not already defined as active.
 							if (!active_channel[s]){
@@ -327,7 +333,7 @@ void loop() {
 					else {
 #ifdef DEBUG
 						serial_write_s("Resetting consecutive reads for channel ");
-						serial_write_s(s);
+						serial_write_s(itoa(s, temp, 10));
 						serial_write_s("\n");
 #endif
 						consecutive_reads[s] = 0;
@@ -343,14 +349,14 @@ void loop() {
 			//Remember that digital switches in drum master are reversed, since they 
 			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 We invert
 			// all digital readings to make this easy to keep straight.
-			v = !digitalRead(D_OFFSET);
+			v = READ_DIGITAL();
 			if (v != last_value[s]){
 				if (start_data_packet_time == -1)
 					start_data_packet_time = time;
-				data_buffer[s] = v;
+//				data_buffer[s] = v;
 				last_read_time[s] = time;
 				last_value[s] = v;
-				read_data_this_loop = true;
+				read_data_this_loop = 1;
 			}
 		}
 	}
@@ -359,6 +365,7 @@ void loop() {
 	//If there is data in the buffer (start_data_packet_time > -1) and either there
 	// was no data read this last iteration OR the max packet time has expired, 
 	// we will send the data burst
+/*
 	if (start_data_packet_time > -1){
 		if (!read_data_this_loop){
 			loops_without_reading_data++;
@@ -382,31 +389,9 @@ void loop() {
 			send_data_burst();
 		}
 	}
-
+*/
 	//We will read active channels again in ACTIVE_CHANNEL_POLL_INTERVAL ms.
-	read_active_channels = false;
-}
-
-/*
- * Writes all data from the data buffer to the serial port, and finishes with a new line character.
- * Resets everything in the buffer to -1.	 Also resets the loops_without_reading_data counter, and 
- * the start time for the data packet.
- */
-void send_data_burst(){
-	//After all ports / banks have been read, send a data burst.
-	for (i = 0; i < BUFFER_SIZE; i++){
-		if (data_buffer[i] != -1){
-			serial_write_s(i);
-			serial_write_s(":");
-			serial_write_s(data_buffer[i]);
-			serial_write_s(";"); 
-			data_buffer[i] = -1;
-		}
-	}
-	serial_write_s();
-
-	start_data_packet_time = -1;
-	loops_without_reading_data = 0;
+	read_active_channels = 0;
 }
 
 int main (void){
