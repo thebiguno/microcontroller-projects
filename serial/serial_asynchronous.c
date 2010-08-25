@@ -40,9 +40,9 @@ struct ring {
 static struct ring tx_buffer;
 static struct ring rx_buffer;
 
-void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
+void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
 	//Set baud rate
-	unsigned int calculated_baud = (F_CPU / 16 / baud) - 1;
+	uint16_t calculated_baud = (F_CPU / 16 / baud) - 1;
 	UBRR0H = calculated_baud >> 8;
 	UBRR0L = calculated_baud & 0xFF;
 
@@ -77,7 +77,7 @@ void serial_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 #endif
 }
 
-void serial_init_b(uint16_t baud){
+void serial_init_b(uint32_t baud){
 	serial_init(baud, 8, 0, 1);
 }
 
