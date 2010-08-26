@@ -8,4 +8,6 @@ SOURCES=drummaster.c ../lib/serial/serial_asynchronous.c ../lib/analog/analog_sy
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
+CDEFS += -DADC_PRESCALER_MASK=5 -DSERIAL_BUFFER_SIZE=256
+
 include ../build/targets.mk

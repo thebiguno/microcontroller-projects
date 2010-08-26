@@ -4,10 +4,11 @@
  * 
  * At a very high level, Drum Master will listen to a series of sensors (both analog, via piezo
  * transducers, and digital, via grounding pullup resistors), and report the values back to the
- * computer via the serial port.	It does this in packets, after a certain maximum time delay,
- * using a binary protocol consisting of 3 bytes / packet:
+ * computer via the serial port.	Each signal is sent in a packet, using a binary protocol 
+ * consisting of 3 bytes / packet:
  *
- *		<start:4><channel:6><value:10><checksum:4>
+ *		|sssscccc|ccvvvvvv|vvvvkkkk|
+ *      <start:4><channel:6><value:10><checksum:4>
  *
  * Each portion of the packet is described below:
  *		<start> is the 4 bit sequence 0xF.  It is used to signal the start of a packet to synch 
@@ -56,28 +57,12 @@
 #include "../lib/timer/timer.h"
 
 //Send debug signals as well as data.  This will likely make slave software 
-// stop working; only define it when you are debugging via serial console
-#define DEBUG
+// stop working; only define it when you are debugging via serial console.
+// Debug values can be from 1 (little debug data, essentially only ASCII 
+// representation of protocol) to 5 (everything).  Set to 0 or comment out to
+// disable debug, for production use.
+//#define DEBUG 2
 
-//Analog Pins offset and count, used for setting ADMUX register
-//#define A_OFFSET 0
-//#define A_COUNT 4
-
-//Trigger Pins offset; count is the same as Analog
-//#define T_OFFSET 2
-#define READ_TRIGGER(offset) (PIND & _BV(PIND2 + offset) >> (PIND2 + offset))
-
-//Digital Pins offset; count is 1.
-//#define D_OFFSET 6
-#define READ_DIGITAL() (PIND & _BV(PIND6) >> PIND6)
-
-//Multiplexer selector pins.	S2 is MSB; S0 is LSB.
-//#define S0 10
-//#define S1 9
-//#define S2 8
-
-//How long to wait after selecting a new sensor in a bank (us).
-//#define SELECTION_DELAY 2
 
 //How many times to read the input for each hit; this can help to ensure a good reading 
 // is obtained.	 A good default to this is 3; only adjust this if you find you need more
@@ -125,16 +110,12 @@
 
 
 //Temp variables; i and j are iterators for port and bank respectively; s and v are the selector 
-// address (channel) and velocity respectively;	 x is truly a temp variable, and can be used for
-// anything you wish.	 There are no guarantees that it will keep its value for any length of time,
-// so make sure nothing else stores to it before you read your value.
-int i, j, s, v;
-long x;
-
-
-//Have we read any data in the last loop?	 Set to false at the beginning of the loop, and marked as
-// true whenever we read any data.
-uint8_t read_data_this_loop;
+// address (channel) and velocity respectively;	 x and y are truly temp variables, and can be used for
+// anything you wish.	 There are no guarantees that they will keep its value for any length of time,
+// so make sure nothing else stores to them before you read your value.
+uint8_t i, j, s;
+uint16_t v;
+uint64_t x, y;
 
 //Is it time to read active channels?	 Set to true at the beginning of a loop if this is the case, and
 // reset at the end.
@@ -154,21 +135,15 @@ uint8_t active_channel[BUFFER_SIZE];
 // calls to timer_millis().
 uint64_t time;
 
-//When was the last time that each channel was read?	Used for debounce.
+//When was the last time that each channel was read?  Used for debounce.
 uint64_t last_read_time[BUFFER_SIZE];
 //What was the last value read from each channel?
 uint16_t last_value[BUFFER_SIZE];
-//When was each bank last read?
-uint64_t bank_last_read_time[8];
 //When did we last read the active channels?
 uint64_t last_read_active_channels;
 
-//When we first sense something, we mark the time; once MAX_DATA_PACKET_INTERVAL ms
-// have passed (or we have reached the max number of loops without seeing any new data)
-// will we send the data burst.
-uint64_t start_data_packet_time = -1; 
 
-#ifdef DEBUG
+#if DEBUG > 0
 char temp[32];
 #endif
 
@@ -193,29 +168,55 @@ int get_channel(uint8_t bank, uint8_t port){
  * Reads the input a number of times, and returns the maximum.	The number 
  * of times to read the input is defined by ANALOG_SAMPLES
  */
-int get_velocity(int pin){
-#ifdef DEBUG
+int get_velocity(uint8_t pin){
+#if DEBUG > 4
 	x = timer_millis(); 
 #endif
 
 	int max_val = 0;
-	for (int t = 0; t < ANALOG_SAMPLES; t++){
+	for (uint8_t t = 0; t < ANALOG_SAMPLES; t++){
 		uint16_t val = analog_read_p(pin);
 		if (val > max_val) max_val = val;
 	}
-#ifdef DEBUG
+#if DEBUG > 4
+	y = timer_millis();
 	serial_write_s("Read ");
 	serial_write_s(itoa(ANALOG_SAMPLES, temp, 10));
 	serial_write_s(" samples from pin ");
 	serial_write_s(itoa(pin, temp, 10));
 	serial_write_s(" in ");
-	serial_write_s(itoa(timer_millis() - x, temp, 10));
-	serial_write_s("ms\n");
+	serial_write_s(itoa(y - x, temp, 10));
+	serial_write_s("ms\n\r");
 #endif
 	return max_val;
 }
 
 void send_data(uint8_t channel, uint16_t data){
+#if DEBUG == 0
+	uint8_t packet;
+	uint8_t checksum = 0x0;
+	
+	packet = 0xF0 | ((channel >> 2) & 0xF);
+	checksum ^= packet >> 4;
+	checksum ^= packet & 0xF;
+	serial_write_c(packet);
+
+	packet = ((channel & 0x3) << 6) | ((data >> 4) & 0x3F);
+	checksum ^= packet >> 4;
+	checksum ^= packet & 0xF;
+	serial_write_c(packet);
+	
+	packet = ((data & 0xF) << 4);
+	checksum ^= packet >> 4;
+	packet |= checksum & 0xF;
+	serial_write_c(packet);
+#else
+	serial_write_s("Data: channel ");
+	serial_write_s(itoa(channel, temp, 10));
+	serial_write_s(", value");
+	serial_write_s(itoa(data, temp, 10));
+	serial_write_s("\n\r");
+#endif
 
 }
 
@@ -230,7 +231,11 @@ void setup() {
 	apins[3] = 3;
 	analog_init(apins, 4);
 	
-	serial_init(115200, 8, 0, 1);
+#if DEBUG >= 1
+	serial_init(9600, 8, 0, 1);
+#else 
+	serial_init(57600, 8, 0, 1);
+#endif
 	
 	timer_init();
 
@@ -254,7 +259,6 @@ void setup() {
 void loop() {
 	//We cache the current time to avoid needing to call timer_millis() each time throughout the loop.
 	time = timer_millis();
-	read_data_this_loop = 0;
 
 	//If ACTIVE_CHANNEL_MIN_POLL_INTERVAL ms have passed since the last time we read active channels,
 	// go ahead and read them now.
@@ -281,10 +285,10 @@ void loop() {
 			// state when struck, like a piezo), then we poll less frequently.
 			if (consecutive_reads[s] > MIN_ACTIVE_CHANNEL_POLL_COUNT && !active_channel[s]){
 				active_channel[s] = 1;
-#ifdef DEBUG
+#if DEBUG >= 2
 				serial_write_s("Switching channel ");
 				serial_write_s(itoa(s, temp, 10));
-				serial_write_s(" to be 'active'\n");
+				serial_write_s(" to be 'active'\n\r");
 #endif
 			}
 
@@ -296,33 +300,36 @@ void loop() {
 			// analog pin.
 //			if (!active_channel[s] || read_active_channels){
 				if (time - last_read_time[s] > ANALOG_BOUNCE_PERIOD){
-					if (READ_TRIGGER(j) || active_channel[s]){
+					if ((PIND & _BV(PIND2 + j)) || active_channel[s]){
 						v = get_velocity(j);
 						if (!active_channel[s] 
 									|| abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE
 									|| (active_channel[s] && time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL)){
-#ifdef DEBUG
+#if DEBUG >= 2
 							if (active_channel[s]){
-								serial_write_s("Large change of value; old value is ");
-								serial_write_s(itoa(last_value[s], temp, 10));
-								serial_write_s("; new value is ");
-								serial_write_s(itoa(v, temp, 10));
-								serial_write_s("\n");
+								if (abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE){
+									serial_write_s("Large change of value for channel ");
+									serial_write_s(itoa(s, temp, 10));
+									serial_write_s("; old value is ");
+									serial_write_s(itoa(last_value[s], temp, 10));
+									serial_write_s("; new value is ");
+									serial_write_s(itoa(v, temp, 10));
+									serial_write_s("\n\r");
+								}
+								if (time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL){
+									serial_write_s("Timeout for channel ");
+									serial_write_s(itoa(s, temp, 10));
+									serial_write_s("; resending current value of ");
+									serial_write_s(itoa(v, temp, 10));
+									serial_write_s("\n\r");
+								}
 							} 
 #endif
-							if (start_data_packet_time == -1)
-								start_data_packet_time = time;
-
 							//Write data
 							send_data(s, v);
-							//TODO
-//							if (data_buffer[s] < v){
-//								data_buffer[s] = v;
-//								last_value[s] = v;
-//							}
+
 							last_read_time[s] = time;
-							bank_last_read_time[i] = time;
-							read_data_this_loop = 1;
+							last_value[s] = v;
 
 							//Only bother incrementing consecutive reads for channels not already defined as active.
 							if (!active_channel[s]){
@@ -331,10 +338,10 @@ void loop() {
 						}
 					}
 					else {
-#ifdef DEBUG
+#if DEBUG >= 3
 						serial_write_s("Resetting consecutive reads for channel ");
 						serial_write_s(itoa(s, temp, 10));
-						serial_write_s("\n");
+						serial_write_s("\n\r");
 #endif
 						consecutive_reads[s] = 0;
 					}	 
@@ -349,47 +356,16 @@ void loop() {
 			//Remember that digital switches in drum master are reversed, since they 
 			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 We invert
 			// all digital readings to make this easy to keep straight.
-			v = READ_DIGITAL();
+			v = (PIND & _BV(PIND6)) >> PIND6;
 			if (v != last_value[s]){
-				if (start_data_packet_time == -1)
-					start_data_packet_time = time;
-//				data_buffer[s] = v;
+				send_data(s, v);
+				
 				last_read_time[s] = time;
 				last_value[s] = v;
-				read_data_this_loop = 1;
 			}
 		}
 	}
 
-
-	//If there is data in the buffer (start_data_packet_time > -1) and either there
-	// was no data read this last iteration OR the max packet time has expired, 
-	// we will send the data burst
-/*
-	if (start_data_packet_time > -1){
-		if (!read_data_this_loop){
-			loops_without_reading_data++;
-#ifdef DEBUG
-			serial_write_s("loops without reading data:");
-			serial_write_s(itoa(loops_without_reading_data, temp, 10));
-			serial_write_s("\n");
-#endif
-		}
-		else {
-			loops_without_reading_data = 0; 
-		}
-
-		if (loops_without_reading_data > MAX_LOOPS_WITHOUT_DATA 
-			|| start_data_packet_time + MAX_DATA_PACKET_INTERVAL < time){
-#ifdef DEBUG
-			serial_write_s("Sending data burst ");
-			serial_write_s(itoa(time - start_data_packet_time, temp, 10));
-			serial_write_s("ms after first hit detected\n"); 
-#endif
-			send_data_burst();
-		}
-	}
-*/
 	//We will read active channels again in ACTIVE_CHANNEL_POLL_INTERVAL ms.
 	read_active_channels = 0;
 }
