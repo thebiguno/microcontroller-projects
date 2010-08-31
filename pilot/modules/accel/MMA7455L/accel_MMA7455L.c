@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../accel.h"
 #include "../../../../../lib/i2c/i2c_master.h"
 
@@ -92,35 +93,64 @@ void _accel_do_read(uint8_t *data){
 }
 
 void accel_calibrate(){
-	int16_t total[3] = {0};
 	uint8_t data[3];
-	for (uint8_t i = 0; i < CALIBRATION_SAMPLE_SIZE; i++){
-		_accel_do_read(data);
+	int16_t avg[3];
+	int16_t offset[3];
+	uint8_t loop = 0;
+	int16_t x, y, z;
+	offset[0] = 0; offset[1] = 0; offset[2] = 0;
+	
+	char temp[32];
+	
+	do {
+		// read the axes multiple times and average
+		avg[0] = 0; avg[1] = 0; avg[2] = 0;
+		for (uint8_t i = 0; i < 64; i++) {
+			_accel_do_read(data);
+			sprintf(temp, "rx=%x, ry=%x, rz=%x\n\r", data[0], data[1], data[2]);
+			serial_write_s(temp);
+            avg[0] += (int8_t) data[0];
+            avg[1] += (int8_t) data[1];
+            avg[2] += (int8_t) data[2];
+		}
+		sprintf(temp, "ax=%i, ay=%i, az=%i\n\r", avg[0], avg[1], avg[2]);
+		serial_write_s(temp);
+		// divide by 64
+		x = avg[0] >> 6;
+		y = avg[1] >> 6;
+		z = avg[2] >> 6;
+		offset[0] += (x * -2);
+		offset[1] += (y * -2);
+		offset[2] += ((64 - z) * 2);
 		
-		total[0] += (int8_t) data[0];
-		total[1] += (int8_t) data[1];
-		total[2] += (int8_t) data[2];
-	}
-
-	//Each offset value is calculated as (DESIRED_VALUE - ACTUAL_VALUE) * MULT_FACTOR
-	// where DESIRED_VALUE is the theoretical reading (assuming the device is flat,
-	// X and Y are 0x00 and Z is 0x3F).  Actual value is the average of a number of
-	// readings (to eliminate spurious results), and the multiplication factor is
-	// 2 (or possibly a 'bit more' -- see Freescale Application Note AN3745).
-	//Send the calibration data, starting at register 0x10
-	//TODO: This calibration routine needs to be improved.  First, we currently have
-	// no allowance for negative values.  Second, it is recommended in AN3745 to
-	// use an iterative process to find the actual values, as the first time around
-	// may not be completely accurate.
-	message[0] = ADDRESS << 1 | I2C_WRITE;
-	message[1] = 0x10;
-	message[2] = 0x00; //((0x00 - (total[0] / CALIBRATION_SAMPLE_SIZE)) * 2);
-	message[3] = 0x00;
-	message[4] = 0x00; //((0x00 - (total[1] / CALIBRATION_SAMPLE_SIZE)) * 2);
-	message[5] = 0x00;
-	message[6] = 0x00; //((0x3F - (total[2] / CALIBRATION_SAMPLE_SIZE)) * 3);
-	message[7] = 0x00;
-	i2c_start_transceiver_with_data(message, 8);
+		sprintf(temp, "ox=%i, oy=%i, oz=%i\n\r", offset[0], offset[1], offset[2]);
+		serial_write_s(temp);
+		
+		// write compensation values into offset drift register ($10-$15)
+		message[0] = ADDRESS << 1 | I2C_WRITE;
+		message[1] = 0x10;
+		message[2] = (uint8_t) offset[0]; // x LSB
+		message[3] = (uint8_t) (offset[0] >> 8);      // x MSB
+		message[4] = (uint8_t) offset[1]; // y LSB
+		message[5] = (uint8_t) (offset[1] >> 8);      // y MSB
+		message[6] = (uint8_t) offset[2]; // z LSB
+		message[7] = (uint8_t) (offset[2] >> 8);      // z MSB
+		i2c_start_transceiver_with_data(message, 8);
+		
+		// remeasure the values
+		avg[0] = 0; avg[1] = 0; avg[2] = 0;
+		for (uint8_t i = 0; i < 64; i++) {
+			_accel_do_read(data);
+            avg[0] += (int8_t) data[0];
+            avg[1] += (int8_t) data[1];
+			avg[2] += (int8_t) data[2];
+		}
+		// divide by 64
+		x = avg[0] >> 6;
+		y = avg[1] >> 6;
+		z = avg[2] >> 6;
+		loop++;
+	} while ( ((abs(x) > 2) || (abs(y) > 2) || (abs(z - 64) > 2)) && (loop < 10));
 
 	//Store calibration bytes to EEPROM
 	uint8_t calibration_data[6];

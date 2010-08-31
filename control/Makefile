@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include ../build/variables.mk
 
 PROJECT=control
 MMCU=atmega168
@@ -12,4 +12,4 @@ SOURCES=main.c
 include modules/comm/module.mk
 include modules/control/module.mk
 
-include ../../build/targets.mk
+include ../build/targets.mk

@@ -1,3 +1,0 @@
-[submodule "lib"]
-	path = lib
-	url = ssh://git@digitalcave.ca/~/avr/lib.git
