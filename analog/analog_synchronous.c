@@ -22,7 +22,7 @@ void analog_init(uint8_t analog_pins[], uint8_t count){
 		DIDR0 |= _BV(pins[i]);
 	}
 
-	//ADC Enable, prescaler = 0x4 (F_CPU / 16)
+	//ADC Enable, prescaler as specified with default of 0x4 (F_CPU / 16)
 	ADCSRA |= _BV(ADEN) | ADC_PRESCALER_MASK;
 
 	//Free running mode (already default, but in case it was set previously)
