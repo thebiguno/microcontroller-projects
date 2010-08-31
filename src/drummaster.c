@@ -160,7 +160,7 @@ void set_mux_selectors(uint8_t s){
  * Convert from a bank / port tuple to single channel number (value from 0 - 39 inclusive)
  * for sending to Drum Slave software.
  */
-int get_channel(uint8_t bank, uint8_t port){
+uint8_t get_channel(uint8_t bank, uint8_t port){
 	return (bank << 3) | port;
 }
 
@@ -168,12 +168,12 @@ int get_channel(uint8_t bank, uint8_t port){
  * Reads the input a number of times, and returns the maximum.	The number 
  * of times to read the input is defined by ANALOG_SAMPLES
  */
-int get_velocity(uint8_t pin){
+uint16_t get_velocity(uint8_t pin){
 #if DEBUG > 4
 	x = timer_millis(); 
 #endif
 
-	int max_val = 0;
+	uint16_t max_val = 0;
 	for (uint8_t t = 0; t < ANALOG_SAMPLES; t++){
 		uint16_t val = analog_read_p(pin);
 		if (val > max_val) max_val = val;
