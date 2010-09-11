@@ -7,8 +7,7 @@
  */
 #define ADDRESS 0x1D
 
-#define AVERAGE_SAMPLE_SIZE 0x10
-#define CALIBRATION_SAMPLE_SIZE 0xF0
+#define AVERAGE_SAMPLE_SIZE 0x8
 
 #define PERSIST_OFFSET 0x00  //The address to store offset calibration data
 
@@ -100,31 +99,42 @@ void accel_calibrate(){
 	int16_t x, y, z;
 	offset[0] = 0; offset[1] = 0; offset[2] = 0;
 	
-	char temp[32];
+	// remeasure the values
+	avg[0] = 0; avg[1] = 0; avg[2] = 0;
+	for (uint8_t i = 0; i < 64; i++) {
+		_accel_do_read(data);
+		avg[0] += (int8_t) data[0];
+		avg[1] += (int8_t) data[1];
+		avg[2] += (int8_t) data[2];
+	}
+	// divide by 64
+	x = avg[0] >> 6;
+	y = avg[1] >> 6;
+	z = avg[2] >> 6;
 	
-	do {
+	//At most, loop for 20 iterations
+	while ( ((abs(x) > 2) || (abs(y) > 2) || (abs(z - 64) > 2)) && (loop < 20)) {
 		// read the axes multiple times and average
 		avg[0] = 0; avg[1] = 0; avg[2] = 0;
 		for (uint8_t i = 0; i < 64; i++) {
 			_accel_do_read(data);
-			sprintf(temp, "rx=%x, ry=%x, rz=%x\n\r", data[0], data[1], data[2]);
-			serial_write_s(temp);
             avg[0] += (int8_t) data[0];
             avg[1] += (int8_t) data[1];
             avg[2] += (int8_t) data[2];
 		}
-		sprintf(temp, "ax=%i, ay=%i, az=%i\n\r", avg[0], avg[1], avg[2]);
-		serial_write_s(temp);
 		// divide by 64
 		x = avg[0] >> 6;
 		y = avg[1] >> 6;
 		z = avg[2] >> 6;
-		offset[0] += (x * -2);
+
+		//Each offset value is calculated as (DESIRED_VALUE - ACTUAL_VALUE) * MULT_FACTOR
+		// where DESIRED_VALUE is the theoretical reading (assuming the device is flat,
+		// X and Y are 0x00 and Z is 0x3F).  Actual value is the average of a number of
+		// readings (to eliminate spurious results), and the multiplication factor is
+		// 2 or possibly a 'bit more'.  See Freescale Application Note AN3745 for details.
+		offset[0] += (x * -2);  //Equivalent to ((0 - x) * 2)
 		offset[1] += (y * -2);
-		offset[2] += ((64 - z) * 2);
-		
-		sprintf(temp, "ox=%i, oy=%i, oz=%i\n\r", offset[0], offset[1], offset[2]);
-		serial_write_s(temp);
+		offset[2] += ((0x3F - z) * 2);
 		
 		// write compensation values into offset drift register ($10-$15)
 		message[0] = ADDRESS << 1 | I2C_WRITE;
@@ -137,20 +147,8 @@ void accel_calibrate(){
 		message[7] = (uint8_t) (offset[2] >> 8);      // z MSB
 		i2c_start_transceiver_with_data(message, 8);
 		
-		// remeasure the values
-		avg[0] = 0; avg[1] = 0; avg[2] = 0;
-		for (uint8_t i = 0; i < 64; i++) {
-			_accel_do_read(data);
-            avg[0] += (int8_t) data[0];
-            avg[1] += (int8_t) data[1];
-			avg[2] += (int8_t) data[2];
-		}
-		// divide by 64
-		x = avg[0] >> 6;
-		y = avg[1] >> 6;
-		z = avg[2] >> 6;
 		loop++;
-	} while ( ((abs(x) > 2) || (abs(y) > 2) || (abs(z - 64) > 2)) && (loop < 10));
+	}
 
 	//Store calibration bytes to EEPROM
 	uint8_t calibration_data[6];
@@ -160,7 +158,7 @@ void accel_calibrate(){
 	calibration_data[3] = message[4];
 	calibration_data[4] = message[6];
 	calibration_data[5] = message[7];
-//	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
+	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
 }
 
 vector_t accel_get() {

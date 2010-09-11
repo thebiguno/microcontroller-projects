@@ -29,7 +29,7 @@ int main (void){
 //		if (v.x != last_v.x || v.y != last_v.y || v.z != last_v.z){
 			last_v = v;
 
-			sprintf(temp, "x=%f, y=%f, z=%f\n\r", v.x, v.y, v.z);
+			sprintf(temp, "x=%+1.2f, y=%+1.2f, z=%+1.2f\n\r", v.x, v.y, v.z);
 			serial_write_s(temp);
 //		}
 	}
