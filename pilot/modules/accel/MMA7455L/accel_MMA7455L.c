@@ -1,5 +1,6 @@
-#include <stdlib.h>
 #include "../accel.h"
+#include <util/delay.h>
+#include <stdlib.h>
 #include "../../../../../lib/i2c/i2c_master.h"
 
 /*
@@ -91,15 +92,8 @@ void _accel_do_read(uint8_t *data){
 	data[2] = message[3];	
 }
 
-void accel_calibrate(){
+void _accel_read_multiple(int16_t avg[3]){
 	uint8_t data[3];
-	int16_t avg[3];
-	int16_t offset[3];
-	uint8_t loop = 0;
-	int16_t x, y, z;
-	offset[0] = 0; offset[1] = 0; offset[2] = 0;
-	
-	// remeasure the values
 	avg[0] = 0; avg[1] = 0; avg[2] = 0;
 	for (uint8_t i = 0; i < 64; i++) {
 		_accel_do_read(data);
@@ -108,33 +102,31 @@ void accel_calibrate(){
 		avg[2] += (int8_t) data[2];
 	}
 	// divide by 64
-	x = avg[0] >> 6;
-	y = avg[1] >> 6;
-	z = avg[2] >> 6;
+	avg[0] = avg[0] >> 6;
+	avg[1] = avg[1] >> 6;
+	avg[2] = avg[2] >> 6;
+}
+
+void accel_calibrate(){
+	int16_t avg[3];
+	int16_t offset[3];
+	uint8_t loop = 0;
+	
+	offset[0] = 0; offset[1] = 0; offset[2] = 0;
+	
+	_accel_read_multiple(avg);
 	
 	//At most, loop for 20 iterations
-	while ( ((abs(x) > 2) || (abs(y) > 2) || (abs(z - 64) > 2)) && (loop < 20)) {
-		// read the axes multiple times and average
-		avg[0] = 0; avg[1] = 0; avg[2] = 0;
-		for (uint8_t i = 0; i < 64; i++) {
-			_accel_do_read(data);
-            avg[0] += (int8_t) data[0];
-            avg[1] += (int8_t) data[1];
-            avg[2] += (int8_t) data[2];
-		}
-		// divide by 64
-		x = avg[0] >> 6;
-		y = avg[1] >> 6;
-		z = avg[2] >> 6;
-
+	while ( ((abs(avg[0]) > 2) || (abs(avg[1]) > 2) || (abs(avg[2] - 64) > 2)) && (loop < 20)) {
+		
 		//Each offset value is calculated as (DESIRED_VALUE - ACTUAL_VALUE) * MULT_FACTOR
 		// where DESIRED_VALUE is the theoretical reading (assuming the device is flat,
 		// X and Y are 0x00 and Z is 0x3F).  Actual value is the average of a number of
 		// readings (to eliminate spurious results), and the multiplication factor is
 		// 2 or possibly a 'bit more'.  See Freescale Application Note AN3745 for details.
-		offset[0] += (x * -2);  //Equivalent to ((0 - x) * 2)
-		offset[1] += (y * -2);
-		offset[2] += ((0x3F - z) * 2);
+		offset[0] += (avg[0] * -2);  //Equivalent to ((0 - x) * 2)
+		offset[1] += (avg[1] * -2);
+		offset[2] += ((0x3F - avg[2]) * 2);
 		
 		// write compensation values into offset drift register ($10-$15)
 		message[0] = ADDRESS << 1 | I2C_WRITE;
@@ -146,6 +138,11 @@ void accel_calibrate(){
 		message[6] = (uint8_t) offset[2]; // z LSB
 		message[7] = (uint8_t) (offset[2] >> 8);      // z MSB
 		i2c_start_transceiver_with_data(message, 8);
+
+		//Give the (async) i2c some time to finish
+		_delay_ms(20); 
+
+		_accel_read_multiple(avg);
 		
 		loop++;
 	}
