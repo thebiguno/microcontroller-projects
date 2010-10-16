@@ -26,6 +26,9 @@
  * For more information, please visit http://drummaster.digitalcave.ca.
  * 
  * Changelog:
+ * 1.2.0.1 - October 15 2010:	-Further bugfixes; now things are working (somewhat decently) with Slave software
+ *								version 2.0.1.1.  Main problem was a driver issue for the MUX selector where the 
+ *								endian-ness of the selector was backwards.
  * 1.2.0.0 - Aug 25 2010:		-Converting to plain AVR code from Arduino, to hopefully see a speedup
  *								in analog reading and serial communication.
  * 1.1.2.0 - Sept 12 2009:		-Fixed a bug with active channels which did not send data if the value
@@ -195,21 +198,27 @@ uint16_t get_velocity(uint8_t pin){
 	return max_val;
 }
 
+/*
+ * Sends data.  Channel is a 6 bit number, between 0 and 39 inclusive.  Data is a 10 bit number.
+ */
 void send_data(uint8_t channel, uint16_t data){
 #if DEBUG == 0
 	uint8_t packet;
 	uint8_t checksum = 0x0;
 	
+	//First packet consists of start bits and the 4 MSB of channel.
 	packet = 0xF0 | ((channel >> 2) & 0xF);
 	checksum ^= packet >> 4;
 	checksum ^= packet & 0xF;
 	serial_write_c(packet);
 
+	//Second packet consists of 2 LSB of channel and 6 MSB of data.
 	packet = ((channel & 0x3) << 6) | ((data >> 4) & 0x3F);
 	checksum ^= packet >> 4;
 	checksum ^= packet & 0xF;
 	serial_write_c(packet);
 	
+	//Third packet consists of 4 LSB of data and checksum.
 	packet = ((data & 0xF) << 4);
 	checksum ^= packet >> 4;
 	packet |= checksum & 0xF;
@@ -219,6 +228,12 @@ void send_data(uint8_t channel, uint16_t data){
 	serial_write_s(itoa(channel, temp, 10));
 	serial_write_s(", value ");
 	serial_write_s(itoa(data, temp, 10));
+	serial_write_s(".  Packets: ");	
+	serial_write_s(itoa(0xF0 | ((channel >> 2) & 0xF), temp, 16));
+	serial_write_s(" ");	
+	serial_write_s(itoa(((channel & 0x3) << 6) | ((data >> 4) & 0x3F), temp, 16));	
+	serial_write_s(" ");	
+	serial_write_s(itoa(((data & 0xF) << 4), temp, 16));	
 	serial_write_s("\n\r");
 #endif
 

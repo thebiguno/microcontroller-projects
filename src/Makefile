@@ -11,3 +11,18 @@ SOURCES=drummaster.c ../lib/serial/serial_asynchronous.c ../lib/analog/analog_sy
 CDEFS += -DADC_PRESCALER_MASK=5 -DSERIAL_BUFFER_SIZE=512
 
 include ../build/targets.mk
+
+dist:
+	mkdir -p drummaster/src
+	mkdir -p drummaster/lib
+	mkdir -p drummaster/build
+	cp drummaster.c drummaster/src
+	cp drummaster.hex drummaster/src
+	cp Makefile drummaster/src
+	cp ../build/* drummaster/build
+	cp -R ../lib/serial drummaster/lib
+	cp -R ../lib/analog drummaster/lib
+	cp -R ../lib/timer drummaster/lib
+	tar -czvf drummaster.tgz drummaster/*
+	rm -rf drummaster
+
