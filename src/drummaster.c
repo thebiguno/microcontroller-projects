@@ -61,7 +61,7 @@
 // Debug values can be from 1 (little debug data, essentially only ASCII 
 // representation of protocol) to 5 (everything).  Set to 0 or comment out to
 // disable debug, for production use.
-//#define DEBUG 2
+//#define DEBUG 5
 
 
 //How many times to read the input for each hit; this can help to ensure a good reading 
@@ -153,7 +153,11 @@ char temp[32];
  */
 void set_mux_selectors(uint8_t s){
 	PORTB &= 0xF8; //Clear bottom three bits
-	PORTB |= (s & 0x7); //Set bits based on s, making sure we don't set more than 3 bits
+	//Set bits based on s, making sure we don't set more than 3 bits.
+	//For PCB layout simplicity, we designed the board such that the MSB is 
+	// PINB0 and LSB is PINB2.  Thus, we need to flip the 3-bit word.
+	s = s & 0x7;
+	PORTB |= ((s & 0x1) << 2) | (s & 0x2) | ((s & 0x4) >> 2);
 }
 
 /*
@@ -213,7 +217,7 @@ void send_data(uint8_t channel, uint16_t data){
 #else
 	serial_write_s("Data: channel ");
 	serial_write_s(itoa(channel, temp, 10));
-	serial_write_s(", value");
+	serial_write_s(", value ");
 	serial_write_s(itoa(data, temp, 10));
 	serial_write_s("\n\r");
 #endif
@@ -278,7 +282,7 @@ void loop() {
 
 		//Read the analog pins
 		for (j = 0; j < 4; j++){ // j == bank
-			s = get_channel(j, i);			
+			s = get_channel(j, i);
 
 			//If the channel is defined to be 'active' (i.e., connected to a device which always
 			// reports its state, such as a hi hat pedal, rather than a device which only reports
@@ -339,9 +343,9 @@ void loop() {
 					}
 					else {
 #if DEBUG >= 3
-						serial_write_s("Resetting consecutive reads for channel ");
-						serial_write_s(itoa(s, temp, 10));
-						serial_write_s("\n\r");
+						//serial_write_s("Resetting consecutive reads for channel ");
+						//serial_write_s(itoa(s, temp, 10));
+						//serial_write_s("\n\r");
 #endif
 						consecutive_reads[s] = 0;
 					}	 
