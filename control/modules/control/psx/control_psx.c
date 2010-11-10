@@ -34,10 +34,10 @@
 
 
 void control_init(){
-	psx_init(&PORTD, &PIND, &DDRD, PORTD6, //Data (Brown)
-			&PORTD, &DDRD, PORTD5, //Clock (Blue)
-			&PORTD, &DDRD, PORTD7, //Command (Orange)
-			&PORTB, &DDRB, PORTB0); //Attention (Yellow)
+	psx_init(&PORTD, PIND6, //Data (Brown)
+			&PORTD, PIND5, //Clock (Blue)
+			&PORTD, PIND7, //Command (Orange)
+			&PORTB, PINB0); //Attention (Yellow)
 
 }
  
@@ -59,23 +59,22 @@ control_t get_control(){
 	uint8_t l2 = psx_button(PSB_L2);
 	uint8_t r1 = psx_button(PSB_R1);
 	uint8_t r2 = psx_button(PSB_R2);
-	
+
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
-		if (l1 && l2) result.yaw = R_YAW * -4;
-		else if (l2) result.yaw = R_YAW * -2;
-		else if (l1) result.yaw = R_YAW * -1;
+		if (l1 && l2) result.yaw = R_YAW * -6;  // -45 degrees
+		else if (l2) result.yaw = R_YAW * -3;   // -22.5 degrees
+		else if (l1) result.yaw = R_YAW * -1;   // -7.5 degrees
 	}
 	else if (!l1 && !l2){
-		if (r1 && r2) result.yaw = R_YAW * 4;
-		else if (r2) result.yaw = R_YAW * 2;
-		else if (r1) result.yaw = R_YAW * 1;	
+		if (r1 && r2) result.yaw = R_YAW * 6;   // 45 degrees
+		else if (r2) result.yaw = R_YAW * 3;    // 22.5 degrees
+		else if (r1) result.yaw = R_YAW * 1;    // 7.5 degrees
 	}
 	
 	//Scale into -1 .. 1 range.  We multiply the entire thing by -1 to invert;
 	// up is more throttle, down is reverse throttle
 	result.throttle = (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
-	
 	return result;
 }
 

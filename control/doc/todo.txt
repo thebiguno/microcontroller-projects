@@ -12,18 +12,18 @@ select
 analog		n/a
 
 top buttons
-L1		-5 deg / sec
-L2		-15 deg / sec
+L1		-7.5 deg / sec
+L2		-22.5 deg / sec
 L1+L2		-45 deg / sec
-R1		+5 deg / sec
-R2		+15 deg / sec
+R1		+7.5 deg / sec
+R2		+22.5 deg / sec
 R1+R2		+45 deg / sec
 
 right buttons
 square		aerobatic / 3d mode (no limits on pitch and roll)
 triangle	sport mode (roll limited to 30 deg, pitch forward limited to 45 deg, no pitch backwards)
-circle		
-ex		normal mode (pitch and roll limited to 5 deg)
+circle		hover mode (roll, pitch, yaw = 0)
+cross		stable mode (pitch and roll limited to 5 deg)
 
 left buttons
 left		
