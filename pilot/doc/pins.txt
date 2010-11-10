@@ -1,22 +1,22 @@
 Pin	Function
 1	Reset
-2	RX
-3	TX
+2	Serial RX
+3	Serial TX
 4
 5
 6
 7	VCC
 8	GND
-9	OSC
-10	OSC
-11	Shift1
-12	Shift2
-13	Shift3
-14	Shift4
-15	Motor1
-16	Motor2
-17	Motor3
-18	Motor4
+9	XTAL OSC
+10	XTAL OSC
+11	LED Shift1
+12	LED Shift2
+13	LED Shift3
+14	LED Shift4
+15	Motor1 ESC
+16	Motor2 ESC
+17	Motor3 ESC
+18	Motor4 ESC
 19	
 20	VCC
 21	AREF (3.3v)
