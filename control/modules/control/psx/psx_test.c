@@ -15,13 +15,14 @@
 char temp[32];
 
 control_t control, last_control;
+uint16_t buttons, last_buttons;
 
 int main (void){
 	//Do setup here
 
 	serial_init(9600, 8, 0, 1);
 
-	init_control_hardware();
+	control_init();
 
 	//Main program loop
 	while (1){
