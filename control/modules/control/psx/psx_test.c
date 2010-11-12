@@ -31,6 +31,7 @@ int main (void){
 
 		
 		control = get_control();
+        buttons = get_buttons(); 
 
 		if (control.pitch != last_control.pitch 
 				|| control.roll != last_control.roll 
@@ -51,6 +52,19 @@ int main (void){
 			serial_write_s(temp);
 			serial_write_s("\n\r");
 		}
+		
+		if (buttons != last_buttons) {
+            last_buttons = buttons;
+            
+            if ((buttons & POWER_ON)) serial_write_s(">");
+            if ((buttons & MODE_STABLE)) serial_write_s("X");
+            if ((buttons & MODE_SPORT)) serial_write_s("O");
+            if ((buttons & MODE_AEROBATIC)) serial_write_s("#");
+            if ((buttons & MODE_HOVER)) serial_write_s("^");
+            serial_write_s("\n\r");
+		}
+		
+		
 
 	}
 }
