@@ -26,5 +26,5 @@ Pin	Arduino		Function
 24	A1	PC1	GyroY ADC	Pitch
 25	A2	PC2	GyroZ ADC	Yaw
 26	A3	PC3	Gyro HP Reset
-27	A4	PC4	I2C
-28	A5	PC5	I2C
+27	A4	PC4	I2C SDA
+28	A5	PC5	I2C SCL
