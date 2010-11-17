@@ -25,10 +25,10 @@ COMMAND
 frame start	1 byte	(0x7e)
 length		1 byte  (0x12)
 cmd			1 byte	(0x43)
-frnt / thrl	4 bytes
-rear / roll	4 bytes
-left / ptch	4 bytes
-rght / yaw	4 bytes
+left / thrl	4 bytes
+frnt / roll	4 bytes
+rght / ptch	4 bytes
+back / yaw	4 bytes
 flags		2 bytes
 checksum	1 byte
 
