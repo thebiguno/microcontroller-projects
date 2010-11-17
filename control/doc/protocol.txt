@@ -5,7 +5,7 @@ CONTROLLER -> PILOT
 FLIGHT
 frame start	1 byte	(0x7e)
 length		1 byte	(0x11)
-cmd		1 byte	(0x46)
+cmd			1 byte	(0x46)
 throttle	4 bytes
 roll (x)	4 bytes
 pitch (y)	4 bytes
@@ -23,21 +23,26 @@ PC -> PILOT
 
 COMMAND
 frame start	1 byte	(0x7e)
-length		1 byte
-cmd		1 byte	(0x43)
-motor F		4 bytes
-motor B		4 bytes
-motor L		4 bytes
-motor R		4 bytes
-flags		1 byte
+length		1 byte  (0x12)
+cmd			1 byte	(0x43)
+frnt / thrl	4 bytes
+rear / roll	4 bytes
+left / ptch	4 bytes
+rght / yaw	4 bytes
+flags		2 bytes
 checksum	1 byte
 
 flags are:
-0		calibrate escs
-1		RTS pid
-2		RTS telemetry
-3		(reserved for future RTS raw sensor data)
-7		write EEPROM
+0		armed
+1		reset attitude
+2		calibrate gyros
+3		calibrate accelerometers
+4		calibrate escs
+8		RTS pid
+9		RTS telemetry
+10		(reserved for future RTS raw sensor data)
+14		mode: 0 = TRPY / 1 = FRLR
+15		write EEPROM
 
 PID
 frame start	1 byte	(0x7e)
@@ -57,7 +62,7 @@ checksum	1 byte
 KALMAN TUNING
 frame start	1 byte	(0x7e)
 length		1 byte	(0x19)
-cmd		1 byte	(0x54)
+cmd			1 byte	(0x54)
 q angle x	4 bytes
 q angle y	4 bytes
 q gyro x	4 bytes
@@ -69,10 +74,10 @@ checksum	1 byte
 COMPLEMENTARY TUNING
 frame start	1 byte	(0x7e)
 length		1 byte	(0x0d)
-cmd		1 byte	(0x54)
-x		4 bytes
-y		4 bytes
-z		4 bytes
+cmd			1 byte	(0x54)
+x			4 bytes
+y			4 bytes
+z			4 bytes
 checksum	1 byte
 
 MHV TUNING
@@ -83,7 +88,7 @@ PILOT -> PC
 TELEMETRY
 frame start	1 byte	(0x7e)
 length		1 byte	(0x1e)
-cmd		1 byte	(0x54)
+cmd			1 byte	(0x54)
 roll (x)	4 bytes
 pitch (y)	4 bytes
 yaw (z)		4 bytes
@@ -103,17 +108,20 @@ flags are:
 PID
 frame start	1 byte	(0x7e)
 length		1 byte	(0x25)
-cmd		1 byte	(0x50)
-p x		4 bytes
-i x		4 bytes
-d x		4 bytes
-p y		4 bytes
-i y		4 bytes
-d y		4 bytes
-p z		4 bytes
-i z		4 bytes
-d z		4 bytes
+cmd			1 byte	(0x50)
+p x			4 bytes
+i x			4 bytes
+d x			4 bytes
+p y			4 bytes
+i y			4 bytes
+d y			4 bytes
+p z			4 bytes
+i z			4 bytes
+d z			4 bytes
 checksum	1 byte
+
+Length
+The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.
 
 Checksum
 To calculate: Not including frame delimiters and length, add all bytes keeping only the lowest 8 bits of the result and subtract from 0xFF.

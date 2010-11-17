@@ -35,7 +35,7 @@ uint8_t _ctrl_flags;
 vector_t _sp;
 double _throttle;
 double _motor[4];
-uint8_t _motor_flags;
+uint16_t _motor_flags;
 
 
 void comm_init(){
@@ -95,7 +95,7 @@ uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
     return _ctrl_ct++;
 }
 
-uint8_t comm_rx_motor(double[] cmd, uint8_t *flags) {
+uint8_t comm_rx_motor(double[] cmd, uint16_t *flags) {
     if (_flags & 0x02) {
         // only copy values if the data has changed
         cmd[0] = _motor[0];
@@ -168,7 +168,10 @@ void _read() {
                                 motor[1] = _bytes_to_double(&buf[4]);
                                 motor[2] = _bytes_to_double(&buf[8]);
                                 motor[3] = _bytes_to_double(&buf[12]);
-                                _motor_flags = _buf[16];
+                                _motor_flags = 0x00;
+                                _motor_flags |= _buf[16];
+                                _motor_flags << 0x08;
+                                _motor_flags |= _buf[17];
                                 _motor_ct = 0;
                         }
                     } else {
