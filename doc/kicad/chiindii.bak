@@ -1,0 +1,711 @@
+EESchema Schematic File Version 2  date Tue 16 Nov 2010 05:29:16 PM PST
+LIBS:power,device,transistors,conn,linear,regul,74xx,cmos4000,adc-dac,memory,xilinx,special,microcontrollers,dsp,microchip,analog_switches,motorola,texas,intel,audio,interface,digital-audio,philips,display,cypress,siliconi,opto,atmel,contrib,valves
+EELAYER 43  0
+EELAYER END
+$Descr User 17000 11000
+Sheet 1 1
+Title "Chiindii (Pilot)"
+Date "17 nov 2010"
+Rev "1"
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Notes Line
+	6950 6350 11650 6350
+Wire Notes Line
+	6950 6350 6950 8650
+Wire Notes Line
+	6950 8650 11650 8650
+Wire Notes Line
+	11650 8650 11650 6350
+Connection ~ 10350 7150
+Wire Wire Line
+	10500 7150 10350 7150
+Wire Wire Line
+	11000 6950 11250 6950
+Wire Wire Line
+	4800 2850 6300 2850
+Wire Wire Line
+	6300 2850 6300 6700
+Wire Wire Line
+	6300 6700 10350 6700
+Wire Wire Line
+	10350 6700 10350 7350
+Wire Wire Line
+	10350 7350 10000 7350
+Wire Notes Line
+	8700 8200 7150 8200
+Wire Notes Line
+	8700 8200 8700 7050
+Wire Notes Line
+	8700 7050 7150 7050
+Wire Notes Line
+	7150 7050 7150 8200
+Wire Wire Line
+	8050 7300 8050 7400
+Wire Wire Line
+	8050 7800 8050 7900
+Wire Wire Line
+	7600 7300 7600 7400
+Wire Wire Line
+	7600 7800 7600 7900
+Connection ~ 9150 7550
+Wire Wire Line
+	9150 8000 9150 7350
+Wire Wire Line
+	9150 7350 9300 7350
+Wire Wire Line
+	9150 7650 9300 7650
+Connection ~ 9050 7250
+Wire Wire Line
+	9050 7750 9300 7750
+Wire Notes Line
+	13450 5200 13450 950 
+Wire Notes Line
+	13450 5200 6700 5200
+Wire Notes Line
+	6700 5200 6700 950 
+Wire Notes Line
+	6700 950  13450 950 
+Wire Wire Line
+	4800 2550 8500 2550
+Wire Wire Line
+	8500 2550 8500 4500
+Wire Wire Line
+	8500 4500 10250 4500
+Wire Wire Line
+	4800 2750 8150 2750
+Wire Wire Line
+	11500 4700 10950 4700
+Wire Notes Line
+	7200 4050 8450 4050
+Wire Notes Line
+	7200 4050 7200 4550
+Wire Notes Line
+	7200 4550 8450 4550
+Wire Notes Line
+	8450 4550 8450 4050
+Wire Wire Line
+	10250 4300 7900 4300
+Wire Wire Line
+	13100 3450 8150 3450
+Wire Wire Line
+	8150 3450 8150 2750
+Wire Wire Line
+	10150 4600 10250 4600
+Wire Wire Line
+	10950 4300 13100 4300
+Wire Wire Line
+	13100 4300 13100 2700
+Wire Wire Line
+	13100 2700 10950 2700
+Wire Wire Line
+	7500 4300 7400 4300
+Wire Wire Line
+	7900 4300 7900 4400
+Wire Wire Line
+	9350 3850 9700 3850
+Wire Wire Line
+	8600 4100 8700 4100
+Connection ~ 11100 4000
+Wire Wire Line
+	11100 4100 10950 4100
+Wire Wire Line
+	9850 4000 10250 4000
+Wire Wire Line
+	11200 4500 10950 4500
+Wire Wire Line
+	10950 4400 11100 4400
+Wire Wire Line
+	11100 4400 11100 4500
+Connection ~ 11100 4500
+Wire Wire Line
+	11200 4000 10950 4000
+Wire Wire Line
+	10950 4200 11100 4200
+Wire Wire Line
+	11100 4200 11100 4000
+Connection ~ 11100 4100
+Wire Wire Line
+	12000 4700 12000 4600
+Wire Wire Line
+	12400 4600 12500 4600
+Wire Wire Line
+	10250 4100 9700 4100
+Wire Wire Line
+	9700 4100 9700 3850
+Wire Wire Line
+	9200 4100 9100 4100
+Wire Wire Line
+	8600 4200 8600 3850
+Wire Wire Line
+	8600 4200 10250 4200
+Connection ~ 8600 4100
+Wire Notes Line
+	13150 2250 11600 2250
+Wire Notes Line
+	13150 2250 13150 1100
+Wire Notes Line
+	13150 1100 11600 1100
+Wire Notes Line
+	11600 1100 11600 2250
+Wire Wire Line
+	12500 1350 12500 1450
+Wire Wire Line
+	8950 2250 8600 2250
+Wire Wire Line
+	8600 2500 8700 2500
+Connection ~ 11100 2400
+Wire Wire Line
+	11100 2500 10950 2500
+Wire Wire Line
+	9850 2400 10250 2400
+Wire Wire Line
+	11200 2900 10950 2900
+Wire Wire Line
+	10950 2800 11100 2800
+Wire Wire Line
+	11100 2800 11100 2900
+Connection ~ 11100 2900
+Wire Wire Line
+	11200 2400 10950 2400
+Wire Wire Line
+	10950 2600 11100 2600
+Wire Wire Line
+	11100 2600 11100 2400
+Connection ~ 11100 2500
+Wire Wire Line
+	10250 2500 9700 2500
+Wire Wire Line
+	9700 2500 9700 2250
+Wire Wire Line
+	9200 2500 9100 2500
+Wire Wire Line
+	8600 2250 8600 2600
+Wire Wire Line
+	8600 2600 10250 2600
+Connection ~ 8600 2500
+Wire Wire Line
+	9700 2250 9350 2250
+Wire Wire Line
+	12500 1850 12500 1950
+Wire Wire Line
+	12050 1350 12050 1450
+Wire Wire Line
+	12050 1850 12050 1950
+Wire Wire Line
+	8600 3850 8950 3850
+Connection ~ 13100 3450
+Wire Wire Line
+	10150 3000 10250 3000
+Wire Wire Line
+	10250 3100 8250 3100
+Wire Wire Line
+	8250 3100 8250 2650
+Wire Wire Line
+	10250 4400 8400 4400
+Wire Wire Line
+	12000 4600 10950 4600
+Wire Notes Line
+	11400 4950 12700 4950
+Wire Notes Line
+	11400 4950 11400 4450
+Wire Notes Line
+	11400 4450 12700 4450
+Wire Notes Line
+	12700 4450 12700 4950
+Wire Wire Line
+	11500 3100 10950 3100
+Wire Wire Line
+	12000 3100 12000 3000
+Wire Wire Line
+	12400 3000 12500 3000
+Wire Wire Line
+	12000 3000 10950 3000
+Wire Notes Line
+	11400 3350 12700 3350
+Wire Notes Line
+	11400 3350 11400 2850
+Wire Notes Line
+	11400 2850 12700 2850
+Wire Notes Line
+	12700 2850 12700 3350
+Wire Wire Line
+	8250 2650 4800 2650
+Wire Wire Line
+	10250 4700 7050 4700
+Wire Wire Line
+	7050 4700 7050 2450
+Wire Wire Line
+	7050 2450 4800 2450
+Wire Wire Line
+	9300 7250 9000 7250
+Wire Wire Line
+	9300 7850 9050 7850
+Wire Wire Line
+	9050 7850 9050 7250
+Connection ~ 9050 7750
+Wire Wire Line
+	9150 7550 9300 7550
+Connection ~ 9150 7650
+Wire Wire Line
+	4800 2950 6200 2950
+Wire Wire Line
+	6200 2950 6200 6800
+Wire Wire Line
+	6200 6800 10250 6800
+Wire Wire Line
+	10250 6800 10250 7250
+Wire Wire Line
+	10250 7250 10000 7250
+Wire Wire Line
+	11250 7150 11000 7150
+Wire Wire Line
+	10500 6950 10250 6950
+Connection ~ 10250 6950
+Wire Notes Line
+	10400 7450 10400 6850
+Wire Notes Line
+	10400 7450 11500 7450
+Wire Notes Line
+	11500 7450 11500 6850
+Wire Notes Line
+	11500 6850 10400 6850
+Text Notes 9750 8300 0    80   ~ 0
+Accelerometer
+Text Notes 10450 7400 0    60   ~ 0
+Pullups for i2c
+$Comp
+L R R?
+U 1 1 4CE32F64
+P 10750 7150
+F 0 "R?" V 10830 7150 50  0000 C CNN
+F 1 "4.7k" V 10750 7150 50  0000 C CNN
+	1    10750 7150
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE32F5E
+P 10750 6950
+F 0 "R?" V 10830 6950 50  0000 C CNN
+F 1 "4.7k" V 10750 6950 50  0000 C CNN
+	1    10750 6950
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32F42
+P 11250 7150
+F 0 "#PWR?" H 11250 7110 30  0001 C CNN
+F 1 "+3.3V" H 11250 7260 30  0000 C CNN
+	1    11250 7150
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32F3E
+P 11250 6950
+F 0 "#PWR?" H 11250 6910 30  0001 C CNN
+F 1 "+3.3V" H 11250 7060 30  0000 C CNN
+	1    11250 6950
+	0    1    1    0   
+$EndComp
+Text Notes 7350 8150 0    40   ~ 0
+place near to accelerometer
+Text Notes 7200 8050 0    60   ~ 0
+Power Supply Filtering
+$Comp
+L C C?
+U 1 1 4CE32EA5
+P 7600 7600
+F 0 "C?" H 7650 7700 50  0000 L CNN
+F 1 "100nF" H 7650 7500 50  0000 L CNN
+	1    7600 7600
+	-1   0    0    1   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32EA4
+P 7600 7300
+F 0 "#PWR?" H 7600 7260 30  0001 C CNN
+F 1 "+3.3V" H 7600 7410 30  0000 C CNN
+	1    7600 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE32EA3
+P 7600 7900
+F 0 "#PWR?" H 7600 7900 30  0001 C CNN
+F 1 "GND" H 7600 7830 30  0001 C CNN
+	1    7600 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE32EA2
+P 8050 7600
+F 0 "C?" H 8100 7700 50  0000 L CNN
+F 1 "10uF" H 8100 7500 50  0000 L CNN
+	1    8050 7600
+	-1   0    0    1   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32EA1
+P 8050 7300
+F 0 "#PWR?" H 8050 7260 30  0001 C CNN
+F 1 "+3.3V" H 8050 7410 30  0000 C CNN
+	1    8050 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE32EA0
+P 8050 7900
+F 0 "#PWR?" H 8050 7900 30  0001 C CNN
+F 1 "GND" H 8050 7830 30  0001 C CNN
+	1    8050 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE32E49
+P 9150 8000
+F 0 "#PWR?" H 9150 8000 30  0001 C CNN
+F 1 "GND" H 9150 7930 30  0001 C CNN
+	1    9150 8000
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32DD1
+P 9000 7250
+F 0 "#PWR?" H 9000 7210 30  0001 C CNN
+F 1 "+3.3V" H 9000 7360 30  0000 C CNN
+	1    9000 7250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L DIL14 P?
+U 1 1 4CE32D76
+P 9650 7550
+F 0 "P?" H 9650 7950 60  0000 C CNN
+F 1 "DIL14" V 9650 7550 50  0000 C CNN
+	1    9650 7550
+	1    0    0    -1  
+$EndComp
+Text Notes 8350 1650 0    80   ~ 0
+Gyroscpopes
+Text Label 5150 2650 0    40   ~ 0
+Z (Yaw) Gyro
+Text Label 5150 2550 0    40   ~ 0
+Y (Pitch) Gyro
+Text Label 5150 2450 0    40   ~ 0
+X (Roll) Gyro
+Text Notes 11650 3300 0    60   ~ 0
+Low Pass Filter
+$Comp
+L GND #PWR?
+U 1 1 4CE32BDA
+P 12500 3000
+F 0 "#PWR?" H 12500 3000 30  0001 C CNN
+F 1 "GND" H 12500 2930 30  0001 C CNN
+	1    12500 3000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE32BD9
+P 12200 3000
+F 0 "C?" H 12250 3100 50  0000 L CNN
+F 1 "2.2nF" H 12250 2900 50  0000 L CNN
+	1    12200 3000
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE32BD8
+P 11750 3100
+F 0 "R?" V 11830 3100 50  0000 C CNN
+F 1 "33k" V 11750 3100 50  0000 C CNN
+	1    11750 3100
+	0    1    1    0   
+$EndComp
+Text Notes 7300 4150 0    60   ~ 0
+Low Pass Filter
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32A15
+P 10150 4600
+F 0 "#PWR?" H 10150 4560 30  0001 C CNN
+F 1 "+3.3V" H 10150 4710 30  0000 C CNN
+	1    10150 4600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32A06
+P 10150 3000
+F 0 "#PWR?" H 10150 2960 30  0001 C CNN
+F 1 "+3.3V" H 10150 3110 30  0000 C CNN
+	1    10150 3000
+	0    -1   -1   0   
+$EndComp
+Text Label 9400 3450 0    40   ~ 0
+Gyro High Pass Reset
+$Comp
+L GND #PWR?
+U 1 1 4CE328CE
+P 7400 4300
+F 0 "#PWR?" H 7400 4300 30  0001 C CNN
+F 1 "GND" H 7400 4230 30  0001 C CNN
+	1    7400 4300
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE328A5
+P 8150 4400
+F 0 "R?" V 8230 4400 50  0000 C CNN
+F 1 "33k" V 8150 4400 50  0000 C CNN
+	1    8150 4400
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE3289F
+P 7700 4300
+F 0 "C?" H 7750 4400 50  0000 L CNN
+F 1 "2.2nF" H 7750 4200 50  0000 L CNN
+	1    7700 4300
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE32825
+P 9150 3850
+F 0 "C?" H 9200 3950 50  0000 L CNN
+F 1 "10nF" H 9200 3750 50  0000 L CNN
+	1    9150 3850
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE32824
+P 9450 4100
+F 0 "R?" V 9530 4100 50  0000 C CNN
+F 1 "10k" V 9450 4100 50  0000 C CNN
+	1    9450 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE32823
+P 8900 4100
+F 0 "C?" H 8950 4200 50  0000 L CNN
+F 1 "470nF" H 8950 4000 50  0000 L CNN
+	1    8900 4100
+	0    1    1    0   
+$EndComp
+Text Notes 11650 4900 0    60   ~ 0
+Low Pass Filter
+$Comp
+L GND #PWR?
+U 1 1 4CE32822
+P 12500 4600
+F 0 "#PWR?" H 12500 4600 30  0001 C CNN
+F 1 "GND" H 12500 4530 30  0001 C CNN
+	1    12500 4600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE32821
+P 12200 4600
+F 0 "C?" H 12250 4700 50  0000 L CNN
+F 1 "2.2nF" H 12250 4500 50  0000 L CNN
+	1    12200 4600
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE32820
+P 11750 4700
+F 0 "R?" V 11830 4700 50  0000 C CNN
+F 1 "33k" V 11750 4700 50  0000 C CNN
+	1    11750 4700
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE3281F
+P 11200 4000
+F 0 "#PWR?" H 11200 3960 30  0001 C CNN
+F 1 "+3.3V" H 11200 4110 30  0000 C CNN
+	1    11200 4000
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE3281E
+P 11200 4500
+F 0 "#PWR?" H 11200 4500 30  0001 C CNN
+F 1 "GND" H 11200 4430 30  0001 C CNN
+	1    11200 4500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE3281D
+P 9850 4000
+F 0 "#PWR?" H 9850 4000 30  0001 C CNN
+F 1 "GND" H 9850 3930 30  0001 C CNN
+	1    9850 4000
+	0    1    1    0   
+$EndComp
+$Comp
+L DIL16 P?
+U 1 1 4CE3281C
+P 10600 4350
+F 0 "P?" H 10600 4800 60  0000 C CNN
+F 1 "LY 530" V 10600 4350 50  0000 C CNN
+	1    10600 4350
+	1    0    0    -1  
+$EndComp
+Text Notes 11900 2200 0    40   ~ 0
+place near to each gyro
+Text Notes 11650 2100 0    60   ~ 0
+Power Supply Filtering
+$Comp
+L C C?
+U 1 1 4CE32744
+P 12050 1650
+F 0 "C?" H 12100 1750 50  0000 L CNN
+F 1 "100nF" H 12100 1550 50  0000 L CNN
+	1    12050 1650
+	-1   0    0    1   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32743
+P 12050 1350
+F 0 "#PWR?" H 12050 1310 30  0001 C CNN
+F 1 "+3.3V" H 12050 1460 30  0000 C CNN
+	1    12050 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE32742
+P 12050 1950
+F 0 "#PWR?" H 12050 1950 30  0001 C CNN
+F 1 "GND" H 12050 1880 30  0001 C CNN
+	1    12050 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE3270A
+P 12500 1650
+F 0 "C?" H 12550 1750 50  0000 L CNN
+F 1 "10uF" H 12550 1550 50  0000 L CNN
+	1    12500 1650
+	-1   0    0    1   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE326FD
+P 12500 1350
+F 0 "#PWR?" H 12500 1310 30  0001 C CNN
+F 1 "+3.3V" H 12500 1460 30  0000 C CNN
+	1    12500 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE326F0
+P 12500 1950
+F 0 "#PWR?" H 12500 1950 30  0001 C CNN
+F 1 "GND" H 12500 1880 30  0001 C CNN
+	1    12500 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE3260C
+P 9150 2250
+F 0 "C?" H 9200 2350 50  0000 L CNN
+F 1 "2.2nF" H 9200 2150 50  0000 L CNN
+	1    9150 2250
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 4CE325EF
+P 9450 2500
+F 0 "R?" V 9530 2500 50  0000 C CNN
+F 1 "33k" V 9450 2500 50  0000 C CNN
+	1    9450 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4CE325DF
+P 8900 2500
+F 0 "C?" H 8950 2600 50  0000 L CNN
+F 1 "2.2nF" H 8950 2400 50  0000 L CNN
+	1    8900 2500
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 4CE32463
+P 11200 2400
+F 0 "#PWR?" H 11200 2360 30  0001 C CNN
+F 1 "+3.3V" H 11200 2510 30  0000 C CNN
+	1    11200 2400
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE32409
+P 11200 2900
+F 0 "#PWR?" H 11200 2900 30  0001 C CNN
+F 1 "GND" H 11200 2830 30  0001 C CNN
+	1    11200 2900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4CE323B4
+P 9850 2400
+F 0 "#PWR?" H 9850 2400 30  0001 C CNN
+F 1 "GND" H 9850 2330 30  0001 C CNN
+	1    9850 2400
+	0    1    1    0   
+$EndComp
+$Comp
+L DIL16 P?
+U 1 1 4CE32323
+P 10600 2750
+F 0 "P?" H 10600 3200 60  0000 C CNN
+F 1 "LY 530" V 10600 2750 50  0000 C CNN
+	1    10600 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L ATMEGA8-P IC?
+U 1 1 4CE32229
+P 3800 3550
+F 0 "IC?" H 3100 4800 50  0000 L BNN
+F 1 "ATMEGA 168" H 4050 2150 50  0000 L BNN
+F 2 "DIL28" H 4300 2075 50  0001 C CNN
+	1    3800 3550
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
