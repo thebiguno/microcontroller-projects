@@ -17,9 +17,9 @@ void attitude_init(vector_t gyro, vector_t accel) {
     k.y = 1;
     k.z = 1;
 
-    filter.x = accel.x
-    filter.y = accel.y
-    filter.z = accel.z
+    filter.x = accel.x;
+    filter.y = accel.y;
+    filter.z = accel.z;
     //account for gyro bias
     int_y1.x = -gyro.x;
     int_y1.y = -gyro.y;
