@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x04
+
 static double gain;
 static double beta;
     
@@ -120,3 +122,16 @@ vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     
     return result;
 }
+
+uint8_t attitude_get_id() {
+	return ATTITUDE_ALGORITHM_ID;
+}
+
+void attitude_get_params(double params[]) {
+
+}
+
+void attitude_set_params(double params[]) {
+
+}
+

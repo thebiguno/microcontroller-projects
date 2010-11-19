@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x02
+
 #define DEG_PT5 = 0.00872664626;
 #define DEG_30 = 1.570796326794897;
 /*
@@ -51,6 +53,18 @@ void attitude_reset() {
     filter.x = 0;
     filter.y = 0;
     filter.z = 0;
+}
+
+uint8_t attitude_get_id() {
+	return ATTITUDE_ALGORITHM_ID;
+}
+
+void attitude_get_params(double params[]) {
+
+}
+
+void attitude_set_params(double params[]) {
+
 }
 
 double _attitude(double gyro, double accel, double *_int_y1, double *_filter double k) {
