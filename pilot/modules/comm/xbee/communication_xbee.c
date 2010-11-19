@@ -27,15 +27,17 @@ uint8_t _esc;       // escape byte seen, unescape next byte
 uint8_t _err;       // error condition, ignore bytes until next frame start byte
 uint8_t _buf[MAX_SIZE];
 
-uint8_t _ctrl_ct = 0;
-uint8_t _motor_ct = 0;
+uint8_t _attitude_ct = 0;
+uint8_t _control_ct = 0;
 
-// cached ctrl values
-uint8_t _ctrl_flags;
+uint8_t _flags = 0;
+
+// cached values
+uint8_t _attitude_flags;
+uint16_t _control_flags;
 vector_t _sp;
 double _throttle;
-double _motor[4];
-uint16_t _motor_flags;
+double _control[4];
 
 
 void comm_init(){
@@ -83,28 +85,28 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(checksum, 1);
 }
 
-uint8_t comm_rx_ctrl(double *throttle, vector_t *sp, uint8_t *flags) {
+uint8_t comm_rx_attitude(double *throttle, vector_t *sp, uint8_t *flags) {
     if (_flags & 0x01) {
         // only copy values if the data has changed
         *throttle = _throttle;
         sp->x = _sp.x;
         sp->y = _sp.y;
         sp->z = _sp.z;
-        *flags = _ctrl_flags;
+        *flags = _attitude_flags;
     }
-    return _ctrl_ct++;
+    return _attitude_ct++;
 }
 
-uint8_t comm_rx_motor(double[] cmd, uint16_t *flags) {
+uint8_t comm_rx_control(double control[], uint16_t *flags) {
     if (_flags & 0x02) {
         // only copy values if the data has changed
-        cmd[0] = _motor[0];
-        cmd[1] = _motor[1];
-        cmd[2] = _motor[2];
-        cmd[3] = _motor[3];
-        *flags = _motor_flags;
+    	control[0] = _control[0];
+    	control[1] = _control[1];
+    	control[2] = _control[2];
+    	control[3] = _control[3];
+        *flags = _control_flags;
     }
-    return _motor_ct++;
+    return _control_ct++;
 }
 
 // fills a buffer with a packet
@@ -161,18 +163,18 @@ void _read() {
                                 _sp.x = _bytes_to_double(&_buf[4]);
                                 _sp.y = _bytes_to_double(&_buf[8]);
                                 _sp.z = _bytes_to_double(&_buf[12]);
-                                _ctrl_flags = _buf[16];
-                                _ctrl_ct = 0;
+                                _attitude_flags = _buf[16];
+                                _attitude_ct = 0;
                             case 0x43:
-                                motor[0] = _bytes_to_double(&buf[0]);
-                                motor[1] = _bytes_to_double(&buf[4]);
-                                motor[2] = _bytes_to_double(&buf[8]);
-                                motor[3] = _bytes_to_double(&buf[12]);
-                                _motor_flags = 0x00;
-                                _motor_flags |= _buf[16];
-                                _motor_flags << 0x08;
-                                _motor_flags |= _buf[17];
-                                _motor_ct = 0;
+                                _control[0] = _bytes_to_double(&_buf[0]);
+                                _control[1] = _bytes_to_double(&_buf[4]);
+                                _control[2] = _bytes_to_double(&_buf[8]);
+                                _control[3] = _bytes_to_double(&_buf[12]);
+                                _control_flags = 0;
+                                _control_flags |= _buf[16];
+                                _control_flags <<= 8;
+                                _control_flags |= _buf[17];
+                                _control_ct = 0;
                         }
                     } else {
                         _err = 1;
