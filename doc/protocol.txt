@@ -25,10 +25,10 @@ COMMAND
 frame start	1 byte	(0x7e)
 length		1 byte  (0x12)
 cmd			1 byte	(0x43)
-left / thrl	4 bytes
-frnt / roll	4 bytes
-rght / ptch	4 bytes
-back / yaw	4 bytes
+L / T		4 bytes
+F / R		4 bytes
+R / P		4 bytes
+B / Y		4 bytes
 flags		2 bytes
 checksum	1 byte
 
@@ -38,10 +38,11 @@ flags are:
 2		calibrate gyros
 3		calibrate accelerometers
 4		calibrate escs
-8		RTS pid
-9		RTS telemetry
-10		(reserved for future RTS raw sensor data)
-14		mode: 0 = TRPY / 1 = FRLR
+8		RTS telemetry
+9		RTS pid tuning
+10		RTS attitude tuning 
+11		(reserved for future RTS raw sensor data)
+14		mode: 0 = TRPY / 1 = LFRB
 15		write EEPROM
 
 PID
