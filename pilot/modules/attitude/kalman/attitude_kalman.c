@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x01
+
 static vector_t angle;
 static vector_t bias;
 static vector_t p00;
