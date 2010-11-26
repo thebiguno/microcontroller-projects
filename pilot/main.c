@@ -31,7 +31,19 @@ int main(){
     //Main program loop
     while (1) {
         comm_rx_command(command, &command_flags);
-        comm_rx_tuning(&tuning_type, tuning);
+        uint8_t tuning_ct = comm_rx_tuning(&tuning_type, tuning);
+        if (tuning_ct == 0) {
+            if (tuning_type == 0x00) {
+                vector_t kp = {tuning[0], tuning[3], tuning[6] };
+                vector_t ki = {tuning[1], tuning[4], tuning[7] };
+                vector_t kd = {tuning[2], tuning[5], tuning[8] };
+                pid_set_params(kp, ki, kd);
+            } else {
+                if (tuning_type == attitude_get_id()) {
+                    attitude_set_params(tuning);
+                }
+            }
+        }
         
         vector_t g = gyro_get();
         vector_t a = accel_get();
