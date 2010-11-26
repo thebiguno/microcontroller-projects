@@ -1,4 +1,4 @@
-include ../../../variables.mk
+include ../../build/variables.mk
 
 PROJECT=Skeleton
 MMCU=atmega168
@@ -8,4 +8,4 @@ SOURCES=main.c
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-include ../../../targets.mk
+include ../../build/targets.mk

@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../build/variables.mk
 
 PROJECT=Blinkenlights
 MMCU=atmega644
@@ -10,4 +10,4 @@ SOURCES=main.c
 
 AVRDUDE_PROGRAMMER=usbtiny
 
-include ../../../build/targets.mk
+include ../../build/targets.mk
