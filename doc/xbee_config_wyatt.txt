@@ -1,0 +1,25 @@
+(Pilot)
+SH : 13A200
+SL : 40494C5C
+BD : 6
+CH : C
+ID : 42
+CE : 0
+RR : 0
+RO : 3
+MY : 0
+DL : 1
+VR : 10E6
+
+(Controller)
+SH : 13A200
+SL : 406433A6
+BD : 6
+CH : C
+ID : 42
+CE : 1
+RR : 0
+RO : 3
+MY : 1
+DL : 0
+VR : 10E6
