@@ -58,8 +58,7 @@ int main(){
             sp.z = 0;
 	    }
 		
-        vector_t pv = attitude(g, a, dt);   // PID process variable
-        vector_t mv = pid_mv(sp, pv);       // PID manipulated variable
+        vector_t pv = attitude(g, a, dt);           // PID process variable
 
         if (command_flags & 0x01) { // attitude setpoint
         	double throttle = command[0];
@@ -67,6 +66,7 @@ int main(){
                 armed = 0x00;
         		esc_set(0, motor); // kill
         	} else {
+                vector_t mv = pid_mv(sp, pv);       // PID manipulated variable
         		motor_percent(throttle, mv, motor);
 				esc_set(1, motor);
         		armed = 0x01;

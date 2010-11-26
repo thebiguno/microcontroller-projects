@@ -27,8 +27,6 @@ uint8_t _esc;       // escape byte seen, unescape next byte
 uint8_t _err;       // error condition, ignore bytes until next frame start byte
 uint8_t _buf[MAX_SIZE];
 
-uint8_t _command_ct = 0;
-uint8_t _tuning_ct = 0;
 uint8_t _flags = 0; // 0x01 = new command, 0x02 = new tuning
 
 // cached values
@@ -83,19 +81,22 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
 }
 
 uint8_t comm_rx_command(double command[], uint8_t *flags) {
-    if (_flags & 0x01) {
+    if (_flags & _BV(1)) {
         // only copy values if the data has changed
     	command[0] = _command[0];
     	command[1] = _command[1];
     	command[2] = _command[2];
     	command[3] = _command[3];
         *flags = _command_flags;
+        _flags &= ~_BV(1); // clear the new message flag
+        return 0x01;
+    } else {
+        return 0x00;
     }
-    return _command_ct++;
 }
 
 uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
-    if (_flags & 0x02) {
+    if (_flags & _BV(2)) {
         // only copy values if the data has changed
         *type = _tuning_type;
     	tuning[0] = _tuning[0];
@@ -107,8 +108,11 @@ uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
     	tuning[6] = _tuning[6];
     	tuning[7] = _tuning[7];
     	tuning[8] = _tuning[8];
+        _flags &= ~_BV(2); // clear the new message flag
+        return 0x01;
+    } else {
+        return 0x00;
     }
-    return _tuning_ct++;
 }
 
 void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
@@ -196,7 +200,8 @@ void _read() {
                                 _command[2] = _bytes_to_double(&_buf[8]);
                                 _command[3] = _bytes_to_double(&_buf[12]);
                                 _command_flags = _buf[16];
-                                _command_ct = 0;
+                                _command_flags = 0;
+                                _flags |= _BV(1); // set the new message flag
                             case 'T':
                             	_tuning_type = _buf[0];
                                 _tuning[0] = _bytes_to_double(&_buf[1]);
@@ -208,7 +213,7 @@ void _read() {
                                 _tuning[6] = _bytes_to_double(&_buf[25]);
                                 _tuning[7] = _bytes_to_double(&_buf[29]);
                                 _tuning[8] = _bytes_to_double(&_buf[23]);
-                                _tuning_ct = 0;
+                                _flags |= _BV(2); // set the new message flag
                         }
                     } else {
                         _err = 1;

@@ -11,6 +11,7 @@ void comm_init();
  * Receives the latest command
  * command: 4 doubles
  * flags:
+ * returns 1 for a new message, 0 for a repeat read
  */
 uint8_t comm_rx_command(double command[], uint8_t *flags);
 
@@ -18,6 +19,7 @@ uint8_t comm_rx_command(double command[], uint8_t *flags);
  * Receives the latest tuning
  * type: 0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv
  * payload: 9 doubles
+ * returns 1 for a new message, 0 for a repeat read
  */
 uint8_t comm_rx_tuning(uint8_t *type, double payload[]);
 
