@@ -81,6 +81,7 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
 }
 
 uint8_t comm_rx_command(double command[], uint8_t *flags) {
+    _read();
     if (_flags & _BV(1)) {
         // only copy values if the data has changed
     	command[0] = _command[0];
@@ -96,6 +97,7 @@ uint8_t comm_rx_command(double command[], uint8_t *flags) {
 }
 
 uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
+    _read();
     if (_flags & _BV(2)) {
         // only copy values if the data has changed
         *type = _tuning_type;

@@ -14,26 +14,21 @@ int main (void){
 	//Do setup here
 	comm_init();
 
-    uint8_t fresh_ctrl
-    double ctrl_throttle;
-    vector_t ctrl_sp;
-	uint8_t ctrl_flags;
-    uint8_t fresh_motor;
-    double motor[4];
-    uint16_t motor_flags;
+    uint8_t new_command
+    double[4] command_values;
+    uint8_t command_flags;
 
 	//Main program loop
 	while (1){
 		_delay_ms(1000);
 
-        fresh_ctrl = comm_rx_ctrl(&ctrl_throttle, &ctrl_sp, &ctrl_flags);
-        fresh_motor = comm_rx_motor(&motor, &motor_flags);
+        new_command = comm_rx_command(&command_values, &command_flags);
 
         // TODO receive pid tuning
         // TODO receive filter tuning
         
         // TODO send conditional on flags
-        comm_tx_tm(&ctrl_sp, &motor, &ctrl_flags);
+//        comm_tx_tm(&ctrl_sp, &motor, &ctrl_flags);
         // TODO send pid
 	}
 }

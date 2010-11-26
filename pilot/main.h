@@ -2,7 +2,6 @@
 #define MAIN_H
 
 #include <avr/io.h>
-#include <math.h>
 
 void set_data(char *data);
 
