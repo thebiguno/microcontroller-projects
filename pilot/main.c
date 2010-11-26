@@ -19,70 +19,72 @@ int main(){
     //Do setup here
 
     uint16_t dt = 0; // TODO need to update dt with the loop time
-    double throttle;
+    double command[4];
+    uint8_t command_flags;
+    double tuning[9];
+    uint8_t tuning_type;
+
     vector_t sp;
     double motor[4];
-    uint8_t attitude_flags = 0x00;
-    uint16_t command_flags = 0x0000;
 
     //Main program loop
     while (1) {
-        comm_rx_attitude(&throttle, &sp, &attitude_flags);
-        // comm_rx_motor(motor, &command_flags);
-        // uint8_t tune_pid = comm_rx_pid(&p, &i, &d);
-        // if (tune_pid) {
-        //     pid_tune(p, i, d);
-        // }
-        // uint8_t tune_att = comm_rx_att(&att, &att_flags);
-        // if (tune_att) {
-        //     
-        // }
-        
-        if (attitude_flags & 0x04 || command_flags & 0x0004) {
-            gyro_calibrate();
-        }
-        if (attitude_flags & 0x08 || command_flags & 0x0008) {
-            accel_calibrate();
-        }
-        if (attitude_flags & 0x10 || command_flags & 0x0010) {
-            esc_calibrate();
-        }
+        comm_rx_command(command, &command_flags);
+        comm_rx_tuning(&tuning_type, tuning);
         
         vector_t g = gyro_get();
         vector_t a = accel_get();
 
-        if (attitude_flags & 0x02 || command_flags & 0x02) {
-            attitude_reset(&g, &a);
-        }
-
+        if ((command_flags & 0x01) == 0x01) { // attitude setpoint
+			sp.x = command[1];
+			sp.y = command[2];
+			sp.z = command[3];
+		}
+		
         vector_t pv = attitude(g, a, dt);
         vector_t mv = pid_mv(sp, pv);
 
-        if (attitude_flags & 0x01) {
-            // armed by controller
-            motor_percent(throttle, mv, motor);
+        uint8_t armed = 0x00;
+
+        if ((command_flags & 0x01) == 0x01) { // attitude setpoint
+        	double throttle = command[0];
+        	if (throttle < 0.001) {
+        		esc_set(0, motor); // kill
+        	} else {
+        		motor_percent(throttle, mv, motor);
+				esc_set(1, motor);
+        		armed = 0x01;
+        	}
+        } else if ((command_flags & 0x02) == 0x02) { // motor setpoint
             esc_set(1, motor);
-        } else if (command_flags & 0x0001) {
-            // armed by configuration
-            esc_set(1, motor);
-        } else {
-            esc_set(0, motor);
+    		armed = 0x01;
         }
         
-        if (command_flags & 0x0100) {
-            comm_tx_telemetry(pv, motor, 0x00); // TODO flags
+        if ((command_flags & 0x04) == 0x04) { // reset attitude
+       		// TODO this doesn't seem right
+            attitude_reset(&g, &a);
         }
-        if (command_flags & 0x0200) {
-//            comm_tx_pid_tuning(pid);
+        
+        if ((command_flags & 0x08) == 0x08) { // calibrate
+            accel_calibrate();
+            esc_calibrate();
         }
-        if (command_flags & 0x0400) {
-        	double params[] = { 0.0 };
-        	attitude_get_params(params);
-        	comm_tx_attitude_tuning(params, attitude_get_id());
+
+        if ((command_flags & 0x10) == 0x10) { // RTS tuning
+        	double pid[9] = { 0.0 };
+//        	pid_get_params(pid);
+        	comm_tx_tuning(0x00, pid);
+
+        	uint8_t type = attitude_get_id();
+        	double params[9] = { 0.0 };
+//        	attitude_get_params(params);
+        	comm_tx_tuning(type, params);
         }
-        if (command_flags & 0x0800) {
-            //comm_tx_raw(&g, &a);
+
+        if ((command_flags & 0x20) == 0x20) { // RTS telemetry
+            comm_tx_telemetry(pv, motor, armed);
         }
+
 	}
 }
 

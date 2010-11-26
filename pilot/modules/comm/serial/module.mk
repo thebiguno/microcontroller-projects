@@ -1,1 +1,1 @@
-SOURCES += modules/comm/xbee/communication_xbee.c lib/serial/serial_asynchronous.c
+SOURCES += modules/comm/serial/communication_serial.c lib/serial/serial_asynchronous.c

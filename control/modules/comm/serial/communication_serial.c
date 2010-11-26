@@ -67,14 +67,19 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(checksum, 1);
 }
 
-void comm_tx_ctrl(control_t control, uint8_t flags){
+void comm_tx_attitude(control_t control){
 	uint8_t packet[18];
-    packet[0] = 0x46;
+    packet[0] = 'C';
 	_double_to_bytes(control.throttle, &packet[1]);
     _double_to_bytes(control.roll, &packet[5]);
     _double_to_bytes(control.pitch, &packet[9]);
     _double_to_bytes(control.yaw, &packet[13]);
-    packet[17] = flags;
+    packet[17] = 0x01;
     _send_bytes(packet, 18);
 }
-
+void comm_tx_reset_and_calibrate() {
+	uint8_t packet[18];
+    packet[0] = 'C';
+    packet[17] = 0x0C;
+    _send_bytes(packet, 18);
+}

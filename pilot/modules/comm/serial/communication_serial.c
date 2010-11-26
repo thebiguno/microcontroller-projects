@@ -27,18 +27,15 @@ uint8_t _esc;       // escape byte seen, unescape next byte
 uint8_t _err;       // error condition, ignore bytes until next frame start byte
 uint8_t _buf[MAX_SIZE];
 
-uint8_t _attitude_ct = 0;
-uint8_t _control_ct = 0;
-
-uint8_t _flags = 0;
+uint8_t _command_ct = 0;
+uint8_t _tuning_ct = 0;
+uint8_t _flags = 0; // 0x01 = new command, 0x02 = new tuning
 
 // cached values
-uint8_t _attitude_flags;
-uint16_t _control_flags;
-vector_t _sp;
-double _throttle;
-double _control[4];
-
+double _command[4];
+uint8_t _command_flags;
+double _tuning[9];
+uint8_t _tuning_type;
 
 void comm_init(){
 	serial_init(9600, 8, 0, 1);
@@ -85,28 +82,63 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(checksum, 1);
 }
 
-uint8_t comm_rx_attitude(double *throttle, vector_t *sp, uint8_t *flags) {
+uint8_t comm_rx_command(double command[], uint8_t *flags) {
     if (_flags & 0x01) {
         // only copy values if the data has changed
-        *throttle = _throttle;
-        sp->x = _sp.x;
-        sp->y = _sp.y;
-        sp->z = _sp.z;
-        *flags = _attitude_flags;
+    	command[0] = _command[0];
+    	command[1] = _command[1];
+    	command[2] = _command[2];
+    	command[3] = _command[3];
+        *flags = _command_flags;
     }
-    return _attitude_ct++;
+    return _command_ct++;
 }
 
-uint8_t comm_rx_control(double control[], uint16_t *flags) {
+uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
     if (_flags & 0x02) {
         // only copy values if the data has changed
-    	control[0] = _control[0];
-    	control[1] = _control[1];
-    	control[2] = _control[2];
-    	control[3] = _control[3];
-        *flags = _control_flags;
+        *type = _tuning_type;
+    	tuning[0] = _tuning[0];
+    	tuning[1] = _tuning[1];
+    	tuning[2] = _tuning[2];
+    	tuning[3] = _tuning[3];
+    	tuning[4] = _tuning[4];
+    	tuning[5] = _tuning[5];
+    	tuning[6] = _tuning[6];
+    	tuning[7] = _tuning[7];
+    	tuning[8] = _tuning[8];
     }
-    return _control_ct++;
+    return _tuning_ct++;
+}
+
+void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
+	uint8_t packet[18];
+    packet[0] = 'E';
+	_double_to_bytes(vector.x, &packet[1]);
+    _double_to_bytes(vector.y, &packet[5]);
+    _double_to_bytes(vector.z, &packet[9]);
+    _double_to_bytes(motor[0], &packet[13]);
+    _double_to_bytes(motor[1], &packet[17]);
+    _double_to_bytes(motor[2], &packet[21]);
+    _double_to_bytes(motor[3], &packet[25]);
+    packet[29] = flags;
+    _send_bytes(packet, 30);
+}
+
+void comm_tx_tuning(uint8_t type, double payload[]) {
+	uint8_t packet[18];
+    packet[0] = 'E';
+    packet[1] = type;
+	_double_to_bytes(payload[0], &packet[2]);
+    _double_to_bytes(payload[1], &packet[6]);
+    _double_to_bytes(payload[2], &packet[10]);
+    _double_to_bytes(payload[3], &packet[14]);
+    _double_to_bytes(payload[4], &packet[18]);
+    _double_to_bytes(payload[5], &packet[22]);
+    _double_to_bytes(payload[6], &packet[26]);
+    _double_to_bytes(payload[7], &packet[30]);
+    _double_to_bytes(payload[8], &packet[34]);
+    _send_bytes(packet, 38);
 }
 
 // fills a buffer with a packet
@@ -158,23 +190,25 @@ void _read() {
                 if (_pos == (_len + 2)) {
                     if ((_chk & 0xff) == 0xff) {
                         switch(_api) {
-                            case 0x46:
-                                _throttle = _bytes_to_double(&_buf[0]);
-                                _sp.x = _bytes_to_double(&_buf[4]);
-                                _sp.y = _bytes_to_double(&_buf[8]);
-                                _sp.z = _bytes_to_double(&_buf[12]);
-                                _attitude_flags = _buf[16];
-                                _attitude_ct = 0;
-                            case 0x43:
-                                _control[0] = _bytes_to_double(&_buf[0]);
-                                _control[1] = _bytes_to_double(&_buf[4]);
-                                _control[2] = _bytes_to_double(&_buf[8]);
-                                _control[3] = _bytes_to_double(&_buf[12]);
-                                _control_flags = 0;
-                                _control_flags |= _buf[16];
-                                _control_flags <<= 8;
-                                _control_flags |= _buf[17];
-                                _control_ct = 0;
+                            case 'C':
+                                _command[0] = _bytes_to_double(&_buf[0]);
+                                _command[1] = _bytes_to_double(&_buf[4]);
+                                _command[2] = _bytes_to_double(&_buf[8]);
+                                _command[3] = _bytes_to_double(&_buf[12]);
+                                _command_flags = _buf[16];
+                                _command_ct = 0;
+                            case 'T':
+                            	_tuning_type = _buf[0];
+                                _tuning[0] = _bytes_to_double(&_buf[1]);
+                                _tuning[1] = _bytes_to_double(&_buf[5]);
+                                _tuning[2] = _bytes_to_double(&_buf[9]);
+                                _tuning[3] = _bytes_to_double(&_buf[13]);
+                                _tuning[4] = _bytes_to_double(&_buf[17]);
+                                _tuning[5] = _bytes_to_double(&_buf[21]);
+                                _tuning[6] = _bytes_to_double(&_buf[25]);
+                                _tuning[7] = _bytes_to_double(&_buf[29]);
+                                _tuning[8] = _bytes_to_double(&_buf[23]);
+                                _tuning_ct = 0;
                         }
                     } else {
                         _err = 1;
