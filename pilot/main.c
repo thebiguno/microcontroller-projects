@@ -18,20 +18,16 @@ void send_debug_data(uint8_t *data){
 int main(){
     //Do setup here
 
-    uint8_t armed;
+    uint8_t armed = 0x00;
     uint16_t dt = 0; // TODO need to update dt with the loop time
     double command[4];
     uint8_t command_flags;
     double tuning[9];
     uint8_t tuning_type;
 
-    vector_t sp;        // PID set point
+    vector_t sp = { 0,0,0 };      // PID set point
     double motor[4];
     
-    sp.x = 0;
-    sp.y = 0;
-    sp.z = 0;
-
     //Main program loop
     while (1) {
         comm_rx_command(command, &command_flags);
