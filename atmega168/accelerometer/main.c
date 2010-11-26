@@ -16,8 +16,8 @@ uint8_t data[3];
 char temp[32];
 
 int16_t convert(int8_t raw){
-	return (raw / 64.0) * 1000;
-//	return raw;
+//	return (raw / 64.0) * 1000;
+	return raw;
 }
 
 void get_average_reading(uint8_t *data, uint8_t count){
@@ -59,11 +59,11 @@ void show_reading(){
 	get_average_reading(data, 0x10);
 		
 	serial_write_s("x=");
-	serial_write_s(itoa(convert(data[0]), temp, 10));
+	serial_write_s(itoa(convert(data[0]), temp, 16));
 	serial_write_s(", y=");
-	serial_write_s(itoa(convert(data[1]), temp, 10));
+	serial_write_s(itoa(convert(data[1]), temp, 16));
 	serial_write_s(", z=");
-	serial_write_s(itoa(convert(data[2]), temp, 10));
+	serial_write_s(itoa(convert(data[2]), temp, 16));
 	serial_write_s("\n\r");
 }
 
