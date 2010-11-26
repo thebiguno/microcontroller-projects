@@ -1,95 +1,47 @@
 Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
 
-CONTROLLER -> PILOT
-
-FLIGHT
+COMMAND ( ->)
 frame start	1 byte	(0x7e)
-length		1 byte	(0x11)
-cmd			1 byte	(0x46)
-throttle	4 bytes
-roll (x)	4 bytes
-pitch (y)	4 bytes
-yaw (z)		4 bytes
-flags		1 byte
-checksum	1 byte
-
-flags are:
-0		armed
-1		reset attitude
-2		calibrate gyros
-3		calibrate accelerometers
-
-PC -> PILOT
-
-COMMAND
-frame start	1 byte	(0x7e)
-length		1 byte  (0x12)
-cmd			1 byte	(0x43)
+length		1 byte  (0x11 = 17 bytes)
+cmd		1 byte	(0x43 = C for command)
 L / T		4 bytes
-F / R		4 bytes
+T / R		4 bytes
 R / P		4 bytes
 B / Y		4 bytes
-flags		2 bytes
+flags		1 bytes
 checksum	1 byte
 
 flags are:
-0		armed
-1		reset attitude
-2		calibrate gyros
-3		calibrate accelerometers
-4		calibrate escs
-8		RTS telemetry
-9		RTS pid tuning
-10		RTS attitude tuning 
-11		(reserved for future RTS raw sensor data)
-14		mode: 0 = TRPY / 1 = LFRB
-15		write EEPROM
+0  0x01		attitude command (i.e. armed with attidude)
+1  0x02		motor command (i.e. armed with motor)
+2  0x04		reset attitude command
+3  0x08         calibrate command
+4  0x10		RTS tuning (PID & attitude)
+4  0x20		RTS telemetry flag (sent with attidude and motor commands)
+6  0x40		(unused)
+7  0x80		write EEPROM command
 
-PID
+note: an attitude command with a throttle of 0 is a kill command
+
+TUNING (<->)
 frame start	1 byte	(0x7e)
-length		1 byte	(0x25)
-cmd		1 byte	(0x50)
-p x		4 bytes
-i x		4 bytes
-d x		4 bytes
-p y		4 bytes
-i y		4 bytes
-d y		4 bytes
-p z		4 bytes
-i z		4 bytes
-d z		4 bytes
+length		1 byte	(0x26 = 38 bytes)
+cmd		1 byte	(0x54 = T for tuning)
+type		1 byte  0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv 
+payload		36 bytes (9 floats, depends on tuning type)
 checksum	1 byte
 
-KALMAN TUNING
+payloads are
+PID:		p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
+simple:		time_const
+complementary:	k.x, k.y, k.z
+kalman:		qangle.x, qangle.y, qgyro.x, qgyro.y, rangle.x, rangle.y
+mhv:		gain, beta
+
+TELEMETRY (<- )
 frame start	1 byte	(0x7e)
-length		1 byte	(0x19)
-cmd			1 byte	(0x54)
-q angle x	4 bytes
-q angle y	4 bytes
-q gyro x	4 bytes
-q gyro y	4 bytes
-r angle x	4 bytes
-r angle y	4 bytes
-checksum	1 byte
-
-COMPLEMENTARY TUNING
-frame start	1 byte	(0x7e)
-length		1 byte	(0x0d)
-cmd			1 byte	(0x54)
-x			4 bytes
-y			4 bytes
-z			4 bytes
-checksum	1 byte
-
-MHV TUNING
-TODO
-
-PILOT -> PC
-
-TELEMETRY
-frame start	1 byte	(0x7e)
-length		1 byte	(0x1e)
-cmd			1 byte	(0x54)
+length		1 byte	(0x1e = 30 bytes)
+cmd		1 byte	(0x45 = E for tElemetry)
 roll (x)	4 bytes
 pitch (y)	4 bytes
 yaw (z)		4 bytes
@@ -101,25 +53,7 @@ flags		1 byte
 checksum	1 byte
 
 flags are:
-0		armed
-1		comp filter
-2		kalman filter
-3		mhv filter
-
-PID
-frame start	1 byte	(0x7e)
-length		1 byte	(0x25)
-cmd			1 byte	(0x50)
-p x			4 bytes
-i x			4 bytes
-d x			4 bytes
-p y			4 bytes
-i y			4 bytes
-d y			4 bytes
-p z			4 bytes
-i z			4 bytes
-d z			4 bytes
-checksum	1 byte
+0  0x01		armed
 
 Length
 The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.
