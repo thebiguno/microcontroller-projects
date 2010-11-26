@@ -3,7 +3,7 @@ include ../build/variables.mk
 PROJECT=pilot
 MMCU=atmega168
 F_CPU=20000000
-SOURCES=main.c
+SOURCES=main.c ../lib/timer/timer_0.c
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk

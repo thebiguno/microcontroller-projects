@@ -80,73 +80,6 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(checksum, 1);
 }
 
-uint8_t comm_rx_command(double command[], uint8_t *flags) {
-    _read();
-    if (_flags & _BV(1)) {
-        // only copy values if the data has changed
-    	command[0] = _command[0];
-    	command[1] = _command[1];
-    	command[2] = _command[2];
-    	command[3] = _command[3];
-        *flags = _command_flags;
-        _flags &= ~_BV(1); // clear the new message flag
-        return 0x01;
-    } else {
-        return 0x00;
-    }
-}
-
-uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
-    _read();
-    if (_flags & _BV(2)) {
-        // only copy values if the data has changed
-        *type = _tuning_type;
-    	tuning[0] = _tuning[0];
-    	tuning[1] = _tuning[1];
-    	tuning[2] = _tuning[2];
-    	tuning[3] = _tuning[3];
-    	tuning[4] = _tuning[4];
-    	tuning[5] = _tuning[5];
-    	tuning[6] = _tuning[6];
-    	tuning[7] = _tuning[7];
-    	tuning[8] = _tuning[8];
-        _flags &= ~_BV(2); // clear the new message flag
-        return 0x01;
-    } else {
-        return 0x00;
-    }
-}
-
-void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
-	uint8_t packet[18];
-    packet[0] = 'E';
-	_double_to_bytes(vector.x, &packet[1]);
-    _double_to_bytes(vector.y, &packet[5]);
-    _double_to_bytes(vector.z, &packet[9]);
-    _double_to_bytes(motor[0], &packet[13]);
-    _double_to_bytes(motor[1], &packet[17]);
-    _double_to_bytes(motor[2], &packet[21]);
-    _double_to_bytes(motor[3], &packet[25]);
-    packet[29] = flags;
-    _send_bytes(packet, 30);
-}
-
-void comm_tx_tuning(uint8_t type, double payload[]) {
-	uint8_t packet[18];
-    packet[0] = 'E';
-    packet[1] = type;
-	_double_to_bytes(payload[0], &packet[2]);
-    _double_to_bytes(payload[1], &packet[6]);
-    _double_to_bytes(payload[2], &packet[10]);
-    _double_to_bytes(payload[3], &packet[14]);
-    _double_to_bytes(payload[4], &packet[18]);
-    _double_to_bytes(payload[5], &packet[22]);
-    _double_to_bytes(payload[6], &packet[26]);
-    _double_to_bytes(payload[7], &packet[30]);
-    _double_to_bytes(payload[8], &packet[34]);
-    _send_bytes(packet, 38);
-}
-
 // fills a buffer with a packet
 // when the packet is complete, parses it into the appropriate structure
 void _read() {
@@ -227,4 +160,71 @@ void _read() {
                 }
         }
     }
+}
+
+uint8_t comm_rx_command(double command[], uint8_t *flags) {
+    _read();
+    if (_flags & _BV(1)) {
+        // only copy values if the data has changed
+    	command[0] = _command[0];
+    	command[1] = _command[1];
+    	command[2] = _command[2];
+    	command[3] = _command[3];
+        *flags = _command_flags;
+        _flags &= ~_BV(1); // clear the new message flag
+        return 0x01;
+    } else {
+        return 0x00;
+    }
+}
+
+uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
+    _read();
+    if (_flags & _BV(2)) {
+        // only copy values if the data has changed
+        *type = _tuning_type;
+    	tuning[0] = _tuning[0];
+    	tuning[1] = _tuning[1];
+    	tuning[2] = _tuning[2];
+    	tuning[3] = _tuning[3];
+    	tuning[4] = _tuning[4];
+    	tuning[5] = _tuning[5];
+    	tuning[6] = _tuning[6];
+    	tuning[7] = _tuning[7];
+    	tuning[8] = _tuning[8];
+        _flags &= ~_BV(2); // clear the new message flag
+        return 0x01;
+    } else {
+        return 0x00;
+    }
+}
+
+void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
+	uint8_t packet[18];
+    packet[0] = 'E';
+	_double_to_bytes(vector.x, &packet[1]);
+    _double_to_bytes(vector.y, &packet[5]);
+    _double_to_bytes(vector.z, &packet[9]);
+    _double_to_bytes(motor[0], &packet[13]);
+    _double_to_bytes(motor[1], &packet[17]);
+    _double_to_bytes(motor[2], &packet[21]);
+    _double_to_bytes(motor[3], &packet[25]);
+    packet[29] = flags;
+    _send_bytes(packet, 30);
+}
+
+void comm_tx_tuning(uint8_t type, double payload[]) {
+	uint8_t packet[18];
+    packet[0] = 'E';
+    packet[1] = type;
+	_double_to_bytes(payload[0], &packet[2]);
+    _double_to_bytes(payload[1], &packet[6]);
+    _double_to_bytes(payload[2], &packet[10]);
+    _double_to_bytes(payload[3], &packet[14]);
+    _double_to_bytes(payload[4], &packet[18]);
+    _double_to_bytes(payload[5], &packet[22]);
+    _double_to_bytes(payload[6], &packet[26]);
+    _double_to_bytes(payload[7], &packet[30]);
+    _double_to_bytes(payload[8], &packet[34]);
+    _send_bytes(packet, 38);
 }

@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include "../lib/timer/timer.h"
 
 void set_data(char *data){
 /*
@@ -18,9 +18,9 @@ void send_debug_data(uint8_t *data){
 int main(){
     //Do setup here
 
+    uint64_t millis = 0;
     uint8_t armed = 0x00;
     uint8_t rts_telemetry = 0x00;
-    uint16_t dt = 0; // TODO need to update dt with the loop time
     double command[4];
     uint8_t command_flags;
     double tuning[9];
@@ -31,6 +31,9 @@ int main(){
     
     //Main program loop
     while (1) {
+        uint64_t curr_millis = timer_millis();
+        uint64_t dt =+ (curr_millis - millis);
+        millis = curr_millis;
         uint8_t command_new_msg = comm_rx_command(command, &command_flags);
         uint8_t tuning_new_msg = comm_rx_tuning(&tuning_type, tuning);
         if (tuning_new_msg) {
@@ -64,6 +67,7 @@ int main(){
             } else {
                 rts_telemetry = 0x00;
             }
+            dt = 0;
 		} else if (command_new_msg && command_flags & 0x02) { // motor setpoint command
             armed = 0x02;
             sp.x = 0;
@@ -75,17 +79,28 @@ int main(){
             } else {
                 rts_telemetry = 0x00;
             }
+            dt = 0;
 	    }
 		
-        vector_t pv = attitude(g, a, dt);           // PID process variable
+        vector_t pv = attitude(g, a);               // PID process variable
 
         if (armed & 0x01) {                         // armed by attitude command
         	double throttle = command[0];
+        	if (dt > 3000) {
+        	    // TODO level out and scale back throttle
+        	}
             vector_t mv = pid_mv(sp, pv);           // PID manipulated variable
     		motor_percent(throttle, mv, motor);
-			esc_set(armed, motor);
+			esc_set(motor);
         } else if (command_flags & 0x02) {          // armed by motor command
-            esc_set(1, motor);
+            if (dt > 3000) {
+                // kill the motors completely
+                motor[0] = 0;
+                motor[1] = 0;
+                motor[2] = 0;
+                motor[3] = 0;
+            }
+            esc_set(motor);
         }
         
         if (command_new_msg && command_flags & 0x04) { // reset attitude
