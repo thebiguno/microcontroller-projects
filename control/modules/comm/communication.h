@@ -11,7 +11,7 @@ void comm_init();
 /*
  * Sends flight control to the pilot.
  */
-void comm_tx_attitude(control_t control, uint8_t flags);
+void comm_tx_attitude(control_t control);
 void comm_tx_reset_and_calibrate();
 
 #endif
