@@ -19,6 +19,7 @@ int main(){
     //Do setup here
 
     uint8_t armed = 0x00;
+    uint8_t rts_telemetry = 0x00;
     uint16_t dt = 0; // TODO need to update dt with the loop time
     double command[4];
     uint8_t command_flags;
@@ -30,9 +31,9 @@ int main(){
     
     //Main program loop
     while (1) {
-        comm_rx_command(command, &command_flags);
-        uint8_t tuning_ct = comm_rx_tuning(&tuning_type, tuning);
-        if (tuning_ct == 0) {
+        uint8_t command_new_msg = comm_rx_command(command, &command_flags);
+        uint8_t tuning_new_msg = comm_rx_tuning(&tuning_type, tuning);
+        if (tuning_new_msg) {
             if (tuning_type == 0x00) {
                 vector_t kp = {tuning[0], tuning[3], tuning[6] };
                 vector_t ki = {tuning[1], tuning[4], tuning[7] };
@@ -48,44 +49,55 @@ int main(){
         vector_t g = gyro_get();
         vector_t a = accel_get();
 
-        if (command_flags & 0x01) { // attitude setpoint
+        if (command_new_msg && command_flags & 0x01) { // attitude setpoint command
+            if (command[0] < 0.001) {
+                armed = 0x00;
+            } else {
+                armed = 0x01;
+            }
 			sp.x = command[1];
 			sp.y = command[2];
 			sp.z = command[3];
-		} else if (command_flags & 0x02) { // motor setpoint
+			
+			if (command_flags & 0x10) { // RTS tuning
+                rts_telemetry = 0x01;
+            } else {
+                rts_telemetry = 0x00;
+            }
+		} else if (command_new_msg && command_flags & 0x02) { // motor setpoint command
+            armed = 0x02;
             sp.x = 0;
             sp.y = 0;
             sp.z = 0;
+
+            if (command_flags & 0x20) { // RTS telemetry
+                rts_telemetry = 0x01;
+            } else {
+                rts_telemetry = 0x00;
+            }
 	    }
 		
         vector_t pv = attitude(g, a, dt);           // PID process variable
 
-        if (command_flags & 0x01) { // attitude setpoint
+        if (armed & 0x01) {                         // armed by attitude command
         	double throttle = command[0];
-        	if (throttle < 0.001) {
-                armed = 0x00;
-        		esc_set(0, motor); // kill
-        	} else {
-                vector_t mv = pid_mv(sp, pv);       // PID manipulated variable
-        		motor_percent(throttle, mv, motor);
-				esc_set(1, motor);
-        		armed = 0x01;
-        	}
-        } else if (command_flags & 0x02) { // motor setpoint
+            vector_t mv = pid_mv(sp, pv);           // PID manipulated variable
+    		motor_percent(throttle, mv, motor);
+			esc_set(armed, motor);
+        } else if (command_flags & 0x02) {          // armed by motor command
             esc_set(1, motor);
-    		armed = 0x01;
         }
         
-        if (command_flags & 0x04) { // reset attitude
+        if (command_new_msg && command_flags & 0x04) { // reset attitude
             attitude_reset();
         }
         
-        if (command_flags & 0x08) { // calibrate
+        if (command_new_msg && command_flags & 0x08) { // calibrate
             accel_calibrate();
             gyro_calibrate();
             esc_calibrate();
         }
-
+        
         if (command_flags & 0x10) { // RTS tuning
             vector_t kp;
             vector_t ki;
@@ -99,11 +111,14 @@ int main(){
         	attitude_get_params(params);
         	comm_tx_tuning(type, params);
         }
+        
+        if (command_new_msg && command_flags & 0x80) { // write EEPROM
 
-        if (command_flags & 0x20) { // RTS telemetry
+        }            
+
+        if (rts_telemetry) { // RTS telemetry
             comm_tx_telemetry(pv, motor, armed);
         }
-
 	}
 }
 
