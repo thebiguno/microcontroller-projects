@@ -36,11 +36,11 @@ int main(){
         vector_t g = gyro_get();
         vector_t a = accel_get();
 
-        if ((command_flags & 0x01) == 0x01) { // attitude setpoint
+        if (command_flags & 0x01) { // attitude setpoint
 			sp.x = command[1];
 			sp.y = command[2];
 			sp.z = command[3];
-		} else if ((command_flags & 0x02) == 0x02) { // motor setpoint
+		} else if (command_flags & 0x02) { // motor setpoint
             sp.x = 0;
             sp.y = 0;
             sp.z = 0;
@@ -49,7 +49,7 @@ int main(){
         vector_t pv = attitude(g, a, dt);   // PID process variable
         vector_t mv = pid_mv(sp, pv);       // PID manipulated variable
 
-        if ((command_flags & 0x01) == 0x01) { // attitude setpoint
+        if (command_flags & 0x01) { // attitude setpoint
         	double throttle = command[0];
         	if (throttle < 0.001) {
                 armed = 0x00;
@@ -59,22 +59,22 @@ int main(){
 				esc_set(1, motor);
         		armed = 0x01;
         	}
-        } else if ((command_flags & 0x02) == 0x02) { // motor setpoint
+        } else if (command_flags & 0x02) { // motor setpoint
             esc_set(1, motor);
     		armed = 0x01;
         }
         
-        if ((command_flags & 0x04) == 0x04) { // reset attitude
+        if (command_flags & 0x04) { // reset attitude
             attitude_reset();
         }
         
-        if ((command_flags & 0x08) == 0x08) { // calibrate
+        if (command_flags & 0x08) { // calibrate
             accel_calibrate();
             gyro_calibrate();
             esc_calibrate();
         }
 
-        if ((command_flags & 0x10) == 0x10) { // RTS tuning
+        if (command_flags & 0x10) { // RTS tuning
             vector_t kp;
             vector_t ki;
             vector_t kd;
@@ -88,7 +88,7 @@ int main(){
         	comm_tx_tuning(type, params);
         }
 
-        if ((command_flags & 0x20) == 0x20) { // RTS telemetry
+        if (command_flags & 0x20) { // RTS telemetry
             comm_tx_telemetry(pv, motor, armed);
         }
 
