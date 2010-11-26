@@ -18,14 +18,19 @@ void send_debug_data(uint8_t *data){
 int main(){
     //Do setup here
 
+    uint8_t armed;
     uint16_t dt = 0; // TODO need to update dt with the loop time
     double command[4];
     uint8_t command_flags;
     double tuning[9];
     uint8_t tuning_type;
 
-    vector_t sp;
+    vector_t sp;        // PID set point
     double motor[4];
+    
+    sp.x = 0;
+    sp.y = 0;
+    sp.z = 0;
 
     //Main program loop
     while (1) {
@@ -39,16 +44,19 @@ int main(){
 			sp.x = command[1];
 			sp.y = command[2];
 			sp.z = command[3];
-		}
+		} else if ((command_flags & 0x02) == 0x02) { // motor setpoint
+            sp.x = 0;
+            sp.y = 0;
+            sp.z = 0;
+	    }
 		
-        vector_t pv = attitude(g, a, dt);
-        vector_t mv = pid_mv(sp, pv);
-
-        uint8_t armed = 0x00;
+        vector_t pv = attitude(g, a, dt);   // PID process variable
+        vector_t mv = pid_mv(sp, pv);       // PID manipulated variable
 
         if ((command_flags & 0x01) == 0x01) { // attitude setpoint
         	double throttle = command[0];
         	if (throttle < 0.001) {
+                armed = 0x00;
         		esc_set(0, motor); // kill
         	} else {
         		motor_percent(throttle, mv, motor);
@@ -61,23 +69,26 @@ int main(){
         }
         
         if ((command_flags & 0x04) == 0x04) { // reset attitude
-       		// TODO this doesn't seem right
-            attitude_reset(&g, &a);
+            attitude_reset();
         }
         
         if ((command_flags & 0x08) == 0x08) { // calibrate
             accel_calibrate();
+            gyro_calibrate();
             esc_calibrate();
         }
 
         if ((command_flags & 0x10) == 0x10) { // RTS tuning
-        	double pid[9] = { 0.0 };
-//        	pid_get_params(pid);
+            vector_t kp;
+            vector_t ki;
+            vector_t kd;
+        	pid_get_params(kp, ki, kd);
+        	double pid[9] = { kp.x, ki.x, kd.x, kp.y, ki.y, kd.y, kp.z, ki.z, kd.z };
         	comm_tx_tuning(0x00, pid);
 
         	uint8_t type = attitude_get_id();
         	double params[9] = { 0.0 };
-//        	attitude_get_params(params);
+        	attitude_get_params(params);
         	comm_tx_tuning(type, params);
         }
 

@@ -18,13 +18,18 @@ void pid_init() {
     vector_t kp = {0.7,0.7,0.0};
     vector_t ki = {0.001,0.0,0.0};
     vector_t kd = {0.001,0.0,0.0};
-    pid_tune(kp, ki, kd);
+    pid_set_params(kp, ki, kd);
 }
 
-void pid_tune(vector_t kp, vector_t ki, vector_t kd) {
+void pid_set_params(vector_t kp, vector_t ki, vector_t kd) {
     _kp = kp;
     _ki = ki;
     _kd = kd;
+}
+void pid_get_params(vector_t kp, vector_t ki, vector_t kd) {
+    kp = _kp;
+    ki = _ki;
+    kd = _kd;
 }
 
 double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_err_t *err){

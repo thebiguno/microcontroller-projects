@@ -18,5 +18,4 @@ vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt);
 uint8_t attitude_get_id();
 
 void attitude_get_params(double params[]);
-
 void attitude_set_params(double params[]);
