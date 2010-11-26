@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x02
+
 #define DEG_PT5 = 0.00872664626;
 #define DEG_30 = 1.570796326794897;
 /*
@@ -17,9 +19,9 @@ void attitude_init(vector_t gyro, vector_t accel) {
     k.y = 1;
     k.z = 1;
 
-    filter.x = accel.x
-    filter.y = accel.y
-    filter.z = accel.z
+    filter.x = accel.x;
+    filter.y = accel.y;
+    filter.z = accel.z;
     //account for gyro bias
     int_y1.x = -gyro.x;
     int_y1.y = -gyro.y;
@@ -51,6 +53,18 @@ void attitude_reset() {
     filter.x = 0;
     filter.y = 0;
     filter.z = 0;
+}
+
+uint8_t attitude_get_id() {
+	return ATTITUDE_ALGORITHM_ID;
+}
+
+void attitude_get_params(double params[]) {
+
+}
+
+void attitude_set_params(double params[]) {
+
 }
 
 double _attitude(double gyro, double accel, double *_int_y1, double *_filter double k) {

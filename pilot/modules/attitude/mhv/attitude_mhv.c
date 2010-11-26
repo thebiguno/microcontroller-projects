@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x04
+
 static double gain;
 static double beta;
     
@@ -14,8 +16,8 @@ quaternion_t q;
     
 void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read these values from EEPROM
-    gain 3.14159265358979f * (5.0f / 180.0f); // gyroscope measurement error in rad/s (shown as 5 deg/s)
-    beta sqrt(3.0f / 4.0f) * gain);           // compute beta
+    gain = 3.14159265358979f * (5.0f / 180.0f); // gyroscope measurement error in rad/s (shown as 5 deg/s)
+    beta = sqrt(3.0f / 4.0f) * gain;           // compute beta
     
     
     q.w = 1.0;
@@ -120,3 +122,16 @@ vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     
     return result;
 }
+
+uint8_t attitude_get_id() {
+	return ATTITUDE_ALGORITHM_ID;
+}
+
+void attitude_get_params(double params[]) {
+
+}
+
+void attitude_set_params(double params[]) {
+
+}
+

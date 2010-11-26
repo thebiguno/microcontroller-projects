@@ -1,5 +1,7 @@
 #include "../../../main.h"
 
+#define ATTITUDE_ALGORITHM_ID 0x01
+
 static vector_t angle;
 static vector_t bias;
 static vector_t p00;
@@ -46,3 +48,16 @@ void _attitude (double gyro, double accel, double *angle, double *bias, double *
     *p10 -= k1 * *p00;
     *p11 -= k1 * *p01;
 }
+
+uint8_t attitude_get_id() {
+	return ATTITUDE_ALGORITHM_ID;
+}
+
+void attitude_get_params(double params[]) {
+
+}
+
+void attitude_set_params(double params[]) {
+
+}
+

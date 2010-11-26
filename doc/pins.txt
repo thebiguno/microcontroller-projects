@@ -1,4 +1,4 @@
-Pin	Arduino		Function
+Pin	Arduino	AVR	Function
 1	RST	PC6	Reset
 2	RX	PD0	Serial RX
 3	TX	PD1	Serial TX

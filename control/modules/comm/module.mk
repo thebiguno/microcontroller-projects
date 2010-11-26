@@ -1,1 +1,1 @@
-include modules/comm/xbee/module.mk
+include modules/comm/serial/module.mk
