@@ -173,26 +173,26 @@ void _read() {
             b = 0x20 ^ b;
             _esc = 0;
         }
-        if (_pos > 1) { // start byte and length byte not included in checksum
+        if (_pos > 1) { // start byte and length byte not included in checksum, but the checksum byte is
             _chk += b;
         }
         
         switch(_pos) {
-            case 0: // start frame
+            case 0: // start frame byte
                 _pos++;
                 continue;
-            case 1: // length
+            case 1: // length byte
                 _len = b;
                 _pos++;
                 continue;
-            case 2:
+            case 2: // command byte
                 _api = b;
                 _pos++;
                 continue;
-            default:
+            default: // all other bytes
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
-                if (_pos == (_len + 2)) {
-                    if ((_chk & 0xff) == 0xff) {
+                if (_pos == (_len + 2)) { // checksum byte
+                    if (_chk  == 0xff) {  // checksum is valid
                         switch(_api) {
                             case 'C':
                                 _command[0] = _bytes_to_double(&_buf[0]);
@@ -216,11 +216,11 @@ void _read() {
                                 _flags |= _BV(2); // set the new message flag
                         }
                     } else {
-                        _err = 1;
+                        _err = 1; // checksum is invalid
                     }
-                    _pos = 0;
+                    _pos = 0;     // end of message, reset position and checksum
                     _chk = 0;
-                } else {
+                } else {          // payload byte, copy to buffer
                     _buf[_pos - 3] = b;
                 }
         }
