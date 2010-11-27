@@ -12,11 +12,11 @@
 #define XON 0x11
 #define XOFF 0x13
 
-#define MAX_SIZE 37
+#define MAX_SIZE 36
 
 union udouble {
 	double d;
-	uint32_t u;
+	uint8_t u[sizeof(double)];
 };
 
 uint8_t _pos;       // current position in the frame
@@ -40,18 +40,17 @@ void comm_init(){
 }
 
 void _double_to_bytes(double value, uint8_t *buffer) {
-	union udouble converter;
-	converter.d = value;
-	
-	buffer[3] = (converter.u >> 24) & 0xFF;
-	buffer[2] = (converter.u >> 16) & 0xFF;
-	buffer[1] = (converter.u >> 8) & 0xFF;
-	buffer[0] = converter.u & 0xFF;
+    union udouble converter;
+    converter.d = value;
+    for (int i = 0; i < sizeof(double); i++) {
+        buffer[i] = converter.u[i];
+    }
 }
 double _bytes_to_double(uint8_t *buffer) {
     union udouble converter;
-    
-    converter.u = ((uint32_t)buffer[0] << 24) && ((uint32_t)buffer[1] << 16) && ((uint16_t)buffer[2] << 8) && (buffer[3]);
+    for (int i = 0; i < sizeof(double); i++) {
+        converter.u[i] = buffer[0];
+    }
     return converter.d;
 }
 
@@ -130,24 +129,17 @@ void _read() {
                     if ((_chk & 0xff) == 0xff) {
                         switch(_api) {
                             case 'C':
-                                _command[0] = _bytes_to_double(&_buf[0]);
-                                _command[1] = _bytes_to_double(&_buf[4]);
-                                _command[2] = _bytes_to_double(&_buf[8]);
-                                _command[3] = _bytes_to_double(&_buf[12]);
+                                for (int i = 0; i < 4; i++) {
+                                    _command[i] = _bytes_to_double(&_buf[i*4]);
+                                }
                                 _command_flags = _buf[16];
                                 _command_flags = 0;
                                 _flags |= _BV(1); // set the new message flag
                             case 'T':
-                            	_tuning_type = _buf[0];
-                                _tuning[0] = _bytes_to_double(&_buf[1]);
-                                _tuning[1] = _bytes_to_double(&_buf[5]);
-                                _tuning[2] = _bytes_to_double(&_buf[9]);
-                                _tuning[3] = _bytes_to_double(&_buf[13]);
-                                _tuning[4] = _bytes_to_double(&_buf[17]);
-                                _tuning[5] = _bytes_to_double(&_buf[21]);
-                                _tuning[6] = _bytes_to_double(&_buf[25]);
-                                _tuning[7] = _bytes_to_double(&_buf[29]);
-                                _tuning[8] = _bytes_to_double(&_buf[23]);
+                                _tuning_type = _buf[0];
+                                for (int i = 0; i < 9; i++) {
+                                    _tuning[0] = _bytes_to_double(&_buf[(i*4)+1]);
+                                }
                                 _flags |= _BV(2); // set the new message flag
                         }
                     } else {
@@ -166,10 +158,9 @@ uint8_t comm_rx_command(double command[], uint8_t *flags) {
     _read();
     if (_flags & _BV(1)) {
         // only copy values if the data has changed
-    	command[0] = _command[0];
-    	command[1] = _command[1];
-    	command[2] = _command[2];
-    	command[3] = _command[3];
+        for (int i = 0; i < 4; i++) {
+            command[i] = _command[i];
+        }
         *flags = _command_flags;
         _flags &= ~_BV(1); // clear the new message flag
         return 0x01;
@@ -183,15 +174,9 @@ uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
     if (_flags & _BV(2)) {
         // only copy values if the data has changed
         *type = _tuning_type;
-    	tuning[0] = _tuning[0];
-    	tuning[1] = _tuning[1];
-    	tuning[2] = _tuning[2];
-    	tuning[3] = _tuning[3];
-    	tuning[4] = _tuning[4];
-    	tuning[5] = _tuning[5];
-    	tuning[6] = _tuning[6];
-    	tuning[7] = _tuning[7];
-    	tuning[8] = _tuning[8];
+        for (int i = 0; i < 9; i++) {
+            tuning[i] = _tuning[i];
+        }
         _flags &= ~_BV(2); // clear the new message flag
         return 0x01;
     } else {
@@ -205,10 +190,9 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
 	_double_to_bytes(vector.x, &packet[1]);
     _double_to_bytes(vector.y, &packet[5]);
     _double_to_bytes(vector.z, &packet[9]);
-    _double_to_bytes(motor[0], &packet[13]);
-    _double_to_bytes(motor[1], &packet[17]);
-    _double_to_bytes(motor[2], &packet[21]);
-    _double_to_bytes(motor[3], &packet[25]);
+    for (int i = 0; i < 4; i++) {
+        _double_to_bytes(motor[0], &packet[(i*4)+13]);
+    }
     packet[29] = flags;
     _send_bytes(packet, 30);
 }
@@ -217,14 +201,8 @@ void comm_tx_tuning(uint8_t type, double payload[]) {
 	uint8_t packet[18];
     packet[0] = 'E';
     packet[1] = type;
-	_double_to_bytes(payload[0], &packet[2]);
-    _double_to_bytes(payload[1], &packet[6]);
-    _double_to_bytes(payload[2], &packet[10]);
-    _double_to_bytes(payload[3], &packet[14]);
-    _double_to_bytes(payload[4], &packet[18]);
-    _double_to_bytes(payload[5], &packet[22]);
-    _double_to_bytes(payload[6], &packet[26]);
-    _double_to_bytes(payload[7], &packet[30]);
-    _double_to_bytes(payload[8], &packet[34]);
+    for (int i = 0; i < 9; i++) {
+        _double_to_bytes(payload[0], &packet[(i*4)+2]);
+    }
     _send_bytes(packet, 38);
 }
