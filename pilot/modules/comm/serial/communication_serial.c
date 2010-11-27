@@ -42,13 +42,13 @@ void comm_init(){
 void _double_to_bytes(double value, uint8_t *buffer) {
     union udouble converter;
     converter.d = value;
-    for (int i = 0; i < sizeof(double); i++) {
+    for (uint8_t i = 0; i < sizeof(double); i++) {
         buffer[i] = converter.u[i];
     }
 }
 double _bytes_to_double(uint8_t *buffer) {
     union udouble converter;
-    for (int i = 0; i < sizeof(double); i++) {
+    for (uint8_t i = 0; i < sizeof(double); i++) {
         converter.u[i] = buffer[0];
     }
     return converter.d;
@@ -69,7 +69,7 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     
     uint8_t checksum = 0;
     
-    for (int i = 0; i < length; i++) {
+    for (uint8_t i = 0; i < length; i++) {
         _send_byte(bytes[i], 1);
         checksum += bytes[i];
     }
@@ -129,7 +129,7 @@ void _read() {
                     if ((_chk & 0xff) == 0xff) {
                         switch(_api) {
                             case 'C':
-                                for (int i = 0; i < 4; i++) {
+                                for (uint8_t i = 0; i < 4; i++) {
                                     _command[i] = _bytes_to_double(&_buf[i*4]);
                                 }
                                 _command_flags = _buf[16];
@@ -137,7 +137,7 @@ void _read() {
                                 _flags |= _BV(1); // set the new message flag
                             case 'T':
                                 _tuning_type = _buf[0];
-                                for (int i = 0; i < 9; i++) {
+                                for (uint8_t i = 0; i < 9; i++) {
                                     _tuning[0] = _bytes_to_double(&_buf[(i*4)+1]);
                                 }
                                 _flags |= _BV(2); // set the new message flag
@@ -190,7 +190,7 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
 	_double_to_bytes(vector.x, &packet[1]);
     _double_to_bytes(vector.y, &packet[5]);
     _double_to_bytes(vector.z, &packet[9]);
-    for (int i = 0; i < 4; i++) {
+    for (uint8_t i = 0; i < 4; i++) {
         _double_to_bytes(motor[0], &packet[(i*4)+13]);
     }
     packet[29] = flags;
@@ -201,7 +201,7 @@ void comm_tx_tuning(uint8_t type, double payload[]) {
 	uint8_t packet[18];
     packet[0] = 'E';
     packet[1] = type;
-    for (int i = 0; i < 9; i++) {
+    for (uint8_t i = 0; i < 9; i++) {
         _double_to_bytes(payload[0], &packet[(i*4)+2]);
     }
     _send_bytes(packet, 38);
