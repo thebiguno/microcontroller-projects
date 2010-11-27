@@ -1,6 +1,5 @@
 #include "pid.h"
 #include <stdio.h>
-#include <math.h>
 
 #define SP -1.04719
 #define PV 1.04719
