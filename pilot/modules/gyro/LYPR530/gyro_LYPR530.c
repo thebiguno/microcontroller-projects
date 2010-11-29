@@ -5,7 +5,6 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include "../../../lib/analog/analog.h"
-#include "../../../lib/serial/serial.h"
 
 //The calibrated values show what the zero'd value of all axis should be.
 // In theory this is 382, but it should be calibrated to find the actual value.
@@ -16,11 +15,11 @@ static uint16_t results[3];
 
 void gyro_init(){
 	//Send HP reset for a few ms
-	DDRC |= _BV(PIN3);
-	PORTC |= _BV(PIN3);
+	*(&PORT_GYRO_HP_RESET - 0x1) |= _BV(PIN_GYRO_HP_RESET);
+	PORT_GYRO_HP_RESET |= _BV(PIN_GYRO_HP_RESET);
 	_delay_ms(10);
-	PORTC &= ~_BV(PIN3);
-	DDRC &= ~_BV(PIN3);
+	PORT_GYRO_HP_RESET &= ~_BV(PIN_GYRO_HP_RESET);
+	*(&PORT_GYRO_HP_RESET - 0x1) &= ~_BV(PIN_GYRO_HP_RESET);
 
 	//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
 	// We start with this as a default, and reset it as needed.
@@ -29,9 +28,9 @@ void gyro_init(){
 	calibrated_values[2] = 382;
 
 	uint8_t pins[3];
-	pins[0] = 0;
-	pins[1] = 1;
-	pins[2] = 2;
+	pins[0] = PIN_GYRO_X;
+	pins[1] = PIN_GYRO_Y;
+	pins[2] = PIN_GYRO_Z;
 	analog_init(pins, 3);
 }
 

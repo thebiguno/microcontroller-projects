@@ -42,15 +42,15 @@ Pin	RBBB	AVR	Chiindii Function
 8	GND	GND	GND
 9		PB6	XTAL OSC
 10		PB7	XTAL OSC
-11	D5	PD5	LED Shift1
-12	D6	PD6	LED Shift2
-13	D7	PD7	LED Shift3
-14	D8	PB0	LED Shift4
+11	D5	PD5	LED Shift Data
+12	D6	PD6	LED Shift Clock
+13	D7	PD7	LED Shift Latch
+14	D8	PB0
 
-15	D9	PB1	Motor1 ESC	Left
-16	D10	PB2	Motor2 ESC	Top
-17	D11	PB3	Motor3 ESC	Right
-18	D12	PB4	Motor4 ESC	Bottom
+15	D9	PB1	MotorA ESC	Left
+16	D10	PB2	MotorB ESC	Top
+17	D11	PB3	MotorC ESC	Right
+18	D12	PB4	MotorD ESC	Bottom
 19	D13	PB5
 20	AVCC	AVCC	AVCC
 21	AREF	AREF	AREF (3.3v)
@@ -62,6 +62,49 @@ Pin	RBBB	AVR	Chiindii Function
 27	A4	PC4	I2C SDA
 28	A5	PC5	I2C SCL
 
+Pilot - ATMega644
+Pin	AVR	Chiindii Function
+1	PB0	Motor A
+2	PB1	Motor B
+3	PB2	Motor C
+4	PB3	Motor D
+5	PB4
+6	PB5
+7	PB6
+8	PB7
+9	~RESET
+10	VCC
+11	GND
+12	OSC
+13	OSC
+14	PD0	Serial RX
+15	PD1	Serial TX
+16	PD2
+17	PD3
+18	PD4	LED Shift Data
+19	PD5	LED Shift Clock
+20	PD6	LED Shift Latch
+21	PD7
+22	PC0	SCL
+23	PC1	SDA
+24	PC2
+25	PC3
+26	PC4
+27	PC5
+28	PC6
+29	PC7
+30	AVCC
+31	GND
+32	AREF
+33	PA7
+34	PA6
+35	PA5
+36	PA4
+37	PA3	Gyro HP Reset
+38	PA2	Gyro Z
+39	PA1	Gyro Y
+40	PA0	Gyro X
+
 
 Pilot - ATMEGA32U4
 Pin	Teensy2	AVR	Chiindii Function
@@ -72,11 +115,11 @@ Pin	Teensy2	AVR	Chiindii Function
 5		UGnd
 6		UCap
 7		VBus
-8	0	PB0	LED Shift1
-9	1	PB1	LED Shift2
-10	2	PB2	LED Shift3
+8	0	PB0	LED Shift Data
+9	1	PB1	LED Shift Clock
+10	2	PB2	LED Shift Latch
 
-11	3	PB3	LED Shift4
+11	3	PB3
 12	4	PB7
 13	RST		~RESET
 14	VCC	VCC	VCC

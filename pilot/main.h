@@ -3,6 +3,14 @@
 
 #include <avr/io.h>
 
+//Figure out which pin mapping to use
+#if defined(__AVR_ATmega168__) || \
+	defined(__AVR_ATmega328__) 
+	#include "pins328.h"
+#elif defined(__AVR_ATmega644__)
+	#include "pins644.h"
+#endif 
+
 void set_data(char *data);
 
 void send_debug_data(uint8_t *data);
