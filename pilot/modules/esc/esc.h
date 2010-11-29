@@ -5,8 +5,3 @@ void esc_init();
  */
 void esc_set(double speed[]);
 
-/*
- *
- */
-void esc_calibrate();
-
