@@ -27,10 +27,8 @@ int main(){
                 vector_t ki = {tuning[1], tuning[4], tuning[7] };
                 vector_t kd = {tuning[2], tuning[5], tuning[8] };
                 pid_set_params(kp, ki, kd);
-            } else {
-                if (tuning_type == attitude_get_id()) {
-                    attitude_set_params(tuning);
-                }
+            } else if (tuning_type == attitude_get_id()) {
+                attitude_set_params(tuning);
             }
         } else if (command_new_msg) {
             if (command_flags & 0x01) {             // attitude setpoint command
@@ -93,10 +91,9 @@ int main(){
         } else if (command_flags & 0x02) {          // armed by motor command
             if (dt > 3000) {
                 // kill the motors completely
-                motor[0] = 0;
-                motor[1] = 0;
-                motor[2] = 0;
-                motor[3] = 0;
+                for (uint8_t i = 0; i < 4; i++) {
+                    motor[i] = 0;
+                }
             }
             esc_set(motor);
         }
