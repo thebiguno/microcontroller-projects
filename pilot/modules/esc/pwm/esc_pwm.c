@@ -1,4 +1,4 @@
-#include <avr/io.h>
+#include "../esc.h"
 #include "lib/pwm/pwm.h"
 
 // these values represent a typical ESC that runs at 50Hz, 
@@ -9,17 +9,19 @@
 #define PULSE_SPACING 20000 // 20 ms - 50 Hz
 
 void esc_init() {
-	volatile uint8_t *ports[8];
-	ports[0] = &PORTB;
-	ports[1] = &PORTB;
-	ports[2] = &PORTB;
+	volatile uint8_t *ports[4];
+	ports[0] = &PORT_MOTOR_A;
+	ports[1] = &PORT_MOTOR_B;
+	ports[2] = &PORT_MOTOR_C;
+	ports[3] = &PORT_MOTOR_D;
 	
-	uint8_t pins[8];
-	pins[0] = 2;
-	pins[1] = 1;
-	pins[2] = 3;
+	uint8_t pins[4];
+	pins[0] = PIN_MOTOR_A;
+	pins[1] = PIN_MOTOR_B;
+	pins[2] = PIN_MOTOR_C;
+	pins[3] = PIN_MOTOR_D;
 	
-	pwm_init(ports, pins, 3, PULSE_SPACING);
+	pwm_init(ports, pins, 4, PULSE_SPACING);
     pwm_start();
 }
 

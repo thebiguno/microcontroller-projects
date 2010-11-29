@@ -36,4 +36,3 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags);
 void comm_tx_tuning(uint8_t type, double payload[]);
 
 #endif
-

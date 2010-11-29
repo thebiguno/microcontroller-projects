@@ -1,3 +1,8 @@
+#ifndef ESC_H
+#define ESC_H
+
+#include "../../main.h"
+
 void esc_init();
 
 /*
@@ -5,3 +10,4 @@ void esc_init();
  */
 void esc_set(double speed[]);
 
+#endif

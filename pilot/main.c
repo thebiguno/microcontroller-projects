@@ -50,7 +50,6 @@ int main(){
             } else if (command_flags & 0x08) {      // calibrate
                 accel_calibrate();
                 gyro_calibrate();
-                esc_calibrate();
             } else if (command_flags & 0x10) {      // RTS tuning
                 vector_t kp;
                 vector_t ki;
