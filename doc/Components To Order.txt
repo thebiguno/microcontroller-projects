@@ -17,15 +17,15 @@ Digikey:
 2x	Breadboard	438-1045-ND		$20	WO / WJ
 1x	20 MHz Crystal	X036-ND			$1	WJ	
 10x	1k Resistors	CF18JT1K00CT-ND		$1	WO
-10x	10k Resistors	P10KBACT-ND		$1	WO
-10x	4.7k Resistors	4.7KEBK-ND		$1	WO
+10x	10k Resistors	CF18JT10K0CT-ND		$1	WO
+10x	4.7k Resistors	CF18JT4K70CT-ND		$1	WO
 2x	Proto Board	V2025-ND		$14	WO / WJ
 10x	CR2016		P138-ND			$3	WJ
 1x	Coin Cell Hold.	BH800S-ND		$1	WJ
 2x	Female Header	SAM1213-50-ND		$10	WJ
 1	soldering tip	ST6-ND			$4	CB
 1	Battery		N035-ND			$1	CB
-1	Battery		N100-NDSR41		$1	CB                                       
+1	Battery		N100-ND			$1	CB                                       
 10	555 Timer	497-2299-5-ND		$8	CB
 5	650mA 1500AIC 20x5mm Fuse    F2364-ND	$2	CB
 4	4xAA		BH24AAW-ND		$5	CB*3 / WO*1
