@@ -19,16 +19,24 @@ NG Hobbies:
 3x Rotors		http://www.nghobbies.com/cart/index.php?main_page=product_info&products_id=268		$7.50	$30
 
 Digikey:
-?x LiPo Battery Connector
-?x Bullet Conector (ESC / Motors)
+3x	ATMega 644PA	ATMEGA644PA-PU-ND	$25	WO*1 / WJ*2
+2x	Breadboard	438-1045-ND		$20	WO / WJ
+1x	20 MHz Crystal	X036-ND			$1	WJ	
+10x	10k Resistors	CF18JT10K0CT-ND		$2	WO
+10x	4.7k Resistors	4.7KEBK-ND		$1	WO
+2x	Proto Board	V2025-ND		$14	WO / WJ
+10x	CR2016		P138-ND			$3	WJ
+1x	Coin Cell Hold.	BH800S-ND		$1	WJ
+2x	Female Header	SAM1213-50-ND		$10	WJ
+1	soldering tip	ST6-ND			$4	CB
+1	Battery		N035-ND			$1	CB
+1	Battery		N100-NDSR41		$1	CB                                       
+10	555 Timer	497-2299-5-ND		$8	CB
+5	650mA 1500AIC 20x5mm Fuse    F2364-ND	$2	CB
+4	4xAA		BH24AAW-ND		$5	CB*3 / WO*1
+4	4xAA		BH14AAW-ND		$4	CB*3 / WO*1
+20	2x4 DIP Socket	A100204-ND		$3	CB
 
-ATMEGA644PA-PU-ND	http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=ATMEGA644A-PU-ND	$8.25	$24.75
-3M5471-ND		http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=3M5471-ND		$0.46	$1.38
-Breadboard		http://search.digikey.com/scripts/DkSearch/dksus.dll?vendor=0&keywords=438-1045-ND	$9.83	$19.66
-20 MHz Crystal		http://search.digikey.com/scripts/DkSearch/dksus.dll?vendor=0&keywords=X036-ND		.47	
-10x	10k Resistors	CF18JT10K0CT-ND		$2
-10x	4.7k Resistors	4.7KEBK-ND		$1
-2x	Proto Board	V2025-ND		$14
 
 
 SparkFun:

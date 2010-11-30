@@ -8,6 +8,8 @@ void persist_init(){
     ;
 }
 
+//TODO Change section safety from 0x7 to a AVR-specific value based on MMCU
+
 uint8_t persist_write(uint8_t section, uint8_t address, uint8_t *data, uint8_t length){
 	//There are 512 bytes in ATMega168 EEPROM; we use three bits for the section 
 	// address and the remaining 6 for address.  This gives at most 0x3F bytes

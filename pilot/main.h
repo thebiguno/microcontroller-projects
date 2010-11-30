@@ -8,7 +8,7 @@
 	defined(__AVR_ATmega328P__) 
 	#include "pins328.h"
 #elif defined(__AVR_ATmega644__) || \
-	defined(__AVR_ATmega644P__) || \
+	defined(__AVR_ATmega644P__)
 	#include "pins644.h"
 #endif 
 

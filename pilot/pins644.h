@@ -1,3 +1,6 @@
+#ifndef PINS_H
+#define PINS_H
+
 //The pin definitions for ATMega644
 
 #define PORT_LED_SHIFT_DATA		PORTD
@@ -33,3 +36,5 @@
 // is hardcoded to use serial port 0) and should be cross-platform already.
 //RX: PD0
 //TX: PD1
+
+#endif

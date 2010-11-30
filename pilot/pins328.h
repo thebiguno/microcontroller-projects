@@ -1,3 +1,6 @@
+#ifndef PINS_H
+#define PINS_H
+
 //The pin definitions for ATMega328 / 168
 
 #define PORT_LED_SHIFT_DATA		PORTD
@@ -29,8 +32,9 @@
 //SCL: PC5
 //SDA: PC4
 
-
 //Note: Serial communications are referenced by macro definitions UCSR0x (i.e.
 // is hardcoded to use serial port 0) and should be cross-platform already.
 //RX: PD0
 //TX: PD1
+
+#endif
