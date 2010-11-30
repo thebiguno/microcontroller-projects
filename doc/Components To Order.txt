@@ -25,6 +25,11 @@ Digikey:
 ATMEGA644PA-PU-ND	http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=ATMEGA644A-PU-ND	$8.25	$24.75
 3M5471-ND		http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=3M5471-ND		$0.46	$1.38
 Breadboard		http://search.digikey.com/scripts/DkSearch/dksus.dll?vendor=0&keywords=438-1045-ND	$9.83	$19.66
+10x	10k Resistors	CF18JT10K0CT-ND		$2
+10x	4.7k Resistors	4.7KEBK-ND		$1
+2x	Proto Board	V2025-ND		$14
+
+
 
 SparkFun:
 
