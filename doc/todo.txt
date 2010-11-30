@@ -1,9 +1,9 @@
-- combine all the filter messages into one message that has:
-  - enough bytes to represent the algorithm with the most parameters
-  - a byte to indicate the algorithm compiled into the avr
-  - add an RTS filter to the command message
-  - add a FilterEventListener to the protocol handler (avr and java)
-  - have the gui show the right tuning screen based on the results of the initial RTS filter
+Have the GUI show the right tuning screen based on the results of the initial RTS filter
+More configurable flight modes:
+- have one set of pid params for each flight mode
+- add pitch, yaw, roll, throttle scaling params for ea
+- add a mode change message that changes the mode, pid params, and scaling params on the pilot
+- add scaling params to GUI
 
 sticks
 LY		pitch -90 deg to +90 deg (limited by mode)
