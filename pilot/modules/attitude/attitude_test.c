@@ -27,7 +27,7 @@ int main(){
 //        serial_write_s(temp);
 //        sprintf(temp, "ax=%+1.2f, ay=%+1.2f, az=%+1.2f\n\r", a.x, a.y, a.z);
 //        serial_write_s(temp);
-        sprintf(temp, " x=%+1.2f,  y=%+1.2f,  z=%+1.2f\n\r", pv.x, pv.y, pv.z);
+        sprintf(temp, " x=%+1.2f,  y=%+1.2f,  z=%+1.2f\n\r", pv.x * 57.2957795, pv.y * 57.2957795, pv.z * 57.2957795);
         serial_write_s(temp);
     }
 }
