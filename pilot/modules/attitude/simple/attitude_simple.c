@@ -3,19 +3,17 @@
 
 #define ATTITUDE_ALGORITHM_ID 0x08
 
-// TODO read timeConstant from EEPROM
+// TODO read kt from EEPROM
 // TODO try to understand what these filter terms are for
-#define timeConstant 0
-#define filterTerm0 timeConstant / (timeConstant + 0.010) //10ms = ESC update rate
-#define filterTerm1 1 - filterTerm0
-
-#define MAGIC 57.2957795 // what is this constant??
+#define kt 0
+#define k0 kt / (kt + 0.010) //10ms = ESC update rate
+#define k1 1 - k0
 
 static vector_t pv;
 uint64_t millis = 0;
 
 void attitude_init(vector_t gyro, vector_t accel) {
-    ;
+    millis = timer_millis();
 }
 
 void attitude_reset() {
@@ -29,10 +27,10 @@ vector_t attitude(vector_t gyro, vector_t accel) {
     uint64_t curr_millis = timer_millis();
     double dt = (curr_millis - millis) * 0.001;
     millis = curr_millis;
-    vector_t result;
-    result.x = (filterTerm0 * (pv.x + (gyro.x * dt)) + filterTerm1 * (accel.x)) * MAGIC;
-    result.y = (filterTerm0 * (pv.y + (gyro.y * dt)) + filterTerm1 * (accel.y)) * MAGIC;
-    return result;
+    pv.x = (k0 * (pv.x + (gyro.x * dt)) + k1 * (accel.x));
+    pv.y = (k0 * (pv.y + (gyro.y * dt)) + k1 * (accel.y));
+    pv.z = (k0 * (pv.z + (gyro.z * dt)) + k1 * (accel.z));
+    pv;
 }
 
 uint8_t attitude_get_id() {
