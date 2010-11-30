@@ -1,7 +1,7 @@
 #include <math.h>
 
 #include "../../../main.h"
-#include "../../lib/timer/timer.h"
+#include "../../../lib/timer/timer.h"
 
 #define ATTITUDE_ALGORITHM_ID 0x02
 
