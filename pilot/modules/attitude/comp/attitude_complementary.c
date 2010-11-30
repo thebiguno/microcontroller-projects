@@ -15,9 +15,11 @@
 static vector_t int_y1;    // output of the first integrator (rad/sec)
 static vector_t filter;    // complementary filter output (and output of second integrator), (rad)
 static vector_t k;         // tuning paramater -- bandwidth of filter
-static uint16_t millis;
+uint64_t millis;
 
 void attitude_init(vector_t gyro, vector_t accel) {
+    millis = timer_millis();
+    
     // TODO read this from EEPROM
     k.x = 1;
     k.y = 1;
