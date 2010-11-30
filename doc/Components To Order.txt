@@ -16,7 +16,8 @@ Digikey:
 1x	ATMega 168	ATMEGA168-20PU-ND	$5	CB
 2x	Breadboard	438-1045-ND		$20	WO / WJ
 1x	20 MHz Crystal	X036-ND			$1	WJ	
-10x	10k Resistors	CF18JT10K0CT-ND		$2	WO
+10x	1k Resistors	CF18JT1K00CT-ND		$1	WO
+10x	10k Resistors	P10KBACT-ND		$1	WO
 10x	4.7k Resistors	4.7KEBK-ND		$1	WO
 2x	Proto Board	V2025-ND		$14	WO / WJ
 10x	CR2016		P138-ND			$3	WJ
@@ -30,7 +31,7 @@ Digikey:
 4	4xAA		BH24AAW-ND		$5	CB*3 / WO*1
 4	4xAA		BH14AAW-ND		$4	CB*3 / WO*1
 20	2x4 DIP Socket	A100204-ND		$3	CB
-
+1	Accelerometer	MMA7455LT-ND		$3	WJ
 
 
 SparkFun:
