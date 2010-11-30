@@ -8,7 +8,7 @@ SOURCES=main.c ../lib/timer/timer_0.c
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DNO_INTERRUPT_ENABLE
+CDEFS += -DNO_INTERRUPT_ENABLE -lm -lc -lm
 
 #Include each module
 include modules/accel/module.mk

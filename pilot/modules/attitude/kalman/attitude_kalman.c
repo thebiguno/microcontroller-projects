@@ -63,6 +63,12 @@ uint8_t attitude_get_id() {
 	return ATTITUDE_ALGORITHM_ID;
 }
 
+void attitude_reset() {
+	angle.x = 0.0;
+	angle.y = 0.0;
+	angle.z = 0.0;
+}
+
 void attitude_get_params(double params[]) {
     params[0] = q_angle.x;
     params[1] = q_angle.y;
