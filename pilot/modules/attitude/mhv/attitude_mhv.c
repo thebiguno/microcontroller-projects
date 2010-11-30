@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "../../../main.h"
 
 #define ATTITUDE_ALGORITHM_ID 0x04
@@ -19,14 +21,13 @@ void attitude_init(vector_t gyro, vector_t accel) {
     gain = 3.14159265358979f * (5.0f / 180.0f); // gyroscope measurement error in rad/s (shown as 5 deg/s)
     beta = sqrt(3.0f / 4.0f) * gain;           // compute beta
     
-    
     q.w = 1.0;
     q.x = 0.0;
     q.y = 0.0;
     q.z = 0.0;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
+vector_t attitude(vector_t gyro, vector_t accel) {
     // Local system variables
     double norm;                                                    // vector norm
     double f_1, f_2, f_3;                                           // objective function elements
@@ -103,13 +104,13 @@ vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
     double test = q.x * q.y + q.z * q.w;
     if (test > 0.499) { // singularity at north pole
         result.z = 2 * atan2(q.x, q.w);
-        result.y = Math.PI/2;
+        result.y = M_PI/2;
         result.x = 0;
         return;
     }
     if (test < -0.499) { // singularity at south pole
         result.z = -2 * atan2(q.x, q.w);
-        result.y = - Math.PI/2;
+        result.y = - M_PI/2;
         result.x = 0;
         return;
     }
