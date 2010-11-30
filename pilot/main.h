@@ -5,9 +5,10 @@
 
 //Figure out which pin mapping to use
 #if defined(__AVR_ATmega168__) || \
-	defined(__AVR_ATmega328__) 
+	defined(__AVR_ATmega328P__) 
 	#include "pins328.h"
-#elif defined(__AVR_ATmega644__)
+#elif defined(__AVR_ATmega644__) || \
+	defined(__AVR_ATmega644P__) || \
 	#include "pins644.h"
 #endif 
 
