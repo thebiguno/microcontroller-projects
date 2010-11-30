@@ -5,7 +5,7 @@
  */
  
 #include "../communication.h"
-#include "lib/serial/serial.h"
+#include "../../../lib/serial/serial.h"
 
 #define START 0x7e
 #define ESCAPE 0x7d

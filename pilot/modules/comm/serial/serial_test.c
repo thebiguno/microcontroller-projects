@@ -11,24 +11,35 @@
 #include "../communication.h"
 
 int main (void){
-	//Do setup here
-	comm_init();
+    comm_init();
 
-    uint8_t new_command
-    double[4] command_values;
+    uint8_t new = 0;
+    double command_values[4];
     uint8_t command_flags;
+    double tuning_values[9];
+    uint8_t tuning_id;
 
-	//Main program loop
-	while (1){
-		_delay_ms(1000);
+    //Main program loop
+    while (1){
+        _delay_ms(1000);
 
-        new_command = comm_rx_command(&command_values, &command_flags);
+        // read and echo command
+        new = comm_rx_command(command_values, &command_flags);
+        if (new) {
+            if (command_flags & _BV(0)) {
+                vector_t vector = {command_values[1], command_values[2], command_values[3]};
+                double motor[4] = {0,0,0,0};
+                comm_tx_telemetry(vector, motor, command_flags);
+            } else if (command_flags & _BV(1)) {
+                vector_t vector = {0,0,0};
+                comm_tx_telemetry(vector, command_values, command_flags);
+            }
+        }
 
-        // TODO receive pid tuning
-        // TODO receive filter tuning
-        
-        // TODO send conditional on flags
-//        comm_tx_tm(&ctrl_sp, &motor, &ctrl_flags);
-        // TODO send pid
-	}
+        // read and echo tuning
+        new = comm_rx_tuning(&tuning_id, tuning_values);
+        if (new) {
+            comm_tx_tuning(tuning_id, tuning_values);
+        }
+    }
 }
