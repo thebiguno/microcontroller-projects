@@ -1,9 +1,12 @@
+#include <math.h>
+
 #include "../../../main.h"
+#include "../../lib/timer/timer.h"
 
 #define ATTITUDE_ALGORITHM_ID 0x02
 
-#define DEG_PT5 = 0.00872664626;
-#define DEG_30 = 1.570796326794897;
+#define DEG_PT5 0.00872664626
+#define DEG_30 1.570796326794897
 /*
  * A complementary filter derived from the following:
  * - http://www.rcgroups.com/forums/showpost.php?p=12082524&postcount=1286
@@ -12,6 +15,7 @@
 static vector_t int_y1;    // output of the first integrator (rad/sec)
 static vector_t filter;    // complementary filter output (and output of second integrator), (rad)
 static vector_t k;         // tuning paramater -- bandwidth of filter
+static uint16_t millis;
 
 void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM
@@ -28,23 +32,27 @@ void attitude_init(vector_t gyro, vector_t accel) {
     int_y1.z = -gyro.z;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
-    vector_t int_x1; // input to the first integrator (rad/sec/sec)
-    vector_t int_x2; // input to the second integrator (rad/sec)
+void _attitude(double *gyro, double *_accel, double *_accel_z, double *_int_y1, double *_filter, double k, double dt) {
+    double accel;
+    if (*_accel_z < DEG_PT5 || *_filter > DEG_30 || *_filter < -DEG_30) {
+        accel = *_accel;
+    } else {
+        accel = atan2(*_accel, *_accel_z);
+    }
 
-    if (accel.z < DEG_PT5 || filter.x > DEG_30 || filter.x < -DEG_30) {
-    	double accel_x = filter.x;
-    } else {
-    	double accel_x = atan(accel.x, accel.z);
-    }
-    if (accel.z < DEG_PT5 || filter.y > DEG_30 || filter.y < -DEG_30) {
-    	double accel_x = filter.y;
-    } else {
-    	double accel_x = atan(accel.y, accel.z);
-    }
-    
-    filter.x = _attitude(gyro.x, accel_x, &int_y1.x, &filter.x, k.x);
-    filter.y = _attitude(gyro.y, accel_y, &int_y1.y, &filter.y, k.y);
+    double int_x1 = (accel - *_filter) * k *  k;                    // input to the first integrator (rad/sec/sec)
+    *_int_y1 += int_x1 * dt;
+    double int_x2 = *_int_y1 + (accel - *_filter) * 2 *  k + *gyro;  // input to the second integrator (rad/sec)
+    *_filter = (int_x2 * dt) + *_filter;
+}
+
+vector_t attitude(vector_t gyro, vector_t accel) {
+    uint64_t curr_millis = timer_millis();
+    double dt = (curr_millis - millis) * 0.001;
+    millis = curr_millis;
+
+    _attitude(&gyro.x, &accel.x, &accel.z, &int_y1.x, &filter.x, k.x, dt);
+    _attitude(&gyro.y, &accel.y, &accel.z, &int_y1.y, &filter.y, k.y, dt);
     
     return filter;
 }
@@ -65,12 +73,4 @@ void attitude_get_params(double params[]) {
 
 void attitude_set_params(double params[]) {
 
-}
-
-double _attitude(double gyro, double accel, double *_int_y1, double *_filter double k) {
-    double int_x1 = (accel - *_filter) * k *  k;
-    *_int_y1 += int_x1 * dt;
-    double int_x2 = *_int_y1 + (accel - *_filter) * 2 *  k + gyro;
-    *_filter = (int_x2 * dt) + *_filter;
-    return filter;
 }
