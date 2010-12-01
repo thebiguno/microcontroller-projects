@@ -39,25 +39,25 @@
 #include "psx.h"
 
 //Define ports used
-static volatile uint8_t *_data_port = 0;
-static volatile uint8_t *_clock_port = 0;
-static volatile uint8_t *_command_port = 0;
-static volatile uint8_t *_attention_port = 0;
+static volatile uint8_t *_data_port;
+static volatile uint8_t *_clock_port;
+static volatile uint8_t *_command_port;
+static volatile uint8_t *_attention_port;
 
 //Define the input
-static volatile uint8_t *_data_in = 0;
+static volatile uint8_t *_data_in;
 
 //Define ddr used
-static volatile uint8_t *_data_ddr = 0;
-static volatile uint8_t *_clock_ddr = 0;
-static volatile uint8_t *_command_ddr = 0;
-static volatile uint8_t *_attention_ddr = 0;
+static volatile uint8_t *_data_ddr;
+static volatile uint8_t *_clock_ddr;
+static volatile uint8_t *_command_ddr;
+static volatile uint8_t *_attention_ddr;
 
 //Define pins to use
-static uint8_t _clock_pin = 0;
-static uint8_t _command_pin = 0;
-static uint8_t _attention_pin = 0;
-static uint8_t _data_pin = 0;
+static uint8_t _clock_pin;
+static uint8_t _command_pin;
+static uint8_t _attention_pin;
+static uint8_t _data_pin;
 
 //Common structure for last read data
 static uint8_t _data[9];
