@@ -7,6 +7,6 @@ SOURCES=../attitude_test.c attitude_kalman.c ../../accel/MMA7455L/accel_MMA7455L
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
-CDEFS += -lm -lc -lm
+CDEFS += -Wl,-u,vfprintf -lprintf_flt -lm
 
 include ../../../../../build/targets.mk
