@@ -1,3 +1,6 @@
+#ifndef ATTITUDE_H
+#define ATTITUDE_H
+
 #include "../../main.h"
 
 /*
@@ -19,3 +22,6 @@ uint8_t attitude_get_id();
 
 void attitude_get_params(double params[]);
 void attitude_set_params(double params[]);
+
+#endif
+
