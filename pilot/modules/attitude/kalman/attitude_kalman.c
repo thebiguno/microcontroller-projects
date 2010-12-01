@@ -62,7 +62,9 @@ void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_
 
 vector_t attitude(vector_t gyro, vector_t accel) {
     uint64_t curr_millis = timer_millis();
-    double dt = (curr_millis - millis) * 0.001;
+    uint64_t dtm = curr_millis - millis;
+    if (dtm == 0) return angle;
+    double dt = dtm * 0.001;
     millis = curr_millis;
 
     _attitude(gyro.x, accel.x, &state_x, tuning_x, dt);
