@@ -1,14 +1,14 @@
 include ../build/variables.mk
 
 PROJECT=pilot
-MMCU=atmega168
+MMCU=atmega644
 F_CPU=20000000
 SOURCES=main.c ../lib/timer/timer_0.c
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DNO_INTERRUPT_ENABLE -lm -lc -lm
+CDEFS += -DNO_INTERRUPT_ENABLE -lm
 
 #Include each module
 include modules/accel/module.mk
