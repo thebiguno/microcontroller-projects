@@ -15,8 +15,8 @@ AVRDUDE_PROGRAMMER=stk500v1
 AVRDUDE_PORT=/dev/tty.usb*
 AVRDUDE_UPLOAD_RATE=19200
 
-COMPILER=/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/avr-gcc
-OBJCOPY=/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/avr-objcopy
+COMPILER=avr-gcc
+OBJCOPY=avr-objcopy
 
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99
 CDEFS=-DF_CPU=$(F_CPU)
