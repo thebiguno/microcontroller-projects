@@ -17,13 +17,15 @@ int main(){
     accel_init();
     accel_calibrate();
     
+    attitude_init(gyro_get(), accel_get());
+    
     //Main program loop
     while (1) {
         vector_t g = gyro_get();
         vector_t a = accel_get();
         vector_t pv = attitude(g, a);
-        
-        sprintf(temp, " x=%+d,  y=%+d,  z=%+d\n\r", (int) (pv.x * 57.2957795), (int) (pv.y * 57.2957795), (int) (pv.z * 57.2957795));
+
+        sprintf(temp, " x=%+03d, y=%+03d, z=%+03d\n\r", (int) (pv.x * 57.2957795), (int) (pv.y * 57.2957795), (int) (pv.z * 57.2957795));
         serial_write_s(temp);
     }
 }
