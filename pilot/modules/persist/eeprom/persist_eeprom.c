@@ -1,12 +1,26 @@
 /*
- * LYPR530 implementation 
+ * EEPROM persist implementation 
  */
 #include "../persist.h"
 #include "../../../../../lib/eeprom/eeprom.h"
 
+#if defined(__AVR_ATmega168__) 
+#define SECTION_MASK 0x7
+#elif defined(__AVR_ATmega328P__)
+#define SECTION_MASK 0xF
+#elif defined(__AVR_ATmega644__) || \
+	defined(__AVR_ATmega644P__) || \
+	defined(__AVR_ATmega644PA__)
+#define SECTION_MASK 0x1F
+#else
+#error You must define the section mask for your chip!  Please verify that MMCU is set correctly, and that there is a matching pin definition file declared at the top of eeprom.c
+#endif 
+
+
 void persist_init(){
     ;
 }
+
 
 //TODO Change section safety from 0x7 to a AVR-specific value based on MMCU
 
