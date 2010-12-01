@@ -18,7 +18,9 @@
  * 
  * You need to pass the ports by reference - e.g. shift_init(&PORTC, PORTC0, &PORTC, PORTC1, &PORTC, PORTC2).
  */
-void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin);
+void shift_init(volatile uint8_t *data_port, uint8_t data_pin, 
+		volatile uint8_t *clock_port, uint8_t clock_pin, 
+		volatile uint8_t *latch_port, uint8_t latch_pin);
 
 /*
  * Sends one byte of data to the shift register.  Must have called shift_init() first.
