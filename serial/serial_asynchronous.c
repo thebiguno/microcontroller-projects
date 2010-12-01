@@ -138,8 +138,13 @@ uint8_t serial_available() {
 #if defined(__AVR_ATtiny2313__) || \
     defined(__AVR_ATmega168__)
 ISR(USART_RX_vect){
-#elif defined(__AVR_ATmega644__)
+#elif defined(__AVR_ATmega644__) || \
+	defined(__AVR_ATmega644P__) || \
+	defined(__AVR_ATmega644PA__)
 ISR(USART0_RX_vect){
+#else 
+#error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
+void error1() {
 #endif
       
 	//Next index, assuming all goes well
@@ -156,8 +161,13 @@ ISR(USART0_RX_vect){
 #if defined(__AVR_ATtiny2313__) || \
     defined(__AVR_ATmega168__)
 ISR(USART_UDRE_vect){
-#elif defined(__AVR_ATmega644__)
+#elif defined(__AVR_ATmega644__) || \
+	defined(__AVR_ATmega644P__) || \
+	defined(__AVR_ATmega644PA__)
 ISR(USART0_UDRE_vect){
+#else 
+#error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
+void error2() {
 #endif
 
 	//Next index, assuming all goes well
