@@ -6,10 +6,13 @@
 //Figure out which pin mapping to use
 #if defined(__AVR_ATmega168__) || \
 	defined(__AVR_ATmega328P__) 
-	#include "pins328.h"
+#include "pins/328.h"
 #elif defined(__AVR_ATmega644__) || \
-	defined(__AVR_ATmega644P__)
-	#include "pins644.h"
+	defined(__AVR_ATmega644P__) || \
+	defined(__AVR_ATmega644PA__)
+#include "pins/644.h"
+#else
+#error You must define the pin mappings for your chip!  Please verify that MMCU is set correctly, and that there is a matching pin definition file declared at the top of main.h
 #endif 
 
 void set_data(char *data);
