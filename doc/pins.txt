@@ -36,7 +36,7 @@ Pin	AVR	Chiindii Function
 2	PB1	Motor B
 3	PB2	Motor C
 4	PB3	Motor D
-5	PB4
+5	PB4	Heartbeat
 6	PB5	MOSI
 7	PB6	MISO
 8	PB7	SCK
