@@ -148,7 +148,7 @@ void _read() {
                     _pos = 0;
                     _chk = 0;
                 } else {
-                    _buf[_pos - 3] = b;
+                    _buf[_pos++ - 3] = b;
                 }
         }
     }
