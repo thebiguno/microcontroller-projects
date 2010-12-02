@@ -1,7 +1,11 @@
 #include "main.h"
-#include "../lib/timer/timer.h"
 
 int main(){
+
+    //Heartbeat init
+    *(&PORT_HEARTBEAT - 0x1) |= _BV(PIN_HEARTBEAT);
+    PORT_HEARTBEAT |= _BV(PIN_HEARTBEAT);
+
     uint64_t millis = 0;
     uint8_t armed = 0x00;
     uint8_t rts_telemetry = 0x00;
@@ -12,9 +16,18 @@ int main(){
 
     vector_t sp = { 0,0,0 };      // PID set point
     double motor[4];
+
+	timer_init();    
+    gyro_init();    
+    accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
+    
+    attitude_init(gyro_get(), accel_get());    
     
     //Main program loop
     while (1) {
+        //Heartbeat
+        PORT_HEARTBEAT = PORT_HEARTBEAT ^ _BV(PIN_HEARTBEAT);
+    
         uint64_t curr_millis = timer_millis();
         uint64_t dt =+ (curr_millis - millis);
         millis = curr_millis;
