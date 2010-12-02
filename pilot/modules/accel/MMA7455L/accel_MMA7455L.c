@@ -8,7 +8,7 @@
  */
 #define ADDRESS 0x1D
 
-#define AVERAGE_SAMPLE_SIZE 0x8
+#define AVERAGE_SAMPLE_SIZE 0x4
 
 #define PERSIST_OFFSET 0x00  //The address to store offset calibration data
 
@@ -17,6 +17,8 @@ static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
 static uint8_t running_average_pointer = 0;
 
 uint8_t message[8]; //Temporary array used for i2c communications
+
+static vector_t result; //Accel values passed back
 
 void accel_init(){
 	//Init i2c
@@ -164,6 +166,9 @@ void accel_calibrate(){
 }
 
 vector_t accel_get() {
+	//Don't wait around if the data is not ready...
+	if (!_accel_data_is_ready()) return result;
+	
 	_accel_do_read(running_average[running_average_pointer]);
 	running_average_pointer = (running_average_pointer + 1) % AVERAGE_SAMPLE_SIZE;
 
@@ -176,7 +181,6 @@ vector_t accel_get() {
 
 	//Calculate the actual g values; for 2g sensitivity (which we are using), 
 	// there are 64 intervals per g value.
-	vector_t result;
 	result.x = (double) totals[0] / AVERAGE_SAMPLE_SIZE / 0x3F;
 	result.y = (double) totals[1] / AVERAGE_SAMPLE_SIZE / 0x3F;
 	result.z = (double) totals[2] / AVERAGE_SAMPLE_SIZE / 0x3F;
