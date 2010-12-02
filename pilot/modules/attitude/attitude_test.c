@@ -10,7 +10,11 @@ int main(){
     char temp[35];
     
     serial_init(9600, 8, 0, 1);
-    
+
+    //Heartbeat init
+    DDRB |= _BV(PINB0);
+    PORTB |= _BV(PINB0);
+
     gyro_init();
     gyro_calibrate();
     
@@ -21,6 +25,9 @@ int main(){
     
     //Main program loop
     while (1) {
+		//Heartbeat
+        PORTB = PORTB ^ _BV(PINB0);
+
         vector_t g = gyro_get();
         vector_t a = accel_get();
         vector_t pv = attitude(g, a);
