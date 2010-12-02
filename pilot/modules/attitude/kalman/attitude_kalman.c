@@ -29,6 +29,8 @@ static kalman_tuning_t tuning_y;
 static uint64_t millis;
 
 void attitude_init(vector_t gyro, vector_t accel) {
+	timer_init();
+	
     millis = timer_millis();
 
     // TODO read this from EEPROM
