@@ -4,6 +4,7 @@ PROJECT=pilot
 MMCU=atmega644
 F_CPU=20000000
 SOURCES=main.c ../lib/timer/timer_0.c
+AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk

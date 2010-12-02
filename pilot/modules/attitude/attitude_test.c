@@ -12,8 +12,8 @@ int main(){
     serial_init(9600, 8, 0, 1);
 
     //Heartbeat init
-    DDRB |= _BV(PINB0);
-    PORTB |= _BV(PINB0);
+    *(&PORT_HEARTBEAT - 0x1) |= _BV(PIN_HEARTBEAT);
+    PORT_HEARTBEAT |= _BV(PIN_HEARTBEAT);
 
     gyro_init();
     gyro_calibrate();
@@ -26,7 +26,7 @@ int main(){
     //Main program loop
     while (1) {
 		//Heartbeat
-        PORTB = PORTB ^ _BV(PINB0);
+        PORT_HEARTBEAT = PORT_HEARTBEAT ^ _BV(PIN_HEARTBEAT);
 
         vector_t g = gyro_get();
         vector_t a = accel_get();

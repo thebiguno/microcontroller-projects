@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <avr/io.h>
+#include "../lib/timer/timer.h"
 
 //Figure out which pin mapping to use
 #if defined(__AVR_ATmega168__) || \
