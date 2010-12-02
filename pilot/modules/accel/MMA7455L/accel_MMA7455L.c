@@ -21,6 +21,11 @@ uint8_t message[8]; //Temporary array used for i2c communications
 void accel_init(){
 	//Init i2c
 	i2c_master_init(400);
+	
+	//We *must* start interrupts before any i2c stuff will work, regardless of 
+	// anything else.  If it matters, you should start this accel module after
+	// other interrupt-sensitive modules.
+	sei();
 
 	//Enable accelerometer in 2g measurement mode
 	message[0] = ADDRESS << 1 | I2C_WRITE;
