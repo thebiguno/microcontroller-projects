@@ -2,7 +2,7 @@ Messages originating in the same control loop are batched together provided that
 
 COMMAND ( ->)
 frame start	1 byte	(0x7e)
-length		1 byte  (0x11 = 17 bytes)
+length		1 byte  (0x12 = 18 bytes)
 cmd		1 byte	(0x43 = C for command)
 L / T		4 bytes
 T / R		4 bytes
@@ -25,7 +25,7 @@ note: an attitude command with a throttle of 0 is a kill command
 
 TUNING (<->)
 frame start	1 byte	(0x7e)
-length		1 byte	(0x26 = 38 bytes)
+length		1 byte	(0x27 = 39 bytes)
 cmd		1 byte	(0x54 = T for tuning)
 type		1 byte  0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv 
 payload		36 bytes (9 floats, depends on tuning type)
