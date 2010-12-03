@@ -9,7 +9,7 @@ AVRDUDE_PROGRAMMER=usbtiny
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DNO_INTERRUPT_ENABLE -lm
+CDEFS += -DADC_PRESCALER_MASK=0x7 -DNO_INTERRUPT_ENABLE -lm
 
 #Include each module
 include modules/accel/module.mk

@@ -13,6 +13,8 @@ int main(){
 	uint8_t command_flags;
 	double tuning[9];
 	uint8_t tuning_type;
+	
+	uint64_t last_telemetry = 0;
 
 	vector_t sp = { 0,0,0 };	  // PID set point
 	double motor[4];
@@ -22,6 +24,10 @@ int main(){
 	timer_init();
 	gyro_init();
 	accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
+	
+	//TODO Remove later...
+	gyro_calibrate();
+	accel_calibrate();
 	
 	attitude_init(gyro_get(), accel_get());	   
 	
@@ -113,7 +119,10 @@ int main(){
 		}
 
 		if (rts_telemetry) {						// RTS telemetry
-			comm_tx_telemetry(pv, motor, armed);
+			if (curr_millis - last_telemetry > 100){
+				comm_tx_telemetry(pv, motor, armed);
+				last_telemetry = curr_millis;
+			}
 		}
 	}
 }

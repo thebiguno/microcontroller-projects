@@ -148,7 +148,7 @@ void _read() {
                     _pos = 0;
                     _chk = 0;
                 } else {
-                    _buf[_pos - 3] = b;
+                    _buf[_pos++ - 3] = b;
                 }
         }
     }
@@ -186,7 +186,7 @@ uint8_t comm_rx_tuning(uint8_t *type, double tuning[]) {
 
 void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
 	uint8_t packet[30];
-    packet[0] = 'T';
+    packet[0] = 'E';
 	_double_to_bytes(vector.x, &packet[1]);
     _double_to_bytes(vector.y, &packet[5]);
     _double_to_bytes(vector.z, &packet[9]);
@@ -199,7 +199,7 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
 
 void comm_tx_tuning(uint8_t type, double payload[]) {
 	uint8_t packet[38];
-    packet[0] = 'E';
+    packet[0] = 'T';
     packet[1] = type;
     for (uint8_t i = 0; i < 9; i++) {
         _double_to_bytes(payload[0], &packet[(i*4)+2]);
