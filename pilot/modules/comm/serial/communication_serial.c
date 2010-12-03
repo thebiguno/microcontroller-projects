@@ -36,7 +36,7 @@ double _tuning[9];
 uint8_t _tuning_type;
 
 void comm_init(){
-	serial_init(9600, 8, 0, 1);
+	serial_init(57600, 8, 0, 1);
 }
 
 void _double_to_bytes(double value, uint8_t *buffer) {
