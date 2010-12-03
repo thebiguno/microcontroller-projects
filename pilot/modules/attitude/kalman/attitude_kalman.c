@@ -65,7 +65,11 @@ void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_
 vector_t attitude(vector_t gyro, vector_t accel) {
     uint64_t curr_millis = timer_millis();
     uint64_t dtm = curr_millis - millis;
+
+    //If there is no elapsed time (ms), return the last known angle.
+    // If there is a dt==0 encountered, Kalman throws a fit!
     if (dtm == 0) return angle;
+
     double dt = dtm * 0.001;
     millis = curr_millis;
 
