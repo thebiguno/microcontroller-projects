@@ -15,7 +15,7 @@ flags are:
 0  0x01		attitude command (i.e. armed with attidude)
 1  0x02		motor command (i.e. armed with motor)
 2  0x04		reset attitude command
-3  0x08         calibrate command
+3  0x08		calibrate command
 4  0x10		RTS tuning (PID & attitude)
 4  0x20		RTS telemetry flag (sent with attidude and motor commands)
 6  0x40		(unused)
