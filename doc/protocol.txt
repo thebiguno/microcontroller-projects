@@ -45,15 +45,16 @@ cmd		1 byte	(0x45 = E for tElemetry)
 roll (x)	4 bytes
 pitch (y)	4 bytes
 yaw (z)		4 bytes
-motor F		4 bytes
+motor A		4 bytes
 motor B		4 bytes
-motor L		4 bytes
-motor R		4 bytes
+motor C		4 bytes
+motor D		4 bytes
 flags		1 byte
 checksum	1 byte
 
 flags are:
 0  0x01		armed
+1  0x02		wing configuration (0 = left,front,right,back; 1 = tl,tr,br,bl)
 
 Length
 The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.
