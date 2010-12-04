@@ -191,7 +191,7 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags) {
     _double_to_bytes(vector.y, &packet[5]);
     _double_to_bytes(vector.z, &packet[9]);
     for (uint8_t i = 0; i < 4; i++) {
-        _double_to_bytes(motor[0], &packet[(i*4)+13]);
+        _double_to_bytes(motor[i], &packet[(i*4)+13]);
     }
     packet[29] = flags;
     _send_bytes(packet, 30);
@@ -202,7 +202,7 @@ void comm_tx_tuning(uint8_t type, double payload[]) {
     packet[0] = 'T';
     packet[1] = type;
     for (uint8_t i = 0; i < 9; i++) {
-        _double_to_bytes(payload[0], &packet[(i*4)+2]);
+        _double_to_bytes(payload[i], &packet[(i*4)+2]);
     }
     _send_bytes(packet, 38);
 }
