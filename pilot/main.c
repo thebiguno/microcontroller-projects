@@ -57,9 +57,10 @@ int main(){
 			
 				attitude_set_params(tuning);
 			}
-		} else if (command_new_msg) {
+		}
+		if (command_new_msg) {
 			if (command_flags & 0x01) {				// attitude setpoint command
-				if (command[0] < 0.001) {
+				if (command[0] < 0.01) {
 					armed = 0x00;
 				} else {
 					armed = 0x01;
@@ -83,22 +84,18 @@ int main(){
 				vector_t kd;
 				pid_get_params(kp, ki, kd);
 				double pid[9] = { kp.x, ki.x, kd.x, kp.y, ki.y, kd.y, kp.z, ki.z, kd.z };
-				comm_tx_tuning(0x00, pid);
+				comm_tx_tuning('P', pid);
 
-				uint8_t type = attitude_get_id();
 				double params[9] = { 0.0 };
 				attitude_get_params(params);
-				comm_tx_tuning(type, params);
+				comm_tx_tuning(attitude_get_id(), params);
+			} else if (command_flags & 0x20) {		// RTS telemetry
+			    // TODO with this logic, once telemetry is requested, it can't be turned off
+				rts_telemetry = 0x01;
 			} else if (command_flags & 0x80) {		// write EEPROM
 				
 			}			
 			
-			// a request for telemetry will come along with attitude and motor setpoint commands
-			if (command_flags & 0x10) {				// RTS telemetry
-				rts_telemetry = 0x01;
-			} else {
-				rts_telemetry = 0x00;
-			}
 			dt = 0;
 		}
 
