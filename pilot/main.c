@@ -43,18 +43,12 @@ int main(){
 		uint8_t tuning_new_msg = comm_rx_tuning(&tuning_type, tuning);
 		
 		if (tuning_new_msg) {
-			if (tuning_type == 0x00) {
-			    DDRB |= _BV(PINB0);
-			    PORTB |= _BV(PINB0);
-			
+			if (tuning_type == 'P') {
 				vector_t kp = {tuning[0], tuning[3], tuning[6] };
 				vector_t ki = {tuning[1], tuning[4], tuning[7] };
 				vector_t kd = {tuning[2], tuning[5], tuning[8] };
 				pid_set_params(kp, ki, kd);
 			} else if (tuning_type == attitude_get_id()) {
-			    DDRB |= _BV(PINB1);
-			    PORTB |= _BV(PINB1);
-			
 				attitude_set_params(tuning);
 			}
 		}
