@@ -7,11 +7,11 @@
 
 int main (void){
 	//Do setup here
-	DDRA = 0xF;
+	DDRB = 0xF;
 	
 	//Main program loop
 	while (1){
-		PORTA = ~PORTA;
+		PORTB = ~PORTB;
 		
 		_delay_ms(500);
 	}

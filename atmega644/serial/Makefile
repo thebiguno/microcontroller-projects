@@ -2,7 +2,7 @@ include ../../build/variables.mk
 
 PROJECT=serial
 MMCU=atmega644
-F_CPU=16000000
+F_CPU=20000000
 SOURCES=main.c lib/timer/timer.c lib/serial/serial_asynchronous.c
 
 # You can also define anything here and it will override 
