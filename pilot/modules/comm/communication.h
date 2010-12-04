@@ -17,7 +17,7 @@ uint8_t comm_rx_command(double command[], uint8_t *flags);
 
 /*
  * Receives the latest tuning
- * type: 0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv
+ * type: P = PID, C = complementary, K = kalman, M = mhv
  * payload: 9 doubles
  * returns 1 for a new message, 0 for a repeat read
  */
@@ -30,7 +30,7 @@ void comm_tx_telemetry(vector_t vector, double motor[], uint8_t flags);
 
 /*
  * Send tuning
- * type: 0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv
+ * type: P = PID, C = complementary, K = kalman, M = mhv
  * payload: 9 doubles
  */
 void comm_tx_tuning(uint8_t type, double payload[]);

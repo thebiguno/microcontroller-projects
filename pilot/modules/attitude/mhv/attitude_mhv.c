@@ -125,7 +125,7 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 }
 
 uint8_t attitude_get_id() {
-	return ATTITUDE_ALGORITHM_ID;
+    return 'M';
 }
 
 void attitude_get_params(double params[]) {

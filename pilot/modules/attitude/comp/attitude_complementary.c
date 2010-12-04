@@ -3,8 +3,6 @@
 #include "../../../main.h"
 #include "../../../lib/timer/timer.h"
 
-#define ATTITUDE_ALGORITHM_ID 0x02
-
 #define DEG_PT5 0.00872664626
 #define DEG_30 1.570796326794897
 /*
@@ -66,7 +64,7 @@ void attitude_reset() {
 }
 
 uint8_t attitude_get_id() {
-	return ATTITUDE_ALGORITHM_ID;
+    return 'C';
 }
 
 void attitude_get_params(double params[]) {

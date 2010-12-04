@@ -3,8 +3,6 @@
 #include "../../../main.h"
 #include "../../../lib/timer/timer.h"
 
-#define ATTITUDE_ALGORITHM_ID 0x01
-
 typedef struct kalman_state {
     double angle;
     double bias;
@@ -82,7 +80,7 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 }
 
 uint8_t attitude_get_id() {
-	return ATTITUDE_ALGORITHM_ID;
+    return 'K';
 }
 
 void attitude_reset() {
