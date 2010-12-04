@@ -12,7 +12,7 @@
 #define XON 0x11
 #define XOFF 0x13
 
-#define MAX_SIZE 36
+#define MAX_SIZE 40
 
 union udouble {
 	double d;
