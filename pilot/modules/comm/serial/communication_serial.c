@@ -68,7 +68,7 @@ void _send_bytes(uint8_t *bytes, uint8_t length) {
     _send_byte(length, 1);
     
     uint8_t checksum = 0;
-    
+
     for (uint8_t i = 0; i < length; i++) {
         _send_byte(bytes[i], 1);
         checksum += bytes[i];
@@ -113,6 +113,8 @@ void _read() {
         
         switch(_pos) {
             case 0: // start frame
+    	    DDRB |= _BV(PINB0);
+    	    PORTB |= _BV(PINB0);
                 _pos++;
                 continue;
             case 1: // length
@@ -124,6 +126,8 @@ void _read() {
                 _pos++;
                 continue;
             default:
+    	    DDRB |= _BV(PINB1);
+    	    PORTB |= _BV(PINB1);
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
                 if (_pos == (_len + 2)) {
                     if ((_chk & 0xff) == 0xff) {
