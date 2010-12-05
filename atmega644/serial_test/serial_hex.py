@@ -6,7 +6,7 @@
 
 import serial
 
-ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
+ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600, parity=serial.PARITY_EVEN)
 
 ser.write("Hello World!")
 
