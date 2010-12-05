@@ -199,7 +199,9 @@ void error2() {
 		UDR0 = tx_buffer.buffer[tx_buffer.tail];
 	}
 	else {
-		//Signal that there is no more data available.
+		//Once the ring buffer is empty (i.e. head == tail), we disable
+		// USART Data Register Empty interrupts until someone write to
+		// the tx buffer again.
 		UCSR0B &= ~_BV(UDRIE0);
 	}
 }
