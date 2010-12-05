@@ -8,7 +8,7 @@
 #include "lib/serial/serial.h"
 
 int main (void){
-	serial_init(57600, 8, 2, 1);
+	serial_init(57600, 8, 0, 1);
 		
 	DDRB |= _BV(PINB0) | _BV(PINB1) | _BV(PINB4);
 
@@ -19,7 +19,6 @@ int main (void){
 		PORTB ^= _BV(PINB4);
 		
 		if (serial_available()){
-		
 			PORTB |= _BV(PINB0);
 			if (serial_read_c(buf)){
 				PORTB |= _BV(PINB1);
