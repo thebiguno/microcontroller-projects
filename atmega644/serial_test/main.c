@@ -8,7 +8,7 @@
 #include "lib/serial/serial.h"
 
 int main (void){
-	serial_init(57600, 8, 0, 1);
+	serial_init(2400, 8, 0, 1);
 		
 	DDRB |= _BV(PINB0) | _BV(PINB1) | _BV(PINB4);
 
@@ -27,6 +27,8 @@ int main (void){
 		}
 		
 		PORTB &= ~(_BV(PINB0) | _BV(PINB1));
+		
+		_delay_ms(1);
 	}
 }
 
