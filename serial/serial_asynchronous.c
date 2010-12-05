@@ -44,6 +44,29 @@ struct ring {
 	// and must be incremented before the next read.
 };
 
+void _serial_write_to_buffer(struct ring *buffer, char data){
+	//Next index, assuming all goes well
+	uint8_t next_head = (buffer->head + 1) % SERIAL_BUFFER_SIZE;
+
+	//Buffer the next byte if there is room left in the buffer.
+	if (next_head != buffer->tail){
+		buffer->buffer[buffer->head] = data;
+		buffer->head = next_head;
+	}
+}
+
+char _serial_read_from_buffer(struct ring *buffer, char *c){
+	//Return the next byte if we have remaining items in the buffer
+	if (buffer->head == buffer->tail) {
+		return 0;
+	}
+	else {
+		*c = buffer->buffer[buffer->tail];
+		buffer->tail = (buffer->tail + 1) % SERIAL_BUFFER_SIZE;	
+		return 1;
+	}
+}
+
 static struct ring tx_buffer;
 static struct ring rx_buffer;
 
@@ -92,15 +115,10 @@ void serial_init_b(uint32_t baud){
 }
 
 uint8_t serial_read_c(char *c){
-	//Return the next byte if we have remaining items in the buffer
-	if (rx_buffer.head != rx_buffer.tail) {
-		*c = rx_buffer.buffer[rx_buffer.tail];
-		rx_buffer.tail = (rx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
+	if (_serial_read_from_buffer(&rx_buffer, c)){
 		return 1;
 	}
-	else {
-		return 0;
-	}
+	return 0;
 }
 
 uint8_t serial_read_s(char *s, uint8_t len){
@@ -121,14 +139,7 @@ void serial_write_s(char *data){
 }
 
 void serial_write_c(char data){
-	//Next index, assuming all goes well
-	uint8_t next_head = (tx_buffer.head + 1) % SERIAL_BUFFER_SIZE;
-
-	//Buffer the next byte if there is room left in the buffer.
-	if (next_head != tx_buffer.tail){
-		tx_buffer.buffer[tx_buffer.head] = data;
-		tx_buffer.head = next_head;
-	}
+	_serial_write_to_buffer(&tx_buffer, data);
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
 	UCSR0B |= _BV(UDRIE0);
@@ -161,15 +172,8 @@ ISR(USART0_RX_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
 void error1() {
 #endif
-      
-	//Next index, assuming all goes well
-	uint8_t next_head = (rx_buffer.head + 1) % SERIAL_BUFFER_SIZE;
-
-	//Buffer the next byte if there is room left in the buffer.
-	if (next_head != rx_buffer.tail){
-		rx_buffer.buffer[rx_buffer.head] = UDR0;
-		rx_buffer.head = next_head;
-	}
+	unsigned char data = UDR0;
+	_serial_write_to_buffer(&rx_buffer, data);
 } 
 
 
@@ -192,11 +196,9 @@ ISR(USART0_UDRE_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
 void error2() {
 #endif
-
-	//Transmit the next byte if we have remaining items in the buffer
-	if (tx_buffer.head != tx_buffer.tail) {
-		tx_buffer.tail = (tx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
-		UDR0 = tx_buffer.buffer[tx_buffer.tail];
+	char c;
+	if (_serial_read_from_buffer(&tx_buffer, &c)){
+		UDR0 = c;
 	}
 	else {
 		//Once the ring buffer is empty (i.e. head == tail), we disable
