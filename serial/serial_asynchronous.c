@@ -94,8 +94,8 @@ void serial_init_b(uint32_t baud){
 uint8_t serial_read_c(char *c){
 	//Return the next byte if we have remaining items in the buffer
 	if (rx_buffer.head != rx_buffer.tail) {
-		rx_buffer.tail = (rx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
 		*c = rx_buffer.buffer[rx_buffer.tail];
+		rx_buffer.tail = (rx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
 		return 1;
 	}
 	else {
