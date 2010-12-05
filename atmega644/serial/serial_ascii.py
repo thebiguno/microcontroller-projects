@@ -6,9 +6,7 @@
 
 import serial
 
-ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
-
-ser.write("Hello world!");
+ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 9600)
 
 while True:
         b = ser.read()
