@@ -42,8 +42,8 @@ TELEMETRY (<- )
 frame start	1 byte	(0x7e)
 length		1 byte	(0x1e = 30 bytes)
 cmd		1 byte	(0x45 = E for tElemetry)
-roll (x)	4 bytes
-pitch (y)	4 bytes
+pitch (x)	4 bytes
+roll (y)	4 bytes
 yaw (z)		4 bytes
 motor A		4 bytes
 motor B		4 bytes
