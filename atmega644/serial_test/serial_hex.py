@@ -11,6 +11,6 @@ ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
 ser.write("Hello World!")
 
 while True:
-        b = ord(ser.read())
-        print(hex(b));
+        b = ser.read()
+        print(str(hex(ord(b))) + " (" + b + ")");
 
