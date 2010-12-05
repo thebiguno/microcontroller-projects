@@ -6,6 +6,8 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	UBRR0H = calculated_baud >> 8;
 	UBRR0L = calculated_baud & 0xFF;
 
+	//Make sure 2x and multi processor comm modes are off
+	UCSR0A &= ~(_BV(U2X0) | _BV(MPCM0));
 	
 	//Calculate frame format
 	//Init to 0; we populate this later

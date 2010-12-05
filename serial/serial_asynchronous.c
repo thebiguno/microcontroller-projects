@@ -33,8 +33,15 @@
 
 struct ring {
 	uint8_t buffer[SERIAL_BUFFER_SIZE];
-	uint8_t start;
-	uint8_t end;
+	//Just like a snake eating something and pooping it out...
+	uint8_t head;  //You put data into head...
+	uint8_t tail;  //...and take it off of tail.
+	//If they are equal, then there is nothing in the buffer.  If 
+	// (head + 1) % length == tail then the buffer is full.  The current
+	// position of head points to the location where the next byte will
+	// be written (and head will then be incremented after the byte is written); 
+	// the position of tail points to the location of the last byte which was read,
+	// and must be incremented before the next read.
 };
 
 static struct ring tx_buffer;
@@ -46,6 +53,9 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	UBRR0H = calculated_baud >> 8;
 	UBRR0L = calculated_baud & 0xFF;
 
+	//Make sure 2x and multi processor comm modes are off
+	UCSR0A &= ~(_BV(U2X0) | _BV(MPCM0));
+	
 	
 	//Calculate frame format
 	//Init to 0; we populate this later
@@ -82,13 +92,10 @@ void serial_init_b(uint32_t baud){
 }
 
 uint8_t serial_read_c(char *c){
-	//Next index, assuming all goes well
-	uint8_t next_start = (rx_buffer.start + 1) % SERIAL_BUFFER_SIZE;
-	
 	//Return the next byte if we have remaining items in the buffer
-	if (next_start != rx_buffer.end) {
-		rx_buffer.start = next_start;
-		*c = rx_buffer.buffer[next_start];
+	if (rx_buffer.head != rx_buffer.tail) {
+		rx_buffer.tail = (rx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
+		*c = rx_buffer.buffer[rx_buffer.tail];
 		return 1;
 	}
 	else {
@@ -115,12 +122,12 @@ void serial_write_s(char *data){
 
 void serial_write_c(char data){
 	//Next index, assuming all goes well
-	uint8_t next_end = (tx_buffer.end + 1) % SERIAL_BUFFER_SIZE;
+	uint8_t next_head = (tx_buffer.head + 1) % SERIAL_BUFFER_SIZE;
 
 	//Buffer the next byte if there is room left in the buffer.
-	if (next_end != tx_buffer.start){
-		tx_buffer.buffer[tx_buffer.end] = data;
-		tx_buffer.end = next_end;
+	if (next_head != tx_buffer.tail){
+		tx_buffer.buffer[tx_buffer.head] = data;
+		tx_buffer.head = next_head;
 	}
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
@@ -128,7 +135,7 @@ void serial_write_c(char data){
 }
 
 uint8_t serial_available() {
-    return UCSR0A & _BV(RXC0);
+	return (rx_buffer.head == rx_buffer.tail ? 0 : 1);
 }
 
 //Note: These defines are only a small subset of those which are available (and are
@@ -156,12 +163,12 @@ void error1() {
 #endif
       
 	//Next index, assuming all goes well
-	uint8_t next_end = (rx_buffer.end + 1) % SERIAL_BUFFER_SIZE;
+	uint8_t next_head = (rx_buffer.head + 1) % SERIAL_BUFFER_SIZE;
 
 	//Buffer the next byte if there is room left in the buffer.
-	if (next_end != rx_buffer.start){
-		rx_buffer.buffer[rx_buffer.end] = UDR0;
-		rx_buffer.end = next_end;
+	if (next_head != rx_buffer.tail){
+		rx_buffer.buffer[rx_buffer.head] = UDR0;
+		rx_buffer.head = next_head;
 	}
 } 
 
@@ -186,15 +193,13 @@ ISR(USART0_UDRE_vect){
 void error2() {
 #endif
 
-	//Next index, assuming all goes well
-	uint8_t next_start = (tx_buffer.start + 1) % SERIAL_BUFFER_SIZE;
-	
 	//Transmit the next byte if we have remaining items in the buffer
-	if (next_start != tx_buffer.end) {
-		UDR0 = tx_buffer.buffer[next_start];
-		tx_buffer.start = next_start;
+	if (tx_buffer.head != tx_buffer.tail) {
+		tx_buffer.tail = (tx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
+		UDR0 = tx_buffer.buffer[tx_buffer.tail];
 	}
 	else {
+		//Signal that there is no more data available.
 		UCSR0B &= ~_BV(UDRIE0);
 	}
 }

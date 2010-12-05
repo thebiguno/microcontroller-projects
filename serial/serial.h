@@ -47,7 +47,9 @@ void serial_write_s(char *data);
 void serial_write_c(char data);
 
 /*
- * Checks if any bytes are available for read.  Returns 0 when no bytes are available.  Implementations MUST NOT block.
+ * Checks if any bytes are available for read.  Returns 0 when no bytes are available; 
+ * returns non-zero when there are any bytes avilable.  Implementations MUST NOT block.
+ * Implementations MAY return the total number of bytes available.
  */
 uint8_t serial_available();
 
