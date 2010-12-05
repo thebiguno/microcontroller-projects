@@ -142,19 +142,19 @@ uint8_t serial_available() {
 // pretty much only the chips which I personally use).  You can add more chips to 
 // these defines, and as long as you match the correct chips with the correct vector
 // names, it should just work.
-#if defined(__AVR_ATtiny2313__) || \
-	defined(__AVR_ATmega48P__)  || \
-	defined(__AVR_ATmega88P__)  || \
-	defined(__AVR_ATmega168P__) || \
-	defined(__AVR_ATmega328P__) || \
-	defined(__AVR_ATmega48__)   || \
-	defined(__AVR_ATmega88__)   || \
+#if defined(__AVR_ATtiny2313__)    || \
+	defined(__AVR_ATmega48P__)     || \
+	defined(__AVR_ATmega88P__)     || \
+	defined(__AVR_ATmega168P__)    || \
+	defined(__AVR_ATmega328P__)    || \
+	defined(__AVR_ATmega48__)      || \
+	defined(__AVR_ATmega88__)      || \
     defined(__AVR_ATmega168__)
 ISR(USART_RX_vect){
 #elif defined(__AVR_ATmega324P__)  || \
-	defined(__AVR_ATmega644__) || \
-	defined(__AVR_ATmega644P__) || \
-	defined(__AVR_ATmega644PA__) || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
 	defined(__AVR_ATmega1284P__)
 ISR(USART0_RX_vect){
 #else 
@@ -173,19 +173,19 @@ void error1() {
 } 
 
 
-#if defined(__AVR_ATtiny2313__) || \
-	defined(__AVR_ATmega48P__)  || \
-	defined(__AVR_ATmega88P__)  || \
-	defined(__AVR_ATmega168P__) || \
-	defined(__AVR_ATmega328P__) || \
-	defined(__AVR_ATmega48__)   || \
-	defined(__AVR_ATmega88__)   || \
+#if defined(__AVR_ATtiny2313__)    || \
+	defined(__AVR_ATmega48P__)     || \
+	defined(__AVR_ATmega88P__)     || \
+	defined(__AVR_ATmega168P__)    || \
+	defined(__AVR_ATmega328P__)    || \
+	defined(__AVR_ATmega48__)      || \
+	defined(__AVR_ATmega88__)      || \
     defined(__AVR_ATmega168__)
 ISR(USART_UDRE_vect){
 #elif defined(__AVR_ATmega324P__)  || \
-	defined(__AVR_ATmega644__) || \
-	defined(__AVR_ATmega644P__) || \
-	defined(__AVR_ATmega644PA__) || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
 	defined(__AVR_ATmega1284P__)
 ISR(USART0_UDRE_vect){
 #else 
