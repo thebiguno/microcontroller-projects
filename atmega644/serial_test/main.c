@@ -19,15 +19,12 @@ int main (void){
 		PORTB ^= _BV(PINB4);
 		
 		if (serial_available()){
-			serial_write_c('A');
 		
 			PORTB |= _BV(PINB0);
 			if (serial_read_c(buf)){
-				serial_write_c('S');
-				serial_write_c(buf[0]);
-			} else {
 				PORTB |= _BV(PINB1);
-			}
+				serial_write_c(buf[0]);
+			} 
 		}
 		
 		PORTB &= ~(_BV(PINB0) | _BV(PINB1));
