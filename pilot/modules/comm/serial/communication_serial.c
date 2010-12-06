@@ -113,8 +113,6 @@ void _read() {
         
         switch(_pos) {
             case 0: // start frame
-    	    DDRB |= _BV(PINB0);
-    	    PORTB |= _BV(PINB0);
                 _pos++;
                 continue;
             case 1: // length
@@ -126,28 +124,32 @@ void _read() {
                 _pos++;
                 continue;
             default:
-    	    DDRB |= _BV(PINB1);
-    	    PORTB |= _BV(PINB1);
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
                 if (_pos == (_len + 2)) {
                     if ((_chk & 0xff) == 0xff) {
-                        switch(_api) {
-                            case 'C':
-                                for (uint8_t i = 0; i < 4; i++) {
-                                    _command[i] = _bytes_to_double(&_buf[i*4]);
-                                }
-                                _command_flags = _buf[16];
-                                _command_flags = 0;
-                                _flags |= _BV(1); // set the new message flag
-                            case 'T':
-                                _tuning_type = _buf[0];
-                                for (uint8_t i = 0; i < 9; i++) {
-                                    _tuning[0] = _bytes_to_double(&_buf[(i*4)+1]);
-                                }
-                                _flags |= _BV(2); // set the new message flag
-                        }
+						switch(_api) {
+ 							case 'C':
+								for (uint8_t i = 0; i < 4; i++) {
+									_command[i] = _bytes_to_double(&_buf[i*4]);
+								}
+								_command_flags = _buf[16];
+								_flags |= _BV(1); // set the new message flag
+					    	    DDRB |= _BV(PINB0);
+					    	    PORTB |= _BV(PINB0);
+								break;
+							case 'T':
+								_tuning_type = _buf[0];
+								for (uint8_t i = 0; i < 9; i++) {
+									_tuning[i] = _bytes_to_double(&_buf[(i*4)+1]);
+								}
+								_flags |= _BV(2); // set the new message flag
+					    	    DDRB |= _BV(PINB1);
+					    	    PORTB |= _BV(PINB1);
+							}
                     } else {
                         _err = 1;
+			    	    DDRB |= _BV(PINB2);
+			    	    PORTB |= _BV(PINB2);
                     }
                     _pos = 0;
                     _chk = 0;
