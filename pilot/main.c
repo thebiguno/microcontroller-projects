@@ -47,7 +47,7 @@ int main(){
 				vector_t kp = {tuning[0], tuning[3], tuning[6] };
 				vector_t ki = {tuning[1], tuning[4], tuning[7] };
 				vector_t kd = {tuning[2], tuning[5], tuning[8] };
-				pid_set_params(kp, ki, kd);
+				pid_set_params(&kp, &ki, &kd);
 			} else if (tuning_type == attitude_get_id()) {
 				attitude_set_params(tuning);
 			}
@@ -76,7 +76,7 @@ int main(){
 				vector_t kp;
 				vector_t ki;
 				vector_t kd;
-				pid_get_params(kp, ki, kd);
+				pid_get_params(&kp, &ki, &kd);
 				double pid[9] = { kp.x, ki.x, kd.x, kp.y, ki.y, kd.y, kp.z, ki.z, kd.z };
 				comm_tx_tuning('P', pid);
 

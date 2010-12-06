@@ -18,18 +18,30 @@ void pid_init() {
     vector_t kp = {0.7,0.7,0.0};
     vector_t ki = {0.001,0.0,0.0};
     vector_t kd = {0.001,0.0,0.0};
-    pid_set_params(kp, ki, kd);
+    pid_set_params(&kp, &ki, &kd);
 }
 
-void pid_set_params(vector_t kp, vector_t ki, vector_t kd) {
-    _kp = kp;
-    _ki = ki;
-    _kd = kd;
+void pid_set_params(vector_t *kp, vector_t *ki, vector_t *kd) {
+    _kp.x = kp->x;
+    _kp.y = kp->y;
+    _kp.z = kp->z;
+    _ki.x = ki->x;
+    _ki.y = ki->y;
+    _ki.z = ki->z;
+    _kd.x = kd->x;
+    _kd.y = kd->y;
+    _kd.z = kd->z;
 }
-void pid_get_params(vector_t kp, vector_t ki, vector_t kd) {
-    kp = _kp;
-    ki = _ki;
-    kd = _kd;
+void pid_get_params(vector_t *kp, vector_t *ki, vector_t *kd) {
+    kp->x = _kp.x;
+    kp->y = _kp.y;
+    kp->z = _kp.z;
+    ki->x = _ki.x;
+    ki->y = _ki.y;
+    ki->z = _ki.z;
+    kd->x = _kd.x;
+    kd->y = _kd.y;
+    kd->z = _kd.z;
 }
 
 double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_err_t *err){
