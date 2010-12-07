@@ -5,24 +5,42 @@
 #define USART_BAUDRATE 57600
 #define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 
-#define BUFFER_SIZE 256
+#define SERIAL_BUFFER_SIZE 256
 
-char buf[BUFFER_SIZE];
-int head = 0;
-int tail = 0;
+struct ring {
+	uint8_t buffer[SERIAL_BUFFER_SIZE];
+	//Just like a snake eating something and pooping it out...
+	uint16_t head;  //You put data into head...
+	uint16_t tail;  //...and take it off of tail.
+	//If they are equal, then there is nothing in the buffer.  If 
+	// (head + 1) % length == tail then the buffer is full.  The current
+	// position of head points to the location where the next byte will
+	// be written (and head will then be incremented after the byte is written); 
+	// the position of tail points to the location of the last byte which was read,
+	// and must be incremented before the next read.
+};
 
-int available_in_buffer(void)
+static struct ring rx_buffer;
+
+int _buffer_count(struct ring *buffer)
 {
 	// This is the hardest part,
 	// calculating the size of data in buffer.
-	return ((head - tail ) % BUFFER_SIZE);
+	return ((buffer->head - buffer->tail ) % SERIAL_BUFFER_SIZE);
 }
 
-inline char get_from_buffer(void)
+inline char _buffer_get(struct ring *buffer)
 {
-	char data = buf[tail];
-	if (++tail >= BUFFER_SIZE) tail = 0;
+	char data = buffer->buffer[buffer->tail];
+	if (++buffer->tail >= SERIAL_BUFFER_SIZE) buffer->tail = 0;
 	return data;
+}
+
+inline void _buffer_put(struct ring *buffer, char data){
+	if ((buffer->head + 1) % SERIAL_BUFFER_SIZE != buffer->tail){
+		buffer->buffer[buffer->head] = data;
+		if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
+	}
 }
 
 
@@ -39,44 +57,26 @@ int main (void)
 
 	DDRB |= _BV(PORTB4) | _BV(PORTB0) | _BV(PORTB1);
 
-   		UDR0 = 'W';
-
    for (;;) // Loop forever
    {
    
-		while (available_in_buffer())
-		{
-			
-//			_delay_ms(1);
-		}
-		PORTB &= ~_BV(PINB0);
-		
 		PORTB ^= _BV(PORTB4);
    }   
 }
 
 ISR(USART0_RX_vect)
 {
-	char b = UDR0;
-//	UDR0 = b;
-	if ((head + 1) % BUFFER_SIZE != tail)
-	{
-		buf[head] = b;
-		if (++head >= BUFFER_SIZE) head = 0;
-	}
+	char data = UDR0;
+
+	_buffer_put(&rx_buffer, data);
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
 	UCSR0B |= _BV(UDRIE0);	
 }
 
 ISR(USART0_UDRE_vect){
-//			PORTB |= _BV(PINB0);
-		if (available_in_buffer()){
-
-			char data = get_from_buffer();
-//			while ( !( UCSR0A & (1<<TXC0)) )
-//				;
-							
+		if (_buffer_count(&rx_buffer)){
+			char data = _buffer_get(&rx_buffer);							
 			UDR0 = data;
 		}
 		else {
