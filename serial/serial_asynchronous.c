@@ -24,53 +24,59 @@
 #include "serial.h"
 #include <avr/interrupt.h>
 
-//The buffer size; used for both RX and TX buffers.  Defaults to 64 bytes; you can 
-// change it by redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
+//The buffer size; if separate buffer sizes are not defined for rx and tx, this one is
+// used for both RX and TX buffers.  Defaults to 64 bytes.  You can change it by 
+// redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
 // beside where F_CPU is defined).
-#ifndef SERIAL_BUFFER_SIZE
+#ifdef SERIAL_BUFFER_SIZE
+#if SERIAL_BUFFER_SIZE > 256
+#define SERIAL_BUFFER_SIZE 256
+#endif
+#else
 #define SERIAL_BUFFER_SIZE 64
 #endif
 
 struct ring {
-	uint8_t buffer[SERIAL_BUFFER_SIZE];
 	//Just like a snake eating something and pooping it out...
-	uint8_t head;  //You put data into head...
-	uint8_t tail;  //...and take it off of tail.
+	volatile uint8_t head;  //You put data into head...
+	volatile uint8_t tail;  //...and take it off of tail.
 	//If they are equal, then there is nothing in the buffer.  If 
 	// (head + 1) % length == tail then the buffer is full.  The current
 	// position of head points to the location where the next byte will
 	// be written (and head will then be incremented after the byte is written); 
 	// the position of tail points to the location of the last byte which was read,
 	// and must be incremented before the next read.
+	// NOTE:  You *cannot* use anything larger than uint8_t for the head / tail
+	// indices; doing so will result in corrupt output, presumably because it
+	// takes more than one instruction to do comparisons.
+	volatile uint8_t buffer[SERIAL_BUFFER_SIZE];
 };
 
-void _serial_write_to_buffer(struct ring *buffer, char data){
-	//Next index, assuming all goes well
-	uint8_t next_head = (buffer->head + 1) % SERIAL_BUFFER_SIZE;
-
-	//Buffer the next byte if there is room left in the buffer.
-	if (next_head != buffer->tail){
-		buffer->buffer[buffer->head] = data;
-		buffer->head = next_head;
-	}
-}
-
-char _serial_read_from_buffer(struct ring *buffer, char *c){
-	//Return the next byte if we have remaining items in the buffer
-	if (buffer->head == buffer->tail) {
-		return 0;
-	}
-	else {
-		*c = buffer->buffer[buffer->tail];
-		buffer->tail = (buffer->tail + 1) % SERIAL_BUFFER_SIZE;	
-		return 1;
-	}
-}
-
-static struct ring tx_buffer;
 static struct ring rx_buffer;
+static struct ring tx_buffer;
 
-void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){  
+inline uint8_t _buffer_empty(struct ring *buffer){
+	return (buffer->head == buffer->tail);
+}
+
+inline uint8_t _buffer_full(struct ring *buffer){
+	return ((buffer->head + 1) % SERIAL_BUFFER_SIZE == buffer->tail);
+}
+
+inline char _buffer_get(struct ring *buffer){
+	char c = buffer->buffer[buffer->tail];
+	buffer->tail++;
+	if (buffer->tail >= SERIAL_BUFFER_SIZE) buffer->tail = 0;
+	return c;
+}
+
+inline void _buffer_put(struct ring *buffer, char data){
+	buffer->buffer[buffer->head] = data;
+	buffer->head++;
+	if (buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
+}
+
+void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){
 	//Set baud rate
 	uint16_t calculated_baud = (F_CPU / 16 / baud) - 1;
 	UBRR0H = calculated_baud >> 8;
@@ -78,7 +84,6 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 
 	//Make sure 2x and multi processor comm modes are off
 	UCSR0A &= ~(_BV(U2X0) | _BV(MPCM0));
-	
 	
 	//Calculate frame format
 	//Init to 0; we populate this later
@@ -97,12 +102,11 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	//Parity, Stop bits
 	UCSR0C |= (parity << UPM00) | ((stop_bits - 1) << USBS0);
 	
-	
 	//Enable Rx / Tx
 	UCSR0B |= _BV(TXEN0) | _BV(RXEN0);
 	
-	//Enable interrupts
-	UCSR0B |= _BV(RXCIE0);// | _BV(UDRIE0) | _BV(TXCIE0);
+	//Enable RX interrupts; UDRE will be enabled on serial_write_c().
+	UCSR0B |= _BV(RXCIE0);
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
@@ -115,7 +119,8 @@ void serial_init_b(uint32_t baud){
 }
 
 uint8_t serial_read_c(char *c){
-	if (_serial_read_from_buffer(&rx_buffer, c)){
+	if (!_buffer_empty(&rx_buffer)){
+		*c = _buffer_get(&rx_buffer);
 		return 1;
 	}
 	return 0;
@@ -132,21 +137,21 @@ uint8_t serial_read_s(char *s, uint8_t len){
 	return count;
 }
 
+void serial_write_c(char data){
+	_buffer_put(&tx_buffer, data);
+	
+	//Signal that there is data available; the UDRE interrupt will fire.
+	UCSR0B |= _BV(UDRIE0);
+}
+
 void serial_write_s(char *data){
 	while (*data){
 		serial_write_c(*data++);
 	}
 }
 
-void serial_write_c(char data){
-	_serial_write_to_buffer(&tx_buffer, data);
-	
-	//Signal that there is data available; the UDRE interrupt will fire.
-	UCSR0B |= _BV(UDRIE0);
-}
-
 uint8_t serial_available() {
-	return (rx_buffer.head == rx_buffer.tail ? 0 : 1);
+	return !_buffer_empty(&rx_buffer);
 }
 
 //Note: These defines are only a small subset of those which are available (and are
@@ -172,10 +177,11 @@ ISR(USART0_RX_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
 void error1() {
 #endif
-	unsigned char data = UDR0;
-	_serial_write_to_buffer(&rx_buffer, data);
-} 
-
+	char data = UDR0;
+	if (!_buffer_full(&rx_buffer)){
+		_buffer_put(&rx_buffer, data);
+	}
+}
 
 #if defined(__AVR_ATtiny2313__)    || \
 	defined(__AVR_ATmega48P__)     || \
@@ -196,9 +202,8 @@ ISR(USART0_UDRE_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
 void error2() {
 #endif
-	char c;
-	if (_serial_read_from_buffer(&tx_buffer, &c)){
-		UDR0 = c;
+	if (!_buffer_empty(&tx_buffer)){
+		UDR0 = _buffer_get(&tx_buffer);
 	}
 	else {
 		//Once the ring buffer is empty (i.e. head == tail), we disable
@@ -206,5 +211,5 @@ void error2() {
 		// the tx buffer again.
 		UCSR0B &= ~_BV(UDRIE0);
 	}
-}
 
+}
