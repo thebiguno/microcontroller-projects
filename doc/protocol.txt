@@ -1,34 +1,46 @@
-Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
-
-COMMAND ( ->)
+MESSAGE STRUCTURE
 frame start	1 byte	(0x7e)
-length		1 byte  (0x12 = 18 bytes)
-cmd		1 byte	(0x43 = C for command)
-L / T		4 bytes
-T / R		4 bytes
-R / P		4 bytes
-B / Y		4 bytes
-flags		1 bytes
+length		1 byte
+payload
+checksum	1 byte
+
+
+FLIGHT ( ->)
+frame start	1 byte	(0x7e)
+length		1 byte  (0x05 = 5 bytes)
+L / T		1 byte
+T / R		1 byte
+R / P		1 byte
+B / Y		1 byte
+flags		1 byte
 checksum	1 byte
 
 flags are:
-0  0x01		attitude command (i.e. armed with attidude)
-1  0x02		motor command (i.e. armed with motor)
-2  0x04		reset attitude command
-3  0x08		calibrate command
-4  0x10		RTS tuning (PID & attitude)
-4  0x20		RTS telemetry flag (sent with attidude and motor commands)
-6  0x40		(unused)
-7  0x80		write EEPROM command
+0x00		kill
+0x01		interpret payload as attitude values
+0x02		interpret payload as motor values
+0x04		enter command mode
 
-note: an attitude command with a throttle of 0 is a kill command
+COMMAND ( ->)
+frame start	1 byte	(0x7e)
+length		1 byte  (0x01 = 1 bytes)
+cmd		1 byte
+checksum	1 byte
+
+commands are:
+R		reset attitude
+C		calibrate
+T		request tuning
+E		turn on/off telemetry
+W		write EEPROM
+X		exit command mode
 
 TUNING (<->)
 frame start	1 byte	(0x7e)
-length		1 byte	(0x27 = 39 bytes)
+length		1 byte	(0x27 = 11 bytes)
 cmd		1 byte	(0x54 = T for tuning)
 type		1 byte  0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv 
-payload		36 bytes (9 floats, depends on tuning type)
+payload		9 bytes (depends on tuning type)
 checksum	1 byte
 
 payloads are
@@ -42,13 +54,13 @@ TELEMETRY (<- )
 frame start	1 byte	(0x7e)
 length		1 byte	(0x1e = 30 bytes)
 cmd		1 byte	(0x45 = E for tElemetry)
-pitch (x)	4 bytes
-roll (y)	4 bytes
-yaw (z)		4 bytes
-motor A		4 bytes
-motor B		4 bytes
-motor C		4 bytes
-motor D		4 bytes
+pitch (x)	1 byte
+roll (y)	1 byte
+yaw (z)		1 byte
+motor A		1 byte
+motor B		1 byte
+motor C		1 byte
+motor D		1 byte
 flags		1 byte
 checksum	1 byte
 
@@ -71,6 +83,8 @@ Bytes to be escaped:
 To escape a character, insert a 0x7d and follow it with the byte to be escaped xor'd with 0x20.
 
 RANDOM NOTES:
+Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
+
 The framing, checksum, and escape mechanism are inspired by the Xbee API mode.
 
 The ideal crystal we should be using for this project i think is 16 MHz.  This matches the XBee clock speed and allows communication at any baud rate without error (the Xbee uses a 16 MHz crystal).  For a link with the PC the rate of 76800 would be the most reliable.  If faster clock speeds on the AVR are beneficial, then 19.6608 MHz or 20.8896 MHz are ideal with a baud rate of 76800.
