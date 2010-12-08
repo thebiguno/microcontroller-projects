@@ -10,7 +10,7 @@
 #include "lib/serial/serial.h"
 
 int main (void){
-	serial_init(57600, 8, 0, 1);
+	serial_init_b(BAUD);
 		
 	char temp[32];
 
