@@ -3,6 +3,34 @@
 
 #include <avr/io.h>
 
+//The buffer size; if separate buffer sizes are not defined for rx and tx, this one is
+// used for both RX and TX buffers.  Defaults to 64 bytes.  You can change it by 
+// redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
+// beside where F_CPU is defined).
+#ifdef SERIAL_BUFFER_SIZE
+#if SERIAL_BUFFER_SIZE > 256
+#define SERIAL_BUFFER_SIZE 256
+#endif
+#else
+#define SERIAL_BUFFER_SIZE 64
+#endif
+
+struct ring {
+	//Just like a snake eating something and pooping it out...
+	volatile uint8_t head;  //You put data into head...
+	volatile uint8_t tail;  //...and take it off of tail.
+	//If they are equal, then there is nothing in the buffer.  If 
+	// (head + 1) % length == tail then the buffer is full.  The current
+	// position of head points to the location where the next byte will
+	// be written (and head will then be incremented after the byte is written); 
+	// the position of tail points to the location of the last byte which was read,
+	// and must be incremented before the next read.
+	// NOTE:  You *cannot* use anything larger than uint8_t for the head / tail
+	// indices; doing so will result in corrupt output, presumably because it
+	// takes more than one instruction to do comparisons.
+	volatile uint8_t buffer[SERIAL_BUFFER_SIZE];
+};
+
 /*
  * Initializes the USART with the given parameters.  Valid arguments include:
  *  baud: Any valid baud rate based on hardware support
