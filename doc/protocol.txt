@@ -1,59 +1,43 @@
 MESSAGE STRUCTURE
 frame start	1 byte	(0x7e)
 length		1 byte
+cmd		1 byte
 payload
 checksum	1 byte
 
-
 FLIGHT ( ->)
 frame start	1 byte	(0x7e)
-length		1 byte  (0x05 = 5 bytes)
+length		1 byte  (0x06 = 6 bytes)
+cmd		1 byte	(A = attitude, M = motor)
 L / T		1 byte
 T / R		1 byte
 R / P		1 byte
 B / Y		1 byte
-flags		1 byte
 checksum	1 byte
-
-flags are:
-0x00		kill
-0x01		interpret payload as attitude values
-0x02		interpret payload as motor values
-0x04		enter command mode
 
 COMMAND ( ->)
 frame start	1 byte	(0x7e)
 length		1 byte  (0x01 = 1 bytes)
-cmd		1 byte
+cmd		1 byte	(R = reset attitude, C = calibrate, t = request tuning, E = telemetry on, e = telemetry off, W = write EEPROM)
 checksum	1 byte
-
-commands are:
-R		reset attitude
-C		calibrate
-T		request tuning
-E		turn on/off telemetry
-W		write EEPROM
-X		exit command mode
 
 TUNING (<->)
 frame start	1 byte	(0x7e)
-length		1 byte	(0x27 = 11 bytes)
-cmd		1 byte	(0x54 = T for tuning)
-type		1 byte  0 = PID, 1 = simple, 2 = complementary, 3 = kalman, 4 = mhv 
-payload		9 bytes (depends on tuning type)
+length		1 byte
+cmd		1 byte	(p = pid, c = complementary, k = kalman, m = mhv)
+payload		(depends on tuning type)
 checksum	1 byte
 
 payloads are
-PID:		p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
-simple:		time_const
-complementary:	k.x, k.y, k.z
-kalman:		qangle.x, qangle.y, qgyro.x, qgyro.y, rangle.x, rangle.y
-mhv:		gain, beta
+PID:		36 bytes: p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
+complementary:	12 bytes: k.x, k.y, k.z
+kalman:		24 bytes: qangle.x, qangle.y, qgyro.x, qgyro.y, rangle.x, rangle.y
+mhv:		8 bytes: gain, beta
 
 TELEMETRY (<- )
 frame start	1 byte	(0x7e)
 length		1 byte	(0x1e = 30 bytes)
-cmd		1 byte	(0x45 = E for tElemetry)
+cmd		1 byte	(T = telemetry)
 pitch (x)	1 byte
 roll (y)	1 byte
 yaw (z)		1 byte
@@ -63,10 +47,6 @@ motor C		1 byte
 motor D		1 byte
 flags		1 byte
 checksum	1 byte
-
-flags are:
-0  0x01		armed
-1  0x02		wing configuration (0 = left,front,right,back; 1 = tl,tr,br,bl)
 
 Length
 The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.

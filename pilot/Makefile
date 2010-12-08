@@ -1,7 +1,7 @@
 include ../build/variables.mk
 
 PROJECT=pilot
-MMCU=atmega644
+MMCU=atmega644p
 F_CPU=20000000
 SOURCES=main.c ../lib/timer/timer_0.c
 AVRDUDE_PROGRAMMER=usbtiny
@@ -20,5 +20,6 @@ include modules/gyro/module.mk
 include modules/motor/module.mk
 include modules/persist/module.mk
 include modules/pid/module.mk
+include modules/protocol/module.mk
 
 include ../build/targets.mk

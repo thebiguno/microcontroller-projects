@@ -37,5 +37,6 @@ typedef struct vector {
 #include "modules/motor/motor.h"
 #include "modules/esc/esc.h"
 #include "modules/pid/pid.h"
+#include "modules/protocol/protocol.h"
 
 #endif
