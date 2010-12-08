@@ -5,13 +5,12 @@
 ###################
 
 import serial, sys
+from time import sleep
 
-ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
+ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", sys.argv[1])
 
-b = 0;
-
-while b != 0:
-        b = ser.read()
+#Give time to init AVR before bombarding it with data
+sleep(0.1);
 
 ser.write("Hello World!\nThe quick brown fox jumped over the lazy dog.\nThis is a long test... how long does it need to be?  I don't know.  Why do you ask?\n")
 
