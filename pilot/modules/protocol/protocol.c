@@ -48,12 +48,12 @@ void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
 	_protocol_send_byte(checksum, 1);
 }
 
-void _protocol_dispatch(uint8_t cmd, uint8_t *buf, uint8_t length) {
+void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 	switch(cmd) {
 		case 'A':
 		case 'M':
 			for (uint8_t i = 0; i < 4; i++) {
-				_last_flight_val[i] = (*_buf)[i];
+				_last_flight_val[i] = (_buf)[i];
 			}
 			_last_flight_cmd = cmd;
 			break;
@@ -142,7 +142,7 @@ void protocol_poll()
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
                 if (_pos == (_len + 2)) {
                     if ((_chk & 0xff) == 0xff) {
-						_protocol_dispatch(_api, &_buf, _len - 1);
+						_protocol_dispatch(_api, _len - 1);
                     } else {
                         _err = 1;
                     }
