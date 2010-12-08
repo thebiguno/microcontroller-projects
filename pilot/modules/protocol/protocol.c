@@ -77,6 +77,7 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'W':
 //			pid_persist();
 //			attitude_persist();
+			break;
 		case 'p':
 //			pid_set_tuning(buf, length);
 			break;
