@@ -27,6 +27,10 @@ static inline void _buffer_put(volatile struct ring *buffer, char data){
 	if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
 }
 
+void _serial_init_rx(){
+	UCSR0B |= _BV(RXCIE0);
+}
+
 uint8_t serial_available() {
 	UCSR0B &= ~_BV(RXCIE0); //Temporarily disable RX interrupts so we don't get interrupted
 	uint8_t r = !_buffer_empty(&rx_buffer);

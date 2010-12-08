@@ -44,6 +44,8 @@ static inline void _buffer_put(volatile struct ring *buffer, char data){
 	if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
 }
 
+void _serial_init_tx(){}
+
 void serial_write_c(char data){
 	//Disable UCSR interrupts temporarily to avoid clobbering the buffer
 	UCSR0B &= ~_BV(UDRIE0);

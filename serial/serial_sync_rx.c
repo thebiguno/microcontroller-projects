@@ -1,5 +1,7 @@
 #include "serial.h"
 
+void _serial_init_rx(){}
+
 uint8_t serial_available() {
     return UCSR0A & _BV(RXC0);
 }

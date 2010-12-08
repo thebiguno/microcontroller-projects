@@ -1,5 +1,7 @@
 #include "serial.h"
 
+void _serial_init_tx(){}
+
 void serial_write_s(char *data){
 	while (*data){
 		serial_write_c(*data++);

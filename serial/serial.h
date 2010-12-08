@@ -8,8 +8,9 @@
 // redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
 // beside where F_CPU is defined).
 #ifdef SERIAL_BUFFER_SIZE
-#if SERIAL_BUFFER_SIZE > 256
-#define SERIAL_BUFFER_SIZE 256
+#if SERIAL_BUFFER_SIZE > 255
+#undef SERIAL_BUFFER_SIZE
+#define SERIAL_BUFFER_SIZE 255
 #endif
 #else
 #define SERIAL_BUFFER_SIZE 64

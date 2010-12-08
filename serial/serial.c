@@ -7,6 +7,11 @@
 
 #include "serial.h"
 #include <avr/interrupt.h>
+#include <util/delay.h>
+
+//Defined in rx / tx modules
+void _serial_init_rx();
+void _serial_init_tx();
 
 void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){
 	//Set baud rate
@@ -34,11 +39,15 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	//Parity, Stop bits
 	UCSR0C |= (parity << UPM00) | ((stop_bits - 1) << USBS0);
 	
-	//Enable Rx / Tx
-	UCSR0B |= _BV(TXEN0) | _BV(RXEN0);
-	
-	//Enable RX interrupts; UDRE will be enabled on serial_write_c() if hybrid mode is not enabled.
-//	UCSR0B |= _BV(RXCIE0);
+	//Enable Rx / Tx if they are not disabled, and call init methods of rx/tx modules
+#ifndef SERIAL_DISABLE_RX
+	UCSR0B |= _BV(RXEN0);
+	_serial_init_rx();
+#endif
+#ifndef SERIAL_DISABLE_TX
+	UCSR0B |= _BV(TXEN0);
+	_serial_init_tx();
+#endif
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
