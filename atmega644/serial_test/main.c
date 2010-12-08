@@ -19,9 +19,7 @@ int main (void){
 		PORTB ^= _BV(PINB4);
 		
 		if (serial_available()){
-			PORTB |= _BV(PINB0);
 			if (serial_read_c(buf)){
-				PORTB |= _BV(PINB1);
 				serial_write_c(buf[0]);
 			} 
 		}

@@ -8,6 +8,7 @@ SOURCES=main.c lib/serial/serial_asynchronous.c
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
+CDEFS+=-DSERIAL_BUFFER_SIZE=256
 AVRDUDE_PROGRAMMER=usbtiny
 
 include ../../build/targets.mk

@@ -14,7 +14,11 @@ struct ring {
 	// be written (and head will then be incremented after the byte is written); 
 	// the position of tail points to the location of the last byte which was read,
 	// and must be incremented before the next read.
+	// NOTE:  You *cannot* use anything larger than uint8_t for the head / tail
+	// indices; doing so will result in corrupt output, presumably because it
+	// takes more than one instruction to do comparisons.
 	volatile uint8_t buffer[SERIAL_BUFFER_SIZE];
+	volatile uint8_t buffer_size;
 };
 
 static struct ring rx_buffer;
