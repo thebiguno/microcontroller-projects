@@ -34,10 +34,13 @@ int main(){
 		millis = curr_millis;
 
 		protocol_poll();
+		
 		double flight_command[4];
 		uint8_t cmd_type = protocol_receive_flight_command(flight_command);
-		if (cmd_type == 'A' || cmd_type == 'M')
+		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed = cmd_type;
+			dt = 0;
+		}
 
 		vector_t g = gyro_get();
 		vector_t a = accel_get();
