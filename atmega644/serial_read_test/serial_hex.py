@@ -12,6 +12,6 @@ ser.write("Hello World!\nThe quick brown fox jumped over the lazy dog.\nThis is 
 
 while True:
         b = ser.read()
-        #sys.stdout.write(str(hex(ord(b))) + " (" + b + ")");
+        #sys.stdout.write(str(hex(ord(b))) + " (" + b + ")\n")
         sys.stdout.write(b);
 
