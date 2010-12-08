@@ -29,8 +29,10 @@ void serial_init_b(uint32_t baud);
 uint8_t serial_read_c(char *c);
 
 /*
- * Reads data into buffer of (at most) the given length.  Returns the number of bytes
+ * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
  * which were read.  Implementations MAY block until the entire buffer is filled.
+ * The character after the last read character will be null terminated (which is why
+ * the most you can read is length - 1).
  */
 uint8_t serial_read_s(char *s, uint8_t len);
 

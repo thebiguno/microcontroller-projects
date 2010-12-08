@@ -19,6 +19,9 @@
  * will take the synchronous implementation about 25131µs (25ms) to return from the 
  * write_s function; the asynchronous implementation takes about 669µs (less than 1ms) 
  * to return.
+ *
+ * If you define SERIAL_TX_HYBRID then you get slightly modified execution, where the rx buffer
+ * is still serviced by interrupts, but bytes are transmitted synchronously.
  */
 
 #include "serial.h"
@@ -53,27 +56,28 @@ struct ring {
 };
 
 static struct ring rx_buffer;
-static struct ring tx_buffer;
 
-inline uint8_t _buffer_empty(struct ring *buffer){
+#ifndef SERIAL_TX_HYBRID
+static struct ring tx_buffer;
+#endif
+
+static inline uint8_t _buffer_empty(struct ring *buffer){
 	return (buffer->head == buffer->tail);
 }
 
-inline uint8_t _buffer_full(struct ring *buffer){
+static inline uint8_t _buffer_full(struct ring *buffer){
 	return ((buffer->head + 1) % SERIAL_BUFFER_SIZE == buffer->tail);
 }
 
-inline char _buffer_get(struct ring *buffer){
+static inline char _buffer_get(struct ring *buffer){
 	char c = buffer->buffer[buffer->tail];
-	buffer->tail++;
-	if (buffer->tail >= SERIAL_BUFFER_SIZE) buffer->tail = 0;
+	if (++buffer->tail >= SERIAL_BUFFER_SIZE) buffer->tail = 0;
 	return c;
 }
 
-inline void _buffer_put(struct ring *buffer, char data){
+static inline void _buffer_put(struct ring *buffer, char data){
 	buffer->buffer[buffer->head] = data;
-	buffer->head++;
-	if (buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
+	if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
 }
 
 void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits){
@@ -130,19 +134,29 @@ uint8_t serial_read_s(char *s, uint8_t len){
 	uint8_t count = 0;
 	char data = 0;
 	
-	while (count < len && serial_read_c(&data)){
+	while (count < (len - 1) && serial_read_c(&data)){
 		s[count++] = data;
 	}
+	
+	s[count++] = 0x00;
 	
 	return count;
 }
 
+#ifdef SERIAL_TX_HYBRID
 void serial_write_c(char data){
 	_buffer_put(&tx_buffer, data);
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
 	UCSR0B |= _BV(UDRIE0);
 }
+#else
+void serial_write_c(char data){
+	//Nop loop to wait until last transmission has completed
+	while (!(UCSR0A & _BV(UDRE0)));
+	UDR0 = data;
+}
+#endif
 
 void serial_write_s(char *data){
 	while (*data){
@@ -183,6 +197,7 @@ void error1() {
 	}
 }
 
+#ifndef SERIAL_TX_HYBRID
 #if defined(__AVR_ATtiny2313__)    || \
 	defined(__AVR_ATmega48P__)     || \
 	defined(__AVR_ATmega88P__)     || \
@@ -213,3 +228,4 @@ void error2() {
 	}
 
 }
+#endif
