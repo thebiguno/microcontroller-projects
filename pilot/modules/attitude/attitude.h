@@ -20,8 +20,8 @@ vector_t attitude(vector_t gyro, vector_t accel);
 
 uint8_t attitude_get_id();
 
-void attitude_get_params(double params[]);
-void attitude_set_params(double params[]);
+void attitude_send_tuning();
+void attitude_receive_tuning(uint8_t *buf);
 
 #endif
 

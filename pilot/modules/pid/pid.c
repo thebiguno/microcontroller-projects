@@ -15,33 +15,44 @@ pid_err_t _err_z;
 
 void pid_init() {
     // TODO get tuning values K from EEPROM
-    vector_t kp = {0.7,0.7,0.0};
-    vector_t ki = {0.001,0.0,0.0};
-    vector_t kd = {0.001,0.0,0.0};
-    pid_set_params(&kp, &ki, &kd);
+	_kp.x = 0.7;
+	_kp.y = 0.7;
+	_kp.z = 0.0;
+	_ki.x = 0.001;
+	_ki.y = 0.001;
+	_ki.z = 0.0;
+	_kd.x = 0.001;
+	_kd.y = 0.0;
+	_kd.z = 0.0;
 }
 
-void pid_set_params(vector_t *kp, vector_t *ki, vector_t *kd) {
-    _kp.x = kp->x;
-    _kp.y = kp->y;
-    _kp.z = kp->z;
-    _ki.x = ki->x;
-    _ki.y = ki->y;
-    _ki.z = ki->z;
-    _kd.x = kd->x;
-    _kd.y = kd->y;
-    _kd.z = kd->z;
+void pid_send_tuning() {
+	uint8_t length = 36;
+	uint8_t buf[length];
+	
+	protocol_double_to_bytes(_kp.x, &(buf[0]));
+	protocol_double_to_bytes(_kp.y, &(buf[4]));
+	protocol_double_to_bytes(_kp.z, &(buf[8]));
+	protocol_double_to_bytes(_ki.x, &(buf[12]));
+	protocol_double_to_bytes(_ki.y, &(buf[16]));
+	protocol_double_to_bytes(_ki.z, &(buf[20]));
+	protocol_double_to_bytes(_kd.x, &(buf[24]));
+	protocol_double_to_bytes(_kd.y, &(buf[28]));
+	protocol_double_to_bytes(_kd.z, &(buf[32]));
+
+	protocol_send_message('P', buf, length);
 }
-void pid_get_params(vector_t *kp, vector_t *ki, vector_t *kd) {
-    kp->x = _kp.x;
-    kp->y = _kp.y;
-    kp->z = _kp.z;
-    ki->x = _ki.x;
-    ki->y = _ki.y;
-    ki->z = _ki.z;
-    kd->x = _kd.x;
-    kd->y = _kd.y;
-    kd->z = _kd.z;
+
+void pid_receive_tuning(uint8_t *buf) {
+	_kp.x = protocol_bytes_to_double(&(buf[0]));
+	_kp.y = protocol_bytes_to_double(&(buf[4]));
+	_kp.z = protocol_bytes_to_double(&(buf[8]));
+	_ki.x = protocol_bytes_to_double(&(buf[12]));
+	_ki.y = protocol_bytes_to_double(&(buf[16]));
+	_ki.z = protocol_bytes_to_double(&(buf[20]));
+	_kd.x = protocol_bytes_to_double(&(buf[24]));
+	_kd.y = protocol_bytes_to_double(&(buf[28]));
+	_kd.z = protocol_bytes_to_double(&(buf[32]));
 }
 
 double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_err_t *err){

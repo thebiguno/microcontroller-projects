@@ -65,8 +65,8 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			accel_calibrate();
 			break;
 		case 't':
-//			pid_send_tuning();
-//			attitude_send_tuning();
+			pid_send_tuning();
+			attitude_send_tuning();
 			break;
 		case 'E':
 			_telemetry_enabled = 1;
@@ -75,23 +75,23 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			_telemetry_enabled = 0;
 			break;
 		case 'W':
-//			pid_persist();
-//			attitude_persist();
+			//pid_persist();
+			//attitude_persist();
 			break;
 		case 'p':
-//			pid_set_tuning(buf, length);
+			pid_receive_tuning(_buf);
 			break;
 		case 'c':
 			if (attitude_get_id() == 'C')
-//				attitude_set_tuning(buf, length);
+				attitude_receive_tuning(_buf);
 			break;
 		case 'k':
 			if (attitude_get_id() == 'K')
-//				attitude_set_tuning(buf, length);
+				attitude_receive_tuning(_buf);
 			break;
 		case 'm':
 			if (attitude_get_id() == 'M')
-//				attitude_set_tuning(buf, length);
+				attitude_receive_tuning(_buf);
 			break;
 		}
 }
