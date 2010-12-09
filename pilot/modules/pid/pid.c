@@ -40,7 +40,7 @@ void pid_send_tuning() {
 	protocol_double_to_bytes(_kd.y, &(buf[28]));
 	protocol_double_to_bytes(_kd.z, &(buf[32]));
 
-	protocol_send_message('P', buf, length);
+	protocol_send_message('p', buf, length);
 }
 
 void pid_receive_tuning(uint8_t *buf) {

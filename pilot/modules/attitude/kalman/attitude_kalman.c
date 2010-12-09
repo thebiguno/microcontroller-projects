@@ -100,7 +100,7 @@ void attitude_send_tuning() {
 	protocol_double_to_bytes(tuning_x.r_angle, &(buf[16]));
 	protocol_double_to_bytes(tuning_y.r_angle, &(buf[20]));
 
-	protocol_send_message('K', buf, length);
+	protocol_send_message('k', buf, length);
 }
 
 void attitude_receive_tuning(uint8_t *buf) {
