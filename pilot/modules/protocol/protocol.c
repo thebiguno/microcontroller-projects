@@ -206,17 +206,17 @@ double protocol_byte_to_percent(uint8_t x) {
 uint8_t protocol_percent_to_byte(double x) {
 	return (uint8_t) (2.55 * x);
 }
-void protocol_double_to_bytes(double value, uint8_t *buffer) {
+void protocol_double_to_bytes(double value, uint8_t *buffer, uint8_t offset) {
     union udouble converter;
     converter.d = value;
     for (uint8_t i = 0; i < sizeof(double); i++) {
-        buffer[i] = converter.u[i];
+        buffer[i + offset] = converter.u[i];
     }
 }
-double protocol_bytes_to_double(uint8_t *buffer) {
+double protocol_bytes_to_double(uint8_t *buffer, uint8_t offset) {
     union udouble converter;
     for (uint8_t i = 0; i < sizeof(double); i++) {
-        converter.u[i] = buffer[0];
+        converter.u[i] = buffer[i + offset];
     }
     return converter.d;
 }

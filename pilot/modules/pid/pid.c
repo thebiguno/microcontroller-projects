@@ -30,29 +30,29 @@ void pid_send_tuning() {
 	uint8_t length = 36;
 	uint8_t buf[length];
 	
-	protocol_double_to_bytes(_kp.x, &(buf[0]));
-	protocol_double_to_bytes(_kp.y, &(buf[4]));
-	protocol_double_to_bytes(_kp.z, &(buf[8]));
-	protocol_double_to_bytes(_ki.x, &(buf[12]));
-	protocol_double_to_bytes(_ki.y, &(buf[16]));
-	protocol_double_to_bytes(_ki.z, &(buf[20]));
-	protocol_double_to_bytes(_kd.x, &(buf[24]));
-	protocol_double_to_bytes(_kd.y, &(buf[28]));
-	protocol_double_to_bytes(_kd.z, &(buf[32]));
+	protocol_double_to_bytes(_kp.x, buf, 0);
+	protocol_double_to_bytes(_kp.y, buf, 4);
+	protocol_double_to_bytes(_kp.z, buf, 8);
+	protocol_double_to_bytes(_ki.x, buf, 12);
+	protocol_double_to_bytes(_ki.y, buf, 16);
+	protocol_double_to_bytes(_ki.z, buf, 20);
+	protocol_double_to_bytes(_kd.x, buf, 24);
+	protocol_double_to_bytes(_kd.y, buf, 28);
+	protocol_double_to_bytes(_kd.z, buf, 32);
 
 	protocol_send_message('p', buf, length);
 }
 
 void pid_receive_tuning(uint8_t *buf) {
-	_kp.x = protocol_bytes_to_double(&(buf[0]));
-	_kp.y = protocol_bytes_to_double(&(buf[4]));
-	_kp.z = protocol_bytes_to_double(&(buf[8]));
-	_ki.x = protocol_bytes_to_double(&(buf[12]));
-	_ki.y = protocol_bytes_to_double(&(buf[16]));
-	_ki.z = protocol_bytes_to_double(&(buf[20]));
-	_kd.x = protocol_bytes_to_double(&(buf[24]));
-	_kd.y = protocol_bytes_to_double(&(buf[28]));
-	_kd.z = protocol_bytes_to_double(&(buf[32]));
+	_kp.x = protocol_bytes_to_double(buf, 0);
+	_kp.y = protocol_bytes_to_double(buf, 4);
+	_kp.z = protocol_bytes_to_double(buf, 8);
+	_ki.x = protocol_bytes_to_double(buf, 12);
+	_ki.y = protocol_bytes_to_double(buf, 16);
+	_ki.z = protocol_bytes_to_double(buf, 20);
+	_kd.x = protocol_bytes_to_double(buf, 24);
+	_kd.y = protocol_bytes_to_double(buf, 28);
+	_kd.z = protocol_bytes_to_double(buf, 32);
 }
 
 double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_err_t *err){

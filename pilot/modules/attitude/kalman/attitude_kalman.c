@@ -93,22 +93,22 @@ void attitude_send_tuning() {
 	uint8_t length = 24;
 	uint8_t buf[length];
 	
-	protocol_double_to_bytes(tuning_x.q_angle, &(buf[0]));
-	protocol_double_to_bytes(tuning_y.q_angle, &(buf[4]));
-	protocol_double_to_bytes(tuning_x.q_gyro, &(buf[8]));
-	protocol_double_to_bytes(tuning_y.q_gyro, &(buf[12]));
-	protocol_double_to_bytes(tuning_x.r_angle, &(buf[16]));
-	protocol_double_to_bytes(tuning_y.r_angle, &(buf[20]));
+	protocol_double_to_bytes(tuning_x.q_angle, buf, 0);
+	protocol_double_to_bytes(tuning_y.q_angle, buf, 4);
+	protocol_double_to_bytes(tuning_x.q_gyro, buf, 8);
+	protocol_double_to_bytes(tuning_y.q_gyro, buf, 12);
+	protocol_double_to_bytes(tuning_x.r_angle, buf, 16);
+	protocol_double_to_bytes(tuning_y.r_angle, buf, 20);
 
 	protocol_send_message('k', buf, length);
 }
 
 void attitude_receive_tuning(uint8_t *buf) {
-	tuning_x.q_angle = protocol_bytes_to_double(&(buf[0]));
-	tuning_y.q_angle = protocol_bytes_to_double(&(buf[4]));
-	tuning_x.q_gyro = protocol_bytes_to_double(&(buf[8]));
-	tuning_y.q_gyro = protocol_bytes_to_double(&(buf[12]));
-	tuning_x.r_angle = protocol_bytes_to_double(&(buf[16]));
-	tuning_y.r_angle = protocol_bytes_to_double(&(buf[20]));
+	tuning_x.q_angle = protocol_bytes_to_double(buf, 0);
+	tuning_y.q_angle = protocol_bytes_to_double(buf, 4);
+	tuning_x.q_gyro = protocol_bytes_to_double(buf, 8);
+	tuning_y.q_gyro = protocol_bytes_to_double(buf, 12);
+	tuning_x.r_angle = protocol_bytes_to_double(buf, 16);
+	tuning_y.r_angle = protocol_bytes_to_double(buf, 20);
 }
 
