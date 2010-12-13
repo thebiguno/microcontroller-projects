@@ -22,6 +22,7 @@ int main(){
 	gyro_calibrate();
 	accel_calibrate();
 	
+	pid_init();
 	attitude_init(gyro_get(), accel_get());	   
 	
 	//Main program loop
