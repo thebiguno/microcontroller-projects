@@ -69,10 +69,7 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			attitude_send_tuning();
 			break;
 		case 'E':
-			_telemetry_enabled = 1;
-			break;
-		case 'e':
-			_telemetry_enabled = 0;
+			_telemetry_enabled = _telemetry_enabled ? 0x00 : 0x01;
 			break;
 		case 'W':
 			//pid_persist();
