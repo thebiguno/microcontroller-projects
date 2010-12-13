@@ -37,8 +37,8 @@ void attitude_init(vector_t gyro, vector_t accel) {
     tuning_y.q_angle = 0.001;
     tuning_x.q_gyro = 0.003;
     tuning_y.q_gyro = 0.003;
-    tuning_x.r_angle = 0.03;
-    tuning_y.r_angle = 0.03;
+    tuning_x.r_angle = 0.3;
+    tuning_y.r_angle = 0.3;
 }
 
 void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_t tuning, double dt) {
