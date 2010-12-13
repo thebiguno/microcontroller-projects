@@ -68,7 +68,7 @@ int main(){
 			esc_set(flight_command);
 		}
 
-		if (curr_millis - last_telemetry > 100){
+		if (curr_millis - last_telemetry > 250){
 			protocol_send_telemetry(pv, motor);
 			last_telemetry = curr_millis;
 		}
