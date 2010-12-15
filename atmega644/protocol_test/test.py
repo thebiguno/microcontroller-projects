@@ -9,7 +9,7 @@ XOFF = 0x13
 
 MAX_SIZE = 40
 
-buf = []
+buf = dict()
 b = 0
 err = False
 esc = False
@@ -18,7 +18,16 @@ len = 0
 cmd = 0
 chk = 0x00
 
-ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
+ser = serial.Serial("/dev/tty.usbserial-A8007UF6", 57600)
+
+def dispatch(cmd, buf, len):
+	sys.stdout.write(hex(cmd))
+	sys.stdout.write(":\n")
+	for x in range(0,len-1,4):
+		printfl(buf, x)
+
+def printfl(buf,x):
+	print("%0.2X" % buf[x] + "%0.2X" % buf[x+1] + "%0.2X" % buf[x+2] + "%0.2X" % buf[x+3])
 
 while True:
 	b = ord(ser.read())
@@ -68,16 +77,6 @@ while True:
 			pos = 0
 			chk = 0
 		else:
-			pos = pos + 1;
 			buf[pos - 3] = b;
-
-def dispatch(cmd, buf, len):
-	sys.stdout.write(cmd);
-	sys.stdout.write(":\n");
-	for x in range(0,8,4):
-		printf(buf, x)
-	
-def printf(buf,offset):
-	for x in range(offset, offset + 4):
-		sys.stdout.write(hex(buf[x]));
+			pos = pos + 1;
 
