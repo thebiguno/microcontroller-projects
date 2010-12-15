@@ -10,14 +10,16 @@
 #include "lib/serial/serial.h"
 
 int main (void){
-	serial_init(57600, 8, 0, 1);
+	serial_init_b(BAUD);
 		
-	char c;
-
 	//Main program loop
 	while (1){
-		if (serial_read_c(&c)){
-			serial_write_c(c);
-		}		
+		//serial_write_c(serial_read_c());
+		for (uint8_t i = 0; i <= 0xF; i++){
+			serial_write_c(i);
+//			_delay_ms(1);
+		}
+		_delay_ms(10);
+		
 	}
 }

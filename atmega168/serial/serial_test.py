@@ -12,10 +12,15 @@ ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", sys.argv[1])
 #Give time to init AVR before bombarding it with data
 sleep(1);
 
-ser.write("Hello World!\nThe quick brown fox jumped over the lazy dog.\nThis is a long test... how long does it need to be?  I don't know.  Why do you ask?\n")
-
+i = 0
 while True:
         b = ser.read()
-        sys.stdout.write(str(hex(ord(b))) + " (" + b + ")\n")
-        #sys.stdout.write(b);
+	if (ord(b) != i):
+		print("Bitstream corruption!  Expected " + hex(i) + ", recieved " + hex(ord(b)))
+		i = -1
+	else:
+       		print(str(hex(ord(b))))
+	i = i + 1
+	if (i > 0x3F):
+		i = 0
 

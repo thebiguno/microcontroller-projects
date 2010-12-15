@@ -12,10 +12,13 @@ ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", sys.argv[1])
 #Give time to init AVR before bombarding it with data
 sleep(1);
 
-ser.write("Hello World!\nThe quick brown fox jumped over the lazy dog.\nThis is a long test... how long does it need to be?  I don't know.  Why do you ask?\n")
-
 while True:
-        b = ser.read()
-        sys.stdout.write(str(hex(ord(b))) + " (" + b + ")\n")
-        #sys.stdout.write(b);
-
+	i = 0
+	j = 0
+	while (i <= 0xF):
+		while (j <= 0xF):
+			ser.write(hex(i << 4 | j))
+			j = j + 1
+		sleep(0.5)
+		i = i + 1
+		j = 0
