@@ -27,7 +27,7 @@ def dispatch(cmd, buf, len):
 		printfl(buf, x)
 
 def printfl(buf,x):
-	print("%0.2X" % buf[x] + "%0.2X" % buf[x+1] + "%0.2X" % buf[x+2] + "%0.2X" % buf[x+3])
+	print("%0.2X" % buf[x+3] + "%0.2X" % buf[x+2] + "%0.2X" % buf[x+1] + "%0.2X" % buf[x+0])
 
 while True:
 	b = ord(ser.read())
