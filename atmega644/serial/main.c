@@ -11,26 +11,21 @@
 
 int main (void){
 	serial_init_b(BAUD);
-		
-	char temp[32];
 
+	uint8_t i = 0;
+	char c;
+	DDRB |= _BV(PINB0);
+	
 	//Main program loop
 	while (1){
-		uint8_t r = serial_read_s(temp, 31);
-		if (r){
-			serial_write_s(temp);
-			serial_write_c('\n');
-			serial_write_s(itoa(r, temp, 10));
+		uint8_t b = serial_read_c(&c);
+		if (i != b){
+			PORTB |= _BV(PINB0);
+			i = 0xFF;
+			_delay_ms(100);
 		}
-		//serial_write_c(serial_read_c());
-		serial_write_s("\n\rTesting...\n\r");
-		serial_write_c('c');
-		serial_write_c('h');
-		serial_write_c('a');
-		serial_write_c('r');
-		serial_write_c('\n');
-		serial_write_c('\r');
-		_delay_ms(1000);
+		i++;
+		PORTB &= ~_BV(PINB0);
 		
 	}
 }
