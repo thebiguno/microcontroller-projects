@@ -11,6 +11,8 @@
 
 int main (void){
 	serial_init_b(57600);
+	
+	_delay_ms(3000);
 		
 	uint8_t buf[36];
 
