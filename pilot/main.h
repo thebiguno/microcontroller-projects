@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include "../lib/timer/timer.h"
+#include "../lib/shift/shift.h"
 
 //Figure out which pin mapping to use
 #if defined(__AVR_ATmega168__) || \
