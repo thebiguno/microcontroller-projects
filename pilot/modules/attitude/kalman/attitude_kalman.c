@@ -22,8 +22,10 @@ typedef struct kalman_tuning {
 static vector_t angle;
 static kalman_state_t state_x;
 static kalman_state_t state_y;
+static kalman_state_t state_z;
 static kalman_tuning_t tuning_x;
 static kalman_tuning_t tuning_y;
+static kalman_tuning_t tuning_z;
 
 static uint64_t millis;
 
@@ -35,10 +37,13 @@ void attitude_init(vector_t gyro, vector_t accel) {
     // TODO read this from EEPROM
     tuning_x.q_angle = 0.001;
     tuning_y.q_angle = 0.001;
+    tuning_z.q_angle = 0.001;
     tuning_x.q_gyro = 0.003;
     tuning_y.q_gyro = 0.003;
+    tuning_z.q_gyro = 0.003;
     tuning_x.r_angle = 0.3;
     tuning_y.r_angle = 0.3;
+    tuning_z.r_angle = 0.3;
 }
 
 void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_t tuning, double dt) {
@@ -74,9 +79,10 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 
     _attitude(gyro.x, accel.x, &state_x, tuning_x, dt);
     _attitude(gyro.y, accel.y, &state_y, tuning_y, dt);
+    _attitude(gyro.z, accel.z, &state_z, tuning_z, dt);
     angle.x = state_x.angle;
     angle.y = state_y.angle;
-    angle.z = gyro.z;
+    angle.z = state_z.angle;
     return angle;
 }
 
@@ -90,15 +96,18 @@ void attitude_reset() {
 }
 
 void attitude_send_tuning() {
-	uint8_t length = 24;
+	uint8_t length = 36;
 	uint8_t buf[length];
 	
 	protocol_double_to_bytes(tuning_x.q_angle, buf, 0);
 	protocol_double_to_bytes(tuning_y.q_angle, buf, 4);
-	protocol_double_to_bytes(tuning_x.q_gyro, buf, 8);
-	protocol_double_to_bytes(tuning_y.q_gyro, buf, 12);
-	protocol_double_to_bytes(tuning_x.r_angle, buf, 16);
-	protocol_double_to_bytes(tuning_y.r_angle, buf, 20);
+	protocol_double_to_bytes(tuning_z.q_angle, buf, 8);
+	protocol_double_to_bytes(tuning_x.q_gyro, buf, 12);
+	protocol_double_to_bytes(tuning_y.q_gyro, buf, 16);
+	protocol_double_to_bytes(tuning_z.q_gyro, buf, 20);
+	protocol_double_to_bytes(tuning_x.r_angle, buf, 24);
+	protocol_double_to_bytes(tuning_y.r_angle, buf, 28);
+	protocol_double_to_bytes(tuning_y.r_angle, buf, 32);
 
 	protocol_send_message('k', buf, length);
 }
@@ -106,9 +115,12 @@ void attitude_send_tuning() {
 void attitude_receive_tuning(uint8_t *buf) {
 	tuning_x.q_angle = protocol_bytes_to_double(buf, 0);
 	tuning_y.q_angle = protocol_bytes_to_double(buf, 4);
-	tuning_x.q_gyro = protocol_bytes_to_double(buf, 8);
-	tuning_y.q_gyro = protocol_bytes_to_double(buf, 12);
-	tuning_x.r_angle = protocol_bytes_to_double(buf, 16);
-	tuning_y.r_angle = protocol_bytes_to_double(buf, 20);
+	tuning_z.q_angle = protocol_bytes_to_double(buf, 8);
+	tuning_x.q_gyro = protocol_bytes_to_double(buf, 12);
+	tuning_y.q_gyro = protocol_bytes_to_double(buf, 16);
+	tuning_z.q_gyro = protocol_bytes_to_double(buf, 20);
+	tuning_x.r_angle = protocol_bytes_to_double(buf, 24);
+	tuning_y.r_angle = protocol_bytes_to_double(buf, 28);
+	tuning_z.r_angle = protocol_bytes_to_double(buf, 32);
 }
 
