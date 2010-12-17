@@ -31,7 +31,7 @@ void gyro_init(){
 	pins[0] = PIN_GYRO_X;
 	pins[1] = PIN_GYRO_Y;
 	pins[2] = PIN_GYRO_Z;
-	analog_init(pins, 3);
+	analog_init(pins, 3, ANALOG_AREF);
 }
 
 double _gyro_raw_to_rad(uint16_t raw, uint16_t calibrated_zero){
