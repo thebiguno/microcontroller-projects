@@ -2,10 +2,19 @@
 #define ANALOG_H
 #include <avr/io.h>
 
+#define ANALOG_AREF		0
+#define ANALOG_AVCC		1
+#define ANALOG_INTERNAL	3
+
 /*
- * Initializes analog hardware.
+ * Initializes analog hardware.  The aref argument can be one of three things:
+ * 0, 1, or 3.  According to the ATmega168 datasheet, the meanings are:
+ * 0: Use AREF, internal Vref turned off
+ * 1: Use AVCC with external cap at AREF pin
+ * 3: Use internal 1.1V reference with external cap at AREF pin
  */
-void analog_init(uint8_t pins[], uint8_t count);
+
+void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref);
 
 /*
  * Reads the current analog values into given data buffer.  Buffer must be at 
