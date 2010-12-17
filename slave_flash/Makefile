@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include build/variables.mk
 
 PROJECT=slave_flash
 MMCU=atmega168
@@ -11,4 +11,4 @@ AVRDUDE_PROGRAMMER=usbtiny
 
 CDEFS+=-DSERIAL_DISABLE_RX
 
-include ../../build/targets.mk
+include build/targets.mk
