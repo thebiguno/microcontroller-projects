@@ -248,7 +248,7 @@ void setup() {
 	apins[1] = 1;
 	apins[2] = 2;
 	apins[3] = 3;
-	analog_init(apins, 4);
+	analog_init(apins, 4, ANALOG_AREF);
 	
 #if DEBUG >= 1
 	serial_init(9600, 8, 0, 1);
