@@ -7,12 +7,12 @@
 #include "lib/serial/serial.h"
 
 //The amount of delta required to register a flash.
-#define FLASH_THRESHOLD 		30
+#define FLASH_THRESHOLD 		40
 //The amount of delta required to re-calibrate ambient
 #define AMBIENT_THRESHOLD		-10
 
 //The time after the last command pulse before the 'fire' command happens; in micro seconds.
-#define MIN_FIRE_PULSE_DELAY	30000
+#define MIN_FIRE_PULSE_DELAY	45000
 #define MAX_FIRE_PULSE_DELAY	100000
 
 //The maximum length of a pulse.  If we read one longer than this, then we will re-adjust
@@ -43,14 +43,14 @@ static inline void fire_flash(){
 	_delay_ms(1);
 	PORTB &= ~_BV(PINB2);
 	
-	//flash PINC5 3 times to confirm flash.
-	for (uint8_t i = 0; i < 3; i++){
+	//Pulse PINC5 10 times to confirm flash.
+	for (uint8_t i = 0; i < 10; i++){
 		PORTC |= _BV(PINC5);
 		_delay_ms(5);
 		PORTC &= ~_BV(PINC5);
 		_delay_ms(20);
 	}
-
+	_delay_ms(100);
 }
 
 static inline void read_flash(){
