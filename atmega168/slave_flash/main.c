@@ -6,6 +6,21 @@
 #include "lib/timer/timer.h"
 #include "lib/serial/serial.h"
 
+//Status LED
+#define STATUS_LED_PORT			PORTD
+#define STATUS_LED_PIN			PIND5
+
+//Heartbeat LED
+#define HEARTBEAT_LED_PORT		PORTD
+#define HEARTBEAT_LED_PIN		PIND6
+
+//Analog pin
+#define ANALOG_PIN				0
+
+//XSYNC pin
+#define XSYNC_PORT				PORTB
+#define XSYNC_PIN				PINB1
+
 //The amount of delta required to register a flash.
 #define FLASH_THRESHOLD 		40
 //The amount of delta required to re-calibrate ambient
@@ -39,15 +54,15 @@ char temp[64];
 #endif
 
 static inline void fire_flash(){
-	PORTB |= _BV(PINB2);
+	XSYNC_PORT |= _BV(XSYNC_PIN);
 	_delay_ms(1);
-	PORTB &= ~_BV(PINB2);
+	XSYNC_PORT &= ~_BV(XSYNC_PIN);
 	
-	//Pulse PINC5 10 times to confirm flash.
+	//Pulse status 10 times to confirm flash.
 	for (uint8_t i = 0; i < 10; i++){
-		PORTC |= _BV(PINC5);
+		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
 		_delay_ms(5);
-		PORTC &= ~_BV(PINC5);
+		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
 		_delay_ms(20);
 	}
 	_delay_ms(100);
@@ -92,7 +107,7 @@ int main (void){
 
 	//Analog init
 	uint8_t pins[1];
-	pins[0] = 0;
+	pins[0] = ANALOG_PIN;
 	analog_init(pins, 1, ANALOG_INTERNAL);
 	
 	//Timer init
@@ -102,17 +117,17 @@ int main (void){
 	// of readings
 	read_ambient();
 
-	//PINB1 is xsync output
-	DDRB |= _BV(PINB2);
-	//PINC5 is flash confirm light; PINC4 is heartbeat (100ms)
-	DDRC |= _BV(PINC5) | _BV(PINC4);
+	//Enable XSYNC and LED in output mode
+	*(&XSYNC_PORT - 0x1) |= _BV(XSYNC_PIN);
+	*(&STATUS_LED_PORT - 0x1) |= _BV(STATUS_LED_PIN);
+	*(&HEARTBEAT_LED_PORT - 0x1) |= _BV(HEARTBEAT_LED_PIN);
 
 
-	//Flash PINC5 five times to confirm we are up and running
+	//Flash LED five times to confirm we are up and running
 	for (uint8_t i = 0; i < 5; i++){
-		PORTC |= _BV(PINC5);
+		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
 		_delay_ms(10);
-		PORTC &= ~_BV(PINC5);
+		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
 		_delay_ms(50);
 	}
 
@@ -121,19 +136,16 @@ int main (void){
 		//Current time in microseconds
 		time = timer_micros();
 
-#ifdef DEBUG
-		//Print status every second
+		//Print status / heartbeat every second
 		if (time - status_time > 1000000){
+			HEARTBEAT_LED_PORT ^= _BV(HEARTBEAT_LED_PIN);
+
+#ifdef DEBUG
 			sprintf(temp, "Ambient: %d; Analog: %d; Flash: %d\n\r", ambient, analog, flash);
 			serial_write_s(temp);
-			status_time = time;
-		}
-#else
-		if (time - status_time > 100000){
-			PORTC ^= _BV(PINC4);
-			status_time = time;
-		}
 #endif		
+			status_time = time;
+		}
 
 		read_flash();		
 		
