@@ -45,7 +45,7 @@ int main (void){
 		protocol_double_to_bytes(x4[i], buf, i * 4);
 	}
 	protocol_send_message('F', buf, 36);
-	
+
 	while(1) {
 	}	
 }
