@@ -29,6 +29,7 @@ void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref){
 	// 0: Use AREF, internal Vref turned off
 	// 1: Use AVCC with external cap at AREF pin
 	// 3: Use internal 1.1V reference with external cap at AREF pin
+	if (aref != 0x1 && aref != 0x3) aref = 0x0; //Sanity check...
 	ADMUX &= ~(_BV(REFS1) | _BV(REFS0));  //Clear AREF bits...
 	ADMUX |= aref << REFS0; //... and set according to aref
 	
