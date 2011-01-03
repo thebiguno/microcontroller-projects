@@ -10,10 +10,6 @@
 #define STATUS_LED_PORT			PORTD
 #define STATUS_LED_PIN			PIND5
 
-//Heartbeat LED
-#define HEARTBEAT_LED_PORT		PORTD
-#define HEARTBEAT_LED_PIN		PIND6
-
 //Analog pin
 #define ANALOG_PIN				0
 
@@ -26,13 +22,13 @@
 //The amount of delta required to re-calibrate ambient
 #define AMBIENT_THRESHOLD		-10
 
-//The time after the last command pulse before the 'fire' command happens; in micro seconds.
-#define MIN_FIRE_PULSE_DELAY	45000
-#define MAX_FIRE_PULSE_DELAY	100000
+//The time after the last command pulse before the 'fire' command happens; in milli seconds.
+#define MIN_FIRE_PULSE_DELAY	45
+#define MAX_FIRE_PULSE_DELAY	100
 
 //The maximum length of a pulse.  If we read one longer than this, then we will re-adjust
 // ambient, as it is likely just than someone has turned the lights on.
-#define MAX_PULSE_WIDTH			100000
+#define MAX_PULSE_WIDTH			500
 //The maximum count of pulses.  If we exceed this, we will re-adjust ambient, as it is likely
 // that we are just sitting on the edge of the flash threshold
 #define MAX_PULSE_COUNT			20
@@ -59,7 +55,7 @@ static inline void fire_flash(){
 	XSYNC_PORT &= ~_BV(XSYNC_PIN);
 	
 	//Pulse status 10 times to confirm flash.
-	for (uint8_t i = 0; i < 10; i++){
+	for (uint8_t i = 0; i <= 10; i++){
 		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
 		_delay_ms(5);
 		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
@@ -96,7 +92,7 @@ static inline void read_ambient(){
 static inline void reset(){
 	//Reset everything
 	pulse_count = 0;
-	time = timer_micros();
+	time = timer_millis();
 	read_flash();
 }
 
@@ -120,11 +116,10 @@ int main (void){
 	//Enable XSYNC and LED in output mode
 	*(&XSYNC_PORT - 0x1) |= _BV(XSYNC_PIN);
 	*(&STATUS_LED_PORT - 0x1) |= _BV(STATUS_LED_PIN);
-	*(&HEARTBEAT_LED_PORT - 0x1) |= _BV(HEARTBEAT_LED_PIN);
 
 
 	//Flash LED five times to confirm we are up and running
-	for (uint8_t i = 0; i < 5; i++){
+	for (uint8_t i = 0; i <= 5; i++){
 		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
 		_delay_ms(10);
 		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
@@ -133,19 +128,17 @@ int main (void){
 
 	//Main program loop
 	while (1){
-		//Current time in microseconds
-		time = timer_micros();
-
-		//Print status / heartbeat every second
-		if (time - status_time > 1000000){
-			HEARTBEAT_LED_PORT ^= _BV(HEARTBEAT_LED_PIN);
+		//Current time in milliseconds
+		time = timer_millis();
 
 #ifdef DEBUG
+		//Print status / heartbeat every second
+		if (time - status_time > 1000000){
 			sprintf(temp, "Ambient: %d; Analog: %d; Flash: %d\n\r", ambient, analog, flash);
 			serial_write_s(temp);
-#endif		
 			status_time = time;
 		}
+#endif		
 
 		read_flash();		
 		
@@ -182,18 +175,18 @@ int main (void){
 			//Read to the end of the pulse.  If the pulse is lasting longer than MAX_PULSE_WIDTH
 			// then we may need to adjust the ambient value.
 			while (flash > FLASH_THRESHOLD 
-					&& timer_micros() - time < MAX_PULSE_WIDTH){
+					&& timer_millis() - time < MAX_PULSE_WIDTH){
 				read_flash();
 			}
 #ifdef DEBUG				
-			sprintf(temp, "Last pulse ended %8ld us ago\n\r", (uint32_t) (timer_micros() - pulse_end_time));
+			sprintf(temp, "Last pulse ended %8ld us ago\n\r", (uint32_t) (timer_millis() - pulse_end_time));
 			serial_write_s(temp);
 #endif
 			
-			pulse_end_time = timer_micros();
+			pulse_end_time = timer_millis();
 			
 			//If this 'pulse' was really just ambient, adjust ambient and reset...
-			if (timer_micros() - time > MAX_PULSE_WIDTH){
+			if (timer_millis() - time > MAX_PULSE_WIDTH){
 #ifdef DEBUG				
 				serial_write_s("Pulse time too long; probably just ambient...\n\r");
 #endif
