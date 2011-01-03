@@ -57,7 +57,17 @@ uint64_t timer_micros(){
  * The ISR for timer0 overflow.  Increment the _timer_count here, and do the calculcations
  * to increment _timer_millis as needed.
  */
+#if defined(__AVR_ATtiny13__)   || \
+	defined(__AVR_ATtiny24__)   || \
+	defined(__AVR_ATtiny44__)   || \
+	defined(__AVR_ATtiny84__)   || \
+	defined(__AVR_ATtiny25__)   || \
+	defined(__AVR_ATtiny45__)   || \
+	defined(__AVR_ATtiny85__)
+ISR(TIM0_COMPA_vect){
+#else //TODO Verify which AVRs use this ISR, and print error accordingly
 ISR(TIMER0_COMPA_vect){
+#endif
 	TCNT0 = 0;
 	_timer_millis++;
 }
