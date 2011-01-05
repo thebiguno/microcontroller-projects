@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "../util/convert.h"
 #include "../comm/communication.h"
 
 #define START 0x7e
@@ -173,17 +174,17 @@ void protocol_poll()
 uint8_t protocol_receive_flight_command(double values[])
 {
 	if (_last_flight_cmd == 'A') {
-		values[0] = protocol_byte_to_percent(_last_flight_val[0]);
-		values[1] = protocol_byte_to_radian(_last_flight_val[1]);
-		values[2] = protocol_byte_to_radian(_last_flight_val[2]);
-		values[3] = protocol_byte_to_radian(_last_flight_val[3]);
+		values[0] = convert_byte_to_percent(_last_flight_val[0]);
+		values[1] = convert_byte_to_radian(_last_flight_val[1]);
+		values[2] = convert_byte_to_radian(_last_flight_val[2]);
+		values[3] = convert_byte_to_radian(_last_flight_val[3]);
 		_last_flight_cmd = 0x00;
 		return 'A';
 	} else if (_last_flight_cmd == 'M') {
-		values[0] = protocol_byte_to_percent(_last_flight_val[0]);
-		values[1] = protocol_byte_to_percent(_last_flight_val[1]);
-		values[2] = protocol_byte_to_percent(_last_flight_val[2]);
-		values[3] = protocol_byte_to_percent(_last_flight_val[3]);
+		values[0] = convert_byte_to_percent(_last_flight_val[0]);
+		values[1] = convert_byte_to_percent(_last_flight_val[1]);
+		values[2] = convert_byte_to_percent(_last_flight_val[2]);
+		values[3] = convert_byte_to_percent(_last_flight_val[3]);
 		_last_flight_cmd = 0x00;
 		return 'M';
 	} else {
@@ -195,42 +196,13 @@ void protocol_send_telemetry(vector_t vector, double motor[]) {
 	if (_telemetry_enabled) {
 		uint8_t packet[7];
 
-		packet[0] = protocol_radian_to_byte(vector.x);
-		packet[1] = protocol_radian_to_byte(vector.y);
-		packet[2] = protocol_radian_to_byte(vector.z);
+		packet[0] = convert_radian_to_byte(vector.x);
+		packet[1] = convert_radian_to_byte(vector.y);
+		packet[2] = convert_radian_to_byte(vector.z);
 		for (uint8_t i = 0; i < 4; i++) {
-			packet[i+3] = protocol_percent_to_byte(motor[i]);
+			packet[i+3] = convert_percent_to_byte(motor[i]);
 		}
 		protocol_send_message('T', packet, 7);
 	}
-}
-
-double protocol_byte_to_radian(uint8_t x) {
-	double r = 0.024639942381096 * x;
-	return (r > M_PI) ? (2.0 * M_PI) - r : r; // convert quadrants III & IV into negative values
-}
-uint8_t protocol_radian_to_byte(double x) {
-	double r = (x < 0) ? (2.0 * M_PI) + x : x; // convert quadrants III & IV into positive values
-	return (uint8_t) (40.584510488433314 * r);
-}
-double protocol_byte_to_percent(uint8_t x) {
-	return 0.392156862745098 * x;
-}
-uint8_t protocol_percent_to_byte(double x) {
-	return (uint8_t) (2.55 * x);
-}
-void protocol_double_to_bytes(double value, uint8_t *buffer, uint8_t offset) {
-    union udouble converter;
-    converter.d = value;
-    for (uint8_t i = 0; i < sizeof(double); i++) {
-        buffer[i + offset] = converter.u[i];
-    }
-}
-double protocol_bytes_to_double(uint8_t *buffer, uint8_t offset) {
-    union udouble converter;
-    for (uint8_t i = 0; i < sizeof(double); i++) {
-        converter.u[i] = buffer[i + offset];
-    }
-    return converter.d;
 }
 
