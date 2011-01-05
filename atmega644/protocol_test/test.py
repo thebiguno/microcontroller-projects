@@ -32,6 +32,7 @@ def printfl(buf,x):
 while True:
 	b = ord(ser.read())
 	if b == -1:
+		sys.stdout.write("end of stream\n")
 		break
 	if err and b == START:
 		sys.stdout.write("recover from error\n")
