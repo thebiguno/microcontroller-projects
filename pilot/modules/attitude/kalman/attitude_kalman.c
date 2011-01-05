@@ -31,22 +31,65 @@ static kalman_tuning_t tuning_z;
 
 static uint64_t millis;
 
+void attitude_read_tuning() {
+	uint8_t chk = 0;
+	uint8_t data[37];
+	
+	persist_read(PERSIST_SECTION_ATTITUDE, 0x00, data, 37);
+	for (int i = 0; i < 36; i++) {
+		chk += data[i];
+	}
+	if (chk == data[36]) {
+		tuning_x.q_angle = convert_bytes_to_double(data, 0);
+		tuning_y.q_angle = convert_bytes_to_double(data, 4);
+		tuning_z.q_angle = convert_bytes_to_double(data, 8);
+		tuning_x.q_gyro = convert_bytes_to_double(data, 12);
+		tuning_y.q_gyro = convert_bytes_to_double(data, 16);
+		tuning_z.q_gyro = convert_bytes_to_double(data, 20);
+		tuning_x.r_angle = convert_bytes_to_double(data, 24);
+		tuning_y.r_angle = convert_bytes_to_double(data, 28);
+		tuning_z.r_angle = convert_bytes_to_double(data, 32);
+	} else {
+		tuning_x.q_angle = 0.001;
+		tuning_y.q_angle = 0.001;
+		tuning_z.q_angle = 0.001;
+		tuning_x.q_gyro = 0.003;
+		tuning_y.q_gyro = 0.003;
+		tuning_z.q_gyro = 0.003;
+		tuning_x.r_angle = 0.3;
+		tuning_y.r_angle = 0.3;
+		tuning_z.r_angle = 0.3;
+	}
+}
+
+void attitude_write_tuning() {
+	uint8_t chk = 0;
+	uint8_t data[37];
+	
+	convert_double_to_bytes(tuning_x.q_angle, data, 0);
+	convert_double_to_bytes(tuning_y.q_angle, data, 4);
+	convert_double_to_bytes(tuning_z.q_angle, data, 8);
+	convert_double_to_bytes(tuning_x.q_gyro, data, 12);
+	convert_double_to_bytes(tuning_y.q_gyro, data, 16);
+	convert_double_to_bytes(tuning_z.q_gyro, data, 20);
+	convert_double_to_bytes(tuning_x.r_angle, data, 24);
+	convert_double_to_bytes(tuning_y.r_angle, data, 28);
+	convert_double_to_bytes(tuning_z.r_angle, data, 32);
+	
+	for (int i = 0; i < 36; i++) {
+		chk += data[i];
+	}
+	data[36] = chk;
+	
+	persist_write(PERSIST_SECTION_ATTITUDE, 0x00, data, 37);
+}
+
 void attitude_init(vector_t gyro, vector_t accel) {
 	timer_init();
 	
     millis = timer_millis();
 
-//	persis_read(PERSIST_SECTION_ATTITUDE, )
-    // TODO read this from EEPROM
-    tuning_x.q_angle = 0.001;
-    tuning_y.q_angle = 0.001;
-    tuning_z.q_angle = 0.001;
-    tuning_x.q_gyro = 0.003;
-    tuning_y.q_gyro = 0.003;
-    tuning_z.q_gyro = 0.003;
-    tuning_x.r_angle = 0.3;
-    tuning_y.r_angle = 0.3;
-    tuning_z.r_angle = 0.3;
+	attitude_read_tuning();
 }
 
 void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_t tuning, double dt) {

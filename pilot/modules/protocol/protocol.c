@@ -79,8 +79,8 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			shift_state ^= _BV(5);
 			break;
 		case 'W':
-			//pid_persist();
-			//attitude_persist();
+			pid_write_tuning();
+			attitude_write_tuning();
 			break;
 		case 'p':
 			pid_receive_tuning(_buf);
@@ -135,7 +135,7 @@ void protocol_poll()
 			_esc = 0;
         }
         if (_pos > 1) { // start byte and length byte not included in checksum
-            _chk += b;
+            _pos += b;
         }
         
         switch(_pos) {
@@ -157,7 +157,7 @@ void protocol_poll()
 						shift_state ^= _BV(1); // toggle for every message dispatched
 						_protocol_dispatch(_api, _len - 1);
 						break; // i.e. maximum one message processed per main loop
-                    } else {
+					} else {
 						shift_state |= _BV(7);
 						_err = 1;
                     }

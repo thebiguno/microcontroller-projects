@@ -3,9 +3,10 @@
 
 #include "../../main.h"
 
-#define PERSIST_SECTION_ACCEL 		0x0
-#define PERSIST_SECTION_GYRO 		0x1
-#define PERSIST_SECTION_ATTITUDE	0x2
+#define PERSIST_SECTION_ATTITUDE	0x0
+#define PERSIST_SECTION_PID			0x1
+#define PERSIST_SECTION_ACCEL 		0x2
+#define PERSIST_SECTION_GYRO 		0x3
 
 
 /*

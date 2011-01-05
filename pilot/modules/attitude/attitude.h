@@ -23,5 +23,8 @@ uint8_t attitude_get_id();
 void attitude_send_tuning();
 void attitude_receive_tuning(uint8_t *buf);
 
+void attitude_read_tuning();
+void attitude_write_tuning();
+
 #endif
 
