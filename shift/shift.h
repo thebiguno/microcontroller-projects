@@ -9,7 +9,18 @@
  *  Data Out (74595 pin 14)
  *  Clock Out (74595 pin 11)
  *  Latch Out (74595 pin 12)
- * You need to connect /Shift Register Clear (pin 10) to VCC and /Output Enable (pin 13) to GND
+ *
+ * Shift Register Pinout:
+ * Pin 1 - 7: Outputs B - H
+ * Pin 8: GND
+ * Pin 9: Serial Output (Chain this to pin 14 if you are linking multiple registers)
+ * Pin 10: /Shift Register Clear (Connect to VCC)
+ * Pin 11: Connect to AVR Clock Out  <-----
+ * Pin 12: Connect to AVR Latch Out  <-----
+ * Pin 13: /Output Enable (Connect to GND)
+ * Pin 14: Connect to AVR Data Out or previous shift register if chaining  <-----
+ * Pin 15: Output A
+ * Pin 16: VCC
  */
 
 /*
