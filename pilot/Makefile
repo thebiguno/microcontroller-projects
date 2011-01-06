@@ -12,6 +12,7 @@ AVRDUDE_PROGRAMMER=usbtiny
 CDEFS += -DADC_PRESCALER_MASK=0x7 -DNO_INTERRUPT_ENABLE -lm
 
 #Include each module
+include modules/status/module.mk
 include modules/accel/module.mk
 include modules/attitude/module.mk
 include modules/comm/module.mk

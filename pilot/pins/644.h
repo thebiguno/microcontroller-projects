@@ -19,9 +19,6 @@
 #define PORT_MOTOR_D			PORTB
 #define PIN_MOTOR_D				PINB3
 
-#define PORT_HEARTBEAT			PORTB
-#define PIN_HEARTBEAT			PINB4
-
 //The ADCx channel numbers; see datasheet pinout and register ADCMUX bits 3::0 for definitions.
 #define PIN_GYRO_X				0
 #define PIN_GYRO_Y				1

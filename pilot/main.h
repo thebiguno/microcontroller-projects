@@ -3,7 +3,6 @@
 
 #include <avr/io.h>
 #include "../lib/timer/timer.h"
-#include "../lib/shift/shift.h"
 
 //Figure out which pin mapping to use
 #if defined(__AVR_ATmega168__) || \
@@ -27,10 +26,7 @@ typedef struct vector {
     double z;
 } vector_t;
 
-//Common modules which other modules need to interact with
 #include "modules/persist/persist.h"
-
-//Needed to push data out to the modules
 #include "modules/comm/communication.h"
 #include "modules/accel/accel.h"
 #include "modules/gyro/gyro.h"
@@ -39,5 +35,6 @@ typedef struct vector {
 #include "modules/esc/esc.h"
 #include "modules/pid/pid.h"
 #include "modules/protocol/protocol.h"
+#include "modules/status/status.h"
 
 #endif

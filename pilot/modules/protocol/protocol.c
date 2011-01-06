@@ -100,6 +100,7 @@ void protocol_poll()
     while (comm_available() && comm_read(&b)) {
         if (_err > 0 && b == START) {
 			// recover from error condition
+			status_clear(STATUS_PROTOCOL_ERR);
 			_err = 0;
 			_pos = 0;
         } else if (_err > 0) {
@@ -144,6 +145,7 @@ void protocol_poll()
 						_protocol_dispatch(_api, _len - 1);
 						break; // i.e. maximum one message processed per main loop
 					} else {
+						status_set(STATUS_PROTOCOL_ERR);
 						_err = 1;
                     }
                     _pos = 0;

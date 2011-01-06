@@ -2,20 +2,14 @@
 
 int main(){
 
-	//Heartbeat init
-	*(&PORT_HEARTBEAT - 0x1) |= _BV(PIN_HEARTBEAT);
-	PORT_HEARTBEAT |= _BV(PIN_HEARTBEAT);
-
 	uint64_t millis = 0;
 	uint8_t armed = 0x00;
 	uint64_t last_telemetry = 0;
 	vector_t sp = { 0,0,0 };		// ATTITUDE set point
 	double motor[4];				// MOTOR set point
 	
-	uint8_t shift_state = 0x00;
-	shift_init(&PORT_LED_SHIFT_DATA, PIN_LED_SHIFT_DATA, &PORT_LED_SHIFT_CLOCK, PIN_LED_SHIFT_CLOCK, &PORT_LED_SHIFT_LATCH, PIN_LED_SHIFT_LATCH);
-
 	//Init all modules.  We call accel_init last as it forces sei().
+	status_init();
 	comm_init();
 	timer_init();
 	gyro_init();
@@ -44,25 +38,25 @@ int main(){
 		vector_t pv = attitude(g, a);				// PID process variable
 
 		if (armed == 'A') {							// armed by attitude command
-			shift_state |= _BV(1);
+			status_set(STATUS_ARMED);
 			
 			double throttle = flight_command[0];
 			sp.x = flight_command[1];
 			sp.y = flight_command[2];
 			sp.z = flight_command[3];
 			if (dt > 3000) {
-				shift_state &= ~_BV(1);
+				status_clear(STATUS_ARMED);
 				
 				// TODO level out and scale back throttle
 			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
-		} else if (armed == 'M') {			// armed by motor command
-			shift_state |= _BV(2);
+		} else if (armed == 'M') {					// armed by motor command
+			status_set(STATUS_ARMED);
 			
 			if (dt > 3000) {
-				shift_state &= ~_BV(2);
+				status_clear(STATUS_ARMED);
 				// kill the motors completely
 				
 				for (uint8_t i = 0; i < 4; i++) {
@@ -73,14 +67,11 @@ int main(){
 		}
 
 		if (curr_millis - last_telemetry > 250){
-			//Heartbeat
-			PORT_HEARTBEAT = PORT_HEARTBEAT ^ _BV(PIN_HEARTBEAT);
-			
+			status_toggle(STATUS_HEARTBEAT);
+
 			protocol_send_telemetry(pv, motor);
 			last_telemetry = curr_millis;
 		}
-		
-		shift_out(shift_state);
 	}
 }
 
