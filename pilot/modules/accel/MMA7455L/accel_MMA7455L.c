@@ -50,16 +50,16 @@ void accel_init(){
 		chk += calibration_data[i];
 	}
 	if (chk == calibration_data[6]) {
+		message[0] = ADDRESS << 1 | I2C_WRITE;
+		message[1] = 0x10;
 		message[2] = calibration_data[0];
 		message[3] = calibration_data[1];
 		message[4] = calibration_data[2];
 		message[5] = calibration_data[3];
 		message[6] = calibration_data[4];
 		message[7] = calibration_data[5];
-	} // else tuning with 0x00, definitely not ideal
-	message[0] = ADDRESS << 1 | I2C_WRITE;
-	message[1] = 0x10;
-	i2c_start_transceiver_with_data(message, 8);
+		i2c_start_transceiver_with_data(message, 8);
+	}
 
 	//Read in AVERAGE_SAMPLE_SIZE readings so that our initial average is sane.
 	for (uint8_t i = 0; i < AVERAGE_SAMPLE_SIZE; i++){
