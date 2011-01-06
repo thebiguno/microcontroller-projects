@@ -20,10 +20,6 @@ int main(){
 	gyro_init();
 	accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
 	
-	//TODO Remove later...
-	gyro_calibrate();
-	accel_calibrate();
-	
 	pid_init();
 	attitude_init(gyro_get(), accel_get());	   
 	

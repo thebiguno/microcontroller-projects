@@ -10,8 +10,6 @@
 
 #define AVERAGE_SAMPLE_SIZE 0x4
 
-#define PERSIST_OFFSET 0x00  //The address to store offset calibration data
-
 //Running average of values
 static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
 static uint8_t running_average_pointer = 0;
@@ -41,21 +39,26 @@ void accel_init(){
 	message[2] = _BV(7);
 	i2c_start_transceiver_with_data(message, 3);
 
-	//Reset the offset drift to zero; this can be re-calibrated later.
-	//We read the last calibration from EEPROM; probably won't be 
+	// Reset the offset drift to zero; this can be re-calibrated later.
+	// We read the last calibration from EEPROM; probably won't be 
 	// perfect, but it will be better than 0x00 for everything.
 	
-	uint8_t calibration_data[6];
-	persist_read(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
-	
+	uint8_t calibration_data[7];
+	persist_read(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 7);
+	uint8_t chk = 0x00;
+	for (uint8_t i = 0; i < 6; i++) {
+		chk += calibration_data[i];
+	}
+	if (chk == calibration_data[6]) {
+		message[2] = calibration_data[0];
+		message[3] = calibration_data[1];
+		message[4] = calibration_data[2];
+		message[5] = calibration_data[3];
+		message[6] = calibration_data[4];
+		message[7] = calibration_data[5];
+	} // else tuning with 0x00, definitely not ideal
 	message[0] = ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x10;
-	message[2] = calibration_data[0];
-	message[3] = calibration_data[1];
-	message[4] = calibration_data[2];
-	message[5] = calibration_data[3];
-	message[6] = calibration_data[4];
-	message[7] = calibration_data[5];
 	i2c_start_transceiver_with_data(message, 8);
 
 	//Read in AVERAGE_SAMPLE_SIZE readings so that our initial average is sane.
@@ -138,12 +141,12 @@ void accel_calibrate(){
 		// write compensation values into offset drift register ($10-$15)
 		message[0] = ADDRESS << 1 | I2C_WRITE;
 		message[1] = 0x10;
-		message[2] = (uint8_t) offset[0]; // x LSB
-		message[3] = (uint8_t) (offset[0] >> 8);      // x MSB
-		message[4] = (uint8_t) offset[1]; // y LSB
-		message[5] = (uint8_t) (offset[1] >> 8);      // y MSB
-		message[6] = (uint8_t) offset[2]; // z LSB
-		message[7] = (uint8_t) (offset[2] >> 8);      // z MSB
+		message[2] = (uint8_t) offset[0]; 			// x LSB
+		message[3] = (uint8_t) (offset[0] >> 8);	// x MSB
+		message[4] = (uint8_t) offset[1]; 			// y LSB
+		message[5] = (uint8_t) (offset[1] >> 8);	// y MSB
+		message[6] = (uint8_t) offset[2];			// z LSB
+		message[7] = (uint8_t) (offset[2] >> 8);	// z MSB
 		i2c_start_transceiver_with_data(message, 8);
 
 		//Give the (async) i2c some time to finish
@@ -155,14 +158,17 @@ void accel_calibrate(){
 	}
 
 	//Store calibration bytes to EEPROM
-	uint8_t calibration_data[6];
+	uint8_t calibration_data[7];
 	calibration_data[0] = message[2];
 	calibration_data[1] = message[3];
 	calibration_data[2] = message[4];
 	calibration_data[3] = message[4];
 	calibration_data[4] = message[6];
 	calibration_data[5] = message[7];
-	persist_write(PERSIST_SECTION_ACCEL, PERSIST_OFFSET, calibration_data, 6);
+	for (uint8_t i = 0; i < 6; i++) {
+		calibration_data[6] += calibration_data[i];
+	}
+	persist_write(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 7);
 }
 
 vector_t accel_get() {

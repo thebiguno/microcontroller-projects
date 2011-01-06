@@ -21,11 +21,25 @@ void gyro_init(){
 	PORT_GYRO_HP_RESET &= ~_BV(PIN_GYRO_HP_RESET);
 	*(&PORT_GYRO_HP_RESET - 0x1) &= ~_BV(PIN_GYRO_HP_RESET);
 
-	//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
-	// We start with this as a default, and reset it as needed.
-	calibrated_values[0] = 382;
-	calibrated_values[1] = 382;
-	calibrated_values[2] = 382;
+	uint8_t calibration_data[7];
+	persist_read(PERSIST_SECTION_GYRO, 0x00, calibration_data, 7);
+	uint8_t chk = 0x00;
+	for (uint8_t i = 0; i < 6; i++) {
+		chk += calibration_data[i];
+	}
+	if (chk == calibration_data[6]) {
+		calibrated_values[0] = calibration_data[0] << 8;
+		calibrated_values[0] &= calibration_data[1];
+		calibrated_values[1] = calibration_data[2] << 8;
+		calibrated_values[1] &= calibration_data[3];
+		calibrated_values[2] = calibration_data[4] << 8;
+		calibrated_values[2] &= calibration_data[5];
+	} else {
+		//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
+		calibrated_values[0] = 382;
+		calibrated_values[1] = 382;
+		calibrated_values[2] = 382;
+	}
 
 	uint8_t pins[3];
 	pins[0] = PIN_GYRO_X;
@@ -100,4 +114,17 @@ void gyro_calibrate(){
 		
 		loop++;
 	}
+	
+	uint8_t calibration_data[7];
+	calibration_data[0] = (uint8_t) calibrated_values[0] >> 8;
+	calibration_data[1] = (uint8_t) calibrated_values[0];
+	calibration_data[2] = (uint8_t) calibrated_values[1] >> 8;
+	calibration_data[3] = (uint8_t) calibrated_values[1];
+	calibration_data[4] = (uint8_t) calibrated_values[2] >> 8;
+	calibration_data[5] = (uint8_t) calibrated_values[2];
+	
+	for (uint8_t i = 0; i < 6; i++) {
+		calibration_data[6] += calibration_data[i];
+	}
+	persist_write(PERSIST_SECTION_GYRO, 0x00, calibration_data, 7);
 }
