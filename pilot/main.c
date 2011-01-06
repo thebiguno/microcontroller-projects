@@ -11,7 +11,8 @@ int main(){
 	uint64_t last_telemetry = 0;
 	vector_t sp = { 0,0,0 };		// ATTITUDE set point
 	double motor[4];				// MOTOR set point
-
+	
+	uint8_t shift_state = 0x00;
 	shift_init(&PORT_LED_SHIFT_DATA, PIN_LED_SHIFT_DATA, &PORT_LED_SHIFT_CLOCK, PIN_LED_SHIFT_CLOCK, &PORT_LED_SHIFT_LATCH, PIN_LED_SHIFT_LATCH);
 
 	//Init all modules.  We call accel_init last as it forces sei().
@@ -25,9 +26,6 @@ int main(){
 	
 	//Main program loop
 	while (1) {
-		//Heartbeat
-		PORT_HEARTBEAT = PORT_HEARTBEAT ^ _BV(PIN_HEARTBEAT);
-	
 		uint64_t curr_millis = timer_millis();
 		uint64_t dt =+ (curr_millis - millis);
 		millis = curr_millis;
@@ -46,19 +44,27 @@ int main(){
 		vector_t pv = attitude(g, a);				// PID process variable
 
 		if (armed == 'A') {							// armed by attitude command
+			shift_state |= _BV(1);
+			
 			double throttle = flight_command[0];
 			sp.x = flight_command[1];
 			sp.y = flight_command[2];
 			sp.z = flight_command[3];
 			if (dt > 3000) {
+				shift_state &= ~_BV(1);
+				
 				// TODO level out and scale back throttle
 			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
 		} else if (armed == 'M') {			// armed by motor command
+			shift_state |= _BV(2);
+			
 			if (dt > 3000) {
+				shift_state &= ~_BV(2);
 				// kill the motors completely
+				
 				for (uint8_t i = 0; i < 4; i++) {
 					flight_command[i] = 0;
 				}
@@ -67,9 +73,14 @@ int main(){
 		}
 
 		if (curr_millis - last_telemetry > 250){
+			//Heartbeat
+			PORT_HEARTBEAT = PORT_HEARTBEAT ^ _BV(PIN_HEARTBEAT);
+			
 			protocol_send_telemetry(pv, motor);
 			last_telemetry = curr_millis;
 		}
+		
+		shift_out(shift_state);
 	}
 }
 

@@ -21,8 +21,6 @@ uint8_t _last_flight_cmd; // only for Attitude and Motor messages
 uint8_t _last_flight_val[4];
 uint8_t _telemetry_enabled = 0;
 
-uint8_t shift_state = 0x00;
-
 void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
     if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
@@ -49,9 +47,6 @@ void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
 	checksum = 0xff - checksum;
 
 	_protocol_send_byte(checksum, 1);
-	
-	shift_state ^= _BV(2); // toggle every message sent
-	shift_out(shift_state);
 }
 
 void _protocol_dispatch(uint8_t cmd, uint8_t length) {
@@ -76,7 +71,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			break;
 		case 'E':
 			_telemetry_enabled = _telemetry_enabled ? 0x00 : 0x01;
-			shift_state ^= _BV(5);
 			break;
 		case 'W':
 			pid_write_tuning();
@@ -102,14 +96,10 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 
 void protocol_poll()
 {
-	shift_state ^= _BV(0); // toggle every call to poll (heartbeat)
-	shift_out(shift_state);
-	
     uint8_t b;
     while (comm_available() && comm_read(&b)) {
         if (_err > 0 && b == START) {
 			// recover from error condition
-			shift_state &= ~_BV(7);
 			_err = 0;
 			_pos = 0;
         } else if (_err > 0) {
@@ -118,20 +108,17 @@ void protocol_poll()
         
         if (_pos > 0 && b == START) {
 			// unexpected start of frame
-			shift_state |= _BV(7);
 			_err = 1;
 			continue;
         }
         if (_pos > 0 && b == ESCAPE) {
 			// unescape next byte
-			shift_state |= _BV(6);
 			_esc = 1;
 			continue;
         }
         if (_esc) {
 			// unescape current byte
 			b = 0x20 ^ b;
-			shift_state &= ~_BV(6);
 			_esc = 0;
         }
         if (_pos > 1) { // start byte and length byte not included in checksum
@@ -154,11 +141,9 @@ void protocol_poll()
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
                 if (_pos == (_len + 2)) {
                     if ((_chk & 0xff) == 0xff) {
-						shift_state ^= _BV(1); // toggle for every message dispatched
 						_protocol_dispatch(_api, _len - 1);
 						break; // i.e. maximum one message processed per main loop
 					} else {
-						shift_state |= _BV(7);
 						_err = 1;
                     }
                     _pos = 0;
@@ -167,7 +152,6 @@ void protocol_poll()
                     _buf[_pos++ - 3] = b;
                 }
         }
-		shift_out(shift_state);
     }
 }
 
