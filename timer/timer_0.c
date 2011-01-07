@@ -64,9 +64,21 @@ uint64_t timer_micros(){
 	defined(__AVR_ATtiny25__)   || \
 	defined(__AVR_ATtiny45__)   || \
 	defined(__AVR_ATtiny85__)
+EMPTY_INTERRUPT(TIM0_COMPB_vect);
+EMPTY_INTERRUPT(TIM0_OVF_vect);
 ISR(TIM0_COMPA_vect){
-#else //TODO Verify which AVRs use this ISR, and print error accordingly
+#elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega324P__)    || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
+	defined(__AVR_ATmega1284P__)
+EMPTY_INTERRUPT(TIMER0_COMPB_vect)
+EMPTY_INTERRUPT(TIMER0_OVF_vect)
 ISR(TIMER0_COMPA_vect){
+#else //TODO Verify which AVRs use this ISR, and print error accordingly
+	#error You must define TIMER0 vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in timer_0.c
+	timer_0_error(){
 #endif
 	TCNT0 = 0;
 	_timer_millis++;
