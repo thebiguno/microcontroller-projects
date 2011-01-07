@@ -9,7 +9,7 @@ from time import sleep
 
 ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
 
-i = 0
+i = 1
 
 while True:
 	sleep(1)
@@ -18,5 +18,5 @@ while True:
 	ser.write(s)
 	i = i + 1;
 	if (i > 0xFF):
-		i = 0x0
+		i = 1
 

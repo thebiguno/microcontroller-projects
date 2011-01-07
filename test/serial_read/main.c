@@ -13,13 +13,13 @@ int main(){
 	_delay_ms(500);
 	shift_out(0x00);
 	
+	char b;	
 	
 	//Main program loop
 	while (1) {
-		char b;
+		
 		while (serial_available() && serial_read_c(&b)) {
 			shift_out(b);
 		}
 	}
 }
-
