@@ -64,8 +64,8 @@ uint64_t timer_micros(){
 	defined(__AVR_ATtiny25__)   || \
 	defined(__AVR_ATtiny45__)   || \
 	defined(__AVR_ATtiny85__)
-EMPTY_INTERRUPT(TIM0_COMPB_vect);
-EMPTY_INTERRUPT(TIM0_OVF_vect);
+EMPTY_INTERRUPT(TIM0_COMPB_vect)
+EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #elif defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega324P__)    || \
