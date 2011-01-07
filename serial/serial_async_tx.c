@@ -44,7 +44,12 @@ static inline void _buffer_put(volatile struct ring *buffer, char data){
 	if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
 }
 
-void _serial_init_tx(){}
+void _serial_init_tx(){
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
+	sei();
+#endif
+}
 
 void serial_write_c(char data){
 	//Disable UCSR interrupts temporarily to avoid clobbering the buffer

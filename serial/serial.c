@@ -48,11 +48,6 @@ void serial_init(uint32_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_
 	UCSR0B |= _BV(TXEN0);
 	_serial_init_tx();
 #endif
-	
-	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
-#ifndef NO_INTERRUPT_ENABLE
-	sei();
-#endif
 }
 
 void serial_init_b(uint32_t baud){

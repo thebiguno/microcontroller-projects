@@ -30,6 +30,11 @@ static inline void _buffer_put(volatile struct ring *buffer, char data){
 void _serial_init_rx(){
 	//Enable RX interrupts
 	UCSR0B |= _BV(RXCIE0);
+	
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
+	sei();
+#endif	
 }
 
 uint8_t serial_available() {
