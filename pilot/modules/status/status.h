@@ -3,9 +3,9 @@
 
 #include "../../main.h"
 
-#define STATUS_HEARTBEAT	1
-#define STATUS_ARMED		2
-#define STATUS_PROTOCOL_ERR	8
+#define STATUS_HEARTBEAT	_BV(0)
+#define STATUS_ARMED		_BV(1)
+#define STATUS_PROTOCOL_ERR	_BV(7)
 
 void status_init();
 void status_set(uint8_t bv);
