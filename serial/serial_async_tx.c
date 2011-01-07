@@ -77,7 +77,7 @@ ISR(USART_UDRE_vect){
 	defined(__AVR_ATmega1284P__)
 ISR(USART0_UDRE_vect){
 #else 
-#error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
+#error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynch_tx.c
 void error2() {
 #endif
 	if (!_buffer_empty(&tx_buffer)){

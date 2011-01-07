@@ -28,6 +28,7 @@ static inline void _buffer_put(volatile struct ring *buffer, char data){
 }
 
 void _serial_init_rx(){
+	//Enable RX interrupts
 	UCSR0B |= _BV(RXCIE0);
 }
 
