@@ -3,7 +3,7 @@
 
 void comm_init()
 {
-	serial_init(57600, 8, 0, 1);
+	serial_init_b(57600);
 }
 
 void comm_write(uint8_t b) {
