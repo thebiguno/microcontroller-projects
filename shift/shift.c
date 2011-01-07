@@ -27,20 +27,20 @@ uint8_t shift_out(uint8_t data){
 
 	for (int i = 0; i < 8; i++){
 		//Clear the pin first...
-		*_data_port &= ~(1 << _data_pin);
+		*_data_port &= ~_BV(_data_pin);
 		//... then set the bit (if appropriate).  We could probably
 		// do this in one step, but this is more clear, plus speed is 
 		// (probably) not critical here.
 		*_data_port |= (((data >> (7 - i)) & 0x1) << _data_pin);
 		
 		//Pulse clock to shift in
-		*_clock_port &= ~(1 << _clock_pin);
-		*_clock_port |= (1 << _clock_pin);
+		*_clock_port &= ~_BV(_clock_pin);
+		*_clock_port |= _BV(_clock_pin);
 	}
 
 	//Pulse latch to transfer contents to output
-	*_latch_port &= ~(1 << _latch_pin);	
-	*_latch_port |= (1 << _latch_pin);
+	*_latch_port &= ~_BV(_latch_pin);	
+	*_latch_port |= _BV(_latch_pin);
 
 	return 0;
 }
