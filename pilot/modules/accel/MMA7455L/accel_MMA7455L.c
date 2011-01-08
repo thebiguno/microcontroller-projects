@@ -2,7 +2,6 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include "../../../lib/i2c/i2c_master.h"
-#include "../../../lib/shift/shift.h"
 
 /*
  * MMA7455L implementation 
