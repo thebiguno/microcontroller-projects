@@ -52,23 +52,26 @@ int main(){
 				sp.y = 0;
 				sp.y = 0;
 				// scale back throttle
-				throttle = throttle--; // TODO this is way too fast, don't scale back so quickly
+				throttle--; // TODO this is way too fast, don't scale back so quickly
 			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
 		} else if (armed == 'M') {					// armed by motor command
 			status_set(STATUS_ARMED);
+			for (uint8_t i = 0; i < 4; i++) {
+				motor[i] = flight_command[i];
+			}
 			
 			if (dt > 3000) {
 				status_clear(STATUS_ARMED);
+
 				// kill the motors completely
-				
 				for (uint8_t i = 0; i < 4; i++) {
-					flight_command[i] = 0;
+					motor[i] = 0;
 				}
 			}
-			esc_set(flight_command);
+			esc_set(motor);
 		}
 
 		if (curr_millis - last_telemetry > 250){
