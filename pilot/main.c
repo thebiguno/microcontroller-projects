@@ -71,7 +71,7 @@ int main(){
 			esc_set(flight_command);
 		}
 
-		if (curr_millis - last_telemetry > 250){
+		if (curr_millis - last_telemetry > 75){
 			status_toggle(STATUS_HEARTBEAT);
 
 			protocol_send_telemetry(pv, motor);
