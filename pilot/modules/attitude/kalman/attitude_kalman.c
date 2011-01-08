@@ -144,7 +144,7 @@ void attitude_send_tuning() {
 	convert_double_to_bytes(tuning_z.q_gyro, buf, 20);
 	convert_double_to_bytes(tuning_x.r_angle, buf, 24);
 	convert_double_to_bytes(tuning_y.r_angle, buf, 28);
-	convert_double_to_bytes(tuning_y.r_angle, buf, 32);
+	convert_double_to_bytes(tuning_z.r_angle, buf, 32);
 
 	protocol_send_message('k', buf, length);
 }
