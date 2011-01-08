@@ -24,12 +24,9 @@ void gyro_init(){
 	uint8_t calibration_data[7];
 	uint8_t length = persist_read(PERSIST_SECTION_GYRO, calibration_data, 6);
 	if (length == 6) {
-		calibrated_values[0] = calibration_data[0] << 8;
-		calibrated_values[0] &= calibration_data[1];
-		calibrated_values[1] = calibration_data[2] << 8;
-		calibrated_values[1] &= calibration_data[3];
-		calibrated_values[2] = calibration_data[4] << 8;
-		calibrated_values[2] &= calibration_data[5];
+		calibrated_values[0] = (calibration_data[0] << 8) + calibration_data[1];
+		calibrated_values[1] = (calibration_data[2] << 8) + calibration_data[3];
+		calibrated_values[2] = (calibration_data[4] << 8) + calibration_data[5];
 	} else {
 		//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
 		calibrated_values[0] = 382;
