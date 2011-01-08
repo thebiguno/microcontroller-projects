@@ -1,7 +1,7 @@
 #include "../accel.h"
 #include <util/delay.h>
 #include <stdlib.h>
-#include "../../../../../lib/i2c/i2c_master.h"
+#include "../../../lib/i2c/i2c_master.h"
 
 /*
  * MMA7455L implementation 
@@ -43,13 +43,9 @@ void accel_init(){
 	// We read the last calibration from EEPROM; probably won't be 
 	// perfect, but it will be better than 0x00 for everything.
 	
-	uint8_t calibration_data[7];
-	persist_read(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 7);
-	uint8_t chk = 0x00;
-	for (uint8_t i = 0; i < 6; i++) {
-		chk += calibration_data[i];
-	}
-	if (chk == calibration_data[6]) {
+	uint8_t calibration_data[6];
+	uint8_t length = persist_read(PERSIST_SECTION_ACCEL, calibration_data, 6);
+	if (length == 6) {
 		message[0] = ADDRESS << 1 | I2C_WRITE;
 		message[1] = 0x10;
 		message[2] = calibration_data[0];
@@ -158,17 +154,14 @@ void accel_calibrate(){
 	}
 
 	//Store calibration bytes to EEPROM
-	uint8_t calibration_data[7];
+	uint8_t calibration_data[6];
 	calibration_data[0] = message[2];
 	calibration_data[1] = message[3];
 	calibration_data[2] = message[4];
-	calibration_data[3] = message[4];
+	calibration_data[3] = message[5];
 	calibration_data[4] = message[6];
 	calibration_data[5] = message[7];
-	for (uint8_t i = 0; i < 6; i++) {
-		calibration_data[6] += calibration_data[i];
-	}
-	persist_write(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 7);
+	persist_write(PERSIST_SECTION_ACCEL, calibration_data, 6);
 }
 
 vector_t accel_get() {
