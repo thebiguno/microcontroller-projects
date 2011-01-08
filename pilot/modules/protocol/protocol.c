@@ -145,9 +145,8 @@ void protocol_poll()
             default:
                 if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
                 if (_pos == (_len + 2)) {
-                    if ((_chk & 0xff) == 0xff) {
+                    if (_chk == 0xff) {
 						_protocol_dispatch(_api, _len - 1);
-						break; // i.e. maximum one message processed per main loop
 					} else {
 						status_set(STATUS_PROTOCOL_ERR);
 						_err = 1;
