@@ -47,9 +47,12 @@ void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
 	checksum = 0xff - checksum;
 
 	_protocol_send_byte(checksum, 1);
+	
+	status_toggle(STATUS_MESSAGE_TX);
 }
 
 void _protocol_dispatch(uint8_t cmd, uint8_t length) {
+	status_toggle(STATUS_MESSAGE_RX);
 	switch(cmd) {
 		case 'A':
 		case 'M':
@@ -109,6 +112,7 @@ void protocol_poll()
         
         if (_pos > 0 && b == START) {
 			// unexpected start of frame
+			status_set(STATUS_PROTOCOL_ERR);
 			_err = 1;
 			continue;
         }
