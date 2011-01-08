@@ -13,11 +13,11 @@ uint8_t convert_radian_to_byte(double x)
 
 double convert_byte_to_percent(uint8_t x)
 {
-	return 0.392156862745098 * x;
+	return 0.003921568627451 * x;
 }
 uint8_t convert_percent_to_byte(double x)
 {
-	return (uint8_t) (2.55 * x);
+	return (uint8_t) (255 * x);
 }
 
 void convert_double_to_bytes(double value, uint8_t *buffer, uint8_t offset)
