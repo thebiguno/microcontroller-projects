@@ -23,7 +23,7 @@ void gyro_init(){
 
 	uint8_t calibration_data[7];
 	persist_read(PERSIST_SECTION_GYRO, 0x00, calibration_data, 7);
-	uint8_t chk = 0x00;
+	uint8_t chk = 0x42;  //Init checksum to magic number
 	for (uint8_t i = 0; i < 6; i++) {
 		chk += calibration_data[i];
 	}
@@ -116,6 +116,7 @@ void gyro_calibrate(){
 	}
 	
 	uint8_t calibration_data[7];
+	calibration_data[6] = 0x42; //Init checksum to magic number
 	calibration_data[0] = (uint8_t) calibrated_values[0] >> 8;
 	calibration_data[1] = (uint8_t) calibrated_values[0];
 	calibration_data[2] = (uint8_t) calibrated_values[1] >> 8;
