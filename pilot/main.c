@@ -47,7 +47,12 @@ int main(){
 			if (dt > 3000) {
 				status_clear(STATUS_ARMED);
 				
-				// TODO level out and scale back throttle
+				// level out 
+				sp.x = 0;
+				sp.y = 0;
+				sp.y = 0;
+				// scale back throttle
+				throttle = throttle--; // TODO this is way too fast, don't scale back so quickly
 			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			motor_percent(throttle, mv, motor);

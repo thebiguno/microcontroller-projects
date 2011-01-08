@@ -139,6 +139,7 @@ uint8_t attitude_get_id() {
 void attitude_reset() {
 	angle.x = 0.0;
 	angle.y = 0.0;
+	angle.z = 0.0;
 }
 
 void attitude_send_tuning() {
