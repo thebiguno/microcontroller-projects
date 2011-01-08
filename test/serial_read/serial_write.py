@@ -12,7 +12,7 @@ ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", 57600)
 i = 1
 
 while True:
-	sleep(1)
+	sleep(0.1)
 	s = array.array('B', [i]).tostring()
 	print(i)
 	ser.write(s)

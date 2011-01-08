@@ -19,8 +19,6 @@ int main(){
 	
 	char b;	
 	
-	uint8_t i = 0;
-	
 	//Main program loop
 	while (1) {
 		while (serial_available() && serial_read_c(&b)) {
