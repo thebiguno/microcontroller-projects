@@ -45,7 +45,7 @@ void accel_init(){
 	
 	uint8_t calibration_data[7];
 	persist_read(PERSIST_SECTION_ACCEL, 0x00, calibration_data, 7);
-	uint8_t chk = 0x00;
+	uint8_t chk = 0x42; // Init checksum to magic number
 	for (uint8_t i = 0; i < 6; i++) {
 		chk += calibration_data[i];
 	}
@@ -159,6 +159,7 @@ void accel_calibrate(){
 
 	//Store calibration bytes to EEPROM
 	uint8_t calibration_data[7];
+	calibration_data[6] = 0x42; //Init checksum to magic number
 	calibration_data[0] = message[2];
 	calibration_data[1] = message[3];
 	calibration_data[2] = message[4];
