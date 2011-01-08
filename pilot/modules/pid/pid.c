@@ -16,14 +16,10 @@ pid_err_t _err_y;
 pid_err_t _err_z;
 
 void pid_read_tuning() {
-	uint8_t chk = 0;
-	uint8_t data[37];
+	uint8_t data[36];
 	
-	persist_read(PERSIST_SECTION_PID, 0x00, data, 37);
-	for (int i = 0; i < 36; i++) {
-		chk += data[i];
-	}
-	if (chk == data[36]) {
+	uint8_t length = persist_read(PERSIST_SECTION_PID, data, 36);
+	if (length == 36) {
 		_kp.x = convert_bytes_to_double(data, 0);
 		_kp.y = convert_bytes_to_double(data, 4);
 		_kp.z = convert_bytes_to_double(data, 8);
@@ -47,8 +43,7 @@ void pid_read_tuning() {
 }
 
 void pid_write_tuning() {
-	uint8_t chk = 0;
-	uint8_t data[37];
+	uint8_t data[36];
 	
 	convert_double_to_bytes(_kp.x, data, 0);
 	convert_double_to_bytes(_kp.y, data, 4);
@@ -60,12 +55,7 @@ void pid_write_tuning() {
 	convert_double_to_bytes(_kd.y, data, 28);
 	convert_double_to_bytes(_kd.z, data, 32);
 	
-	for (int i = 0; i < 36; i++) {
-		chk += data[i];
-	}
-	data[36] = chk;
-	
-	persist_write(PERSIST_SECTION_PID, 0x00, data, 37);
+	persist_write(PERSIST_SECTION_PID, data, 36);
 }
 
 void pid_init() {
