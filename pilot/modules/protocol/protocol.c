@@ -127,7 +127,7 @@ void protocol_poll()
 			_esc = 0;
         }
         if (_pos > 1) { // start byte and length byte not included in checksum
-            _pos += b;
+            _chk += b;
         }
         
         switch(_pos) {
