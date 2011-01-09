@@ -10,6 +10,7 @@ void pid_init();
  * of manipulated variables
  */
 vector_t pid_mv(vector_t sp, vector_t pv);
+void pid_reset();
 
 void pid_send_tuning();
 void pid_receive_tuning(uint8_t *buf);

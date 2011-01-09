@@ -71,6 +71,7 @@ int main(){
 					motor[i] = 0;
 				}
 			}
+			pid_reset();							// since pid isn't used for motor commands, take this opportunity to clear any accumulated error
 			esc_set(motor);
 		}
 

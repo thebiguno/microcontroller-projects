@@ -111,3 +111,12 @@ vector_t pid_mv(vector_t sp, vector_t pv) {
 	return mv;
 }
 
+void pid_reset() {
+	state_x->i = 0;
+	state_x->pv = 0;
+	state_y->i = 0;
+	state_y->pv = 0;
+	state_z->i = 0;
+	state_z->pv = 0;
+}
+
