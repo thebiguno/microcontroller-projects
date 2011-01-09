@@ -6,14 +6,14 @@ vector_t _kp;
 vector_t _ki;
 vector_t _kd;
 
-typedef struct err {
-    double i;
-    double d;
-} pid_err_t;
+typedef struct pid_state {
+	double i;	// the integrated error
+	double pv;	// the last pv
+} pid_state_t;
 
-pid_err_t _err_x;
-pid_err_t _err_y;
-pid_err_t _err_z;
+pid_state_t _state_x;
+pid_state_t _state_y;
+pid_state_t _state_z;
 
 void pid_read_tuning() {
 	uint8_t data[36];
@@ -91,23 +91,23 @@ void pid_receive_tuning(uint8_t *buf) {
 	_kd.z = convert_bytes_to_double(buf, 32);
 }
 
-double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_err_t *err){
-    double e = sp - pv;
-    double mv = (kp * e) + (ki * err->i) + (kd * (pv - err->d));
+double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_state_t *state){
+	double e = sp - pv;
+	double mv = (kp * e) + (ki * state->i) + (kd * (pv - state->d));
 
-    err->i += e;
-    err->d = e;
-    
-    return mv;
+	state->i += e;
+	state->pv = pv;
+
+	return mv;
 }
 
 vector_t pid_mv(vector_t sp, vector_t pv) {
-    vector_t mv;
+	vector_t mv;
 
-	mv.x = _pid_mv(sp.x, pv.x, _kp.x, _ki.x, _kd.x, &_err_x);
-	mv.y = _pid_mv(sp.y, pv.y, _kp.y, _ki.y, _kd.y, &_err_y);
-	mv.z = _pid_mv(sp.z, pv.z, _kp.z, _ki.z, _kd.z, &_err_z);
+	mv.x = _pid_mv(sp.x, pv.x, _kp.x, _ki.x, _kd.x, &_state_x);
+	mv.y = _pid_mv(sp.y, pv.y, _kp.y, _ki.y, _kd.y, &_state_y);
+	mv.z = _pid_mv(sp.z, pv.z, _kp.z, _ki.z, _kd.z, &_state_z);
 
-    return mv;
+	return mv;
 }
 

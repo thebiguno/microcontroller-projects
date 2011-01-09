@@ -21,7 +21,6 @@ typedef struct kalman_tuning {
     double r_angle;
 } kalman_tuning_t;
     
-static vector_t angle;
 static kalman_state_t state_x;
 static kalman_state_t state_y;
 static kalman_state_t state_z;
@@ -77,62 +76,60 @@ void attitude_write_tuning() {
 void attitude_init(vector_t gyro, vector_t accel) {
 	timer_init();
 	
-    millis = timer_millis();
+	millis = timer_millis();
 
 	attitude_read_tuning();
 }
 
 void _attitude (double gyro, double accel, kalman_state_t *state, kalman_tuning_t tuning, double dt) {
-    state->angle += dt * (gyro - state->bias);
-    state->p00 +=  - dt * (state->p10 + state->p01) + tuning.q_angle * dt;
-    state->p01 +=  - dt * state->p11;
-    state->p10 +=  - dt * state->p11;
-    state->p11 +=  + tuning.q_gyro * dt;
+	state->angle += dt * (gyro - state->bias);
+	state->p00 +=  - dt * (state->p10 + state->p01) + tuning.q_angle * dt;
+	state->p01 +=  - dt * state->p11;
+	state->p10 +=  - dt * state->p11;
+	state->p11 +=  + tuning.q_gyro * dt;
 
-    double y = accel - state->angle;
-    double s = state->p00 + tuning.r_angle;
-    double k0 = state->p00 / s;
-    double k1 = state->p10 / s;
+	double y = accel - state->angle;
+	double s = state->p00 + tuning.r_angle;
+	double k0 = state->p00 / s;
+	double k1 = state->p10 / s;
 
-    state->angle +=  k0 * y;
-    state->bias +=  k1 * y;
-    state->p00 -= k0 * state->p00;
-    state->p01 -= k0 * state->p01;
-    state->p10 -= k1 * state->p00;
-    state->p11 -= k1 * state->p01;
+	state->angle +=  k0 * y;
+	state->bias +=  k1 * y;
+	state->p00 -= k0 * state->p00;
+	state->p01 -= k0 * state->p01;
+	state->p10 -= k1 * state->p00;
+	state->p11 -= k1 * state->p01;
 }
 
 vector_t attitude(vector_t gyro, vector_t accel) {
-    uint64_t curr_millis = timer_millis();
-    uint64_t dtm = curr_millis - millis;
+	uint64_t curr_millis = timer_millis();
+	uint64_t dtm = curr_millis - millis;
 
-    //If there is no elapsed time (ms), return the last known angle.
-    // If there is a dt==0 encountered, Kalman throws a fit!
-    if (dtm == 0) return angle;
+	// if there is no elapsed time (ms), return the last known angle
+	if (dtm > 0) {
+		double dt = dtm * 0.001;
+		millis = curr_millis;
 
-    double dt = dtm * 0.001;
-    millis = curr_millis;
-
-    _attitude(gyro.x, accel.x, &state_x, tuning_x, dt);
-    _attitude(gyro.y, accel.y, &state_y, tuning_y, dt);
-    _attitude(gyro.z, accel.z, &state_z, tuning_z, dt);
-    angle.x = state_x.angle;
-    angle.y = state_y.angle;
-    angle.z = state_z.angle;
-    return angle;
+		_attitude(gyro.x, accel.x, &state_x, tuning_x, dt);
+		_attitude(gyro.y, accel.y, &state_y, tuning_y, dt);
+		_attitude(gyro.z, accel.z, &state_z, tuning_z, dt);
+	}
+	
+	static vector_t angle;
+	angle.x = state_x.angle;
+	angle.y = state_y.angle;
+	angle.z = state_z.angle;
+	return angle;
 }
 
 uint8_t attitude_get_id() {
-    return 'K';
+	return 'K';
 }
 
 void attitude_reset() {
 	state_x.angle = 0.0;
 	state_y.angle = 0.0;
 	state_z.angle = 0.0;
-	angle.x = 0.0;
-	angle.y = 0.0;
-	angle.z = 0.0;
 }
 
 void attitude_send_tuning() {
