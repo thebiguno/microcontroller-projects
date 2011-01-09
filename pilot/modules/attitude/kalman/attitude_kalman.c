@@ -127,6 +127,9 @@ uint8_t attitude_get_id() {
 }
 
 void attitude_reset() {
+	state_x.angle = 0.0;
+	state_y.angle = 0.0;
+	state_z.angle = 0.0;
 	angle.x = 0.0;
 	angle.y = 0.0;
 	angle.z = 0.0;
