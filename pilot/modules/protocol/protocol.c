@@ -76,7 +76,7 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'E':
 			_telemetry_enabled = _telemetry_enabled ? 0x00 : 0x01;
 			break;
-		case 'R';
+		case 'r':
 			_raw_enabled = _raw_enabled ? 0x00 : 0x01;
 			break;
 		case 'W':
@@ -203,12 +203,12 @@ void protocol_send_raw(vector_t gyro, vector_t accel) {
 	if (_raw_enabled) {
 		uint8_t packet[24];
 		
-		convert_float_to_byte(gyro.x, packet, 0);
-		convert_float_to_byte(gyro.y, packet, 4);
-		convert_float_to_byte(gyro.z, packet, 8);
-		convert_float_to_byte(accel.x, packet, 12);
-		convert_float_to_byte(accel.y, packet, 16);
-		convert_float_to_byte(accel.z, packet, 20);
+		convert_double_to_bytes(gyro.x, packet, 0);
+		convert_double_to_bytes(gyro.y, packet, 4);
+		convert_double_to_bytes(gyro.z, packet, 8);
+		convert_double_to_bytes(accel.x, packet, 12);
+		convert_double_to_bytes(accel.y, packet, 16);
+		convert_double_to_bytes(accel.z, packet, 20);
 		
 		protocol_send_message('R', packet, 24);
 	}
