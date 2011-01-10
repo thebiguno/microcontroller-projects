@@ -20,6 +20,7 @@ uint8_t _buf[MAX_SIZE];
 uint8_t _last_flight_cmd; // only for Attitude and Motor messages
 uint8_t _last_flight_val[4];
 uint8_t _telemetry_enabled = 0;
+uint8_t _raw_enabled = 0;
 
 void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
@@ -74,6 +75,9 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			break;
 		case 'E':
 			_telemetry_enabled = _telemetry_enabled ? 0x00 : 0x01;
+			break;
+		case 'R';
+			_raw_enabled = _raw_enabled ? 0x00 : 0x01;
 			break;
 		case 'W':
 			pid_write_tuning();
@@ -192,6 +196,21 @@ void protocol_send_telemetry(vector_t vector, double motor[]) {
 			packet[i+3] = convert_percent_to_byte(motor[i]);
 		}
 		protocol_send_message('T', packet, 7);
+	}
+}
+
+void protocol_send_raw(vector_t gyro, vector_t accel) {
+	if (_raw_enabled) {
+		uint8_t packet[24];
+		
+		convert_float_to_byte(gyro.x, packet, 0);
+		convert_float_to_byte(gyro.y, packet, 4);
+		convert_float_to_byte(gyro.z, packet, 8);
+		convert_float_to_byte(accel.x, packet, 12);
+		convert_float_to_byte(accel.y, packet, 16);
+		convert_float_to_byte(accel.z, packet, 20);
+		
+		protocol_send_message('R', packet, 24);
 	}
 }
 
