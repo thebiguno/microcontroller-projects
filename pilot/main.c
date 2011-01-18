@@ -79,6 +79,7 @@ int main(){
 			status_toggle(STATUS_HEARTBEAT);
 
 			protocol_send_telemetry(pv, motor);
+			protocol_send_raw(g, a);
 			last_telemetry = curr_millis;
 		}
 	}
