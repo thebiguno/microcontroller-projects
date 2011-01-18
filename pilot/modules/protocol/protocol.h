@@ -35,4 +35,9 @@ uint8_t protocol_receive_flight_command(double values[]);
  */
 void protocol_send_telemetry(vector_t attitude, double motor[]);
 
+/*
+ * Helper message that formats and sends telemetry.
+ */
+void protocol_send_raw(vector_t gyro, vector_t accel);
+
 #endif
