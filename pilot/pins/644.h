@@ -24,8 +24,8 @@
 #define PIN_GYRO_Y				1
 #define PIN_GYRO_Z				2
 //The High Pass Reset for the Gyro.  Used for LYOR530 module to pulse high for a few milliseconds on init to reset the HP filter.
-#define PORT_GYRO_HP_RESET		PORTC
-#define PIN_GYRO_HP_RESET		PINC3
+#define PORT_GYRO_HP_RESET		PORTA
+#define PIN_GYRO_HP_RESET		PINA3
 
 //Note: I2C is referenced by the macro definitions SDA and SCL, and
 // should be cross-platform already.
