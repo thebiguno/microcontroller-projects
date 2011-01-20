@@ -14,20 +14,46 @@ typedef struct quaternion {
     double z;
 } quaternion_t;
 
-quaternion_t q;
-    
+static vector_t result;
+static quaternion_t q;
+static uint64_t millis;
+
+void attitude_read_tuning() {
+	// TODO read these values from EEPROM
+	// uint8_t data[36];
+	// 
+    gain = 3.14159265358979 * (5.0 / 180.0); // gyroscope measurement error in rad/s (shown as 5 deg/s)
+    beta = sqrt(3.0 / 4.0) * gain;           // compute beta
+}
+
+void attitude_write_tuning() {
+	
+	// persist_write(PERSIST_SECTION_ATTITUDE, data, 36);
+}
+
 void attitude_init(vector_t gyro, vector_t accel) {
-    // TODO read these values from EEPROM
-    gain = 3.14159265358979f * (5.0f / 180.0f); // gyroscope measurement error in rad/s (shown as 5 deg/s)
-    beta = sqrt(3.0f / 4.0f) * gain;           // compute beta
+	attitude_read_tuning();
     
     q.w = 1.0;
     q.x = 0.0;
     q.y = 0.0;
     q.z = 0.0;
+
+	millis = timer_millis();
 }
 
 vector_t attitude(vector_t gyro, vector_t accel) {
+	uint64_t curr_millis = timer_millis();
+	uint64_t dtm = curr_millis - millis;
+	
+	if (dtm == 0) {
+		// return the last result
+		return result;
+	}
+	
+	double dt = dtm * 0.001;
+	millis = curr_millis;
+
     // Local system variables
     double norm;                                                    // vector norm
     double f_1, f_2, f_3;                                           // objective function elements
@@ -54,15 +80,15 @@ vector_t attitude(vector_t gyro, vector_t accel) {
     accel.z /= norm;
 
     // Compute the objective function and Jacobian
-    f_1 = two_q.x * q.z - two_q.w * SEq.y - accel.x;
-    f_2 = two_q.w * q.x + two_q.y * SEq.z - accel.y;
-    f_3 = 1.0f - two_q.x * SEq.x - two_q.y * SEq.y - accel.z;
+    f_1 = two_q.x * q.z - two_q.w * q.y - accel.x;
+    f_2 = two_q.w * q.x + two_q.y * q.z - accel.y;
+    f_3 = 1.0 - two_q.x * q.x - two_q.y * q.y - accel.z;
     J_11or24 = two_q.y;                                                    // J_11 negated in matrix multiplication
-    J_12or23 = 2.0f * SEq.z;
+    J_12or23 = 2.0 * q.z;
     J_13or22 = two_q.w;                                                    // J_12 negated in matrix multiplication
     J_14or21 = two_q.x;
-    J_32 = 2.0f * J_14or21;                                                 // negated in matrix multiplication
-    J_33 = 2.0f * J_11or24;                                                 // negated in matrix multiplication
+    J_32 = 2.0 * J_14or21;                                                 // negated in matrix multiplication
+    J_33 = 2.0 * J_11or24;                                                 // negated in matrix multiplication
 
     // Compute the gradient (matrix multiplication)
     q_hat_dot.w = J_14or21 * f_2 - J_11or24 * f_1;
@@ -84,35 +110,34 @@ vector_t attitude(vector_t gyro, vector_t accel) {
     q_dot_omega.z = half_q.w * gyro.z + half_q.x * gyro.y - half_q.y * gyro.x;
     
     // Compute then integrate the estimated quaternion derrivative
-    SEq.w += (q_dot_omega.w - (beta * q_hat_dot.w)) * deltat;
-    SEq.x += (q_dot_omega.x - (beta * q_hat_dot.x)) * deltat;
-    SEq.y += (q_dot_omega.y - (beta * q_hat_dot.y)) * deltat;
-    SEq.z += (q_dot_omega.z - (beta * q_hat_dot.z)) * deltat;
+    q.w += (q_dot_omega.w - (beta * q_hat_dot.w)) * dt;
+    q.x += (q_dot_omega.x - (beta * q_hat_dot.x)) * dt;
+    q.y += (q_dot_omega.y - (beta * q_hat_dot.y)) * dt;
+    q.z += (q_dot_omega.z - (beta * q_hat_dot.z)) * dt;
     
     // Normalise quaternion
-    norm = sqrt(SEq.w * SEq.w + SEq.x * SEq.x + SEq.y * SEq.y + SEq.z * SEq.z);
-    SEq.w /= norm;
-    SEq.x /= norm;
-    SEq.y /= norm;
-    SEq.z /= norm;
+    norm = sqrt(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
+    q.w /= norm;
+    q.x /= norm;
+    q.y /= norm;
+    q.z /= norm;
     
     // convert quaternion into attitude
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
     // TODO verify that heading, bank, and attitude are as expected
     
-    vector_t result;
     double test = q.x * q.y + q.z * q.w;
     if (test > 0.499) { // singularity at north pole
         result.z = 2 * atan2(q.x, q.w);
         result.y = M_PI/2;
         result.x = 0;
-        return;
+        return result;
     }
     if (test < -0.499) { // singularity at south pole
         result.z = -2 * atan2(q.x, q.w);
         result.y = - M_PI/2;
         result.x = 0;
-        return;
+        return result;
     }
     double sqx = q.x * q.x;
     double sqy = q.y * q.y;
@@ -128,11 +153,24 @@ uint8_t attitude_get_id() {
     return 'M';
 }
 
-void attitude_get_params(double params[]) {
-
+void attitude_send_tuning() {
+	// uint8_t length = 36;
+	// uint8_t buf[length];
+	// 
+	// protocol_send_message('m', buf, length);
 }
 
-void attitude_set_params(double params[]) {
+void attitude_receive_tuning(uint8_t *buf) {
+}
 
+void attitude_reset() {
+	result.x = 0;
+	result.y = 0;
+	result.z = 0;
+	
+	q.w = 0;
+	q.x = 0;
+	q.y = 0;
+	q.z = 0;
 }
 
