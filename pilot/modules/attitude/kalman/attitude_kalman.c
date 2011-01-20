@@ -112,7 +112,7 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 
 		_attitude(gyro.x, accel.x, &state_x, tuning_x, dt);
 		_attitude(gyro.y, accel.y, &state_y, tuning_y, dt);
-		_attitude(gyro.z, accel.z, &state_z, tuning_z, dt);
+		_attitude(gyro.z, 0, &state_z, tuning_z, dt);
 	}
 	
 	static vector_t angle;
