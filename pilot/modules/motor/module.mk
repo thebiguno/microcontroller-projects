@@ -1,1 +1,1 @@
-include modules/motor/t/module.mk
+include modules/motor/plus/module.mk

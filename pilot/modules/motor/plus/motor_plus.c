@@ -4,7 +4,7 @@
 
 void motor_percent(double throttle, vector_t mv, double result[]) {
     result[0] = MOTOR_LIMIT(throttle + mv.y + mv.z); // left
-    result[1] = MOTOR_LIMIT(throttle - mv.x - mv.z); // front
+    result[1] = MOTOR_LIMIT(throttle + mv.x - mv.z); // front
     result[2] = MOTOR_LIMIT(throttle - mv.y + mv.z); // right
-    result[3] = MOTOR_LIMIT(throttle + mv.x - mv.z); // rear
+    result[3] = MOTOR_LIMIT(throttle - mv.x - mv.z); // rear
 }
