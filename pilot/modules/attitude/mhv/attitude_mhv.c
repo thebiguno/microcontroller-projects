@@ -2,8 +2,6 @@
 
 #include "../../../main.h"
 
-#define ATTITUDE_ALGORITHM_ID 0x04
-
 static double gain;
 static double beta;
     
