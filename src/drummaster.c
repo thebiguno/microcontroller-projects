@@ -26,6 +26,10 @@
  * For more information, please visit http://drummaster.digitalcave.ca.
  * 
  * Changelog:
+ * 1.2.0.2 - January 23 2011:	-For digital channels, send 0x1 for closed (button pressed) and 0x0 for button open. 
+ * 								This is backwards from the logical state (since we use pullup resistors forcing 
+ * 								the value to logic HIGH for open and logic LOW for closed; however it makes
+ * 								the slave software a bit easier to understand.
  * 1.2.0.1 - October 15 2010:	-Further bugfixes; now things are working (somewhat decently) with Slave software
  *								version 2.0.1.1.  Main problem was a driver issue for the MUX selector where the 
  *								endian-ness of the selector was backwards.
@@ -373,11 +377,11 @@ void loop() {
 		s = get_channel(j, i);
 		if (time - last_read_time[s] > DIGITAL_BOUNCE_PERIOD){
 			//Remember that digital switches in drum master are reversed, since they 
-			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 We invert
-			// all digital readings to make this easy to keep straight.
+			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 When 
+			// sending the readings, we invert the value to make this easy to keep straight.
 			v = (PIND & _BV(PIND6)) >> PIND6;
 			if (v != last_value[s]){
-				send_data(s, v);
+				send_data(s, (v == 0 ? 1 : 0)); //The actual inversion
 				
 				last_read_time[s] = time;
 				last_value[s] = v;
