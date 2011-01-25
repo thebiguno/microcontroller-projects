@@ -138,7 +138,7 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 	static vector_t angle;
 	angle.x = state_x.angle;
 	angle.y = state_y.angle;
-	angle.z = state_z.angle * state_z.scale;
+	angle.z = state_z.angle;
 	return angle;
 }
 
