@@ -6,10 +6,10 @@ static double gain;
 static double beta;
     
 typedef struct quaternion {
-    double w;
-    double x;
-    double y;
-    double z;
+	double w;	// scalar component of the quaternion
+	double x;	// i-component of the quaternion
+	double y;	// j-component of the quaternion
+	double z;	// k-component of the quaternion
 } quaternion_t;
 
 static vector_t result;
