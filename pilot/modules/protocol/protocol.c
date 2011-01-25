@@ -64,6 +64,7 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			break;
 		case 'R':
 			attitude_reset();
+			pid_reset();
 			break;
 		case 'C':
 			gyro_calibrate();
