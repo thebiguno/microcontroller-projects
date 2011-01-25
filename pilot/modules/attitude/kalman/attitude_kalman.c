@@ -51,7 +51,7 @@ void attitude_read_tuning() {
 	} else {
 		state_x.q_angle = 0.001;
 		state_y.q_angle = 0.001;
-		state_z.scale = (3.3 / 1024.0) / 0.002 * (M_PI / 2.0);
+		state_z.scale = 1.0; //(3.3 / 1024.0) / 0.002 * (M_PI / 2.0);
 		state_x.q_gyro = 0.003;
 		state_y.q_gyro = 0.003;
 		state_z.bias = 0;
@@ -108,12 +108,17 @@ void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 
 void _attitude_z(double gyro, runge_kutta_t *state, double dt) {
 	// http://tom.pycke.be/mav/70/gyroscope-to-roll-pitch-and-yaw
-	
-	double corrected = gyro + state->bias; // should it be gyro * bias?
+
+	// state->angle = state->angle + gyro * state->scale * dt;
+
+	// double corrected = gyro + state->bias; // should it be gyro * bias?
+	double corrected = gyro * state->scale * dt;
 	state->angle = state->angle + ((state->history[2] + state->history[1] * 2 + state->history[0] * 2 + corrected) / 6);
 	state->history[2] = state->history[1];
 	state->history[1] = state->history[0];
 	state->history[0] = corrected;
+	
+	
 }
 
 vector_t attitude(vector_t gyro, vector_t accel) {
