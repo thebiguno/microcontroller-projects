@@ -2,9 +2,6 @@
 #include "../persist/persist.h"
 #include "../util/convert.h"
 
-// 5 degrees minimum command for yaw
-#define MIN_COMMAND 0.0872664626
-
 typedef struct pid {
 	// state
 	double i;	// the integrated error
@@ -19,7 +16,6 @@ static pid_t state_x;
 static pid_t state_y;
 static pid_t state_z;
 static pid_t state_heading;
-static double heading;
 
 void pid_read_tuning() {
 	uint8_t data[36];
@@ -46,11 +42,6 @@ void pid_read_tuning() {
 		state_y.kd = 0.0;
 		state_z.kd = 0.0;
 	}
-	
-	// TODO read from EEPROM
-	state_heading.kp = 3.0;
-	state_heading.ki = 0.0;
-	state_heading.kd = 0.0;
 }
 
 void pid_write_tuning() {
@@ -115,23 +106,12 @@ double _pid_mv(double sp, double pv, pid_t *state){
 vector_t pid_mv(vector_t sp, vector_t pv) {
 	vector_t mv;
 
-	// for x and y, sp is an absolute value in radians, and pv is an absolute value in radians (s/b stable)
+	// for x and y, values are in radians
 	mv.x = _pid_mv(sp.x, pv.x, &state_x);
 	mv.y = _pid_mv(sp.y, pv.y, &state_y);
 	
-	// for z, sp is a relative value in radians / second, and pv is the absolute value in radians (likely drifting)
-	if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
-		// yaw setpoint exceeds minimum threshold
-		heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
-		// do PID as normal
-		mv.z = _pid_mv(sp.z, pv.z, &state_z);
-	} else {
-		// no yaw setpoint, apply a heading hold
-		// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
-// 		double hold = _pid_mv(heading, pv.z, &state_heading);
-// 		mv.z = _pid_mv(hold, pv.z, &state_z);
-		mv.z = 0;
-	}
+	// for z, values are in radians / second
+	mv.z = _pid_mv(sp.z, pv.z, &state_y);
 
 	return mv;
 }

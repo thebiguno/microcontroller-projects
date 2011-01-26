@@ -1,5 +1,8 @@
 #include "main.h"
 
+// 5 degrees minimum command for yaw
+#define MIN_COMMAND 0.0872664626
+
 int main(){
 
 	uint64_t millis = 0;
@@ -7,6 +10,7 @@ int main(){
 	uint64_t last_telemetry = 0;
 	vector_t sp = { 0,0,0 };		// ATTITUDE set point
 	double motor[4];				// MOTOR set point
+//	double heading;					// heading hold
 	
 	//Init all modules.  We call accel_init last as it forces sei().
 	status_init();
@@ -54,7 +58,23 @@ int main(){
 				// scale back throttle
 				throttle--; // TODO this is way too fast, don't scale back so quickly
 			}
+			
+			if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
+				// yaw setpoint exceeds minimum threshold
+				//heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
+				pv.z = g.z;		// for z do pid directly on the gyro reading
+				// do PID as normal
+			} else {
+				// TODO implement heading hold, requires implementing PID for heading
+				// no yaw setpoint, apply a heading hold
+				// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
+		// 		double hold = _pid_mv(heading, pv.z, &state_heading);
+		// 		mv.z = _pid_mv(hold, pv.z, &state_z);
+				pv.z = 0;
+				sp.z = 0;
+			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
+			
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
 		} else if (armed == 'M') {					// armed by motor command
