@@ -2,58 +2,69 @@
 #include "../persist/persist.h"
 #include "../util/convert.h"
 
-vector_t _kp;
-vector_t _ki;
-vector_t _kd;
+// 5 degrees minimum command for yaw
+#define MIN_COMMAND 0.0872664626
 
-typedef struct pid_state {
+typedef struct pid {
+	// state
 	double i;	// the integrated error
 	double pv;	// the last pv
-} pid_state_t;
+	// tuning
+	double kp;
+	double ki;
+	double kd;
+} pid_t;
 
-pid_state_t _state_x;
-pid_state_t _state_y;
-pid_state_t _state_z;
+static pid_t state_x;
+static pid_t state_y;
+static pid_t state_z;
+static pid_t state_heading;
+static double heading;
 
 void pid_read_tuning() {
 	uint8_t data[36];
 	
 	uint8_t length = persist_read(PERSIST_SECTION_PID, data, 36);
 	if (length == 36) {
-		_kp.x = convert_bytes_to_double(data, 0);
-		_kp.y = convert_bytes_to_double(data, 4);
-		_kp.z = convert_bytes_to_double(data, 8);
-		_ki.x = convert_bytes_to_double(data, 12);
-		_ki.y = convert_bytes_to_double(data, 16);
-		_ki.z = convert_bytes_to_double(data, 20);
-		_kd.x = convert_bytes_to_double(data, 24);
-		_kd.y = convert_bytes_to_double(data, 28);
-		_kd.z = convert_bytes_to_double(data, 32);
+		state_x.kp = convert_bytes_to_double(data, 0);
+		state_y.kp = convert_bytes_to_double(data, 4);
+		state_z.kp = convert_bytes_to_double(data, 8);
+		state_x.ki = convert_bytes_to_double(data, 12);
+		state_y.ki = convert_bytes_to_double(data, 16);
+		state_z.ki = convert_bytes_to_double(data, 20);
+		state_x.kd = convert_bytes_to_double(data, 24);
+		state_y.kd = convert_bytes_to_double(data, 28);
+		state_z.kd = convert_bytes_to_double(data, 32);
 	} else {
-		_kp.x = 0.7;
-		_kp.y = 0.7;
-		_kp.z = 0.7;
-		_ki.x = 0.001;
-		_ki.y = 0.001;
-		_ki.z = 0.001;
-		_kd.x = 0.0;
-		_kd.y = 0.0;
-		_kd.z = 0.0;
+		state_x.kp = 0.7;
+		state_y.kp = 0.7;
+		state_z.kp = 0.7;
+		state_x.ki = 0.001;
+		state_y.ki = 0.001;
+		state_z.ki = 0.001;
+		state_x.kd = 0.0;
+		state_y.kd = 0.0;
+		state_z.kd = 0.0;
 	}
+	
+	// TODO read from EEPROM
+	state_heading.kp = 3.0;
+	state_heading.ki = 0.0;
+	state_heading.kd = 0.0;
 }
 
 void pid_write_tuning() {
 	uint8_t data[36];
 	
-	convert_double_to_bytes(_kp.x, data, 0);
-	convert_double_to_bytes(_kp.y, data, 4);
-	convert_double_to_bytes(_kp.z, data, 8);
-	convert_double_to_bytes(_ki.x, data, 12);
-	convert_double_to_bytes(_ki.y, data, 16);
-	convert_double_to_bytes(_ki.z, data, 20);
-	convert_double_to_bytes(_kd.x, data, 24);
-	convert_double_to_bytes(_kd.y, data, 28);
-	convert_double_to_bytes(_kd.z, data, 32);
+	convert_double_to_bytes(state_x.kp, data, 0);
+	convert_double_to_bytes(state_y.kp, data, 4);
+	convert_double_to_bytes(state_z.kp, data, 8);
+	convert_double_to_bytes(state_x.ki, data, 12);
+	convert_double_to_bytes(state_y.ki, data, 16);
+	convert_double_to_bytes(state_z.ki, data, 20);
+	convert_double_to_bytes(state_x.kd, data, 24);
+	convert_double_to_bytes(state_y.kd, data, 28);
+	convert_double_to_bytes(state_z.kd, data, 32);
 	
 	persist_write(PERSIST_SECTION_PID, data, 36);
 }
@@ -66,34 +77,34 @@ void pid_send_tuning() {
 	uint8_t length = 36;
 	uint8_t buf[length];
 	
-	convert_double_to_bytes(_kp.x, buf, 0);
-	convert_double_to_bytes(_kp.y, buf, 4);
-	convert_double_to_bytes(_kp.z, buf, 8);
-	convert_double_to_bytes(_ki.x, buf, 12);
-	convert_double_to_bytes(_ki.y, buf, 16);
-	convert_double_to_bytes(_ki.z, buf, 20);
-	convert_double_to_bytes(_kd.x, buf, 24);
-	convert_double_to_bytes(_kd.y, buf, 28);
-	convert_double_to_bytes(_kd.z, buf, 32);
+	convert_double_to_bytes(state_x.kp, buf, 0);
+	convert_double_to_bytes(state_y.kp, buf, 4);
+	convert_double_to_bytes(state_z.kp, buf, 8);
+	convert_double_to_bytes(state_x.ki, buf, 12);
+	convert_double_to_bytes(state_y.ki, buf, 16);
+	convert_double_to_bytes(state_z.ki, buf, 20);
+	convert_double_to_bytes(state_x.kd, buf, 24);
+	convert_double_to_bytes(state_y.kd, buf, 28);
+	convert_double_to_bytes(state_z.kd, buf, 32);
 
 	protocol_send_message('p', buf, length);
 }
 
 void pid_receive_tuning(uint8_t *buf) {
-	_kp.x = convert_bytes_to_double(buf, 0);
-	_kp.y = convert_bytes_to_double(buf, 4);
-	_kp.z = convert_bytes_to_double(buf, 8);
-	_ki.x = convert_bytes_to_double(buf, 12);
-	_ki.y = convert_bytes_to_double(buf, 16);
-	_ki.z = convert_bytes_to_double(buf, 20);
-	_kd.x = convert_bytes_to_double(buf, 24);
-	_kd.y = convert_bytes_to_double(buf, 28);
-	_kd.z = convert_bytes_to_double(buf, 32);
+	state_x.kp = convert_bytes_to_double(buf, 0);
+	state_y.kp = convert_bytes_to_double(buf, 4);
+	state_z.kp = convert_bytes_to_double(buf, 8);
+	state_x.ki = convert_bytes_to_double(buf, 12);
+	state_y.ki = convert_bytes_to_double(buf, 16);
+	state_z.ki = convert_bytes_to_double(buf, 20);
+	state_x.kd = convert_bytes_to_double(buf, 24);
+	state_y.kd = convert_bytes_to_double(buf, 28);
+	state_z.kd = convert_bytes_to_double(buf, 32);
 }
 
-double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_state_t *state){
+double _pid_mv(double sp, double pv, pid_t *state){
 	double e = sp - pv;
-	double mv = (kp * e) + (ki * state->i) + (kd * (pv - state->pv));
+	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (pv - state->pv));
 
 	state->i += e;
 	state->pv = pv;
@@ -104,19 +115,34 @@ double _pid_mv(double sp, double pv, double kp, double ki, double kd, pid_state_
 vector_t pid_mv(vector_t sp, vector_t pv) {
 	vector_t mv;
 
-	mv.x = _pid_mv(sp.x, pv.x, _kp.x, _ki.x, _kd.x, &_state_x);
-	mv.y = _pid_mv(sp.y, pv.y, _kp.y, _ki.y, _kd.y, &_state_y);
-	mv.z = _pid_mv(sp.z, pv.z, _kp.z, _ki.z, _kd.z, &_state_z);
+	// for x and y, sp is an absolute value in radians, and pv is an absolute value in radians (s/b stable)
+	mv.x = _pid_mv(sp.x, pv.x, &state_x);
+	mv.y = _pid_mv(sp.y, pv.y, &state_y);
+	
+	// for z, sp is a relative value in radians / second, and pv is the absolute value in radians (likely drifting)
+	if (sp.z < MIN_COMMAND || sp.z > -MIN_COMMAND) {
+		// yaw setpoint exceeds minimum threshold
+		heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
+		// do PID as normal
+		mv.z = _pid_mv(sp.z, pv.z, &state_z);
+	} else {
+		// no yaw setpoint, apply a heading hold
+		// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
+		double hold = _pid_mv(heading, pv.z, &state_heading);
+		mv.z = _pid_mv(hold, pv.z, &state_z);
+	}
 
 	return mv;
 }
 
 void pid_reset() {
-	_state_x.i = 0;
-	_state_x.pv = 0;
-	_state_y.i = 0;
-	_state_y.pv = 0;
-	_state_z.i = 0;
-	_state_z.pv = 0;
+	state_x.i = 0;
+	state_x.pv = 0;
+	state_y.i = 0;
+	state_y.pv = 0;
+	state_z.i = 0;
+	state_z.pv = 0;
+	state_heading.i = 0;
+	state_heading.pv = 0;
 }
 
