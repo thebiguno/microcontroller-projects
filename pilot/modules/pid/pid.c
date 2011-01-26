@@ -120,7 +120,7 @@ vector_t pid_mv(vector_t sp, vector_t pv) {
 	mv.y = _pid_mv(sp.y, pv.y, &state_y);
 	
 	// for z, sp is a relative value in radians / second, and pv is the absolute value in radians (likely drifting)
-	if (sp.z < MIN_COMMAND || sp.z > -MIN_COMMAND) {
+	if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
 		// yaw setpoint exceeds minimum threshold
 		heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
 		// do PID as normal
@@ -128,8 +128,9 @@ vector_t pid_mv(vector_t sp, vector_t pv) {
 	} else {
 		// no yaw setpoint, apply a heading hold
 		// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
-		double hold = _pid_mv(heading, pv.z, &state_heading);
-		mv.z = _pid_mv(hold, pv.z, &state_z);
+// 		double hold = _pid_mv(heading, pv.z, &state_heading);
+// 		mv.z = _pid_mv(hold, pv.z, &state_z);
+		mv.z = 0;
 	}
 
 	return mv;
