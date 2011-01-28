@@ -25,11 +25,8 @@ void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref){
 	//ADC Enable, prescaler as specified with default of 0x4 (F_CPU / 16)
 	ADCSRA |= _BV(ADEN) | ADC_PRESCALER_MASK;
 
-	//Set AREF mode.  According to the ATmega168 datasheet, there are three options:
-	// 0: Use AREF, internal Vref turned off
-	// 1: Use AVCC with external cap at AREF pin
-	// 3: Use internal 1.1V reference with external cap at AREF pin
-	if (aref != 0x1 && aref != 0x3) aref = 0x0; //Sanity check...
+	//Set AREF mode.
+	//TODO Add support for REFS2, used on ATtiny85 (and presumably more)...
 	ADMUX &= ~(_BV(REFS0 + 1) | _BV(REFS0));  //Clear AREF bits...
 	ADMUX |= aref << REFS0; //... and set according to aref
 	

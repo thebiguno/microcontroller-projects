@@ -6,13 +6,18 @@
 	#define ANALOG_AVCC		0
 	#define ANALOG_INTERNAL	1
 #elif defined(__AVR_ATtiny25__)   || \
-	defined(__AVR_ATtiny45__)     || \
-	defined(__AVR_ATtiny85__)
+	  defined(__AVR_ATtiny45__)   || \
+	  defined(__AVR_ATtiny85__)
 	#define ANALOG_AVCC		0
 	#define ANALOG_AREF		1
 	#define ANALOG_INTERNAL	2
 	//TODO Add support for REFS2
-#else
+#elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega324P__)    || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
+	defined(__AVR_ATmega1284P__)
 	#define ANALOG_AREF		0
 	#define ANALOG_AVCC		1
 	#define ANALOG_INTERNAL	3

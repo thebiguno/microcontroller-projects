@@ -57,10 +57,7 @@ uint64_t timer_micros(){
  * The ISR for timer1 overflow.  Increment the _timer_count here, and do the calculcations
  * to increment _timer_millis as needed.
  */
-#if defined(__AVR_ATtiny24__)   || \
-	defined(__AVR_ATtiny44__)   || \
-	defined(__AVR_ATtiny84__)   || \
-	defined(__AVR_ATtiny25__)   || \
+#if defined(__AVR_ATtiny25__)   || \
 	defined(__AVR_ATtiny45__)   || \
 	defined(__AVR_ATtiny85__)
 EMPTY_INTERRUPT(TIM0_COMPB_vect)
@@ -75,6 +72,11 @@ ISR(TIM0_COMPA_vect){
 EMPTY_INTERRUPT(TIMER1_COMPB_vect)
 EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
+#elif defined(__AVR_ATtiny24__)   || \
+	defined(__AVR_ATtiny44__)   || \
+	defined(__AVR_ATtiny84__)
+	#error This library is not supported for the ATtiny 24/44/84 chips.  Even though these chips have timer1, it is not a 16 bit timer.
+	timer_1_error(){
 #else //TODO Verify which AVRs use this ISR, and print error accordingly
 	#error You must define TIMER1 vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in timer_1.c
 	timer_1_error(){
