@@ -1,6 +1,17 @@
 /*
  * PSX control hardware implementation
  * Written by Wyatt Olson
+ *
+ *    ps1/ps2
+ * 1. brown			dta
+ * 2. orange		cmd
+ * 3. violet/grey	vib (7.6v)
+ * 4. black			gnd
+ * 5. red			vcc (3.3v)
+ * 6. yellow		att
+ * 7. blue			clk
+ * 8. black/white	n/c
+ * 9. green			ack
  */
 
 #include "../control.h"
