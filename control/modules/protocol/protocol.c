@@ -17,6 +17,9 @@ static uint8_t _esc;       // escape byte seen, unescape next byte
 static uint8_t _err;       // error condition, ignore bytes until next frame start byte
 static uint8_t _buf[MAX_SIZE];
 
+static uint8_t dummy[] = {0}; // zero sized array not allowed in C
+
+
 static void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
     if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
@@ -55,8 +58,11 @@ void protocol_send_control(control_t control){
 }
 
 void protocol_send_reset_attitude() {
-	uint8_t packet[] = {0}; // zero sized array not allowed in C
-	protocol_send_message('R', packet, 0);
+	protocol_send_message('R', dummy, 0);
+}
+
+void protocol_send_calibrate() {
+	protocol_send_message('C', dummy, 0);
 }
 
 /*
