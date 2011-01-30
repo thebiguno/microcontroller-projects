@@ -19,6 +19,11 @@
 #define PORT_MOTOR_D			PORTB
 #define PIN_MOTOR_D				PINB3
 
+#define PORT_LED_PORT			PORTC
+#define PIN_LED_PORT			PINC2
+#define PORT_LED_STARBOARD		PORTC
+#define PIN_LED_STARBOARD		PINC3
+
 //The ADCx channel numbers; see datasheet pinout and register ADCMUX bits 3::0 for definitions.
 #define PIN_GYRO_X				0
 #define PIN_GYRO_Y				1
