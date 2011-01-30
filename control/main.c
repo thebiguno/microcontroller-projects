@@ -64,7 +64,7 @@ int main (void){
         }
         
         //Send control data
-        comm_tx_attitude(control);
+        protocol_send_control(control);
     }
 }
 
