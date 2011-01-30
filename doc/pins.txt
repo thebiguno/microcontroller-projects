@@ -1,34 +1,45 @@
-Control - ATMEGA168
-Pin	RBBB	AVR	Chiindii Function
-1	~RESET	PC6
-2	RX	PD0	Serial RX
-3	TX	PD1	Serial TX
-4	D2	PD2
-5	D3	PD3
-6	D4	PD4
-7	VCC	VCC
-8	GND	GND
-9		PB6
-10		PB7
-11	D5	PD5	PSX Clock (blue)
-12	D6	PD6	PSX Data (brown)
-13	D7	PD7	PSX Command (orange)
-14	D8	PB0	PSX Attention (yellow)
-
-15	D9	PB1
-16	D10	PB2
-17	D11	PB3
-18	D12	PB4
-19	D13	PB5
-20	AVCC	AVCC
-21	AREF	AREF
-22	GND	GND
-23	A0	PC0
-24	A1	PC1
-25	A2	PC2
-26	A3	PC3
-27	A4	PC4
-28	A5	PC5
+Control - ATMega644P
+Pin	AVR	Chiindii Function
+1	PB0	PSX Clock (blue)
+2	PB1	PSX Data (brown)
+3	PB2	PSX Command (orange)
+4	PB3	PSX Attention (yellow)
+5	PB4
+6	PB5	MOSI
+7	PB6	MISO
+8	PB7	SCK
+9	~RESET
+10	VCC
+11	GND
+12	OSC
+13	OSC
+14	PD0	Serial RX0 -> XBee
+15	PD1	Serial TX0 -> XBee
+16	PD2	Serial RX1 -> PC
+17	PD3	Serial RX1 -> PC
+18	PD4	LED Shift Data (for debugging)
+19	PD5	LED Shift Clock (for debugging)
+20	PD6	LED Shift Latch (for debugging)
+21	PD7
+22	PC0	SCL (reserved)
+23	PC1	SDA (reserved)
+24	PC2	LED Armed
+25	PC3	LED Cruise
+26	PC4
+27	PC5
+28	PC6
+29	PC7
+30	AVCC
+31	GND
+32	AREF
+33	PA7
+34	PA6
+35	PA5
+36	PA4
+37	PA3
+38	PA2
+39	PA1
+40	PA0
 
 Pilot - ATMega644
 Pin	AVR	Chiindii Function
@@ -40,23 +51,23 @@ Pin	AVR	Chiindii Function
 6	PB5	MOSI
 7	PB6	MISO
 8	PB7	SCK
-9	~RESET	
+9	~RESET
 10	VCC
 11	GND
 12	OSC
 13	OSC
-14	PD0	Serial RX
-15	PD1	Serial TX
+14	PD0	Serial RX -> XBee
+15	PD1	Serial TX -> XBee
 16	PD2
 17	PD3
 18	PD4	LED Shift Data
 19	PD5	LED Shift Clock
 20	PD6	LED Shift Latch
 21	PD7
-22	PC0	SCL
-23	PC1	SDA
-24	PC2
-25	PC3
+22	PC0	SCL -> Accelerometer
+23	PC1	SDA -> Accelerometer
+24	PC2	LED port (left / red)
+25	PC3	LED starboard (right / green)
 26	PC4
 27	PC5
 28	PC6
