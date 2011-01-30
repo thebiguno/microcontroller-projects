@@ -31,7 +31,7 @@ void control_init();
  *
  */
 
-control_t get_control();
+control_t control_read_analog();
 
 
 /*
@@ -57,6 +57,6 @@ control_t get_control();
 /*
  * Returns the value of all buttons.
  */
-uint16_t get_buttons();
+uint16_t control_read_buttons();
 
 #endif

@@ -41,7 +41,7 @@ void control_init(){
 
 }
  
-control_t get_control(){
+control_t control_read_analog(){
 	psx_read_gamepad();
 	
 	control_t result;
@@ -78,7 +78,7 @@ control_t get_control(){
 	return result;
 }
 
-uint16_t get_buttons(){
+uint16_t control_read_buttons(){
 	uint16_t buttons = 0x0;
 
 	if (psx_button(PSB_START)) buttons |= POWER_ON;
@@ -89,3 +89,4 @@ uint16_t get_buttons(){
 	
 	return buttons;
 }
+
