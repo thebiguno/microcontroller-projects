@@ -16,8 +16,8 @@ int main (void){
 	//Main program loop
 	while (1){
 		//Read controls
-        control_t control = get_control();
-        uint16_t buttons = get_buttons();
+        control_t control = control_read_analog();
+        uint16_t buttons = control_read_buttons();
         
         flags = 0x00;
         if (((debounce & POWER_ON) == 0) && buttons & POWER_ON) {
