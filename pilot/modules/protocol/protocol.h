@@ -4,11 +4,6 @@
 #include <math.h>
 #include "../../main.h"
 
-union udouble {
-	double d;
-	uint8_t u[sizeof(double)];
-};
-
 /*
  * Dispatch a message to the appropriate module.
  */

@@ -1,5 +1,10 @@
 #include "convert.h"
 
+union udouble {
+	double d;
+	uint8_t u[sizeof(double)];
+};
+
 double convert_byte_to_radian(uint8_t x)
 {
 	double r = 0.024639942381096 * x;
