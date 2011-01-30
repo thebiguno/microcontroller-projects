@@ -26,10 +26,10 @@
 #define B_THROTTLE MAX_THROTTLE * -1
 
 void control_init(){
-	psx_init(&PORTD, PIND6, //Data (Brown)
-			&PORTD, PIND5, //Clock (Blue)
-			&PORTD, PIND7, //Command (Orange)
-			&PORTB, PINB0); //Attention (Yellow)
+	psx_init(&PORT_PSX_DATA, PIN_PSX_DATA, //Data (Brown)
+			&PORT_PSX_CLOCK, PIN_PSX_CLOCK, //Clock (Blue)
+			&PORT_PSX_COMMAND, PIN_PSX_COMMAND, //Command (Orange)
+			&PORT_PSX_ATTENTION, PIN_PSX_ATTENTION); //Attention (Yellow)
 }
  
 control_t control_read_analog(){
