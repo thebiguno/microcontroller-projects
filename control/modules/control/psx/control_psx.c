@@ -25,20 +25,11 @@
 #define M_THROTTLE 2 * MAX_THROTTLE / 256
 #define B_THROTTLE MAX_THROTTLE * -1
 
-//Mappings between button functions and PSX buttons
-#define POWER_ON_IMPL 			PSB_START
-#define MODE_AEROBATIC_IMPL 	PSB_SQUARE
-#define MODE_SPORT_IMPL			PSB_CIRCLE
-#define MODE_STABLE_IMPL	 	PSB_CROSS
-#define MODE_HOVER_IMPL		 	PSB_TRIANGLE
-
-
 void control_init(){
 	psx_init(&PORTD, PIND6, //Data (Brown)
 			&PORTD, PIND5, //Clock (Blue)
 			&PORTD, PIND7, //Command (Orange)
 			&PORTB, PINB0); //Attention (Yellow)
-
 }
  
 control_t control_read_analog(){
@@ -81,7 +72,10 @@ control_t control_read_analog(){
 uint16_t control_read_buttons(){
 	uint16_t buttons = 0x0;
 
-	if (psx_button(PSB_START)) buttons |= POWER_ON;
+	if (psx_button(PSB_START)) buttons |= POWER;
+	if (psx_button(PSB_SELECT)) buttons |= CRUISE;
+	if (psx_button(PSB_L3)) buttons |= RESET_ATTITUDE;
+	if (psx_button(PSB_R3)) buttons |= CALIBRATE;
 	if (psx_button(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
 	if (psx_button(PSB_CIRCLE)) buttons |= MODE_SPORT;
 	if (psx_button(PSB_CROSS)) buttons |= MODE_STABLE;

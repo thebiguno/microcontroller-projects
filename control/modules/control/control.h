@@ -37,10 +37,10 @@ control_t control_read_analog();
 /*
  * Define the position of buttons in the result of the getButtons() method.
  */
-#define POWER_ON 			0x0001
-//#define 					0x0002
-//#define 					0x0004
-//#define 					0x0008
+#define POWER				0x0001
+#define CRUISE				0x0002
+#define RESET_ATTITUDE		0x0004
+#define CALIBRATE			0x0008
 #define MODE_AEROBATIC 		0x0010
 #define MODE_SPORT 			0x0020
 #define MODE_STABLE 		0x0040
