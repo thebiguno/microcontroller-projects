@@ -78,8 +78,8 @@ int main(){
 				// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
 		// 		double hold = _pid_mv(heading, pv.z, &state_heading);
 		// 		mv.z = _pid_mv(hold, pv.z, &state_z);
-				pv.z = 0;
-				sp.z = 0;
+				// pv.z = 0;
+				// sp.z = 0;
 			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			
