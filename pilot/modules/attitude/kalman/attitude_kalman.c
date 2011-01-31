@@ -20,32 +20,23 @@ typedef struct kalman {
 	double r_angle;
 } kalman_t;
 
-typedef struct runge_kutta {
-	// state
-	double angle;
-	double history[3];
-	// tuning
-	double bias;
-} runge_kutta_t;
-    
 static kalman_t state_x;
 static kalman_t state_y;
-static runge_kutta_t state_z;
 
 static uint64_t millis;
 
 void attitude_read_tuning() {
-	uint8_t data[36];
+	uint8_t data[24];
 	
-	uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 36);
-	if (length == 36) {
+	uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 24);
+	if (length == 24) {
 		state_x.q_angle = convert_bytes_to_double(data, 0);
-		state_y.q_angle = convert_bytes_to_double(data, 4);
-		state_z.bias = convert_bytes_to_double(data, 8);
-		state_x.q_gyro = convert_bytes_to_double(data, 12);
+		state_x.q_gyro = convert_bytes_to_double(data, 4);
+		state_x.r_angle = convert_bytes_to_double(data, 8);
+
+		state_y.q_angle = convert_bytes_to_double(data, 12);
 		state_y.q_gyro = convert_bytes_to_double(data, 16);
-		state_x.r_angle = convert_bytes_to_double(data, 24);
-		state_y.r_angle = convert_bytes_to_double(data, 28);
+		state_y.r_angle = convert_bytes_to_double(data, 20);
 	} else {
 		state_x.q_angle = 0.001;
 		state_x.q_gyro = 0.003;
@@ -54,25 +45,21 @@ void attitude_read_tuning() {
 		state_y.q_angle = 0.001;
 		state_y.q_gyro = 0.003;
 		state_y.r_angle = 0.3;
-
-		state_z.bias = 0;
 	}
 }
 
 void attitude_write_tuning() {
-	uint8_t data[36];
+	uint8_t data[24];
 	
 	convert_double_to_bytes(state_x.q_angle, data, 0);
 	convert_double_to_bytes(state_y.q_angle, data, 4);
-	convert_double_to_bytes(state_z.bias, data, 8);
-	convert_double_to_bytes(state_x.q_gyro, data, 12);
-	convert_double_to_bytes(state_y.q_gyro, data, 16);
-	convert_double_to_bytes(0, data, 20);
-	convert_double_to_bytes(state_x.r_angle, data, 24);
-	convert_double_to_bytes(state_y.r_angle, data, 28);
-	convert_double_to_bytes(0, data, 32);
+	convert_double_to_bytes(state_x.q_gyro, data, 8);
 	
-	persist_write(PERSIST_SECTION_ATTITUDE, data, 36);
+	convert_double_to_bytes(state_y.q_gyro, data, 12);
+	convert_double_to_bytes(state_x.r_angle, data, 16);
+	convert_double_to_bytes(state_y.r_angle, data, 20);
+	
+	persist_write(PERSIST_SECTION_ATTITUDE, data, 24);
 }
 
 void attitude_init(vector_t gyro, vector_t accel) {
@@ -105,21 +92,6 @@ void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 	state->p11 -= k1 * state->p01;
 }
 
-void _attitude_z(double gyro, runge_kutta_t *state, double dt) {
-	// http://tom.pycke.be/mav/70/gyroscope-to-roll-pitch-and-yaw
-
-	// state->angle = state->angle + gyro * dt;
-
-	// double corrected = gyro + state->bias; // should it be gyro * bias?
-	double angle = (gyro + state->bias) * dt;
-	state->angle = state->angle + ((state->history[2] + state->history[1] * 2 + state->history[0] * 2 + angle) / 6);
-	state->history[2] = state->history[1];
-	state->history[1] = state->history[0];
-	state->history[0] = angle;
-	
-	
-}
-
 vector_t attitude(vector_t gyro, vector_t accel) {
 	uint64_t curr_millis = timer_millis();
 	uint64_t dtm = curr_millis - millis;
@@ -131,13 +103,11 @@ vector_t attitude(vector_t gyro, vector_t accel) {
 
 		_attitude(gyro.x, accel.x, &state_x, dt);
 		_attitude(gyro.y, accel.y, &state_y, dt);
-		_attitude_z(gyro.z, &state_z, dt);
 	}
 	
 	static vector_t angle;
 	angle.x = state_x.angle;
 	angle.y = state_y.angle;
-	angle.z = state_z.angle;
 	return angle;
 }
 
@@ -148,33 +118,30 @@ uint8_t attitude_get_id() {
 void attitude_reset() {
 	state_x.angle = 0.0;
 	state_y.angle = 0.0;
-	state_z.angle = 0.0;
 }
 
 void attitude_send_tuning() {
-	uint8_t length = 36;
+	uint8_t length = 24;
 	uint8_t buf[length];
 	
 	convert_double_to_bytes(state_x.q_angle, buf, 0);
-	convert_double_to_bytes(state_y.q_angle, buf, 4);
-	convert_double_to_bytes(state_z.bias, buf, 8);
-	convert_double_to_bytes(state_x.q_gyro, buf, 12);
+	convert_double_to_bytes(state_x.q_gyro, buf, 4);
+	convert_double_to_bytes(state_x.r_angle, buf, 8);
+
+	convert_double_to_bytes(state_y.q_angle, buf, 12);
 	convert_double_to_bytes(state_y.q_gyro, buf, 16);
-	convert_double_to_bytes(0, buf, 20);
-	convert_double_to_bytes(state_x.r_angle, buf, 24);
-	convert_double_to_bytes(state_y.r_angle, buf, 28);
-	convert_double_to_bytes(0, buf, 32);
+	convert_double_to_bytes(state_y.r_angle, buf, 20);
 
 	protocol_send_message('k', buf, length);
 }
 
 void attitude_receive_tuning(uint8_t *buf) {
 	state_x.q_angle = convert_bytes_to_double(buf, 0);
-	state_y.q_angle = convert_bytes_to_double(buf, 4);
-	state_z.bias = convert_bytes_to_double(buf, 8);
-	state_x.q_gyro = convert_bytes_to_double(buf, 12);
+	state_x.q_gyro = convert_bytes_to_double(buf, 4);
+	state_x.r_angle = convert_bytes_to_double(buf, 8);
+
+	state_y.q_angle = convert_bytes_to_double(buf, 12);
 	state_y.q_gyro = convert_bytes_to_double(buf, 16);
-	state_x.r_angle = convert_bytes_to_double(buf, 24);
-	state_y.r_angle = convert_bytes_to_double(buf, 28);
+	state_y.r_angle = convert_bytes_to_double(buf, 20);
 }
 
