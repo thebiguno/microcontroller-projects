@@ -15,7 +15,6 @@ typedef struct pid {
 static pid_t state_x;
 static pid_t state_y;
 static pid_t state_z;
-static pid_t state_heading;
 
 void pid_read_tuning() {
 	uint8_t data[36];
@@ -123,7 +122,5 @@ void pid_reset() {
 	state_y.pv = 0;
 	state_z.i = 0;
 	state_z.pv = 0;
-	state_heading.i = 0;
-	state_heading.pv = 0;
 }
 
