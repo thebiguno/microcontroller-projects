@@ -11,6 +11,7 @@ int main(){
 	vector_t sp = { 0,0,0 };		// ATTITUDE set point
 	double motor[4];				// MOTOR set point
 //	double heading;					// heading hold
+	uint8_t throttle_back;
 	
 	//Init all modules.  We call accel_init last as it forces sei().
 	status_init();
@@ -55,11 +56,18 @@ int main(){
 				sp.x = 0;
 				sp.y = 0;
 				sp.y = 0;
-				// scale back throttle
-				throttle--; // TODO this is way too fast, don't scale back so quickly
+				
+				throttle_back += dt;
+				
+				// NOTE: this will go from full throttle to off in about two minutes
+				if (throttle_back >= 500) {
+					// scale back throttle
+					throttle_back = 0;
+					throttle--;
+				}
 			}
 			
-			if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
+			// if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
 				// yaw setpoint exceeds minimum threshold
 				//heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
 				pv.z = g.z;		// for z do pid directly on the gyro reading
