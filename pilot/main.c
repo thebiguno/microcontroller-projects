@@ -40,7 +40,8 @@ int main(){
 
 		vector_t g = gyro_get();
 		vector_t a = accel_get();
-		vector_t pv = attitude(g, a);				// PID process variable
+		vector_t pv = attitude(g, a);				// compute PID process variable for x and y using Kalman
+		pv.z = g.z;									// for z do PID directly on the gyro reading
 
 		if (armed == 'A') {							// armed by attitude command
 			status_set(STATUS_ARMED);
@@ -57,9 +58,8 @@ int main(){
 				sp.y = 0;
 				sp.y = 0;
 				
-				throttle_back += dt;
-				
 				// NOTE: this will go from full throttle to off in about two minutes
+				throttle_back += dt;
 				if (throttle_back >= 500) {
 					// scale back throttle
 					throttle_back = 0;
@@ -67,20 +67,6 @@ int main(){
 				}
 			}
 			
-			// if (sp.z > MIN_COMMAND || sp.z < -MIN_COMMAND) {
-				// yaw setpoint exceeds minimum threshold
-				//heading = pv.z;	// remember the last heading so it can be used when the command drops below threshold
-				pv.z = g.z;		// for z do pid directly on the gyro reading
-				// do PID as normal
-			} else {
-				// TODO implement heading hold, requires implementing PID for heading
-				// no yaw setpoint, apply a heading hold
-				// use PID to compute a new heading based on the saved heading and the heading reported by the attitude (pv)
-		// 		double hold = _pid_mv(heading, pv.z, &state_heading);
-		// 		mv.z = _pid_mv(hold, pv.z, &state_z);
-				// pv.z = 0;
-				// sp.z = 0;
-			}
 			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
 			
 			motor_percent(throttle, mv, motor);
