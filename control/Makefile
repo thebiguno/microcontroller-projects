@@ -3,7 +3,7 @@ include ../build/variables.mk
 PROJECT=control
 MMCU=atmega644p
 F_CPU=20000000
-SOURCES=main.c
+SOURCES=main.c ../lib/ring/ring.c
 AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 
