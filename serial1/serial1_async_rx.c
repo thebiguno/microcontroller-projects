@@ -23,15 +23,15 @@ void _serial1_init_rx(){
 
 uint8_t serial1_available() {
 	UCSR1B &= ~_BV(RXCIE1); //Temporarily disable RX interrupts so we don't get interrupted
-	uint8_t r = !_buffer_empty(&rx_buffer);
+	uint8_t r = !ring_buffer_empty(&rx_buffer);
 	UCSR1B |= _BV(RXCIE1); //Re-enable interrupts
 	return r;
 }
 
 uint8_t serial1_read_c(char *c){
 	UCSR1B &= ~_BV(RXCIE1); //Temporarily disable RX interrupts so we don't get interrupted
-	if (!_buffer_empty(&rx_buffer)){
-		*c = _buffer_get(&rx_buffer);
+	if (!ring_buffer_empty(&rx_buffer)){
+		*c = ring_buffer_get(&rx_buffer);
 		UCSR1B |= _BV(RXCIE1); //Re-enable interrupts
 		return 1;
 	}
@@ -54,7 +54,7 @@ uint8_t serial1_read_s(char *s, uint8_t len){
 
 ISR(USART1_RX_vect){
 	char data = UDR1;
-	if (!_buffer_full(&rx_buffer)){
-		_buffer_put(&rx_buffer, data);
+	if (!ring_buffer_full(&rx_buffer)){
+		ring_buffer_put(&rx_buffer, data);
 	}
 }
