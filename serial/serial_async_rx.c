@@ -4,30 +4,14 @@
  */
 
 #include "serial.h"
+#include "../ring/ring.h"
 #include <avr/interrupt.h>
 
-static volatile struct ring rx_buffer;
-
-static inline uint8_t _buffer_empty(volatile struct ring *buffer){
-	return (buffer->head == buffer->tail);
-}
-
-static inline uint8_t _buffer_full(volatile struct ring *buffer){
-	return ((buffer->head + 1) % SERIAL_BUFFER_SIZE == buffer->tail);
-}
-
-static inline char _buffer_get(volatile struct ring *buffer){
-	char c = buffer->buffer[buffer->tail];
-	if (++buffer->tail >= SERIAL_BUFFER_SIZE) buffer->tail = 0;
-	return c;
-}
-
-static inline void _buffer_put(volatile struct ring *buffer, char data){
-	buffer->buffer[buffer->head] = data;
-	if (++buffer->head >= SERIAL_BUFFER_SIZE) buffer->head = 0;
-}
+static volatile ring_t rx_buffer;
 
 void _serial_init_rx(){
+	ring_init(&rx_buffer, SERIAL_BUFFER_SIZE);
+	
 	//Enable RX interrupts
 	UCSR0B |= _BV(RXCIE0);
 	
@@ -39,15 +23,15 @@ void _serial_init_rx(){
 
 uint8_t serial_available() {
 	UCSR0B &= ~_BV(RXCIE0); //Temporarily disable RX interrupts so we don't get interrupted
-	uint8_t r = !_buffer_empty(&rx_buffer);
+	uint8_t r = !ring_buffer_empty(&rx_buffer);
 	UCSR0B |= _BV(RXCIE0); //Re-enable interrupts
 	return r;
 }
 
 uint8_t serial_read_c(char *c){
 	UCSR0B &= ~_BV(RXCIE0); //Temporarily disable RX interrupts so we don't get interrupted
-	if (!_buffer_empty(&rx_buffer)){
-		*c = _buffer_get(&rx_buffer);
+	if (!ring_buffer_empty(&rx_buffer)){
+		*c = ring_buffer_get(&rx_buffer);
 		UCSR0B |= _BV(RXCIE0); //Re-enable interrupts
 		return 1;
 	}
@@ -93,7 +77,7 @@ ISR(USART0_RX_vect){
 void error1() {
 #endif
 	char data = UDR0;
-	if (!_buffer_full(&rx_buffer)){
-		_buffer_put(&rx_buffer, data);
+	if (!ring_buffer_full(&rx_buffer)){
+		ring_buffer_put(&rx_buffer, data);
 	}
 }
