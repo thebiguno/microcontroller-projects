@@ -1,8 +1,8 @@
 #include "ring.h"
 
 void ring_init(volatile ring_t *ring, uint8_t size) {
-	if (size > 255) size = 255;
 	ring->buffer = (uint8_t *)malloc(sizeof(uint8_t[size]));
+	ring->size = size;
 }
 
 inline uint8_t ring_buffer_empty(volatile ring_t *ring){
