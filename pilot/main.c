@@ -23,6 +23,8 @@ int main(){
 	pid_init();
 	attitude_init(gyro_get(), accel_get());	   
 	
+	protocol_send_diag("pilot reset");
+	
 	//Main program loop
 	while (1) {
 		uint64_t curr_millis = timer_millis();
