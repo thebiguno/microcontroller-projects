@@ -7,7 +7,7 @@ SOURCES=main.c ../lib/ring/ring.c
 AVRDUDE_PROGRAMMER=usbtiny
 
 HFUSE=0x91
-LFUSE=0xE2
+LFUSE=0xF7
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
