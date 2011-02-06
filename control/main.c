@@ -7,13 +7,23 @@ int main (void){
 	uint8_t armed = 0;
 	uint8_t cruise = 0;
     
+	DDRC |= _BV(PINC0);			// set pin to output mode
+	PORTC |= _BV(PINC0);		// start with led off
+
 	comm_init();
+
 	control_init();
+
+	protocol_send_diag("controller reset");
 	
 	while (1){
+		// PORTC ^= _BV(PINC0);		// turn led on
+
+		protocol_poll();
+
 		control_t control = control_read_analog();
 		uint16_t buttons = control_read_buttons();
-
+		
 		if (buttons & POWER) {
 			armed ^= 0x01;
 			// TODO toggle the armed LED
@@ -40,7 +50,7 @@ int main (void){
 			// don't use the throttle input, use the cruise control throttle value
 			control.throttle = cruise;
 		}
-
+		
 		if (buttons & MODE_AEROBATIC) {
 			mode = MODE_AEROBATIC;
 		} else if (buttons & MODE_STABLE) {
@@ -50,7 +60,7 @@ int main (void){
 		} else if (buttons & MODE_STABLE) {
 			mode = MODE_STABLE;
 		}
-
+		
 		if (!armed) {
 			if (buttons & RESET_ATTITUDE) {
 				protocol_send_reset_attitude();
@@ -75,7 +85,7 @@ int main (void){
 				control.pitch *= 0.0555;
 				control.roll *= 0.0555;
 			}
-
+		
 			//Send control data
 			protocol_send_control(control);
 		}
