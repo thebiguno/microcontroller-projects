@@ -35,4 +35,6 @@ void protocol_send_telemetry(vector_t attitude, double motor[]);
  */
 void protocol_send_raw(vector_t gyro, vector_t accel);
 
+void protocol_send_diag(char *);
+
 #endif

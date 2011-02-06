@@ -215,3 +215,14 @@ void protocol_send_raw(vector_t gyro, vector_t accel) {
 	}
 }
 
+void protocol_send_diag(char* s) {
+	uint8_t packet[255];
+	uint8_t l = 0;
+	while (*s != '\0') {
+		packet[l] = *s;
+		l++;
+		s++;
+	}
+	protocol_send_message('D', packet, l);
+}
+
