@@ -3,7 +3,8 @@
 #include "../../../lib/serial1/serial1.h"
 
 void comm_init(){
-	serial_init(9600, 8, 0, 1);
+	serial_init_b(57600);
+	serial1_init_b(57600);
 }
 
 void comm_pilot_write(uint8_t b) {
