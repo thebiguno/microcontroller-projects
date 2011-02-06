@@ -16,6 +16,11 @@ program: $(PROJECT).hex
 	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE)  \
 		-U flash:w:$(PROJECT).hex 
+		
+fuse:
+	$(AVRDUDE) -V -F -p $(MMCU) \
+		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
+		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
 	
 size: build
 	avr-size $(PROJECT).hex
