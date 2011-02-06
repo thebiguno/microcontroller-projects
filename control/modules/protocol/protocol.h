@@ -4,15 +4,7 @@
 #include <math.h>
 #include "../../main.h"
 
-/*
- * Poll pilot for incomming telemetry data which will be forwarded to the pc.
- */
-void protocol_poll_pilot();
-
-/*
- * Poll pc for incomming messages that should be forwarwarded to the pilot.
- */
-void protocol_poll_pc();
+void protocol_poll();
 
 /*
  * Sends a control message to the pilot.
@@ -28,5 +20,7 @@ void protocol_send_reset_attitude();
  * Sends a reset calibrate message to the pilot.
  */
 void protocol_send_calibrate();
+
+void protocol_send_diag(char *);
 
 #endif
