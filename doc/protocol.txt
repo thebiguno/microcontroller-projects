@@ -30,9 +30,7 @@ checksum	1 byte
 
 payloads are
 PID:		36 bytes: p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
-complementary:	12 bytes: k.x, k.y, k.z
-kalman:		24 bytes: qangle.x, qangle.y, qgyro.x, qgyro.y, rangle.x, rangle.y
-mhv:		8 bytes: gain, beta
+kalman:		24 bytes: qangle.x, qgyro.x, rangle.x, qangle.y, qgyro.y, rangle.y
 
 TELEMETRY (<- )
 frame start	1 byte	(0x7e)
@@ -47,6 +45,13 @@ motor C		1 byte
 motor D		1 byte
 flags		1 byte
 checksum	1 byte
+
+DIAG (<- )
+frame start	1 byte	(0x7e)
+length		1 bype (variable)
+cmd			1 byte (D = DIAG)
+string		variable length
+checksum
 
 Length
 The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.
