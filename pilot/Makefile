@@ -6,6 +6,9 @@ F_CPU=20000000
 SOURCES=main.c ../lib/timer/timer_0.c ../lib/shift/shift.c ../lib/ring/ring.c
 AVRDUDE_PROGRAMMER=usbtiny
 
+HFUSE=0x91
+LFUSE=0xF7
+
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
