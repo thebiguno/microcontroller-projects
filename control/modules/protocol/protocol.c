@@ -155,10 +155,8 @@ static void _protocol_poll(uint8_t b, state_t *source, uint8_t dest){
 		if (source->pos == (source->len + 2)) {
 			if (source->chk == 0xff) {
 				if (dest == 0x00) {
-					protocol_send_diag("relay pc->pilot");
 					protocol_send_message_to_pilot(source->api, source->buf, source->len - 1);
 				} else if (dest == 0x01) {
-					protocol_send_diag("relay pilot->pc");
 					protocol_send_message_to_pc(source->api, source->buf, source->len - 1);
 				}
 			} else {
