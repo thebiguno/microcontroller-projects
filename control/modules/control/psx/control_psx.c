@@ -58,10 +58,12 @@ void control_update() {
 	// TODO verify if debouncing is really required or if the psx is debouncing for us
 	// debounce all 16 buttons at once
 	// based on code from http://www.ganssle.com/debouncing-pt2.htm
-	uint8_t i, j;
+	// last 10 readings must all be 1 for the state to be 1, otherwise it's 0
+	uint8_t i;
+	uint16_t j;
 	bounce_state[bounce_index] = psx_buttons();
 	++bounce_index;
-	j = 0xff;
+	j = 0xffff;
 	for (i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
 	state_changed = button_state ^ j;
 	button_state = j;
@@ -113,7 +115,7 @@ control_t control_read_analog(){
 uint16_t control_button_state(){
 	uint16_t buttons = 0x0;
 
-	// power is a relative on/off control, but it's state is not transmitted directly
+	// power is a relative on/off control
 	if (_control_button_state(PSB_START)) buttons |= POWER;
 	
 	// reset and calibrate are one-shot controls
