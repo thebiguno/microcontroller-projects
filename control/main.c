@@ -18,6 +18,7 @@ int main (void){
 
 		protocol_poll();
 
+		control_update();
 		control_t control = control_read_analog();
 		uint16_t buttons = control_read_buttons();
 		
