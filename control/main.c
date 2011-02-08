@@ -1,14 +1,11 @@
-#include <avr/io.h>
-
 #include "main.h"
 
 int main (void){
 	uint8_t mode = MODE_STABLE;
 	uint8_t armed = 0;
-	uint8_t cruise = 0;
     
-	DDRC |= _BV(PINC0);			// set pin to output mode
-	PORTC |= _BV(PINC0);		// start with led off
+	DDRD |= _BV(PIND5);			// set armed pin to output mode
+	PORTD |= _BV(PIND5);		// off
 
 	comm_init();
 
@@ -26,7 +23,7 @@ int main (void){
 		
 		if (buttons & POWER) {
 			armed ^= 0x01;
-			// TODO toggle the armed LED
+			PORTD ^= _BV(PIND5);
 			
 			if (!armed) {
 				// send a kill command
@@ -36,19 +33,6 @@ int main (void){
 				control.yaw = 0;
 				protocol_send_control(control);
 			}
-		}
-		if (buttons & CRUISE) {
-			// TODO toggle the cruise control LED
-			if (cruise == 0) {
-				cruise = control.throttle;
-			} else {
-				cruise = 0;
-			}
-		}
-		
-		if (cruise > 0) {
-			// don't use the throttle input, use the cruise control throttle value
-			control.throttle = cruise;
 		}
 		
 		if (buttons & MODE_AEROBATIC) {
