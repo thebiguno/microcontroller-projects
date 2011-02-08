@@ -41,6 +41,9 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 				volatile uint8_t *command_port, uint8_t command_pin,
 				volatile uint8_t *attention_port, uint8_t attention_pin);
 				
+/* Returns the current state of all 16 buttons */
+uint16_t psx_buttons();
+			
 /* Returns non-zero if the given button is pressed. */
 uint8_t psx_button(uint16_t);
 
