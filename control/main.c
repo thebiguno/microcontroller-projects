@@ -1,6 +1,7 @@
 #include "main.h"
 
 int main (void){
+	uint64_t millis = 0;
 	uint8_t mode = MODE_STABLE;
 	uint8_t armed = 0;
     
@@ -14,17 +15,20 @@ int main (void){
 	protocol_send_diag("controller reset");
 	
 	while (1){
-		// PORTC ^= _BV(PINC0);		// turn led on
+		uint64_t curr_millis = timer_millis();
+		uint64_t dt =+ (curr_millis - millis);
+		millis = curr_millis;
 
 		protocol_poll();
 
 		control_update();
 		control_t control = control_read_analog();
-		uint16_t buttons = control_read_buttons();
+		uint16_t button_state = control_button_state();
+		uint16_t button_changed = control_button_state_changed();
 		
-		if (buttons & POWER) {
+		if (button_changed & POWER && button_state & POWER) { // rising edge, 0->1
 			armed ^= 0x01;
-			PORTD ^= _BV(PIND5);
+			PORTD ^= _BV(PIND5); // toggle
 			
 			if (!armed) {
 				// send a kill command
@@ -36,27 +40,30 @@ int main (void){
 			}
 		}
 		
-		if (buttons & MODE_AEROBATIC) {
+		if (button_state & MODE_AEROBATIC) {
 			mode = MODE_AEROBATIC;
-		} else if (buttons & MODE_STABLE) {
+		} else if (button_state & MODE_STABLE) {
 			mode = MODE_STABLE;
-		} else if (buttons & MODE_HOVER) {
+		} else if (button_state & MODE_HOVER) {
 			mode = MODE_HOVER;
-		} else if (buttons & MODE_STABLE) {
+		} else if (button_state & MODE_STABLE) {
 			mode = MODE_STABLE;
 		}
 		
 		if (!armed) {
-			if (buttons & RESET_ATTITUDE) {
+			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
 				protocol_send_reset_attitude();
 			}
-			if (buttons & CALIBRATE) {
+			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
 				protocol_send_calibrate();
 			}
 		} else {
+			// TODO it would be best to simplify this to two modes
+			// 		5 degree mode and 45 degree mode or something like that
+			
 			if ((mode & MODE_AEROBATIC) == MODE_AEROBATIC) {
 				// aerobatic / 3d mode (no limits on pitch and roll)
-			} else if ((mode & MODE_STABLE) == MODE_SPORT) {
+			} else if ((mode & MODE_SPORT) == MODE_SPORT) {
 				// sport mode (roll limited to 30 deg, pitch limited to 45 deg)
 				control.roll *= 0.3333;
 				control.roll *= 0.5;
@@ -72,7 +79,9 @@ int main (void){
 			}
 		
 			//Send control data
-			protocol_send_control(control);
+			if (dt > 50) {
+				protocol_send_control(control);
+			}
 		}
     }
 }
