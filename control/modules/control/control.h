@@ -41,11 +41,16 @@ void control_update();
  * Returns Throttle, Pitch, Roll, and Yaw
  */
 control_t control_read_analog();
+
 /*
  * Returns the value of all buttons.
  */
-uint16_t control_read_buttons();
+uint16_t control_button_state();
 
+/*
+ * Returns which buttons have changed state since the last call to update.
+ */
+uint16_t control_button_state_changed();
 
 /*
  * Define the position of buttons in the result of the getButtons() method.

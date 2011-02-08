@@ -48,10 +48,14 @@ void control_init(){
 uint16_t button_state; // debounced state of the buttons
 uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array that maintains bounce status
 uint8_t bounce_index; // index into bounce_state
+uint16_t state_changed;
+
+uint8_t osc; // state of the one-shot controls
 
 void control_update() {
 	psx_read_gamepad();
 	
+	// TODO verify if debouncing is really required or if the psx is debouncing for us
 	// debounce all 16 buttons at once
 	// based on code from http://www.ganssle.com/debouncing-pt2.htm
 	uint8_t i, j;
@@ -59,12 +63,16 @@ void control_update() {
 	++bounce_index;
 	j = 0xff;
 	for (i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
+	state_changed = button_state ^ j;
 	button_state = j;
 	if (bounce_index >= BOUNCE_MAX_CHECKS) bounce_index = 0;
 }
 
-static inline uint8_t control_button(uint16_t button) {
+static inline uint8_t _control_button_state(uint16_t button) {
 	return ((~button_state & button) > 0);
+}
+static inline uint8_t _control_button_state_changed(uint16_t button) {
+	return ((~state_changed & button) > 0);
 }
 
 control_t control_read_analog(){
@@ -78,10 +86,10 @@ control_t control_read_analog(){
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
-	uint8_t l1 = control_button(PSB_L1);
-	uint8_t l2 = control_button(PSB_L2);
-	uint8_t r1 = control_button(PSB_R1);
-	uint8_t r2 = control_button(PSB_R2);
+	uint8_t l1 = _control_button_state(PSB_L1);
+	uint8_t l2 = _control_button_state(PSB_L2);
+	uint8_t r1 = _control_button_state(PSB_R1);
+	uint8_t r2 = _control_button_state(PSB_R2);
 
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
@@ -102,17 +110,33 @@ control_t control_read_analog(){
 	return result;
 }
 
-uint16_t control_read_buttons(){
+uint16_t control_button_state(){
 	uint16_t buttons = 0x0;
 
-	if (control_button(PSB_START)) buttons |= POWER;
-	if (control_button(PSB_L3)) buttons |= RESET_ATTITUDE;
-	if (control_button(PSB_R3)) buttons |= CALIBRATE;
-	if (control_button(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
-	if (control_button(PSB_CIRCLE)) buttons |= MODE_SPORT;
-	if (control_button(PSB_CROSS)) buttons |= MODE_STABLE;
-	if (control_button(PSB_TRIANGLE)) buttons |= MODE_HOVER;
+	// power is a relative on/off control, but it's state is not transmitted directly
+	if (_control_button_state(PSB_START)) buttons |= POWER;
+	
+	// reset and calibrate are one-shot controls
+	if (_control_button_state(PSB_L3)) buttons |= RESET_ATTITUDE;
+	if (_control_button_state(PSB_R3)) buttons |= CALIBRATE;
+	
+	// mode buttons are one-shot controls
+	if (_control_button_state(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
+	if (_control_button_state(PSB_CIRCLE)) buttons |= MODE_SPORT;
+	if (_control_button_state(PSB_CROSS)) buttons |= MODE_STABLE;
+	if (_control_button_state(PSB_TRIANGLE)) buttons |= MODE_HOVER;
 
+	return buttons;
+}
+uint16_t control_button_state_changed() {
+	uint16_t buttons = 0x0;
+
+	if (_control_button_state_changed(PSB_START)) buttons |= POWER;
+	if (_control_button_state_changed(PSB_L3)) buttons |= RESET_ATTITUDE;
+	if (_control_button_state_changed(PSB_R3)) buttons |= CALIBRATE;
+	
+	// mode buttons not included because it is safe to read stale values
+	
 	return buttons;
 }
 
