@@ -36,31 +36,52 @@
 #define M_THROTTLE 2 * MAX_THROTTLE / 256
 #define B_THROTTLE MAX_THROTTLE * -1
 
+#define BOUNCE_MAX_CHECKS 10
+
 void control_init(){
 	psx_init(&PORT_PSX_DATA, PIN_PSX_DATA, //Data (Brown)
 			&PORT_PSX_CLOCK, PIN_PSX_CLOCK, //Clock (Blue)
 			&PORT_PSX_COMMAND, PIN_PSX_COMMAND, //Command (Orange)
 			&PORT_PSX_ATTENTION, PIN_PSX_ATTENTION); //Attention (Yellow)
 }
- 
-control_t control_read_analog(){
+
+uint16_t button_state; // debounced state of the buttons
+uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array that maintains bounce status
+uint8_t bounce_index; // index into bounce_state
+
+void control_update() {
 	psx_read_gamepad();
 	
+	// debounce all 16 buttons at once
+	// based on code from http://www.ganssle.com/debouncing-pt2.htm
+	uint8_t i, j;
+	bounce_state[bounce_index] = psx_buttons();
+	++bounce_index;
+	j = 0xff;
+	for (i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
+	button_state = j;
+	if (bounce_index >= BOUNCE_MAX_CHECKS) bounce_index = 0;
+}
+
+static inline uint8_t control_button(uint16_t button) {
+	return ((~button_state & button) > 0);
+}
+
+control_t control_read_analog(){
 	control_t result;
 
-	//Perform scaling into radians.  Currently this is linear, we may want 
-	// to change it to 
+	// Pitch and Roll are Absolute Linear Controls
+	// Perform scaling into radians.  
+	// Currently this is linear, we may want to change it to 
 	result.pitch = M_PITCH * psx_stick(PSS_LY) + B_PITCH;
-
-	//Perform scaling into radians
 	result.roll = M_ROLL * psx_stick(PSS_LX) + B_ROLL;
 	
+	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
-	
-	uint8_t l1 = psx_button(PSB_L1);
-	uint8_t l2 = psx_button(PSB_L2);
-	uint8_t r1 = psx_button(PSB_R1);
-	uint8_t r2 = psx_button(PSB_R2);
+	uint8_t l1 = control_button(PSB_L1);
+	uint8_t l2 = control_button(PSB_L2);
+	uint8_t r1 = control_button(PSB_R1);
+	uint8_t r2 = control_button(PSB_R2);
 
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
@@ -74,24 +95,24 @@ control_t control_read_analog(){
 		else if (r1) result.yaw = R_YAW * 1;    // 7.5 degrees
 	}
 	
-	//Scale into -1 .. 1 range.  We multiply the entire thing by -1 to invert;
+	// Throttle is a Relative Linear Control
+	// Scale into -1 .. 1 range.  We multiply the entire thing by -1 to invert;
 	// up is more throttle, down is reverse throttle
-	result.throttle = (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
+	result.throttle =+ (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
 	return result;
 }
 
 uint16_t control_read_buttons(){
 	uint16_t buttons = 0x0;
 
-	if (psx_button(PSB_START)) buttons |= POWER;
-	if (psx_button(PSB_SELECT)) buttons |= CRUISE;
-	if (psx_button(PSB_L3)) buttons |= RESET_ATTITUDE;
-	if (psx_button(PSB_R3)) buttons |= CALIBRATE;
-	if (psx_button(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
-	if (psx_button(PSB_CIRCLE)) buttons |= MODE_SPORT;
-	if (psx_button(PSB_CROSS)) buttons |= MODE_STABLE;
-	if (psx_button(PSB_TRIANGLE)) buttons |= MODE_HOVER;
-	
+	if (control_button(PSB_START)) buttons |= POWER;
+	if (control_button(PSB_L3)) buttons |= RESET_ATTITUDE;
+	if (control_button(PSB_R3)) buttons |= CALIBRATE;
+	if (control_button(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
+	if (control_button(PSB_CIRCLE)) buttons |= MODE_SPORT;
+	if (control_button(PSB_CROSS)) buttons |= MODE_STABLE;
+	if (control_button(PSB_TRIANGLE)) buttons |= MODE_HOVER;
+
 	return buttons;
 }
 

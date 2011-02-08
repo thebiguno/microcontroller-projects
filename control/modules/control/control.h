@@ -31,14 +31,27 @@ void control_init();
  *
  */
 
+/*
+ * Updates the state of the controller.  
+ * Must be called before the control_read methods in order to obtain fresh data.
+ */
+void control_update();
+
+/*
+ * Returns Throttle, Pitch, Roll, and Yaw
+ */
 control_t control_read_analog();
+/*
+ * Returns the value of all buttons.
+ */
+uint16_t control_read_buttons();
 
 
 /*
  * Define the position of buttons in the result of the getButtons() method.
  */
 #define POWER				0x0001
-#define CRUISE				0x0002
+//#define 					0x0002
 #define RESET_ATTITUDE		0x0004
 #define CALIBRATE			0x0008
 #define MODE_AEROBATIC 		0x0010
@@ -54,9 +67,5 @@ control_t control_read_analog();
 //#define 					0x4000
 //#define 					0x8000
 
-/*
- * Returns the value of all buttons.
- */
-uint16_t control_read_buttons();
 
 #endif
