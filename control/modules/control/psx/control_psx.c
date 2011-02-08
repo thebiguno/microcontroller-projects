@@ -50,8 +50,6 @@ uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array that maintains bounce status
 uint8_t bounce_index; // index into bounce_state
 uint16_t state_changed;
 
-uint8_t osc; // state of the one-shot controls
-
 void control_update() {
 	psx_read_gamepad();
 	
