@@ -65,14 +65,17 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'R':
 			attitude_reset();
 			pid_reset();
+			protocol_send_diag("attitude reset");
 			break;
 		case 'C':
 			gyro_calibrate();
 			accel_calibrate();
+			protocol_send_diag("calibrated");
 			break;
 		case 't':
 			pid_send_tuning();
 			attitude_send_tuning();
+			protocol_send_diag("tuning sent");
 			break;
 		case 'E':
 			_telemetry_enabled = _telemetry_enabled ? 0x00 : 0x01;
@@ -83,21 +86,17 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'W':
 			pid_write_tuning();
 			attitude_write_tuning();
+			protocol_send_diag("tuning persisted");
 			break;
 		case 'p':
 			pid_receive_tuning(_buf);
-			break;
-		case 'c':
-			if (attitude_get_id() == 'C')
-				attitude_receive_tuning(_buf);
+			protocol_send_diag("pid received");
 			break;
 		case 'k':
-			if (attitude_get_id() == 'K')
+			if (attitude_get_id() == 'K') {
 				attitude_receive_tuning(_buf);
-			break;
-		case 'm':
-			if (attitude_get_id() == 'M')
-				attitude_receive_tuning(_buf);
+			}
+			protocol_send_diag("kalman received");
 			break;
 		}
 }
