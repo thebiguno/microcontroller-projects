@@ -40,13 +40,11 @@ int main (void){
 			}
 		}
 		
-		if (button_state & MODE_AEROBATIC) {
-			mode = MODE_AEROBATIC;
+		if (button_state & MODE_SPORT) {
+			protocol_send_diag("sport mode");
+			mode = MODE_SPORT;
 		} else if (button_state & MODE_STABLE) {
-			mode = MODE_STABLE;
-		} else if (button_state & MODE_HOVER) {
-			mode = MODE_HOVER;
-		} else if (button_state & MODE_STABLE) {
+			protocol_send_diag("stable mode");
 			mode = MODE_STABLE;
 		}
 		
@@ -58,22 +56,13 @@ int main (void){
 				protocol_send_calibrate();
 			}
 		} else {
-			// TODO it would be best to simplify this to two modes
-			// 		5 degree mode and 45 degree mode or something like that
-			
-			if ((mode & MODE_AEROBATIC) == MODE_AEROBATIC) {
-				// aerobatic / 3d mode (no limits on pitch and roll)
-			} else if ((mode & MODE_SPORT) == MODE_SPORT) {
-				// sport mode (roll limited to 30 deg, pitch limited to 45 deg)
-				control.roll *= 0.3333;
+			if ((mode & MODE_SPORT) == MODE_SPORT) {
+				// sport mode (roll and roll limited to 45 deg -- 0.785398163 radians)
+				control.pitch *= 0.5;
 				control.roll *= 0.5;
-			} else if ((mode & MODE_HOVER) == MODE_HOVER) {
-				// TODO this mode is pretty useless
-				// hover mode (roll, pitch, yaw = 0)
-				control.pitch = 0;
-				control.roll = 0;
 			} else {
 				// stable mode (pitch and roll limited to 5 deg -- 0.0872664626 radians)
+				control.throttle *= 0.5;
 				control.pitch *= 0.0555;
 				control.roll *= 0.0555;
 			}

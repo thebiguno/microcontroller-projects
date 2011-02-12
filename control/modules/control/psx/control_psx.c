@@ -18,20 +18,20 @@
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/timer/timer.h"
 
-//Pitch limits
-#define MAX_PITCH M_PI / 3				//Max pitch is ¹/3 (60 degrees)
+//Pitch scale to radians
+#define MAX_PITCH M_PI / 3				//Max pitch is PI/3 (60 degrees)
 #define M_PITCH (2 * MAX_PITCH) / 256	//1 unit change in raw pitch is 0.0081... radians change
 #define B_PITCH MAX_PITCH * -1			//Zero value
 
-//Roll limits
-#define MAX_ROLL M_PI / 3				//Max roll is ¹/3 (60 degrees)
+//Roll scale to radians
+#define MAX_ROLL M_PI / 3				//Max roll is PI/3 radians (60 degrees)
 #define M_ROLL (2 * MAX_ROLL) / 256		//1 unit change in raw roll is 0.0081... radians change
 #define B_ROLL MAX_ROLL * -1			//Zero value
 
-//Yaw rate
+//Yaw rate scale to radians
 #define R_YAW M_PI / 24					//7.5 degrees / second / input
 
-//Throttle limits
+//Throttle scale to percentage
 #define MAX_THROTTLE 1.0				//Max throttle is 1
 #define M_THROTTLE 2 * MAX_THROTTLE / 256
 #define B_THROTTLE MAX_THROTTLE * -1
@@ -46,7 +46,7 @@ void control_init(){
 }
 
 uint16_t button_state; // debounced state of the buttons
-uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array that maintains bounce status
+uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array of unbounced button states
 uint8_t bounce_index; // index into bounce_state
 uint16_t state_changed;
 
