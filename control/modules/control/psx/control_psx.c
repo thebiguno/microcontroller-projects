@@ -108,32 +108,25 @@ control_t control_read_analog(){
 }
 
 uint16_t control_button_state(){
-	uint16_t buttons = 0x0;
+	uint16_t state = 0x0;
 
-	// power is a relative on/off control
-	if (_control_button_state(PSB_START)) buttons |= POWER;
-	
-	// reset and calibrate are one-shot controls
-	if (_control_button_state(PSB_L3)) buttons |= RESET_ATTITUDE;
-	if (_control_button_state(PSB_R3)) buttons |= CALIBRATE;
-	
-	// mode buttons are one-shot controls
-	if (_control_button_state(PSB_SQUARE)) buttons |= MODE_AEROBATIC;
-	if (_control_button_state(PSB_CIRCLE)) buttons |= MODE_SPORT;
-	if (_control_button_state(PSB_CROSS)) buttons |= MODE_STABLE;
-	if (_control_button_state(PSB_TRIANGLE)) buttons |= MODE_HOVER;
+	if (_control_button_state(PSB_START)) state |= POWER;
+	if (_control_button_state(PSB_L3)) state |= RESET_ATTITUDE;
+	if (_control_button_state(PSB_R3)) state |= CALIBRATE;
+	if (_control_button_state(PSB_TRIANGLE)) state |= MODE_SPORT;
+	if (_control_button_state(PSB_CROSS)) state |= MODE_STABLE;
 
-	return buttons;
+	return state;
 }
 uint16_t control_button_state_changed() {
-	uint16_t buttons = 0x0;
+	uint16_t changed = 0x0;
 
-	if (_control_button_state_changed(PSB_START)) buttons |= POWER;
-	if (_control_button_state_changed(PSB_L3)) buttons |= RESET_ATTITUDE;
-	if (_control_button_state_changed(PSB_R3)) buttons |= CALIBRATE;
-	
-	// mode buttons not included because it is safe to read stale values
-	
-	return buttons;
+	if (_control_button_state_changed(PSB_START)) changed |= POWER;
+	if (_control_button_state_changed(PSB_L3)) changed |= RESET_ATTITUDE;
+	if (_control_button_state_changed(PSB_R3)) changed |= CALIBRATE;
+	if (_control_button_state_changed(PSB_TRIANGLE)) changed |= MODE_SPORT;
+	if (_control_button_state_changed(PSB_CROSS)) changed |= MODE_STABLE;
+
+	return changed;
 }
 
