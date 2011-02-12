@@ -28,7 +28,7 @@ int main(){
 	//Main program loop
 	while (1) {
 		uint64_t curr_millis = timer_millis();
-		uint64_t dt =+ (curr_millis - millis);
+		uint64_t dt = (curr_millis - millis);
 		millis = curr_millis;
 
 		protocol_poll();
