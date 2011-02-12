@@ -1,23 +1,25 @@
 #include "main.h"
 
 int main (void){
-	uint64_t millis = 0;
+	uint64_t millis = timer_millis();
+	uint16_t t = 0;
 	uint8_t mode = MODE_STABLE;
 	uint8_t armed = 0;
     
-	DDRD |= _BV(PIND5);			// set armed pin to output mode
-	PORTD |= _BV(PIND5);		// off
-
 	comm_init();
 
 	control_init();
 
 	protocol_send_diag("controller reset");
 	
+	PORTD &= ~_BV(PIND5);		// off
+	DDRD |= _BV(PIND5);			// set armed pin to output mode
+
 	while (1){
 		uint64_t curr_millis = timer_millis();
-		uint64_t dt =+ (curr_millis - millis);
+		uint16_t dt = curr_millis - millis; // this is how long the last loop took
 		millis = curr_millis;
+		t += dt;
 
 		protocol_poll();
 
@@ -30,7 +32,10 @@ int main (void){
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
-			if (!armed) {
+			if (armed) {
+				protocol_send_diag("armed");
+				t = 0;
+			} else {
 				protocol_send_diag("disarmed");
 				// send a kill command
 				control.throttle = 0;
@@ -38,30 +43,19 @@ int main (void){
 				control.roll = 0;
 				control.yaw = 0;
 				protocol_send_control(control);
-			} else {
-				protocol_send_diag("armed");
 			}
 		}
 		
-		if (button_state & MODE_SPORT) {
+		if ((button_state & MODE_SPORT) && (button_changed & MODE_SPORT)) {
 			protocol_send_diag("sport mode");
 			mode = MODE_SPORT;
-		} else if (button_state & MODE_STABLE) {
+		} else if ((button_state & MODE_STABLE) && (button_changed & MODE_STABLE)) {
 			protocol_send_diag("stable mode");
 			mode = MODE_STABLE;
 		}
 		
-		if (!armed) {
-			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
-				protocol_send_diag("reset attitude");
-				protocol_send_reset_attitude();
-			}
-			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
-				protocol_send_diag("calibrate");
-				protocol_send_calibrate();
-			}
-		} else {
-			if ((mode & MODE_SPORT) == MODE_SPORT) {
+		if (armed) {
+			if (mode & MODE_SPORT) {
 				// sport mode (roll and roll limited to 45 deg -- 0.785398163 radians)
 				control.pitch *= 0.5;
 				control.roll *= 0.5;
@@ -73,9 +67,19 @@ int main (void){
 			}
 		
 			//Send control data
-			if (dt > 50) {
-				protocol_send_diag("*");
+			if (t > 50) {
+				protocol_send_diag("!");
 				protocol_send_control(control);
+				t = 0;
+			}
+		} else {
+			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
+				protocol_send_diag("reset attitude");
+				protocol_send_reset_attitude();
+			}
+			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
+				protocol_send_diag("calibrate");
+				protocol_send_calibrate();
 			}
 		}
     }
