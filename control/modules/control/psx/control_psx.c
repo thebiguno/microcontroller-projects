@@ -45,31 +45,15 @@ void control_init(){
 			&PORT_PSX_ATTENTION, PIN_PSX_ATTENTION); //Attention (Yellow)
 }
 
-uint16_t button_state; // debounced state of the buttons
-uint16_t bounce_state[BOUNCE_MAX_CHECKS]; // array of unbounced button states
-uint8_t bounce_index; // index into bounce_state
-uint16_t state_changed;
+static uint16_t button_state = 0;
+static uint16_t button_changed = 0;
 
 void control_update() {
 	psx_read_gamepad();
 	
-	// TODO verify if debouncing is really required or if the psx is debouncing for us
-	// debounce all 16 buttons at once
-	// based on code from http://www.ganssle.com/debouncing-pt2.htm
-	// last 10 readings must all be 1 for the state to be 1, otherwise it's 0
-	uint16_t j = 0xffff;
-	bounce_state[bounce_index++] = psx_buttons();
-	for (uint8_t i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
-	state_changed = button_state ^ j;
-	button_state = j;
-	if (bounce_index >= BOUNCE_MAX_CHECKS) bounce_index = 0;
-}
-
-static inline uint8_t _control_button_state(uint16_t button) {
-	return ((button_state & button) > 0);
-}
-static inline uint8_t _control_button_state_changed(uint16_t button) {
-	return ((state_changed & button) > 0);
+	uint16_t read = psx_buttons();
+	button_changed = button_state ^ read;
+	button_state = read;
 }
 
 control_t control_read_analog(){
@@ -83,10 +67,10 @@ control_t control_read_analog(){
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
-	uint8_t l1 = _control_button_state(PSB_L1);
-	uint8_t l2 = _control_button_state(PSB_L2);
-	uint8_t r1 = _control_button_state(PSB_R1);
-	uint8_t r2 = _control_button_state(PSB_R2);
+	uint8_t l1 = button_state & PSB_L1;
+	uint8_t l2 = button_state & PSB_L2;
+	uint8_t r1 = button_state & PSB_R1;
+	uint8_t r2 = button_state & PSB_R2;
 
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
@@ -108,24 +92,24 @@ control_t control_read_analog(){
 }
 
 uint16_t control_button_state(){
-	uint16_t state = 0x0;
+	uint16_t state = 0;
 
-	if (_control_button_state(PSB_START)) state |= POWER;
-	if (_control_button_state(PSB_L3)) state |= RESET_ATTITUDE;
-	if (_control_button_state(PSB_R3)) state |= CALIBRATE;
-	if (_control_button_state(PSB_TRIANGLE)) state |= MODE_SPORT;
-	if (_control_button_state(PSB_CROSS)) state |= MODE_STABLE;
+	if (button_state & PSB_START) state |= POWER;
+	if (button_state & PSB_L3) state |= RESET_ATTITUDE;
+	if (button_state & PSB_R3) state |= CALIBRATE;
+	if (button_state & PSB_TRIANGLE) state |= MODE_SPORT;
+	if (button_state & PSB_CROSS) state |= MODE_STABLE;
 
 	return state;
 }
 uint16_t control_button_state_changed() {
-	uint16_t changed = 0x0;
+	uint16_t changed = 0;
 
-	if (_control_button_state_changed(PSB_START)) changed |= POWER;
-	if (_control_button_state_changed(PSB_L3)) changed |= RESET_ATTITUDE;
-	if (_control_button_state_changed(PSB_R3)) changed |= CALIBRATE;
-	if (_control_button_state_changed(PSB_TRIANGLE)) changed |= MODE_SPORT;
-	if (_control_button_state_changed(PSB_CROSS)) changed |= MODE_STABLE;
+	if (button_changed & PSB_START) changed |= POWER;
+	if (button_changed & PSB_L3) changed |= RESET_ATTITUDE;
+	if (button_changed & PSB_R3) changed |= CALIBRATE;
+	if (button_changed & PSB_TRIANGLE) changed |= MODE_SPORT;
+	if (button_changed & PSB_CROSS) changed |= MODE_STABLE;
 
 	return changed;
 }
