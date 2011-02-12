@@ -57,22 +57,19 @@ void control_update() {
 	// debounce all 16 buttons at once
 	// based on code from http://www.ganssle.com/debouncing-pt2.htm
 	// last 10 readings must all be 1 for the state to be 1, otherwise it's 0
-	uint8_t i;
-	uint16_t j;
-	bounce_state[bounce_index] = psx_buttons();
-	++bounce_index;
-	j = 0xffff;
-	for (i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
+	uint16_t j = 0xffff;
+	bounce_state[bounce_index++] = psx_buttons();
+	for (uint8_t i = 0; i < BOUNCE_MAX_CHECKS; i++) j = j & bounce_state[i];
 	state_changed = button_state ^ j;
 	button_state = j;
 	if (bounce_index >= BOUNCE_MAX_CHECKS) bounce_index = 0;
 }
 
 static inline uint8_t _control_button_state(uint16_t button) {
-	return ((~button_state & button) > 0);
+	return ((button_state & button) > 0);
 }
 static inline uint8_t _control_button_state_changed(uint16_t button) {
-	return ((~state_changed & button) > 0);
+	return ((state_changed & button) > 0);
 }
 
 control_t control_read_analog(){
