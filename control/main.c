@@ -26,17 +26,20 @@ int main (void){
 		uint16_t button_state = control_button_state();
 		uint16_t button_changed = control_button_state_changed();
 		
-		if (button_changed & POWER && button_state & POWER) { // rising edge, 0->1
+		if ((button_state & POWER) && (button_changed & POWER)) { // rising edge, 0->1
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
 			if (!armed) {
+				protocol_send_diag("disarmed");
 				// send a kill command
 				control.throttle = 0;
 				control.pitch = 0;
 				control.roll = 0;
 				control.yaw = 0;
 				protocol_send_control(control);
+			} else {
+				protocol_send_diag("armed");
 			}
 		}
 		
@@ -50,9 +53,11 @@ int main (void){
 		
 		if (!armed) {
 			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
+				protocol_send_diag("reset attitude");
 				protocol_send_reset_attitude();
 			}
 			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
+				protocol_send_diag("calibrate");
 				protocol_send_calibrate();
 			}
 		} else {
@@ -69,6 +74,7 @@ int main (void){
 		
 			//Send control data
 			if (dt > 50) {
+				protocol_send_diag("*");
 				protocol_send_control(control);
 			}
 		}
