@@ -143,12 +143,13 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 
 
 uint16_t psx_buttons() {
-	return *(uint16_t*)(_data + 3);
+	uint16_t buttons = *(uint16_t*)(_data + 3); //Get 2 bytes, comprising data positions 3 and 4.
+	return ~buttons;
 }
 
 uint8_t psx_button(uint16_t button) {
-	uint16_t buttons = *(uint16_t*)(_data + 3); //Get 2 bytes, comprising data positions 3 and 4.
-	return ((~buttons & button) > 0);
+	uint16_t buttons = psx_buttons();
+	return ((buttons & button) > 0);
 }
 
 uint8_t psx_stick(unsigned int stick) {
