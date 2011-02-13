@@ -87,7 +87,7 @@ control_t control_read_analog(){
 	// Throttle is a Relative Linear Control
 	// Scale into -1 .. 1 range.  We multiply the entire thing by -1 to invert;
 	// up is more throttle, down is reverse throttle
-	result.throttle =+ (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
+	result.throttle = (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
 	return result;
 }
 
