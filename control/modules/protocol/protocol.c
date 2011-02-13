@@ -77,12 +77,12 @@ static void protocol_send_message_to_pilot(uint8_t cmd, uint8_t *bytes, uint8_t 
 }
 
 void protocol_send_control(control_t control){
-	uint8_t packet[18];
-	convert_double_to_bytes(control.throttle, packet, 0);
-	convert_double_to_bytes(control.pitch, packet, 4);
-	convert_double_to_bytes(control.roll, packet, 8);
-	convert_double_to_bytes(control.yaw, packet, 12);
-	protocol_send_message_to_pilot('C', packet, 16);
+	uint8_t packet[4];
+	packet[0] = convert_percent_to_byte(control.throttle);
+	packet[1] = convert_radian_to_byte(control.pitch);
+	packet[2] = convert_radian_to_byte(control.roll);
+	packet[3] = convert_radian_to_byte(control.yaw);
+	protocol_send_message_to_pilot('A', packet, 4);
 }
 void protocol_send_kill() {
 	uint8_t packet[4];
