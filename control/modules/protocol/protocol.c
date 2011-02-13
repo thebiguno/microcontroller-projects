@@ -84,6 +84,14 @@ void protocol_send_control(control_t control){
 	convert_double_to_bytes(control.yaw, packet, 12);
 	protocol_send_message_to_pilot('C', packet, 16);
 }
+void protocol_send_kill() {
+	uint8_t packet[4];
+	packet[0] = convert_percent_to_byte(0);
+	packet[1] = convert_percent_to_byte(0);
+	packet[2] = convert_percent_to_byte(0);
+	packet[3] = convert_percent_to_byte(0);
+	protocol_send_message_to_pilot('M', packet, 4);
+}
 
 void protocol_send_reset_attitude(){
 	protocol_send_message_to_pilot('R', dummy, 0);

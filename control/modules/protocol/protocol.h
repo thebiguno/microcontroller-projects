@@ -10,6 +10,7 @@ void protocol_poll();
  * Sends a control message to the pilot.
  */
 void protocol_send_control(control_t control);
+void protocol_send_kill();
 
 /*
  * Sends a reset attitude message to the pilot.
