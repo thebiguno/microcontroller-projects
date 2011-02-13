@@ -25,19 +25,23 @@ int main(){
 	
 	protocol_send_diag("pilot reset");
 	
+	uint16_t t = 0;
+	double throttle = 0.0;
+	
 	//Main program loop
 	while (1) {
 		uint64_t curr_millis = timer_millis();
-		uint64_t dt = (curr_millis - millis);
+		uint64_t dt = curr_millis - millis;
 		millis = curr_millis;
-
+		t += dt;
+		
 		protocol_poll();
 		
 		double flight_command[4];
 		uint8_t cmd_type = protocol_receive_flight_command(flight_command);
 		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed = cmd_type;
-			dt = 0;
+			t = 0;
 		}
 
 		vector_t g = gyro_get();
@@ -48,11 +52,11 @@ int main(){
 		if (armed == 'A') {							// armed by attitude command
 			status_set(STATUS_ARMED);
 			
-			double throttle = flight_command[0];
+			throttle += flight_command[0];
 			sp.x = flight_command[1];
 			sp.y = flight_command[2];
 			sp.z = flight_command[3];
-			if (dt > 3000) {
+			if (t > 3000) {
 				status_clear(STATUS_ARMED);
 				
 				// level out 
@@ -62,7 +66,7 @@ int main(){
 				
 				// NOTE: this will go from full throttle to off in about two minutes
 				throttle_back += dt;
-				if (throttle_back >= 500) {
+				if (throttle > 0 && throttle_back >= 500) {
 					// scale back throttle
 					throttle_back = 0;
 					throttle--;
@@ -79,7 +83,11 @@ int main(){
 				motor[i] = flight_command[i];
 			}
 			
-			if (dt > 3000) {
+			if (motor[0] == 0 && motor[1] == 0 && motor[2] == 0 && motor[3] == 0) {
+				status_clear(STATUS_ARMED);
+			}
+			
+			if (t > 3000) {
 				status_clear(STATUS_ARMED);
 
 				// kill the motors completely
@@ -89,6 +97,7 @@ int main(){
 			}
 			pid_reset();							// since pid isn't used for motor commands, take this opportunity to clear any accumulated error
 			esc_set(motor);
+			throttle = 0;
 		}
 
 		if (curr_millis - last_telemetry > 75){
