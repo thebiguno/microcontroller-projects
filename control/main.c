@@ -1,15 +1,16 @@
+//#include <stdio.h>
 #include "main.h"
 
 int main (void){
+	timer_init(); 
+	comm_init();
+	control_init();
+
 	uint64_t millis = timer_millis();
 	uint16_t t = 0;
 	uint8_t mode = MODE_STABLE;
 	uint8_t armed = 0;
     
-	comm_init();
-
-	control_init();
-
 	protocol_send_diag("controller reset");
 	
 	PORTD &= ~_BV(PIND5);		// off
@@ -37,12 +38,7 @@ int main (void){
 				t = 0;
 			} else {
 				protocol_send_diag("disarmed");
-				// send a kill command
-				control.throttle = 0;
-				control.pitch = 0;
-				control.roll = 0;
-				control.yaw = 0;
-				protocol_send_control(control);
+				protocol_send_kill();
 			}
 		}
 		
@@ -68,7 +64,9 @@ int main (void){
 		
 			//Send control data
 			if (t > 50) {
-				protocol_send_diag("!");
+//				char buf[50];
+//				sprintf(buf, "%.3f %.3f %.3f %.3f", control.throttle, control.pitch, control.roll, control.yaw);
+//				protocol_send_diag(buf);
 				protocol_send_control(control);
 				t = 0;
 			}
