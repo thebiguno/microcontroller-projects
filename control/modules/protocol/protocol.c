@@ -78,7 +78,7 @@ static void protocol_send_message_to_pilot(uint8_t cmd, uint8_t *bytes, uint8_t 
 
 void protocol_send_control(control_t control){
 	uint8_t packet[4];
-	packet[0] = convert_percent_to_byte(control.throttle);
+	packet[0] = convert_throttle_to_byte(control.throttle);
 	packet[1] = convert_radian_to_byte(control.pitch);
 	packet[2] = convert_radian_to_byte(control.roll);
 	packet[3] = convert_radian_to_byte(control.yaw);

@@ -167,7 +167,7 @@ void protocol_poll()
 uint8_t protocol_receive_flight_command(double values[])
 {
 	if (_last_flight_cmd == 'A') {
-		values[0] = convert_byte_to_percent(_last_flight_val[0]);
+		values[0] = convert_byte_to_throttle(_last_flight_val[0]);
 		values[1] = convert_byte_to_radian(_last_flight_val[1]);
 		values[2] = convert_byte_to_radian(_last_flight_val[2]);
 		values[3] = convert_byte_to_radian(_last_flight_val[3]);
