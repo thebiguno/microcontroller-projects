@@ -41,3 +41,10 @@ double convert_bytes_to_double(uint8_t *buffer, uint8_t offset)
     }
     return converter.d;
 }
+
+double convert_byte_to_throttle(int8_t x) {
+	return (0.007874015748031f * x) - 1;
+}
+uint8_t convert_throttle_to_byte(double x) {
+	return (int8_t) (127 * x) + 127;
+}

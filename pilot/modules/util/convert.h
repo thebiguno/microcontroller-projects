@@ -12,4 +12,7 @@ uint8_t convert_radian_to_byte(double x);
 double convert_byte_to_percent(uint8_t x);
 uint8_t convert_percent_to_byte(double x);
 
+double convert_byte_to_throttle(int8_t x);
+uint8_t convert_throttle_to_byte(double x);
+
 #endif
