@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 #include "main.h"
 
 int main (void){
@@ -64,9 +64,9 @@ int main (void){
 		
 			//Send control data
 			if (t > 50) {
-//				char buf[50];
-//				sprintf(buf, "%.3f %.3f %.3f %.3f", control.throttle, control.pitch, control.roll, control.yaw);
-//				protocol_send_diag(buf);
+				char buf[50];
+				snprintf(buf, 50, "%d %d %d %d", (int) (control.throttle * 100), (int) (control.pitch * 57.2957795), (int) (control.roll * 57.2957795), (int) (control.yaw * 57.2957795));
+				protocol_send_diag(buf);
 				protocol_send_control(control);
 				t = 0;
 			}

@@ -52,7 +52,7 @@ int main(){
 		if (armed == 'A') {							// armed by attitude command
 			status_set(STATUS_ARMED);
 			
-			throttle += flight_command[0];
+			throttle = flight_command[0];
 			sp.x = flight_command[1];
 			sp.y = flight_command[2];
 			sp.z = flight_command[3];
