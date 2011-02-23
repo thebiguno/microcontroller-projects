@@ -68,6 +68,8 @@ EMPTY_INTERRUPT(TIM0_COMPB_vect)
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega328__)     || \
+	defined(__AVR_ATmega328P__)    || \	
 	defined(__AVR_ATmega324P__)    || \
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \

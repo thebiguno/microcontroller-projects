@@ -13,6 +13,8 @@
 	#define ANALOG_INTERNAL	2
 	//TODO Add support for REFS2
 #elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega328__)     || \
+	defined(__AVR_ATmega328P__)    || \
 	defined(__AVR_ATmega324P__)    || \
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \
