@@ -29,14 +29,12 @@
 #define B_ROLL MAX_ROLL * -1			//Zero value
 
 //Yaw rate scale to radians
-#define R_YAW M_PI / 24					//7.5 degrees / second / input
+#define R_YAW M_PI / 24.0				//7.5 degrees / second / input
 
-//Throttle scale to percentage
-#define MAX_THROTTLE 1.0				//Max throttle is 1
-#define M_THROTTLE 2 * MAX_THROTTLE / 256
+//Throttle scale to a rate of change per second
+#define MAX_THROTTLE 0.1				//Max throttle rate of change is 10% / second
+#define M_THROTTLE (2 * MAX_THROTTLE) / 256
 #define B_THROTTLE MAX_THROTTLE * -1
-
-#define BOUNCE_MAX_CHECKS 10
 
 void control_init(){
 	psx_init(&PORT_PSX_DATA, PIN_PSX_DATA, //Data (Brown)
@@ -56,14 +54,19 @@ void control_update() {
 	button_state = read;
 }
 
-control_t control_read_analog(){
+control_t control_read_analog() {
+	// this code assumes "mode 2" which is the standard in North America
+	// left stick = throttle
+	// right stick = pitch / roll
+	// however since the ps2 stick is spring loaded the throttle stick is a relative control rather than absolute
+	// and the yaw controls are on the top buttons rather than on the throttle stick
 	control_t result;
 
 	// Pitch and Roll are Absolute Linear Controls
 	// Perform scaling into radians.  
 	// Currently this is linear, we may want to change it to 
-	result.pitch = M_PITCH * psx_stick(PSS_LY) + B_PITCH;
-	result.roll = M_ROLL * psx_stick(PSS_LX) + B_ROLL;
+	result.pitch = M_PITCH * psx_stick(PSS_RY) + B_PITCH;
+	result.roll = M_ROLL * psx_stick(PSS_RX) + B_ROLL;
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
@@ -74,20 +77,22 @@ control_t control_read_analog(){
 
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
-		if (l1 && l2) result.yaw = R_YAW * -6;  // -45 degrees
-		else if (l2) result.yaw = R_YAW * -3;   // -22.5 degrees
-		else if (l1) result.yaw = R_YAW * -1;   // -7.5 degrees
+		if (l1 && l2) result.yaw = R_YAW * -6.0;  // -45 degrees/second
+		else if (l2) result.yaw = R_YAW * -3.0;   // -22.5 degrees/second
+		else if (l1) result.yaw = R_YAW * -1.0;   // -7.5 degrees/second
 	}
 	else if (!l1 && !l2){
-		if (r1 && r2) result.yaw = R_YAW * 6;   // 45 degrees
-		else if (r2) result.yaw = R_YAW * 3;    // 22.5 degrees
-		else if (r1) result.yaw = R_YAW * 1;    // 7.5 degrees
+		if (r1 && r2) result.yaw = R_YAW * 6.0;   // 45 degrees/second
+		else if (r2) result.yaw = R_YAW * 3.0;    // 22.5 degrees/second
+		else if (r1) result.yaw = R_YAW * 1.0;    // 7.5 degrees/second
 	}
 	
 	// Throttle is a Relative Linear Control
-	// Scale into -1 .. 1 range.  We multiply the entire thing by -1 to invert;
-	// up is more throttle, down is reverse throttle
-	result.throttle = (M_THROTTLE * psx_stick(PSS_RY) + B_THROTTLE) * -1;
+	// Scale into -1 .. 1 range.  Multiply by -1 to invert; up is more throttle, down is reverse throttle
+	// Don't let the throttle exceed 80%; this leaves some overhead to pitch and roll and "full" throttle
+	double delta = (M_THROTTLE * psx_stick(PSS_LY) + B_THROTTLE) * -1 * (dt * 0.001);
+	result.throttle = result.throttle + delta;
+	if (result.throttle > .8) result.throttle = .8;
 	return result;
 }
 

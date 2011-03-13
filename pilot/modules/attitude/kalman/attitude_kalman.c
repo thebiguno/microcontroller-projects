@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "../../../main.h"
-#include "../../../lib/timer/timer.h"
 #include "../../protocol/protocol.h"
 #include "../../persist/persist.h"
 #include "../../util/convert.h"
@@ -22,8 +21,6 @@ typedef struct kalman {
 
 static kalman_t state_x;
 static kalman_t state_y;
-
-static uint64_t millis;
 
 void attitude_read_tuning() {
 	uint8_t data[24];
@@ -63,10 +60,6 @@ void attitude_write_tuning() {
 }
 
 void attitude_init(vector_t gyro, vector_t accel) {
-	timer_init();
-	
-	millis = timer_millis();
-
 	attitude_read_tuning();
 }
 
@@ -93,16 +86,11 @@ void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 }
 
 vector_t attitude(vector_t gyro, vector_t accel) {
-	uint64_t curr_millis = timer_millis();
-	uint64_t dtm = curr_millis - millis;
-
 	// if there is no elapsed time (ms), return the last known angle
-	if (dtm > 0) {
-		double dt = dtm * 0.001;
-		millis = curr_millis;
-
-		_attitude(gyro.x, accel.x, &state_x, dt);
-		_attitude(gyro.y, accel.y, &state_y, dt);
+	if (dt > 0) {
+		uint16_t dt_s = dt * 0.001;
+		_attitude(gyro.x, accel.x, &state_x, dt_s);
+		_attitude(gyro.y, accel.y, &state_y, dt_s);
 	}
 	
 	static vector_t angle;

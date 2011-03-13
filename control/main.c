@@ -18,7 +18,7 @@ int main (void){
 
 	while (1){
 		uint64_t curr_millis = timer_millis();
-		uint16_t dt = curr_millis - millis; // this is how long the last loop took
+		dt = curr_millis - millis; // this is how long the last loop took
 		millis = curr_millis;
 		t += dt;
 

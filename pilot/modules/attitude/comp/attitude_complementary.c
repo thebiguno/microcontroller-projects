@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "../../../main.h"
-#include "../../../lib/timer/timer.h"
 
 #define DEG_PT5 0.00872664626
 #define DEG_30 1.570796326794897
@@ -16,8 +15,6 @@ static vector_t k;         // tuning paramater -- bandwidth of filter
 uint64_t millis;
 
 void attitude_init(vector_t gyro, vector_t accel) {
-    millis = timer_millis();
-    
     // TODO read this from EEPROM
     k.x = 1;
     k.y = 1;
@@ -47,12 +44,10 @@ void _attitude(double *gyro, double *_accel, double *_accel_z, double *_int_y1, 
 }
 
 vector_t attitude(vector_t gyro, vector_t accel) {
-    uint64_t curr_millis = timer_millis();
-    double dt = (curr_millis - millis) * 0.001;
-    millis = curr_millis;
+    double dt_s = dt * 0.001;
 
-    _attitude(&gyro.x, &accel.x, &accel.z, &int_y1.x, &filter.x, k.x, dt);
-    _attitude(&gyro.y, &accel.y, &accel.z, &int_y1.y, &filter.y, k.y, dt);
+    _attitude(&gyro.x, &accel.x, &accel.z, &int_y1.x, &filter.x, k.x, dt_s);
+    _attitude(&gyro.y, &accel.y, &accel.z, &int_y1.y, &filter.y, k.y, dt_s);
     
     return filter;
 }

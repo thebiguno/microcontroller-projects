@@ -24,6 +24,8 @@ typedef struct control {
     double throttle;
 } control_t;
 
+uint16_t dt;
+
 #include "modules/control/control.h"
 #include "modules/comm/communication.h"
 #include "modules/protocol/protocol.h"
