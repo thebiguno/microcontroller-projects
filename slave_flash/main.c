@@ -11,11 +11,11 @@
 #define STATUS_LED_PIN			PINB0
 
 //Analog pin
-#define ANALOG_PIN				0
+#define ANALOG_PIN				1
 
 //XSYNC pin
 #define XSYNC_PORT				PORTB
-#define XSYNC_PIN				PINB3
+#define XSYNC_PIN				PINB1
 
 //The amount of delta required to register a flash.
 #define FLASH_THRESHOLD 		40
