@@ -9,6 +9,8 @@
 
 #include "lib/serial/serial.h"
 
+#define BAUD 57600
+
 int main (void){
 	serial_init_b(BAUD);
 		
