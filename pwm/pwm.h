@@ -27,10 +27,6 @@
  *    ....
  *    ports[5] = &PORTD;
  *
- *    volatile uint8_t *ddrs[8];
- *    ddrs[0] = &DDRB;
- *    ....
- *
  *    uint8_t pins[8];
  *    pins[0] = 1;
  *    ....
@@ -65,7 +61,7 @@ void pwm_set_period(uint32_t period);
 
 /*
  * Turns off the PWM generator and stops the timer clock.  Does not clear any config
- * variables.  You can turn PWM back on again using the pwm_on() function.
+ * variables.  You can turn PWM back on again using the pwm_start() function.
  */
 void pwm_stop();
 
