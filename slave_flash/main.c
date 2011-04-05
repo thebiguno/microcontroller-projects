@@ -7,27 +7,27 @@
 #include "lib/serial/serial.h"
 
 //Status LED
-#define STATUS_LED_PORT			PORTD
-#define STATUS_LED_PIN			PIND5
+#define STATUS_LED_PORT			PORTB
+#define STATUS_LED_PIN			PINB0
 
 //Analog pin
 #define ANALOG_PIN				0
 
 //XSYNC pin
 #define XSYNC_PORT				PORTB
-#define XSYNC_PIN				PINB1
+#define XSYNC_PIN				PINB3
 
 //The amount of delta required to register a flash.
 #define FLASH_THRESHOLD 		40
 //The amount of delta required to re-calibrate ambient
-#define AMBIENT_THRESHOLD		-10
+#define AMBIENT_THRESHOLD		-8
 
 //The time after the last command pulse before the 'fire' command happens; in milli seconds.
-#define MIN_FIRE_PULSE_DELAY	45
+#define MIN_FIRE_PULSE_DELAY	40
 #define MAX_FIRE_PULSE_DELAY	100
 
 //The maximum length of a pulse.  If we read one longer than this, then we will re-adjust
-// ambient, as it is likely just than someone has turned the lights on.
+// ambient, as it is likely just than someone has just turned the lights on.
 #define MAX_PULSE_WIDTH			500
 //The maximum count of pulses.  If we exceed this, we will re-adjust ambient, as it is likely
 // that we are just sitting on the edge of the flash threshold
@@ -43,11 +43,21 @@ uint8_t pulse_count = 0;		//How many pulses have happened so far
 	
 uint64_t status_time = 0;	//Start time of the current pulse
 uint64_t pulse_end_time = 0;	//End time of the last pulse
-uint64_t time = 0;				//Current time (calculated at start of loop)	
+uint64_t time = 0;				//Current time (calculated at start of loop)
+uint64_t last_heartbeat = 0;	//Last heartbeat (flashes every second)
 
 #ifdef DEBUG
 char temp[64];
 #endif
+
+static inline void pulse_led(uint8_t count){
+	for (uint8_t i = 0; i <= count; i++){
+		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
+		_delay_ms(5);
+		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
+		_delay_ms(100);
+	}
+}
 
 static inline void fire_flash(){
 	XSYNC_PORT |= _BV(XSYNC_PIN);
@@ -55,12 +65,8 @@ static inline void fire_flash(){
 	XSYNC_PORT &= ~_BV(XSYNC_PIN);
 	
 	//Pulse status 10 times to confirm flash.
-	for (uint8_t i = 0; i <= 10; i++){
-		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
-		_delay_ms(5);
-		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
-		_delay_ms(20);
-	}
+	pulse_led(10);
+
 	_delay_ms(100);
 }
 
@@ -78,6 +84,11 @@ static inline void read_ambient(){
 		analog_read_a(&ambient);
 		_delay_ms(1);
 		sum += ambient;
+#ifdef DEBUG			
+		sprintf(temp, "Ambient reading %d: %d\n\r", i, ambient);
+		serial_write_s(temp);
+#endif	
+
 	}
 	
 	//Divide by 16 (2^4)
@@ -119,21 +130,26 @@ int main (void){
 
 
 	//Flash LED five times to confirm we are up and running
-	for (uint8_t i = 0; i <= 5; i++){
-		STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
-		_delay_ms(10);
-		STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
-		_delay_ms(50);
-	}
+	pulse_led(5);
 
 	//Main program loop
 	while (1){
 		//Current time in milliseconds
 		time = timer_millis();
+		
+		//Flash heartbeat on every second
+		if (STATUS_LED_PORT & _BV(STATUS_LED_PIN) && last_heartbeat + 10 < time){
+			STATUS_LED_PORT &= ~_BV(STATUS_LED_PIN);
+			last_heartbeat = time;
+		}
+		else if (last_heartbeat + 5000 < time){
+			STATUS_LED_PORT |= _BV(STATUS_LED_PIN);
+			last_heartbeat = time;
+		}
 
 #ifdef DEBUG
 		//Print status / heartbeat every second
-		if (time - status_time > 1000000){
+		if (time - status_time > 1000){
 			sprintf(temp, "Ambient: %d; Analog: %d; Flash: %d\n\r", ambient, analog, flash);
 			serial_write_s(temp);
 			status_time = time;
@@ -165,7 +181,8 @@ int main (void){
 		if (flash < AMBIENT_THRESHOLD
 			|| pulse_count > MAX_PULSE_COUNT){
 #ifdef DEBUG				
-			serial_write_s("Flash is negative...\n\r");
+			sprintf(temp, "Flash %d is negative...\n\r", flash);
+			serial_write_s(temp);
 #endif
 			read_ambient();
 		}
