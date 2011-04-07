@@ -72,10 +72,10 @@ control_t control_read_analog() {
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
-	uint8_t l1 = button_state & PSB_L1;
-	uint8_t l2 = button_state & PSB_L2;
-	uint8_t r1 = button_state & PSB_R1;
-	uint8_t r2 = button_state & PSB_R2;
+	uint16_t l1 = button_state & PSB_L1;
+	uint16_t l2 = button_state & PSB_L2;
+	uint16_t r1 = button_state & PSB_R1;
+	uint16_t r2 = button_state & PSB_R2;
 
 	//TODO these numbers are arbitrary, change them to actually make sense
 	if (!r1 && !r2){
