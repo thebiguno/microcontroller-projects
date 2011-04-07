@@ -85,10 +85,10 @@ void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 	state->p11 -= k1 * state->p01;
 }
 
-vector_t attitude(vector_t gyro, vector_t accel) {
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt) {
 	// if there is no elapsed time (ms), return the last known angle
 	if (dt > 0) {
-		uint16_t dt_s = dt * 0.001;
+		double dt_s = dt * 0.001;
 		_attitude(gyro.x, accel.x, &state_x, dt_s);
 		_attitude(gyro.y, accel.y, &state_y, dt_s);
 	}

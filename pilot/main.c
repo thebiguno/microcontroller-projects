@@ -46,8 +46,7 @@ int main(){
 
 		vector_t g = gyro_get();
 		vector_t a = accel_get();
-		vector_t pv = attitude(g, a);				// compute PID process variable for x and y using Kalman
-		pv.z = g.z;									// for z do PID directly on the gyro reading
+		vector_t pv = attitude(g, a, dt);			// compute PID process variable for x and y using Kalman
 
 		if (armed == 'A') {							// armed by attitude command
 			status_set(STATUS_ARMED);
@@ -62,7 +61,7 @@ int main(){
 				// level out 
 				sp.x = 0;
 				sp.y = 0;
-				sp.y = 0;
+				sp.z = 0;
 				
 				// NOTE: this will go from full throttle to off in about two minutes
 				throttle_back += dt;

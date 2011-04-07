@@ -14,9 +14,9 @@ void attitude_init(vector_t gyro, vector_t accel);
 void attitude_reset();
 
 /*
- * Given gyro_data in rad/s, accel_data in m/s/s, and delta t in seconds, return an attitude in radians (relative to the reset state)
+ * Given gyro_data in rad/s, accel_data in m/s/s, and delta t in ms, return an attitude in radians (relative to the reset state)
  */
-vector_t attitude(vector_t gyro, vector_t accel);
+vector_t attitude(vector_t gyro, vector_t accel, uint16_t dt);
 
 uint8_t attitude_get_id();
 

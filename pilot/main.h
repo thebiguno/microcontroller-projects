@@ -26,8 +26,6 @@ typedef struct vector {
     double z;
 } vector_t;
 
-uint16_t dt;
-
 #include "modules/persist/persist.h"
 #include "modules/comm/communication.h"
 #include "modules/accel/accel.h"
