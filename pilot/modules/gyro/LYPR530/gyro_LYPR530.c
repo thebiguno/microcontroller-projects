@@ -113,7 +113,7 @@ void gyro_calibrate(){
 	calibration_data[1] = (uint8_t) calibrated_values[0];
 	calibration_data[2] = (uint8_t) (calibrated_values[1] >> 8);
 	calibration_data[3] = (uint8_t) calibrated_values[1];
-	calibration_data[4] = (uint8_t) (calibrated_v// alues[2] >> 8);
+	calibration_data[4] = (uint8_t) (calibrated_values[2] >> 8);
 	// 	calibration_data[5] = (uint8_t) calibrated_values[2];
 	persist_write(PERSIST_SECTION_GYRO, calibration_data, 4);
 }
