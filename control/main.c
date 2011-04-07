@@ -57,7 +57,6 @@ int main (void){
 				control.roll *= 0.5;
 			} else {
 				// stable mode (pitch and roll limited to 5 deg -- 0.0872664626 radians)
-				control.throttle *= 0.5;
 				control.pitch *= 0.0555;
 				control.roll *= 0.0555;
 			}

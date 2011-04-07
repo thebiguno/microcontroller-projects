@@ -46,6 +46,8 @@ void control_init(){
 static uint16_t button_state = 0;
 static uint16_t button_changed = 0;
 
+static double throttle = 0.0;
+
 void control_update() {
 	psx_read_gamepad();
 	
@@ -88,11 +90,18 @@ control_t control_read_analog() {
 	}
 	
 	// Throttle is a Relative Linear Control
-	// Scale into -1 .. 1 range.  Multiply by -1 to invert; up is more throttle, down is reverse throttle
+	// Ignore the points around the centre of the stick
+	// Scale into +/- 10% change / second range
+	// Multiply by -1 to invert; up is more throttle, down is reverse throttle
 	// Don't let the throttle exceed 80%; this leaves some overhead to pitch and roll and "full" throttle
-	double delta = (M_THROTTLE * psx_stick(PSS_LY) + B_THROTTLE) * -1 * (dt * 0.001);
-	result.throttle = result.throttle + delta;
-	if (result.throttle > .8) result.throttle = .8;
+	uint8_t t = psx_stick(PSS_LY);
+	if (t < 126 || t > 130) {
+		double delta = (M_THROTTLE * t + B_THROTTLE) * -1 * (dt * 0.001);
+		throttle += delta;
+		if (throttle > .8) throttle = .8;
+		if (throttle < 0) throttle = 0;
+	}
+	result.throttle = throttle;
 	return result;
 }
 

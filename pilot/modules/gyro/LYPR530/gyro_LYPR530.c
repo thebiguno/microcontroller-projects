@@ -8,10 +8,10 @@
 
 //The calibrated values show what the zero'd value of all axis should be.
 // In theory this is 382, but it should be calibrated to find the actual value.
-static uint16_t calibrated_values[3];
+static uint16_t calibrated_values[2];
 
 //Array used for raw analog reading
-static uint16_t results[3];
+static uint16_t results[2];
 
 void gyro_init(){
 	//Send HP reset for a few ms
@@ -21,24 +21,24 @@ void gyro_init(){
 	PORT_GYRO_HP_RESET &= ~_BV(PIN_GYRO_HP_RESET);
 	*(&PORT_GYRO_HP_RESET - 0x1) &= ~_BV(PIN_GYRO_HP_RESET);
 
-	uint8_t calibration_data[6];
-	uint8_t length = persist_read(PERSIST_SECTION_GYRO, calibration_data, 6);
-	if (length == 6) {
+	uint8_t calibration_data[4];
+	uint8_t length = persist_read(PERSIST_SECTION_GYRO, calibration_data, 4);
+	if (length == 4) {
 		calibrated_values[0] = ((uint16_t) calibration_data[0] << 8) + calibration_data[1];
 		calibrated_values[1] = ((uint16_t) calibration_data[2] << 8) + calibration_data[3];
-		calibrated_values[2] = ((uint16_t) calibration_data[4] << 8) + calibration_data[5];
+		// calibrated_values[2] = ((uint16_t) calibration_data[4] << 8) + calibration_data[5];
 	} else {
 		//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
 		calibrated_values[0] = 382;
 		calibrated_values[1] = 382;
-		calibrated_values[2] = 382;
+		// calibrated_values[2] = 382;
 	}
 
-	uint8_t pins[3];
+	uint8_t pins[2];
 	pins[0] = PIN_GYRO_X;
 	pins[1] = PIN_GYRO_Y;
-	pins[2] = PIN_GYRO_Z;
-	analog_init(pins, 3, ANALOG_AREF);
+	// pins[2] = PIN_GYRO_Z;
+	analog_init(pins, 2, ANALOG_AREF);
 }
 
 double _gyro_raw_to_rad(uint16_t raw, uint16_t calibrated_zero){
@@ -59,19 +59,19 @@ vector_t gyro_get() {
     
     result.x = _gyro_raw_to_rad(results[0], calibrated_values[0]);
     result.y = _gyro_raw_to_rad(results[1], calibrated_values[1]);
-    result.z = _gyro_raw_to_rad(results[2], calibrated_values[2]);
+    // result.z = _gyro_raw_to_rad(results[2], calibrated_values[2]);
     
     return result;
 }
 
-void _gyro_read_multiple(uint32_t avg[3]){
-	avg[0] = 0; avg[1] = 0; avg[2] = 0;
+void _gyro_read_multiple(uint32_t avg[2]){
+	avg[0] = 0; avg[1] = 0; //avg[2] = 0;
     for (uint8_t i = 0; i < 64; i++){
 	    analog_read_a(results);
 	    
 	    avg[0] += results[0];
 	    avg[1] += results[1];
-	    avg[2] += results[2];
+	    // avg[2] += results[2];
 
 		//Give the ADC time to get some new values... if we use synchronous analog
 		// library then we can get rid of this, otherwise just do it.  Calibration 
@@ -82,18 +82,18 @@ void _gyro_read_multiple(uint32_t avg[3]){
 	//Divide by 64 for the average
 	avg[0] = avg[0] >> 6;
 	avg[1] = avg[1] >> 6;
-	avg[2] = avg[2] >> 6;
+	// avg[2] = avg[2] >> 6;
 }
 
 void gyro_calibrate(){
-	uint32_t avg[3];
+	uint32_t avg[2];
 	_gyro_read_multiple(avg);
 	uint8_t loop = 0;
 	
 	//At most, loop for 5 iterations, or until the difference is minimal.
 	while (((abs((int16_t) results[0] - (int16_t) calibrated_values[0]) > 2) 
-			|| (abs((int16_t) results[1] - (int16_t) calibrated_values[1]) > 2)
-			|| (abs((int16_t) results[2] - (int16_t) calibrated_values[2]) > 2)) 
+			|| (abs((int16_t) results[1] - (int16_t) calibrated_values[1]) > 2))
+			// || (abs((int16_t) results[2] - (int16_t) calibrated_values[2]) > 2)) 
 		&& (loop < 5)) {
 
 		_gyro_read_multiple(avg);
@@ -101,7 +101,7 @@ void gyro_calibrate(){
 		//Divide by 64 for the average
 		calibrated_values[0] = avg[0];
 		calibrated_values[1] = avg[1];
-		calibrated_values[2] = avg[2];
+		// calibrated_values[2] = avg[2];
 	
 		_gyro_read_multiple(avg);
 		
@@ -113,7 +113,7 @@ void gyro_calibrate(){
 	calibration_data[1] = (uint8_t) calibrated_values[0];
 	calibration_data[2] = (uint8_t) (calibrated_values[1] >> 8);
 	calibration_data[3] = (uint8_t) calibrated_values[1];
-	calibration_data[4] = (uint8_t) (calibrated_values[2] >> 8);
-	calibration_data[5] = (uint8_t) calibrated_values[2];
-	persist_write(PERSIST_SECTION_GYRO, calibration_data, 6);
+	calibration_data[4] = (uint8_t) (calibrated_v// alues[2] >> 8);
+	// 	calibration_data[5] = (uint8_t) calibrated_values[2];
+	persist_write(PERSIST_SECTION_GYRO, calibration_data, 4);
 }
