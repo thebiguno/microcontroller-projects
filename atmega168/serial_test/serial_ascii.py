@@ -12,5 +12,5 @@ ser.write("Hello World!")
 
 while True:
         b = ser.read()
-        print(b)
+        print(hex(ord(b)))
 
