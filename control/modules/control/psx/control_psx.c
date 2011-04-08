@@ -63,12 +63,23 @@ control_t control_read_analog() {
 	// however since the ps2 stick is spring loaded the throttle stick is a relative control rather than absolute
 	// and the yaw controls are on the top buttons rather than on the throttle stick
 	control_t result;
+	
+	result.pitch = 0;
+	result.roll = 0;
+	result.yaw = 0;
+	result.throttle = 0;
 
 	// Pitch and Roll are Absolute Linear Controls
 	// Perform scaling into radians.  
 	// Currently this is linear, we may want to change it to 
-	result.pitch = M_PITCH * psx_stick(PSS_RY) + B_PITCH;
-	result.roll = M_ROLL * psx_stick(PSS_RX) + B_ROLL;
+	uint8_t p = psx_stick(PSS_RY);
+	if (p < 126 || p > 130) {
+		result.pitch = M_PITCH * psx_stick(PSS_RY) + B_PITCH;
+	}
+	uint8_t r = psx_stick(PSS_RX);
+	if (r < 126 || p > 130) {
+		result.roll = M_ROLL * psx_stick(PSS_RX) + B_ROLL;
+	}
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
