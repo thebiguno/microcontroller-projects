@@ -53,6 +53,11 @@ uint16_t control_button_state();
 uint16_t control_button_state_changed();
 
 /*
+ * Sets the throttle state back to zero.
+ */
+void control_reset_throttle();
+
+/*
  * Define the position of buttons in the result of the getButtons() method.
  */
 #define POWER				0x0001

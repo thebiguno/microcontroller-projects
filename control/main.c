@@ -39,6 +39,7 @@ int main (void){
 			} else {
 				protocol_send_diag("disarmed");
 				protocol_send_kill();
+				control_reset_throttle();
 			}
 		}
 		

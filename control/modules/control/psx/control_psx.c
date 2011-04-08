@@ -67,7 +67,6 @@ control_t control_read_analog() {
 	result.pitch = 0;
 	result.roll = 0;
 	result.yaw = 0;
-	result.throttle = 0;
 
 	// Pitch and Roll are Absolute Linear Controls
 	// Perform scaling into radians.  
@@ -137,5 +136,9 @@ uint16_t control_button_state_changed() {
 	if (button_changed & PSB_CROSS) changed |= MODE_STABLE;
 
 	return changed;
+}
+
+void control_reset_throttle() {
+	throttle = 0;
 }
 
