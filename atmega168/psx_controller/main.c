@@ -21,16 +21,26 @@ int main (void){
 
 	serial_init(9600, 8, 0, 1);
 
-	psx_init(&PORTD, PORTD6, //Data (Brown)
-		&PORTD, PORTD5, //Clock (Blue)
-		&PORTD, PORTD7, //Command (Orange)
-		&PORTB, PORTB0); //Attention (Yellow)
+	psx_init(&PORTC, PORTC3, //Data (Brown)
+		&PORTC, PORTC2, //Clock (Blue)
+		&PORTC, PORTC4, //Command (Orange)
+		&PORTC, PORTC5); //Attention (Yellow)
 
 	//Main program loop
 	while (1){
 		_delay_ms(10);
 
 		psx_read_gamepad();
+		
+		/*
+		serial_write_s("Header: ");
+		serial_write_s(itoa(psx_stick(1), temp, 16));
+		serial_write_s(",");
+		serial_write_s(itoa(psx_stick(5), temp, 16));
+		serial_write_s(",");
+		serial_write_s(itoa(psx_stick(6), temp, 16));
+		serial_write_s("\n\r");
+		*/
 
 		if (psx_button(PSB_SELECT)) serial_write_s("Select\n\r");
 		if (psx_button(PSB_L1)) serial_write_s("Left 1\n\r");
