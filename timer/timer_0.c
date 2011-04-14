@@ -23,7 +23,29 @@ void timer_init(){
 	OCR0A = F_CPU / 256 / 1000;
 	
 	//Enable compare interrupt
+#if defined(__AVR_ATtiny13__)   || \
+	defined(__AVR_ATtiny24__)   || \
+	defined(__AVR_ATtiny44__)   || \
+	defined(__AVR_ATtiny84__)   || \
+	defined(__AVR_ATtiny25__)   || \
+	defined(__AVR_ATtiny45__)   || \
+	defined(__AVR_ATtiny85__)
+
+	TIMSK = _BV(OCIE0A);
+	
+#elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega328__)     || \
+	defined(__AVR_ATmega328P__)    || \
+	defined(__AVR_ATmega324P__)    || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
+	defined(__AVR_ATmega1284P__)
+	
 	TIMSK0 = _BV(OCIE0A);
+	
+#endif
+	
 
 	//Reset count variables
 	_timer_millis = 0;
@@ -69,7 +91,7 @@ EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #elif defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega328__)     || \
-	defined(__AVR_ATmega328P__)    || \	
+	defined(__AVR_ATmega328P__)    || \
 	defined(__AVR_ATmega324P__)    || \
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \
