@@ -18,6 +18,8 @@
 *										-Changed to use uintx_t data types instead of char
 *										-Fixed many bugs (including glaring protocol violations)
 *										-Code cleanup
+*	 2011-04	0.3		Wyatt Olson		-Fixed a number of logic bugs, where the impl did not match spec
+*										-Code cleanup (merged methods, fixed comments, etc)
 *
 *
 * Usage information:
