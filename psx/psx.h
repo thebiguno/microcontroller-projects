@@ -5,7 +5,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+//Half a clock cycle; 10µs seems to be about right
 #define CTRL_CLK        10
+//The delay between bytes.  20µs seems to work fine on some chips (644, 168 on RBBB, etc); 
+// however on other chips (vanilla 168 at 20MHz), it seems you need longer (200µs).  Not sure
+// what is different; if you find that analog is not working on a given chip, try adjusting
+// this and see if that helps at all.
 #define CTRL_BYTE_DELAY 200
 
 //These are our button constants

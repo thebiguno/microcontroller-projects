@@ -112,7 +112,6 @@ void _psx_send_command(uint8_t send_data[], uint8_t size){
 	// you submit another command.
 	*_attention_port &= ~(_BV(_attention_pin));
 	*_command_port |= _BV(_command_pin);
-	*_clock_port |= _BV(_clock_pin);	
 
 	//Clock should always be high; it is an active low line...
 	*_clock_port |= _BV(_clock_pin);
