@@ -62,6 +62,82 @@ static uint8_t _data_pin;
 //Common structure for last read data
 static uint8_t _data[9];
 
+
+/* Private.  The actual serial transfer.  Handles clock.  The PSX controller is full 
+ * duplex, so this will send a byte as well as receive one.
+ */
+uint8_t _psx_gamepad_shift(uint8_t transmit_byte) {
+	uint8_t received_byte = 0;
+	for(uint8_t i = 0; i < 8; i++) {
+		//Drop the clock...
+		*_clock_port &= ~_BV(_clock_pin);
+	
+		//...set the command (outgoing) pin...
+		if (transmit_byte & (_BV(i))) {
+			*_command_port |= _BV(_command_pin);
+		}
+		else {
+			*_command_port &= ~_BV(_command_pin);
+		}
+		
+		//...wait half the clock cycle...
+		_delay_us(CTRL_CLK);
+		
+		//...raise the clock to HIGH...
+		*_clock_port |= _BV(_clock_pin);
+		
+		//...at which point you read the data...
+		if(*_data_in & _BV(_data_pin)) {
+			received_byte |= _BV(i);
+		}
+		
+		//...and wait the other half of the clock cycle
+		_delay_us(CTRL_CLK);
+	}
+
+	//Clock should already be high at this point, but just to be sure...
+	*_clock_port |= _BV(_clock_pin);
+	
+	//Delay for the byte delay time
+	_delay_us(CTRL_BYTE_DELAY);
+	
+	return received_byte;
+}
+
+/* Private.  Sends a command using the shift method.
+ */
+void _psx_send_command(uint8_t send_data[], uint8_t size){
+	//Before you submit each command packet, you must set attention low; once
+	// you are done each packet, return it high.  You have to toggle the line before
+	// you submit another command.
+	*_attention_port &= ~(_BV(_attention_pin));
+	*_command_port |= _BV(_command_pin);
+	*_clock_port |= _BV(_clock_pin);	
+
+	//Clock should always be high; it is an active low line...
+	*_clock_port |= _BV(_clock_pin);
+		
+	_delay_us(CTRL_BYTE_DELAY);
+	
+	for (uint8_t i = 0; i < size; i++){
+		send_data[i] = _psx_gamepad_shift(send_data[i]);
+	}
+	
+	
+	*_attention_port |= _BV(_attention_pin);
+}
+
+
+
+/* Reads the gamepad.  You need to call this whenever you want updated state.
+ */
+void psx_read_gamepad() {
+//	uint8_t dword[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	_data[0] = 0x01;
+	_data[1] = 0x42;
+	_psx_send_command(_data, 9);
+}
+
 /* Initialize the pins, and set the controller up to the correct mode.  This must be called
  * before any other psx_* functions are called.
  * (TODO: separate the config options into optional functions, and call based on flags,
@@ -84,13 +160,13 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 	_command_port = command_port;
 	_attention_port = attention_port;
 	
-	//... and output registers...
+	//... and data direction registers...
 	_data_ddr = data_port - 0x1;
 	_clock_ddr = clock_port - 0x1;
 	_command_ddr = command_port - 0x1;
 	_attention_ddr = attention_port - 0x1;
 
-	//... and data in....
+	//... and data input register...
 	_data_in = data_port - 0x2;
 
 	//... and pin numbers.
@@ -154,56 +230,4 @@ uint8_t psx_button(uint16_t button) {
 
 uint8_t psx_stick(unsigned int stick) {
 	return _data[stick];
-}
-
-void _psx_send_command(uint8_t send_data[], uint8_t size){
-	//Note: before you submit each command packet, you must set attention low; once
-	// you are done each packet, return it high.  You have to toggle the line before
-	// you submit another command.
-	*_attention_port &= ~(_BV(_attention_pin));
-	
-	for (uint8_t i = 0; i < size; i++){
-		_psx_gamepad_shift(send_data[i]);
-	}
-	
-	*_attention_port |= _BV(_attention_pin);
-}
-
-/* The actual serial transfer.  Handles clock.  The PSX controller is full duplex,
- * so this will send a byte as well as receive one.
- */
-uint8_t _psx_gamepad_shift(uint8_t sent) {
-	uint8_t received = 0;
-	for(uint8_t i = 0; i < 8; i++) {
-		if (sent & (_BV(i))) {
-			*_command_port |= _BV(_command_pin);
-		}
-		else {
-			*_command_port &= ~_BV(_command_pin);
-		}
-		*_clock_port &= ~_BV(_clock_pin);
-		_delay_us(CTRL_CLK);
-		if(*_data_in & _BV(_data_pin)) {
-			received |= _BV(i);
-		}
-		*_clock_port |= _BV(_clock_pin);
-	}
-
-	*_command_port |= _BV(_command_pin);
-	_delay_us(CTRL_BYTE_DELAY);
-	return received;
-}
-
-void psx_read_gamepad() {
-	*_command_port |= _BV(_command_pin);
-	*_clock_port |= _BV(_clock_pin);
-	*_attention_port &= ~_BV(_attention_pin); // Get controller attention (pull pin low)
-	_delay_us(CTRL_BYTE_DELAY);
-	
-	//Send the command to send button and joystick data;
-	char dword[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-	for (uint8_t i = 0; i < 9; i++) {
-		_data[i] = _psx_gamepad_shift(dword[i]);
-	}
-	*_attention_port |= _BV(_attention_pin); // Done communication, return attention high
 }

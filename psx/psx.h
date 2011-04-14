@@ -5,8 +5,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define CTRL_CLK        20
-#define CTRL_BYTE_DELAY 20
+#define CTRL_CLK        10
+#define CTRL_BYTE_DELAY 200
 
 //These are our button constants
 #define PSB_SELECT      0x0001
@@ -32,9 +32,8 @@
 #define PSS_LX 7
 #define PSS_LY 8
 
-/* Initialize the controller, specifying which port, ddr (for data), and pins to use.
- * Although we don't verify this, data_ddr should correlate with data_port (i.e. DDRB 
- * and PORTB).
+/* Initialize the controller, specifying which port and pins to use for each connection.
+ * We extrapolate the DDR register from the PORT register for each connection.
  */
 void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 				volatile uint8_t *clock_port, uint8_t clock_pin,
@@ -52,10 +51,5 @@ uint8_t psx_stick(unsigned int);
 
 /* Updates the current value of the game pad. */
 void psx_read_gamepad();
-
-/* Private functions for internal use */
-uint8_t _psx_gamepad_shift(uint8_t byte);
-
-void _psx_send_command(uint8_t send_data[], uint8_t size);
 
 #endif
