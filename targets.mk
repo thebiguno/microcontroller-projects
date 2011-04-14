@@ -21,7 +21,12 @@ fuse:
 	$(AVRDUDE) -V -F -p $(MMCU) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
-	
+
+readfuse: 
+	$(AVRDUDE) -V -F -p $(MMCU) \
+		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
+		-U lfuse:r:-:h -U hfuse:r:-:h
+
 size: build
 	avr-size $(PROJECT).hex
 
