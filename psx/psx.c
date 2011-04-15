@@ -62,7 +62,7 @@ static uint8_t _attention_pin;
 static uint8_t _data_pin;
 
 //Common structure for last read data
-static uint8_t _data[9];
+static uint8_t _data[21];
 
 
 /* Private.  The actual serial transfer.  Handles clock.  The PSX controller is full 
@@ -100,9 +100,6 @@ uint8_t _psx_gamepad_shift(uint8_t transmit_byte) {
 	//Clock should already be high at this point, but just to be sure...
 	*_clock_port |= _BV(_clock_pin);
 	
-	//Delay for the byte delay time
-	_delay_us(CTRL_BYTE_DELAY);
-	
 	return received_byte;
 }
 
@@ -118,12 +115,9 @@ void _psx_send_command(uint8_t send_data[], uint8_t size){
 	//Clock should always be high; it is an active low line...
 	*_clock_port |= _BV(_clock_pin);
 		
-	_delay_us(CTRL_BYTE_DELAY);
-	
 	for (uint8_t i = 0; i < size; i++){
 		send_data[i] = _psx_gamepad_shift(send_data[i]);
 	}
-	
 	
 	*_attention_port |= _BV(_attention_pin);
 }
@@ -133,10 +127,12 @@ void _psx_send_command(uint8_t send_data[], uint8_t size){
 /* Reads the gamepad.  You need to call this whenever you want updated state.
  */
 void psx_read_gamepad() {
-//	uint8_t dword[9] = {0x01, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	_data[0] = 0x01;
 	_data[1] = 0x42;
-	_psx_send_command(_data, 9);
+	for (uint8_t i = 2; i < 21; i++){
+		_data[i] = 0x00;
+	}
+	_psx_send_command(_data, 21);
 }
 
 /* Initialize the pins, and set the controller up to the correct mode.  This must be called
@@ -195,23 +191,13 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 	psx_read_gamepad();
 
 
-	//Enable joystick
-	uint8_t enable_joystick_command[] = {0x01, 0x43, 0x00, 0x01, 0x00};
-	_psx_send_command(enable_joystick_command, 5);
-
+	//Enter Config Mode
+	uint8_t enter_config_command[] = {0x01, 0x43, 0x00, 0x01, 0x00};
+	_psx_send_command(enter_config_command, 5);
 
 	// Lock to Analog Mode on Stick
 	uint8_t lock_analog_mode_command[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
 	_psx_send_command(lock_analog_mode_command, 9);
-
-	
-	// Vibration (disabled; need to define vibration pins if you want to enable it)
-	//uint8_t enable_vibration_command[] = {0x01, 0x4D, 0x00, 0x00, 0x01}
-	//_psx_send_command(enable_vibration_command, 5);
-    
-	//Config controller to return all pressure values
-	//uint8_t pressure_values_command[] = {0x01, 0x4F, 0x00, 0xFF, 0xFF, 0x03, 0x00, 0x00, 0x00}
-	//_psx_send_command(pressure_values_command, 9);
 
 	//Exit config mode
 	uint8_t exit_config_command[] = {0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A};
