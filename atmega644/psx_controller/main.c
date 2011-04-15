@@ -26,18 +26,39 @@ int main (void){
 		&PORTA, PINA1, //Command (Orange)
 		&PORTA, PINA0); //Attention (Yellow)
 
-	uint16_t state = 0;
-	uint16_t change = 0;
-	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
 
 		psx_read_gamepad();
 		
-		uint16_t read = psx_buttons();
-		change = state ^ read;
-		state = read;
+		/*
+		serial_write_s("0x");
+		serial_write_s(itoa(psx_stick(0), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(1), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(2), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(3), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(4), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(5), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(6), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(7), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(8), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(9), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(10), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(11), temp, 16));
+		serial_write_s("\n\r");
+		*/
 		
 		if (psx_button(PSB_SELECT)) serial_write_s("Select\n\r");
 		if (psx_button(PSB_L1)) serial_write_s("Left 1\n\r");

@@ -33,12 +33,30 @@ int main (void){
 		psx_read_gamepad();
 		
 		/*
-		serial_write_s("Header: ");
+		serial_write_s("0x");
+		serial_write_s(itoa(psx_stick(0), temp, 16));
+		serial_write_s(", 0x");
 		serial_write_s(itoa(psx_stick(1), temp, 16));
-		serial_write_s(",");
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(2), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(3), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(4), temp, 16));
+		serial_write_s(", 0x");
 		serial_write_s(itoa(psx_stick(5), temp, 16));
-		serial_write_s(",");
+		serial_write_s(", 0x");
 		serial_write_s(itoa(psx_stick(6), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(7), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(8), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(9), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(10), temp, 16));
+		serial_write_s(", 0x");
+		serial_write_s(itoa(psx_stick(11), temp, 16));
 		serial_write_s("\n\r");
 		*/
 
@@ -83,6 +101,5 @@ int main (void){
 			serial_write_s(itoa(last_RY, temp, 16));
 			serial_write_s("\n\r");
 		}
-
 	}
 }
