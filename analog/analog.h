@@ -27,11 +27,16 @@
 
 
 /*
- * Initializes analog hardware.  The aref argument can be one of three things:
- * 0, 1, or 3.  According to the ATmega168 datasheet, the meanings are:
- * 0: Use AREF, internal Vref turned off
- * 1: Use AVCC with external cap at AREF pin
- * 3: Use internal 1.1V reference with external cap at AREF pin
+ * Initializes analog hardware.  analog_pins is an array of pin numbers;
+ * count is the length of this array.  This allows you to only init the 
+ * analog pins that you need to use.
+ *
+ * The aref argument can be one of three things:
+ *  ANALOG_AREF0: Use AREF, internal Vref turned off
+ *  ANALOG_AVCC: Use AVCC with external cap at AREF pin
+ *  ANALOG_INTERNAL: Use internal 1.1V reference with external cap at AREF pin
+ * 
+ * Depending on your AVR chip, you may only have a subset of these options.
  */
 
 void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref);
