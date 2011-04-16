@@ -1,0 +1,21 @@
+(Pilot)
+SH : 13A200
+SL : 4049703F
+BD : 4			-- 19200
+CH : C
+ID : 2C02
+CE : 0
+MY : 0
+DL : 1
+VR : 10E6 		-- 1.xE6 non-beacon
+
+(Controller)
+SH : 13A200
+SL : 404970A1
+BD : 4
+CH : C
+ID : 2C02
+CE : 1
+MY : 1
+DL : 0
+VR : 10E6
