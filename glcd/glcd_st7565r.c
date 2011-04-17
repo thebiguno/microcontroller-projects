@@ -20,6 +20,9 @@ static uint8_t _reset_pin = 0;
 
 static uint8_t _st7565r_buffer[LCD_WIDTH][LCD_HEIGHT >> 3];
 
+//State of display inversion.
+static uint8_t _st7565r_display_invert = 0;
+
 /*
  * Shifts out a SPI command.  See page 24 of driver datasheet for format.
  */
@@ -98,20 +101,14 @@ void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value){
 	}
 }
 
-/*
- * Hardware restart.  Pulls the reset pin low, waits, then brings it high again.
- * See ST7565R Driver datasheet page 40 for information.
- */
-void _st7565r_hardware_reset(){
-	//Bring reset low (should be low already, unless init has been called again)
-	*_reset_port &= ~(_BV(_reset_pin));
-	
-	//Wait 100ms for power to stabilize, then bring the reset pin high (/reset)
-	_delay_ms(100);
-	*_reset_port |= _BV(_reset_pin);
-	
-	//See ST7565R Driver datasheet page 51
-	_delay_ms(1);
+void glcd_invert_display(){
+	_st7565r_display_invert ^= 0x1;
+	_st7565r_command(0xA6 | _st7565r_display_invert);	//Display reverse
+}
+
+void glcd_set_contrast(uint8_t contrast){
+	_st7565r_command(0x81); //Electronic Volume Mode Set (get into contrast mode)
+	_st7565r_command(contrast & 0x3F); //Set the contrast.
 }
 
 /*
@@ -146,7 +143,16 @@ void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin,
 	//ST7565R Driver datasheet says that "When the power is turned on, the IC 
 	// internal state becomes unstable, and it is necessary to initialize it 
 	// using the /RES terminal" (page 40).
-	_st7565r_hardware_reset();
+	
+	//Bring reset low
+	*_reset_port &= ~(_BV(_reset_pin));
+	
+	//Wait 100ms for power to stabilize, then bring the reset pin high (/reset)
+	_delay_ms(100);
+	*_reset_port |= _BV(_reset_pin);
+	
+	//See ST7565R Driver datasheet page 51
+	_delay_ms(1);
 	
 	//See driver datasheet page 51 for required init sequence
 	_st7565r_command(0xA2);	//Set LCD bias to 1/9 (page 43)
@@ -178,18 +184,7 @@ void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin,
 	
 	_st7565r_command(0xAF);	//LCD On
 	_st7565r_command(0xA4);	//All points normal
-//	_st7565r_command(0xA7);	//DIsplay reverse
+	
+	//Medium contrast
+	glcd_set_contrast(0x20);
 }
-
-
-/*
-void do_something(){
-	for (uint8_t y = 0; y < LCD_HEIGHT; y++){
-		for (uint8_t x = 0; x < LCD_WIDTH; x++){	
-			glcd_set_pixel(x, y, x & 0x1);
-		}
-	}
-
-	glcd_write_buffer();
-}
-*/

@@ -29,6 +29,20 @@ void glcd_write_buffer();
 void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value);
 
 /*
+ * Optional operation; on LCDs that support it, this command will invert the display.
+ * For hardware that does not support this, implementors MAY add this feature in software,
+ * or leave it as a nop.
+ */
+void glcd_invert_display();
+
+/*
+ * Optional operation; on LCDs that support software contrast, this command will
+ * adjust contrast.  For hardware that does not support this, implementors SHOULD
+ * leave it as a nop.
+ */
+void glcd_set_contrast(uint8_t contrast);
+
+/*
  * Finished API methods
  */
 
