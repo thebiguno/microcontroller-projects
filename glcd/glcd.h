@@ -1,6 +1,11 @@
 #ifndef GLCD_H
 #define GLCD_H
 
+//Overlay modes.
+#define OVERLAY_NAND	0		//Always remove pixels
+#define OVERLAY_OR 		1		//Always draw pixels
+#define OVERLAY_XOR		2		//XOR new pixels with buffer pixels
+
 //The LCD width / height in pixels.  This may be used by driver implementations.
 #define LCD_WIDTH 128
 #define LCD_HEIGHT 32
@@ -22,16 +27,13 @@
 void glcd_write_buffer();
 
 /*
- * Most basic operation; sets a pixel at the given X, Y co-ordinates.  Depending on
- * the hardware, the pixel can be either grayscale or monochrome.  Driver implementations
- * that do not support grayscale MUST interpret non-zero values as 1.
+ * Most basic operation; sets a pixel at the given X, Y co-ordinates.  Existing 
+ * data will be 
  */
-void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value);
+void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t o);
 
 /*
- * Get a a pixel at the given X, Y co-ordinates.  Depending on the hardware, the 
- * pixel can be either grayscale or monochrome.  Driver implementations that do 
- * not support grayscale MUST return non-zero values as 1.
+ * Get a a pixel at the given X, Y co-ordinates, using the specified overlay mode.
  */
 uint8_t glcd_get_pixel(uint8_t x, uint8_t y);
 

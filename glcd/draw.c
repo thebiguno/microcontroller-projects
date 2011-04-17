@@ -2,7 +2,7 @@
 
 // Implementation of Bresenham's algorithm; adapted from Lady Ada's GLCD library,
 // which was in turn adapted from Wikpedia.
-void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1){
+void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
 
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
 	
@@ -32,10 +32,10 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1){
 
 	for (; x0 < x1; x0++) {
 		if (steep) {
-			glcd_set_pixel(y0, x0, 1);
+			glcd_set_pixel(y0, x0, o);
 		}
 		else {
-			glcd_set_pixel(x0, y0, 1);
+			glcd_set_pixel(x0, y0, o);
 		}
 		err -= dy;
 		if (err < 0) {
@@ -45,19 +45,14 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1){
 	}
 }
 
-void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f){
+void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o){
 	//Make sure that x0,y0 is top left corner.
 	if (x0 > x1) swap(x0, x1);
 	if (y0 > y1) swap(y0, y1);
 
 	for(uint8_t x = x0; x <= x1; x++){
-		glcd_set_pixel(x, y0, 1);
-		glcd_set_pixel(x, y1, 1);
-		
-		if (f || x == x0 || x == x1){
-			for (uint8_t y = y0; y <= y1; y++){
-				glcd_set_pixel(x, y, 1);
-			}
+		for (uint8_t y = y0; y <= y1; y++){
+			if (f || x == x0 || x == x1 || y == y0 || y == y1) glcd_set_pixel(x, y, o);
 		}
 	}
 }
