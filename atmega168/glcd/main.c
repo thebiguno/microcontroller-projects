@@ -23,6 +23,10 @@ int main (void){
 	
 	glcd_draw_line(0, 0, 128, 32);
 	glcd_draw_line(0, 32, 128, 0);
+	
+	glcd_draw_square(10, 10, 20, 20, 0);
+	glcd_draw_square(100, 5, 110, 25, 1);
+	
 //	for (uint8_t i = 0; i < 6; i++){
 //		glcd_set_pixel(i, 2, 1);
 //	}
