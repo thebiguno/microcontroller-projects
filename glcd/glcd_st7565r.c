@@ -1,3 +1,9 @@
+/*
+ * The software driver implementation for the ST7565R LCD driver chip.  This will implement
+ * the API functions declared in glcd.h.
+ */
+
+#include "glcd_st7565r.h"
 #include "glcd.h"
 
 static volatile uint8_t *_data_port = 0;
@@ -12,10 +18,12 @@ static uint8_t _a0_pin = 0;
 static uint8_t _cs1b_pin = 0;
 static uint8_t _reset_pin = 0;
 
+static uint8_t _st7565r_buffer[LCD_WIDTH][LCD_HEIGHT >> 3];
+
 /*
- * Send a software SPI command.  See page 24 of driver datasheet
+ * Shifts out a SPI command.  See page 24 of driver datasheet for format.
  */
-void _glcd_do(uint8_t a0, uint8_t data){
+void _st7565r_shift(uint8_t a0, uint8_t data){
 	//Bring CS1B low (just to be sure...)
 	*_cs1b_port &= ~(_BV(_cs1b_pin));
 	
@@ -49,24 +57,52 @@ void _glcd_do(uint8_t a0, uint8_t data){
 		//...and wait the other half of the clock cycle
 		_delay_us(CTRL_CLK);
 	}	
-	
-	//Bring CS1B high
-//	*_cs1b_port |= _BV(_cs1b_pin);
 }
 
-void _glcd_command(uint8_t data){
-	_glcd_do(0, data);
+void _st7565r_command(uint8_t data){
+	_st7565r_shift(0, data);
 }
 
-void _glcd_data(uint8_t data){
-	_glcd_do(1, data);
+void _st7565r_data(uint8_t data){
+	_st7565r_shift(1, data);
+}
+
+/*
+ * Implementation of the glcd API.  
+ * 
+ * Writes the entire buffer to the LCD.  Resets the line to the start position, 
+ * and iterates through the entire buffer.
+ */
+void glcd_write_buffer(){
+	for (uint8_t y = 0; y < (LCD_HEIGHT >> 3); y++){
+		_st7565r_command(0xB0 | y);	//Set page
+		_st7565r_command(0x10);	//Set column
+		_st7565r_command(0x00);	
+		for (uint8_t x = 0; x < LCD_WIDTH; x++){	
+			_st7565r_data(_st7565r_buffer[x][y]);
+		}
+	}
+}
+
+/*
+ * Implementation of the glcd API.
+ *
+ * Sets the pixel at the given location in the buffer.
+ */
+void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value){
+	if (value == 0){
+		_st7565r_buffer[x][y >> 3] &= _BV(y & 0x7);
+	}
+	else {
+		_st7565r_buffer[x][y >> 3] |= _BV(y & 0x7);
+	}
 }
 
 /*
  * Hardware restart.  Pulls the reset pin low, waits, then brings it high again.
  * See ST7565R Driver datasheet page 40 for information.
  */
-void glcd_hardware_reset(){
+void _st7565r_hardware_reset(){
 	//Bring reset low (should be low already, unless init has been called again)
 	*_reset_port &= ~(_BV(_reset_pin));
 	
@@ -80,9 +116,9 @@ void glcd_hardware_reset(){
 
 /*
  * Init the LCD.  Thanks to Lady Ada's example ST7565R driver for the correct
- * sequence of commands to init the LCD properly.
+ * sequence of commands to init the LCD properly (https://github.com/adafruit/ST7565-LCD)
  */
-void glcd_init(volatile uint8_t *data_port, uint8_t data_pin, 
+void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin, 
 		volatile uint8_t *clock_port, uint8_t clock_pin, 
 		volatile uint8_t *a0_port, uint8_t a0_pin,
 		volatile uint8_t *cs1b_port, uint8_t cs1b_pin,
@@ -110,62 +146,50 @@ void glcd_init(volatile uint8_t *data_port, uint8_t data_pin,
 	//ST7565R Driver datasheet says that "When the power is turned on, the IC 
 	// internal state becomes unstable, and it is necessary to initialize it 
 	// using the /RES terminal" (page 40).
-	glcd_hardware_reset();
+	_st7565r_hardware_reset();
 	
 	//See driver datasheet page 51 for required init sequence
-	_glcd_command(0xA3);	//Set LCD bias to 1/9 (page 43)
-	_glcd_command(0xA0);	//ADC Select (page 43)
-	_glcd_command(0xC0);	//Common output mode select (page 45)
-	_glcd_command(0x40);	//Set display start line
-	_glcd_command(0x28 | 0x4);	// turn on voltage converter (VC=1, VR=0, VF=0)
+	_st7565r_command(0xA2);	//Set LCD bias to 1/9 (page 43)
+	_st7565r_command(0xA0);	//ADC Select (page 43)
+	
+	//Common output mode select (page 45).  This allows you to have the LCD flipped 
+	// upside down and still address things in the correct way.
+	_st7565r_command(0xC8);
+	
+	//Set display start line
+	_st7565r_command(0x40);
+	
+	
+	//Enable power supply circuits slowly (not sure why, but Lady Ada does this...)
+	_st7565r_command(0x28 | 0x4);	// turn on voltage converter (VC=1, VR=0, VF=0)
 	// Wait for 50% rising
 	_delay_ms(50);
-	
 	// turn on voltage regulator (VC=1, VR=1, VF=0)
-	_glcd_command(0x28 | 0x6);
-	
+	_st7565r_command(0x28 | 0x6);
 	// wait >=50ms
 	_delay_ms(50);
-
 	// turn on voltage follower (VC=1, VR=1, VF=1)
-	_glcd_command(0x28 | 0x7);
-	// wait
+	_st7565r_command(0x28 | 0x7);
+	// wait a bit
 	_delay_ms(10);
 
 	// set lcd operating voltage (regulator resistor, ref voltage resistor)
-	_glcd_command(0x20 | 0x6);
+	_st7565r_command(0x20 | 0x1);
 	
-	_glcd_command(0xAF);	//LCD On
-	_glcd_command(0xA4);	//All points normal
+	_st7565r_command(0xAF);	//LCD On
+	_st7565r_command(0xA4);	//All points normal
+//	_st7565r_command(0xA7);	//DIsplay reverse
 }
 
 
-
-void do_something(){
 /*
-	write_command(0xA0);	//ADC Select (Normal)
-	write_command(0xAE);	//LCD Off
-	write_command(0xC0);	//Common Output mode selection (Normal)
-	write_command(0xA2);	//LCD Bias Set (1/9 bias)
-	write_command(0x2F);	//Power control operating mode 7
-	write_command(0x26);	//Resistor ratio 6
-	write_command(0x81);	//Display start line to 0x1
-	write_command(0x2F);	//Power control operating mode 7
+void do_something(){
+	for (uint8_t y = 0; y < LCD_HEIGHT; y++){
+		for (uint8_t x = 0; x < LCD_WIDTH; x++){	
+			glcd_set_pixel(x, y, x & 0x1);
+		}
+	}
 
-	write_command(0xA5);	//All points on
-	
-	_delay_ms(500);
-	
-	write_command(0xA4);	//All points off (normal)
-	*/
-
-	
-	
-	_glcd_data(0xAA);		//Write 0b01010101
-	_glcd_data(0xAA);		//Write 0b01010101
-	_glcd_data(0xAA);		//Write 0b01010101
-	_glcd_data(0xAA);		//Write 0b01010101
-	_glcd_data(0xAA);		//Write 0b01010101
-	_glcd_data(0xAA);		//Write 0b01010101
-
+	glcd_write_buffer();
 }
+*/

@@ -1,35 +1,35 @@
 #ifndef GLCD_H
 #define GLCD_H
 
+//The LCD width / height in pixels.  This may be used by driver implementations.
+#define LCD_WIDTH 128
+#define LCD_HEIGHT 32
+
 #include <avr/io.h>
-#include <util/delay.h>
 
-#define CTRL_CLK 1
-
-/*
- * Graphical LCD library, for Newhaven Display NHD‐C12832A1Z‐NSW‐BBW‐3V3 
- * (Digikey part #NHD-C12832A1Z-NSW-BBW-3V3-ND); 128x32 LCD display, SPI interface.
+/*************
+ * IMPORTANT *
+ *************
  *
- * There are 4 wires that you care about: 
- *  SDA (Serial Data)
- *  SCL (Serial Clock)
- *  A0 (Select Registers)
- *  CS1B (Chip Select)
- * These must be initialized with a port and pin in the init method.
+ * You must include a driver, which includes the following API functions.
  */
+ 
+/* 
+ * Writes the buffer to the LCD.  Only applicable for hardware implementations in which
+ * the AVR buffers the display RAM locally.  For hardware implementations on which the
+ * display RAM is directly accessed, this can be an empty function.
+ */
+void glcd_write_buffer();
 
 /*
- * Initializes the library to use the specified ports and pins for the required
- * pins.  You must call this before you can use any other functions.
- * 
- * You need to pass the ports by reference - e.g. 
- * glcd_init(&PORTC, PORTC0, &PORTC, PORTC1, &PORTC, PORTC2, &PORTC, PORTC3 &PORTC, PORTC4).
+ * Most basic operation; sets a pixel at the given X, Y co-ordinates.  Depending on
+ * the hardware, the pixel can be either grayscale or monochrome.  Driver implementations
+ * that do not support grayscale MUST interpret non-zero values as 1.
  */
-void glcd_init(volatile uint8_t *data_port, uint8_t data_pin, 
-		volatile uint8_t *clock_port, uint8_t clock_pin, 
-		volatile uint8_t *select_register_port, uint8_t select_register_pin,
-		volatile uint8_t *select_chip_port, uint8_t select_chip_pin,
-		volatile uint8_t *reset_port, uint8_t reset_pin);
+void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value);
 
-void do_something();
+/*
+ * Finished API methods
+ */
+
 #endif
