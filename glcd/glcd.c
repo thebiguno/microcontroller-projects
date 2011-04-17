@@ -78,7 +78,10 @@ void glcd_hardware_reset(){
 	_delay_ms(1);
 }
 
-
+/*
+ * Init the LCD.  Thanks to Lady Ada's example ST7565R driver for the correct
+ * sequence of commands to init the LCD properly.
+ */
 void glcd_init(volatile uint8_t *data_port, uint8_t data_pin, 
 		volatile uint8_t *clock_port, uint8_t clock_pin, 
 		volatile uint8_t *a0_port, uint8_t a0_pin,
@@ -110,14 +113,30 @@ void glcd_init(volatile uint8_t *data_port, uint8_t data_pin,
 	glcd_hardware_reset();
 	
 	//See driver datasheet page 51 for required init sequence
-	_glcd_command(0xA2);	//Set LCD bias to 1/9 (page 43)
+	_glcd_command(0xA3);	//Set LCD bias to 1/9 (page 43)
 	_glcd_command(0xA0);	//ADC Select (page 43)
 	_glcd_command(0xC0);	//Common output mode select (page 45)
-	_glcd_command(0x24);	//V0 voltage regulator internal resistor ratio set to 5.0 (page 45, 34)
-	//TODO Electronic volume control?
-	//TODO Power controller set?
+	_glcd_command(0x40);	//Set display start line
+	_glcd_command(0x28 | 0x4);	// turn on voltage converter (VC=1, VR=0, VF=0)
+	// Wait for 50% rising
+	_delay_ms(50);
+	
+	// turn on voltage regulator (VC=1, VR=1, VF=0)
+	_glcd_command(0x28 | 0x6);
+	
+	// wait >=50ms
+	_delay_ms(50);
+
+	// turn on voltage follower (VC=1, VR=1, VF=1)
+	_glcd_command(0x28 | 0x7);
+	// wait
+	_delay_ms(10);
+
+	// set lcd operating voltage (regulator resistor, ref voltage resistor)
+	_glcd_command(0x20 | 0x6);
 	
 	_glcd_command(0xAF);	//LCD On
+	_glcd_command(0xA4);	//All points normal
 }
 
 
