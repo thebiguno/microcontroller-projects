@@ -2,7 +2,7 @@ include ../../build/variables.mk
 
 PROJECT=glcd
 MMCU=atmega168
-F_CPU=6000000
+F_CPU=4000000
 SOURCES=main.c lib/glcd/glcd.c 
 AVRDUDE_PROGRAMMER=usbtiny
 
