@@ -30,8 +30,7 @@
  */
 void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin, 
 		volatile uint8_t *clock_port, uint8_t clock_pin, 
-		volatile uint8_t *select_register_port, uint8_t select_register_pin,
-		volatile uint8_t *select_chip_port, uint8_t select_chip_pin,
+		volatile uint8_t *a0_port, uint8_t a0_pin,
 		volatile uint8_t *reset_port, uint8_t reset_pin);
 
 

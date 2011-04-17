@@ -9,13 +9,11 @@
 static volatile uint8_t *_data_port = 0;
 static volatile uint8_t *_clock_port = 0;
 static volatile uint8_t *_a0_port = 0;
-static volatile uint8_t *_cs1b_port = 0;
 static volatile uint8_t *_reset_port = 0;
 
 static uint8_t _data_pin = 0;
 static uint8_t _clock_pin = 0;
 static uint8_t _a0_pin = 0;
-static uint8_t _cs1b_pin = 0;
 static uint8_t _reset_pin = 0;
 
 static uint8_t _st7565r_buffer[LCD_WIDTH][LCD_HEIGHT >> 3];
@@ -27,9 +25,6 @@ static uint8_t _st7565r_display_invert = 0;
  * Shifts out a SPI command.  See page 24 of driver datasheet for format.
  */
 void _st7565r_shift(uint8_t a0, uint8_t data){
-	//Bring CS1B low (just to be sure...)
-	*_cs1b_port &= ~(_BV(_cs1b_pin));
-	
 	//If a0 = 1, then we are outputting data; a0 low is a command.
 	if (a0){
 		*_a0_port |= _BV(_a0_pin);
@@ -125,26 +120,22 @@ void glcd_set_contrast(uint8_t contrast){
 void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin, 
 		volatile uint8_t *clock_port, uint8_t clock_pin, 
 		volatile uint8_t *a0_port, uint8_t a0_pin,
-		volatile uint8_t *cs1b_port, uint8_t cs1b_pin,
 		volatile uint8_t *reset_port, uint8_t reset_pin){
 
 	_data_port = data_port;
 	_clock_port = clock_port;
 	_a0_port = a0_port;
-	_cs1b_port = cs1b_port;
 	_reset_port = reset_port;
 
 	//Set up all pins as output; PORTX - 0x1 is DDRX
 	*(_data_port - 0x1) |= _BV(data_pin);
 	*(_clock_port - 0x1) |= _BV(clock_pin);
 	*(_a0_port - 0x1) |= _BV(a0_pin);
-	*(_cs1b_port - 0x1) |= _BV(cs1b_pin);
 	*(_reset_port - 0x1) |= _BV(reset_pin);
 	
 	_data_pin = data_pin;
 	_clock_pin = clock_pin;
 	_a0_pin = a0_pin;
-	_cs1b_pin = cs1b_pin;
 	_reset_pin = reset_pin;
 	
 	//ST7565R Driver datasheet says that "When the power is turned on, the IC 
@@ -188,6 +179,10 @@ void st7565r_init(volatile uint8_t *data_port, uint8_t data_pin,
 
 	// set lcd operating voltage (regulator resistor, ref voltage resistor)
 	_st7565r_command(0x20 | 0x1);
+	
+	//Write the existing (empty) buffer to get rid of any pre-existing noise in
+	// the LCD buffer.
+	glcd_write_buffer();
 	
 	_st7565r_command(0xAF);	//LCD On
 	_st7565r_command(0xA4);	//All points normal
