@@ -101,6 +101,10 @@ void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value){
 	}
 }
 
+uint8_t glcd_get_pixel(uint8_t x, uint8_t y){
+	return _st7565r_buffer[x][y >> 3] & _BV(y & 0x7) != 0;
+}
+
 void glcd_invert_display(){
 	_st7565r_display_invert ^= 0x1;
 	_st7565r_command(0xA6 | _st7565r_display_invert);	//Display reverse

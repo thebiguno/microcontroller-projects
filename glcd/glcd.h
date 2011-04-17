@@ -29,6 +29,13 @@ void glcd_write_buffer();
 void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t value);
 
 /*
+ * Get a a pixel at the given X, Y co-ordinates.  Depending on the hardware, the 
+ * pixel can be either grayscale or monochrome.  Driver implementations that do 
+ * not support grayscale MUST return non-zero values as 1.
+ */
+uint8_t glcd_get_pixel(uint8_t x, uint8_t y);
+
+/*
  * Optional operation; on LCDs that support it, this command will invert the display.
  * For hardware that does not support this, implementors MAY add this feature in software,
  * or leave it as a nop.
