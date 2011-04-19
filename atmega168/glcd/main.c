@@ -42,7 +42,7 @@ int main (void){
 //	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 7, font_medium, codepage_medium, OVERLAY_OR);
 //	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
 	
-	glcd_draw_text(1, 10, "0123456789", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
+	glcd_draw_text(1, 10, "0123", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
 	
 	//glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
@@ -55,6 +55,8 @@ int main (void){
 //	glcd_set_contrast(0x20);
 	
 	uint8_t counter = 7;
+	
+	//glcd_invert_display();
 	
 	prog_uchar* battery = battery_6;
 	while(1){
@@ -70,11 +72,12 @@ int main (void){
 		if (counter == 5) battery = battery_5;
 		if (counter == 6) battery = battery_6;
 	
-		glcd_draw_rectangle(100, 15, 105, 26, 1, OVERLAY_NAND);
+		glcd_draw_rectangle(98, 13, 106, 26, 1, OVERLAY_NAND);
 		glcd_draw_bitmap(100, 15, 5, 9, battery, OVERLAY_OR);
-		
-		if (counter == 0) counter = 7;
-	
 		glcd_write_buffer();
+		
+		if (counter == 0) {
+			counter = 7;
+		}
 	}
 }
