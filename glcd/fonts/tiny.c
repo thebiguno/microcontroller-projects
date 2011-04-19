@@ -22,10 +22,10 @@ prog_uchar codepage_tiny[] PROGMEM = {
 
 /*
  * A 5x3 pixel font.  The bits are read across from top left to top right, then down
- * to the next line.  Each character is represented by a 16bit unsigned integer, with 
- * bit 15 ignored.
+ * to the next line.  Each character is represented by two 8bit unsigned integers, with 
+ * bit 8 of the first ignored.
  */
-prog_uint16_t font_tiny[] PROGMEM = {
+prog_uchar font_tiny[] PROGMEM = {
 	0x2b, 0x6a,		//0, 0x0
 	0x2c, 0x97,		//1
 	0x73, 0xe7,		//2
