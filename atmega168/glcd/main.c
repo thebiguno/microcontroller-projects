@@ -10,8 +10,10 @@
 #include "lib/glcd/glcd.h"
 #include "lib/glcd/draw.h"
 #include "lib/glcd/glcd_st7565r.h"
+#include "lib/glcd/fonts/xlarge.h"
 #include "lib/glcd/fonts/large.h"
 #include "lib/glcd/fonts/medium.h"
+#include "lib/glcd/fonts/tiny.h"
 
 prog_uchar battery_0[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc6,0x3f};
 prog_uchar battery_1[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc7,0xff};
@@ -38,7 +40,9 @@ int main (void){
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
 	*/
 //	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 7, font_medium, codepage_medium, OVERLAY_OR);
-	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
+//	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
+	
+	glcd_draw_text(1, 10, "0123456789", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
 	
 	//glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
