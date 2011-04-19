@@ -3,7 +3,13 @@
 
 #include "glcd.h"
 #include <stdlib.h>
+#include <avr/pgmspace.h> 
 
+
+/*
+ * Draws text on screen at the specified position, using the given font, in
+ * the given overlay mode.
+ */
 void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t o); 
 
 /*

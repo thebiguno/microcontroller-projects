@@ -15,8 +15,7 @@
  * There are 5 wires that you care about: 
  *  SDA (Serial Data)
  *  SCL (Serial Clock)
- *  A0 (Select Registers)
- *  CS1B (Chip Select)
+ *  A0 (1 for data, 0 for command)
  *  RESET (Reset)
  * These must be initialized with a port and pin in the init method.
  */
