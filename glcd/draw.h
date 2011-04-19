@@ -9,8 +9,9 @@
 /*
  * Draws text on screen at the specified position, using the given font, in
  * the given overlay mode.
+ * The Width / Height are for the glyphs in the given font.
  */
-void glcd_draw_text(uint8_t x, uint8_t y, char* text, prog_uchar* font, prog_uchar* codepage, uint8_t o);
+void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, prog_uchar* font, prog_uchar* codepage, uint8_t o);
 
 /*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the
@@ -23,7 +24,7 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o);
  * If f (fill) is 0, it is just an outline; if f is non-zero it is filled.
  * Overlay (o) determines the overlay method to use.
  */
-void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o);
+void glcd_draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o);
 
 /*
  * Draws a circle of radius r centered at point x, y.  If f (fill) is 0, it is just
