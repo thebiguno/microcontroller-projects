@@ -74,19 +74,21 @@ void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t hei
 
 		uint8_t bitCounter = glyphBitCount - 1;
 		uint8_t byteCounter = 0;
-		
-		for(uint8_t iy = y; iy < y + height; iy++){
-			for(uint8_t ix = x; ix < x + width; ix++){
-				if (pgm_read_byte_near(font + (glyphIndex * glyphByteCount) + byteCounter) & _BV(bitCounter)){
-					glcd_set_pixel(ix, iy, o);
+
+		if (glyphIndex != 0xFF){		
+			for(uint8_t iy = y; iy < y + height; iy++){
+				for(uint8_t ix = x; ix < x + width; ix++){
+					if (pgm_read_byte_near(font + (glyphIndex * glyphByteCount) + byteCounter) & _BV(bitCounter)){
+						glcd_set_pixel(ix, iy, o);
+					}
+					
+					if (bitCounter == 0){
+						byteCounter++;
+						bitCounter = 8;
+					}
+					
+					bitCounter--;
 				}
-				
-				if (bitCounter == 0){
-					byteCounter++;
-					bitCounter = 8;
-				}
-				
-				bitCounter--;
 			}
 		}
 
