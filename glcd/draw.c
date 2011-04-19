@@ -45,7 +45,7 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
 	}
 }
 
-void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o){
+void glcd_draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o){
 	//Make sure that x0,y0 is top left corner.
 	if (x0 > x1) swap(x0, x1);
 	if (y0 > y1) swap(y0, y1);
@@ -57,10 +57,8 @@ void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f,
 	}
 }
 
-void glcd_draw_text(uint8_t x, uint8_t y, char* text, prog_uchar* font, prog_uchar* codepage, uint8_t o){
+void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, prog_uchar* font, prog_uchar* codepage, uint8_t o){
 	uint8_t i = 0;
-	uint8_t width = 5;
-	uint8_t height = 7;
 	
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
