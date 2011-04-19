@@ -20,18 +20,17 @@ int main (void){
 	
 //	_delay_ms(500);
 	
-	
+	/*
 	glcd_draw_line(0, 0, 128, 32, OVERLAY_OR);
 	glcd_draw_line(0, 32, 128, 0, OVERLAY_OR);
 	
 	glcd_draw_square(10, 10, 20, 20, 0, OVERLAY_OR);
 	glcd_draw_square(100, 5, 110, 30, 1, OVERLAY_XOR);
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
+	*/
+	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", OVERLAY_OR);
+	glcd_draw_text(1, 7, "0123456789!.,?/\\%", OVERLAY_OR);
 	
-//	for (uint8_t i = 0; i < 6; i++){
-//		glcd_set_pixel(i, 2, 1);
-//	}
-
 	glcd_write_buffer();
 	
 	DDRB |= _BV(PINB0);
