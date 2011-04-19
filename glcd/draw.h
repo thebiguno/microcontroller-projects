@@ -14,6 +14,12 @@
 void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, prog_uchar* font, prog_uchar* codepage, uint8_t o);
 
 /*
+ * Draws a bitmap on the screen at the specified position, of specified width / height,
+ * in the specified overlay mode.
+ */
+void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, prog_uchar* bitmap, uint8_t o);
+
+/*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the
  * overlay mode to use.
  */
