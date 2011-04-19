@@ -10,6 +10,7 @@
 #include "lib/glcd/glcd.h"
 #include "lib/glcd/draw.h"
 #include "lib/glcd/glcd_st7565r.h"
+#include "lib/glcd/fonts/medium.h"
 
 
 int main (void){
@@ -28,8 +29,8 @@ int main (void){
 	glcd_draw_square(100, 5, 110, 30, 1, OVERLAY_XOR);
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
 	*/
-	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", OVERLAY_OR);
-	glcd_draw_text(1, 7, "0123456789!.,?/\\%", OVERLAY_OR);
+	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", font_medium, codepage_medium, OVERLAY_OR);
+	glcd_draw_text(1, 7, "0123456789!.,?/\\%", font_medium, codepage_medium, OVERLAY_OR);
 	
 	glcd_write_buffer();
 	
