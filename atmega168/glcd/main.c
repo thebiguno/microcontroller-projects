@@ -31,7 +31,7 @@ int main (void){
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
 	*/
 	glcd_draw_text(1, 1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5, 7, font_medium, codepage_medium, OVERLAY_OR);
-	glcd_draw_text(1, 9, "0123456789!.,?/\\%", 3, 5, font_tiny, codepage_tiny, OVERLAY_OR);
+	glcd_draw_text(1, 10, "0123456789!.,?/\\%", 3, 5, font_tiny, codepage_tiny, OVERLAY_OR);
 	
 	glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
