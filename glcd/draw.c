@@ -56,3 +56,43 @@ void glcd_draw_square(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f,
 		}
 	}
 }
+
+void glcd_draw_text(uint8_t x, uint8_t y, char* text, prog_uchar* font, prog_uchar* codepage, uint8_t o){
+	uint8_t i = 0;
+	uint8_t width = 5;
+	uint8_t height = 7;
+	
+	//We need to figure out which bit the beginning of the character is, and how
+	// many bytes are used for a glyph.
+	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
+	uint8_t glyphBitCount = (width * height) & 0x7; //(w*h)%8
+	if (glyphBitCount != 0){
+		glyphByteCount++;
+	}
+	
+	while (text[i]){
+		//Find the entry in the code page
+		uint8_t glyphIndex = pgm_read_byte_near(codepage + (uint8_t) text[i]);
+
+		uint8_t bitCounter = glyphBitCount - 1;
+		uint8_t byteCounter = 0;
+		
+		for(uint8_t iy = y; iy < y + height; iy++){
+			for(uint8_t ix = x; ix < x + width; ix++){
+				if (pgm_read_byte_near(font + (glyphIndex * glyphByteCount) + byteCounter) & _BV(bitCounter)){
+					glcd_set_pixel(ix, iy, o);
+				}
+				
+				if (bitCounter == 0){
+					byteCounter++;
+					bitCounter = 8;
+				}
+				
+				bitCounter--;
+			}
+		}
+
+		x += (width + 1);
+		i++;
+	}
+}

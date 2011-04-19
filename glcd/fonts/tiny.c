@@ -1,8 +1,6 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
 
-#include "../draw.h"
-
 /*
  * The font's code page to map chars to glyphs.  The index of this array is the value of 
  * each char in the string; the value of the array will point to an entry in the font table.

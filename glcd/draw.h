@@ -10,7 +10,7 @@
  * Draws text on screen at the specified position, using the given font, in
  * the given overlay mode.
  */
-void glcd_draw_text(uint8_t x, uint8_t y, char* text, prog_uchar font_tiny*, prog_uchar codepage*, uint8_t o);
+void glcd_draw_text(uint8_t x, uint8_t y, char* text, prog_uchar* font, prog_uchar* codepage, uint8_t o);
 
 /*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the
