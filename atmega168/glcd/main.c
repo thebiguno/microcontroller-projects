@@ -15,6 +15,11 @@
 
 prog_uchar battery_0[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc6,0x3f};
 prog_uchar battery_1[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc7,0xff};
+prog_uchar battery_2[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xff,0xff};
+prog_uchar battery_3[] PROGMEM = {0x0e,0xfc,0x63,0x1f,0xff,0xff};
+prog_uchar battery_4[] PROGMEM = {0x0e,0xfc,0x63,0xff,0xff,0xff};
+prog_uchar battery_5[] PROGMEM = {0x0e,0xfc,0x7f,0xff,0xff,0xff};
+prog_uchar battery_6[] PROGMEM = {0x0e,0xff,0xff,0xff,0xff,0xff};
 
 int main (void){
 	//Do setup here
@@ -37,16 +42,35 @@ int main (void){
 	
 	//glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
-	glcd_draw_bitmap(100, 15, 5, 9, battery_0, OVERLAY_OR);
+//	glcd_draw_bitmap(100, 15, 5, 9, battery_0, OVERLAY_OR);
 	
-	glcd_write_buffer();
+//	glcd_write_buffer();
 	
 	DDRB |= _BV(PINB0);
 	
-	glcd_set_contrast(0x20);
+//	glcd_set_contrast(0x20);
 	
+	uint8_t counter = 7;
+	
+	prog_uchar* battery = battery_6;
 	while(1){
 		PORTB = ~PORTB;
 		_delay_ms(500);
+
+		counter--;	
+		if (counter == 0) battery = battery_0;
+		if (counter == 1) battery = battery_1;
+		if (counter == 2) battery = battery_2;
+		if (counter == 3) battery = battery_3;
+		if (counter == 4) battery = battery_4;
+		if (counter == 5) battery = battery_5;
+		if (counter == 6) battery = battery_6;
+	
+		glcd_draw_rectangle(100, 15, 105, 26, 1, OVERLAY_NAND);
+		glcd_draw_bitmap(100, 15, 5, 9, battery, OVERLAY_OR);
+		
+		if (counter == 0) counter = 7;
+	
+		glcd_write_buffer();
 	}
 }
