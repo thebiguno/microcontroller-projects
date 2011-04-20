@@ -39,8 +39,8 @@ int main (void){
 	glcd_draw_square(100, 5, 110, 30, 1, OVERLAY_XOR);
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
 	*/
-	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", 7, 11, font_medium, codepage_medium, OVERLAY_OR);
-	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", 7, 11, font_medium, codepage_medium, OVERLAY_OR);
+	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", 7, 11, font_large, codepage_large, OVERLAY_OR);
+	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", 7, 11, font_large, codepage_large, OVERLAY_OR);
 //	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
 	
 	//glcd_draw_text(1, 10, "0123", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
