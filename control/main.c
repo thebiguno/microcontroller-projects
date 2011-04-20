@@ -8,7 +8,6 @@ int main (void){
 
 	uint64_t millis = timer_millis();
 	uint16_t t = 0;
-	uint8_t mode = MODE_STABLE;
 	uint8_t armed = 0;
     
 	protocol_send_diag("controller reset");
@@ -43,25 +42,7 @@ int main (void){
 			}
 		}
 		
-		if ((button_state & MODE_SPORT) && (button_changed & MODE_SPORT)) {
-			protocol_send_diag("sport mode");
-			mode = MODE_SPORT;
-		} else if ((button_state & MODE_STABLE) && (button_changed & MODE_STABLE)) {
-			protocol_send_diag("stable mode");
-			mode = MODE_STABLE;
-		}
-		
 		if (armed) {
-			if (mode & MODE_SPORT) {
-				// sport mode (roll and roll limited to 45 deg -- 0.785398163 radians)
-				control.pitch *= 0.5;
-				control.roll *= 0.5;
-			} else {
-				// stable mode (pitch and roll limited to 5 deg -- 0.0872664626 radians)
-				control.pitch *= 0.0555;
-				control.roll *= 0.0555;
-			}
-		
 			//Send control data
 			if (t > 50) {
 				char buf[50];

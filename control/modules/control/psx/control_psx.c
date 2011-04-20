@@ -14,19 +14,10 @@
  * 9. green			ack
  */
 
+#include <math.h>
 #include "../control.h"
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/timer/timer.h"
-
-//Pitch scale to radians
-#define MAX_PITCH M_PI / 3				//Max pitch is PI/3 (60 degrees)
-#define M_PITCH (2 * MAX_PITCH) / 256	//1 unit change in raw pitch is 0.0081... radians change
-#define B_PITCH MAX_PITCH * -1			//Zero value
-
-//Roll scale to radians
-#define MAX_ROLL M_PI / 3				//Max roll is PI/3 radians (60 degrees)
-#define M_ROLL (2 * MAX_ROLL) / 256		//1 unit change in raw roll is 0.0081... radians change
-#define B_ROLL MAX_ROLL * -1			//Zero value
 
 //Yaw rate scale to radians
 #define R_YAW M_PI / 24.0				//7.5 degrees / second / input
@@ -70,15 +61,11 @@ control_t control_read_analog() {
 
 	// Pitch and Roll are Absolute Linear Controls
 	// Perform scaling into radians.  
-	// Currently this is linear, we may want to change it to 
+	// The scaling follows a sin curve and is limited to about 10 degrees (pi/18 radians)
 	uint8_t p = psx_stick(PSS_RY);
-	if (p < 126 || p > 130) {
-		result.pitch = M_PITCH * psx_stick(PSS_RY) + B_PITCH;
-	}
+	result.pitch = (M_PI / (18.0 * 2.0)) * (sin((p - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
 	uint8_t r = psx_stick(PSS_RX);
-	if (r < 126 || p > 130) {
-		result.roll = M_ROLL * psx_stick(PSS_RX) + B_ROLL;
-	}
+	result.roll = (M_PI / (18.0 * 2.0)) * (sin((r - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
 	
 	// The four Yaw buttons are Momentary Controls
 	result.yaw = 0.0;
@@ -121,8 +108,6 @@ uint16_t control_button_state(){
 	if (button_state & PSB_START) state |= POWER;
 	if (button_state & PSB_L3) state |= RESET_ATTITUDE;
 	if (button_state & PSB_R3) state |= CALIBRATE;
-	if (button_state & PSB_TRIANGLE) state |= MODE_SPORT;
-	if (button_state & PSB_CROSS) state |= MODE_STABLE;
 
 	return state;
 }
@@ -132,8 +117,6 @@ uint16_t control_button_state_changed() {
 	if (button_changed & PSB_START) changed |= POWER;
 	if (button_changed & PSB_L3) changed |= RESET_ATTITUDE;
 	if (button_changed & PSB_R3) changed |= CALIBRATE;
-	if (button_changed & PSB_TRIANGLE) changed |= MODE_SPORT;
-	if (button_changed & PSB_CROSS) changed |= MODE_STABLE;
 
 	return changed;
 }

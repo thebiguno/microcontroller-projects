@@ -64,8 +64,8 @@ void control_reset_throttle();
 //#define 					0x0002
 #define RESET_ATTITUDE		0x0004
 #define CALIBRATE			0x0008
-#define MODE_SPORT	 		0x0010
-#define MODE_STABLE			0x0020
+//#define 			 		0x0010
+//#define 					0x0020
 //#define 			 		0x0040
 //#define 					0x0080
 //#define 					0x0100
