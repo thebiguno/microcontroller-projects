@@ -32,7 +32,7 @@
  *    ....
  *    pins[5] = 3;
  *
- *    pwm_init(ports, ddrs, pins, 6, 20000);
+ *    pwm_init(ports, pins, 6, 20000);
  *
  * While the code to do this is uglier than if it were to just be a function 
  * call, by allowing an arbitrary number of PWM pins, it is best to do it like this.
