@@ -12,6 +12,8 @@ LFUSE=0xF7
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
+CLIBS+=-lm
+
 #Include each module
 include modules/comm/module.mk
 include modules/control/module.mk
