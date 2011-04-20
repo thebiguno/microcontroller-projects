@@ -79,8 +79,8 @@ Pin	AVR	Chiindii Function
 34	PA6
 35	PA5
 36	PA4
-37	PA3	Gyro HP Reset
-38	PA2	Gyro Z
+37	PA3
+38	PA2	Gyro HP Reset
 39	PA1	Gyro Y
 40	PA0	Gyro X
 
