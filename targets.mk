@@ -9,7 +9,7 @@ $(PROJECT).hex: $(PROJECT).out
 
 
 $(PROJECT).out: $(SOURCES) 
-	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).out $(SOURCES)
+	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).out $(SOURCES) $(CLIBS)
 
 
 program: $(PROJECT).hex

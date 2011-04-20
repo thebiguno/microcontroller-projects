@@ -23,3 +23,4 @@ OBJCOPY=avr-objcopy
 
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99 -mcall-prologues
 CDEFS=-DF_CPU=$(F_CPU)
+#CLIBS=
