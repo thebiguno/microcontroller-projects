@@ -1,15 +1,18 @@
 HobbyKing:
-1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8247			$12	$12
-1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=11060		$20	$20
-2x 3S1P 4000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=7634			$20	$40
-3x 3S1P 3000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8851			$18	$54
-6x 3S1P 1600mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6539			$9	$54
-10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
-5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
-5x Motor		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=6247			$9	$45
-6x Motor		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=4321			$5.50	$33	
-1x XT60 Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572			$3.50	$3.50
-1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255		$4.50	$4.50
+  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8247			$12	$12
+  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=11060		$20	$20
+  2x 3S1P 4000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=7634			$20	$40
+  3x 3S1P 3000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8851			$18	$54
+  6x 3S1P 1600mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6539			$9	$54
+  10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
+  5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
+* 5x ESC (20A)		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6548			$7.80	$39
+* 5x Motor		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6247			$9	$45
+  6x Motor		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=4321			$5.50	$33	
+  1x XT60 Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572			$3.50	$3.50
+  1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255		$4.50	$4.50
+* 5x prop/shaft adapter	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=8890			$1.80	$9
+  1x programming card	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=2169			$7	$7
 
 Digikey:
 3x	ATMega 644PA	ATMEGA644PA-PU-ND	$25	WO*1 / WJ*2
@@ -32,6 +35,8 @@ Digikey:
 4	4xAA		BH14AAW-ND		$4	CB*3 / WO*1
 20	2x4 DIP Socket	A100204-ND		$3	CB
 1	Accelerometer	MMA7455LT-ND		$3	WJ
+
+1	term block	A98335-ND		
 
 
 SparkFun:
