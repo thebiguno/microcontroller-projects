@@ -1,3 +1,3 @@
-extern prog_uchar codepage_medium[];
+extern prog_uchar codepage_large[];
 
-extern prog_uchar font_medium[];
+extern prog_uchar font_large[];
