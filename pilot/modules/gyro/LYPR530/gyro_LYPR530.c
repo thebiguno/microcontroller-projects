@@ -19,8 +19,7 @@ void gyro_init(){
 	PORT_GYRO_HP_RESET |= _BV(PIN_GYRO_HP_RESET);
 	_delay_ms(30);
 	PORT_GYRO_HP_RESET &= ~_BV(PIN_GYRO_HP_RESET);
-	*(&PORT_GYRO_HP_RESET - 0x1) &= ~_BV(PIN_GYRO_HP_RESET);
-
+	
 	uint8_t calibration_data[4];
 	uint8_t length = persist_read(PERSIST_SECTION_GYRO, calibration_data, 4);
 	if (length == 4) {
