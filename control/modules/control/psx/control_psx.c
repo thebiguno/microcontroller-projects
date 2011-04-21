@@ -19,9 +19,6 @@
 #include "../../../lib/psx/psx.h"
 #include "../../../lib/timer/timer.h"
 
-//Yaw rate scale to radians
-#define R_YAW M_PI / 24.0				//7.5 degrees / second / input
-
 //Throttle scale to a rate of change per second
 #define MAX_THROTTLE 0.1				//Max throttle rate of change is 10% / second
 #define M_THROTTLE (2 * MAX_THROTTLE) / 256
@@ -63,28 +60,11 @@ control_t control_read_analog() {
 	// Perform scaling into radians.  
 	// The scaling follows a sin curve and is limited to about 10 degrees (pi/18 radians)
 	uint8_t p = psx_stick(PSS_RY);
-	result.pitch = (M_PI / (18.0 * 2.0)) * (sin((p - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
+	result.pitch = (tan((p - 128) / (32 * M_PI))) / (5 * M_PI);
 	uint8_t r = psx_stick(PSS_RX);
-	result.roll = (M_PI / (18.0 * 2.0)) * (sin((r - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
-	
-	// The four Yaw buttons are Momentary Controls
-	result.yaw = 0.0;
-	uint16_t l1 = button_state & PSB_L1;
-	uint16_t l2 = button_state & PSB_L2;
-	uint16_t r1 = button_state & PSB_R1;
-	uint16_t r2 = button_state & PSB_R2;
-
-	//TODO these numbers are arbitrary, change them to actually make sense
-	if (!r1 && !r2){
-		if (l1 && l2) result.yaw = R_YAW * -6.0;  // -45 degrees/second
-		else if (l2) result.yaw = R_YAW * -3.0;   // -22.5 degrees/second
-		else if (l1) result.yaw = R_YAW * -1.0;   // -7.5 degrees/second
-	}
-	else if (!l1 && !l2){
-		if (r1 && r2) result.yaw = R_YAW * 6.0;   // 45 degrees/second
-		else if (r2) result.yaw = R_YAW * 3.0;    // 22.5 degrees/second
-		else if (r1) result.yaw = R_YAW * 1.0;    // 7.5 degrees/second
-	}
+	result.roll = (tan((r - 128) / (32 * M_PI))) / (5 * M_PI);
+	uint8_t y = psx_stick(PSS_LX);
+	result.yaw = (tan((y - 128) / (32 * M_PI))) / (5 * M_PI);
 	
 	// Throttle is a Relative Linear Control
 	// Ignore the points around the centre of the stick
@@ -106,6 +86,7 @@ uint16_t control_button_state(){
 	uint16_t state = 0;
 
 	if (button_state & PSB_START) state |= POWER;
+	if (button_state & PSB_SELECT) state |= TELEMETRY;
 	if (button_state & PSB_L3) state |= RESET_ATTITUDE;
 	if (button_state & PSB_R3) state |= CALIBRATE;
 
@@ -115,6 +96,7 @@ uint16_t control_button_state_changed() {
 	uint16_t changed = 0;
 
 	if (button_changed & PSB_START) changed |= POWER;
+	if (button_changed & PSB_SELECT) changed |= TELEMETRY;
 	if (button_changed & PSB_L3) changed |= RESET_ATTITUDE;
 	if (button_changed & PSB_R3) changed |= CALIBRATE;
 

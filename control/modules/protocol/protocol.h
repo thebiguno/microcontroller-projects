@@ -22,6 +22,8 @@ void protocol_send_reset_attitude();
  */
 void protocol_send_calibrate();
 
+void protocol_send_toggle_telemetry();
+
 void protocol_send_diag(char *);
 
 #endif
