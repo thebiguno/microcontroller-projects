@@ -12,7 +12,8 @@ LFUSE=0xF7
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DADC_PRESCALER_MASK=0x7 -DNO_INTERRUPT_ENABLE -lm
+CDEFS += -DADC_PRESCALER_MASK=0x7 -DNO_INTERRUPT_ENABLE
+CLIBS += -lm
 
 #Include each module
 include modules/status/module.mk
