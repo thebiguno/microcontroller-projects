@@ -61,7 +61,7 @@ void control_reset_throttle();
  * Define the position of buttons in the result of the getButtons() method.
  */
 #define POWER				0x0001
-//#define 					0x0002
+#define TELEMETRY			0x0002
 #define RESET_ATTITUDE		0x0004
 #define CALIBRATE			0x0008
 //#define 			 		0x0010

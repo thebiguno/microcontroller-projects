@@ -101,6 +101,10 @@ void protocol_send_calibrate(){
 	protocol_send_message_to_pilot('C', dummy, 0);
 }
 
+void protocol_send_toggle_telemetry(){
+	protocol_send_message_to_pilot('E', dummy, 0);
+}
+
 void protocol_send_diag(char* s) {
 	uint8_t packet[255];
 	uint8_t l = 0;

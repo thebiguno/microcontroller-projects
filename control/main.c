@@ -10,8 +10,6 @@ int main (void){
 	uint16_t t = 0;
 	uint8_t armed = 0;
     
-	protocol_send_diag("controller reset");
-	
 	PORTD &= ~_BV(PIND5);		// off
 	DDRD |= _BV(PIND5);			// set armed pin to output mode
 
@@ -33,31 +31,28 @@ int main (void){
 			PORTD ^= _BV(PIND5); // toggle
 			
 			if (armed) {
-				protocol_send_diag("armed");
 				t = 0;
 			} else {
-				protocol_send_diag("disarmed");
 				protocol_send_kill();
 				control_reset_throttle();
 			}
 		}
 		
+		if ((button_state & TELEMETRY) && (button_changed & TELEMETRY)) { // rising edge, 0->1
+			protocol_send_toggle_telemetry();
+		}
+		
 		if (armed) {
 			//Send control data
 			if (t > 50) {
-				char buf[50];
-				snprintf(buf, 50, "%d %d %d %d", (int) (control.throttle * 100), (int) (control.pitch * 57.2957795), (int) (control.roll * 57.2957795), (int) (control.yaw * 57.2957795));
-				protocol_send_diag(buf);
 				protocol_send_control(control);
 				t = 0;
 			}
 		} else {
 			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
-				protocol_send_diag("reset attitude");
 				protocol_send_reset_attitude();
 			}
 			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
-				protocol_send_diag("calibrate");
 				protocol_send_calibrate();
 			}
 		}
