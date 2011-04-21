@@ -63,28 +63,30 @@ control_t control_read_analog() {
 	// Perform scaling into radians.  
 	// The scaling follows a sin curve and is limited to about 10 degrees (pi/18 radians)
 	uint8_t p = psx_stick(PSS_RY);
-	result.pitch = (M_PI / (18.0 * 2.0)) * (sin((p - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
+	result.pitch = (tan((p - 128) / (32 * M_PI))) / (5 * M_PI);
 	uint8_t r = psx_stick(PSS_RX);
-	result.roll = (M_PI / (18.0 * 2.0)) * (sin((r - 128.0 - 22.0 * M_PI) / (14.0 * M_PI)) + 1.0);
+	result.roll = (tan((r - 128) / (32 * M_PI))) / (5 * M_PI);
+	uint8_t y = psx_stick(PSS_LX);
+	result.yaw = (tan((y - 128) / (32 * M_PI))) / (5 * M_PI);
 	
 	// The four Yaw buttons are Momentary Controls
-	result.yaw = 0.0;
-	uint16_t l1 = button_state & PSB_L1;
-	uint16_t l2 = button_state & PSB_L2;
-	uint16_t r1 = button_state & PSB_R1;
-	uint16_t r2 = button_state & PSB_R2;
+	// result.yaw = 0.0;
+	// uint16_t l1 = button_state & PSB_L1;
+	// uint16_t l2 = button_state & PSB_L2;
+	// uint16_t r1 = button_state & PSB_R1;
+	// uint16_t r2 = button_state & PSB_R2;
 
 	//TODO these numbers are arbitrary, change them to actually make sense
-	if (!r1 && !r2){
-		if (l1 && l2) result.yaw = R_YAW * -6.0;  // -45 degrees/second
-		else if (l2) result.yaw = R_YAW * -3.0;   // -22.5 degrees/second
-		else if (l1) result.yaw = R_YAW * -1.0;   // -7.5 degrees/second
-	}
-	else if (!l1 && !l2){
-		if (r1 && r2) result.yaw = R_YAW * 6.0;   // 45 degrees/second
-		else if (r2) result.yaw = R_YAW * 3.0;    // 22.5 degrees/second
-		else if (r1) result.yaw = R_YAW * 1.0;    // 7.5 degrees/second
-	}
+	// if (!r1 && !r2){
+	// 	if (l1 && l2) result.yaw = R_YAW * -6.0;  // -45 degrees/second
+	// 	else if (l2) result.yaw = R_YAW * -3.0;   // -22.5 degrees/second
+	// 	else if (l1) result.yaw = R_YAW * -1.0;   // -7.5 degrees/second
+	// }
+	// else if (!l1 && !l2){
+	// 	if (r1 && r2) result.yaw = R_YAW * 6.0;   // 45 degrees/second
+	// 	else if (r2) result.yaw = R_YAW * 3.0;    // 22.5 degrees/second
+	// 	else if (r1) result.yaw = R_YAW * 1.0;    // 7.5 degrees/second
+	// }
 	
 	// Throttle is a Relative Linear Control
 	// Ignore the points around the centre of the stick
