@@ -24,6 +24,17 @@
 #define PORT_LED_STARBOARD		PORTC
 #define PIN_LED_STARBOARD		PINC3
 
+#define PORT_STATUS_HEARTBEAT	PORTD
+#define PIN_STATUS_HEARTBEAT	PIND2
+#define PORT_STATUS_ARMED		PORTD
+#define PIN_STATUS_ARMED		PIND3
+#define PORT_STATUS_TX			PORTD
+#define PIN_STATUS_TX			PIND4
+#define PORT_STATUS_RX			PORTD
+#define PIN_STATUS_RX			PIND5
+#define PORT_STATUS_ERR			PORTD
+#define PIN_STATUS_ERR			PIND6
+
 //The ADCx channel numbers; see datasheet pinout and register ADCMUX bits 3::0 for definitions.
 #define PIN_GYRO_X				0
 #define PIN_GYRO_Y				1

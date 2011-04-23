@@ -15,7 +15,7 @@ void persist_init(){
 
 uint8_t persist_write(uint8_t section, uint8_t *data, uint8_t length){
 	if (section > 0x8 || length > 0x3E){ //Keep 1 byte free for checksum
-		status_set(STATUS_PERSIST_ERR); //Message too long / address undefined
+		status_set(STATUS_ERR); //Message too long / address undefined
 		return 0;
 	}
 	
@@ -32,7 +32,7 @@ uint8_t persist_write(uint8_t section, uint8_t *data, uint8_t length){
 
 uint8_t persist_read(uint8_t section, uint8_t *data, uint8_t length){
 	if (section > 0x8 || length > 0x3E){ //Keep 1 byte free for checksum
-		status_set(STATUS_PERSIST_ERR); //Message too long / address undefined
+		status_set(STATUS_ERR); //Message too long / address undefined
 		return 0;
 	}
 	
