@@ -1,5 +1,5 @@
 #include "../esc.h"
-#include "lib/pwm/pwm.h"
+#include "../../../lib/pwm/pwm.h"
 
 // these values represent a typical ESC that runs at 50Hz, 
 // turns motor off at a pulse width of 1000ms, 
