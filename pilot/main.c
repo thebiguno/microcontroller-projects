@@ -3,6 +3,7 @@
 
 int main(){
 
+	status_init();
 	status_error(STATUS_ERR_RESET);
 	_delay_ms(500);
 	// error is cleared after all init is done
@@ -16,7 +17,6 @@ int main(){
 	uint8_t throttle_back;
 	
 	//Init all modules.  We call accel_init last as it forces sei().
-	status_init();
 	comm_init();
 	timer_init();
 	gyro_init();
