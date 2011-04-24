@@ -1,10 +1,9 @@
 #include "main.h"
 
-// 5 degrees minimum command for yaw
-#define MIN_COMMAND 0.0872664626
-
 int main(){
 
+	status_error(STATUS_ERR_RESET);
+	
 	uint64_t millis = 0;
 	uint8_t armed = 0x00;
 	uint64_t last_telemetry = 0;
@@ -21,9 +20,9 @@ int main(){
 	accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
 	
 	pid_init();
-	attitude_init(gyro_get(), accel_get());	   
+	attitude_init(gyro_get(), accel_get());
 	
-	protocol_send_diag("pilot reset");
+	status_error(0x00);
 	
 	uint16_t t = 0;
 	double throttle = 0.0;

@@ -1,4 +1,5 @@
 #include <math.h>
+#include <util/delay.h>
 
 #include "../../../main.h"
 #include "../../protocol/protocol.h"
@@ -35,6 +36,10 @@ void attitude_read_tuning() {
 		state_y.q_gyro = convert_bytes_to_double(data, 16);
 		state_y.r_angle = convert_bytes_to_double(data, 20);
 	} else {
+		status_error(STATUS_ERR_ATTITUDE_CHECKSUM);
+		_delay_ms(1000);
+		status_error(0x00);
+		
 		state_x.q_angle = 0.001;
 		state_x.q_gyro = 0.003;
 		state_x.r_angle = 0.3;

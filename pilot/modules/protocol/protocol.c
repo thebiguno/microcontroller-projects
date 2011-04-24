@@ -107,6 +107,7 @@ void protocol_poll()
     while (comm_available() && comm_read(&b)) {
         if (_err > 0 && b == START) {
 			// recover from error condition
+			status_error(0x00);
 			_err = 0;
 			_pos = 0;
         } else if (_err > 0) {
@@ -115,6 +116,7 @@ void protocol_poll()
         
         if (_pos > 0 && b == START) {
 			// unexpected start of frame
+			status_error(STATUS_ERR_PROTOCOL);
 			_err = 1;
 			continue;
         }
@@ -150,6 +152,7 @@ void protocol_poll()
                     if (_chk == 0xff) {
 						_protocol_dispatch(_api, _len - 1);
 					} else {
+						status_error(STATUS_ERR_PROTOCOL);
 						_err = 1;
                     }
                     _pos = 0;
