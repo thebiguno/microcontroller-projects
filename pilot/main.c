@@ -1,8 +1,11 @@
+#include <util/delay.h>
 #include "main.h"
 
 int main(){
 
 	status_error(STATUS_ERR_RESET);
+	_delay_ms(500);
+	// error is cleared after all init is done
 	
 	uint64_t millis = 0;
 	uint8_t armed = 0x00;
