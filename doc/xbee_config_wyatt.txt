@@ -1,7 +1,7 @@
 (Pilot)
 SH : 13A200
 SL : 40494C5C
-BD : 6
+BD : 6			-- 57600
 CH : C
 ID : 42
 CE : 0
@@ -14,7 +14,7 @@ VR : 10E6
 (Controller)
 SH : 13A200
 SL : 406433A6
-BD : 6
+BD : 5			-- 38400
 CH : C
 ID : 42
 CE : 1

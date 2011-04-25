@@ -2,7 +2,7 @@ include ../build/variables.mk
 
 PROJECT=control
 MMCU=atmega644p
-F_CPU=6000000
+F_CPU=8000000
 SOURCES=main.c ../lib/timer/timer_0.c ../lib/ring/ring.c
 AVRDUDE_PROGRAMMER=usbtiny
 

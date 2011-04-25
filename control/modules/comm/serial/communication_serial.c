@@ -3,8 +3,8 @@
 #include "../../../lib/serial1/serial1.h"
 
 void comm_init(){
-	serial_init_b(9600);	// link to xbee
-	serial1_init_b(9600);	// link to pc
+	serial_init_b(38400);	// link to xbee
+	serial1_init_b(38400);	// link to pc
 }
 
 void comm_pilot_write(uint8_t b) {
