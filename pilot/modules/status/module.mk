@@ -1,1 +1,1 @@
-SOURCES += modules/status/status_shift.c
+SOURCES += modules/status/status_direct.c

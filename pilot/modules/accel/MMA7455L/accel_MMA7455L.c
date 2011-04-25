@@ -55,6 +55,10 @@ void accel_init(){
 		message[6] = calibration_data[4];
 		message[7] = calibration_data[5];
 		i2c_start_transceiver_with_data(message, 8);
+	} else {
+		status_error(STATUS_ERR_ACCEL_CHECKSUM);
+		_delay_ms(1000);
+		status_error(0x00);
 	}
 
 	//Read in AVERAGE_SAMPLE_SIZE readings so that our initial average is sane.

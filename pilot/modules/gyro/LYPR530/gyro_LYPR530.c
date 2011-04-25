@@ -27,6 +27,10 @@ void gyro_init(){
 		calibrated_values[1] = ((uint16_t) calibration_data[2] << 8) + calibration_data[3];
 		// calibrated_values[2] = ((uint16_t) calibration_data[4] << 8) + calibration_data[5];
 	} else {
+		status_error(STATUS_ERR_GYRO_CHECKSUM);
+		_delay_ms(1000);
+		status_error(0x00);
+
 		//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
 		calibrated_values[0] = 382;
 		calibrated_values[1] = 382;

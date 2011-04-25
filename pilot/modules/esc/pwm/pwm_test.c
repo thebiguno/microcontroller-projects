@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "../esc.h"
-#include "lib/pwm/pwm.h"
+#include "../../../lib/pwm/pwm.h"
 
 int main (void){
 	//Do setup here
