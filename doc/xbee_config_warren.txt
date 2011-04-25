@@ -1,7 +1,7 @@
 (Pilot)
 SH : 13A200
 SL : 4049703F
-BD : 4			-- 19200
+BD : 6			-- 57600
 CH : C
 ID : 2C02
 CE : 0
@@ -12,7 +12,7 @@ VR : 10E6 		-- 1.xE6 non-beacon
 (Controller)
 SH : 13A200
 SL : 404970A1
-BD : 4
+BD : 3			-- 9600
 CH : C
 ID : 2C02
 CE : 1
