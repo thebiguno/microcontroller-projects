@@ -10,7 +10,7 @@
 #include "lib/glcd/glcd.h"
 #include "lib/glcd/draw.h"
 #include "lib/glcd/glcd_st7565r.h"
-#include "lib/glcd/fonts/tiny.h"
+#include "lib/glcd/fonts/xsmall.h"
 #include "lib/glcd/fonts/small.h"
 #include "lib/glcd/fonts/medium.h"
 #include "lib/glcd/fonts/large.h"
@@ -41,14 +41,14 @@ int main (void){
 //	glcd_draw_rectangle(100, 5, 110, 30, 1, OVERLAY_XOR);
 //	glcd_draw_rectangle(40, 12, 70, 25, 1, OVERLAY_NAND);
 
-//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", 3, 5, font_tiny, codepage_tiny, OVERLAY_OR);
-//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", 5, 7, font_small, codepage_small, OVERLAY_OR);
+//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_tiny, codepage_tiny, OVERLAY_OR);
+//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_small, OVERLAY_OR);
 
-//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", 7, 9, font_medium, codepage_medium, OVERLAY_OR);
-//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", 7, 11, font_large, codepage_large, OVERLAY_OR);
-//	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
+//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);
+//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+//	glcd_draw_text(1, 10, "0123456789", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
 	
-	glcd_draw_text(1, 10, "0123", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
+	glcd_draw_text(1, 10, "0123", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, font_xlarge, codepage_xlarge, OVERLAY_OR);
 	
 //	glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	

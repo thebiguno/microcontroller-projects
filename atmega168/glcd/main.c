@@ -13,7 +13,7 @@
 #include "lib/glcd/fonts/xlarge.h"
 #include "lib/glcd/fonts/large.h"
 #include "lib/glcd/fonts/medium.h"
-#include "lib/glcd/fonts/tiny.h"
+#include "lib/glcd/fonts/xsmall.h"
 
 prog_uchar battery_0[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc6,0x3f};
 prog_uchar battery_1[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc7,0xff};
@@ -39,19 +39,17 @@ int main (void){
 	glcd_draw_square(100, 5, 110, 30, 1, OVERLAY_XOR);
 	glcd_draw_square(40, 12, 70, 25, 1, OVERLAY_NAND);
 	*/
-	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", 7, 11, font_large, codepage_large, OVERLAY_OR);
-	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", 7, 11, font_large, codepage_large, OVERLAY_OR);
-//	glcd_draw_text(1, 10, "0123456789", 7, 9, font_large, codepage_large, OVERLAY_OR);
+	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+//	glcd_draw_text(1, 10, "0123456789", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
 	
-	//glcd_draw_text(1, 10, "0123", 11, 17, font_xlarge, codepage_xlarge, OVERLAY_OR);
+	//glcd_draw_text(1, 10, "0123", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, font_xlarge, codepage_xlarge, OVERLAY_OR);
 	
 	//glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
 //	glcd_draw_bitmap(100, 15, 5, 9, battery_0, OVERLAY_OR);
 	
 	glcd_write_buffer();
-	
-	DDRB |= _BV(PINB0);
 	
 //	glcd_set_contrast(0x20);
 	
@@ -61,10 +59,6 @@ int main (void){
 	
 	prog_uchar* battery = battery_6;
 	while(1){
-		PORTB = ~PORTB;
-		_delay_ms(500);
-
-	/*
 		counter--;	
 		if (counter == 0) battery = battery_0;
 		if (counter == 1) battery = battery_1;
@@ -81,6 +75,5 @@ int main (void){
 		if (counter == 0) {
 			counter = 7;
 		}
-	*/
 	}
 }
