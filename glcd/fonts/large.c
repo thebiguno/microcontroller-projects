@@ -21,9 +21,7 @@ prog_uchar codepage_large[] PROGMEM = {
 };
 
 /*
- * A 7x5 pixel font.  The bits are read across from top left to top right, then down
- * to the next line.  Each character is represented by five 8bit unsigned integers, with 
- * bit 8 of the first ignored.
+ * A 7x11 pixel font.
  */
 prog_uchar font_large[] PROGMEM = {
 	0x07,0x1f,0x77,0xc7,0x9f,0x7f,0xbe,0x7d,0xdf,0x1c,	//0, 0x0
