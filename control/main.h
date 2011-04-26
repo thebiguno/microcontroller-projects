@@ -28,6 +28,7 @@ uint16_t dt;
 
 #include "modules/control/control.h"
 #include "modules/comm/communication.h"
+#include "modules/status/status.h"
 #include "modules/protocol/protocol.h"
 
 #endif

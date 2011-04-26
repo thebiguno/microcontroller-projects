@@ -5,6 +5,7 @@ int main (void){
 	timer_init(); 
 	comm_init();
 	control_init();
+	status_init();
 
 	uint64_t millis = timer_millis();
 	uint16_t t = 0;

@@ -18,6 +18,7 @@ CLIBS+=-lm
 include modules/comm/module.mk
 include modules/control/module.mk
 include modules/protocol/module.mk
+include modules/status/module.mk
 include modules/util/module.mk
 
 include ../build/targets.mk
