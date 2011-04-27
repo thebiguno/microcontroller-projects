@@ -68,25 +68,18 @@ void _st7565r_data(uint8_t data){
 /*
  * Implementation of the glcd API.  
  * 
- * Writes the entire buffer to the LCD.  Resets the line to the start position, 
- * and iterates through the entire buffer.
+ * Writes the a subset of the buffer to the LCD.
  */
-void glcd_write_buffer(){
-	for (uint8_t y = 0; y < (LCD_HEIGHT >> 3); y++){
-		_st7565r_command(0xB0 | y);	//Set page
-		_st7565r_command(0x10);	//Set column
-		_st7565r_command(0x00);	
-		for (uint8_t x = 0; x < LCD_WIDTH; x++){	
-			_st7565r_data(_st7565r_buffer[x][y]);
-		}
-	}
-}
-
 void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
+	if (x1 >= LCD_WIDTH) x1 = LCD_WIDTH - 1;
+	if (x2 >= LCD_WIDTH) x1 = LCD_WIDTH - 1;
+	if (y1 >= LCD_HEIGHT) y1 = LCD_HEIGHT - 1;
+	if (y2 >= LCD_HEIGHT) y2 = LCD_HEIGHT - 1;
+	
 	for (uint8_t y = (y1 >> 3); y <= (y2 >> 3); y++){
 		_st7565r_command(0xB0 | y);	//Set page
-		_st7565r_command(0x10);	//Set column
-		_st7565r_command(0x00 | x1);	
+		_st7565r_command(0x10 | (x1 >> 4));	//Set column; 4 MSB
+		_st7565r_command(0x00 | (x1 & 0xF));	// Set column; 4 LSB
 		for (uint8_t x = x1; x <= x2; x++){	
 			if (x < LCD_WIDTH && y < (LCD_HEIGHT >> 3)){
 				_st7565r_data(_st7565r_buffer[x][y]);
@@ -95,6 +88,27 @@ void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
 	}
 }
 
+/*
+ * Implementation of the glcd API.  
+ * 
+ * Writes the entire buffer to the LCD.  Resets the line to the start position, 
+ * and iterates through the entire buffer.
+ */
+void glcd_write_buffer(){
+	glcd_write_buffer_bounds(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+	/*
+	for (uint8_t y = 0; y < (LCD_HEIGHT >> 3); y++){
+		_st7565r_command(0xB0 | y);	//Set page
+		_st7565r_command(0x10);	//Set column
+		_st7565r_command(0x00);	
+		for (uint8_t x = 0; x < LCD_WIDTH; x++){	
+			_st7565r_data(_st7565r_buffer[x][y]);
+		}
+	}
+	*/
+}
+
+
 
 /*
  * Implementation of the glcd API.
@@ -102,14 +116,16 @@ void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
  * Sets the pixel at the given location in the buffer, using the given overlay mode.
  */
 void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t o){
-	if (o == OVERLAY_OR){
-		_st7565r_buffer[x][y >> 3] |= _BV(y & 0x7);
-	}
-	else if (o == OVERLAY_NAND){
-		_st7565r_buffer[x][y >> 3] &= ~_BV(y & 0x7);
-	}
-	else if (o == OVERLAY_XOR){
-		_st7565r_buffer[x][y >> 3] ^= _BV(y & 0x7);
+	if (x < LCD_WIDTH && y < LCD_HEIGHT){
+		if (o == OVERLAY_OR){
+			_st7565r_buffer[x][y >> 3] |= _BV(y & 0x7);
+		}
+		else if (o == OVERLAY_NAND){
+			_st7565r_buffer[x][y >> 3] &= ~_BV(y & 0x7);
+		}
+		else if (o == OVERLAY_XOR){
+			_st7565r_buffer[x][y >> 3] ^= _BV(y & 0x7);
+		}
 	}
 }
 
