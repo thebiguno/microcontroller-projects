@@ -82,6 +82,20 @@ void glcd_write_buffer(){
 	}
 }
 
+void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
+	for (uint8_t y = (y1 >> 3); y <= (y2 >> 3); y++){
+		_st7565r_command(0xB0 | y);	//Set page
+		_st7565r_command(0x10);	//Set column
+		_st7565r_command(0x00 | x1);	
+		for (uint8_t x = x1; x <= x2; x++){	
+			if (x < LCD_WIDTH && y < (LCD_HEIGHT >> 3)){
+				_st7565r_data(_st7565r_buffer[x][y]);
+			}
+		}
+	}
+}
+
+
 /*
  * Implementation of the glcd API.
  *
