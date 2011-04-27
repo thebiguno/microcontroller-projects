@@ -1,15 +1,15 @@
-include ../../../../../build/variables.mk
+include ../../build/variables.mk
 
-PROJECT=psx_test
-MMCU=atmega644p
-F_CPU=20000000
-SOURCES=psx_test.c control_psx.c ../../../lib/psx/psx.c ../../../lib/serial1/serial1.c ../../../lib/serial1/serial1_sync_rx.c ../../../lib/serial1/serial1_sync_tx.c
+PROJECT=glcd
+MMCU=atmega644
+F_CPU=8000000
+SOURCES=main.c lib/glcd/glcd_st7565r.c lib/glcd/draw.c lib/glcd/fonts/xsmall.c lib/glcd/fonts/small.c lib/glcd/fonts/medium.c lib/glcd/fonts/large.c lib/glcd/fonts/xlarge.c
 AVRDUDE_PROGRAMMER=usbtiny
 
-# The flags after -Wl... are to enable double format strings in printf
-CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99 -Wl,-u,vfprintf -lprintf_flt -lm 
+HFUSE=0xDF
+LFUSE=0xE2
 
-# You can also define anything here and it will override 
+# You can also define anything here and it will override
 # the definitions in variables.mk
 
-include ../../../../../build/targets.mk
+include ../../build/targets.mk

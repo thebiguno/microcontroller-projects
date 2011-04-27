@@ -1,70 +1,90 @@
 /*
- * Sample skeleton source file.
+ * PS2 Controller test.  Connect the wires as indicated in the psx_init() function call.
  */
 
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "../../../pins/644.h"
-#include "../control.h"
-#include "../../../lib/psx/psx.h"
-#include "../../../lib/serial1/serial1.h"
+#include "lib/glcd/glcd.h"
+#include "lib/glcd/draw.h"
+#include "lib/glcd/glcd_st7565r.h"
+#include "lib/glcd/fonts/xsmall.h"
+#include "lib/glcd/fonts/small.h"
+#include "lib/glcd/fonts/medium.h"
+#include "lib/glcd/fonts/large.h"
+#include "lib/glcd/fonts/xlarge.h"
 
-char temp[32];
 
-control_t control, last_control;
-uint16_t buttons, last_buttons;
+
+prog_uchar battery_0[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc6,0x3f};
+prog_uchar battery_1[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xc7,0xff};
+prog_uchar battery_2[] PROGMEM = {0x0e,0xfc,0x63,0x18,0xff,0xff};
+prog_uchar battery_3[] PROGMEM = {0x0e,0xfc,0x63,0x1f,0xff,0xff};
+prog_uchar battery_4[] PROGMEM = {0x0e,0xfc,0x63,0xff,0xff,0xff};
+prog_uchar battery_5[] PROGMEM = {0x0e,0xfc,0x7f,0xff,0xff,0xff};
+prog_uchar battery_6[] PROGMEM = {0x0e,0xff,0xff,0xff,0xff,0xff};
 
 int main (void){
 	//Do setup here
-
-	serial1_init_b(9600);
-	serial1_write_s("--reset--\n\r");
+//	_delay_ms(500);
 	
-	control_init();
-	serial1_write_s("--init--\n\r");
+	st7565r_init(&PORTA, PINA3, &PORTA, PINA2, &PORTA, PINA1, &PORTA, PINA0);
+	
+//	_delay_ms(500);
+	
+//	glcd_draw_line(0, 0, 128, 32, OVERLAY_OR);
+//	glcd_draw_line(0, 32, 128, 0, OVERLAY_OR);
+	
+//	glcd_draw_rectangle(10, 10, 20, 20, DRAW_UNFILLED, OVERLAY_OR);
+//	glcd_draw_rectangle(100, 5, 110, 30, DRAW_FILLED, OVERLAY_XOR);
+//	glcd_draw_rectangle(40, 12, 70, 25, DRAW_FILLED, OVERLAY_NAND);
 
-	//Main program loop
-	while (1){
+//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_tiny, codepage_tiny, OVERLAY_OR);
+//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_small, OVERLAY_OR);
 
-		_delay_ms(10);
+//	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);
+//	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+//	glcd_draw_text(1, 10, "0123456789", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+	
+//	glcd_draw_text(1, 10, "0123", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, font_xlarge, codepage_xlarge, OVERLAY_OR);
+	
+//	glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
+	
+//	glcd_draw_bitmap(100, 15, 5, 9, battery_0, OVERLAY_OR);
 
-		control_update();
-		control = control_read_analog();
-		buttons = control_button_state();
-//		uint16_t buttons_changed = control_button_state_changed();
-
-		if (control.pitch != last_control.pitch 
-				|| control.roll != last_control.roll 
-				|| control.yaw != last_control.yaw 
-				|| control.throttle != last_control.throttle){
-			last_control = control;
-
-			sprintf(temp, "%g", control.pitch);
-			serial1_write_s(temp);
-			serial1_write_s(", ");
-			sprintf(temp, "%g", control.roll);
-			serial1_write_s(temp);
-			serial1_write_s(", ");
-			sprintf(temp, "%g", control.yaw);
-			serial1_write_s(temp);
-			serial1_write_s(", ");
-			sprintf(temp, "%g", control.throttle);
-			serial1_write_s(temp);
-			serial1_write_s("\n\r");
-		}
+	//Entire buffer is filled
+	glcd_draw_rectangle(0, 0, 127, 31, DRAW_FILLED, OVERLAY_OR);
+	//Draw only segment of buffer
+	glcd_write_buffer_bounds(0, 3, 0, 9);
+	
+//	glcd_set_contrast(0x20);
+	
+	uint8_t counter = 7;
+	
+	//glcd_invert_display();
+	
+	prog_uchar* battery = battery_6;
+	while(1){
+		_delay_ms(500);
+		/*
+		counter--;	
+		if (counter == 0) battery = battery_0;
+		if (counter == 1) battery = battery_1;
+		if (counter == 2) battery = battery_2;
+		if (counter == 3) battery = battery_3;
+		if (counter == 4) battery = battery_4;
+		if (counter == 5) battery = battery_5;
+		if (counter == 6) battery = battery_6;
+	
+		glcd_draw_rectangle(98, 13, 106, 26, 1, OVERLAY_NAND);
+		glcd_draw_bitmap(100, 15, 5, 9, battery, OVERLAY_OR);
+		glcd_write_buffer();
 		
-		if (buttons != last_buttons) {
-            last_buttons = buttons;
-            
-            if ((buttons & POWER)) serial1_write_s(">");
-            if ((buttons & MODE_STABLE)) serial1_write_s("X");
-            if ((buttons & MODE_SPORT)) serial1_write_s("O");
-            serial1_write_s("\n\r");
+		if (counter == 0) {
+			counter = 7;
 		}
-
+		*/
 	}
 }
