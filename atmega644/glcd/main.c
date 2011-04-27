@@ -37,9 +37,9 @@ int main (void){
 //	glcd_draw_line(0, 0, 128, 32, OVERLAY_OR);
 //	glcd_draw_line(0, 32, 128, 0, OVERLAY_OR);
 	
-//	glcd_draw_rectangle(10, 10, 20, 20, 0, OVERLAY_OR);
-//	glcd_draw_rectangle(100, 5, 110, 30, 1, OVERLAY_XOR);
-//	glcd_draw_rectangle(40, 12, 70, 25, 1, OVERLAY_NAND);
+//	glcd_draw_rectangle(10, 10, 20, 20, DRAW_UNFILLED, OVERLAY_OR);
+//	glcd_draw_rectangle(100, 5, 110, 30, DRAW_FILLED, OVERLAY_XOR);
+//	glcd_draw_rectangle(40, 12, 70, 25, DRAW_FILLED, OVERLAY_NAND);
 
 //	glcd_draw_text(1, 1,  " ABCDEFGHIJKLMN", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_tiny, codepage_tiny, OVERLAY_OR);
 //	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_small, OVERLAY_OR);
@@ -48,15 +48,16 @@ int main (void){
 //	glcd_draw_text(1, 15, "OPQRSTUVWXYZ,.!?", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
 //	glcd_draw_text(1, 10, "0123456789", FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
 	
-	glcd_draw_text(1, 10, "0123", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, font_xlarge, codepage_xlarge, OVERLAY_OR);
+//	glcd_draw_text(1, 10, "0123", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, font_xlarge, codepage_xlarge, OVERLAY_OR);
 	
 //	glcd_draw_rectangle(0, 9, 128, 15, 1, OVERLAY_XOR);
 	
 //	glcd_draw_bitmap(100, 15, 5, 9, battery_0, OVERLAY_OR);
-	
-	glcd_write_buffer();
-	
-	DDRB |= _BV(PINB0);
+
+	//Entire buffer is filled
+	glcd_draw_rectangle(0, 0, 127, 31, DRAW_FILLED, OVERLAY_OR);
+	//Draw only segment of buffer
+	glcd_write_buffer_bounds(0, 3, 0, 9);
 	
 //	glcd_set_contrast(0x20);
 	
@@ -66,9 +67,8 @@ int main (void){
 	
 	prog_uchar* battery = battery_6;
 	while(1){
-		PORTB = ~PORTB;
 		_delay_ms(500);
-
+		/*
 		counter--;	
 		if (counter == 0) battery = battery_0;
 		if (counter == 1) battery = battery_1;
@@ -85,5 +85,6 @@ int main (void){
 		if (counter == 0) {
 			counter = 7;
 		}
+		*/
 	}
 }
