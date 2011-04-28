@@ -20,7 +20,7 @@ void status_init();
 void status_set_battery_level(double value);
 
 /*
- * Sets the throttle (percentage from 0.0 to 100.0 inclusive)
+ * Sets the throttle (double from 0.0 to 1.0 inclusive)
  */
 void status_set_throttle(double value);
 

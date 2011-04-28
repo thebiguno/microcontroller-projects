@@ -25,16 +25,17 @@ int main (void){
 		status_set_throttle(throttle);
 		status_set_armed(armed);
 		status_set_armed_time(time);
+		status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);
 		
 		battery_state-=5;
 		time += 1000;
-		pitch += (rand() / (double) RAND_MAX) - (RAND_MAX / 2) * 1.0;
-		roll += (rand() / (double) RAND_MAX) - (RAND_MAX / 2) * 1.0;
-		throttle += (rand() / (double) RAND_MAX) - (RAND_MAX / 2) * 1.0;
+		pitch += ((rand() / (double) RAND_MAX) * 10) - 5;
+		roll += ((rand() / (double) RAND_MAX) * 10) - 5;
+		throttle += 0.05;
 		armed ^= 0x1;
-		
-		if (throttle < 0) throttle = 0;
-		if (throttle > 100) throttle = 100;
+				
+		if (throttle < 0.0) throttle = 0;
+		if (throttle > 1.0) throttle = 0;
 		
 		_delay_ms(1000);
 	}
