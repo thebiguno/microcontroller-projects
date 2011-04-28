@@ -20,9 +20,10 @@ void status_init();
 void status_set_battery_level(double value);
 
 /*
- * Sets the throttle (double from 0.0 to 1.0 inclusive)
+ * Sets the throttle (double from 0.0 to 1.0 inclusive).  If 
+ * armed, then show throttle; otherwise show ---
  */
-void status_set_throttle(double value);
+void status_set_throttle(double value, uint8_t armed);
 
 /*
  * Sets the telemetry values on the display (double values, in degrees; level is 0)
@@ -32,12 +33,7 @@ void status_set_telemetry(double pitch, double roll);
 /*
  * Sets the motor values on the display (double value from 0.0 to 1.0)
  */
-void status_set_motors(double front, double right, double back, double left);
-
-/*
- * Sets armed if value != 0; unarmed if value == 0.
- */
-void status_set_armed(uint8_t armed);
+void status_set_motors(double left, double front, double right, double back);
 
 /*
  * Sets the current armed time, in milliseconds.
