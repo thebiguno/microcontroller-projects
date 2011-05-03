@@ -58,28 +58,28 @@ Pin	AVR	Chiindii Function
 13	OSC
 14	PD0	Serial RX -> XBee
 15	PD1	Serial TX -> XBee
-16	PD2
-17	PD3
-18	PD4	LED Shift Data
-19	PD5	LED Shift Clock
-20	PD6	LED Shift Latch
-21	PD7
+16	PD2	Status LED - Heartbeat
+17	PD3	Status LED - Armed
+18	PD4	Status LED - Rx
+19	PD5	Status LED - Tx
+20	PD6	Status LED - Error
+21	PD7	
 22	PC0	SCL -> Accelerometer
 23	PC1	SDA -> Accelerometer
-24	PC2	LED port (left / red)
-25	PC3	LED starboard (right / green)
+24	PC2	
+25	PC3	
 26	PC4
-27	PC5
-28	PC6
-29	PC7
+27	PC5	Running Lights - Data
+28	PC6	Running Lights - Clock
+29	PC7	Running Lights - Latch
 30	AVCC
 31	GND
 32	AREF
-33	PA7
+33	PA7	Battery Level
 34	PA6
 35	PA5
 36	PA4
-37	PA3
+37	PA3	
 38	PA2	Gyro HP Reset
 39	PA1	Gyro Y
 40	PA0	Gyro X
