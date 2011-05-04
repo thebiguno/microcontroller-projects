@@ -31,3 +31,11 @@ SR131-IB-ND		Box (for pilot)			1x	$6
 296-1600-5-ND		Shift Register / Latch		10x	$6
 4608X-1-271LF-ND	270 Ω bussed x7			6x	$2		6x	$2
 497-6271-5-ND		LED Shift Driver		2x	$4		2x	$4
+
+(Maybe?)
+A34203-ND		8-wire Ribbon Cable Connector	2x	$4
+1-103957-4-ND		4-wire Ribbon Cable Connector	2x	$2
+296-17764-5-ND		Boost / Buck Converter		2x	$2
+TL499ACP-ND		Power Supply Converter		2x	$5
+811-2030-ND		100uH Inductor			5x	$2
+754-1492-ND		RGB LED				2x	$4
