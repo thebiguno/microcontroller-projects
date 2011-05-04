@@ -28,6 +28,7 @@ A26509-40-ND		Male Header			6x	$10
 365-1204-ND		Yellow LED			6x	$1
 365-1203-ND		Red LED				6x	$1
 SR131-IB-ND		Box (for pilot)			1x	$6
+296-1600-5-ND		Shift Register / Latch		10x	$6
 
 (Maybe?)
 A34203-ND		8-wire Ribbon Cable Connector	2x	$4
