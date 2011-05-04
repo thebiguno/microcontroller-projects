@@ -17,16 +17,17 @@ HobbyKing:
 Digikey:
 Part			Description			WO Num	WO Price	WJ Num	WK Price
 631-1080-ND		3.6864MHz Crystal		4x	$4
-X138-ND			9.216MHz Crystal		4x	$4
+X138-ND			9.216MHz Crystal		4x	$4		4x	$4
 338-1699-ND		47uF Caps			10x	$2
 493-1021-ND		100uF Caps			10x	$2
 493-1703-ND		560uF Caps			10x	$3
-A26509-40-ND		Male Header			6x	$10
-929974E-01-36-ND	Female Header			6x	$20
-365-1202-ND		Green LED			6x	$3
-365-1201-ND		Blue LED			6x	$3
-365-1204-ND		Yellow LED			6x	$1
-365-1203-ND		Red LED				6x	$1
+A26509-40-ND		Male Header			6x	$10		4x
+929974E-01-36-ND	Female Header			6x	$20		4x
+365-1202-ND		Green LED			6x	$3		6x	$3
+365-1201-ND		Blue LED			6x	$3		6x	$3
+365-1204-ND		Yellow LED			6x	$1		6x	$1
+365-1203-ND		Red LED				6x	$1		6x	$1
 SR131-IB-ND		Box (for pilot)			1x	$6
 296-1600-5-ND		Shift Register / Latch		10x	$6
-
+4608X-1-271LF-ND	270 Ω bussed x7			6x	$2		6x	$2
+497-6271-5-ND		LED Shift Driver		2x	$4		2x	$4
