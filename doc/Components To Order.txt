@@ -31,6 +31,10 @@ SR131-IB-ND		Box (for pilot)			1x	$6
 296-1600-5-ND		Shift Register / Latch		10x	$6
 4608X-1-271LF-ND	270 Ω bussed x7			6x	$2		6x	$2
 497-6271-5-ND		LED Shift Driver		2x	$4		2x	$4
+Q2F116B-ND		1/16" Shrink Tubing		6x	$2		6x	$2
+Q2F018B-ND		1/8" Shrink Tubing		6x	$2		6x	$2
+Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
+Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
 
 (Maybe?)
 A34203-ND		8-wire Ribbon Cable Connector	2x	$4
