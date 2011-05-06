@@ -19,6 +19,11 @@ typedef struct state {
 	uint8_t buf[MAX_SIZE];
 } state_t;
 
+// Set bits as messages sent / recieved.  Cleared by main 
+// calling protocol_clear_activity_state().  Bits interpreted
+// as PROTOCOL_COMM_{RX|TX}_{PILOT|PC} in protocol.h
+static uint8_t comm_state = 0; 
+
 static state_t pilot;		// messages coming in from the pilot
 static state_t pc;			// messages coming in from the pc
 
@@ -34,6 +39,8 @@ static void _protocol_send_byte_to_pc(uint8_t b, uint8_t escape){
 }
 
 static void protocol_send_message_to_pc(uint8_t cmd, uint8_t *bytes, uint8_t length){
+	comm_state |= PROTOCOL_COMM_TX_PC;
+
 	_protocol_send_byte_to_pc(START, 0);
 	_protocol_send_byte_to_pc(length + 1, 1);
 	_protocol_send_byte_to_pc(cmd, 0);
@@ -60,6 +67,8 @@ static void _protocol_send_byte_to_pilot(uint8_t b, uint8_t escape){
 }
 
 static void protocol_send_message_to_pilot(uint8_t cmd, uint8_t *bytes, uint8_t length){
+	comm_state |= PROTOCOL_COMM_TX_PILOT;
+
 	_protocol_send_byte_to_pilot(START, 0);
 	_protocol_send_byte_to_pilot(length + 1, 1);
 	_protocol_send_byte_to_pilot(cmd, 0);
@@ -201,3 +210,10 @@ void protocol_poll() {
 	protocol_poll_pc();
 }
 
+void protocol_clear_comm_state() {
+	comm_state = 0;
+}
+
+uint8_t protocol_comm_state(uint8_t bit) {
+	return comm_state & bit;
+}

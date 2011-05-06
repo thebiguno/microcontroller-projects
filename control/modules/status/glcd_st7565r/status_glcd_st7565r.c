@@ -26,7 +26,8 @@
 #define STATUS_BATTERY_PILOT_Y		22
 #define STATUS_BATTERY_CONTROL_X	75
 #define STATUS_BATTERY_CONTROL_Y	22
-
+#define STATUS_COMM_X				75
+#define STATUS_COMM_Y				15
 
 //Temp buffer for printf
 char temp[16];
@@ -157,4 +158,19 @@ void status_set_armed_time(uint32_t millis){
 	
 	//Flush
 	glcd_write_buffer_bounds(STATUS_TIME_X, STATUS_TIME_Y + 6, STATUS_TIME_X + 30, STATUS_TIME_Y + 13);
+}
+
+void status_set_comm_state(uint8_t tx_pilot, uint8_t rx_pilot, uint8_t tx_pc, uint8_t rx_pc){
+	//Clear existing
+	glcd_draw_rectangle(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 36, STATUS_COMM_Y + 5, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write values
+	if (tx_pilot) glcd_draw_text(STATUS_COMM_X, STATUS_COMM_Y, "TX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	if (rx_pilot) glcd_draw_text(STATUS_COMM_X + 9, STATUS_COMM_Y, "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	if (tx_pc) glcd_draw_text(STATUS_COMM_X + 18, STATUS_COMM_Y, "TX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	if (rx_pc) glcd_draw_text(STATUS_COMM_X + 27, STATUS_COMM_Y, "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	
+	//Flush
+	glcd_write_buffer_bounds(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 36, STATUS_COMM_Y + 5);
+
 }

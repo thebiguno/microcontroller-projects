@@ -46,4 +46,9 @@ void status_set_motors(double left, double front, double right, double back);
  */
 void status_set_armed_time(uint32_t millis);
 
+/*
+ * Sets rx / tx icons depending on communication status
+ */
+void status_set_comm_state(uint8_t tx_pilot, uint8_t rx_pilot, uint8_t tx_px, uint8_t rx_pc);
+
 #endif

@@ -100,6 +100,13 @@ int main (void){
 			status_set_throttle(control.throttle, armed);
 			status_set_armed_time(armed_time);
 //			status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);			
+
+			status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX_PILOT), 
+					protocol_comm_state(PROTOCOL_COMM_RX_PILOT), 
+					protocol_comm_state(PROTOCOL_COMM_TX_PC), 
+					protocol_comm_state(PROTOCOL_COMM_RX_PC));
+					
+			protocol_clear_comm_state();
 		}
     }
 }
