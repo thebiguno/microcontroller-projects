@@ -17,18 +17,35 @@ HobbyKing:
 Digikey:
 Part			Description			WO Num	WO Price	WJ Num	WK Price
 631-1080-ND		3.6864MHz Crystal		4x	$4
-X138-ND			9.216MHz Crystal		4x	$4
+X138-ND			9.216MHz Crystal		4x	$4		4x	$4
 338-1699-ND		47uF Caps			10x	$2
 493-1021-ND		100uF Caps			10x	$2
 493-1703-ND		560uF Caps			10x	$3
-A26509-40-ND		Male Header			6x	$10
-929974E-01-36-ND	Female Header			6x	$20
-365-1202-ND		Green LED			6x	$3
-365-1201-ND		Blue LED			6x	$3
-365-1204-ND		Yellow LED			6x	$1
-365-1203-ND		Red LED				6x	$1
+A26509-40-ND		Male Header			6x	$10		4x
+929974E-01-36-ND	Female Header			6x	$20		4x
+365-1202-ND		Green LED			6x	$3		6x	$3
+365-1201-ND		Blue LED			6x	$3		6x	$3
+365-1204-ND		Yellow LED			6x	$1		6x	$1
+365-1203-ND		Red LED				6x	$1		6x	$1
 SR131-IB-ND		Box (for pilot)			1x	$6
 296-1600-5-ND		Shift Register / Latch		10x	$6
+4606X-1-820LF-ND	82Ω bussed x5 (Green / Blue)	5x	$1		5x	$1
+4606X-1-121LF-ND	120Ω bussed x5 (Red / Yellow)	5x	$1		5x	$1
+497-6271-5-ND		LED Shift Driver		2x	$4		2x	$4
+Q2F116B-ND		1/16" Shrink Tubing		6x	$2		6x	$2
+Q2F018B-ND		1/8" Shrink Tubing		6x	$2		6x	$2
+Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
+Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
+SW627-ND		Power Switch			5x	$7		5x	$7
+
+(Find Before Ordering)
+Wire (Rona?)
+Battery Conector
+Logic connectors 
+	Control Battery Jack / Plug	A31002-ND / A30892-ND ?
+	Pilot Power (from battery)	Same as above?
+	PWM Out				Same as above?
+	LED Out				Same as above?
 
 (Maybe?)
 A34203-ND		8-wire Ribbon Cable Connector	2x	$4
@@ -37,4 +54,3 @@ A34203-ND		8-wire Ribbon Cable Connector	2x	$4
 TL499ACP-ND		Power Supply Converter		2x	$5
 811-2030-ND		100uH Inductor			5x	$2
 754-1492-ND		RGB LED				2x	$4
-

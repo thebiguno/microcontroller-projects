@@ -68,10 +68,10 @@ Pin	AVR	Chiindii Function
 23	PC1	SDA -> Accelerometer
 24	PC2	
 25	PC3	
-26	PC4
-27	PC5	Running Lights - Data
-28	PC6	Running Lights - Clock
-29	PC7	Running Lights - Latch
+26	PC4	Running Lights - Left
+27	PC5	Running Lights - Front
+28	PC6	Running Lights - Right
+29	PC7	Running Lights - Back
 30	AVCC
 31	GND
 32	AREF
