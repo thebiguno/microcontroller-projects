@@ -95,7 +95,6 @@ int main (void){
 			millis_last_status = millis;
 			
 //			status_set_pilot_battery_level(battery_state / (double) 0xff);
-//			status_set_control_battery_level(battery_state / (double) 0xff);
 //			status_set_telemetry(pitch, roll);
 			status_set_throttle(control.throttle, armed);
 			status_set_armed_time(armed_time);
