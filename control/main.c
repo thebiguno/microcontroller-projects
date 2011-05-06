@@ -36,7 +36,16 @@ int main (void){
 		protocol_poll();
 
 		control_update();
-		control_t control = control_read_analog();
+		control_t control;
+		if (armed){
+			control = control_read_analog();
+		}
+		else {
+			control.pitch = 0;
+			control.roll = 0;
+			control.yaw = 0;
+			control.throttle = 0;
+		}
 		uint16_t button_state = control_button_state();
 		uint16_t button_changed = control_button_state_changed();
 		
@@ -44,9 +53,10 @@ int main (void){
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
+			control_reset_throttle();
+			
 			if (!armed) {
 				protocol_send_kill();
-				control_reset_throttle();
 			}
 		}
 		
