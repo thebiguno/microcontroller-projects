@@ -1,18 +1,18 @@
 HobbyKing:
-  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8247			$12	$12
-  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=11060		$20	$20
-  2x 3S1P 4000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=7634			$20	$40
-  3x 3S1P 3000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8851			$18	$54
-  6x 3S1P 1600mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6539			$9	$54
-  10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163			$6	$60
-  5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457			$7	$35
-* 5x ESC (20A)		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6548			$7.80	$39
-* 5x Motor		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6247			$9	$45
-  6x Motor		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=4321			$5.50	$33	
-  1x XT60 Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572			$3.50	$3.50
-  1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255		$4.50	$4.50
-* 5x prop/shaft adapter	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=8890			$1.80	$9
-  1x programming card	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=2169			$7	$7
+  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8247		$12	$12
+  1x Charger		http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=11060	$20	$20
+  2x 3S1P 4000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=7634		$20	$40
+  3x 3S1P 3000mAH 20C	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=8851		$18	$54
+  6x 3S1P 1600mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6539		$9	$54
+  10x 3S1P 1000mAH 20C	http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=9163		$6	$60
+  5x ESC (18A)		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=6457		$7	$35
+* 5x ESC (20A)		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6548		$7.80	$39
+* 5x Motor		http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=6247		$9	$45
+  6x Motor		http://hobbycity.com/hobbyking/store/uh_viewItem.asp?idProduct=4321		$5.50	$33	
+  1x XT60 Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=9572		$3.50	$3.50
+  1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255	$4.50	$4.50
+* 5x prop/shaft adapter	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=8890		$1.80	$9
+  1x programming card	http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idProduct=2169		$7	$7
 
 Digikey:
 Part			Description			WO Num	WO Price	WJ Num	WK Price
@@ -21,8 +21,9 @@ X138-ND			9.216MHz Crystal		4x	$4		4x	$4
 338-1699-ND		47uF Caps			10x	$2
 493-1021-ND		100uF Caps			10x	$2
 493-1703-ND		560uF Caps			10x	$3
-A26509-40-ND		Male Header			6x	$10		4x
-929974E-01-36-ND	Female Header			6x	$20		4x
+P5143-ND		2200uF Caps			2x	$2
+A26509-40-ND		Male Header			6x	$9		4x	$6
+929974E-01-36-ND	Female Header			6x	$15		4x	$10
 365-1202-ND		Green LED			6x	$3		6x	$3
 365-1201-ND		Blue LED			6x	$3		6x	$3
 365-1204-ND		Yellow LED			6x	$1		6x	$1
@@ -37,6 +38,7 @@ Q2F018B-ND		1/8" Shrink Tubing		6x	$2		6x	$2
 Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
 Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
 SW627-ND		Power Switch			5x	$7		5x	$7
+507-1224-ND		Fuse (for multimeter)		10x	$2		(Do you want to split?)
 
 (Find Before Ordering)
 Wire (Rona?)
