@@ -26,6 +26,7 @@ typedef struct control {
 
 uint16_t dt;
 
+#include "modules/battery/battery.h"
 #include "modules/control/control.h"
 #include "modules/comm/communication.h"
 #include "modules/status/status.h"

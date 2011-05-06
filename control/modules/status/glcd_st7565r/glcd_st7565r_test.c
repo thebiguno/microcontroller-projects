@@ -20,10 +20,10 @@ int main (void){
 	_delay_ms(500);
 	
 	while(1){
-		status_set_battery_level(battery_state / (double) 0xff);
+		status_set_pilot_battery_level(battery_state / (double) 0xff);
+		status_set_control_battery_level(battery_state / (double) 0xff);
 		status_set_telemetry(pitch, roll);
-		status_set_throttle(throttle);
-		status_set_armed(armed);
+		status_set_throttle(throttle, armed);
 		status_set_armed_time(time);
 		status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);
 		

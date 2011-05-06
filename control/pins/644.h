@@ -26,4 +26,6 @@
 #define PORT_LED_CRUISE			PORTC
 #define PIN_LED_CRUISE			PINC3
 
+#define ADC_BATTERY				7		//ADC 7, pin A7.
+
 #endif

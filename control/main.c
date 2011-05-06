@@ -6,19 +6,26 @@ int main (void){
 	comm_init();
 	control_init();
 	status_init();
+	battery_init();
 
 	uint64_t millis = timer_millis();
-	uint16_t t = 0;
+
+	//Used to send telemetry
+	uint64_t millis_last_telemetry = millis;
+	//Used to re-check battery level on controller
+	uint64_t millis_last_status_battery = millis;
+	//Used to update status
+	uint64_t millis_last_status = millis;
+	
 	uint8_t armed = 0;
+	uint64_t armed_time = 0;	//Running total; accumulated after disarmed command.
+	uint64_t last_armed_time_start = 0;
     
 	PORTD &= ~_BV(PIND5);		// off
 	DDRD |= _BV(PIND5);			// set armed pin to output mode
 
 	while (1){
-		uint64_t curr_millis = timer_millis();
-		dt = curr_millis - millis; // this is how long the last loop took
-		millis = curr_millis;
-		t += dt;
+		millis = timer_millis();
 
 		protocol_poll();
 
@@ -32,8 +39,12 @@ int main (void){
 			PORTD ^= _BV(PIND5); // toggle
 			
 			if (armed) {
-				t = 0;
-			} else {
+				//Start counting...
+				last_armed_time_start = millis;
+			}
+			else {
+				//Add this armed 'chunk' to the running total
+				armed_time = armed_time + (millis - last_armed_time_start);
 				protocol_send_kill();
 				control_reset_throttle();
 			}
@@ -44,10 +55,13 @@ int main (void){
 		}
 		
 		if (armed) {
+			//Update armed time
+			
+		
 			//Send control data
-			if (t > 50) {
+			if ((millis - millis_last_telemetry) > 50) {
 				protocol_send_control(control);
-				t = 0;
+				millis_last_telemetry = millis;
 			}
 		} else {
 			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
@@ -56,6 +70,31 @@ int main (void){
 			if (button_changed & CALIBRATE && button_state & CALIBRATE) { // rising edge, 0->1
 				protocol_send_calibrate();
 			}
+		}
+		
+		//TODO Update every 10 seconds or something longer... this is 1 second for debugging
+		if ((millis - millis_last_status_battery) > 1000){
+			millis_last_status_battery = millis;
+			
+			status_set_control_battery_level(battery_level());
+		}
+		
+		
+		//Update the status every quarter second
+		if ((millis - millis_last_status) > 250){
+			millis_last_status = millis;
+			
+//			status_set_pilot_battery_level(battery_state / (double) 0xff);
+//			status_set_control_battery_level(battery_state / (double) 0xff);
+//			status_set_telemetry(pitch, roll);
+			status_set_throttle(control.throttle, armed);
+			if (armed){
+				status_set_armed_time(armed_time + (millis - last_armed_time_start));
+			}
+			else {
+				status_set_armed_time(armed_time);
+			}
+//			status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);			
 		}
     }
 }

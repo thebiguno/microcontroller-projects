@@ -14,6 +14,7 @@ LFUSE=0xF7
 CLIBS+=-lm
 
 #Include each module
+include modules/battery/module.mk
 include modules/comm/module.mk
 include modules/control/module.mk
 include modules/protocol/module.mk

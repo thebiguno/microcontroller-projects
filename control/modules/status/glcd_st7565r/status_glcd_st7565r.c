@@ -12,18 +12,20 @@
 #include "../../../lib/glcd/fonts/large.h"
 #include "../../../lib/glcd/fonts/xlarge.h"
 
-#define STATUS_MOTORS_X		0
-#define STATUS_MOTORS_Y		0
-#define STATUS_THROTTLE_X	30
-#define STATUS_THROTTLE_Y	0
-#define STATUS_PITCH_X		75
-#define STATUS_PITCH_Y		0
-#define STATUS_ROLL_X		100
-#define STATUS_ROLL_Y		0
-#define STATUS_TIME_X		30
-#define STATUS_TIME_Y		18
-#define STATUS_BATTERY_X	105
-#define STATUS_BATTERY_Y	22
+#define STATUS_MOTORS_X				0
+#define STATUS_MOTORS_Y				0
+#define STATUS_THROTTLE_X			30
+#define STATUS_THROTTLE_Y			0
+#define STATUS_PITCH_X				75
+#define STATUS_PITCH_Y				0
+#define STATUS_ROLL_X				100
+#define STATUS_ROLL_Y				0
+#define STATUS_TIME_X				30
+#define STATUS_TIME_Y				18
+#define STATUS_BATTERY_PILOT_X		105
+#define STATUS_BATTERY_PILOT_Y		22
+#define STATUS_BATTERY_CONTROL_X	75
+#define STATUS_BATTERY_CONTROL_Y	22
 
 
 //Temp buffer for printf
@@ -40,7 +42,7 @@ void _status_reset(){
 	glcd_draw_text(STATUS_MOTORS_X, STATUS_MOTORS_Y, "Motors", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	glcd_draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, "Throttle", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y, "Time", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y, "Armed Time", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	
 	glcd_write_buffer();
@@ -55,19 +57,31 @@ void status_init(){
 	_status_reset();
 }
 
-void status_set_battery_level(double value){
+
+void status_set_battery_level(double value, uint8_t x, uint8_t y, char* name){
 	//Clear existing
-	glcd_draw_rectangle(STATUS_BATTERY_X, STATUS_BATTERY_Y, STATUS_BATTERY_X + 21, STATUS_BATTERY_Y + 9, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(x, y, x + 21, y + 9, DRAW_FILLED, OVERLAY_NAND);
 	
 	//Redraw edge
-	glcd_draw_rectangle(STATUS_BATTERY_X, STATUS_BATTERY_Y, STATUS_BATTERY_X + 20, STATUS_BATTERY_Y + 8, DRAW_UNFILLED, OVERLAY_OR);
-	glcd_draw_line(STATUS_BATTERY_X + 21, STATUS_BATTERY_Y + 2, STATUS_BATTERY_X + 21, STATUS_BATTERY_Y + 7, OVERLAY_OR);
+	glcd_draw_rectangle(x, y, x + 20, y + 8, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_line(x + 21, y + 2, x + 21, y + 7, OVERLAY_OR);
 	
 	//Fill according to level
-	glcd_draw_rectangle(STATUS_BATTERY_X + 1, STATUS_BATTERY_Y + 1, STATUS_BATTERY_X + 1 + (int) (value * 20), STATUS_BATTERY_Y + 7, DRAW_FILLED, OVERLAY_OR);
+	glcd_draw_rectangle(x + 1, y + 1, x + 1 + (int) (value * 20), y + 7, DRAW_FILLED, OVERLAY_OR);
+	
+	//Print name
+	glcd_draw_text(x + 2, y + 2, name, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_XOR);
 	
 	//Flush
-	glcd_write_buffer_bounds(STATUS_BATTERY_X, STATUS_BATTERY_Y, STATUS_BATTERY_X + 21, STATUS_BATTERY_Y + 9);
+	glcd_write_buffer_bounds(x, y, x + 21, y + 9);
+}
+
+void status_set_pilot_battery_level(double value){
+	status_set_battery_level(value, STATUS_BATTERY_PILOT_X, STATUS_BATTERY_PILOT_Y, "P");
+}
+
+void status_set_control_battery_level(double value){
+	status_set_battery_level(value, STATUS_BATTERY_CONTROL_X, STATUS_BATTERY_CONTROL_Y, "C");
 }
 
 void status_set_telemetry(double pitch, double roll){

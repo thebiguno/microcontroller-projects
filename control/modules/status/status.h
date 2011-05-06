@@ -15,9 +15,15 @@
 void status_init();
 
 /*
- * Sets the battery level (double from 0.0 to 1.0 inclusive)
+ * Sets the battery level for the pilot (double from 0.0 to 1.0 inclusive)
  */
-void status_set_battery_level(double value);
+void status_set_pilot_battery_level(double value);
+
+/*
+ * Sets the battery level for the control (double from 0.0 to 1.0 inclusive)
+ */
+void status_set_control_battery_level(double value);
+
 
 /*
  * Sets the throttle (double from 0.0 to 1.0 inclusive).  If 
