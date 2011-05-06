@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <math.h>
+#include <util/delay.h>
 #include "../lib/timer/timer.h"
 
 //Figure out which pin mapping to use

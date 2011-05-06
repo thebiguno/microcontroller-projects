@@ -9,6 +9,7 @@ int main (void){
 	battery_init();
 
 	uint64_t millis = timer_millis();
+	uint64_t last_millis = millis;
 
 	//Used to send telemetry
 	uint64_t millis_last_telemetry = millis;
@@ -18,14 +19,19 @@ int main (void){
 	uint64_t millis_last_status = millis;
 	
 	uint8_t armed = 0;
-	uint64_t armed_time = 0;	//Running total; accumulated after disarmed command.
-	uint64_t last_armed_time_start = 0;
+	uint64_t armed_time = 0;
     
 	PORTD &= ~_BV(PIND5);		// off
 	DDRD |= _BV(PIND5);			// set armed pin to output mode
 
 	while (1){
-		millis = timer_millis();
+		//Prevent the main loop from running more than every ms.
+		while (millis <= last_millis){
+			millis = timer_millis();
+		}
+		
+		dt = millis - last_millis; // this is how long the last loop took; must be at least 1.
+		last_millis = millis;
 
 		protocol_poll();
 
@@ -38,13 +44,7 @@ int main (void){
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
-			if (armed) {
-				//Start counting...
-				last_armed_time_start = millis;
-			}
-			else {
-				//Add this armed 'chunk' to the running total
-				armed_time = armed_time + (millis - last_armed_time_start);
+			if (!armed) {
 				protocol_send_kill();
 				control_reset_throttle();
 			}
@@ -56,7 +56,7 @@ int main (void){
 		
 		if (armed) {
 			//Update armed time
-			
+			armed_time += dt;
 		
 			//Send control data
 			if ((millis - millis_last_telemetry) > 50) {
@@ -88,12 +88,7 @@ int main (void){
 //			status_set_control_battery_level(battery_state / (double) 0xff);
 //			status_set_telemetry(pitch, roll);
 			status_set_throttle(control.throttle, armed);
-			if (armed){
-				status_set_armed_time(armed_time + (millis - last_armed_time_start));
-			}
-			else {
-				status_set_armed_time(armed_time);
-			}
+			status_set_armed_time(armed_time);
 //			status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);			
 		}
     }
