@@ -14,7 +14,7 @@
 static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
 static uint8_t running_average_pointer = 0;
 
-uint8_t message[8]; //Temporary array used for i2c communications
+static uint8_t message[8]; //Temporary array used for i2c communications
 
 static vector_t result; //Accel values passed back
 
