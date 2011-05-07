@@ -4,25 +4,12 @@ static uint8_t state = 0x00;
 static uint8_t error = 0x00;
 
 void status_init() {
-	// extrapolate ddr from port
-	// volatile uint8_t *_heartbeat_ddr = &PORT_STATUS_HEARTBEAT - 0x1;
-	// volatile uint8_t *_armed_ddr = &PORT_STATUS_ARMED - 0x1;
-	// volatile uint8_t *_tx_ddr = &PORT_STATUS_TX - 0x1;
-	// volatile uint8_t *_rx_ddr = &PORT_STATUS_RX - 0x1;
-	// volatile uint8_t *_err_ddr = &PORT_STATUS_ERR - 0x1;
-	// 
-	// // set all pins to output
-	// *_heartbeat_ddr |= _BV(PIN_STATUS_HEARTBEAT);
-	// *_armed_ddr |= _BV(PIN_STATUS_ARMED);
-	// *_tx_ddr |= _BV(PIN_STATUS_TX);
-	// *_rx_ddr |= _BV(PIN_STATUS_TX);
-	// *_err_ddr |= _BV(PIN_STATUS_ERR);
-	
-	DDRD |= _BV(PIND2);
-	DDRD |= _BV(PIND3);
-	DDRD |= _BV(PIND4);
-	DDRD |= _BV(PIND5);
-	DDRD |= _BV(PIND6);
+	// set all status pins to output
+	*(&PORT_STATUS_HEARTBEAT - 0x1) |= _BV(PIN_STATUS_HEARTBEAT);
+	*(&PORT_STATUS_ARMED - 0x1) |= _BV(PIN_STATUS_ARMED);
+	*(&PORT_STATUS_TX - 0x1) |= _BV(PIN_STATUS_TX);
+	*(&PORT_STATUS_RX - 0x1) |= _BV(PIN_STATUS_RX);
+	*(&PORT_STATUS_ERR - 0x1) |= _BV(PIN_STATUS_ERR);
 }
 
 void _status_out() {
