@@ -23,6 +23,9 @@ typedef struct state {
 // calling protocol_clear_activity_state().  Bits interpreted
 // as PROTOCOL_COMM_{RX|TX}_{PILOT|PC} in protocol.h
 static uint8_t comm_state = 0; 
+static double battery = 0;
+static double _vector[] = {0,0};
+static double _motors[] = {0,0,0,0};
 
 static state_t pilot;		// messages coming in from the pilot
 static state_t pc;			// messages coming in from the pc
@@ -128,20 +131,17 @@ void protocol_send_diag(char* s) {
 void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 	switch(cmd) {
 		case 'B':
-			double percent = convert_byte_to_percent(pilot.buf[0]);
-			// TODO update battery status
+			battery = convert_byte_to_percent(pilot.buf[0]);
 			break;
 		case 'T':
-			double x = convert_byte_to_radian(pilot.buf[0]);
-			double y = convert_byte_to_radian(pilot.buf[1]);
-			double z = convert_byte_to_radian(pilot.buf[2]);
-			double m1 = convert_byte_to_percent(pilot.buf[3]);
-			double m2 = convert_byte_to_percent(pilot.buf[4]);
-			double m3 = convert_byte_to_percent(pilot.buf[5]);
-			double m4 = convert_byte_to_percent(pilot.buf[6]);
-			// TODO update telemetry status
+			_vector[0] = convert_byte_to_radian(pilot.buf[0]);
+			_vector[1] = convert_byte_to_radian(pilot.buf[1]);
+			_motors[0] = convert_byte_to_percent(pilot.buf[3]);
+			_motors[1] = convert_byte_to_percent(pilot.buf[4]);
+			_motors[2] = convert_byte_to_percent(pilot.buf[5]);
+			_motors[3] = convert_byte_to_percent(pilot.buf[6]);
 			break;
-		}
+	}
 }
 
 /*
@@ -237,4 +237,16 @@ void protocol_clear_comm_state() {
 
 uint8_t protocol_comm_state(uint8_t bit) {
 	return comm_state & bit;
+}
+
+void protocol_get_motors(double motors[]) {
+	for (int i = 0; i < 4; i++) {
+		motors[i] = _motors[i];
+	}
+}
+
+void protocol_get_vector(double vector[]) {
+	for (int i = 0; i < 2; i++) {
+		vector[i] = _vector[i];
+	}
 }
