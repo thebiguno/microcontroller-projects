@@ -2,3 +2,6 @@
 *.hex
 *.out
 applet/
+doc/kicad/chiindii-cache.bak
+doc/kicad/chiindii-cache.lib
+
