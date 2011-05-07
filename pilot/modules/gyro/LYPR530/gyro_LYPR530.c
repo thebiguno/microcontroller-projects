@@ -37,11 +37,11 @@ void gyro_init(){
 		// calibrated_values[2] = 382;
 	}
 
-	uint8_t pins[2];
+	uint8_t pins[3];
 	pins[0] = PIN_GYRO_X;
 	pins[1] = PIN_GYRO_Y;
-	// pins[2] = PIN_GYRO_Z;
-	analog_init(pins, 2, ANALOG_AREF);
+	pins[2] = ADC_BATTERY;  //We init the battery check here too, since doing analog_init twice will kill first init settings
+	analog_init(pins, 3, ANALOG_AREF);
 }
 
 double _gyro_raw_to_rad(uint16_t raw, uint16_t calibrated_zero){

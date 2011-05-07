@@ -91,9 +91,9 @@ void status_set_telemetry(double pitch, double roll){
 	glcd_draw_rectangle(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 20, STATUS_ROLL_Y + 13, DRAW_FILLED, OVERLAY_NAND);	
 
 	//Write values
-	sprintf(temp, "%3.1d", (int8_t) pitch);
+	sprintf(temp, "%3.1d", (int8_t) (pitch * 57.2957795));
 	glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
-	sprintf(temp, "%3.1d", (int8_t) roll);
+	sprintf(temp, "%3.1d", (int8_t) (roll * 57.2957795));
 	glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
 	
 	//Flush

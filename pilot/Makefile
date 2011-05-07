@@ -19,6 +19,7 @@ CLIBS += -lm
 include modules/status/module.mk
 include modules/accel/module.mk
 include modules/attitude/module.mk
+include modules/battery/module.mk
 include modules/comm/module.mk
 include modules/esc/module.mk
 include modules/gyro/module.mk

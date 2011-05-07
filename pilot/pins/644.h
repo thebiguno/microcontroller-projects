@@ -42,6 +42,9 @@
 #define PORT_GYRO_HP_RESET		PORTA
 #define PIN_GYRO_HP_RESET		PINA2
 
+//ADC pin for battery level checking (connected via voltage divider to input battery source)
+#define ADC_BATTERY				7		//ADC 7, pin A7.
+
 //Note: I2C is referenced by the macro definitions SDA and SCL, and
 // should be cross-platform already.
 //SCL: PC0
