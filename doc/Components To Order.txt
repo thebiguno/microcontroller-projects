@@ -42,6 +42,7 @@ SW627-ND		Power Switch			5x	$7		5x	$7
 CH865-ND		Switch				5x	$7		5x	$7
 A30937-ND		8-position Conn. Header
 A31044-ND		8-position Conn. Recepticle
+433-1013-ND		Buzzer				2x	$3		?
 
 (Find Before Ordering)
 Wire (Rona?)
@@ -59,3 +60,8 @@ A34203-ND		8-wire Ribbon Cable Connector	2x	$4
 TL499ACP-ND		Power Supply Converter		2x	$5
 811-2030-ND		100uH Inductor			5x	$2
 754-1492-ND		RGB LED				2x	$4
+
+Rona:
+4x 4"	#10 screw
+4x 3/4"	#10 screws
+48" 1/2" aluminum
