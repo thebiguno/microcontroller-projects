@@ -225,3 +225,9 @@ void protocol_send_diag(char* s) {
 	protocol_send_message('D', packet, l);
 }
 
+void protocol_send_battery(double percent) {
+	uint8_t packet[1];
+	packet[0] = convert_percent_to_byte(percent);
+	protocol_send_message('B', packet, 1);
+}
+
