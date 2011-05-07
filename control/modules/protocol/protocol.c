@@ -125,7 +125,27 @@ void protocol_send_diag(char* s) {
 	protocol_send_message_to_pc('D', packet, l);
 }
 
+void _protocol_dispatch(uint8_t cmd, uint8_t length) {
+	switch(cmd) {
+		case 'B':
+			double percent = convert_byte_to_percent(pilot.buf[0]);
+			// TODO update battery status
+			break;
+		case 'T':
+			double x = convert_byte_to_radian(pilot.buf[0]);
+			double y = convert_byte_to_radian(pilot.buf[1]);
+			double z = convert_byte_to_radian(pilot.buf[2]);
+			double m1 = convert_byte_to_percent(pilot.buf[3]);
+			double m2 = convert_byte_to_percent(pilot.buf[4]);
+			double m3 = convert_byte_to_percent(pilot.buf[5]);
+			double m4 = convert_byte_to_percent(pilot.buf[6]);
+			// TODO update telemetry status
+			break;
+		}
+}
+
 /*
+ * intercept all messages from the pilot and dispatch them to the status module
  * copy all messages from source to destintation
  * messages are decoded and buffered so they can be retransmitted without interfering with messages from the controller
  * dest of 0x00 is pilot
@@ -178,6 +198,7 @@ static void _protocol_poll(uint8_t b, state_t *source, uint8_t dest){
 				if (dest == 0x00) {
 					protocol_send_message_to_pilot(source->api, source->buf, source->len - 1);
 				} else if (dest == 0x01) {
+					_protocol_dispatch(source->api, source->len - 1);
 					protocol_send_message_to_pc(source->api, source->buf, source->len - 1);
 				}
 			} else {
