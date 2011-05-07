@@ -239,6 +239,10 @@ uint8_t protocol_comm_state(uint8_t bit) {
 	return comm_state & bit;
 }
 
+double protocol_get_battery() {
+	return battery;
+}
+
 void protocol_get_motors(double motors[]) {
 	for (int i = 0; i < 4; i++) {
 		motors[i] = _motors[i];

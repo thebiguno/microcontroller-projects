@@ -41,4 +41,10 @@ void protocol_clear_comm_state();
  */
 uint8_t protocol_comm_state(uint8_t bit);
 
+double protocol_get_battery();
+
+void protocol_get_motors(double motors[]);
+
+void protocol_get_vector(double vector[]);
+
 #endif

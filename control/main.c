@@ -85,11 +85,14 @@ int main (void){
 			millis_last_status = millis;
 			
 			status_set_control_battery_level(battery_level());
-//			status_set_pilot_battery_level(battery_state / (double) 0xff);
-//			status_set_telemetry(pitch, roll);
+			status_set_pilot_battery_level(protocol_get_battery());
+			double bucket[] = {0,0,0,0};
+			protocol_get_vector(bucket);
+			status_set_telemetry(bucket[1], bucket[0]);
 			status_set_throttle(control.throttle, armed);
 			status_set_armed_time(armed_time);
-//			status_set_motors(rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX, rand() / (double) RAND_MAX);			
+			protocol_get_motors(bucket);
+			status_set_motors(bucket[0], bucket[1], bucket[2], bucket[3]);			
 
 			status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX_PILOT), 
 					protocol_comm_state(PROTOCOL_COMM_RX_PILOT), 
