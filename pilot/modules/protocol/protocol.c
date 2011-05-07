@@ -9,18 +9,18 @@
 
 #define MAX_SIZE 40
 
-uint8_t _pos;       // current position in the frame
-uint8_t _len;       // frame length
-uint8_t _api;       // frame api code
-uint8_t _chk;       // checksum
-uint8_t _esc;       // escape byte seen, unescape next byte
-uint8_t _err;       // error condition, ignore bytes until next frame start byte
-uint8_t _buf[MAX_SIZE];
+static uint8_t _pos;       // current position in the frame
+static uint8_t _len;       // frame length
+static uint8_t _api;       // frame api code
+static uint8_t _chk;       // checksum
+static uint8_t _esc;       // escape byte seen, unescape next byte
+static uint8_t _err;       // error condition, ignore bytes until next frame start byte
+static uint8_t _buf[MAX_SIZE];
 
-uint8_t _last_flight_cmd; // only for Attitude and Motor messages
-uint8_t _last_flight_val[4];
-uint8_t _telemetry_enabled = 0;
-uint8_t _raw_enabled = 0;
+static uint8_t _last_flight_cmd; // only for Attitude and Motor messages
+static uint8_t _last_flight_val[4];
+static uint8_t _telemetry_enabled = 0;
+static uint8_t _raw_enabled = 0;
 
 void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
