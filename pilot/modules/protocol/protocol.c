@@ -49,11 +49,11 @@ void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
 
 	_protocol_send_byte(checksum, 1);
 	
-	status_toggle(STATUS_MESSAGE_TX);
+	status_set(STATUS_MESSAGE_TX);
 }
 
 void _protocol_dispatch(uint8_t cmd, uint8_t length) {
-	status_toggle(STATUS_MESSAGE_RX);
+	status_set(STATUS_MESSAGE_RX);
 	switch(cmd) {
 		case 'A':
 		case 'M':

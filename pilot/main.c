@@ -11,6 +11,7 @@ int main(){
 	uint64_t millis = 0;
 	uint8_t armed = 0x00;
 	uint64_t last_telemetry = 0;
+	uint64_t last_status_clear = 0;
 	uint64_t last_battery = 0;	
 	vector_t sp = { 0,0,0 };		// ATTITUDE set point
 	double motor[4];				// MOTOR set point
@@ -108,11 +109,22 @@ int main(){
 
 			protocol_send_telemetry(pv, motor);
 			protocol_send_raw(g, a);
-			last_telemetry = curr_millis;
+			last_telemetry = curr_millis;			
 		}
+
+		if (curr_millis - last_status_clear > 500){
+			status_clear(STATUS_MESSAGE_RX);
+			status_clear(STATUS_MESSAGE_TX);
+			
+			last_status_clear = curr_millis;
+		}		
 		
 		if (curr_millis - last_battery > 5000){
 			protocol_send_battery(battery_level());
+			
+			status_clear(STATUS_MESSAGE_RX);
+			status_clear(STATUS_MESSAGE_TX);
+			
 			last_battery = curr_millis;
 		}		
 	}
