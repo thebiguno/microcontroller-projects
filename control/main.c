@@ -13,8 +13,6 @@ int main (void){
 
 	//Used to send telemetry
 	uint64_t millis_last_telemetry = millis;
-	//Used to re-check battery level on controller
-	uint64_t millis_last_status_battery = millis;
 	//Used to update status
 	uint64_t millis_last_status = millis;
 	
@@ -82,18 +80,11 @@ int main (void){
 			}
 		}
 		
-		//TODO Update every 10 seconds or something longer... this is 1 second for debugging
-		if ((millis - millis_last_status_battery) > 1000){
-			millis_last_status_battery = millis;
-			
-			status_set_control_battery_level(battery_level());
-		}
-		
-		
-		//Update the status every quarter second
-		if ((millis - millis_last_status) > 250){
+		//Update the status display
+		if ((millis - millis_last_status) > 100){
 			millis_last_status = millis;
 			
+			status_set_control_battery_level(battery_level());
 //			status_set_pilot_battery_level(battery_state / (double) 0xff);
 //			status_set_telemetry(pitch, roll);
 			status_set_throttle(control.throttle, armed);
