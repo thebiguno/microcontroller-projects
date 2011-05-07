@@ -88,7 +88,7 @@ int main (void){
 			status_set_pilot_battery_level(protocol_get_battery());
 			double bucket[] = {0,0,0,0};
 			protocol_get_vector(bucket);
-			status_set_telemetry(bucket[1], bucket[0]);
+			status_set_telemetry(bucket[0], bucket[1]);
 			status_set_throttle(control.throttle, armed);
 			status_set_armed_time(armed_time);
 			protocol_get_motors(bucket);
