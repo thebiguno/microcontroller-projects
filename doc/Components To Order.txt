@@ -39,6 +39,7 @@ Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
 Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
 SW627-ND		Power Switch			5x	$7		5x	$7
 507-1224-ND		Fuse (for multimeter)		10x	$2		(Do you want to split?)
+CH865-ND		Switch				5x	$7		5x	$7
 
 (Find Before Ordering)
 Wire (Rona?)
