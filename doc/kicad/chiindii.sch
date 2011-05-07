@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat May  7 11:29:26 2011
+EESchema Schematic File Version 2  date Sat May  7 17:14:09 2011
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -43,10 +43,10 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Notes 6850 10500 0    60   ~ 0
-V Div on AVR Tx
-Text Notes 6800 9550 0    80   ~ 0
-XBee
+Wire Wire Line
+	5050 3750 4800 3750
+Wire Wire Line
+	5050 3950 4800 3950
 Wire Notes Line
 	8950 9300 6600 9300
 Wire Notes Line
@@ -467,6 +467,23 @@ Wire Notes Line
 	7850 10600 7850 9850
 Wire Notes Line
 	7850 9850 6800 9850
+Wire Wire Line
+	4800 4050 5050 4050
+Wire Wire Line
+	4800 3850 5050 3850
+$Comp
+L CONN_4 P?
+U 1 1 4DC58285
+P 5400 3900
+F 0 "P?" V 5350 3900 50  0000 C CNN
+F 1 "To ESC" V 5450 3900 50  0000 C CNN
+	1    5400 3900
+	1    0    0    -1  
+$EndComp
+Text Notes 6850 10500 0    60   ~ 0
+V Div on AVR Tx
+Text Notes 6800 9550 0    80   ~ 0
+XBee
 $Comp
 L GND #PWR?
 U 1 1 4DC580BE
@@ -661,7 +678,7 @@ L CRYSTAL X?
 U 1 1 4DC57DA4
 P 2400 2950
 F 0 "X?" H 2400 3100 60  0000 C CNN
-F 1 "CRYSTAL" H 2400 2800 60  0000 C CNN
+F 1 "20MHz" H 2400 2800 60  0000 C CNN
 	1    2400 2950
 	0    1    1    0   
 $EndComp
@@ -843,7 +860,7 @@ L ATMEGA32-P IC?
 U 1 1 4DC56D87
 P 3800 4150
 F 0 "IC?" H 3000 5980 50  0000 L BNN
-F 1 "ATMEGA32-P" H 4000 2250 50  0000 L BNN
+F 1 "ATMega644" H 4000 2250 50  0000 L BNN
 F 2 "DIL40" H 4275 2175 50  0001 C CNN
 	1    3800 4150
 	1    0    0    -1  
