@@ -20,6 +20,7 @@ int main(){
 	comm_init();
 	timer_init();
 	gyro_init();
+	esc_init();
 	accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
 	
 	pid_init();
