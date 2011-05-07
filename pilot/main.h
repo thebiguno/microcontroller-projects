@@ -31,6 +31,7 @@ typedef struct vector {
 #include "modules/accel/accel.h"
 #include "modules/gyro/gyro.h"
 #include "modules/attitude/attitude.h"
+#include "modules/battery/battery.h"
 #include "modules/motor/motor.h"
 #include "modules/esc/esc.h"
 #include "modules/pid/pid.h"
