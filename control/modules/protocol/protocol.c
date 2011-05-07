@@ -196,8 +196,10 @@ static void _protocol_poll(uint8_t b, state_t *source, uint8_t dest){
 		if (source->pos == (source->len + 2)) {
 			if (source->chk == 0xff) {
 				if (dest == 0x00) {
+					comm_state |= PROTOCOL_COMM_RX_PC;
 					protocol_send_message_to_pilot(source->api, source->buf, source->len - 1);
 				} else if (dest == 0x01) {
+					comm_state |= PROTOCOL_COMM_RX_PILOT;
 					_protocol_dispatch(source->api, source->len - 1);
 					protocol_send_message_to_pc(source->api, source->buf, source->len - 1);
 				}
