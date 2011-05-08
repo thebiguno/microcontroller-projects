@@ -37,11 +37,6 @@ void status_set_throttle(double value, uint8_t armed);
 void status_set_telemetry(double pitch, double roll);
 
 /*
- * Sets the motor values on the display (double value from 0.0 to 1.0)
- */
-void status_set_motors(double left, double front, double right, double back);
-
-/*
  * Sets the current armed time, in milliseconds.
  */
 void status_set_armed_time(uint32_t millis);
@@ -49,6 +44,6 @@ void status_set_armed_time(uint32_t millis);
 /*
  * Sets rx / tx icons depending on communication status
  */
-void status_set_comm_state(uint8_t tx_pilot, uint8_t rx_pilot, uint8_t tx_px, uint8_t rx_pc);
+void status_set_comm_state(uint8_t tx, uint8_t rx);
 
 #endif
