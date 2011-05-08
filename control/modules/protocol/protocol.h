@@ -1,10 +1,8 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-#define PROTOCOL_COMM_TX_PILOT	_BV(0)
-#define PROTOCOL_COMM_RX_PILOT	_BV(1)
-#define PROTOCOL_COMM_TX_PC		_BV(2)
-#define PROTOCOL_COMM_RX_PC		_BV(3)
+#define PROTOCOL_COMM_TX	_BV(0)
+#define PROTOCOL_COMM_RX	_BV(1)
 
 #include <math.h>
 #include "../../main.h"

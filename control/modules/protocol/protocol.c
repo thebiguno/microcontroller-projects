@@ -42,8 +42,6 @@ static void _protocol_send_byte_to_pc(uint8_t b, uint8_t escape){
 }
 
 static void protocol_send_message_to_pc(uint8_t cmd, uint8_t *bytes, uint8_t length){
-	comm_state |= PROTOCOL_COMM_TX_PC;
-
 	_protocol_send_byte_to_pc(START, 0);
 	_protocol_send_byte_to_pc(length + 1, 1);
 	_protocol_send_byte_to_pc(cmd, 0);
@@ -70,7 +68,7 @@ static void _protocol_send_byte_to_pilot(uint8_t b, uint8_t escape){
 }
 
 static void protocol_send_message_to_pilot(uint8_t cmd, uint8_t *bytes, uint8_t length){
-	comm_state |= PROTOCOL_COMM_TX_PILOT;
+	comm_state |= PROTOCOL_COMM_TX; //Controller is sending to pilot
 
 	_protocol_send_byte_to_pilot(START, 0);
 	_protocol_send_byte_to_pilot(length + 1, 1);
@@ -196,10 +194,9 @@ static void _protocol_poll(uint8_t b, state_t *source, uint8_t dest){
 		if (source->pos == (source->len + 2)) {
 			if (source->chk == 0xff) {
 				if (dest == 0x00) {
-					comm_state |= PROTOCOL_COMM_RX_PC;
 					protocol_send_message_to_pilot(source->api, source->buf, source->len - 1);
 				} else if (dest == 0x01) {
-					comm_state |= PROTOCOL_COMM_RX_PILOT;
+					comm_state |= PROTOCOL_COMM_RX;	//Controller is recieving message
 					_protocol_dispatch(source->api, source->len - 1);
 					protocol_send_message_to_pc(source->api, source->buf, source->len - 1);
 				}
@@ -254,5 +251,6 @@ void protocol_get_motors(double motors[]) {
 void protocol_get_vector(double vector[]) {
 	for (int i = 0; i < 2; i++) {
 		vector[i] = _vector[i];
+		_vector[i] = 10000;	//Anything over 1000 is read as 'invalid'.
 	}
 }
