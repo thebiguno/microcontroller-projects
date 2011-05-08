@@ -55,6 +55,13 @@ uint8_t glcd_get_pixel(uint8_t x, uint8_t y);
 void glcd_invert_display();
 
 /*
+ * Optional operation; on LCDs that support it, this command will set the display inversion (true / false).
+ * For hardware that does not support this, implementors MAY add this feature in software,
+ * or leave it as a nop.
+ */
+void glcd_set_display_inverted(uint8_t invert);
+
+/*
  * Optional operation; on LCDs that support software contrast, this command will
  * adjust contrast.  For hardware that does not support this, implementors SHOULD
  * leave it as a nop.
