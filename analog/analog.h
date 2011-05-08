@@ -14,15 +14,19 @@
 	//TODO Add support for REFS2
 #elif defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega328__)     || \
-	defined(__AVR_ATmega328P__)    || \
-	defined(__AVR_ATmega324P__)    || \
+	defined(__AVR_ATmega328P__)
+	#define ANALOG_AREF		0
+	#define ANALOG_AVCC		1
+	#define ANALOG_INTERNAL	3
+#elif defined(__AVR_ATmega324P__)  || \
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \
 	defined(__AVR_ATmega644PA__)   || \
 	defined(__AVR_ATmega1284P__)
-	#define ANALOG_AREF		0
-	#define ANALOG_AVCC		1
-	#define ANALOG_INTERNAL	3
+	#define ANALOG_AREF			0
+	#define ANALOG_AVCC			1
+	#define ANALOG_INTERNAL		2
+	#define ANALOG_INTERNAL_256	3
 #endif
 
 
@@ -35,7 +39,7 @@
  *  ANALOG_AREF0: Use AREF, internal Vref turned off
  *  ANALOG_AVCC: Use AVCC with external cap at AREF pin
  *  ANALOG_INTERNAL: Use internal 1.1V reference with external cap at AREF pin
- * 
+ *  ANALOG_INTERNAL_256: Same as ANALOG_INTERNAL, but with 2.56v instead of 1.1v.
  * Depending on your AVR chip, you may only have a subset of these options.
  */
 
