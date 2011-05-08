@@ -41,6 +41,7 @@ void gyro_init(){
 	pins[0] = PIN_GYRO_X;
 	pins[1] = PIN_GYRO_Y;
 	pins[2] = ADC_BATTERY;  //We init the battery check here too, since doing analog_init twice will kill first init settings
+			//If you adjust these indices, please change the read index in battery.c module as well.
 	analog_init(pins, 3, ANALOG_AREF);
 }
 
