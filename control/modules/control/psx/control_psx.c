@@ -21,7 +21,7 @@
 
 //Throttle scale to a rate of change per second
 #define MAX_THROTTLE 0.1				//Max throttle rate of change is 10% / second
-#define M_THROTTLE (2 * MAX_THROTTLE) / 256
+#define M_THROTTLE (2 * MAX_THROTTLE) / 128
 #define B_THROTTLE MAX_THROTTLE * -1
 
 void control_init(){
@@ -72,11 +72,11 @@ control_t control_read_analog() {
 	// Multiply by -1 to invert; up is more throttle, down is reverse throttle
 	// Don't let the throttle exceed 80%; this leaves some overhead to pitch and roll and "full" throttle
 	uint8_t t = psx_stick(PSS_LY);
-	if (t < 126 || t > 130) {
+	if (t < 64 || t > 191) {
 		double delta = (M_THROTTLE * t + B_THROTTLE) * -1 * (dt * 0.001);
 		throttle += delta;
-		if (throttle > .8) throttle = .8;
-		if (throttle < 0) throttle = 0;
+		if (throttle > 1.0) throttle = 1.0;
+		if (throttle < 0.0) throttle = 0.0;
 	}
 	result.throttle = throttle;
 	return result;
