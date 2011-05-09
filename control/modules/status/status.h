@@ -46,4 +46,8 @@ void status_set_armed_time(uint32_t millis);
  */
 void status_set_comm_state(uint8_t tx, uint8_t rx);
 
+/* Sets the motor values on the display (double value from 0.0 to 1.0)
+ */
+void status_set_motors(double left, double front, double right, double back);
+
 #endif

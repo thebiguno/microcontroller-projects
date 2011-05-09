@@ -7,25 +7,26 @@
 #include "../../../lib/glcd/glcd_st7565r.h"
 #include "../../../lib/glcd/fonts/ascii.h"
 #include "../../../lib/glcd/fonts/xsmall.h"
-#include "../../../lib/glcd/fonts/small.h"
 #include "../../../lib/glcd/fonts/medium.h"
 #include "../../../lib/glcd/fonts/large.h"
 #include "../../../lib/glcd/fonts/xlarge.h"
 
 #define STATUS_THROTTLE_X			0
-#define STATUS_THROTTLE_Y			1
-#define STATUS_PITCH_X				0
-#define STATUS_PITCH_Y				19
-#define STATUS_ROLL_X				22
-#define STATUS_ROLL_Y				19
-#define STATUS_TIME_X				60
-#define STATUS_TIME_Y				0
-#define STATUS_BATTERY_PILOT_X		105
-#define STATUS_BATTERY_PILOT_Y		22
-#define STATUS_BATTERY_CONTROL_X	60
-#define STATUS_BATTERY_CONTROL_Y	22
-#define STATUS_COMM_X		60
-#define STATUS_COMM_Y		15
+#define STATUS_THROTTLE_Y			0
+#define STATUS_PITCH_X				39
+#define STATUS_PITCH_Y				0
+#define STATUS_ROLL_X				39
+#define STATUS_ROLL_Y				17
+#define STATUS_TIME_X				1
+#define STATUS_TIME_Y				21
+#define STATUS_BATTERY_PILOT_X		68
+#define STATUS_BATTERY_PILOT_Y		0
+#define STATUS_BATTERY_CONTROL_X	116
+#define STATUS_BATTERY_CONTROL_Y	0
+#define STATUS_COMM_X				82
+#define STATUS_COMM_Y				0
+#define STATUS_MOTORS_X				82
+#define STATUS_MOTORS_Y				0
 
 //Temp buffer for printf
 char temp[16];
@@ -41,8 +42,12 @@ void _status_reset(){
 //	glcd_draw_text(STATUS_MOTORS_X, STATUS_MOTORS_Y, "Motors", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 //	glcd_draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, "Throttle", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y, "Armed Time", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y, " Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+//	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y, "Armed Time", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	
+	// degree symbols
+	glcd_draw_rectangle(63,  6, 65,  8, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_rectangle(63, 23, 65, 25, DRAW_UNFILLED, OVERLAY_OR);
 	
 	glcd_write_buffer();
 }
@@ -59,20 +64,20 @@ void status_init(){
 
 void status_set_battery_level(double value, uint8_t x, uint8_t y, char* name){
 	//Clear existing
-	glcd_draw_rectangle(x, y, x + 21, y + 9, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(x, y, x + 11, y + 32, DRAW_FILLED, OVERLAY_NAND);
 	
 	//Redraw edge
-	glcd_draw_rectangle(x, y, x + 20, y + 8, DRAW_UNFILLED, OVERLAY_OR);
-	glcd_draw_line(x + 21, y + 2, x + 21, y + 7, OVERLAY_OR);
+	glcd_draw_rectangle(x, y + 1, x + 11, y + 32, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_line(x + 3, y, x + 8, y, OVERLAY_OR);
 	
 	//Fill according to level
-	glcd_draw_rectangle(x + 1, y + 1, x + 1 + (int) (value * 20), y + 7, DRAW_FILLED, OVERLAY_OR);
+	glcd_draw_rectangle(x + 1, y + 33 - (int) (value * 29), x + 10, y + 31, DRAW_FILLED, OVERLAY_OR);
 	
 	//Print name
-	glcd_draw_text(x + 2, y + 2, name, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_XOR);
+	glcd_draw_text(x + 2, y + 25, name, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_XOR);
 	
 	//Flush
-	glcd_write_buffer_bounds(x, y, x + 21, y + 9);
+	glcd_write_buffer_bounds(x, y, x + 11, y + 32);
 }
 
 void status_set_pilot_battery_level(double value){
@@ -85,36 +90,36 @@ void status_set_control_battery_level(double value){
 
 void status_set_telemetry(double pitch, double roll){
 	//Clear existing
-	glcd_draw_rectangle(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 20, STATUS_PITCH_Y + 13, DRAW_FILLED, OVERLAY_NAND);
-	glcd_draw_rectangle(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 20, STATUS_ROLL_Y + 13, DRAW_FILLED, OVERLAY_NAND);	
+	glcd_draw_rectangle(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 23, STATUS_PITCH_Y + 15, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 23, STATUS_ROLL_Y + 15, DRAW_FILLED, OVERLAY_NAND);	
 
 	//Write values
 	if (pitch > 1000){
-		glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, "---", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);		
+		glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);		
 	}
 	else {
 		sprintf(temp, "%3.1d", (int8_t) (pitch * 57.2957795));
-		glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);	
+		glcd_draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);	
 	}
 	
 	if (roll > 1000){
-		glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, "---", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);		
+		glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);		
 	}
 	else {
 		sprintf(temp, "%3.1d", (int8_t) (roll * 57.2957795));
-		glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);	
+		glcd_draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_medium, OVERLAY_OR);	
 	}
 	
 	//Flush
-	glcd_write_buffer_bounds(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 20, STATUS_PITCH_Y + 13);
-	glcd_write_buffer_bounds(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 20, STATUS_ROLL_Y + 13);
+	glcd_write_buffer_bounds(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 23, STATUS_PITCH_Y + 15);
+	glcd_write_buffer_bounds(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 23, STATUS_ROLL_Y + 15);
 }
 
 void status_set_throttle(double throttle, uint8_t armed){
 	glcd_set_display_inverted(armed);
 
 	//Clear existing
-	glcd_draw_rectangle(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 35, STATUS_THROTTLE_Y + 17, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 34, STATUS_THROTTLE_Y + 16, DRAW_FILLED, OVERLAY_NAND);
 	
 	if (armed){
 		if (throttle > 1) throttle = 1;
@@ -129,30 +134,63 @@ void status_set_throttle(double throttle, uint8_t armed){
 	}
 
 	//Flush
-	glcd_write_buffer_bounds(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 35, STATUS_THROTTLE_Y + 17);
+	glcd_write_buffer_bounds(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 34, STATUS_THROTTLE_Y + 16);
 }
 
 void status_set_armed_time(uint32_t millis){
 	//Clear existing
-	glcd_draw_rectangle(STATUS_TIME_X, STATUS_TIME_Y + 6, STATUS_TIME_X + 30, STATUS_TIME_Y + 13, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_TIME_X, STATUS_TIME_Y, STATUS_TIME_X + 32, STATUS_TIME_Y + 10, DRAW_FILLED, OVERLAY_NAND);
 
 	//Write values
-	sprintf(temp, "%02d:%02d", (uint8_t) (millis / 60000), (uint8_t) ((millis % 60000) / 1000));
-	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y + 6, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
+	sprintf(temp, "%02d", (uint8_t) (millis / 60000));
+	glcd_draw_text(STATUS_TIME_X, STATUS_TIME_Y, temp, FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+	sprintf(temp, "%02d", (uint8_t) ((millis % 60000) / 1000));
+	glcd_draw_text(STATUS_TIME_X + 18, STATUS_TIME_Y, temp, FONT_LARGE_WIDTH, FONT_LARGE_HEIGHT, font_large, codepage_large, OVERLAY_OR);
+	
+	glcd_draw_line(17, 23, 17, 25, OVERLAY_OR);
+	glcd_draw_line(17, 28, 17, 30, OVERLAY_OR);
 	
 	//Flush
-	glcd_write_buffer_bounds(STATUS_TIME_X, STATUS_TIME_Y + 6, STATUS_TIME_X + 30, STATUS_TIME_Y + 13);
+	glcd_write_buffer_bounds(STATUS_TIME_X, STATUS_TIME_Y, STATUS_TIME_X + 32, STATUS_TIME_Y + 10);
 }
 
 void status_set_comm_state(uint8_t tx, uint8_t rx){
 	//Clear existing
-	glcd_draw_rectangle(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 18, STATUS_COMM_Y + 5, DRAW_FILLED, OVERLAY_NAND);
-
+	glcd_draw_rectangle(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 6, STATUS_COMM_Y + 10, DRAW_FILLED, OVERLAY_NAND);
 
 	//Write values
 	if (tx) glcd_draw_text(STATUS_COMM_X, STATUS_COMM_Y, "TX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	if (rx) glcd_draw_text(STATUS_COMM_X + 9, STATUS_COMM_Y, "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	if (rx) glcd_draw_text(STATUS_COMM_X, STATUS_COMM_Y + 7, "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	
 	//Flush
-	glcd_write_buffer_bounds(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 18, STATUS_COMM_Y + 5);
+	glcd_write_buffer_bounds(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 6, STATUS_COMM_Y + 10);
+}
+
+void status_set_motors(double left, double front, double right, double back){
+	int lx = 0; int ly = 14;
+	int fx = 14; int fy = 0;
+	int rx = 18; int ry = 14;
+	int bx = 14; int by = 18;
+	int sm = 3; int lg = 13;
+	
+	//Clear existing
+	glcd_draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, OVERLAY_NAND);
+	glcd_draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_FILLED, OVERLAY_NAND);
+ 
+	//Redraw edges: left, top, right, bottom
+	glcd_draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_UNFILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_UNFILLED, OVERLAY_OR);
+	
+	//Fill according to motor levels
+	glcd_draw_rectangle(STATUS_MOTORS_X + lx + lg - (uint8_t) ((1.0 - left) * 12), STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy + lg - (uint8_t) ((1.0 - front) * 12), STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + (uint8_t) ((1.0 - right) * 12), STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, OVERLAY_OR);
+	glcd_draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + (uint8_t) ((1.0 - back) * 12), DRAW_FILLED, OVERLAY_OR);
+		
+ 	//Flush
+	glcd_write_buffer_bounds(STATUS_MOTORS_X, STATUS_MOTORS_Y, STATUS_MOTORS_X + 32, STATUS_MOTORS_Y + 32);
 }
