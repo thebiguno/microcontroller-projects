@@ -7,6 +7,7 @@ int main (void){
 	control_init();
 	status_init();
 	battery_init();
+	sei();	//We have NO_INTERRUPT_ENABLE in the Makefile, so that we only call sei() once.
 
 	uint64_t millis = timer_millis();
 	uint64_t last_millis = millis;
@@ -15,6 +16,8 @@ int main (void){
 	uint64_t millis_last_telemetry = millis;
 	//Used to update status
 	uint64_t millis_last_status = millis;
+	//Used for updating telemetry 
+	double buffer[] = {0,0,0,0};
 	
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
@@ -81,20 +84,28 @@ int main (void){
 		}
 		
 		//Update the status display
-		if ((millis - millis_last_status) > 100){
+		if ((millis - millis_last_status) > 200){
 			millis_last_status = millis;
 			
+			//Batteries
 			status_set_control_battery_level(battery_level());
 			status_set_pilot_battery_level(protocol_get_battery());
-			double bucket[] = {0,0};
-			protocol_get_vector(bucket);
-			status_set_telemetry(bucket[0], bucket[1]);
+			
+			//Pitch / Roll
+			protocol_get_vector(buffer);
+			status_set_telemetry(buffer[0], buffer[1]);
+
+			//Motors
+			protocol_get_motors(buffer);
+			status_set_motors(buffer[0], buffer[1], buffer[2], buffer[3]);
+			
+			//Throttle / Armed / Time
 			status_set_throttle(control.throttle, armed);
 			status_set_armed_time(armed_time);
 
+			//Rx / Tx
 			status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX), 
 					protocol_comm_state(PROTOCOL_COMM_RX));
-					
 			protocol_clear_comm_state();
 		}
     }

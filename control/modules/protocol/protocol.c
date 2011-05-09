@@ -23,7 +23,7 @@ typedef struct state {
 // calling protocol_clear_activity_state().  Bits interpreted
 // as PROTOCOL_COMM_{RX|TX}_{PILOT|PC} in protocol.h
 static uint8_t comm_state = 0; 
-static double battery = 0;
+static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid range.
 static double _vector[] = {0,0};
 static double _motors[] = {0,0,0,0};
 
@@ -239,7 +239,9 @@ uint8_t protocol_comm_state(uint8_t bit) {
 }
 
 double protocol_get_battery() {
-	return battery;
+	double temp = battery;
+	battery = -1.0;	//Reset
+	return temp;
 }
 
 void protocol_get_motors(double motors[]) {
