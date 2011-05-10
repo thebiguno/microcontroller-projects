@@ -16,46 +16,41 @@ HobbyKing:
 
 Digikey:
 Part			Description			WO Num	WO Price	WJ Num	WK Price
-631-1080-ND		3.6864MHz Crystal		2x	$2
-X138-ND			9.216MHz Crystal		2x	$2		4x	$4
-478-4852-ND		0.01uF Caps (10000pF)		?
-478-3192-ND		0.1uF Caps			?
-338-1699-ND		47uF Caps			10x	$2
-493-1021-ND		100uF Caps			10x	$2
-493-1703-ND		560uF Caps			10x	$3
-P5143-ND		2200uF Caps			?2x	$2
+X138-ND			9.216MHz Crystal		2x	$2		2x	$2
+478-4852-ND		0.01uF Caps (10000pF)		10x	$2		10x	$2
+478-3192-ND		0.1uF Caps			10x	$1		10x	$1
+338-1672-ND		47uF Caps			10x	$2		10x	$2
+493-1061-ND		100uF Caps			10x	$2		10x	$2
+493-1062-ND		220uF Caps			10x	$3		10x	$3
+565-1678-ND		470uF Caps			10x	$3		10x	$3
 A26509-40-ND		Male Header			6x	$9		4x	$6
 929974E-01-36-ND	Female Header			6x	$15		4x	$10
 365-1202-ND		Green LED			6x	$3		6x	$3
 365-1201-ND		Blue LED			6x	$3		6x	$3
 365-1204-ND		Yellow LED			6x	$1		6x	$1
 365-1203-ND		Red LED				6x	$1		6x	$1
-SR131-IB-ND		Box (for pilot)			1x	$6
-296-1600-5-ND		Shift Register / Latch		?10x	$6
-4606X-1-820LF-ND	82Ω bussed x5 (Green / Blue)	5x	$1		5x	$1
-4606X-1-121LF-ND	120Ω bussed x5 (Red / Yellow)	5x	$1		5x	$1
-497-6271-5-ND		LED Shift Driver					2x	$4
+SR131-IB-ND		Box (for pilot)			1x	$6		1x	$6
+4606X-1-471LF-ND	470Ω bussed x5 (Green / Blue)	5x	$1		5x	$1
+4606X-1-331LF-ND	330Ω bussed x5 (Red / Yellow)	5x	$1		5x	$1
 Q2F116B-ND		1/16" Shrink Tubing		6x	$2		6x	$2
 Q2F018B-ND		1/8" Shrink Tubing		6x	$2		6x	$2
 Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
 Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
-SW627-ND		Power Switch						5x	$7
-507-1224-ND		Fuse (for multimeter)		10x	$2		(Do you want to split?)
+507-1224-ND		Fuse (for multimeter)		5x	$2		5x	$2
 CH865-ND		Small Power Switch		5x	$7		5x	$7
-A30937-ND		8-position Conn. Header
-A31044-ND		8-position Conn. Recepticle
-433-1013-ND		Buzzer				2x	$3		?
-MCP1702-5002E/TO-ND	Low Dropout 5v regulator	5x	$2		(These are the same series as our 3v ones...)
-MCP1702-3302E/TO-ND	Low Dropout 3.3v regulator	5x	$2
-
+433-1013-ND		Buzzer				2x	$3		2x	$3
+MCP1702-5002E/TO-ND	Low Dropout 5v regulator	5x	$2		5x	$2
+MCP1702-3302E/TO-ND	Low Dropout 3.3v regulator	5x	$2		5x	$2
+490-1223-ND		8MHz Resonator						3x	$2
+SAM1050-50-ND		Long Headers			3x	$6		3x	$6
+754-1492-ND		RGB LED				2x	$4
 
 
 (Find Before Ordering)
 Wire (Rona?)
-Battery Conector
 Logic connectors 
 	Control Battery Jack / Plug	A31002-ND / A30892-ND ?
-	Pilot Power (from battery)	Same as above?
+	Pilot Power (from 
 	PWM Out				Same as above?
 	LED Out				Same as above?
 
@@ -65,7 +60,6 @@ A34203-ND		8-wire Ribbon Cable Connector	2x	$4
 296-17764-5-ND		Boost / Buck Converter		2x	$2
 TL499ACP-ND		Power Supply Converter		2x	$5
 811-2030-ND		100uH Inductor			5x	$2
-754-1492-ND		RGB LED				2x	$4
 
 Rona:
 4x 4"	#10 screw
