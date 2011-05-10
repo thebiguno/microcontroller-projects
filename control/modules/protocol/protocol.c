@@ -24,6 +24,7 @@ typedef struct state {
 // as PROTOCOL_COMM_{RX|TX}_{PILOT|PC} in protocol.h
 static uint8_t comm_state = 0; 
 static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid range.
+static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
 static double _vector[] = {0,0};
 static double _motors[] = {0,0,0,0};
 
@@ -130,6 +131,7 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 	switch(cmd) {
 		case 'B':
 			battery = convert_byte_to_percent(pilot.buf[0]);
+			battery_misses = 0;
 			break;
 		case 'T':
 			_vector[0] = convert_byte_to_radian(pilot.buf[0]);
@@ -240,7 +242,8 @@ uint8_t protocol_comm_state(uint8_t bit) {
 
 double protocol_get_battery() {
 	double temp = battery;
-	battery = -1.0;	//Reset
+	battery_misses++;
+	if (battery_misses >= 3) battery = -1.0;	//Reset if we have not gotten a reading for a while
 	return temp;
 }
 

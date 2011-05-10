@@ -16,6 +16,8 @@ int main (void){
 	uint64_t millis_last_telemetry = millis;
 	//Used to update status
 	uint64_t millis_last_status = millis;
+	//Used to update battery
+	uint64_t millis_last_battery = millis;	
 	//Used for updating telemetry 
 	double buffer[] = {0,0,0,0};
 	
@@ -89,7 +91,7 @@ int main (void){
 			
 			//Batteries
 			status_set_control_battery_level(battery_level());
-			status_set_pilot_battery_level(protocol_get_battery());
+//			status_set_pilot_battery_level(protocol_get_battery());
 			
 			//Pitch / Roll
 			protocol_get_vector(buffer);
@@ -107,6 +109,12 @@ int main (void){
 			status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX), 
 					protocol_comm_state(PROTOCOL_COMM_RX));
 			protocol_clear_comm_state();
+		}
+		
+		if ((millis - millis_last_battery) > 2000){
+			millis_last_battery = millis;
+			
+			status_set_pilot_battery_level(protocol_get_battery());
 		}
     }
 }
