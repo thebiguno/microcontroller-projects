@@ -38,7 +38,7 @@ Q2F014B-ND		1/4" Shrink Tubing		3x	$2		3x	$2
 Q2F038B-ND		3/8" Shrink Tubing		2x	$2		2x	$2
 507-1224-ND		Fuse (for multimeter)		5x	$2		5x	$2
 CH865-ND		Small Power Switch		5x	$7		5x	$7
-433-1013-ND		Buzzer				2x	$3		2x	$3
+668-1204-ND		Buzzer				1x	$3		1x	$3
 MCP1702-5002E/TO-ND	Low Dropout 5v regulator	5x	$2		5x	$2
 MCP1702-3302E/TO-ND	Low Dropout 3.3v regulator	5x	$2		5x	$2
 490-1223-ND		8MHz Resonator						3x	$2

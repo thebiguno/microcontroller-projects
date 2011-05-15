@@ -6,8 +6,8 @@ Pin	AVR	Chiindii Function
 4	PB3	PSX Attention (yellow)
 5	PB4
 6	PB5	MOSI
-7	PB6	MISO
-8	PB7	SCK
+7	PB6	MISO / Buzzer 1
+8	PB7	SCK / Buzzer 2
 9	~RESET
 10	VCC
 11	GND
