@@ -28,4 +28,9 @@
 
 #define ADC_BATTERY				7		//ADC 7, pin A7.
 
+//Both pin1 and pin2 must be on the same port
+#define PORT_BUZZER				PORTB
+#define PIN_BUZZER_1			PINB6
+#define PIN_BUZZER_2			PINB7
+
 #endif

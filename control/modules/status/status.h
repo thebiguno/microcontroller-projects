@@ -50,4 +50,11 @@ void status_set_comm_state(uint8_t tx, uint8_t rx);
  */
 void status_set_motors(double left, double front, double right, double back);
 
+
+//Warning functions: these will be implemented by a high-attention module, probably
+// something like a buzzer or strobe.  They are all error conditions.
+void status_error_init();
+
+void status_error_battery(uint8_t error);
+
 #endif

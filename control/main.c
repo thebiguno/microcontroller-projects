@@ -6,6 +6,7 @@ int main (void){
 	comm_init();
 	control_init();
 	status_init();
+	status_error_init();
 	battery_init();
 	sei();	//We have NO_INTERRUPT_ENABLE in the Makefile, so that we only call sei() once.
 
@@ -20,6 +21,8 @@ int main (void){
 	uint64_t millis_last_battery = millis;	
 	//Used for updating telemetry 
 	double buffer[] = {0,0,0,0};
+	
+	uint8_t error_tone = 0;
 	
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
@@ -92,6 +95,9 @@ int main (void){
 			//Batteries
 			status_set_control_battery_level(battery_level());
 //			status_set_pilot_battery_level(protocol_get_battery());
+
+			status_error_battery(error_tone);
+			error_tone = ~error_tone;
 			
 			//Pitch / Roll
 			protocol_get_vector(buffer);
