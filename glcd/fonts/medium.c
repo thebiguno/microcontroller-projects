@@ -6,8 +6,6 @@
 /*
  * A 7x9 pixel font.  The bits are read across from top left to top right, then down
  * to the next line.  Each character is represented by 8 8bit bytes.
- * 
- * Due to size constraints, this only implements the numbers 0-9 and %.
  */
 prog_uchar font_medium[] PROGMEM = {
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	//space	0x00
