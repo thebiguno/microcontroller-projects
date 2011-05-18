@@ -11,7 +11,7 @@
 //Macro to convert VALUE (in µs) to a clock tick count with a hardcoded prescaler of 64.
 #define PWM_US_TO_CLICKS(value) (F_CPU / 1000000) * (value / 64)
 
-static void checkPinState(){
+static void check_pin_state(){
 	if (PINB & _BV(PINB3)){
 		TCCR0B |= _BV(CS01) | _BV(CS00);
 	}
@@ -39,9 +39,9 @@ int main (void){
 	GIMSK |= _BV(PCIE);
 	
 	//Enable interrupts
-	sei();	
+	sei();
 
-	checkPinState();
+	check_pin_state();
 	
 	//Main program loop
 	while (1){
@@ -62,6 +62,6 @@ ISR(TIM0_COMPA_vect){
 }
 
 ISR(PCINT0_vect){
-	checkPinState();
+	check_pin_state();
 }
 
