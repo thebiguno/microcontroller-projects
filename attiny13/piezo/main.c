@@ -22,8 +22,8 @@ static void check_pin_state(){
 
 int main (void){
 	//Set B0 and B1 to output
-	DDRB |= _BV(PINB0) | _BV(PINB1);
-	PORTB |= _BV(PINB0);
+	DDRB |= _BV(PINB2) | _BV(PINB1);
+	PORTB |= _BV(PINB2);
 
 	//Set the PWM period (i.e. the buzzer frequency)
 	OCR0A = PWM_US_TO_CLICKS(1500);
@@ -55,7 +55,7 @@ int main (void){
 
 ISR(TIM0_COMPA_vect){
 	//XOR PWM pins
-	PORTB ^= _BV(PINB0) | _BV(PINB1);
+	PORTB ^= _BV(PINB2) | _BV(PINB1);
 	
 	//Reset counter
 	TCNT0 = 0;
