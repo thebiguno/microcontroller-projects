@@ -22,8 +22,6 @@ int main (void){
 	//Used for updating telemetry 
 	double buffer[] = {0,0,0,0};
 	
-	uint8_t error_tone = 0;
-	
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
     
@@ -92,13 +90,10 @@ int main (void){
 		if ((millis - millis_last_status) > 200){
 			millis_last_status = millis;
 			
-			//Batteries
+			//Control Battery
 			status_set_control_battery_level(battery_level());
-//			status_set_pilot_battery_level(protocol_get_battery());
+			status_error_battery(battery_level() < 0.2);
 
-			status_error_battery(error_tone);
-			error_tone = ~error_tone;
-			
 			//Pitch / Roll
 			protocol_get_vector(buffer);
 			status_set_telemetry(buffer[0], buffer[1]);
@@ -120,7 +115,9 @@ int main (void){
 		if ((millis - millis_last_battery) > 2000){
 			millis_last_battery = millis;
 			
-			status_set_pilot_battery_level(protocol_get_battery());
+			buffer[0] = protocol_get_battery();
+			status_set_pilot_battery_level(buffer[0]);
+			status_error_battery(buffer[0] < 0.2 && buffer[0] >= 0);
 		}
     }
 }
