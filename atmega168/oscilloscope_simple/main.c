@@ -49,6 +49,7 @@ static inline void send(uint8_t value){
 	if (value) time |= 0x1;
 	else time &= ~0x1;
 	
+	serial_write_c((char) 0x7F);
 	serial_write_c((time >> 24) & 0xFF);
 	serial_write_c((time >> 16) & 0xFF);
 	serial_write_c((time >> 8) & 0xFF);
