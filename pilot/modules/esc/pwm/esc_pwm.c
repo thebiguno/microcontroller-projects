@@ -2,8 +2,8 @@
 #include "../../../lib/pwm/pwm.h"
 
 // these values represent a typical ESC that runs at 50Hz, 
-// turns motor off at a pulse width of 1000ms, 
-// and runs at 100% duty-cycle at a pluse width of 2000ms
+// turns motor off at a pulse width of 1000µs, 
+// and runs at 100% duty-cycle at a pluse width of 2000µs
 #define ESC_M 1000
 #define ESC_B 1000
 #define PULSE_SPACING 20000 // 20 ms - 50 Hz
@@ -31,6 +31,12 @@ uint16_t _scale(double x) {
 
 void esc_set(double speed[]) {
     for (int i = 0; i < 4; i++) {
-        pwm_set_phase(i, _scale(speed[i]));
+    	//Don't send any PWM signal if 
+    	if (speed[i] < 0.001){
+    		pwm_set_phase(i, 0);
+    	}
+    	else {
+	        pwm_set_phase(i, _scale(speed[i]));
+	    }
     }
 }
