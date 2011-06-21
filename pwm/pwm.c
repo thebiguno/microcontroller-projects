@@ -148,9 +148,11 @@ ISR(TIMER1_COMPA_vect){
 		_new_period = 0;
 	}
 	
-	//Set pins high
-	for (uint8_t i = 0; i < _count; i++){	
-		*_ports[i] |= _BV(_pins[i]);
+	//Set pins high, if the PWM value is > 0.
+	for (uint8_t i = 0; i < _count; i++){
+		if (_values[i] > 0){
+			*_ports[i] |= _BV(_pins[i]);
+		}
 	}
 
 	//Trigger OCR1B to interrupt 'Real Soon Now'.  Set this as low as possible while still
