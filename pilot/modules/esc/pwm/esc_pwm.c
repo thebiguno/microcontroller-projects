@@ -23,6 +23,13 @@ void esc_init() {
 	
 	pwm_init(ports, pins, 4, PULSE_SPACING);
     pwm_start();
+    
+    double motor[4];
+    motor[0] = 0;
+    motor[1] = 0;
+    motor[2] = 0;
+    motor[3] = 0;
+    esc_set(motor);
 }
 
 uint16_t _scale(double x) {
@@ -31,12 +38,6 @@ uint16_t _scale(double x) {
 
 void esc_set(double speed[]) {
     for (int i = 0; i < 4; i++) {
-    	//Don't send any PWM signal if 
-    	if (speed[i] < 0.001){
-    		pwm_set_phase(i, 0);
-    	}
-    	else {
-	        pwm_set_phase(i, _scale(speed[i]));
-	    }
+        pwm_set_phase(i, _scale(speed[i]));
     }
 }
