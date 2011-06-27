@@ -45,6 +45,10 @@
 //ADC pin for battery level checking (connected via voltage divider to input battery source)
 #define ADC_BATTERY				7		//ADC 7, pin A7.
 
+//Jumper to set ESC calibration mode; on 644 we use MISO since there is already a breakout to it for programming
+#define PORT_ESC_CALIBRATE_JUMPER	PORTB
+#define PIN_ESC_CALIBRATE_JUMPER	6
+
 //Note: I2C is referenced by the macro definitions SDA and SCL, and
 // should be cross-platform already.
 //SCL: PC0

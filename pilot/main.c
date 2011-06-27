@@ -2,6 +2,48 @@
 #include "main.h"
 
 int main(){
+	//Enable internal pullup on MISO, and set pin to input mode
+	*(&PORT_ESC_CALIBRATE_JUMPER - 0x1) &= ~_BV(PIN_ESC_CALIBRATE_JUMPER); //input mode
+	PORT_ESC_CALIBRATE_JUMPER |= PIN_ESC_CALIBRATE_JUMPER;	//pullup on
+	
+	//If MISO is low, enter ESC calibration mode
+	if (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) &= _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
+		//Set first 4 LEDs on
+		status_set(0xF);
+
+		//Init ESC module
+		esc_init();
+		sei();	//Normally this is called in accel_init(), but here we do it manually.
+		
+		double motor[4];
+		
+		//Turn throttle high
+		motor[0] = 1.0;
+		motor[1] = 1.0;
+		motor[2] = 1.0;
+		motor[3] = 1.0;
+		esc_set(motor);
+		
+		//Wait for MOSI to be high again (i.e., the user pulls the jumper from MOSI to gnd)
+		while (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) &= _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
+			;
+		}
+		
+		//Set status to only heartbeat
+		status_set(STATUS_HEARTBEAT);
+		
+		//Set throttle low
+		motor[0] = 0.0;
+		motor[1] = 0.0;
+		motor[2] = 0.0;
+		motor[3] = 0.0;		
+		esc_set(motor);
+		
+		//End program
+		while (1){
+			;
+		}
+	}
 
 	status_init();
 	status_error(STATUS_ERR_RESET);
