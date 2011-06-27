@@ -7,7 +7,7 @@ int main(){
 	PORT_ESC_CALIBRATE_JUMPER |= PIN_ESC_CALIBRATE_JUMPER;	//pullup on
 	
 	//If MISO is low, enter ESC calibration mode
-	if (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) &= _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
+	if (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) & _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
 		//Set first 4 LEDs on
 		status_set(0xF);
 
@@ -25,7 +25,7 @@ int main(){
 		esc_set(motor);
 		
 		//Wait for MOSI to be high again (i.e., the user pulls the jumper from MOSI to gnd)
-		while (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) &= _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
+		while (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) & _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
 			;
 		}
 		
