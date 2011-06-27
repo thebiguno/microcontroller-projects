@@ -2,14 +2,20 @@
 #include "main.h"
 
 int main(){
+	status_init();
+
 	//Enable internal pullup on MISO, and set pin to input mode
+	PORT_ESC_CALIBRATE_JUMPER |= _BV(PIN_ESC_CALIBRATE_JUMPER);	//pullup on
 	*(&PORT_ESC_CALIBRATE_JUMPER - 0x1) &= ~_BV(PIN_ESC_CALIBRATE_JUMPER); //input mode
-	PORT_ESC_CALIBRATE_JUMPER |= PIN_ESC_CALIBRATE_JUMPER;	//pullup on
+	
 	
 	//If MISO is low, enter ESC calibration mode
 	if (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) & _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
-		//Set first 4 LEDs on
-		status_set(0xF);
+		//Set all LEDs on
+		status_set(STATUS_HEARTBEAT);
+		status_set(STATUS_ARMED);
+		status_set(STATUS_MESSAGE_TX);
+		status_set(STATUS_MESSAGE_RX);
 
 		//Init ESC module
 		esc_init();
@@ -29,8 +35,10 @@ int main(){
 			;
 		}
 		
-		//Set status to only heartbeat
-		status_set(STATUS_HEARTBEAT);
+		//Set status to heartbeat solid on
+		status_clear(STATUS_ARMED);
+		status_clear(STATUS_MESSAGE_TX);
+		status_clear(STATUS_MESSAGE_RX);
 		
 		//Set throttle low
 		motor[0] = 0.0;
@@ -45,7 +53,6 @@ int main(){
 		}
 	}
 
-	status_init();
 	status_error(STATUS_ERR_RESET);
 	_delay_ms(500);
 	// error is cleared after all init is done
