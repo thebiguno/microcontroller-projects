@@ -79,28 +79,35 @@ int main(){
 	
 	status_error(0x00);
 	
+	uint64_t curr_millis;
+	uint64_t dt;
 	uint16_t t = 0;
+	uint8_t cmd_type;
 	double throttle = 0.0;
+	double flight_command[4];
+	vector_t g;
+	vector_t a;
+	vector_t pv;
+	vector_t mv;
 	
 	//Main program loop
 	while (1) {
-		uint64_t curr_millis = timer_millis();
-		uint64_t dt = curr_millis - millis;
+		curr_millis = timer_millis();
+		dt = curr_millis - millis;
 		millis = curr_millis;
 		t += dt;
 		
 		protocol_poll();
 		
-		double flight_command[4];
-		uint8_t cmd_type = protocol_receive_flight_command(flight_command);
+		cmd_type = protocol_receive_flight_command(flight_command);
 		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed = cmd_type;
 			t = 0;
 		}
 
-		vector_t g = gyro_get();
-		vector_t a = accel_get();
-		vector_t pv = attitude(g, a, dt);			// compute PID process variable for x and y using Kalman
+		g = gyro_get();
+		a = accel_get();
+		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
 		if (armed == 'A') {							// armed by attitude command
 			status_set(STATUS_ARMED);
@@ -126,7 +133,7 @@ int main(){
 				}
 			}
 			
-			vector_t mv = pid_mv(sp, pv);			// PID manipulated variable
+			mv = pid_mv(sp, pv);					// PID manipulated variable
 			
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
