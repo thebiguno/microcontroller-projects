@@ -112,7 +112,6 @@ int main(){
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
 		} else if (armed_type == 'M') {				// motor command
-			status_set(STATUS_ARMED);
 			for (uint8_t i = 0; i < 4; i++) {
 				motor[i] = flight_command_data[i];
 			}
@@ -120,6 +119,9 @@ int main(){
 			//Clear armed if all motor values are 0 (this is sent from control module when disarmed)
 			if (motor[0] == 0 && motor[1] == 0 && motor[2] == 0 && motor[3] == 0) {
 				status_clear(STATUS_ARMED);
+			}
+			else {
+				status_set(STATUS_ARMED);
 			}
 			
 			//Check for communication timeouts
