@@ -2,94 +2,60 @@
 #include "main.h"
 
 int main(){
+	//********************
+	// Module Init
+	//********************
+
 	status_init();
-
-	//Enable internal pullup on MISO, and set pin to input mode
-	PORT_ESC_CALIBRATE_JUMPER |= _BV(PIN_ESC_CALIBRATE_JUMPER);	//pullup on
-	*(&PORT_ESC_CALIBRATE_JUMPER - 0x1) &= ~_BV(PIN_ESC_CALIBRATE_JUMPER); //input mode
-	
-	
-	//If MISO is low, enter ESC calibration mode
-	if (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) & _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
-		//Set all LEDs on
-		status_set(STATUS_HEARTBEAT);
-		status_set(STATUS_ARMED);
-		status_set(STATUS_MESSAGE_TX);
-		status_set(STATUS_MESSAGE_RX);
-
-		//Init ESC module
-		esc_init();
-		sei();	//Normally this is called in accel_init(), but here we do it manually.
-		
-		double motor[4];
-		
-		//Turn throttle high
-		motor[0] = 1.0;
-		motor[1] = 1.0;
-		motor[2] = 1.0;
-		motor[3] = 1.0;
-		esc_set(motor);
-		
-		//Wait for MOSI to be high again (i.e., the user pulls the jumper from MOSI to gnd)
-		while (! (*(&PORT_ESC_CALIBRATE_JUMPER - 0x2) & _BV(PIN_ESC_CALIBRATE_JUMPER)) ){
-			;
-		}
-		
-		//Set status to heartbeat solid on
-		status_clear(STATUS_ARMED);
-		status_clear(STATUS_MESSAGE_TX);
-		status_clear(STATUS_MESSAGE_RX);
-		
-		//Set throttle low
-		motor[0] = 0.0;
-		motor[1] = 0.0;
-		motor[2] = 0.0;
-		motor[3] = 0.0;		
-		esc_set(motor);
-		
-		//End program
-		while (1){
-			;
-		}
-	}
-
-	status_error(STATUS_ERR_RESET);
-	_delay_ms(500);
-	// error is cleared after all init is done
-	
-	uint64_t millis = 0;
-	uint8_t armed = 0x00;
-	uint64_t last_telemetry = 0;
-	uint64_t last_status_clear = 0;
-	uint64_t last_battery = 0;
-	vector_t sp = { 0,0,0 };		// ATTITUDE set point
-	double motor[4];				// MOTOR set point
-//	double heading;					// heading hold
-	uint8_t throttle_back;
-	
-	//Init all modules.  We call accel_init last as it forces sei().
 	comm_init();
 	timer_init();
 	gyro_init();
 	esc_init();
-	accel_init();  //sei() is called in accel_init(), as it is needed for i2c.
-	
+	accel_init();  //We call accel_init after all other interrupt-driven modules, as it forces sei() (without which i2c will hang).
 	pid_init();
 	attitude_init(gyro_get(), accel_get());
 	
-	status_error(0x00);
+	if (esc_calibration_required()){
+		esc_calibrate();
+	}
+
+	//Flash the startup status for 500ms (in direct status implementation, all 5 LEDs are on).
+	status_error(STATUS_ERR_RESET);
+	_delay_ms(500);
+	//Statup status is cleared after all init is completed
+
+	//********************
+	// Variable Declarations
+	//********************
 	
-	uint64_t curr_millis;
-	uint64_t dt;
-	uint16_t t = 0;
-	uint8_t cmd_type;
-	double throttle = 0.0;
-	double flight_command[4];
-	vector_t g;
-	vector_t a;
-	vector_t pv;
-	vector_t mv;
+
+	//Time variables	
+	uint64_t millis = 0;			//Last measured millis
+	uint64_t curr_millis;			//Current ms counter
+	uint64_t dt;					//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
+	uint64_t t = 0;					//Time since last signal was recieved
+	uint64_t last_telemetry = 0;	//Time the last telemetry was sent
+	uint64_t last_status_clear = 0;	//Time last status clear was sent
+	uint64_t last_battery = 0;		//Time last battery state was sent
+
+	//State variables
+	uint8_t cmd_type;				//Will be either 'A' or 'M'
+	double flight_command_data[4];	//Data packet received with a flight command
+	double throttle = 0.0;			//Throttle as sent from controller
+	uint8_t throttle_back;			//Used for lost signal throttle decrease
+	vector_t sp = { 0,0,0 };		// Attitude set point
+	double motor[4];				// Motor set point
+		
+	//Variables used in calculations
+	vector_t g;						//Gyro readings
+	vector_t a;						//Accel readings
+	vector_t pv;					//Process Variable
+	vector_t mv;					//Manipulated Variable (output of PID)
 	
+	
+	//Clear startup status
+	status_error(0x00);	
+
 	//Main program loop
 	while (1) {
 		curr_millis = timer_millis();
@@ -99,9 +65,8 @@ int main(){
 		
 		protocol_poll();
 		
-		cmd_type = protocol_receive_flight_command(flight_command);
+		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A' || cmd_type == 'M') {
-			armed = cmd_type;
 			t = 0;
 		}
 
@@ -109,13 +74,15 @@ int main(){
 		a = accel_get();
 		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
-		if (armed == 'A') {							// armed by attitude command
+		if (cmd_type == 'A') {						// attitude command
 			status_set(STATUS_ARMED);
 			
-			throttle = flight_command[0];
-			sp.x = flight_command[1];
-			sp.y = flight_command[2];
-			sp.z = flight_command[3];
+			throttle = flight_command_data[0];
+			sp.x = flight_command_data[1];
+			sp.y = flight_command_data[2];
+			sp.z = flight_command_data[3];
+			
+			//Check for communication timeouts
 			if (t > 3000) {
 				status_clear(STATUS_ARMED);
 				
@@ -133,20 +100,27 @@ int main(){
 				}
 			}
 			
+			//Reset PID if throttle is 0.
+			if (throttle < 0.01) {
+				pid_reset();
+			}
+			
 			mv = pid_mv(sp, pv);					// PID manipulated variable
 			
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
-		} else if (armed == 'M') {					// armed by motor command
+		} else if (cmd_type == 'M') {				// motor command
 			status_set(STATUS_ARMED);
 			for (uint8_t i = 0; i < 4; i++) {
-				motor[i] = flight_command[i];
+				motor[i] = flight_command_data[i];
 			}
 			
+			//Clear armed if all motor values are 0 (this is sent from control module when disarmed)
 			if (motor[0] == 0 && motor[1] == 0 && motor[2] == 0 && motor[3] == 0) {
 				status_clear(STATUS_ARMED);
 			}
 			
+			//Check for communication timeouts
 			if (t > 3000) {
 				status_clear(STATUS_ARMED);
 
@@ -155,11 +129,17 @@ int main(){
 					motor[i] = 0;
 				}
 			}
-			pid_reset();							// since pid isn't used for motor commands, take this opportunity to clear any accumulated error
+			
+			pid_reset();		// since pid isn't used for motor commands, take this opportunity to clear any accumulated error
 			esc_set(motor);
 			throttle = 0;
 		}
 
+		//********************
+		// Intermittent I/O
+		//********************
+
+		//Every 100 ms
 		if (curr_millis - last_telemetry > 100){
 			status_toggle(STATUS_HEARTBEAT);
 
@@ -168,6 +148,7 @@ int main(){
 			last_telemetry = curr_millis;			
 		}
 
+		//Every 500ms
 		if (curr_millis - last_status_clear > 500){
 			status_clear(STATUS_MESSAGE_RX);
 			status_clear(STATUS_MESSAGE_TX);
@@ -175,6 +156,7 @@ int main(){
 			last_status_clear = curr_millis;
 		}
 		
+		//Every 5 seconds
 		if (curr_millis - last_battery > 5000){
 			protocol_send_battery(battery_level());
 
