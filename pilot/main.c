@@ -33,13 +33,14 @@ int main(){
 	uint64_t millis = 0;			//Last measured millis
 	uint64_t curr_millis;			//Current ms counter
 	uint64_t dt;					//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
-	uint64_t t = 0;					//Time since last signal was recieved
+	uint64_t t = 0;					//Time since last signal was received
 	uint64_t last_telemetry = 0;	//Time the last telemetry was sent
 	uint64_t last_status_clear = 0;	//Time last status clear was sent
 	uint64_t last_battery = 0;		//Time last battery state was sent
 
 	//State variables
-	uint8_t cmd_type;				//Will be either 'A' or 'M'
+	uint8_t cmd_type;				//Can be any of the flight command types (a superset of armed_type)
+	uint8_t armed_type = 0x00;		//Will be either 'A' or 'M'; initialized to 0x00 until the first command is received.
 	double flight_command_data[4];	//Data packet received with a flight command
 	double throttle = 0.0;			//Throttle as sent from controller
 	uint8_t throttle_back;			//Used for lost signal throttle decrease
@@ -67,6 +68,7 @@ int main(){
 		
 		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A' || cmd_type == 'M') {
+			armed_type = cmd_type;
 			t = 0;
 		}
 
@@ -74,7 +76,7 @@ int main(){
 		a = accel_get();
 		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
-		if (cmd_type == 'A') {						// attitude command
+		if (armed_type == 'A') {						// attitude command
 			status_set(STATUS_ARMED);
 			
 			throttle = flight_command_data[0];
@@ -109,7 +111,7 @@ int main(){
 			
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
-		} else if (cmd_type == 'M') {				// motor command
+		} else if (armed_type == 'M') {				// motor command
 			status_set(STATUS_ARMED);
 			for (uint8_t i = 0; i < 4; i++) {
 				motor[i] = flight_command_data[i];
