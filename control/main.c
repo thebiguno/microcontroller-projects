@@ -13,8 +13,8 @@ int main (void){
 	uint64_t millis = timer_millis();
 	uint64_t last_millis = millis;
 
-	//Used to send telemetry
-	uint64_t millis_last_telemetry = millis;
+	//Used to send control data (throttle / pitch / roll / yaw)
+	uint64_t millis_last_control = millis;
 	//Used to update status
 	uint64_t millis_last_status = millis;
 	//Used to update battery
@@ -72,12 +72,19 @@ int main (void){
 			//Update armed time
 			armed_time += dt;
 		
-			//Send control data
-			if ((millis - millis_last_telemetry) > 50) {
+			//Send current control data every 50ms if armed.
+			if ((millis - millis_last_control) > 50) {
 				protocol_send_control(control);
-				millis_last_telemetry = millis;
+				millis_last_control = millis;
 			}
 		} else {
+			//Send kill data every 200ms if not armed; this will prevent a missed 
+			// message from preventing the copter from not disarming for more than 200ms.
+			if ((millis - millis_last_control) > 200) {
+				protocol_send_kill();
+				millis_last_control = millis;
+			}		
+		
 			if (button_changed & RESET_ATTITUDE && button_state & RESET_ATTITUDE) { // rising edge, 0->1
 				protocol_send_reset_attitude();
 			}
