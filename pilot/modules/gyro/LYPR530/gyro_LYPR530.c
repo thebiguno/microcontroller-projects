@@ -11,7 +11,7 @@
 static uint16_t calibrated_values[2];
 
 //Array used for raw analog reading
-static uint16_t results[2];
+static uint16_t results[3];
 
 void gyro_init(){
 	//Send HP reset for a few ms
@@ -117,7 +117,7 @@ void gyro_calibrate(){
 	calibration_data[1] = (uint8_t) calibrated_values[0];
 	calibration_data[2] = (uint8_t) (calibrated_values[1] >> 8);
 	calibration_data[3] = (uint8_t) calibrated_values[1];
-	calibration_data[4] = (uint8_t) (calibrated_values[2] >> 8);
-	// 	calibration_data[5] = (uint8_t) calibrated_values[2];
+	// calibration_data[4] = (uint8_t) (calibrated_values[2] >> 8);
+	// calibration_data[5] = (uint8_t) calibrated_values[2];
 	persist_write(PERSIST_SECTION_GYRO, calibration_data, 4);
 }
