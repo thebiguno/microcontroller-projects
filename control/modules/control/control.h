@@ -64,14 +64,14 @@ void control_reset_throttle();
 #define TELEMETRY			0x0002
 #define RESET_ATTITUDE		0x0004
 #define CALIBRATE			0x0008
-//#define 			 		0x0010
-//#define 					0x0020
-//#define 			 		0x0040
-//#define 					0x0080
-//#define 					0x0100
-//#define 					0x0200
-//#define 					0x0400
-//#define 					0x0800
+#define MODE_NEXT	 		0x0010
+#define MODE_PREV			0x0020
+#define MODE_COMMIT	 		0x0040
+#define MODE_RESET			0x0080
+#define VALUE_NEXT			0x0100
+#define VALUE_PREV			0x0200
+#define VALUE_UP			0x0400
+#define VALUE_DOWN			0x0800
 //#define 					0x1000
 //#define 					0x2000
 //#define 					0x4000

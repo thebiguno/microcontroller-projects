@@ -15,6 +15,14 @@
 void status_init();
 
 /*
+ * Initializes the persistent text / graphics for each mode
+ */
+void status_init_mode_flight();
+void status_init_mode_calibrate();
+void status_init_mode_pid();
+void status_init_mode_kalman();
+
+/*
  * Sets the battery level for the pilot (double from 0.0 to 1.0 inclusive)
  */
 void status_set_pilot_battery_level(double value);

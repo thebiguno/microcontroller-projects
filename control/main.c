@@ -24,6 +24,17 @@ int main (void){
 	
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
+	
+	//Controller mode state.  Modes are as follows:
+	// 0: Flight mode (armed / disarmed, shows throttle, telemetry, battery, etc)
+	// 1: Calibration mode (calibrate gyro + accel)
+	// 2: PID mode (read / write PID values)
+	// 3: Kalman mode (read / write Kalman tuning values)
+	//Modes are incremented / decremented using Circle / Square buttons respectively.
+	uint8_t mode = 0;
+    
+    //Init the text / graphics used in flight mode
+    status_init_mode_flight();
     
 	PORTD &= ~_BV(PIND5);		// off
 	DDRD |= _BV(PIND5);			// set armed pin to output mode
@@ -54,6 +65,7 @@ int main (void){
 		uint16_t button_changed = control_button_state_changed();
 		
 		if ((button_state & POWER) && (button_changed & POWER)) { // rising edge, 0->1
+			mode = 0;	//If you arm, you cancel out of any pending changes and go to flight mode.
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
@@ -78,6 +90,15 @@ int main (void){
 				millis_last_control = millis;
 			}
 		} else {
+			//Change mode if applicable
+			if ((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) { // rising edge, 0->1
+				mode = (mode + 1) % 4;
+				
+			}
+			else if ((button_state & MODE_PREV) && (button_changed & MODE_PREV)) { // rising edge, 0->1
+				mode = (mode - 1) % 4;
+			}
+		
 			//Send kill data every 200ms if not armed; this will prevent a missed 
 			// message from preventing the copter from not disarming for more than 200ms.
 			if ((millis - millis_last_control) > 200) {
@@ -96,27 +117,38 @@ int main (void){
 		//Update the status display
 		if ((millis - millis_last_status) > 200){
 			millis_last_status = millis;
+
+			if (mode == 0){			
+				//Control Battery
+				status_set_control_battery_level(battery_level());
+				status_error_battery(battery_level() < 0.2);
+	
+				//Pitch / Roll
+				protocol_get_vector(buffer);
+				status_set_telemetry(buffer[0], buffer[1]);
+	
+				//Motors
+				protocol_get_motors(buffer);
+				status_set_motors(buffer[0], buffer[1], buffer[2], buffer[3]);
+				
+				//Throttle / Armed / Time
+				status_set_throttle(control.throttle, armed);
+				status_set_armed_time(armed_time);
+	
+				//Rx / Tx
+				status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX), 
+						protocol_comm_state(PROTOCOL_COMM_RX));
+				protocol_clear_comm_state();
+			}
+			else if (mode == 1){
 			
-			//Control Battery
-			status_set_control_battery_level(battery_level());
-			status_error_battery(battery_level() < 0.2);
-
-			//Pitch / Roll
-			protocol_get_vector(buffer);
-			status_set_telemetry(buffer[0], buffer[1]);
-
-			//Motors
-			protocol_get_motors(buffer);
-			status_set_motors(buffer[0], buffer[1], buffer[2], buffer[3]);
+			}
+			else if (mode == 2){
 			
-			//Throttle / Armed / Time
-			status_set_throttle(control.throttle, armed);
-			status_set_armed_time(armed_time);
-
-			//Rx / Tx
-			status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX), 
-					protocol_comm_state(PROTOCOL_COMM_RX));
-			protocol_clear_comm_state();
+			}
+			else if (mode == 3){
+			
+			}
 		}
 		
 		if ((millis - millis_last_battery) > 2000){

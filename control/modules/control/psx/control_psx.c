@@ -89,7 +89,17 @@ uint16_t control_button_state(){
 	if (button_state & PSB_SELECT) state |= TELEMETRY;
 	if (button_state & PSB_L3) state |= RESET_ATTITUDE;
 	if (button_state & PSB_R3) state |= CALIBRATE;
-
+	
+	if (button_state & PSB_TRIANGLE) state |= MODE_RESET;
+	if (button_state & PSB_CIRCLE) state |= MODE_NEXT;
+	if (button_state & PSB_SQUARE) state |= MODE_PREV;
+	if (button_state & PSB_CROSS) state |= MODE_COMMIT;
+	
+	if (button_state & PSB_PAD_UP) state |= VALUE_UP;
+	if (button_state & PSB_PAD_DOWN) state |= VALUE_DOWN;
+	if (button_state & PSB_PAD_LEFT) state |= VALUE_NEXT;
+	if (button_state & PSB_PAD_RIGHT) state |= VALUE_PREV;	
+	
 	return state;
 }
 uint16_t control_button_state_changed() {
@@ -100,6 +110,16 @@ uint16_t control_button_state_changed() {
 	if (button_changed & PSB_L3) changed |= RESET_ATTITUDE;
 	if (button_changed & PSB_R3) changed |= CALIBRATE;
 
+	if (button_state & PSB_TRIANGLE) changed |= MODE_RESET;
+	if (button_state & PSB_CIRCLE) changed |= MODE_NEXT;
+	if (button_state & PSB_SQUARE) changed |= MODE_PREV;
+	if (button_state & PSB_CROSS) changed |= MODE_COMMIT;
+	
+	if (button_state & PSB_PAD_UP) changed |= VALUE_UP;
+	if (button_state & PSB_PAD_DOWN) changed |= VALUE_DOWN;
+	if (button_state & PSB_PAD_LEFT) changed |= VALUE_NEXT;
+	if (button_state & PSB_PAD_RIGHT) changed |= VALUE_PREV;
+	
 	return changed;
 }
 

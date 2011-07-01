@@ -31,9 +31,9 @@
 char temp[16];
 
 /*
- * Private function, clears all data and writes labels.
+ * Initializes the persistent text / graphics for each mode
  */
-void _status_reset(){
+void status_init_mode_flight(){
 	//Clear buffer
 	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
 	
@@ -55,13 +55,24 @@ void _status_reset(){
 	glcd_write_buffer();
 }
 
+void status_init_mode_calibrate(){
+	//TODO set up calibrate mode
+}
+
+void status_init_mode_pid(){
+	//TODO set up pid mode
+}
+
+void status_init_mode_kalman(){
+	//TODO set up kalman mode
+}
+
 void status_init(){
 	st7565r_init(&PORT_LCD_DATA, PIN_LCD_DATA, 
 			&PORT_LCD_CLOCK, PIN_LCD_CLOCK, 
 			&PORT_LCD_A0, PIN_LCD_A0, 
 			&PORT_LCD_RESET, PIN_LCD_RESET);
-			
-	_status_reset();
+
 }
 
 
