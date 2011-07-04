@@ -92,9 +92,9 @@ void pid_receive_tuning(uint8_t *buf) {
 	// state_z.kd = convert_bytes_to_double(buf, 32);
 }
 
-double _pid_mv(double sp, double pv, pid_t *state){
+double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	double e = sp - pv;
-	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (pv - state->pv));
+	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (pv - state->pv) / dt);
 
 	state->i += e;
 	state->pv = pv;
@@ -102,17 +102,15 @@ double _pid_mv(double sp, double pv, pid_t *state){
 	return mv;
 }
 
-vector_t pid_mv(vector_t sp, vector_t pv) {
+vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
 	vector_t mv;
 
 	// for x and y, values are in radians
-	mv.x = _pid_mv(sp.x, pv.x, &state_x);
-	mv.y = _pid_mv(sp.y, pv.y, &state_y);
+	mv.x = _pid_mv(sp.x, pv.x, &state_x, dt);
+	mv.y = _pid_mv(sp.y, pv.y, &state_y, dt);
 	
 	// for z, values are in radians / second
-	// if (sp.z > 0) {
-		mv.z = sp.z; //_pid_mv(sp.z, pv.z, &state_z);
-	// }
+	mv.z = sp.z;
 
 	return mv;
 }

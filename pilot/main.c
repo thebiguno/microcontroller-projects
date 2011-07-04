@@ -107,7 +107,7 @@ int main(){
 				pid_reset();
 			}
 			
-			mv = pid_mv(sp, pv);					// PID manipulated variable
+			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
 			
 			motor_percent(throttle, mv, motor);
 			esc_set(motor);
