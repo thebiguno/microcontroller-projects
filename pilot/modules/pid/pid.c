@@ -15,6 +15,7 @@ typedef struct pid {
 static pid_t state_x;
 static pid_t state_y;
 // static pid_t state_z;
+static vector_t last_mv; // used when dt == 0
 
 void pid_read_tuning() {
 	uint8_t data[36];
@@ -105,13 +106,23 @@ double _pid_mv(double sp, double pv, pid_t *state, double dt){
 vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
 	vector_t mv;
 
-	// for x and y, values are in radians
-	mv.x = _pid_mv(sp.x, pv.x, &state_x, dt);
-	mv.y = _pid_mv(sp.y, pv.y, &state_y, dt);
-	
+	if (dt > 0) {
+		double dt_s = dt * 0.001;
+
+		// for x and y, values are in radians
+		mv.x = _pid_mv(sp.x, pv.x, &state_x, dt_s);
+		mv.y = _pid_mv(sp.y, pv.y, &state_y, dt_s);
+
+		last_mv.x = mv.x;
+		last_mv.y = mv.y;
+	} else {
+		mv.x = last_mv.x;
+		mv.y = last_mv.y;
+	}
+
 	// for z, values are in radians / second
 	mv.z = sp.z;
-
+	
 	return mv;
 }
 
