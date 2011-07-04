@@ -96,7 +96,7 @@ double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	double e = sp - pv;
 	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (pv - state->pv) / dt);
 
-	state->i += e;
+	state->i += e * dt;
 	state->pv = pv;
 
 	return mv;
