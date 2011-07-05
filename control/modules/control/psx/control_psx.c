@@ -20,7 +20,7 @@
 #include "../../../lib/timer/timer.h"
 
 //Throttle scale to a rate of change per second
-#define MAX_THROTTLE 0.1				//Max throttle rate of change is 10% / second
+#define MAX_THROTTLE 0.25				//Max throttle rate of change is 25% / second
 #define M_THROTTLE (2 * MAX_THROTTLE) / 128
 #define B_THROTTLE MAX_THROTTLE * -1
 
@@ -68,7 +68,7 @@ control_t control_read_analog() {
 	
 	// Throttle is a Relative Linear Control
 	// Ignore the points around the centre of the stick
-	// Scale into +/- 10% change / second range
+	// Scale into +/- MAX_THROTTLE% change / second range
 	// Multiply by -1 to invert; up is more throttle, down is reverse throttle
 	// Don't let the throttle exceed 80%; this leaves some overhead to pitch and roll and "full" throttle
 	uint8_t t = psx_stick(PSS_LY);
@@ -87,8 +87,6 @@ uint16_t control_button_state(){
 
 	if (button_state & PSB_START) state |= POWER;
 	if (button_state & PSB_SELECT) state |= TELEMETRY;
-	if (button_state & PSB_L3) state |= RESET_ATTITUDE;
-	if (button_state & PSB_R3) state |= CALIBRATE;
 	
 	if (button_state & PSB_TRIANGLE) state |= MODE_RESET;
 	if (button_state & PSB_CIRCLE) state |= MODE_NEXT;
@@ -107,8 +105,6 @@ uint16_t control_button_state_changed() {
 
 	if (button_changed & PSB_START) changed |= POWER;
 	if (button_changed & PSB_SELECT) changed |= TELEMETRY;
-	if (button_changed & PSB_L3) changed |= RESET_ATTITUDE;
-	if (button_changed & PSB_R3) changed |= CALIBRATE;
 
 	if (button_state & PSB_TRIANGLE) changed |= MODE_RESET;
 	if (button_state & PSB_CIRCLE) changed |= MODE_NEXT;
