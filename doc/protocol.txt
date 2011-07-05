@@ -24,13 +24,14 @@ checksum	1 byte
 TUNING (<->)
 frame start	1 byte	(0x7e)
 length		1 byte
-cmd		1 byte	(p = pid, c = complementary, k = kalman, m = mhv)
+cmd		1 byte	(p = pid, c = complementary, k = kalman, m = motor)
 payload		(depends on tuning type)
 checksum	1 byte
 
 payloads are
 PID:		36 bytes: p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
 kalman:		24 bytes: qangle.x, qgyro.x, rangle.x, qangle.y, qgyro.y, rangle.y
+motor:		16 bytes: motor_a, motor_b, motor_c, motor_d
 
 TELEMETRY (<- )
 frame start	1 byte	(0x7e)
