@@ -25,6 +25,13 @@ typedef struct control {
     double throttle;
 } control_t;
 
+typedef struct vector {
+    double x;
+    double y;
+    double z;
+} vector_t;
+
+
 uint16_t dt;
 
 #include "modules/battery/battery.h"

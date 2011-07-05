@@ -7,9 +7,11 @@
 #include "../../../lib/glcd/glcd_st7565r.h"
 #include "../../../lib/glcd/fonts/ascii.h"
 #include "../../../lib/glcd/fonts/xsmall.h"
+#include "../../../lib/glcd/fonts/small.h"
 #include "../../../lib/glcd/fonts/medium.h"
 #include "../../../lib/glcd/fonts/xlarge.h"
 
+//Flight mode layout
 #define STATUS_THROTTLE_X			0
 #define STATUS_THROTTLE_Y			0
 #define STATUS_PITCH_X				39
@@ -26,6 +28,31 @@
 #define STATUS_COMM_Y				0
 #define STATUS_MOTORS_X				82
 #define STATUS_MOTORS_Y				0
+
+#define STATUS_CONFIG_MODE_TITLE_X	10
+#define STATUS_CONFIG_MODE_TITLE_Y	1
+
+
+//Calibrate mode layout
+#define STATUS_CALIBRATE_TEXT_X		5
+#define STATUS_CALIBRATE_TEXT_Y		12
+
+//PID mode layout
+#define STATUS_PID_COMPONENTS_TEXT_X	10
+#define STATUS_PID_COMPONENTS_TEXT_Y	12
+#define STATUS_PID_COLUMN_WIDTH		15
+#define STATUS_PID_PITCH_TEXT_X		1
+#define STATUS_PID_PITCH_TEXT_Y		17
+#define STATUS_PID_ROLL_TEXT_X		1
+#define STATUS_PID_ROLL_TEXT_Y		23
+
+//Motor mode layout
+#define STATUS_MOTOR_COMPONENTS_TEXT_X	10
+#define STATUS_MOTOR_COMPONENTS_TEXT_Y	12
+#define STATUS_MOTOR_COLUMN_WIDTH		15
+#define STATUS_MOTOR_ROW_HEIGHT			8
+
+//Kalman mode layout
 
 //Temp buffer for printf
 char temp[16];
@@ -56,11 +83,45 @@ void status_init_mode_flight(){
 }
 
 void status_init_mode_calibrate(){
-	//TODO set up calibrate mode
+	//Clear buffer
+	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write text labels
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Calibration", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CALIBRATE_TEXT_X, STATUS_CALIBRATE_TEXT_Y, "Ensure craft is level and", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CALIBRATE_TEXT_X, STATUS_CALIBRATE_TEXT_Y + 6, "press X to calibrate", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	
+	glcd_write_buffer();
 }
 
 void status_init_mode_pid(){
-	//TODO set up pid mode
+	//Clear buffer
+	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write text labels
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "PID Tuning", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_PID_COMPONENTS_TEXT_X, STATUS_PID_COMPONENTS_TEXT_Y, "P", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_PID_COMPONENTS_TEXT_X + STATUS_PID_COLUMN_WIDTH, STATUS_PID_COMPONENTS_TEXT_Y, "I", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_PID_COMPONENTS_TEXT_X + 2*STATUS_PID_COLUMN_WIDTH, STATUS_PID_COMPONENTS_TEXT_Y, "D", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+
+	glcd_draw_text(STATUS_PID_PITCH_TEXT_X, STATUS_PID_PITCH_TEXT_Y + 6, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_PID_ROLL_TEXT_X, STATUS_PID_ROLL_TEXT_Y + 6, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	
+	glcd_write_buffer();
+}
+
+void status_init_mode_motor(){
+	//Clear buffer
+	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write text labels
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Motor Tuning", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, font_medium, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_MOTOR_COMPONENTS_TEXT_X, STATUS_MOTOR_COMPONENTS_TEXT_Y, "A", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_MOTOR_COMPONENTS_TEXT_X + STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y, "B", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_MOTOR_COMPONENTS_TEXT_X + 2*STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y, "C", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_MOTOR_COMPONENTS_TEXT_X + 3*STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y, "D", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+
+	glcd_write_buffer();
 }
 
 void status_init_mode_kalman(){
@@ -214,4 +275,23 @@ void status_set_motors(double left, double front, double right, double back){
 		
  	//Flush
 	glcd_write_buffer_bounds(STATUS_MOTORS_X, STATUS_MOTORS_Y, STATUS_MOTORS_X + 32, STATUS_MOTORS_Y + 32);
+}
+
+void status_set_pid_values(uint8_t col, uint8_t row, vector_t p, vector_t i, vector_t d){
+	//TODO
+}
+
+void status_set_motor_values(uint8_t col, double motors[]){
+
+	for (uint8_t i = 0; i < 4; i++){
+		sprintf(temp, "%4.2f", motors[i]);
+		//Either clear the last value, or highlight the selected value
+		glcd_draw_rectangle(STATUS_MOTOR_COMPONENTS_TEXT_X + i * STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y + 8, STATUS_MOTOR_COLUMN_WIDTH - 1 + STATUS_MOTOR_COMPONENTS_TEXT_X + i * STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y + 8 + STATUS_MOTOR_ROW_HEIGHT, DRAW_FILLED, (col == i ? OVERLAY_OR : OVERLAY_NAND));
+		//Show values
+		glcd_draw_text(STATUS_MOTOR_COMPONENTS_TEXT_X + i * STATUS_MOTOR_COLUMN_WIDTH, STATUS_MOTOR_COMPONENTS_TEXT_Y + 8, temp, FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_XOR);
+	}
+}
+
+void status_set_kalman_values(uint8_t tuning_col, uint8_t tuning_row, vector_t kalman_qa, vector_t kalman_qg, vector_t kalman_ra){
+	//TODO
 }

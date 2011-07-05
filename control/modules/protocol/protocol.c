@@ -25,7 +25,7 @@ typedef struct state {
 static uint8_t comm_state = 0; 
 static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid range.
 static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
-static double _vector[] = {0,0};
+static vector_t _vector;
 static double _motors[] = {0,0,0,0};
 
 static state_t pilot;		// messages coming in from the pilot
@@ -134,8 +134,8 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			battery_misses = 0;
 			break;
 		case 'T':
-			_vector[0] = convert_byte_to_radian(pilot.buf[0]);
-			_vector[1] = convert_byte_to_radian(pilot.buf[1]);
+			_vector.x = convert_byte_to_radian(pilot.buf[0]);
+			_vector.y = convert_byte_to_radian(pilot.buf[1]);
 			_motors[0] = convert_byte_to_percent(pilot.buf[3]);
 			_motors[1] = convert_byte_to_percent(pilot.buf[4]);
 			_motors[2] = convert_byte_to_percent(pilot.buf[5]);
@@ -232,6 +232,41 @@ void protocol_poll() {
 	protocol_poll_pc();
 }
 
+void protocol_send_pid_tuning(vector_t p, vector_t i, vector_t d){
+	uint8_t data[36];
+	convert_double_to_bytes(p.x, data, 0);
+	convert_double_to_bytes(p.y, data, 4);
+	//z is ignored
+	convert_double_to_bytes(i.x, data, 12);
+	convert_double_to_bytes(i.y, data, 16);
+	//z is ignored					
+	convert_double_to_bytes(d.x, data, 24);
+	convert_double_to_bytes(d.y, data, 28);
+	//z is ignored					
+	protocol_send_message_to_pilot('p', data, 36);
+}
+
+void protocol_send_motor_tuning(double motors[]){
+	uint8_t data[16];
+	convert_double_to_bytes(motors[0], data, 0);
+	convert_double_to_bytes(motors[1], data, 4);
+	convert_double_to_bytes(motors[2], data, 8);
+	convert_double_to_bytes(motors[3], data, 12);
+	protocol_send_message_to_pilot('m', data, 16);
+}
+
+void protocol_send_kalman_tuning(vector_t qa, vector_t qg, vector_t ra){
+	uint8_t data[24];
+	convert_double_to_bytes(qa.x, data, 0);
+	convert_double_to_bytes(qg.x, data, 4);
+	convert_double_to_bytes(ra.x, data, 8);
+	convert_double_to_bytes(qa.y, data, 12);
+	convert_double_to_bytes(qg.y, data, 16);
+	convert_double_to_bytes(ra.y, data, 20);
+	protocol_send_message_to_pilot('k', data, 24);	
+}
+
+
 void protocol_clear_comm_state() {
 	comm_state = 0;
 }
@@ -253,9 +288,11 @@ void protocol_get_motors(double motors[]) {
 	}
 }
 
-void protocol_get_vector(double vector[]) {
-	for (int i = 0; i < 2; i++) {
-		vector[i] = _vector[i];
-		_vector[i] = 10000;	//Anything over 1000 is read as 'invalid'.
-	}
+void protocol_get_vector(vector_t data) {
+	data.x = _vector.x;
+	data.y = _vector.y;
+
+	//Reset	
+	_vector.x = 10000;	//Anything over 1000 is read as 'invalid'.
+	_vector.y = 10000;	//Anything over 1000 is read as 'invalid'.
 }
