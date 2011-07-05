@@ -86,11 +86,16 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'W':
 			pid_write_tuning();
 			attitude_write_tuning();
+			motor_write_tuning();
 			protocol_send_diag("tuning persisted");
 			break;
 		case 'p':
 			pid_receive_tuning(_buf);
 			protocol_send_diag("pid received");
+			break;
+		case 'm':
+			motor_receive_tuning(_buf);
+			protocol_send_diag("motor received");
 			break;
 		case 'k':
 			if (attitude_get_id() == 'K') {

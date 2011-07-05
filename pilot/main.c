@@ -13,6 +13,7 @@ int main(){
 	esc_init();
 	accel_init();  //We call accel_init after all other interrupt-driven modules, as it forces sei() (without which i2c will hang).
 	pid_init();
+	motor_init();
 	attitude_init(gyro_get(), accel_get());
 	
 	if (esc_calibration_required()){
