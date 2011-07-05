@@ -104,10 +104,6 @@ void protocol_send_kill() {
 	protocol_send_message_to_pilot('M', packet, 4);
 }
 
-void protocol_send_reset_attitude(){
-	protocol_send_message_to_pilot('R', dummy, 0);
-}
-
 void protocol_send_calibrate(){
 	protocol_send_message_to_pilot('C', dummy, 0);
 }

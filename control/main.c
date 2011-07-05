@@ -177,7 +177,6 @@ int main (void){
 			else if ((button_state & MODE_COMMIT) && (button_changed & MODE_COMMIT)) {
 				if (mode == MODE_CALIBRATE){
 					protocol_send_calibrate();
-					protocol_send_reset_attitude();
 				}
 				else if (mode == MODE_PID){
 					protocol_send_pid_tuning(pid_p, pid_i, pid_d);

@@ -16,11 +16,6 @@ void protocol_send_control(control_t control);
 void protocol_send_kill();
 
 /*
- * Sends a reset attitude message to the pilot.
- */
-void protocol_send_reset_attitude();
-
-/*
  * Sends a reset calibrate message to the pilot.
  */
 void protocol_send_calibrate();

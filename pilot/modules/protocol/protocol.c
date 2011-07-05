@@ -62,11 +62,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			}
 			_last_flight_cmd = cmd;
 			break;
-		case 'R':
-			attitude_reset();
-			pid_reset();
-			protocol_send_diag("attitude reset");
-			break;
 		case 'C':
 			gyro_calibrate();
 			accel_calibrate();
