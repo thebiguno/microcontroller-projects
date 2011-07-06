@@ -145,7 +145,7 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		init_display();
 		update_display();
 	}
-	//Commit (X) button is pressed
+	//Commit (triangle) button is pressed
 	else if ((button_state & MODE_COMMIT) && (button_changed & MODE_COMMIT)) {
 		if (mode == MODE_CALIBRATE){
 			protocol_send_calibrate();
@@ -166,7 +166,7 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		
 		update_display();
 	}
-	//Request (Triangle) button is pressed
+	//Request (X) button is pressed
 	else if ((button_state & MODE_RESET) && (button_changed & MODE_RESET)) {
 		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you ask for it in flight mode, etc.
 		protocol_request_tuning();
