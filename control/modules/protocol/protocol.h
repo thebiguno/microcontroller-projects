@@ -32,6 +32,19 @@ void protocol_send_motor_tuning(double motors[]);
 void protocol_send_kalman_tuning(vector_t qa, vector_t qg, vector_t ra);
 
 /*
+ * Read mailboxes to receive tuning messages from the pilot
+ */
+void protocol_get_pid_tuning(vector_t *p, vector_t *i, vector_t *d);
+void protocol_get_motor_tuning(double *motor);
+void protocol_get_kalman_tuning(vector_t *qa, vector_t *qg, vector_t *ra);
+
+/*
+ * Requests all tuning values from the pilot.
+ */
+void protocol_request_tuning();
+
+
+/*
  * Clears the rx / tx activity state; call this from main after updating status LCD.
  */
 void protocol_clear_comm_state();

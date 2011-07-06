@@ -25,7 +25,17 @@ typedef struct state {
 static uint8_t comm_state = 0; 
 static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid range.
 static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
+
+#define MAILBOX_PID		_BV(0)
+#define MAILBOX_MOTOR	_BV(1)
+#define MAILBOX_KALMAN	_BV(2)
+static uint8_t mailbox_flag = 0;	//Check bits for what message types are available
+
 static vector_t _vector;
+static vector_t pid_p, pid_i, pid_d;	//Mailbox for received PID tuning values
+double motor_tune[4] = {1.0, 1.0, 1.0, 1.0};	//Mailbox for received motor tuning values
+vector_t kalman_qa, kalman_qg, kalman_ra;	//Mailbox for received kalman tuning values
+
 static double _motors[] = {0,0,0,0};
 
 static state_t pilot;		// messages coming in from the pilot
@@ -112,6 +122,10 @@ void protocol_send_toggle_telemetry(){
 	protocol_send_message_to_pilot('E', dummy, 0);
 }
 
+void protocol_request_tuning(){
+	protocol_send_message_to_pilot('t', dummy, 0);
+}
+
 void protocol_send_diag(char* s) {
 	uint8_t packet[255];
 	uint8_t l = 0;
@@ -136,6 +150,33 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			_motors[1] = convert_byte_to_percent(pilot.buf[4]);
 			_motors[2] = convert_byte_to_percent(pilot.buf[5]);
 			_motors[3] = convert_byte_to_percent(pilot.buf[6]);
+			break;
+		case 'p':
+			pid_p.x = convert_bytes_to_double(pilot.buf, 0);
+			pid_p.y = convert_bytes_to_double(pilot.buf, 4);
+			//z is ignored
+			pid_i.x = convert_bytes_to_double(pilot.buf, 12);
+			pid_i.y = convert_bytes_to_double(pilot.buf, 16);
+			//z is ignored
+			pid_d.x = convert_bytes_to_double(pilot.buf, 24);
+			pid_d.y = convert_bytes_to_double(pilot.buf, 28);
+			mailbox_flag |= MAILBOX_PID;
+			break;
+		case 'k':
+			kalman_qa.x = convert_bytes_to_double(pilot.buf, 0);
+			kalman_qg.x = convert_bytes_to_double(pilot.buf, 4);
+			kalman_ra.x = convert_bytes_to_double(pilot.buf, 8);
+			kalman_qa.y = convert_bytes_to_double(pilot.buf, 12);
+			kalman_qg.y = convert_bytes_to_double(pilot.buf, 16);
+			kalman_ra.y = convert_bytes_to_double(pilot.buf, 20);
+			mailbox_flag |= MAILBOX_KALMAN;
+			break;
+		case 'm':
+			motor_tune[0] = convert_bytes_to_double(pilot.buf, 0);
+			motor_tune[1] = convert_bytes_to_double(pilot.buf, 4);
+			motor_tune[2] = convert_bytes_to_double(pilot.buf, 8);
+			motor_tune[3] = convert_bytes_to_double(pilot.buf, 12);
+			mailbox_flag |= MAILBOX_MOTOR;
 			break;
 	}
 }
@@ -227,6 +268,47 @@ void protocol_poll() {
 	protocol_poll_pilot();
 	protocol_poll_pc();
 }
+
+void protocol_get_pid_tuning(vector_t *p, vector_t *i, vector_t *d){
+	if (mailbox_flag & MAILBOX_PID){
+		p->x = pid_p.x;
+		i->x = pid_i.x;
+		d->x = pid_d.x;
+		p->y = pid_p.y;
+		i->y = pid_i.y;
+		d->y = pid_d.y;
+	}
+	
+	//Reset flag
+	mailbox_flag &= ~MAILBOX_PID;
+}
+
+void protocol_get_motor_tuning(double *motor){
+	if (mailbox_flag & MAILBOX_MOTOR){
+		for (uint8_t i = 0; i < 4; i++){
+			motor[i] = motor_tune[i];
+		}
+	}
+	
+	//Reset flag
+	mailbox_flag &= ~MAILBOX_MOTOR;
+}
+
+void protocol_get_kalman_tuning(vector_t *qa, vector_t *qg, vector_t *ra){
+	if (mailbox_flag & MAILBOX_KALMAN){
+		qa->x = kalman_qa.x;
+		qg->x = kalman_qg.x;
+		ra->x = kalman_ra.x;
+		qa->y = kalman_qa.y;
+		qg->y = kalman_qg.y;
+		ra->y = kalman_ra.y;
+	}
+	
+	//Reset flag
+	mailbox_flag &= ~MAILBOX_KALMAN;
+}
+
+
 
 void protocol_send_pid_tuning(vector_t p, vector_t i, vector_t d){
 	uint8_t data[36];
