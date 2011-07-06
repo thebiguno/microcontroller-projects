@@ -76,6 +76,10 @@ void status_set_motor_values(uint8_t col, double motors[]);
  */
 void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vector_t kalman_qg, vector_t kalman_ra);
 
+/*
+ * Thin wrapper to invert display on persist.
+ */
+void status_persist_values(uint8_t invert);
 
 
 //Warning functions: these will be implemented by a high-attention module, probably

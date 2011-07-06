@@ -159,6 +159,11 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		else if (mode == MODE_KALMAN){
 			protocol_send_kalman_tuning(kalman_qa, kalman_qg, kalman_ra);
 		}
+		
+		status_persist_values(1);
+		_delay_ms(500);
+		status_persist_values(0);
+		
 		update_display();
 	}
 	//Up / down
