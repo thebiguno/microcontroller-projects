@@ -95,8 +95,8 @@ uint16_t control_button_state(){
 	
 	if (button_state & PSB_PAD_UP) state |= VALUE_UP;
 	if (button_state & PSB_PAD_DOWN) state |= VALUE_DOWN;
-	if (button_state & PSB_PAD_LEFT) state |= VALUE_NEXT;
-	if (button_state & PSB_PAD_RIGHT) state |= VALUE_PREV;	
+	if (button_state & PSB_PAD_LEFT) state |= VALUE_PREV;
+	if (button_state & PSB_PAD_RIGHT) state |= VALUE_NEXT;	
 	
 	return state;
 }
@@ -113,8 +113,8 @@ uint16_t control_button_state_changed() {
 	
 	if (button_state & PSB_PAD_UP) changed |= VALUE_UP;
 	if (button_state & PSB_PAD_DOWN) changed |= VALUE_DOWN;
-	if (button_state & PSB_PAD_LEFT) changed |= VALUE_NEXT;
-	if (button_state & PSB_PAD_RIGHT) changed |= VALUE_PREV;
+	if (button_state & PSB_PAD_LEFT) changed |= VALUE_PREV;
+	if (button_state & PSB_PAD_RIGHT) changed |= VALUE_NEXT;
 	
 	return changed;
 }

@@ -15,16 +15,16 @@
 // 3: Motor tuning mode (read / write motor tuning values)
 // 4: Kalman mode (read / write Kalman tuning values)
 //Modes are incremented / decremented using Circle / Square buttons respectively.
-uint8_t mode = MODE_FLIGHT;
+int8_t mode = MODE_FLIGHT;
 
 //Variables used in non-flight-mode modes
 int8_t tuning_row, tuning_col;				//Reset to 0 when mode is changed; this is used to determine which element is being changed
 vector_t pid_p, pid_i, pid_d;				//Volatile PID values; sent with X, modified with up / down pad
-double motors[4];							//Volatile motor tuning values; sent with X, modified with up / down pad
+double motors[4] = {1.0, 1.0, 1.0, 1.0};	//Volatile motor tuning values; sent with X, modified with up / down pad
 vector_t kalman_qa, kalman_qg, kalman_ra;	//Volatile Kalman values; sent with X, modified with up / down pad
 
 
-void init_display(uint8_t mode){
+void init_display(){
 	if (mode == MODE_FLIGHT){
 		status_init_mode_flight();
 	}
@@ -39,6 +39,21 @@ void init_display(uint8_t mode){
 	}
 	else if (mode == MODE_KALMAN){
 		status_init_mode_kalman();
+	}
+}
+
+void update_display(){
+	if (mode == MODE_CALIBRATE){
+		//Nop
+	}
+	else if (mode == MODE_PID){
+		status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);
+	}
+	else if (mode == MODE_MOTOR){
+		status_set_motor_values(tuning_col, motors);			
+	}
+	else if (mode == MODE_KALMAN){
+		status_set_kalman_values(tuning_col, tuning_row, kalman_qa, kalman_qg, kalman_ra);			
 	}
 }
 
@@ -84,6 +99,97 @@ void adjust_motor(int8_t value){
 	if (motors[tuning_col] > 1.3) motors[tuning_col] = 1.3;
 }
 
+void check_buttons(uint16_t button_state, uint16_t button_changed){
+	//Change mode using next (circle) and prev (square) buttons
+	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) || ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
+		mode += ((button_state & MODE_NEXT) ? 1 : -1);
+		if (mode > MODE_KALMAN) mode = MODE_FLIGHT;
+		if (mode < MODE_FLIGHT) mode = MODE_KALMAN;
+		
+		tuning_row = 0;
+		tuning_col = 0;
+		
+		init_display();
+		update_display();
+	}
+	//Commit (X) button is pressed
+	else if ((button_state & MODE_COMMIT) && (button_changed & MODE_COMMIT)) {
+		if (mode == MODE_CALIBRATE){
+			protocol_send_calibrate();
+		}
+		else if (mode == MODE_PID){
+			protocol_send_pid_tuning(pid_p, pid_i, pid_d);
+		}
+		else if (mode == MODE_MOTOR){
+			protocol_send_motor_tuning(motors);
+		}
+		else if (mode == MODE_KALMAN){
+			protocol_send_kalman_tuning(kalman_qa, kalman_qg, kalman_ra);
+		}
+		update_display();
+	}
+	//Up / down
+	else if (((button_state & VALUE_UP) && (button_changed & VALUE_UP)) || ((button_state & VALUE_DOWN) && (button_changed & VALUE_DOWN))) {
+		if (mode == MODE_PID){
+			adjust_pid((button_state & VALUE_UP) ? 1 : -1);			
+		}
+		else if (mode == MODE_MOTOR){
+			adjust_motor((button_state & VALUE_UP) ? 1 : -1);
+		}
+		else if (mode == MODE_KALMAN){
+			//TODO adjust_kalman((button_state & VALUE_UP) ? 1 : -1);			
+		}
+		update_display();
+	}
+	//Left / right
+	else if (((button_state & VALUE_NEXT) && (button_changed & VALUE_NEXT)) || ((button_state & VALUE_PREV) && (button_changed & VALUE_PREV))) {
+		tuning_col = tuning_col + ((button_state & VALUE_NEXT) ? 1 : -1);
+		if (mode == MODE_PID){
+			if (tuning_col < 0){
+				tuning_row--;
+				tuning_col = 2;
+			}
+			else if (tuning_col >= 3){
+				tuning_row++;
+				tuning_col = 0;
+			}
+			
+			if (tuning_row < 0){
+				tuning_row = 1;
+			}
+			else if (tuning_row >= 2){
+				tuning_row = 0;
+			}
+		}
+		else if (mode == MODE_MOTOR){
+			if (tuning_col < 0){
+				tuning_col = 3;
+			}
+			else if (tuning_col >= 4){
+				tuning_col = 0;
+			}
+		}
+		else if (mode == MODE_KALMAN){
+			if (tuning_col < 0){
+				tuning_row--;
+				tuning_col = 2;
+			}
+			else if (tuning_col >= 3){
+				tuning_row++;
+				tuning_col = 0;
+			}
+			
+			if (tuning_row < 0){
+				tuning_row = 1;
+			}
+			else if (tuning_row >= 2){
+				tuning_row = 0;
+			}
+		}
+		update_display();
+	}
+}
+
 int main (void){
 	timer_init(); 
 	comm_init();
@@ -102,6 +208,8 @@ int main (void){
 	uint64_t millis_last_status = millis;
 	//Used to update battery
 	uint64_t millis_last_battery = millis;	
+	//Used to debounce buttons
+	uint64_t millis_last_button_press = millis;	
 	//Used for updating telemetry 
 	double buffer_array[] = {0,0,0,0};
 	vector_t buffer_vector;
@@ -141,7 +249,9 @@ int main (void){
 		uint16_t button_changed = control_button_state_changed();
 		
 		if ((button_state & POWER) && (button_changed & POWER)) { // rising edge, 0->1
-			mode = 0;	//If you arm, you cancel out of any pending changes and go to flight mode.
+			mode = MODE_FLIGHT;	//If you arm, you cancel out of any pending changes and go to flight mode.
+			init_display();
+			
 			armed ^= 0x01;
 			PORTD ^= _BV(PIND5); // toggle
 			
@@ -166,85 +276,9 @@ int main (void){
 				millis_last_control = millis;
 			}
 		} else {
-			//Change mode using next (circle) and prev (square) buttons
-			if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) || ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
-				mode = (mode + ((button_state & MODE_NEXT)) ? 1 : -1) % 5;
-				tuning_row = 0;
-				tuning_col = 0;
-				init_display(mode);
-			}
-			//Commit (X) button is pressed
-			else if ((button_state & MODE_COMMIT) && (button_changed & MODE_COMMIT)) {
-				if (mode == MODE_CALIBRATE){
-					protocol_send_calibrate();
-				}
-				else if (mode == MODE_PID){
-					protocol_send_pid_tuning(pid_p, pid_i, pid_d);
-				}
-				else if (mode == MODE_MOTOR){
-					protocol_send_motor_tuning(motors);
-				}
-				else if (mode == MODE_KALMAN){
-					protocol_send_kalman_tuning(kalman_qa, kalman_qg, kalman_ra);
-				}
-			}
-			//Up / down
-			else if (((button_state & VALUE_UP) && (button_changed & VALUE_UP)) || ((button_state & VALUE_DOWN) && (button_changed & VALUE_DOWN))) {
-				if (mode == MODE_PID){
-					adjust_pid((button_state & VALUE_UP) ? 1 : -1);
-				}
-				else if (mode == MODE_MOTOR){
-					adjust_motor((button_state & VALUE_UP) ? 1 : -1);
-				}
-				else if (mode == MODE_KALMAN){
-					//TODO adjust_kalman((button_state & VALUE_UP) ? 1 : -1);
-				}
-			}
-			//Left / right
-			else if (((button_state & VALUE_NEXT) && (button_changed & VALUE_NEXT)) || ((button_state & VALUE_PREV) && (button_changed & VALUE_PREV))) {
-				tuning_col = tuning_col + ((button_state & VALUE_NEXT) ? 1 : -1);
-				if (mode == MODE_PID){
-					if (tuning_col < 0){
-						tuning_row--;
-						tuning_col = 2;
-					}
-					else if (tuning_col >= 3){
-						tuning_row++;
-						tuning_col = 0;
-					}
-					
-					if (tuning_row < 0){
-						tuning_row = 1;
-					}
-					else if (tuning_row >= 2){
-						tuning_row = 0;
-					}
-				}
-				else if (mode == MODE_MOTOR){
-					if (tuning_col < 0){
-						tuning_col = 3;
-					}
-					else if (tuning_col >= 4){
-						tuning_col = 0;
-					}
-				}
-				else if (mode == MODE_KALMAN){
-					if (tuning_col < 0){
-						tuning_row--;
-						tuning_col = 2;
-					}
-					else if (tuning_col >= 3){
-						tuning_row++;
-						tuning_col = 0;
-					}
-					
-					if (tuning_row < 0){
-						tuning_row = 1;
-					}
-					else if (tuning_row >= 2){
-						tuning_row = 0;
-					}
-				}
+			if ((millis - millis_last_button_press) > 200){
+				check_buttons(button_state, button_changed);
+				millis_last_button_press = millis;
 			}
 		
 			//Send kill data every 200ms if not armed; this will prevent a missed 
@@ -281,29 +315,16 @@ int main (void){
 						protocol_comm_state(PROTOCOL_COMM_RX));
 				protocol_clear_comm_state();
 			}
-			else if (mode == MODE_CALIBRATE){
-				//No display; just 'press X to calibrate' which is set up in init.
-			}
-			else if (mode == MODE_PID){
-				//Display pid values
-				status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);
-			}
-			else if (mode == MODE_MOTOR){
-				//Display motor values
-				status_set_motor_values(tuning_col, motors);
-			}
-			else if (mode == MODE_KALMAN){
-				//Display kalman values
-				status_set_kalman_values(tuning_col, tuning_row, kalman_qa, kalman_qg, kalman_ra);
-			}
 		}
 		
 		if ((millis - millis_last_battery) > 2000){
-			millis_last_battery = millis;
-			
-			buffer_array[0] = protocol_get_battery();
-			status_set_pilot_battery_level(buffer_array[0]);
-			status_error_battery(buffer_array[0] < 0.2 && buffer_array[0] >= 0);
+			if (mode == MODE_FLIGHT){			
+				millis_last_battery = millis;
+				
+				buffer_array[0] = protocol_get_battery();
+				status_set_pilot_battery_level(buffer_array[0]);
+				status_error_battery(buffer_array[0] < 0.2 && buffer_array[0] >= 0);
+			}
 		}
     }
 }
