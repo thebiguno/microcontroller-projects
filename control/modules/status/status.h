@@ -74,7 +74,7 @@ void status_set_motor_values(uint8_t col, double motors[]);
 /*
  * Sets kalman tuning values.  row / col specifies the selected value.
  */
-void status_set_kalman_values(uint8_t tuning_col, uint8_t tuning_row, vector_t kalman_qa, vector_t kalman_qg, vector_t kalman_ra);
+void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vector_t kalman_qg, vector_t kalman_ra);
 
 
 

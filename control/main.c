@@ -99,6 +99,39 @@ void adjust_motor(int8_t value){
 	if (motors[tuning_col] > 1.3) motors[tuning_col] = 1.3;
 }
 
+void adjust_kalman(int8_t value){
+	//Adjust the selected value by the step
+	if (tuning_col == 0){			//E(alpha^2)
+		if (tuning_row == 0) kalman_qa.x += value * 0.0001;
+		else if (tuning_row == 1) kalman_qa.y += value * 0.0001;
+	}
+	else if (tuning_col == 1){		//E(bias^2)
+		if (tuning_row == 0) kalman_qg.x += value * 0.0001;
+		else if (tuning_row == 1) kalman_qg.y += value * 0.0001;	
+	}
+	else if (tuning_col == 2){		//Sz
+		if (tuning_row == 0) kalman_ra.x += value * 0.01;
+		else if (tuning_row == 1) kalman_ra.y += value * 0.01;
+	}
+	
+	//Sanity checks
+	if (pid_p.x < 0.0) kalman_qa.x = 0.0;
+	if (pid_i.x < 0.0) kalman_qg.x = 0.0;
+	if (pid_d.x < 0.0) kalman_ra.x = 0.0;
+
+	if (pid_p.y < 0.0) kalman_qa.y = 0.0;
+	if (pid_i.y < 0.0) kalman_qg.y = 0.0;
+	if (pid_d.y < 0.0) kalman_ra.y = 0.0;
+
+	if (pid_p.x > 0.1) kalman_qa.x = 0.1;
+	if (pid_i.x > 0.1) kalman_qg.x = 0.1;
+	if (pid_d.x > 5.0) kalman_ra.x = 5.0;
+
+	if (pid_p.y > 0.1) kalman_qa.y = 0.1;
+	if (pid_i.y > 0.1) kalman_qg.y = 0.1;
+	if (pid_d.y > 5.0) kalman_ra.y = 5.0;
+}
+
 void check_buttons(uint16_t button_state, uint16_t button_changed){
 	//Change mode using next (circle) and prev (square) buttons
 	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) || ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
@@ -137,7 +170,7 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 			adjust_motor((button_state & VALUE_UP) ? 1 : -1);
 		}
 		else if (mode == MODE_KALMAN){
-			//TODO adjust_kalman((button_state & VALUE_UP) ? 1 : -1);			
+			adjust_kalman((button_state & VALUE_UP) ? 1 : -1);			
 		}
 		update_display();
 	}
