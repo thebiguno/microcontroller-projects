@@ -167,7 +167,7 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		update_display();
 	}
 	//Up / down
-	else if (((button_state & VALUE_UP) && (button_changed & VALUE_UP)) || ((button_state & VALUE_DOWN) && (button_changed & VALUE_DOWN))) {
+	else if (button_state & VALUE_UP || button_state & VALUE_DOWN) {
 		if (mode == MODE_PID){
 			adjust_pid((button_state & VALUE_UP) ? 1 : -1);			
 		}
@@ -246,8 +246,6 @@ int main (void){
 	uint64_t millis_last_status = millis;
 	//Used to update battery
 	uint64_t millis_last_battery = millis;	
-	//Used to debounce buttons
-	uint64_t millis_last_button_press = millis;	
 	//Used for updating telemetry 
 	double buffer_array[] = {0,0,0,0};
 	vector_t buffer_vector;
@@ -314,10 +312,7 @@ int main (void){
 				millis_last_control = millis;
 			}
 		} else {
-			if ((millis - millis_last_button_press) > 200){
-				check_buttons(button_state, button_changed);
-				millis_last_button_press = millis;
-			}
+			check_buttons(button_state, button_changed);
 		
 			//Send kill data every 200ms if not armed; this will prevent a missed 
 			// message from preventing the copter from not disarming.

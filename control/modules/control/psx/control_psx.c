@@ -106,15 +106,15 @@ uint16_t control_button_state_changed() {
 	if (button_changed & PSB_START) changed |= POWER;
 	if (button_changed & PSB_SELECT) changed |= TELEMETRY;
 
-	if (button_state & PSB_TRIANGLE) changed |= MODE_RESET;
-	if (button_state & PSB_CIRCLE) changed |= MODE_NEXT;
-	if (button_state & PSB_SQUARE) changed |= MODE_PREV;
-	if (button_state & PSB_CROSS) changed |= MODE_COMMIT;
+	if (button_changed & PSB_TRIANGLE) changed |= MODE_RESET;
+	if (button_changed & PSB_CIRCLE) changed |= MODE_NEXT;
+	if (button_changed & PSB_SQUARE) changed |= MODE_PREV;
+	if (button_changed & PSB_CROSS) changed |= MODE_COMMIT;
 	
-	if (button_state & PSB_PAD_UP) changed |= VALUE_UP;
-	if (button_state & PSB_PAD_DOWN) changed |= VALUE_DOWN;
-	if (button_state & PSB_PAD_LEFT) changed |= VALUE_PREV;
-	if (button_state & PSB_PAD_RIGHT) changed |= VALUE_NEXT;
+	if (button_changed & PSB_PAD_UP) changed |= VALUE_UP;
+	if (button_changed & PSB_PAD_DOWN) changed |= VALUE_DOWN;
+	if (button_changed & PSB_PAD_LEFT) changed |= VALUE_PREV;
+	if (button_changed & PSB_PAD_RIGHT) changed |= VALUE_NEXT;
 	
 	return changed;
 }
