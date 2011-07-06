@@ -166,6 +166,11 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		
 		update_display();
 	}
+	//Request (Triangle) button is pressed
+	else if ((button_state & MODE_RESET) && (button_changed & MODE_RESET)) {
+		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you ask for it in flight mode, etc.
+		protocol_request_tuning();
+	}
 	//Up / down
 	else if (button_state & VALUE_UP || button_state & VALUE_DOWN) {
 		if (mode == MODE_PID){
@@ -269,6 +274,11 @@ int main (void){
 		last_millis = millis;
 
 		protocol_poll();
+		
+		//Check for tuning requests from the poll'd protocol
+		protocol_get_pid_tuning(&pid_p, &pid_i, &pid_d);
+		protocol_get_motor_tuning(motors);
+		protocol_get_pid_tuning(&kalman_qa, &kalman_qg, &kalman_ra);
 
 		control_update();
 		control_t control;
@@ -347,6 +357,10 @@ int main (void){
 				status_set_comm_state(protocol_comm_state(PROTOCOL_COMM_TX), 
 						protocol_comm_state(PROTOCOL_COMM_RX));
 				protocol_clear_comm_state();
+			}
+			else {
+				//In case of incoming tuning requests
+				update_display();
 			}
 		}
 		
