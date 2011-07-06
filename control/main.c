@@ -115,21 +115,21 @@ void adjust_kalman(int8_t value){
 	}
 	
 	//Sanity checks
-	if (pid_p.x < 0.0) kalman_qa.x = 0.0;
-	if (pid_i.x < 0.0) kalman_qg.x = 0.0;
-	if (pid_d.x < 0.0) kalman_ra.x = 0.0;
+	if (kalman_qa.x < 0.0) kalman_qa.x = 0.0;
+	if (kalman_qg.x < 0.0) kalman_qg.x = 0.0;
+	if (kalman_ra.x < 0.0) kalman_ra.x = 0.0;
 
-	if (pid_p.y < 0.0) kalman_qa.y = 0.0;
-	if (pid_i.y < 0.0) kalman_qg.y = 0.0;
-	if (pid_d.y < 0.0) kalman_ra.y = 0.0;
+	if (kalman_qa.y < 0.0) kalman_qa.y = 0.0;
+	if (kalman_qg.y < 0.0) kalman_qg.y = 0.0;
+	if (kalman_ra.y < 0.0) kalman_ra.y = 0.0;
 
-	if (pid_p.x > 0.1) kalman_qa.x = 0.1;
-	if (pid_i.x > 0.1) kalman_qg.x = 0.1;
-	if (pid_d.x > 5.0) kalman_ra.x = 5.0;
+	if (kalman_qa.x > 0.1) kalman_qa.x = 0.1;
+	if (kalman_qg.x > 0.1) kalman_qg.x = 0.1;
+	if (kalman_ra.x > 5.0) kalman_ra.x = 5.0;
 
-	if (pid_p.y > 0.1) kalman_qa.y = 0.1;
-	if (pid_i.y > 0.1) kalman_qg.y = 0.1;
-	if (pid_d.y > 5.0) kalman_ra.y = 5.0;
+	if (kalman_qa.y > 0.1) kalman_qa.y = 0.1;
+	if (kalman_qg.y > 0.1) kalman_qg.y = 0.1;
+	if (kalman_ra.y > 5.0) kalman_ra.y = 5.0;
 }
 
 void check_buttons(uint16_t button_state, uint16_t button_changed){
