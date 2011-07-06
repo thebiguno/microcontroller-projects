@@ -45,6 +45,6 @@ double protocol_get_battery();
 
 void protocol_get_motors(double motors[]);
 
-void protocol_get_vector(vector_t data);
+vector_t protocol_get_vector();
 
 #endif

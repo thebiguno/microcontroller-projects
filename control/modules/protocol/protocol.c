@@ -284,11 +284,14 @@ void protocol_get_motors(double motors[]) {
 	}
 }
 
-void protocol_get_vector(vector_t data) {
-	data.x = _vector.x;
-	data.y = _vector.y;
+vector_t protocol_get_vector() {
+	vector_t result;
+	result.x = _vector.x;
+	result.y = _vector.y;
 
 	//Reset	
 	_vector.x = 10000;	//Anything over 1000 is read as 'invalid'.
 	_vector.y = 10000;	//Anything over 1000 is read as 'invalid'.
+	
+	return result;
 }

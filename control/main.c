@@ -332,7 +332,7 @@ int main (void){
 				status_error_battery(battery_level() < 0.2);
 	
 				//Pitch / Roll
-				protocol_get_vector(buffer_vector);
+				buffer_vector = protocol_get_vector();
 				status_set_telemetry(buffer_vector.x, buffer_vector.y);
 	
 				//Motors
