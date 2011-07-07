@@ -75,11 +75,11 @@ void adjust_pid(int8_t value){
 	//Sanity checks
 	if (pid_p.x < 0.0) pid_p.x = 0.0;
 	if (pid_i.x < 0.0) pid_i.x = 0.0;
-	if (pid_d.x < -1.0) pid_d.x = -1.0;
+	if (pid_d.x < 0.0) pid_d.x = 0.0;
 
 	if (pid_p.y < 0.0) pid_p.y = 0.0;
 	if (pid_i.y < 0.0) pid_i.y = 0.0;
-	if (pid_d.y < -1.0) pid_d.y = -1.0;
+	if (pid_d.y < 0.0) pid_d.y = 0.0;
 
 	if (pid_p.x > 1.0) pid_p.x = 1.0;
 	if (pid_i.x > 0.1) pid_i.x = 0.1;
