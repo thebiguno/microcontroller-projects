@@ -95,7 +95,7 @@ void pid_receive_tuning(uint8_t *buf) {
 
 double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	double e = sp - pv;
-	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (pv - state->pv) / dt);
+	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (state->pv - pv) / dt);
 
 	state->i += e * dt;
 	state->pv = pv;
