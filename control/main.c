@@ -102,12 +102,12 @@ void adjust_motor(int8_t value){
 void adjust_kalman(int8_t value){
 	//Adjust the selected value by the step
 	if (tuning_col == 0){			//E(alpha^2)
-		if (tuning_row == 0) kalman_qa.x += value * 0.0001;
-		else if (tuning_row == 1) kalman_qa.y += value * 0.0001;
+		if (tuning_row == 0) kalman_qa.x += value * 0.001;
+		else if (tuning_row == 1) kalman_qa.y += value * 0.001;
 	}
 	else if (tuning_col == 1){		//E(bias^2)
-		if (tuning_row == 0) kalman_qg.x += value * 0.0001;
-		else if (tuning_row == 1) kalman_qg.y += value * 0.0001;	
+		if (tuning_row == 0) kalman_qg.x += value * 0.001;
+		else if (tuning_row == 1) kalman_qg.y += value * 0.001;	
 	}
 	else if (tuning_col == 2){		//Sz
 		if (tuning_row == 0) kalman_ra.x += value * 0.01;
