@@ -363,7 +363,7 @@ void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vect
 			if (i == 1 && j == 1) value = kalman_qg.y;
 			if (i == 2 && j == 1) value = kalman_ra.y;
 			
-			sprintf(temp, (i == 2 ? "%1.2f" : "%1.4f"), value);
+			sprintf(temp, (i == 2 ? "%1.2f" : "%1.3f"), value);
 			
 			//Either clear the last value, or highlight the selected value
 			glcd_draw_rectangle(
