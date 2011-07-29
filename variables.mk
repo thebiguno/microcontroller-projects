@@ -12,7 +12,7 @@
 #AVRDude options
 AVRDUDE=avrdude
 AVRDUDE_PROGRAMMER=stk500v1
-AVRDUDE_PORT=/dev/tty.usb*
+AVRDUDE_PORT=/dev/tty.usbserial*
 AVRDUDE_UPLOAD_RATE=19200
 
 HFUSE=0x99
