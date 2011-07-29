@@ -17,36 +17,18 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 #include "lib/serial/serial.h"
-
-//TODO This will be larger.
-#define BUFFER_SIZE	256
-
-uint8_t data[BUFFER_SIZE];
 
 /*
  * Returns the size of free memory available for a buffer.
  */
 uint16_t free_memory(){
-	uint16_t temp = (uint16_t *) malloc(4);	//Allocate to get the heap pointer
-	uint16_t hp = temp;
+	uint16_t *temp = (uint16_t *) malloc(4);	//Allocate to get the heap pointer
+	uint16_t *hp = temp;
 	free(temp);				//Release memory
-	return SP - hp;			//Return the number of bytes free
-}
-
-void start_recording_data(){
-	for (uint16_t i = 0; i < BUFFER_SIZE; i++){
-		data[i] = PINA;
-		
-		//TODO delay depending on sample rate
-	}
-}
-
-void dump_recorded_data(){
-	for (uint16_t i = 0; i < BUFFER_SIZE; i++){
-		serial_write_c(data[i]);
-	}
+	return SP - *hp;			//Return the number of bytes free
 }
 
 void read_command_data(uint8_t* data){
@@ -61,38 +43,82 @@ int main() {
 	serial_init_b(57600);
 	
 	DDRA = 0x00;	//All PORTA is input
+	DDRB = 0xFF;	//PORTB is output
 
 	uint8_t command;
+	uint8_t trigger_mask;
+	uint8_t trigger_values;
+	uint8_t trigger_config;
 	uint8_t data[4];
+	uint16_t sample_count = 512;	//Requested sample count.  If this is higher than the buffer size, we will return blank values once buffer runs out.
+	uint16_t sample_count_after_trigger = 512;		//Requested sample count after trigger.
+	uint16_t buffer_size = 0;
+	uint32_t divider = 0;
+	uint8_t use_micro = 0;
+	uint16_t delay_time = 0;
 	
-	uint16_t free_memory = free_memory - 0x100;	//Keep 256 bytes free for stack
-
-	while(1) {	
+	while(1) {
+		PORTB = 0x01;
+	
 		//Read commands from client
 		serial_read_c((char*) &command);
 
+		PORTB = 0x00;
+
 		switch(command){
 			case 0x00:	//Reset
-			case '0':
-				//TODO Reset
 				break;
 				
-			case 0x01:	//Arms the trigger
 			case '1':
-				start_recording_data();
-				dump_recorded_data();
+			case 0x01:	//Arms the trigger / start recording
+			case 0x03:	//Test mode: return sawtooth wave
+				PORTB = 0x2;
+				buffer_size = free_memory() - 0x400;	//Keep 1k bytes free for more stack allocations.  We can adjust this with experimentation.
+				if (buffer_size > sample_count) buffer_size = sample_count;
+			
+				//Allocate buffer
+				uint8_t *buffer = (uint8_t *) malloc(buffer_size);
+			
+				PORTB = 0x4;
+			
+				if (command == 0x01){
+					for (uint16_t i = 0; i < buffer_size; i++){
+						buffer[i] = PINA;
+						
+						//TODO delay depending on sample rate
+					}
+				}
+				else if (command == 0x03){
+					//For self test we write a sawtooth waveform
+					uint8_t value = 0x00;
+					for (uint16_t i = 0; i < buffer_size; i++){
+						buffer[i] = value++;
+					}				
+				}
+				
+				PORTB = 0x8;
+
+				//Write the buffer back in reverse...
+				for (uint16_t i = sample_count - 1; i >= 0; i--){
+					if (i < buffer_size) serial_write_c(buffer[i]);
+					else serial_write_c(0x00);
+				}
+				
+				PORTB = 0x10;
+				
+				//Release buffer
+				free(buffer);
+
 				break;
 				
 			case 0x02: //Ask for ID
-			case '2':
 				serial_write_c('1');
 				serial_write_c('A');
 				serial_write_c('L');
 				serial_write_c('S');
 				break;
 
-			case 0x04:
-			case '4': //Ask for ID
+			case 0x04:	//Metadata
 				//Device name
 				serial_write_c(0x01);
 				serial_write_c('A');
@@ -138,41 +164,46 @@ int main() {
 				break;
 				
 			case 0xC0:	//Set trigger mask
-			case 0xC1:
-			case 0xC2:
-				//TODO Set trigger mask
 				read_command_data(data);
+				trigger_mask = data[0];
 				break;
 				
-//			case 0xC2:	//Set trigger config
-			case 0xC6:
-			case 0xCA:
-			case 0xCE:
-				//TODO Set trigger config
+			case 0xC1:	//Set trigger values
 				read_command_data(data);
+				trigger_values = data[0];
 				break;
-				
+
+			case 0xC2:	//Set trigger config
+				read_command_data(data);
+				trigger_config = data[0];
+				break;
+								
 			case 0x80:	//Set divider
 				read_command_data(data);
-				divider = cmdBytes[2];
+
+				divider = data[2];
 				divider = divider << 8;
-				divider += cmdBytes[1];
+				divider += data[1];
 				divider = divider << 8;
-				divider += cmdBytes[0];
+				divider += data[0];
 				
 				if (divider >= 1500000) {
-					useMicro = 0;
-					delayTime = (divider + 1) / 100000;
+					use_micro = 0;
+					delay_time = (divider + 1) / 100000;
 				} 
 				else {
-					useMicro = 1;
-					delayTime = (divider + 1) / 100;
+					use_micro = 1;
+					delay_time = (divider + 1) / 100;
 				}
 				break;
 				
 			case 0x81:	//Set read and delay count
-				//TODO
 				read_command_data(data);
+				
+				//Figure out how many samples there should be before and after the trigger fires.
+				sample_count = 4 * ((data[1] << 8) | data[0]) + 1;
+				sample_count_after_trigger = 4 * ((data[3] << 8) | data[2]) + 1;
+								
 				break;
 				
 			case 0x82:	//Set flags
