@@ -99,11 +99,7 @@ void pwm_init(volatile uint8_t *ports[],
 #else
 	uint32_t max_value = 65535;
 #endif
-
-
-	//Rule of thumb, using 20MHz as the largest F_CPU value.  If running on
-	// a slower clock, speeds can probably be tweaked, but this is probably
-	// good enough.
+	
 	if (period < (1 * max_value / (F_CPU / 1000000))){
 		_prescaler = 1;
 		_prescaler_mask = _BV(CS10);
