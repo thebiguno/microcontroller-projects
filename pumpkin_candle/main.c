@@ -28,7 +28,7 @@ int main (void){
 		a[i] = P / 2;
 		d[i] = 0;
 		ports[i] = &PORTB;
-		pins[i] = i;	//Change this to i if we start counting from B0, instead of B1
+		pins[i] = i;
 	}
 
 	pwm_init(ports, pins, NUM, P);
@@ -36,6 +36,9 @@ int main (void){
 	//Main program loop
 	while (1){
 		for (uint8_t i = 0; i < NUM; i++){
+			//We use increasing prime numbers for d(uration) to effect the speed
+			// of dimming / brightening.  The larger the number here, the faster the 
+			// flickering.
 			d[i] = (i == 0 ? 2 : (i == 1 ? 3 : (i == 2 ? 5 : (i == 3 ? 7 : i * 4 + 1))));
 			s[i] = random() & 0x7F;	//The larger the and'ed value, the more flicker
 			a[i] += s[i] * d[i];
@@ -43,7 +46,7 @@ int main (void){
 			//Keep accumulated values within bounds
 			if (a[i] < 10 || a[i] > P - 10) a[i] = P / 2;
 			
-			//Update the PWM
+			//Update the PWM phase
 			pwm_set_phase(i, a[i]);
 		}
 		
