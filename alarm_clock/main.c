@@ -35,7 +35,7 @@ void shift_latch_data(){
  * hours and minutes given here are in BCD format (as given directly from the RTC module).
  * The cathode is either 1 or not 1 (pin 1 and 2), and maps to bit 16 and 15 respectively.
  */
-uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t cathode){
+uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t twenty_four_hour, uint8_t cathode){
 	if (cathode != 1) cathode = 0;
 	
 	//We have four digits: H2, H1, M2, M1.  (H2 is MSB of Hour).  Each of these digits has
@@ -63,8 +63,8 @@ uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t cathode){
 	
 	//    HourMinNumber_Segment_Cathode
 	// H2: A=(1,7), B=(2,6), C=(2,9), D=(1,8), E=(2,8), G=(2,7) (24-hour not supported, since F is not implemented)	
-	#define H2_A_1 	0
-	#define H2_A_2 	_BV(12)
+	#define H2_A_1 	_BV(12)
+	#define H2_A_2 	0
 	#define H2_B_1 	0
 	#define H2_B_2	_BV(13)
 	#define H2_C_1	0
@@ -133,16 +133,32 @@ uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t cathode){
 	if (cathode) data |= _BV(15);
 	else data |= _BV(14);
 
-	//Set the MSB hour
-	if (hours > 0x12) hours = hours - 0x12; //Convert to 12 hour format
-	if (hours >= 0x10) {
-		if (cathode) data |= H2_B_1 | H2_C_1;
-		else data |= H2_B_2 | H2_C_2;
+	//Adjust times
+	if (!twenty_four_hour){
+		if (hours == 0x12) hours = 0x12;	//0 == midnight
+		if (hours > 0x12) hours = hours - 0x12; //Convert to 12 hour format
+	}
+	else {
+		while (hours >= 0x24) hours =- 0x24;
+	}
+	
+	if (minutes > 0x59) minutes = 0;
+	
+	//Set MSB Hour
+	switch (hours >> 4) {
+		case 1:
+			if (cathode) data |= H2_B_1 | H2_C_1;
+			else data |= H2_B_2 | H2_C_2;
+			break;
+			
+		case 2:
+			if (cathode) data |= H2_A_1 | H2_B_1 | H2_D_1 | H2_E_1 | H2_G_1;
+			else data |= H2_A_2 | H2_B_2 | H2_D_2 | H2_E_2 | H2_G_2;
+			break;
 	}
 	
 	//Set LSB hour
-	hours &= 0xF;
-	switch (hours) {
+	switch (hours & 0xF) {
 		case 0:
 			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1;
 			else data |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2;
@@ -315,32 +331,41 @@ int main (void){
 
 	uint8_t cathode = 0;
 	char temp[32];
-	uint16_t data1 = time_to_data(0x12, 0x34, 1);
-	uint16_t data2 = time_to_data(0x12, 0x34, 0);
-	
-	serial_write_s(itoa(data1, temp, 16));
-	serial_write_s("\n\r");
-	serial_write_s(itoa(data2, temp, 16));
-	serial_write_s("\n\r");
+	uint16_t data1 = 0;
+	uint16_t data2 = 0;
+	uint8_t hours = 0;
+	uint8_t minutes = 0;
 	
 	while (1){
+		data1 = time_to_data(hours, minutes, 1, 1);
+		data2 = time_to_data(hours, minutes, 1, 0);
 		
-		if (cathode){
-			shift_out(data1 >> 8);
-			shift_out(data1 & 0xFF);		
-//			shift_out(0x87);
-//			shift_out(0x00);
-		}
-		else {
-			shift_out(data2 >> 8);
-			shift_out(data2 & 0xFF);
-//			shift_out(0x62);
-//			shift_out(0x80);
+		for(int i = 0; i < 1; i++){
+			if (cathode){
+				shift_out(data1 >> 8);
+				shift_out(data1 & 0xFF);		
+			}
+			else {
+				shift_out(data2 >> 8);
+				shift_out(data2 & 0xFF);
+			}
+			
+			shift_latch_data();
+			_delay_ms(10);
+			cathode = ~cathode;		
 		}
 		
-		shift_latch_data();
-		_delay_ms(10);
-		cathode = ~cathode;
+		minutes++;
+		if ((minutes & 0xF) >= 0xA) minutes += 6;
+		if (minutes > 0x59) {
+			minutes = 0;
+			hours++;
+		}
+		if ((hours & 0xF) >= 0xA) hours += 6;
+		if (hours >= 0x24){
+			hours = 0;
+			minutes = 0;
+		}
 	}
 }
 
