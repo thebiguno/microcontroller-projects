@@ -3,11 +3,14 @@
 #include <util/delay.h>
 
 #include "lib/serial/serial.h"
+#include "lib/i2c/i2c_master.h"
 
 #define SHIFT_PORT			PORTD
 #define SHIFT_DATA_PIN		PIND5
 #define SHIFT_CLOCK_PIN		PIND6
 #define SHIFT_LATCH_PIN		PIND7
+
+#define ADDRESS 			0x51
 
 void shift_out(uint8_t data){
 	for (int i = 0; i < 8; i++){
@@ -321,10 +324,25 @@ void validate_time(uint8_t *hours, uint8_t *minutes, uint8_t twenty_four_hour){
 	if (*minutes > 0x59) *minutes = 0;
 }
 
+void get_current_time(uint8_t *hours, uint8_t *minutes){
+	uint8_t message[4];
+	
+	//Reset the register to reading time
+	message[0] = ADDRESS << 1 | I2C_WRITE;
+	message[1] = 0x02; //Reset register pointer to 0x02
+	i2c_start_transceiver_with_data(message, 2);
 
+	message[0] = ADDRESS << 1 | I2C_READ;
+	i2c_start_transceiver_with_data(message, 4);
+	i2c_get_data_from_transceiver(message, 4);
+	
+	*hours = message[3];
+	*minutes = message[2];
+}
 
 int main (void){
 	serial_init_b(9600);
+	i2c_master_init(100);
 	
 	//Enable outputs for shift register (clock LED driver)
 	DDRD |= _BV(SHIFT_DATA_PIN) | _BV(SHIFT_CLOCK_PIN) | _BV(SHIFT_LATCH_PIN);
@@ -337,10 +355,13 @@ int main (void){
 	uint8_t minutes = 0;
 	
 	while (1){
-		data1 = time_to_data(hours, minutes, 1, 1);
-		data2 = time_to_data(hours, minutes, 1, 0);
+		get_current_time(&hours, &minutes);
 		
-		for(int i = 0; i < 1; i++){
+		data1 = time_to_data(hours, minutes, 0, 1);
+		data2 = time_to_data(hours, minutes, 0, 0);
+		
+		//Display refresh loop
+		for(int i = 0; i < 500; i++){
 			if (cathode){
 				shift_out(data1 >> 8);
 				shift_out(data1 & 0xFF);		
@@ -351,10 +372,10 @@ int main (void){
 			}
 			
 			shift_latch_data();
-			_delay_ms(10);
+			_delay_ms(1);
 			cathode = ~cathode;		
 		}
-		
+		/*
 		minutes++;
 		if ((minutes & 0xF) >= 0xA) minutes += 6;
 		if (minutes > 0x59) {
@@ -366,6 +387,7 @@ int main (void){
 			hours = 0;
 			minutes = 0;
 		}
+		*/
 	}
 }
 
