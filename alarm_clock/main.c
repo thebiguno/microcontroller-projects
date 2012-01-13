@@ -30,14 +30,7 @@ void shift_latch_data(){
 	SHIFT_PORT |= _BV(SHIFT_LATCH_PIN);
 }
 
-/*
- * Shifts the given hours and minutes to the shift register, and latches the data.  The
- * hours and minutes given here are in BCD format (as given directly from the RTC module).
- * The cathode is either 1 or not 1 (pin 1 and 2), and maps to bit 16 and 15 respectively.
- */
-uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t twenty_four_hour, uint8_t cathode){
-	if (cathode != 1) cathode = 0;
-	
+void get_shift_data(uint8_t hours, uint8_t minutes, uint8_t *data1, uint8_t *data2){	
 	//We have four digits: H2, H1, M2, M1.  (H2 is MSB of Hour).  Each of these digits has
 	// 7 segments: A .. F.  Each segment is lit by a (pin,pin) combination, with the pin
 	// numbers mapping to the LED panel pins, with the first
@@ -61,8 +54,11 @@ uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t twenty_four_hour, 
 	// 20		1				1
 	// 21		0				15
 	
+	#define CATHODE_1	_BV(15)
+	#define CATHODE_2	_BV(14)
+	
 	//    HourMinNumber_Segment_Cathode
-	// H2: A=(1,7), B=(2,6), C=(2,9), D=(1,8), E=(2,8), G=(2,7) (24-hour not supported, since F is not implemented)	
+	// H2: A=(1,7), B=(2,6), C=(2,9), D=(1,8), E=(2,8), G=(2,7) (F is not implemented, so 0, 4, 5, 6, 8, 9 are not possible)
 	#define H2_A_1 	_BV(12)
 	#define H2_A_2 	0
 	#define H2_B_1 	0
@@ -127,198 +123,202 @@ uint16_t time_to_data(uint8_t hours, uint8_t minutes, uint8_t twenty_four_hour, 
 	#define M1_G_2	0
 
 	
-	uint16_t data = 0x0000;
-
-	//Set the cathode to use
-	if (cathode) data |= _BV(15);
-	else data |= _BV(14);
-
-	//Adjust times
-	if (!twenty_four_hour){
-		if (hours == 0x12) hours = 0x12;	//0 == midnight
-		if (hours > 0x12) hours = hours - 0x12; //Convert to 12 hour format
-	}
-	else {
-		while (hours >= 0x24) hours =- 0x24;
-	}
+	//Clears existing data, and set the cathode to use
+	*data1 = CATHODE_1;
+	*data2 = CATHODE_2;
 	
-	if (minutes > 0x59) minutes = 0;
-	
-	//Set MSB Hour
+	//Set MSB Hour; only 1, 2, and 3 are supported.
 	switch (hours >> 4) {
 		case 1:
-			if (cathode) data |= H2_B_1 | H2_C_1;
-			else data |= H2_B_2 | H2_C_2;
+			*data1 |= H2_B_1 | H2_C_1;
+			*data2 |= H2_B_2 | H2_C_2;
 			break;
 			
 		case 2:
-			if (cathode) data |= H2_A_1 | H2_B_1 | H2_D_1 | H2_E_1 | H2_G_1;
-			else data |= H2_A_2 | H2_B_2 | H2_D_2 | H2_E_2 | H2_G_2;
+			*data1 |= H2_A_1 | H2_B_1 | H2_D_1 | H2_E_1 | H2_G_1;
+			*data2 |= H2_A_2 | H2_B_2 | H2_D_2 | H2_E_2 | H2_G_2;
+			break;
+
+		case 3:
+			*data1 |= H2_A_1 | H2_B_1 | H2_C_1 | H2_D_1 | H2_G_1;
+			*data2 |= H2_A_2 | H2_B_2 | H2_C_2 | H2_D_2 | H2_G_2;
 			break;
 	}
 	
 	//Set LSB hour
 	switch (hours & 0xF) {
 		case 0:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1;
-			else data |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2;
 			break;
 
 		case 1:
-			if (cathode) data |= H1_B_1 | H1_C_1;
-			else data |= H1_B_2 | H1_C_2;
+			*data1 |= H1_B_1 | H1_C_1;
+			*data2 |= H1_B_2 | H1_C_2;
 			break;
 			
 		case 2:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_D_1 | H1_E_1 | H1_G_1;
-			else data |= H1_A_2 | H1_B_2 | H1_D_2 | H1_E_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_D_1 | H1_E_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_D_2 | H1_E_2 | H1_G_2;
 			break;
 
 		case 3:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_G_1;
-			else data |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_G_2;
 			break;
 
 		case 4:
-			if (cathode) data |= H1_B_1 | H1_C_1 | H1_F_1 | H1_G_1;
-			else data |= H1_B_2 | H1_C_2 | H1_F_2 | H1_G_2;
+			*data1 |= H1_B_1 | H1_C_1 | H1_F_1 | H1_G_1;
+			*data2 |= H1_B_2 | H1_C_2 | H1_F_2 | H1_G_2;
 			break;
 
 		case 5:
-			if (cathode) data |= H1_A_1 | H1_C_1 | H1_D_1 | H1_F_1 | H1_G_1;
-			else data |= H1_A_2 | H1_C_2 | H1_D_2 | H1_F_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_C_1 | H1_D_1 | H1_F_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_C_2 | H1_D_2 | H1_F_2 | H1_G_2;
 			break;
 
 		case 6:
-			if (cathode) data |= H1_A_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1 | H1_G_1;
-			else data |= H1_A_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2 | H1_G_2;
 			break;
 
 		case 7:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1;
-			else data |= H1_A_2 | H1_B_2 | H1_C_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_C_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_C_2;
 			break;
 
 		case 8:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1 | H1_G_1;
-			else data |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_E_1 | H1_F_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_E_2 | H1_F_2 | H1_G_2;
 			break;
 
 		case 9:
-			if (cathode) data |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_F_1 | H1_G_1;
-			else data |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_F_2 | H1_G_2;
+			*data1 |= H1_A_1 | H1_B_1 | H1_C_1 | H1_D_1 | H1_F_1 | H1_G_1;
+			*data2 |= H1_A_2 | H1_B_2 | H1_C_2 | H1_D_2 | H1_F_2 | H1_G_2;
 			break;
 	}
 			
 	//Set MSB minute
 	switch (minutes >> 4) {
 		case 0:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1;
-			else data |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2;
 			break;
 
 		case 1:
-			if (cathode) data |= M2_B_1 | M2_C_1;
-			else data |= M2_B_2 | M2_C_2;
+			*data1 |= M2_B_1 | M2_C_1;
+			*data2 |= M2_B_2 | M2_C_2;
 			break;
 			
 		case 2:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_D_1 | M2_E_1 | M2_G_1;
-			else data |= M2_A_2 | M2_B_2 | M2_D_2 | M2_E_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_D_1 | M2_E_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_D_2 | M2_E_2 | M2_G_2;
 			break;
 
 		case 3:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_G_1;
-			else data |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_G_2;
 			break;
 
 		case 4:
-			if (cathode) data |= M2_B_1 | M2_C_1 | M2_F_1 | M2_G_1;
-			else data |= M2_B_2 | M2_C_2 | M2_F_2 | M2_G_2;
+			*data1 |= M2_B_1 | M2_C_1 | M2_F_1 | M2_G_1;
+			*data2 |= M2_B_2 | M2_C_2 | M2_F_2 | M2_G_2;
 			break;
 
 		case 5:
-			if (cathode) data |= M2_A_1 | M2_C_1 | M2_D_1 | M2_F_1 | M2_G_1;
-			else data |= M2_A_2 | M2_C_2 | M2_D_2 | M2_F_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_C_1 | M2_D_1 | M2_F_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_C_2 | M2_D_2 | M2_F_2 | M2_G_2;
 			break;
 
 		case 6:
-			if (cathode) data |= M2_A_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1 | M2_G_1;
-			else data |= M2_A_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2 | M2_G_2;
 			break;
 
 		case 7:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_C_1;
-			else data |= M2_A_2 | M2_B_2 | M2_C_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_C_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_C_2;
 			break;
 
 		case 8:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1 | M2_G_1;
-			else data |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_E_1 | M2_F_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_E_2 | M2_F_2 | M2_G_2;
 			break;
 
 		case 9:
-			if (cathode) data |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_F_1 | M2_G_1;
-			else data |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_F_2 | M2_G_2;
+			*data1 |= M2_A_1 | M2_B_1 | M2_C_1 | M2_D_1 | M2_F_1 | M2_G_1;
+			*data2 |= M2_A_2 | M2_B_2 | M2_C_2 | M2_D_2 | M2_F_2 | M2_G_2;
 			break;
 	}
 			
 	//Set LSB minute
 	switch (minutes & 0x0F) {
 		case 0:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1;
-			else data |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2;
 			break;
 
 		case 1:
-			if (cathode) data |= M1_B_1 | M1_C_1;
-			else data |= M1_B_2 | M1_C_2;
+			*data1 |= M1_B_1 | M1_C_1;
+			*data2 |= M1_B_2 | M1_C_2;
 			break;
 			
 		case 2:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_D_1 | M1_E_1 | M1_G_1;
-			else data |= M1_A_2 | M1_B_2 | M1_D_2 | M1_E_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_D_1 | M1_E_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_D_2 | M1_E_2 | M1_G_2;
 			break;
 
 		case 3:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_G_1;
-			else data |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_G_2;
 			break;
 
 		case 4:
-			if (cathode) data |= M1_B_1 | M1_C_1 | M1_F_1 | M1_G_1;
-			else data |= M1_B_2 | M1_C_2 | M1_F_2 | M1_G_2;
+			*data1 |= M1_B_1 | M1_C_1 | M1_F_1 | M1_G_1;
+			*data2 |= M1_B_2 | M1_C_2 | M1_F_2 | M1_G_2;
 			break;
 
 		case 5:
-			if (cathode) data |= M1_A_1 | M1_C_1 | M1_D_1 | M1_F_1 | M1_G_1;
-			else data |= M1_A_2 | M1_C_2 | M1_D_2 | M1_F_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_C_1 | M1_D_1 | M1_F_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_C_2 | M1_D_2 | M1_F_2 | M1_G_2;
 			break;
 
 		case 6:
-			if (cathode) data |= M1_A_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1 | M1_G_1;
-			else data |= M1_A_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2 | M1_G_2;
 			break;
 
 		case 7:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_C_1;
-			else data |= M1_A_2 | M1_B_2 | M1_C_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_C_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_C_2;
 			break;
 
 		case 8:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1 | M1_G_1;
-			else data |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_E_1 | M1_F_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_E_2 | M1_F_2 | M1_G_2;
 			break;
 
 		case 9:
-			if (cathode) data |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_F_1 | M1_G_1;
-			else data |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_F_2 | M1_G_2;
+			*data1 |= M1_A_1 | M1_B_1 | M1_C_1 | M1_D_1 | M1_F_1 | M1_G_1;
+			*data2 |= M1_A_2 | M1_B_2 | M1_C_2 | M1_D_2 | M1_F_2 | M1_G_2;
 			break;
 		
 	}
+}
+
+/*
+ * Validates that the input is a valid time format, and fixes it if possible.  Also converts between 12 and 24 hour format.
+ */
+void validate_time(uint8_t *hours, uint8_t *minutes, uint8_t twenty_four_hour){
+	if (twenty_four_hour){
+		while (hours >= 0x24) hours -= 0x24;	//Don't allow for hours outside of [0..23]
+	}
+	else {
+		if (*hours == 0x00) *hours = 0x12;	//0 == midnight
+		while (*hours > 0x12) *hours -= 0x12; //Convert to 12 hour format
+	}
 	
-	
-	return data;
+	if (*minutes > 0x59) *minutes = 0;
 }
 
 
@@ -331,8 +331,8 @@ int main (void){
 
 	uint8_t cathode = 0;
 	char temp[32];
-	uint16_t data1 = 0;
-	uint16_t data2 = 0;
+	uint16_t shift_data1 = 0;
+	uint16_t shift_data2 = 0;
 	uint8_t hours = 0;
 	uint8_t minutes = 0;
 	
