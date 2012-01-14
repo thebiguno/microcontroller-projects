@@ -490,13 +490,26 @@ void i2c_clock_init(){
 	serial_write_s("Setting time...");
 	i2c_start_transceiver_with_data(message, 9);
 	serial_write_s("Done\n\r");
+	
+	//Set alarms to known time for testing
+	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
+	alarms[0][ALARM_HOURS_INDEX] = 0x18;
+
+	alarms[1][ALARM_MINUTES_INDEX] = 0x53;
+	alarms[1][ALARM_HOURS_INDEX] = 0x18;
 #endif
 }
 
+void execute_alarm(uint8_t alarm_index){
+	serial_write_s("Executing alarm #");
+	serial_write_s(itoa(alarm_index, temp, 16));
+	serial_write_s("\n\r");
+}
+
 /*
- * Reads the current time from RTC
+ * Reads the current time from RTC; if an alarm condition is reached, execute alarm.
  */
-void get_current_time(uint8_t *hours, uint8_t *minutes){
+void get_time(uint8_t *hours, uint8_t *minutes){
 	//Reset the register to reading time
 	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x02; //Reset register pointer
@@ -506,25 +519,29 @@ void get_current_time(uint8_t *hours, uint8_t *minutes){
 	i2c_start_transceiver_with_data(message, 4);
 	i2c_get_data_from_transceiver(message, 4);
 	
-	*hours = (message[3] & 0x3F);
-	*minutes = (message[2] & 0x7F);
-
-#ifdef DEBUG
-	serial_write_s("Read time: ");
-	serial_write_s(itoa(*hours, temp, 16));
-	serial_write_s(":");
-	serial_write_s(itoa(*minutes, temp, 16));
-	serial_write_s(":");
-	serial_write_s(itoa(message[1] & 0x7F, temp, 16));	
-	serial_write_s("\n\r");
-#endif	
+	uint8_t new_hours = message[3] & 0x3F;
+	uint8_t new_minutes = message[2] & 0x7F;
+	
+	for (uint8_t i = 0; i < ALARM_MAX_COUNT; i++){
+		//If the newly read time matches an alarm and the last time does 
+		// not (i.e. it was just executed), then execute alarm
+		if (alarms[i][ALARM_HOURS_INDEX] == new_hours 
+				&& alarms[i][ALARM_HOURS_INDEX] != *hours
+				&& alarms[i][ALARM_MINUTES_INDEX] == new_minutes 
+				&& alarms[i][ALARM_MINUTES_INDEX] != *minutes){
+			execute_alarm(i);
+		}
+	}
+	
+	*hours = new_hours;
+	*minutes = new_minutes;
 }
 
 void set_time(int8_t hours_offset, int8_t minutes_offset){
 	uint8_t hours = 0;
 	uint8_t minutes = 0;
 	
-	get_current_time(&hours, &minutes);
+	get_time(&hours, &minutes);
 	
 	hours += hours_offset;
 	minutes += minutes_offset;
@@ -548,9 +565,29 @@ void set_time(int8_t hours_offset, int8_t minutes_offset){
 /*
  * Returns the current time for the given alarm index.
  */
-void get_current_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
+void get_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
 	*hours = alarms[alarm_index][ALARM_HOURS_INDEX];
 	*minutes = alarms[alarm_index][ALARM_MINUTES_INDEX];
+}
+
+void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset){
+	uint8_t hours = 0;
+	uint8_t minutes = 0;
+	
+	get_alarm(alarm_index, &hours, &minutes);
+	
+	hours += hours_offset;
+	minutes += minutes_offset;
+	
+	//Keep everything in valid BCD
+	if ((minutes & 0xF) >= 0x0A) minutes += 0x06;
+	if (minutes > 0x59) minutes = 0x00;
+	
+	if ((hours & 0xF) >= 0x0A) hours += 0x06;
+	if (hours > 0x23) hours = 0;
+	
+	alarms[alarm_index][ALARM_HOURS_INDEX] = hours;
+	alarms[alarm_index][ALARM_MINUTES_INDEX] = minutes;
 }
 
 /*
@@ -632,7 +669,7 @@ int main (void){
 		button_state = button_read();
 		if (button_repeat_counter >= BUTTON_REPEAT){
 			button_repeat_counter = 0;
-			if (button_state & _BV(BUTTON_TIME_PIN)){
+			if (button_state & _BV(BUTTON_TIME_PIN) && !(button_state & _BV(BUTTON_ALARM_PIN))){
 				if (button_state & _BV(BUTTON_HOUR_PIN)){
 					//Updates the time
 					set_time(1, 0);					
@@ -642,18 +679,55 @@ int main (void){
 				}
 				
 				//Refresh the display buffer
-				get_current_time(&hours, &minutes);
+				get_time(&hours, &minutes);
 				format_time(&hours, &minutes, TIME_FORMAT);
 				get_shift_data(hours, minutes, &shift_data1, &shift_data2);
+			}
+			else if (button_state & _BV(BUTTON_ALARM_PIN)){
+				static uint8_t alarm_index = 0x00;
+				if (button_state & _BV(BUTTON_HOUR_PIN)){
+					//Updates the time
+					set_alarm(alarm_index, 1, 0);					
+
+					//Refresh the display buffer
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					get_shift_data(hours, minutes, &shift_data1, &shift_data2);
+				}
+				else if (button_state & _BV(BUTTON_MINUTE_PIN)){
+					set_alarm(alarm_index, 0, 1);
+
+					//Refresh the display buffer
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					get_shift_data(hours, minutes, &shift_data1, &shift_data2);
+				}
+				else if (button_state & _BV(BUTTON_SLEEP_PIN)){
+					alarm_index++;
+					if (alarm_index >= ALARM_MAX_COUNT) alarm_index = 0;
+
+					//Refresh the display buffer
+					get_shift_data(0, alarm_index + 1, &shift_data1, &shift_data2);
+				}
+				else if (button_state & _BV(BUTTON_TIME_PIN)){
+					//Refresh the display buffer
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					get_shift_data(hours, minutes, &shift_data1, &shift_data2);
+				}
+				else {
+					//Refresh the display buffer to show the alarm index
+					get_shift_data(0, alarm_index + 1, &shift_data1, &shift_data2);
+				}
 			}
 		}
 	
 		//Calculate the data for the display buffer.  We only want to do this every X iterations.
-		if (buffer_refresh_counter >= BUFFER_REFRESH){
+		if (buffer_refresh_counter >= BUFFER_REFRESH && !(button_state & _BV(BUTTON_ALARM_PIN))){
 			buffer_refresh_counter = 0;
 			if (mode == MODE_DEFAULT || mode == MODE_SET_TIME){
 				//Get the current time from the RTC
-				get_current_time(&hours, &minutes);
+				get_time(&hours, &minutes);
 				
 				//Convert to proper time format
 				format_time(&hours, &minutes, TIME_FORMAT);
@@ -663,7 +737,7 @@ int main (void){
 			}
 			else if (mode == MODE_SET_ALARM){
 				//Get the current time from the RTC
-				get_current_alarm(0, &hours, &minutes);
+				get_alarm(0, &hours, &minutes);
 				
 				//Convert to proper time format
 				format_time(&hours, &minutes, TIME_FORMAT);
