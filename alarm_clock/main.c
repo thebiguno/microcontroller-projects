@@ -12,10 +12,19 @@
 #define SHIFT_CLOCK_PIN				PIND6
 #define SHIFT_LATCH_PIN				PIND7
 
+#define BUTTON_PORT					PORTB
+#define BUTTON_TIME_PIN				PIN0
+#define BUTTON_ALARM_PIN			PIN1
+#define BUTTON_SLEEP_PIN			PIN2
+#define BUTTON_HOUR_PIN				PIN3
+#define BUTTON_MINUTE_PIN			PIN4
+#define BUTTON_SNOOZE_PIN			PIN5
+
 #define I2C_ADDRESS					0x51
 
-#define BUFFER_REFRESH				512
+#define BUFFER_REFRESH				4092
 #define DIMMER_REFRESH				0
+#define BUTTON_REPEAT				2048
 
 #define MODE_DEFAULT				0x00
 #define MODE_SET_TIME				0x01
@@ -36,6 +45,11 @@ uint8_t message[10];
 //Used to store alarms.  First index is for alarm index (max of ALARM_MAX_COUNT).
 // Second index is for alarm data (ALARM_*_INDEX)
 uint8_t alarms[ALARM_MAX_COUNT][3];
+
+#ifdef DEBUG
+//Temp variable used for number to string conversions
+char temp[30];
+#endif
 
 void shift_init(){
 	//Enable outputs for shift register (clock LED driver)
@@ -435,11 +449,15 @@ void get_shift_data(uint8_t hours, uint8_t minutes, uint16_t *data1, uint16_t *d
  */
 void format_time(uint8_t *hours, uint8_t *minutes, uint8_t time_format){
 	if (time_format == TIME_FORMAT_24){
-		while (*hours >= 0x24) *hours -= 0x24;	//Don't allow for hours outside of [0..23]
+		if (*hours >= 0x24) *hours = 0x00;	//Don't allow for hours outside of [0..23]
 	}
 	else if (time_format == TIME_FORMAT_12){
 		if (*hours == 0x00) *hours = 0x12;	//0 == midnight == 12:00
-		while (*hours > 0x12) *hours -= 0x12; //Convert to 12 hour format
+		if (*hours > 0x12){
+			//Convert to 12 hour format
+			if (*hours == 0x20 || *hours == 0x21) *hours = *hours - 0x18;
+			else *hours = *hours - 0x12;
+		}
 	}
 	
 	if (*minutes > 0x59) *minutes = 0;
@@ -457,6 +475,22 @@ void i2c_clock_init(){
 	message[1] = 0x00;//Control Status 1
 	message[2] = 0x00;//Control Status 2
 	i2c_start_transceiver_with_data(message, 3);
+	
+#ifdef DEBUG
+	//Set clock to known time for testing
+	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
+	message[1] = 0x02; //Reset register pointer to 0x02
+	message[2] = 0x56;	//56 seconds
+	message[3] = 0x51;	//51 minutes
+	message[4] = 0x18;	//18 hours
+	message[5] = 0x07;	//7th
+	message[6] = 0x04;	//Thursday
+	message[7] = 0x01;	//January
+	message[8] = 0x12;  //2012
+	serial_write_s("Setting time...");
+	i2c_start_transceiver_with_data(message, 9);
+	serial_write_s("Done\n\r");
+#endif
 }
 
 /*
@@ -472,8 +506,43 @@ void get_current_time(uint8_t *hours, uint8_t *minutes){
 	i2c_start_transceiver_with_data(message, 4);
 	i2c_get_data_from_transceiver(message, 4);
 	
-	*hours = message[3];
-	*minutes = message[2];
+	*hours = (message[3] & 0x3F);
+	*minutes = (message[2] & 0x7F);
+
+#ifdef DEBUG
+	serial_write_s("Read time: ");
+	serial_write_s(itoa(*hours, temp, 16));
+	serial_write_s(":");
+	serial_write_s(itoa(*minutes, temp, 16));
+	serial_write_s(":");
+	serial_write_s(itoa(message[1] & 0x7F, temp, 16));	
+	serial_write_s("\n\r");
+#endif	
+}
+
+void set_time(int8_t hours_offset, int8_t minutes_offset){
+	uint8_t hours = 0;
+	uint8_t minutes = 0;
+	
+	get_current_time(&hours, &minutes);
+	
+	hours += hours_offset;
+	minutes += minutes_offset;
+	
+	//Keep everything in valid BCD
+	if ((minutes & 0xF) >= 0x0A) minutes += 0x06;
+	if (minutes > 0x59) minutes = 0x00;
+	
+	if ((hours & 0xF) >= 0x0A) hours += 0x06;
+	if (hours > 0x23) hours = 0;
+	
+	//Set clock to known time for testing
+	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
+	message[1] = 0x02; //Reset register pointer to 0x02
+	message[2] = 0x0;	//Reset seconds
+	message[3] = minutes;
+	message[4] = hours;
+	i2c_start_transceiver_with_data(message, 5);
 }
 
 /*
@@ -505,7 +574,29 @@ void refresh_display(uint16_t data1, uint16_t data2){
 	shift_latch_data();
 }
 
+/*
+ * Init hardware for reading buttons
+ */
+void button_init(){
+	//Pullups on all the button pins.
+	BUTTON_PORT |= _BV(BUTTON_TIME_PIN) | _BV(BUTTON_ALARM_PIN) 
+					| _BV(BUTTON_SLEEP_PIN) | _BV(BUTTON_HOUR_PIN) 
+					| _BV(BUTTON_MINUTE_PIN) | _BV(BUTTON_SNOOZE_PIN);
+}
+
+uint8_t button_read(){
+	//If we don't keep all buttons on the same port this will have to split
+	// out, but for now we can cheat.  We invert PINB so that we don't have
+	// to worry about inverse logic due to pullups.
+	return ~PINB & (_BV(BUTTON_TIME_PIN) | _BV(BUTTON_ALARM_PIN) 
+					| _BV(BUTTON_SLEEP_PIN) | _BV(BUTTON_HOUR_PIN) 
+					| _BV(BUTTON_MINUTE_PIN) | _BV(BUTTON_SNOOZE_PIN));
+}
+
 int main (void){
+	DDRC = 0x00;
+	PORTC = 0x00;
+
 #ifdef DEBUG
 	//Init hardware
 	serial_init_b(9600);
@@ -513,6 +604,7 @@ int main (void){
 	i2c_master_init(400);
 	i2c_clock_init();
 	shift_init();
+	button_init();
 	
 	//Clock mode: can switch between showing time, setting time, setting alarm, setting music, etc
 	uint8_t mode = MODE_DEFAULT;
@@ -527,12 +619,34 @@ int main (void){
 	uint8_t hours = 0;
 	uint8_t minutes = 0;
 	
+	//Button state.  Currently shares flag definitions with the button pints themselves, but 
+	// this should change if the buttons move to various ports.
+	uint8_t button_state = 0;
+	
 	uint16_t buffer_refresh_counter = 0;
 	uint16_t dimmer_refresh_counter = 0;
+	uint16_t button_repeat_counter = 0;
 	
 	while (1){
 		//Check button state to change mode if needed
-		//TODO
+		button_state = button_read();
+		if (button_repeat_counter >= BUTTON_REPEAT){
+			button_repeat_counter = 0;
+			if (button_state & _BV(BUTTON_TIME_PIN)){
+				if (button_state & _BV(BUTTON_HOUR_PIN)){
+					//Updates the time
+					set_time(1, 0);					
+				}
+				else if (button_state & _BV(BUTTON_MINUTE_PIN)){
+					set_time(0, 1);
+				}
+				
+				//Refresh the display buffer
+				get_current_time(&hours, &minutes);
+				format_time(&hours, &minutes, TIME_FORMAT);
+				get_shift_data(hours, minutes, &shift_data1, &shift_data2);
+			}
+		}
 	
 		//Calculate the data for the display buffer.  We only want to do this every X iterations.
 		if (buffer_refresh_counter >= BUFFER_REFRESH){
@@ -568,6 +682,7 @@ int main (void){
 
 		buffer_refresh_counter++;
 		dimmer_refresh_counter++;
+		button_repeat_counter++;
 	}
 }
 
