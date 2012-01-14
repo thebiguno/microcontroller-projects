@@ -62,12 +62,6 @@ void format_time(uint8_t *hours, uint8_t *minutes, uint8_t time_format){
 	if (*minutes > 0x59) *minutes = 0;
 }
 
-void execute_alarm(uint8_t alarm_index){
-	serial_write_s("Executing alarm #");
-	serial_write_s(itoa(alarm_index, temp, 16));
-	serial_write_s("\n\r");
-}
-
 /*
  * Sets up the RTC with desired values.
  */
@@ -105,6 +99,12 @@ void i2c_clock_init(){
 #endif
 }
 
+void execute_alarm(uint8_t alarm_index){
+	serial_write_s("Executing alarm #");
+	serial_write_s(itoa(alarm_index, temp, 16));
+	serial_write_s("\n\r");
+}
+
 /*
  * Reads the current time from RTC; if an alarm condition is reached, execute alarm.
  */
@@ -136,10 +136,7 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 	*minutes = new_minutes;
 }
 
-/*
- * Increment the RTC chip by the given hours / minutes
- */
-void set_time(uint8_t hours_offset, uint8_t minutes_offset){
+void set_time(int8_t hours_offset, int8_t minutes_offset){
 	uint8_t hours = 0;
 	uint8_t minutes = 0;
 	
@@ -172,9 +169,6 @@ void get_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
 	*minutes = alarms[alarm_index][ALARM_MINUTES_INDEX];
 }
 
-/*
- * Increment the specified alarm by the given hours / minutes
- */
 void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset){
 	uint8_t hours = 0;
 	uint8_t minutes = 0;
@@ -238,11 +232,10 @@ int main (void){
 	uint16_t shift_data1 = 0;
 	uint16_t shift_data2 = 0;
 
-	//Variables for LED digits 1/2 and 3/4.  Mostly these are for display of hours / minutes,
-	// but that is not the only use (e.g. radio tuning, alarm index, etc).  These will be 
-	// displayed on the LED as hex numbers, so for time it should be in BCD format.
-	uint8_t digit12 = 0;
-	uint8_t digit34 = 0;
+	//Hours / minutes variables.  Not strictly for use only to hold time (e.g. radio tuning
+	// will use these as well).  These are stored as BCD numbers.
+	uint8_t hours = 0;
+	uint8_t minutes = 0;
 	
 	//Button state.  Currently shares flag definitions with the button pints themselves, but 
 	// this should change if the buttons move to various ports.
@@ -269,9 +262,9 @@ int main (void){
 				}
 				
 				//Refresh the display buffer
-				get_time(&digit12, &digit34);
-				format_time(&digit12, &digit34, TIME_FORMAT);
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+				get_time(&hours, &minutes);
+				format_time(&hours, &minutes, TIME_FORMAT);
+				shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 			}
 			else if (button_state & BUTTON_ALARM){
 				static uint8_t alarm_index = 0x00;
@@ -280,17 +273,17 @@ int main (void){
 					set_alarm(alarm_index, 1, 0);					
 
 					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 				}
 				else if (button_state & BUTTON_MINUTE){
 					set_alarm(alarm_index, 0, 1);
 
 					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 				}
 				else if (button_state & BUTTON_SLEEP){
 					alarm_index++;
@@ -301,9 +294,9 @@ int main (void){
 				}
 				else if (button_state & BUTTON_TIME){
 					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+					get_alarm(alarm_index, &hours, &minutes);
+					format_time(&hours, &minutes, TIME_FORMAT);
+					shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 				}
 				else {
 					//Refresh the display buffer to show the alarm index
@@ -317,23 +310,23 @@ int main (void){
 			buffer_refresh_counter = 0;
 			if (mode == MODE_DEFAULT || mode == MODE_SET_TIME){
 				//Get the current time from the RTC
-				get_time(&digit12, &digit34);
+				get_time(&hours, &minutes);
 				
 				//Convert to proper time format
-				format_time(&digit12, &digit34, TIME_FORMAT);
+				format_time(&hours, &minutes, TIME_FORMAT);
 				
 				//Populate the two shift data (display buffer) variables
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+				shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 			}
 			else if (mode == MODE_SET_ALARM){
 				//Get the current time from the RTC
-				get_alarm(0, &digit12, &digit34);
+				get_alarm(0, &hours, &minutes);
 				
 				//Convert to proper time format
-				format_time(&digit12, &digit34, TIME_FORMAT);
+				format_time(&hours, &minutes, TIME_FORMAT);
 				
 				//Populate the two shift data (display buffer) variables
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+				shift_format_data(hours, minutes, &shift_data1, &shift_data2);
 				
 			}
 		}
