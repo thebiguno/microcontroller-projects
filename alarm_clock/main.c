@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <stdlib.h>
-#include <util/delay.h>
 
 #ifdef DEBUG
 #include "lib/serial/serial.h"
@@ -14,8 +13,13 @@
 
 #define I2C_ADDRESS					0x51
 
-#define BUFFER_REFRESH				4092
-#define DIMMER_REFRESH				0
+//Defines the LED brightness via PWM.  0 is max brightness, and higher numbers are dimmer.
+#define DIMMER_MAX					0
+//Defines (in number of main loop iterations) how often to refresh the display buffer.
+#define BUFFER_REFRESH				1024
+//Defines (in number of main loop iterations) how long to debounce buttons
+#define BUTTON_DEBOUNCE				16
+//Defines (in number of main loop iterations) how fast to repeat held-down buttons
 #define BUTTON_REPEAT				2048
 
 #define MODE_DEFAULT				0x00
@@ -26,16 +30,23 @@
 #define TIME_FORMAT_24				0x01
 #define TIME_FORMAT					TIME_FORMAT_12
 
-#define ALARM_MAX_COUNT				0x04
+#define ALARM_MAX_COUNT				4
 
-#define ALARM_HOURS_INDEX			0x00
-#define ALARM_MINUTES_INDEX			0x01
+#define ALARM_HOURS_INDEX			0
+#define ALARM_MINUTES_INDEX			1
+#define ALARM_MODE_INDEX			2
+
+#define ALARM_MODE_COUNT			3
+#define ALARM_MODE_OFF				0x00
+#define ALARM_MODE_BUZZER			0x01
+#define ALARM_MODE_RADIO			0x02
 
 //Used for i2c messages
 uint8_t message[10];
 
 //Used to store alarms.  First index is for alarm index (max of ALARM_MAX_COUNT).
-// Second index is for alarm data (ALARM_*_INDEX)
+// Second index is for alarm data (ALARM_HOURS_INDEX, ALARM_MINUTES_INDEX, 
+// ALARM_MODE_INDEX)
 uint8_t alarms[ALARM_MAX_COUNT][3];
 
 #ifdef DEBUG
@@ -46,11 +57,15 @@ char temp[30];
 /*
  * Validates that the input is a valid time format, and fixes it if possible.  Also converts between 12 and 24 hour format.
  */
-void format_time(uint8_t *hours, uint8_t *minutes, uint8_t time_format){
+void format_time(uint8_t *hours, uint8_t *minutes, uint8_t *flags, uint8_t time_format){
+	//Enable the colon, since this we are displaying time
+	*flags = SHIFT_FLAG_COLON;
+	
 	if (time_format == TIME_FORMAT_24){
 		if (*hours >= 0x24) *hours = 0x00;	//Don't allow for hours outside of [0..23]
 	}
 	else if (time_format == TIME_FORMAT_12){
+		if (*hours >= 0x12) *flags |= SHIFT_FLAG_PM; //Set PM flag
 		if (*hours == 0x00) *hours = 0x12;	//0 == midnight == 12:00
 		if (*hours > 0x12){
 			//Convert to 12 hour format
@@ -60,11 +75,21 @@ void format_time(uint8_t *hours, uint8_t *minutes, uint8_t time_format){
 	}
 	
 	if (*minutes > 0x59) *minutes = 0;
+	
+	//Check if there are any active alarms
+	for (uint8_t i = 0; i < ALARM_MAX_COUNT; i++){
+		if (alarms[i][ALARM_MODE_INDEX] != ALARM_MODE_OFF){
+			*flags |= SHIFT_FLAG_AUTO;
+		}
+	}
 }
 
 void execute_alarm(uint8_t alarm_index){
 	serial_write_s("Executing alarm #");
 	serial_write_s(itoa(alarm_index, temp, 16));
+	serial_write_s(", mode = ");
+	if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_BUZZER) serial_write_s("buzzer");
+	else serial_write_s("radio");
 	serial_write_s("\n\r");
 }
 
@@ -82,6 +107,7 @@ void i2c_clock_init(){
 	i2c_start_transceiver_with_data(message, 3);
 	
 #ifdef DEBUG
+
 	//Set clock to known time for testing
 	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
 	message[1] = 0x02; //Reset register pointer to 0x02
@@ -99,9 +125,11 @@ void i2c_clock_init(){
 	//Set alarms to known time for testing
 	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
 	alarms[0][ALARM_HOURS_INDEX] = 0x18;
+	alarms[0][ALARM_MODE_INDEX] = ALARM_MODE_BUZZER;
 
 	alarms[1][ALARM_MINUTES_INDEX] = 0x53;
 	alarms[1][ALARM_HOURS_INDEX] = 0x18;
+	alarms[1][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
 #endif
 }
 
@@ -127,7 +155,8 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 		if (alarms[i][ALARM_HOURS_INDEX] == new_hours 
 				&& alarms[i][ALARM_HOURS_INDEX] != *hours
 				&& alarms[i][ALARM_MINUTES_INDEX] == new_minutes 
-				&& alarms[i][ALARM_MINUTES_INDEX] != *minutes){
+				&& alarms[i][ALARM_MINUTES_INDEX] != *minutes
+				&& alarms[i][ALARM_MODE_INDEX] != ALARM_MODE_OFF){
 			execute_alarm(i);
 		}
 	}
@@ -199,21 +228,34 @@ void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset
  * Shifts out the display buffers to the shift registers; alternates between each set
  * of display data to keep all segments displayed.
  */
-void refresh_display(uint16_t data1, uint16_t data2){
+void refresh_display(uint32_t data1, uint32_t data2){
 	static uint8_t cathode = 0;
+	static uint8_t dimmer_counter = 0;
 	
-	if (cathode == 0){
-		shift_out(data1 >> 8);
-		shift_out(data1 & 0xFF);		
-		cathode = 1;
+	if (dimmer_counter == 0){
+		if (cathode == 0){
+			shift_out((data1 >> 16) & 0xFF);
+			shift_out((data1 >> 8) & 0xFF);
+			shift_out(data1 & 0xFF);
+			cathode = 1;
+		}
+		else {
+			shift_out((data2 >> 16) & 0xFF);
+			shift_out((data2 >> 8) & 0xFF);
+			shift_out(data2 & 0xFF);
+			cathode = 0;
+		}
 	}
 	else {
-		shift_out(data2 >> 8);
-		shift_out(data2 & 0xFF);
-		cathode = 0;
+		shift_out(0x00);
+		shift_out(0x00);
+		shift_out(0x00);
 	}
-	
+		
 	shift_latch();
+	
+	dimmer_counter++;
+	if (dimmer_counter >= DIMMER_MAX) dimmer_counter = 0;
 }
 
 
@@ -230,123 +272,148 @@ int main (void){
 	shift_init();
 	button_init();
 	
-	//Clock mode: can switch between showing time, setting time, setting alarm, setting music, etc
-	uint8_t mode = MODE_DEFAULT;
-
 	//The display buffers; each of these are shifted into the registers repeatedly to pulse back and
 	// forth on the LED display.
-	uint16_t shift_data1 = 0;
-	uint16_t shift_data2 = 0;
+	uint32_t shift_data1 = 0;
+	uint32_t shift_data2 = 0;
 
-	//Variables for LED digits 1/2 and 3/4.  Mostly these are for display of hours / minutes,
-	// but that is not the only use (e.g. radio tuning, alarm index, etc).  These will be 
-	// displayed on the LED as hex numbers, so for time it should be in BCD format.
-	uint8_t digit12 = 0;
-	uint8_t digit34 = 0;
+	//Variables for LED digits 1/2 and 3/4, and other display flags (PM, colon, etc).  Mostly 
+	// these are for display of hours / minutes, but that is not the only use (e.g. radio 
+	// tuning, alarm index, etc).  These will be displayed on the LED as hex numbers, so for 
+	// time it should be in BCD format.
+	uint8_t digit12 = 0x00;
+	uint8_t digit34 = 0x00;
+	uint8_t flags = 0x00;
 	
 	//Button state.  Currently shares flag definitions with the button pints themselves, but 
 	// this should change if the buttons move to various ports.
-	uint8_t button_state = 0;
+	uint8_t button_state = 0x00;
+	uint8_t last_button_state = 0x00;
 	
-	uint16_t buffer_refresh_counter = 0;
-	uint16_t dimmer_refresh_counter = 0;
-	uint16_t button_repeat_counter = 0;
+	uint16_t buffer_refresh_counter = 0x00;
+	uint16_t button_debounce_counter = 0x00;
+	uint16_t button_repeat_counter = 0x00;
 	
 	while (1){
-		//Check button state to change mode if needed
+		if (button_debounce_counter > 0) button_debounce_counter--;
+		if (button_repeat_counter > 0) button_repeat_counter--;
+
+		//Read buttons
 		button_state = button_read();
-		
-		
-		if (button_repeat_counter >= BUTTON_REPEAT){
-			button_repeat_counter = 0;
-			if (button_state & BUTTON_TIME && !(button_state & BUTTON_ALARM)){
-				if (button_state & BUTTON_HOUR){
-					//Updates the time
-					set_time(1, 0);					
-				}
-				else if (button_state & BUTTON_MINUTE){
-					set_time(0, 1);
-				}
-				
-				//Refresh the display buffer
-				get_time(&digit12, &digit34);
-				format_time(&digit12, &digit34, TIME_FORMAT);
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
-			}
-			else if (button_state & BUTTON_ALARM){
-				static uint8_t alarm_index = 0x00;
-				if (button_state & BUTTON_HOUR){
-					//Updates the time
-					set_alarm(alarm_index, 1, 0);					
-
-					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
-				}
-				else if (button_state & BUTTON_MINUTE){
-					set_alarm(alarm_index, 0, 1);
-
-					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
-				}
-				else if (button_state & BUTTON_SLEEP){
-					alarm_index++;
-					if (alarm_index >= ALARM_MAX_COUNT) alarm_index = 0;
-
-					//Refresh the display buffer
-					shift_format_data(0, alarm_index + 1, &shift_data1, &shift_data2);
-				}
-				else if (button_state & BUTTON_TIME){
-					//Refresh the display buffer
-					get_alarm(alarm_index, &digit12, &digit34);
-					format_time(&digit12, &digit34, TIME_FORMAT);
-					shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
-				}
-				else {
-					//Refresh the display buffer to show the alarm index
-					shift_format_data(0, alarm_index + 1, &shift_data1, &shift_data2);
-				}
-			}
-		}
 	
-		//Calculate the data for the display buffer.  We only want to do this every X iterations.
-		if (buffer_refresh_counter >= BUFFER_REFRESH && !(button_state & BUTTON_ALARM)){
-			buffer_refresh_counter = 0;
-			if (mode == MODE_DEFAULT || mode == MODE_SET_TIME){
-				//Get the current time from the RTC
-				get_time(&digit12, &digit34);
-				
-				//Convert to proper time format
-				format_time(&digit12, &digit34, TIME_FORMAT);
-				
-				//Populate the two shift data (display buffer) variables
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
+		if (button_debounce_counter == 0x00 && button_repeat_counter == 0x00){
+			//If a button is pressed, then check if it has just changed
+			if (button_state != last_button_state){
+				button_debounce_counter = BUTTON_DEBOUNCE;
+				button_repeat_counter = 0x00;
+				last_button_state = button_state;
+	
+				#ifdef DEBUG					
+//				serial_write_s("Button State: ");
+//				serial_write_s(itoa(button_state, temp, 16));
+//				serial_write_s("\n\r");
+				#endif
 			}
-			else if (mode == MODE_SET_ALARM){
-				//Get the current time from the RTC
-				get_alarm(0, &digit12, &digit34);
+
+			//Check repeat speed (repeat only applies to H / M / Sleep keys plus 
+			// alarm or time modifiers)
+			if (((button_state & BUTTON_ALARM) 
+					|| (button_state & BUTTON_TIME))
+					&& ((button_state & BUTTON_HOUR) 
+						|| (button_state & BUTTON_MINUTE) 
+						|| (button_state & BUTTON_SLEEP))){
+				button_repeat_counter = BUTTON_REPEAT;
+			}
+
+			//If alarm is pressed, display / modify alarms
+			if (button_state & BUTTON_ALARM){
+				static uint8_t alarm_index = 0x00;
 				
-				//Convert to proper time format
-				format_time(&digit12, &digit34, TIME_FORMAT);
-				
-				//Populate the two shift data (display buffer) variables
-				shift_format_data(digit12, digit34, &shift_data1, &shift_data2);
-				
+				//Alarm + Sleep = change alarm index
+				if (button_state & BUTTON_SLEEP){
+					if (button_state & BUTTON_HOUR){
+						alarm_index--;
+						if (alarm_index >= ALARM_MAX_COUNT) alarm_index = ALARM_MAX_COUNT - 1;
+					}
+					else if (button_state & BUTTON_MINUTE){
+						alarm_index++;
+						if (alarm_index >= ALARM_MAX_COUNT) alarm_index = 0;
+					}
+
+					digit12 = 0x0A;
+					digit34 = alarm_index + 1;
+					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags |= SHIFT_FLAG_AUTO;
+					else flags = 0x00;
+				}
+				//Alarm + Snooze = view / change alarm mode
+				else if (button_state & BUTTON_SNOOZE){
+					if (button_state & BUTTON_HOUR){
+						alarms[alarm_index][ALARM_MODE_INDEX]--;
+						if (alarms[alarm_index][ALARM_MODE_INDEX] >= ALARM_MODE_RADIO) alarms[alarm_index][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
+					}
+					else if (button_state & BUTTON_MINUTE){
+						alarms[alarm_index][ALARM_MODE_INDEX]++;
+						if (alarms[alarm_index][ALARM_MODE_INDEX] > ALARM_MODE_RADIO) alarms[alarm_index][ALARM_MODE_INDEX] = ALARM_MODE_OFF;
+					}
+
+					digit12 = 0x0A;
+					if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_OFF){
+						digit34 = 0x00;
+						flags = 0x00;
+					}
+					else if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_BUZZER){
+						digit34 = 0x0B;
+						flags = SHIFT_FLAG_AUTO;
+					}
+					else if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_RADIO){
+						digit34 = 0x0F;
+						flags = SHIFT_FLAG_AUTO;
+					}
+					
+				}
+				//Alarm + Time = view / change alarm time
+				else if (button_state & BUTTON_TIME){
+					if (button_state & BUTTON_HOUR){
+						set_alarm(alarm_index, 1, 0);					
+					}
+					else if (button_state & BUTTON_MINUTE){
+						set_alarm(alarm_index, 0, 1);
+					}
+					//Refresh the display buffer with current alarm time
+					get_alarm(alarm_index, &digit12, &digit34);
+					format_time(&digit12, &digit34, &flags, TIME_FORMAT);					
+				}
+				//Alarm by itself = show current alarm index
+				else {
+					digit12 = 0x0A;
+					digit34 = alarm_index + 1;
+					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags |= SHIFT_FLAG_AUTO;
+					else flags = 0x00;
+				}
+			}
+			//If time is pressed modify time
+			else if (button_state & BUTTON_TIME){
+				if (button_state & BUTTON_HOUR){
+					//Updates the time
+					set_time(0x01, 0x00);					
+				}
+				else if (button_state & BUTTON_MINUTE){
+					set_time(0x00, 0x01);
+				}
 			}
 		}
 		
-		//We always want to refresh the display
-		if (dimmer_refresh_counter > DIMMER_REFRESH){
-			dimmer_refresh_counter = 0;
-			refresh_display(shift_data1, shift_data2);
+		//If Alarm is not pressed, we can show time
+		if (buffer_refresh_counter >= BUFFER_REFRESH && !(button_state & BUTTON_ALARM)){
+			get_time(&digit12, &digit34);
+			format_time(&digit12, &digit34, &flags, TIME_FORMAT);		
+			buffer_refresh_counter = 0;
 		}
+		
+		shift_format_data(digit12, digit34, flags, &shift_data1, &shift_data2);
+		refresh_display(shift_data1, shift_data2);
 
 		buffer_refresh_counter++;
-		dimmer_refresh_counter++;
-		button_repeat_counter++;
 	}
 }
 

@@ -26,7 +26,7 @@ void shift_latch(){
 	SHIFT_PORT |= _BV(SHIFT_LATCH_PIN);
 }
 
-void shift_format_data(uint8_t hours, uint8_t minutes, uint16_t *data1, uint16_t *data2){	
+void shift_format_data(uint8_t hours, uint8_t minutes, uint8_t flags, uint32_t *data1, uint32_t *data2){	
 	//We have four digits: H2, H1, M2, M1.  (H2 is MSB of Hour).  Each of these digits has
 	// 7 segments: A .. F.  Each segment is lit by a (pin,pin) combination, with the pin
 	// numbers mapping to the LED panel pins, with the first
@@ -34,24 +34,34 @@ void shift_format_data(uint8_t hours, uint8_t minutes, uint16_t *data1, uint16_t
 	// map these combinations out below, above the defines for each digit.
 
 	//Here we map between LED pins to shift register outputs, counting down from bit 14: 
-	// LED		Shift Data		Shift Pin
-	// 6		13				5
-	// 7		12				4
-	// 8		11				3
-	// 9		10				2
-	// 10		9				1
-	// 12		8				15
-	// 13		7				7
-	// 15		6				6
-	// 16		5				5
-	// 17		4				4
-	// 18		3				3
-	// 19		2				2
-	// 20		1				1
-	// 21		0				15
+	// LED Pin	Shift Data		Shift Pin
+	// 4		23				3.7
+	// 30		15				2.7
+	// 5		14				2.6
+	// 6		13				2.5
+	// 7		12				2.4
+	// 8		11				2.3
+	// 9		10				2.2
+	// 10		9				2.1
+	// 12		8				2.15
+	// 13		7				1.7
+	// 15		6				1.6
+	// 16		5				1.5
+	// 17		4				1.4
+	// 18		3				1.3
+	// 19		2				1.2
+	// 20		1				1.1
+	// 21		0				1.15
 	
-	#define CATHODE_1	_BV(15)
-	#define CATHODE_2	_BV(14)
+	#define CATHODE_1	_BV32(17)
+	#define CATHODE_2	_BV32(16)
+	
+	#define COLON_1	_BV32(15)	//If we use normal _BV() it assumes unsigned, and fills in all 1's
+	#define COLON_2	0
+	#define PM_1	_BV(14)
+	#define PM_2	0
+	#define AUTO_1	0
+	#define AUTO_2	_BV32(23)
 	
 	//    HourMinNumber_Segment_Cathode
 	// H2: A=(1,7), B=(2,6), C=(2,9), D=(1,8), E=(2,8), G=(2,7) (F is not implemented, so 0, 4, 5, 6, 8, 9 are not possible)
@@ -123,6 +133,19 @@ void shift_format_data(uint8_t hours, uint8_t minutes, uint16_t *data1, uint16_t
 	*data1 = CATHODE_1;
 	*data2 = CATHODE_2;
 	
+	if (flags & SHIFT_FLAG_COLON){
+		*data1 |= COLON_1;
+		*data2 |= COLON_2;
+	}
+	if (flags & SHIFT_FLAG_PM){
+		*data1 |= PM_1;
+		*data2 |= PM_2;
+	}
+	if (flags & SHIFT_FLAG_AUTO){
+		*data1 |= AUTO_1;
+		*data2 |= AUTO_2;
+	}
+
 	//Set MSB Hour; only 1, 2, and 3 are supported.
 	switch (hours >> 4) {
 		case 0x01:
