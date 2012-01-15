@@ -5,6 +5,7 @@
 #include "lib/serial/serial.h"
 #endif
 #include "lib/i2c/i2c_master.h"
+#include "lib/analog/analog.h"
 
 
 #include "button.h"
@@ -13,14 +14,14 @@
 
 #define I2C_ADDRESS					0x51
 
-//Defines the LED brightness via PWM.  0 is max brightness, and higher numbers are dimmer.
+//All of this next section of defines are in 'number of main loop iterations', and are used
+// in conjunction with counters to define how often events happen.  They may need to change
+// based on the clock speed.
 #define DIMMER_MAX					0
-//Defines (in number of main loop iterations) how often to refresh the display buffer.
 #define BUFFER_REFRESH				1024
-//Defines (in number of main loop iterations) how long to debounce buttons
 #define BUTTON_DEBOUNCE				16
-//Defines (in number of main loop iterations) how fast to repeat held-down buttons
 #define BUTTON_REPEAT				2048
+#define LIGHT_SENSOR_REFRESH			16384
 
 #define MODE_DEFAULT				0x00
 #define MODE_SET_TIME				0x01
@@ -48,6 +49,9 @@ uint8_t message[10];
 // Second index is for alarm data (ALARM_HOURS_INDEX, ALARM_MINUTES_INDEX, 
 // ALARM_MODE_INDEX)
 uint8_t alarms[ALARM_MAX_COUNT][3];
+
+//The current dimmer value.  Will be adjusted based on ambient light between 0 and DIMMER_MAX.
+uint8_t dimmer_current_max = 0;
 
 #ifdef DEBUG
 //Temp variable used for number to string conversions
@@ -202,6 +206,34 @@ void get_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
 }
 
 /*
+ * Adjusts the brightness of the LED panel, based on ambient room lighting.
+ */
+void adjust_dimmer(){
+	uint8_t light_sensor_pin = analog_read_p(0);
+	
+//#ifdef DEBUG
+//	serial_write_s("Light sensor: ");
+//	serial_write_s(itoa(light_sensor_pin, temp, 16));
+//	serial_write_s("\n\r");
+//#endif
+
+	//From experimentation, we find that 0x50 is about pitch black, 0x70 is average
+	// room light, and 0x80 is bright spotlight.  From that, we can estimate the following
+	// dimmer curve; the exact values will need to be adjusted based on LED panel model,
+	// driver voltage, what resistors are used in LED circuit, etc.
+	if (light_sensor_pin <= 0x50) dimmer_current_max = 0x20;	//Lowest level
+	else if (light_sensor_pin <= 0x52) dimmer_current_max = 0x19;
+	else if (light_sensor_pin <= 0x54) dimmer_current_max = 0x18;
+	else if (light_sensor_pin <= 0x56) dimmer_current_max = 0x14;
+	else if (light_sensor_pin <= 0x58) dimmer_current_max = 0x10;
+	else if (light_sensor_pin <= 0x60) dimmer_current_max = 0x08;
+	else if (light_sensor_pin <= 0x68) dimmer_current_max = 0x04;
+	else if (light_sensor_pin <= 0x70) dimmer_current_max = 0x02;
+	else if (light_sensor_pin <= 0x78) dimmer_current_max = 0x02;
+	else dimmer_current_max = 0x00;
+}
+
+/*
  * Increment the specified alarm by the given hours / minutes
  */
 void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset){
@@ -255,13 +287,13 @@ void refresh_display(uint32_t data1, uint32_t data2){
 	shift_latch();
 	
 	dimmer_counter++;
-	if (dimmer_counter >= DIMMER_MAX) dimmer_counter = 0;
+	if (dimmer_counter >= dimmer_current_max) dimmer_counter = 0;
 }
 
 
 int main (void){
-	DDRC = 0x00;
-	PORTC = 0x00;
+	uint8_t analog_pins[1];
+	analog_pins[0] = 0;
 
 #ifdef DEBUG
 	//Init hardware
@@ -269,6 +301,7 @@ int main (void){
 #endif
 	i2c_master_init(400);
 	i2c_clock_init();
+	analog_init(analog_pins, 1, ANALOG_AREF);
 	shift_init();
 	button_init();
 	
@@ -293,6 +326,7 @@ int main (void){
 	uint16_t buffer_refresh_counter = 0x00;
 	uint16_t button_debounce_counter = 0x00;
 	uint16_t button_repeat_counter = 0x00;
+	uint16_t light_sensor_refresh_counter = 0x00;
 	
 	while (1){
 		if (button_debounce_counter > 0) button_debounce_counter--;
@@ -410,10 +444,16 @@ int main (void){
 			buffer_refresh_counter = 0;
 		}
 		
+		if (light_sensor_refresh_counter >= LIGHT_SENSOR_REFRESH){
+			adjust_dimmer();
+			light_sensor_refresh_counter = 0;
+		}
+		
 		shift_format_data(digit12, digit34, flags, &shift_data1, &shift_data2);
 		refresh_display(shift_data1, shift_data2);
 
 		buffer_refresh_counter++;
+		light_sensor_refresh_counter++;
 	}
 }
 
