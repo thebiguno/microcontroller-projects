@@ -416,7 +416,8 @@ int main (void){
 						alarms[alarm_index][ALARM_MODE_INDEX]++;
 						if (alarms[alarm_index][ALARM_MODE_INDEX] > ALARM_MODE_RADIO) alarms[alarm_index][ALARM_MODE_INDEX] = ALARM_MODE_OFF;
 					}
-
+					alarm_save(alarm_index);
+						
 					digit12 = 0x0A;
 					if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_OFF){
 						digit34 = 0x00;
