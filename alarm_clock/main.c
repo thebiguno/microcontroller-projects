@@ -6,6 +6,7 @@
 #endif
 #include "lib/i2c/i2c_master.h"
 #include "lib/analog/analog.h"
+#include "lib/eeprom/eeprom.h"
 
 
 #include "button.h"
@@ -35,7 +36,9 @@
 
 #define ALARM_HOURS_INDEX			0
 #define ALARM_MINUTES_INDEX			1
-#define ALARM_MODE_INDEX			2
+//Each bit is a flag; Sunday = index 0, Monday = index 1, etc.
+#define ALARM_DAYS_INDEX			2
+#define ALARM_MODE_INDEX			3
 
 #define ALARM_MODE_COUNT			3
 #define ALARM_MODE_OFF				0x00
@@ -48,7 +51,7 @@ uint8_t message[10];
 //Used to store alarms.  First index is for alarm index (max of ALARM_MAX_COUNT).
 // Second index is for alarm data (ALARM_HOURS_INDEX, ALARM_MINUTES_INDEX, 
 // ALARM_MODE_INDEX)
-uint8_t alarms[ALARM_MAX_COUNT][3];
+uint8_t alarms[ALARM_MAX_COUNT][4];
 
 //The current dimmer value.  Will be adjusted based on ambient light between 0 and DIMMER_MAX.
 uint8_t dimmer_current_max = 0;
@@ -57,6 +60,22 @@ uint8_t dimmer_current_max = 0;
 //Temp variable used for number to string conversions
 char temp[30];
 #endif
+
+void alarm_save(uint8_t alarm_index){
+	//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
+	eeprom_write_c(alarm_index * 4 + ALARM_HOURS_INDEX, alarms[alarm_index][ALARM_HOURS_INDEX]);
+	eeprom_write_c(alarm_index * 4 + ALARM_MINUTES_INDEX, alarms[alarm_index][ALARM_MINUTES_INDEX]);
+	eeprom_write_c(alarm_index * 4 + ALARM_DAYS_INDEX, alarms[alarm_index][ALARM_DAYS_INDEX]);
+	eeprom_write_c(alarm_index * 4 + ALARM_MODE_INDEX, alarms[alarm_index][ALARM_MODE_INDEX]);
+}
+
+void alarm_load(uint8_t alarm_index){
+	//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
+	alarms[alarm_index][ALARM_HOURS_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_HOURS_INDEX);
+	alarms[alarm_index][ALARM_MINUTES_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_MINUTES_INDEX);
+	alarms[alarm_index][ALARM_DAYS_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_DAYS_INDEX);
+	alarms[alarm_index][ALARM_MODE_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_MODE_INDEX);
+}
 
 /*
  * Validates that the input is a valid time format, and fixes it if possible.  Also converts between 12 and 24 hour format.
@@ -127,13 +146,13 @@ void i2c_clock_init(){
 	serial_write_s("Done\n\r");
 	
 	//Set alarms to known time for testing
-	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
-	alarms[0][ALARM_HOURS_INDEX] = 0x18;
-	alarms[0][ALARM_MODE_INDEX] = ALARM_MODE_BUZZER;
+//	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
+//	alarms[0][ALARM_HOURS_INDEX] = 0x18;
+//	alarms[0][ALARM_MODE_INDEX] = ALARM_MODE_BUZZER;
 
-	alarms[1][ALARM_MINUTES_INDEX] = 0x53;
-	alarms[1][ALARM_HOURS_INDEX] = 0x18;
-	alarms[1][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
+//	alarms[1][ALARM_MINUTES_INDEX] = 0x53;
+//	alarms[1][ALARM_HOURS_INDEX] = 0x18;
+//	alarms[1][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
 #endif
 }
 
@@ -254,6 +273,9 @@ void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset
 	
 	alarms[alarm_index][ALARM_HOURS_INDEX] = hours;
 	alarms[alarm_index][ALARM_MINUTES_INDEX] = minutes;
+	alarms[alarm_index][ALARM_DAYS_INDEX] = 0x7F; //bit 7 is unused, set it to 0
+	
+	alarm_save(alarm_index);
 }
 
 /*
@@ -304,6 +326,11 @@ int main (void){
 	analog_init(analog_pins, 1, ANALOG_AREF);
 	shift_init();
 	button_init();
+	
+	//Load all alarms from EEPROM
+	for (uint8_t alarm_index = 0; alarm_index < ALARM_MAX_COUNT; alarm_index++){
+		alarm_load(alarm_index);
+	}	
 	
 	//The display buffers; each of these are shifted into the registers repeatedly to pulse back and
 	// forth on the LED display.
