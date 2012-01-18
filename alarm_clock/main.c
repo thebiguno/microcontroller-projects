@@ -230,26 +230,25 @@ void get_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
 void adjust_dimmer(){
 	uint8_t light_sensor_pin = analog_read_p(0);
 	
-//#ifdef DEBUG
-//	serial_write_s("Light sensor: ");
-//	serial_write_s(itoa(light_sensor_pin, temp, 16));
-//	serial_write_s("\n\r");
-//#endif
-
-	//From experimentation, we find that 0x50 is about pitch black, 0x70 is average
+	//From experimentation, we find that 0x40 is about pitch black, 0x70 is average
 	// room light, and 0x80 is bright spotlight.  From that, we can estimate the following
 	// dimmer curve; the exact values will need to be adjusted based on LED panel model,
 	// driver voltage, what resistors are used in LED circuit, etc.
-	if (light_sensor_pin <= 0x50) dimmer_current_max = 0x20;	//Lowest level
-	else if (light_sensor_pin <= 0x52) dimmer_current_max = 0x19;
-	else if (light_sensor_pin <= 0x54) dimmer_current_max = 0x18;
-	else if (light_sensor_pin <= 0x56) dimmer_current_max = 0x14;
-	else if (light_sensor_pin <= 0x58) dimmer_current_max = 0x10;
-	else if (light_sensor_pin <= 0x60) dimmer_current_max = 0x08;
-	else if (light_sensor_pin <= 0x68) dimmer_current_max = 0x04;
-	else if (light_sensor_pin <= 0x70) dimmer_current_max = 0x02;
-	else if (light_sensor_pin <= 0x78) dimmer_current_max = 0x02;
+	if (light_sensor_pin <= 0x40) dimmer_current_max = 0x20;	//Lowest level
+	else if (light_sensor_pin <= 0x48) dimmer_current_max = 0x10;
+	else if (light_sensor_pin <= 0x50) dimmer_current_max = 0x08;
+	else if (light_sensor_pin <= 0x58) dimmer_current_max = 0x04;
+	else if (light_sensor_pin <= 0x60) dimmer_current_max = 0x02;
+	else if (light_sensor_pin <= 0x68) dimmer_current_max = 0x01;
 	else dimmer_current_max = 0x00;
+	
+//#ifdef DEBUG
+//	serial_write_s("light_sensor: ");
+//	serial_write_s(itoa(light_sensor_pin, temp, 16));
+//	serial_write_s("; dimmer_current_max: ");
+//	serial_write_s(itoa(dimmer_current_max, temp, 16));
+//	serial_write_s("\n\r");
+//#endif	
 }
 
 /*
