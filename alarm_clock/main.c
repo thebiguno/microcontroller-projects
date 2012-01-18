@@ -409,7 +409,7 @@ int main (void){
 
 					digit12 = 0x0A;
 					digit34 = alarm_index + 1;
-					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags |= SHIFT_FLAG_AUTO;
+					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags = SHIFT_FLAG_AUTO;
 					else flags = 0x00;
 				}
 				//Alarm + Snooze = view / change alarm mode
@@ -456,7 +456,7 @@ int main (void){
 				else {
 					digit12 = 0x0A;
 					digit34 = alarm_index + 1;
-					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags |= SHIFT_FLAG_AUTO;
+					if (alarms[alarm_index][ALARM_MODE_INDEX] != ALARM_MODE_OFF) flags = SHIFT_FLAG_AUTO;
 					else flags = 0x00;
 				}
 			}
