@@ -21,8 +21,8 @@
 #define DIMMER_MAX					0
 #define BUFFER_REFRESH				1024
 #define BUTTON_DEBOUNCE				16
-#define BUTTON_REPEAT				2048
 #define LIGHT_SENSOR_REFRESH			16384
+#define BUTTON_REPEAT				1024
 
 #define MODE_DEFAULT				0x00
 #define MODE_SET_TIME				0x01
