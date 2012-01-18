@@ -21,8 +21,9 @@
 #define DIMMER_MAX					0
 #define BUFFER_REFRESH				1024
 #define BUTTON_DEBOUNCE				16
-#define BUTTON_REPEAT				1024
+#define BUTTON_REPEAT				2048
 #define LIGHT_SENSOR_REFRESH		4092
+#define ALARM_SAVE_DELAY			16368
 
 #define MODE_DEFAULT				0x00
 #define MODE_SET_TIME				0x01
@@ -56,26 +57,15 @@ uint8_t alarms[ALARM_MAX_COUNT][4];
 //The current dimmer value.  Will be adjusted based on ambient light between 0 and DIMMER_MAX.
 uint8_t dimmer_current_max = 0;
 
+//This is set to 1 when it needs to be saved, and back to 0 when it is saved.
+uint8_t alarm_needs_save = 0x00;
+uint16_t alarm_save_counter = 0x00;
+
+
 #ifdef DEBUG
 //Temp variable used for number to string conversions
 char temp[30];
 #endif
-
-void alarm_save(uint8_t alarm_index){
-	//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
-	eeprom_write_c(alarm_index * 4 + ALARM_HOURS_INDEX, alarms[alarm_index][ALARM_HOURS_INDEX]);
-	eeprom_write_c(alarm_index * 4 + ALARM_MINUTES_INDEX, alarms[alarm_index][ALARM_MINUTES_INDEX]);
-	eeprom_write_c(alarm_index * 4 + ALARM_DAYS_INDEX, alarms[alarm_index][ALARM_DAYS_INDEX]);
-	eeprom_write_c(alarm_index * 4 + ALARM_MODE_INDEX, alarms[alarm_index][ALARM_MODE_INDEX]);
-}
-
-void alarm_load(uint8_t alarm_index){
-	//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
-	alarms[alarm_index][ALARM_HOURS_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_HOURS_INDEX);
-	alarms[alarm_index][ALARM_MINUTES_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_MINUTES_INDEX);
-	alarms[alarm_index][ALARM_DAYS_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_DAYS_INDEX);
-	alarms[alarm_index][ALARM_MODE_INDEX] = eeprom_read_c(alarm_index * 4 + ALARM_MODE_INDEX);
-}
 
 /*
  * Validates that the input is a valid time format, and fixes it if possible.  Also converts between 12 and 24 hour format.
@@ -132,18 +122,18 @@ void i2c_clock_init(){
 #ifdef DEBUG
 
 	//Set clock to known time for testing
-	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
-	message[1] = 0x02; //Reset register pointer to 0x02
-	message[2] = 0x56;	//56 seconds
-	message[3] = 0x51;	//51 minutes
-	message[4] = 0x18;	//18 hours
-	message[5] = 0x07;	//7th
-	message[6] = 0x04;	//Thursday
-	message[7] = 0x01;	//January
-	message[8] = 0x12;  //2012
-	serial_write_s("Setting time...");
-	i2c_start_transceiver_with_data(message, 9);
-	serial_write_s("Done\n\r");
+//	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
+//	message[1] = 0x02; //Reset register pointer to 0x02
+//	message[2] = 0x56;	//56 seconds
+//	message[3] = 0x51;	//51 minutes
+//	message[4] = 0x18;	//18 hours
+//	message[5] = 0x07;	//7th
+//	message[6] = 0x04;	//Thursday
+//	message[7] = 0x01;	//January
+//	message[8] = 0x12;  //2012
+//	serial_write_s("Setting time...");
+//	i2c_start_transceiver_with_data(message, 9);
+//	serial_write_s("Done\n\r");
 	
 	//Set alarms to known time for testing
 //	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
@@ -274,7 +264,8 @@ void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset
 	alarms[alarm_index][ALARM_MINUTES_INDEX] = minutes;
 	alarms[alarm_index][ALARM_DAYS_INDEX] = 0x7F; //bit 7 is unused, set it to 0
 	
-	alarm_save(alarm_index);
+	alarm_needs_save = 0x01;
+	alarm_save_counter = 0;
 }
 
 /*
@@ -319,6 +310,34 @@ void refresh_display(uint32_t data1, uint32_t data2){
 }
 
 
+void alarm_save(){
+	//Blank display momentarily to signal save success
+	refresh_display(0x00, 0x00);
+	refresh_display(0x00, 0x00);
+
+	for (uint8_t i = 0; i < ALARM_MAX_COUNT; i++){
+		//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
+		eeprom_write_c(i * 4 + ALARM_HOURS_INDEX, alarms[i][ALARM_HOURS_INDEX]);
+		eeprom_write_c(i * 4 + ALARM_MINUTES_INDEX, alarms[i][ALARM_MINUTES_INDEX]);
+		eeprom_write_c(i * 4 + ALARM_DAYS_INDEX, alarms[i][ALARM_DAYS_INDEX]);
+		eeprom_write_c(i * 4 + ALARM_MODE_INDEX, alarms[i][ALARM_MODE_INDEX]);
+	}
+	
+	alarm_needs_save = 0x00;
+	_delay_ms(100);	
+}
+
+void alarm_load(){
+	for (uint8_t i = 0; i < ALARM_MAX_COUNT; i++){
+		//Each alarm index takes 4 bytes: hours, minutes, days, and mode.
+		alarms[i][ALARM_HOURS_INDEX] = eeprom_read_c(i * 4 + ALARM_HOURS_INDEX);
+		alarms[i][ALARM_MINUTES_INDEX] = eeprom_read_c(i * 4 + ALARM_MINUTES_INDEX);
+		alarms[i][ALARM_DAYS_INDEX] = eeprom_read_c(i * 4 + ALARM_DAYS_INDEX);
+		alarms[i][ALARM_MODE_INDEX] = eeprom_read_c(i * 4 + ALARM_MODE_INDEX);
+	}
+}
+
+
 int main (void){
 	uint8_t analog_pins[1];
 	analog_pins[0] = 0;
@@ -334,9 +353,7 @@ int main (void){
 	button_init();
 	
 	//Load all alarms from EEPROM
-	for (uint8_t alarm_index = 0; alarm_index < ALARM_MAX_COUNT; alarm_index++){
-		alarm_load(alarm_index);
-	}	
+	alarm_load();
 	
 	//The display buffers; each of these are shifted into the registers repeatedly to pulse back and
 	// forth on the LED display.
@@ -360,7 +377,7 @@ int main (void){
 	uint16_t button_debounce_counter = 0x00;
 	uint16_t button_repeat_counter = 0x00;
 	uint16_t light_sensor_refresh_counter = 0x00;
-	
+		
 	while (1){
 		if (button_debounce_counter > 0) button_debounce_counter--;
 		if (button_repeat_counter > 0) button_repeat_counter--;
@@ -417,12 +434,14 @@ int main (void){
 					if (button_state & BUTTON_HOUR){
 						alarms[alarm_index][ALARM_MODE_INDEX]--;
 						if (alarms[alarm_index][ALARM_MODE_INDEX] >= ALARM_MODE_RADIO) alarms[alarm_index][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
-						alarm_save(alarm_index);
+						alarm_needs_save = 0x01;
+						alarm_save_counter = 0;
 					}
 					else if (button_state & BUTTON_MINUTE){
 						alarms[alarm_index][ALARM_MODE_INDEX]++;
 						if (alarms[alarm_index][ALARM_MODE_INDEX] > ALARM_MODE_RADIO) alarms[alarm_index][ALARM_MODE_INDEX] = ALARM_MODE_OFF;
-						alarm_save(alarm_index);
+						alarm_needs_save = 0x01;
+						alarm_save_counter = 0;
 					}
 						
 					digit12 = 0x0A;
@@ -486,9 +505,16 @@ int main (void){
 		
 		shift_format_data(digit12, digit34, flags, &shift_data1, &shift_data2);
 		refresh_display(shift_data1, shift_data2);
+		
+		if (alarm_needs_save && alarm_save_counter >= ALARM_SAVE_DELAY){
+			alarm_save();
+			alarm_save_counter = 0;
+		}
 
 		buffer_refresh_counter++;
 		light_sensor_refresh_counter++;
+		if (alarm_needs_save) alarm_save_counter++;
+		
 	}
 }
 
