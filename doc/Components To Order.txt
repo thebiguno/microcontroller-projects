@@ -4,5 +4,5 @@ HobbyKing:
 Digikey:
 Part			Description			WO Num	WO Price	WJ Num	WK Price
 497-11071-1-ND		3 axis gyro (I2C)		?
-82-149-ND		Desoldering Wick		1	$4.33		1	$4.33
+?			Trimming Capacitor		2			1?
 
