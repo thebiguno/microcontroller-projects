@@ -2,6 +2,7 @@
 #define SHIFT_H
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 #define _BV32(bit) ((uint32_t) 1 << (bit)) 
 
