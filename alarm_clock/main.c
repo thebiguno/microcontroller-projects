@@ -307,6 +307,13 @@ void refresh_display(uint32_t data1, uint32_t data2){
 		
 	shift_latch();
 	
+	if (dimmer_current_max >= 0x10){
+		shift_out(0x00);
+		shift_out(0x00);
+		shift_out(0x00);
+		shift_latch();
+	}
+	
 	dimmer_counter++;
 	if (dimmer_counter >= dimmer_current_max) dimmer_counter = 0;
 }
