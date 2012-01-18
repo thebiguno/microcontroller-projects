@@ -17,17 +17,20 @@ void shift_out(uint8_t data){
 		// do this in one step, but this is more clear, plus speed is 
 		// (probably) not critical here.
 		SHIFT_PORT |= (((data >> (7 - i)) & 0x1) << SHIFT_DATA_PIN);
-		
-		//Pulse clock to shift in
-		SHIFT_PORT &= ~_BV(SHIFT_CLOCK_PIN);
-		SHIFT_PORT |= _BV(SHIFT_CLOCK_PIN);
+
+		//Pulse clock to shift in.  Remember the inverted logic levels...
+		SHIFT_PORT |= _BV(SHIFT_CLOCK_PIN); //Bring the shift register clock input low
+		SHIFT_PORT &= ~_BV(SHIFT_CLOCK_PIN); //Pull the shift register clock input high
 	}
 }
 
 void shift_latch(){
-	//Pulse latch to transfer contents to output
-	SHIFT_PORT &= ~_BV(SHIFT_LATCH_PIN);	
-	SHIFT_PORT |= _BV(SHIFT_LATCH_PIN);
+	//Pulse latch to transfer contents to output.  We use transistors to bump up voltage;
+	// as a side effect they reverse the logic signals too, so we clock lowering edge
+	// which in effect is a rising edge.	
+	SHIFT_PORT &= ~_BV(SHIFT_LATCH_PIN);	//Set pin low, i.e. shift latch input high
+	_delay_us(1);							//We need a slight delay here, or else the shift register only detects the change occasionally.
+	SHIFT_PORT |= _BV(SHIFT_LATCH_PIN);		//Reset shift latch to low; i.e no change on outputs
 }
 
 void shift_format_data(uint8_t hours, uint8_t minutes, uint8_t flags, uint32_t *data1, uint32_t *data2){	
@@ -39,23 +42,25 @@ void shift_format_data(uint8_t hours, uint8_t minutes, uint8_t flags, uint32_t *
 
 	//Here we map between LED pins to shift register outputs, counting down from bit 14: 
 	// LED Pin	Shift Data		Shift Pin
-	// 4		23				3.7
-	// 30		15				2.7
-	// 5		14				2.6
-	// 6		13				2.5
-	// 7		12				2.4
-	// 8		11				2.3
-	// 9		10				2.2
-	// 10		9				2.1
-	// 12		8				2.15
-	// 13		7				1.7
-	// 15		6				1.6
-	// 16		5				1.5
-	// 17		4				1.4
-	// 18		3				1.3
-	// 19		2				1.2
-	// 20		1				1.1
-	// 21		0				1.15
+	// 4 (Auto)	23				3.11
+	// 2 (C1)	17				3.5
+	// 1 (C2)	16				3.4
+	// 30/14(:)	15				2.11
+	// 5 (PM)	14				2.12
+	// 6		13				2.13
+	// 7		12				2.14
+	// 8		11				2.7
+	// 9		10				2.6
+	// 10		9				2.5
+	// 12		8				2.4
+	// 13		7				1.11
+	// 15		6				1.12
+	// 16		5				1.13
+	// 17		4				1.14
+	// 18		3				1.7
+	// 19		2				1.6
+	// 20		1				1.5
+	// 21		0				1.4
 	
 	#define CATHODE_1	_BV32(17)
 	#define CATHODE_2	_BV32(16)
