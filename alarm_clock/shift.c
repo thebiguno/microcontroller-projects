@@ -2,10 +2,14 @@
 
 void shift_init(){
 	//Enable outputs for shift register (clock LED driver)
-	DDRD |= _BV(SHIFT_DATA_PIN) | _BV(SHIFT_CLOCK_PIN) | _BV(SHIFT_LATCH_PIN);
+	SHIFT_DDR |= _BV(SHIFT_DATA_PIN) | _BV(SHIFT_CLOCK_PIN) | _BV(SHIFT_LATCH_PIN);
 }
 
 void shift_out(uint8_t data){
+	//We use transistors to bump up voltage; as a side effect they reverse the logic 
+	// signals too, so we clock lowering edge which in effect is a rising edge.
+
+	data = ~data; //Bitwise invert the data to account for the transistors.
 	for (int i = 0; i < 8; i++){
 		//Clear the data pin first...
 		SHIFT_PORT &= ~_BV(SHIFT_DATA_PIN);

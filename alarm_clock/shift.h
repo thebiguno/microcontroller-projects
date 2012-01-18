@@ -6,6 +6,7 @@
 #define _BV32(bit) ((uint32_t) 1 << (bit)) 
 
 #define SHIFT_PORT					PORTD
+#define SHIFT_DDR					DDRD
 #define SHIFT_DATA_PIN				PIND5
 #define SHIFT_CLOCK_PIN				PIND6
 #define SHIFT_LATCH_PIN				PIND7
