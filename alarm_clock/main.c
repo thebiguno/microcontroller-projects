@@ -346,7 +346,7 @@ void alarm_load(){
 
 int main (void){
 	uint8_t analog_pins[1];
-	analog_pins[0] = 0;
+	analog_pins[0] = 1;
 
 #ifdef DEBUG
 	//Init hardware
