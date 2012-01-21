@@ -31,7 +31,7 @@
 
 #define TIME_FORMAT_12				0x00
 #define TIME_FORMAT_24				0x01
-#define TIME_FORMAT					TIME_FORMAT_12
+#define TIME_FORMAT					TIME_FORMAT_24
 
 #define ALARM_MAX_COUNT				4
 
