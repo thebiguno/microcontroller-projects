@@ -120,24 +120,25 @@ void i2c_clock_init(){
 	message[1] = 0x00;//Control Status 1
 	message[2] = 0x00;//Control Status 2
 	i2c_start_transceiver_with_data(message, 3);
-	
-#ifdef DEBUG
 
+#ifdef DEBUG
+/*	
 	//Set clock to known time for testing
-//	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
-//	message[1] = 0x02; //Reset register pointer to 0x02
-//	message[2] = 0x56;	//56 seconds
-//	message[3] = 0x51;	//51 minutes
-//	message[4] = 0x18;	//18 hours
-//	message[5] = 0x07;	//7th
-//	message[6] = 0x04;	//Thursday
-//	message[7] = 0x01;	//January
-//	message[8] = 0x12;  //2012
-//	serial_write_s("Setting time...");
-//	i2c_start_transceiver_with_data(message, 9);
-//	serial_write_s("Done\n\r");
-	
+	message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
+	message[1] = 0x02; //Reset register pointer to 0x02
+	message[2] = 0x56;	//56 seconds
+	message[3] = 0x51;	//51 minutes
+	message[4] = 0x18;	//18 hours
+	message[5] = 0x07;	//7th
+	message[6] = 0x04;	//Thursday
+	message[7] = 0x01;	//January
+	message[8] = 0x12;  //2012
+	serial_write_s("Setting time...");
+	i2c_start_transceiver_with_data(message, 9);
+	serial_write_s("Done\n\r");
+*/	
 	//Set alarms to known time for testing
+/*	
 //	alarms[0][ALARM_MINUTES_INDEX] = 0x52;
 //	alarms[0][ALARM_HOURS_INDEX] = 0x18;
 //	alarms[0][ALARM_MODE_INDEX] = ALARM_MODE_BUZZER;
@@ -145,6 +146,7 @@ void i2c_clock_init(){
 //	alarms[1][ALARM_MINUTES_INDEX] = 0x53;
 //	alarms[1][ALARM_HOURS_INDEX] = 0x18;
 //	alarms[1][ALARM_MODE_INDEX] = ALARM_MODE_RADIO;
+*/
 #endif
 }
 
@@ -178,6 +180,17 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 	
 	*hours = new_hours;
 	*minutes = new_minutes;
+/*	
+#ifdef DEBUG
+	serial_write_s("time: ");
+	serial_write_s(itoa(*hours, temp, 16));
+	serial_write_s(":");
+	serial_write_s(itoa(*minutes, temp, 16));
+	serial_write_s(":");
+	serial_write_s(itoa(message[2], temp, 16));
+	serial_write_s("\n\r");
+#endif	
+*/
 }
 
 /*
