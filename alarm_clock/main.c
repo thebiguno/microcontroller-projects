@@ -224,7 +224,7 @@ void adjust_dimmer(){
 	// room light, and 0x80 is bright spotlight.  From that, we can estimate the following
 	// dimmer curve; the exact values will need to be adjusted based on LED panel model,
 	// driver voltage, what resistors are used in LED circuit, etc.
-	if (light_sensor_pin <= 0x40) dimmer_current_max = 0x20;	//Lowest level
+	if (light_sensor_pin <= 0x40) dimmer_current_max = 0x20; //Lowest level is 0x20
 	else if (light_sensor_pin <= 0x48) dimmer_current_max = 0x10;
 	else if (light_sensor_pin <= 0x50) dimmer_current_max = 0x08;
 	else if (light_sensor_pin <= 0x58) dimmer_current_max = 0x04;
@@ -232,13 +232,17 @@ void adjust_dimmer(){
 	else if (light_sensor_pin <= 0x68) dimmer_current_max = 0x01;
 	else dimmer_current_max = 0x00;
 	
-//#ifdef DEBUG
-//	serial_write_s("light_sensor: ");
-//	serial_write_s(itoa(light_sensor_pin, temp, 16));
-//	serial_write_s("; dimmer_current_max: ");
-//	serial_write_s(itoa(dimmer_current_max, temp, 16));
-//	serial_write_s("\n\r");
-//#endif	
+#ifdef DEBUG	
+//	dimmer_current_max = 0;
+#endif
+	
+#ifdef DEBUG
+	serial_write_s("light_sensor: ");
+	serial_write_s(itoa(light_sensor_pin, temp, 16));
+	serial_write_s("; dimmer_current_max: ");
+	serial_write_s(itoa(dimmer_current_max, temp, 16));
+	serial_write_s("\n\r");
+#endif	
 }
 
 /*
