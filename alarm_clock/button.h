@@ -4,12 +4,12 @@
 #include <avr/io.h>
 
 #define BUTTON_PORT					PORTB
-#define BUTTON_TIME_PIN				PIN0
-#define BUTTON_ALARM_PIN			PIN1
-#define BUTTON_SLEEP_PIN			PIN2
-#define BUTTON_HOUR_PIN				PIN3
-#define BUTTON_MINUTE_PIN			PIN4
-#define BUTTON_SNOOZE_PIN			PIN5
+#define BUTTON_ALARM_PIN			PINB0
+#define BUTTON_TIME_PIN				PINB1
+#define BUTTON_MINUTE_PIN			PINB2
+#define BUTTON_HOUR_PIN				PINB3
+#define BUTTON_SLEEP_PIN			PINB4
+#define BUTTON_SNOOZE_PIN			PINB5
 
 //Flags in the return value of button_read()
 #define BUTTON_TIME					_BV(0)
