@@ -98,12 +98,14 @@ void format_time(uint8_t *hours, uint8_t *minutes, uint8_t *flags, uint8_t time_
 }
 
 void execute_alarm(uint8_t alarm_index){
+#ifdef DEBUG
 	serial_write_s("Executing alarm #");
 	serial_write_s(itoa(alarm_index, temp, 16));
 	serial_write_s(", mode = ");
 	if (alarms[alarm_index][ALARM_MODE_INDEX] == ALARM_MODE_BUZZER) serial_write_s("buzzer");
 	else serial_write_s("radio");
 	serial_write_s("\n\r");
+#endif
 }
 
 /*
