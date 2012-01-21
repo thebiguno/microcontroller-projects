@@ -20,6 +20,7 @@ void shift_out(uint8_t data){
 
 		//Pulse clock to shift in.  Remember the inverted logic levels...
 		SHIFT_PORT |= _BV(SHIFT_CLOCK_PIN); //Bring the shift register clock input low
+		_delay_us(1);
 		SHIFT_PORT &= ~_BV(SHIFT_CLOCK_PIN); //Pull the shift register clock input high
 	}
 }
