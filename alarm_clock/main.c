@@ -345,6 +345,9 @@ void alarm_load(){
 
 
 int main (void){
+	//Wait for a second to let power stabilize...
+	_delay_ms(1000);
+
 	uint8_t analog_pins[1];
 	analog_pins[0] = 1;
 
