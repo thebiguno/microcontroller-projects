@@ -325,22 +325,18 @@ void refresh_display(uint32_t data1, uint32_t data2){
 			shift_out(data2 & 0xFF);
 			cathode = 0;
 		}
-	}
-	else {
-		shift_out(0x00);
-		shift_out(0x00);
-		shift_out(0x00);
-	}
 		
-	shift_latch();
-	
-	if (dimmer_current_max >= 0x08){
-		shift_out(0x00);
-		shift_out(0x00);
-		shift_out(0x00);
 		shift_latch();
 	}
-	
+
+	if (dimmer_counter != 0 || dimmer_current_max >= 0x08) {
+		shift_out(0x00);
+		shift_out(0x00);
+		shift_out(0x00);
+		
+		shift_latch();
+	}
+
 	dimmer_counter++;
 	if (dimmer_counter >= dimmer_current_max) dimmer_counter = 0;
 }
@@ -380,8 +376,8 @@ int main (void){
 	uint8_t analog_pins[0x01];
 	analog_pins[0x00] = 0x01;
 
-#ifdef DEBUG
 	//Init hardware
+#ifdef DEBUG
 	serial_init_b(9600);
 #endif
 	i2c_master_init(400);
