@@ -151,7 +151,8 @@ void i2c_clock_init(){
 }
 
 /*
- * Reads the current time from RTC; if an alarm condition is reached, execute alarm.
+ * Reads the current time from RTC; if an alarm condition is reached, execute alarm.  Also
+ * checks if it is time to do the clock skew adjustments
  */
 void get_time(uint8_t *hours, uint8_t *minutes){
 	//Reset the register to reading time
@@ -177,6 +178,27 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 			execute_alarm(i);
 		}
 	}
+	
+	//Do clock adjustment at 3:05 AM.  Why this time?  Why not!
+	if (3 == new_hours 
+			&& 3 != *hours
+			&& 5 == new_minutes 
+			&& 5 != *minutes){
+		
+		//Wait for X millis to slow down a fast clock.  If we needed to speed up a slow
+		// clock we would have to do something else, but as I am running my clock
+		// without any caps, it should always be fast.
+		_delay_ms(3000);
+			
+		//Set clock again to eliminate the drift
+		message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
+		message[1] = 0x02; //Reset register pointer to 0x02
+		message[2] = 0x0;	//Reset seconds
+		message[3] = *minutes;
+		message[4] = *hours;
+		i2c_start_transceiver_with_data(message, 5);
+	}
+
 	
 	*hours = new_hours;
 	*minutes = new_minutes;
