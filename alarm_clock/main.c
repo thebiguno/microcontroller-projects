@@ -20,9 +20,9 @@
 // based on the clock speed.
 #define DIMMER_MAX					0
 #define BUFFER_REFRESH				256
-#define BUTTON_DEBOUNCE				8
-#define BUTTON_REPEAT				512
-#define LIGHT_SENSOR_REFRESH		2048
+#define BUTTON_DEBOUNCE				32
+#define BUTTON_REPEAT				768
+#define LIGHT_SENSOR_REFRESH		16368
 #define ALARM_SAVE_DELAY			16368
 
 #define MODE_DEFAULT				0x00
@@ -31,7 +31,7 @@
 
 #define TIME_FORMAT_12				0x00
 #define TIME_FORMAT_24				0x01
-#define TIME_FORMAT					TIME_FORMAT_24
+#define TIME_FORMAT					TIME_FORMAT_12
 
 #define ALARM_MAX_COUNT				4
 
@@ -257,15 +257,11 @@ void get_alarm(uint8_t alarm_index, uint8_t *hours, uint8_t *minutes){
 void adjust_dimmer(){
 	uint8_t light_sensor_pin = analog_read_p(0);
 	
-	//From experimentation, we find that 0x40 is about pitch black, 0x70 is average
+	//From experimentation, we find that 0x50 is about pitch black, 0x70 is average
 	// room light, and 0x80 is bright spotlight.  From that, we can estimate the following
 	// dimmer curve; the exact values will need to be adjusted based on LED panel model,
 	// driver voltage, what resistors are used in LED circuit, etc.
-	if (light_sensor_pin <= 0x48) dimmer_current_max = 0x10;
-	else if (light_sensor_pin <= 0x50) dimmer_current_max = 0x08;
-	else if (light_sensor_pin <= 0x58) dimmer_current_max = 0x04;
-	else if (light_sensor_pin <= 0x60) dimmer_current_max = 0x02;
-	else if (light_sensor_pin <= 0x68) dimmer_current_max = 0x01;
+	if (light_sensor_pin <= 0x50) dimmer_current_max = 0x10;
 	else dimmer_current_max = 0x00;
 	
 #ifdef DEBUG	
@@ -363,7 +359,6 @@ void alarm_save(){
 		eeprom_write_c(i * 4 + ALARM_MODE_INDEX, alarms[i][ALARM_MODE_INDEX]);
 	}
 	
-	alarm_needs_save = 0x00;
 	_delay_ms(100);	
 }
 
@@ -379,11 +374,11 @@ void alarm_load(){
 
 
 int main (void){
-	//Wait for a second to let power stabilize...
-	_delay_ms(1000);
+	//Wait for a bit to let power stabilize...
+	_delay_ms(500);
 
-	uint8_t analog_pins[1];
-	analog_pins[0] = 1;
+	uint8_t analog_pins[0x01];
+	analog_pins[0x00] = 0x01;
 
 #ifdef DEBUG
 	//Init hardware
@@ -400,8 +395,8 @@ int main (void){
 	
 	//The display buffers; each of these are shifted into the registers repeatedly to pulse back and
 	// forth on the LED display.
-	uint32_t shift_data1 = 0;
-	uint32_t shift_data2 = 0;
+	uint32_t shift_data1 = 0x00;
+	uint32_t shift_data2 = 0x00;
 
 	//Variables for LED digits 1/2 and 3/4, and other display flags (PM, colon, etc).  Mostly 
 	// these are for display of hours / minutes, but that is not the only use (e.g. radio 
@@ -531,29 +526,37 @@ int main (void){
 				else if (button_state & BUTTON_MINUTE){
 					set_time(0x00, 0x01);
 				}
+			}			
+		}
+		
+		//Refresh the buffer.  If Alarm is not pressed, we should also update the time.
+		if (buffer_refresh_counter >= BUFFER_REFRESH){
+			if (!(button_state & BUTTON_ALARM)){
+				get_time(&digit12, &digit34);
+				format_time(&digit12, &digit34, &flags, TIME_FORMAT);
 			}
+			buffer_refresh_counter = 0x00;
+			shift_format_data(digit12, digit34, flags, &shift_data1, &shift_data2);
 		}
 		
-		//If Alarm is not pressed, we can show time
-		if (buffer_refresh_counter >= BUFFER_REFRESH && !(button_state & BUTTON_ALARM)){
-			get_time(&digit12, &digit34);
-			format_time(&digit12, &digit34, &flags, TIME_FORMAT);		
-			buffer_refresh_counter = 0;
-		}
-		
+		//Refresh the light sensor once in a while...
 		if (light_sensor_refresh_counter >= LIGHT_SENSOR_REFRESH){
 			adjust_dimmer();
-			light_sensor_refresh_counter = 0;
+			light_sensor_refresh_counter = 0x00;
 		}
 		
-		shift_format_data(digit12, digit34, flags, &shift_data1, &shift_data2);
+		//Refresh display.  This should happen every loop, as we need to constantly switch
+		// the display (stupid temporal duplexing...)
 		refresh_display(shift_data1, shift_data2);
 		
+		//Save the current alarms to EEPROM 
 		if (alarm_needs_save && alarm_save_counter >= ALARM_SAVE_DELAY){
 			alarm_save();
-			alarm_save_counter = 0;
+			alarm_save_counter = 0x00;
+			alarm_needs_save = 0x00;
 		}
 
+		//Increment counters
 		buffer_refresh_counter++;
 		light_sensor_refresh_counter++;
 		if (alarm_needs_save) alarm_save_counter++;
