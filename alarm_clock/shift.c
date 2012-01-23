@@ -93,10 +93,10 @@ void shift_format_data(uint8_t hours, uint8_t minutes, uint8_t flags, uint32_t *
 	
 	#define COLON_1	_BV32(LP14)	//If we use normal _BV() it assumes unsigned, and fills in all 1's
 	#define COLON_2	0
-	#define PM_1	0
-	#define PM_2	_BV32(LP4)
-	#define AUTO_1	_BV32(LP5)
-	#define AUTO_2	0
+	#define AUTO_1	0
+	#define AUTO_2	_BV32(LP4)
+	#define PM_1	_BV32(LP5)
+	#define PM_2	0
 
 	//    HourMinNumber_Segment_Cathode
 	// H2: A=(1,7), B=(2,6), C=(2,9), D=(1,8), E=(2,8), G=(2,7) (F is not implemented, so 0, 4, 5, 6, 8, 9 are not possible)
