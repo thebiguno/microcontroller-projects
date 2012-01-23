@@ -261,11 +261,11 @@ void adjust_dimmer(){
 	// room light, and 0x80 is bright spotlight.  From that, we can estimate the following
 	// dimmer curve; the exact values will need to be adjusted based on LED panel model,
 	// driver voltage, what resistors are used in LED circuit, etc.
-	if (light_sensor_pin <= 0x50) dimmer_current_max = 0x10;
+	if (light_sensor_pin <= 0x40) dimmer_current_max = 0x20;
 	else dimmer_current_max = 0x00;
 	
 #ifdef DEBUG	
-//	dimmer_current_max = 0;
+//	dimmer_current_max = 0x00;
 #endif
 	
 #ifdef DEBUG
@@ -382,7 +382,7 @@ int main (void){
 #endif
 	i2c_master_init(400);
 	i2c_clock_init();
-	analog_init(analog_pins, 1, ANALOG_AREF);
+	analog_init(analog_pins, 0x01, ANALOG_AREF);
 	shift_init();
 	button_init();
 	
