@@ -171,31 +171,33 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 		//If the newly read time matches an alarm and the last time does 
 		// not (i.e. it was just executed), then execute alarm
 		if (alarms[i][ALARM_HOURS_INDEX] == new_hours 
-				&& alarms[i][ALARM_HOURS_INDEX] != *hours
 				&& alarms[i][ALARM_MINUTES_INDEX] == new_minutes 
-				&& alarms[i][ALARM_MINUTES_INDEX] != *minutes
+				&& (alarms[i][ALARM_HOURS_INDEX] != *hours
+					|| alarms[i][ALARM_MINUTES_INDEX] != *minutes)
 				&& alarms[i][ALARM_MODE_INDEX] != ALARM_MODE_OFF){
 			execute_alarm(i);
 		}
 	}
 	
 	//Do clock adjustment at 3:05 AM.  Why this time?  Why not!
-	if (3 == new_hours 
-			&& 3 != *hours
-			&& 5 == new_minutes 
-			&& 5 != *minutes){
-		
+	if (0x03 == new_hours 
+			&& 0x05 == new_minutes 
+			&& 0x04 == *minutes){	//Execute this on the click from 4 to 5
+		//Blank display momentarily
+		refresh_display(0x00, 0x00);
+		refresh_display(0x00, 0x00);
+
 		//Wait for X millis to slow down a fast clock.  If we needed to speed up a slow
 		// clock we would have to do something else, but as I am running my clock
 		// without any caps, it should always be fast.
-		_delay_ms(3000);
+		_delay_ms(2000);
 			
 		//Set clock again to eliminate the drift
 		message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
 		message[1] = 0x02; //Reset register pointer to 0x02
 		message[2] = 0x0;	//Reset seconds
-		message[3] = *minutes;
-		message[4] = *hours;
+		message[3] = 0x05;	//Minutes
+		message[4] = 0x03;	//Hours
 		i2c_start_transceiver_with_data(message, 5);
 	}
 
