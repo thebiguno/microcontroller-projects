@@ -19,7 +19,7 @@
 // in conjunction with counters to define how often events happen.  They may need to change
 // based on the clock speed.
 #define DIMMER_MAX					0
-#define BUFFER_REFRESH				256
+#define BUFFER_REFRESH				128
 #define BUTTON_DEBOUNCE				32
 #define BUTTON_REPEAT				768
 #define LIGHT_SENSOR_REFRESH		16368
