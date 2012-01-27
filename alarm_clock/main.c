@@ -230,7 +230,7 @@ void get_time(uint8_t *hours, uint8_t *minutes){
 		//Wait for X millis to slow down a fast clock.  If we needed to speed up a slow
 		// clock we would have to do something else, but as I am running my clock
 		// without any caps, it should always be fast.
-		_delay_ms(2000);
+		_delay_ms(2500);
 			
 		//Set clock again to eliminate the drift
 		message[0] = I2C_ADDRESS << 1 | I2C_WRITE;
