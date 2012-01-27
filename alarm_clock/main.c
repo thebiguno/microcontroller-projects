@@ -108,6 +108,46 @@ void execute_alarm(uint8_t alarm_index){
 #endif
 }
 
+
+/*
+ * Shifts out the display buffers to the shift registers; alternates between each set
+ * of display data to keep all segments displayed.
+ */
+void refresh_display(uint32_t data1, uint32_t data2){
+	static uint8_t cathode = 0;
+	static uint8_t dimmer_counter = 0;
+	
+	if (dimmer_counter == 0){
+		if (cathode == 0){
+			shift_out((data1 >> 16) & 0xFF);
+			shift_out((data1 >> 8) & 0xFF);
+			shift_out(data1 & 0xFF);
+			cathode = 1;
+		}
+		else {
+			shift_out((data2 >> 16) & 0xFF);
+			shift_out((data2 >> 8) & 0xFF);
+			shift_out(data2 & 0xFF);
+			cathode = 0;
+		}
+		
+		shift_latch();
+	}
+
+	if (dimmer_counter != 0 || dimmer_current_max >= 0x08) {
+		shift_out(0x00);
+		shift_out(0x00);
+		shift_out(0x00);
+		
+		shift_latch();
+	}
+
+	dimmer_counter++;
+	if (dimmer_counter >= dimmer_current_max) dimmer_counter = 0;
+}
+
+
+
 /*
  * Sets up the RTC with desired values.
  */
@@ -305,44 +345,6 @@ void set_alarm(uint8_t alarm_index, uint8_t hours_offset, uint8_t minutes_offset
 	alarm_needs_save = 0x01;
 	alarm_save_counter = 0;
 }
-
-/*
- * Shifts out the display buffers to the shift registers; alternates between each set
- * of display data to keep all segments displayed.
- */
-void refresh_display(uint32_t data1, uint32_t data2){
-	static uint8_t cathode = 0;
-	static uint8_t dimmer_counter = 0;
-	
-	if (dimmer_counter == 0){
-		if (cathode == 0){
-			shift_out((data1 >> 16) & 0xFF);
-			shift_out((data1 >> 8) & 0xFF);
-			shift_out(data1 & 0xFF);
-			cathode = 1;
-		}
-		else {
-			shift_out((data2 >> 16) & 0xFF);
-			shift_out((data2 >> 8) & 0xFF);
-			shift_out(data2 & 0xFF);
-			cathode = 0;
-		}
-		
-		shift_latch();
-	}
-
-	if (dimmer_counter != 0 || dimmer_current_max >= 0x08) {
-		shift_out(0x00);
-		shift_out(0x00);
-		shift_out(0x00);
-		
-		shift_latch();
-	}
-
-	dimmer_counter++;
-	if (dimmer_counter >= dimmer_current_max) dimmer_counter = 0;
-}
-
 
 void alarm_save(){
 	//Blank display momentarily to signal save success
