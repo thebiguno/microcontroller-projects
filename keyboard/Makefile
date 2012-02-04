@@ -11,4 +11,7 @@ SOURCES=main.c lib/serial/serial.c lib/serial/serial_async_rx.c lib/serial/seria
 #CDEFS+=-DSERIAL_BUFFER_SIZE=256 -DBAUD=$(BAUD)
 AVRDUDE_PROGRAMMER=usbtiny
 
+LFUSE=0xF7
+HFUSE=0xD1
+
 include ../../build/targets.mk
