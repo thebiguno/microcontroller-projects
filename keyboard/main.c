@@ -37,8 +37,14 @@ uint16_t read_columns(){
 	return result;
 }
 
+void send_key(row, column){
+	
+}
+
 int main (void){
+#ifdef DEBUG
 	serial_init_b(9600);
+#endif
 	
 	//Set rows into low impedence (write) mode
 	DDRA = 0xFF;
@@ -64,6 +70,8 @@ int main (void){
 		if (columns != 0x00){
 			for (uint8_t i = 0; i < 16; i++){
 				if (_BV(i) & columns){
+					send_key(row, i);
+#ifdef DEBUG				
 					serial_write_s("Scan Code:\t");
 					serial_write_s(itoa(row, temp, 16));
 					serial_write_s("\t");
@@ -71,6 +79,7 @@ int main (void){
 //					serial_write_s(itoa(columns, temp, 16));
 					serial_write_s("\n\r");
 					_delay_ms(100);
+#endif
 				}
 			}
 		}
