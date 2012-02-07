@@ -1,3 +1,6 @@
+#ifndef HID_H
+#define HID_H
+
 // report descriptor constants
 #define REPORT_SIZE     0x75
 #define REPORT_COUNT    0x95
@@ -141,6 +144,16 @@
 #define KEY_POWER	0x66
 #define PAD_EQUAL	0x67
 
+//Don't send these, just use them for lookups
+#define KEY_LCTL	0xE0
+#define KEY_LSHFT	0xE1
+#define KEY_LALT	0xE2
+//Win, Apple, Meta
+#define KEY_LGUI	0xE3
+#define KEY_RCTL	0xE4
+#define KEY_RSHFT	0xE5
+#define KEY_RALT	0xE6
+#define KEY_RGUI	0xE7
 
 #define KEY_MUTE	0x7F
 #define KEY_VOLUP	0x80
@@ -152,3 +165,5 @@
 #define LED_SCROLL  0x04
 #define LED_COMPOSE 0x08
 #define LED_KANA    0x10
+
+#endif
