@@ -22,6 +22,7 @@
 
 #include "usbdrv/usbdrv.h"
 #include "hid.h"
+#include "qwerty.h"
 
 #include "lib/serial/serial.h"
 
@@ -68,10 +69,10 @@ PROGMEM char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] = { /*
     REPORT_COUNT   , 0x06, // 6x
     REPORT_SIZE    , 0x08, // bytes
     LOGICAL_MINIMUM, 0x00,
-    LOGICAL_MAXIMUM, 0xFF, // maximum key code
+    LOGICAL_MAXIMUM, 0x7F,
     USAGE_PAGE     , 0x07, // keycodes
     USAGE_MINIMUM  , 0x00, // Reserved (no event indicated)
-    USAGE_MAXIMUM  , 0xe7, // Keyboard Right GUI
+    USAGE_MAXIMUM  , 0x7F, // Keyboard Right GUI
     INPUT          , FLAG_DATA | FLAG_ARR | FLAG_ABS,
     // 16 -> 62
 
@@ -79,7 +80,7 @@ PROGMEM char usbHidReportDescriptor[USB_CFG_HID_REPORT_DESCRIPTOR_LENGTH] = { /*
 	// 1 -> 63
 };
 
-static uchar reportBuffer[8];
+static uchar report_buffer[8];
 static uchar idleRate;   		/* repeat rate in 4ms units */
 static uchar protocolVer=1;      /* 0 is the boot protocol, 1 is report protocol */
 uchar ledState = 0;   // bit0: numlock, bit1: caps lock, bit2: scroll lock, bit3: compose, bit4: kana, bit5..7 reserved
@@ -103,12 +104,12 @@ usbMsgLen_t usbFunctionSetup(uchar data[8]) {
                 // we only have one report type, so don't look at wValue
                 // TODO when the consumer devices report is added, return a different report
 //				if(rq->wValue.bytes[1] == 0x02) {
-//					usbMsgPtr = (void *)&reportBuffer2;
-//					return sizeof(reportBuffer2);
+//					usbMsgPtr = (void *)&report_buffer2;
+//					return sizeof(report_buffer2);
 //					return 0;
 //				} else {
-					usbMsgPtr = reportBuffer;
-					return sizeof(reportBuffer);
+					usbMsgPtr = report_buffer;
+					return sizeof(report_buffer);
 //				}
             case USBRQ_HID_SET_REPORT:
 				if (rq->wLength.word == 1) {
@@ -182,9 +183,9 @@ uint16_t read_columns(){
  * takes care of repeat rates, etc.
  */
 void update_report(){
-	//Init rebortBuffer back to 0
+	//Init rebortBuffer back aato 0
 	for (uint8_t i = 0; i < 8; i++){
-		reportBuffer[i] = 0x00;
+		report_buffer[i] = 0x00;
 	}
 
 	uint8_t buffer_index = 2;
@@ -192,21 +193,21 @@ void update_report(){
 
 	for (uint8_t row = 0; row < 8; row++){	
 		set_row(row);
-		//_delay_ms(1); TODO I don't think we need this anymore... if it works, delete it.
 		columns = read_columns();
 	
 		if (columns != 0x00){
 			for (uint8_t col = 0; col < 16; col++){
 				if (_BV(col) & columns){
-					reportBuffer[2] = 0x04;	//Hard coded to A; TODO Remove
-/*
+//					report_buffer[2] = 0x04;	//Hard coded to A; TODO Remove
 					uchar key = 0;
 					uchar mod = 0;
 
-					lookup(row, col, &key, &mod);
-					if (key != 0) reportBuffer[buffer_index++] = key;
-					if (modifier_flags != 0) reportBuffer[0] |= modifier_flags;
-*/
+					lookup_qwerty(row, col, &key, &mod);
+					if (key != 0) report_buffer[buffer_index++] = key;
+					if (mod != 0) report_buffer[0] |= mod;
+					
+					//At most we have 6 keys (byte 0 in report_buffer is mods; 1 is unused; 2..7 are keys)
+					if (buffer_index >= 8) return;
 				}
 			}
 		}	
@@ -233,7 +234,6 @@ int main (void){
 #endif
 	
 	keyboard_init();
-	//TODO Examples show some sort of USB reset here; is this needed?
 	usbInit();
 	
     usbDeviceDisconnect();  /* enforce re-enumeration, do this while interrupts are disabled! */
@@ -246,8 +246,10 @@ int main (void){
 	
 	sei();
 
+#ifdef DEBUG
 	//Used as itoa destination
 	char temp[32];
+#endif
 
 	//Main program loop
 	while (1){
@@ -256,6 +258,6 @@ int main (void){
 		usbPoll();
 		
 		update_report();
-		usbSetInterrupt(reportBuffer, sizeof(reportBuffer));
+		usbSetInterrupt(report_buffer, sizeof(report_buffer));
 	}
 }
