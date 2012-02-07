@@ -9,7 +9,7 @@
  *		PORTD: Misc I/O
  *			D0, D1:	Serial Breakout (Rx Tx)
  *			D2, D3:	USB Data D+ / D- (via level converters)
- *			D4..D6:	Shift Register Outputs for LEDs
+ *			D4..D6:	Outputs for LEDs
  *			D7: Unused?
  */
 
@@ -203,10 +203,11 @@ void update_report(){
 					uchar mod = 0;
 
 					lookup_qwerty(row, col, &key, &mod);
-					if (key != 0) report_buffer[buffer_index++] = key;
+					if (key != 0) report_buffer[buffer_index] = key;
 					if (mod != 0) report_buffer[0] |= mod;
 					
 					//At most we have 6 keys (byte 0 in report_buffer is mods; 1 is unused; 2..7 are keys)
+					buffer_index++;
 					if (buffer_index >= 8) return;
 				}
 			}
@@ -223,6 +224,10 @@ void keyboard_init(){
 	DDRC = 0x00;
 	PORTB = 0xFF;
 	PORTC = 0xFF;
+	
+	//LED Outputs
+//	DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6);
+//	PORTD |= _BV(PD4) | _BV(PD5) | _BV(PD6);
 }
 
 int main (void){
