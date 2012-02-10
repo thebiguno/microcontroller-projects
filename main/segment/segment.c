@@ -2,30 +2,6 @@
 
 #include <avr/sfr_defs.h>
 
-// static uint8_t lookup[32] = {
-// 	// common anode
-// 	// high = off; so the lookup is defined by what segments are off, not what segments are on
-// 	SEG_G,											// 0
-// 	SEG_A + SEG_D + SEG_E + SEG_F + SEG_G,			// 1
-// 	SEG_C + SEG_C,									// 2
-// 	SEG_E + SEG_F,									// 3
-// 	SEG_A + SEG_D + SEG_E,							// 4
-// 	SEG_B + SEG_E,									// 5
-// 	SEG_B,											// 6
-// 	SEG_D + SEG_E + SEG_F + SEG_G,					// 7
-// 	0x00,											// 8
-// 	SEG_D + SEG_E,									// 9
-// 	SEG_D,											// A
-// 	SEG_A + SEG_B,									// b
-// 	SEG_B + SEG_C + SEG_G,							// C
-// 	SEG_A + SEG_F + SEG_G,							// d
-// 	SEG_B + SEG_C,									// E
-// 	SEG_B + SEG_C + SEG_D,							// F
-// 	SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F,	// dash
-// 	SEG_A + SEG_B + SEG_C + SEG_E + SEG_F + SEG_G,	// underscore
-// 	0xFF											// all off
-// };
-
 static volatile uint8_t *_data_port = 0;
 static volatile uint8_t *_clock_port = 0;
 static volatile uint8_t *_latch_port = 0;
