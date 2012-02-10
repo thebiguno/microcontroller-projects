@@ -1,0 +1,126 @@
+SR1  1 (B)		-> Seg  5 (E)
+SR1  2 (C)		-> Seg  3 (D)
+SR1  3 (D)		-> Seg 11 (F)
+SR1  4 (E)		-> Seg 13 ()
+SR1  5 (F)		-> Seg  ()
+SR1  6 (G)		-> Seg  ()
+SR1  7 (H)		-> Seg  ()
+SR1  8 GND		-> GND
+SR1  9 (H')		-> SR2 14 (DATA)
+SR1 10 (/CLR)	-> VCC
+SR1 11 (CLOCK)	-> AVR (PB1)
+SR1 12 (LATCH)	-> AVR (PB2)
+SR1 13 (/OE)	-> GND
+SR1 14 (DATA)	-> AVR (PB0)
+SR1 15 (A)		-> Seg ()
+SR1 16 (VCC)	-> VCC
+
+SR2  1 (B)		-> Seg (DIG1)
+SR2  2 (C)		-> Seg (DIG2)
+SR2  3 (D)		-> Seg (DIG3)
+SR2  4 (E)		-> Seg (DIG3)
+SR2  5 (F)		-> Seg  (L1L2)
+SR2  6 (G)		-> Seg  (L3)
+SR2  7 (H)		-> NC
+SR2  8 GND		-> GND
+SR2  9 (H')		-> GND
+SR2 10 (/CLR)	-> VCC
+SR2 11 (CLOCK)	-> AVR   (PB1)
+SR2 12 (LATCH)	-> AVR   (PB2)
+SR2 13 (/OE)	-> GND
+SR2 14 (DATA)	-> SR1 9 (H')
+SR2 15 (A)		-> NC
+SR2 16 (VCC)	-> VCC
+
+Seg  1 (DIG1)
+Seg  2 (DIG2)
+Seg  3 (D)
+Seg  4 (L1L2)
+Seg  5 (E)
+Seg  6 (DIG3)
+Seg  7 (DP)
+Seg  8 (DIG4)
+Seg  9 (L3 A)	-> GND
+Seg 10 (L3)
+Seg 11 (F)
+Seg 12 (L1L2 A)	-> GND
+Seg 13 (C)
+Seg 14 (A)
+Seg 15 (G)
+Seg 16 (B)
+
+SR3  1 (B)		-> Mat  6 (G2)
+SR3  2 (C)		-> Mat  7 (G3)
+SR3  3 (D)		-> Mat  8 (G4)
+SR3  4 (E)		-> Mat  9 (G5)
+SR3  5 (F)		-> Mat 10 (G6)
+SR3  6 (G)		-> Mat 11 (G7)
+SR3  7 (H)		-> Mat 12 (G8)
+SR3  8 GND		-> GND
+SR3  9 (H')		-> SR4 14 (DATA)
+SR3 10 (/CLR)	-> VCC
+SR3 11 (CLOCK)	-> AVR    (PB5)
+SR3 12 (LATCH)	-> AVR    (PB6)
+SR3 13 (/OE)	-> GND
+SR3 14 (DATA)	-> AVR    (PB4)
+SR3 15 (A)		-> Mat  5 (G1)
+SR3 16 (VCC)	-> VCC
+
+SR4  1 (B)		-> Mat 19 (R2)
+SR4  2 (C)		-> Mat 18 (R3)
+SR4  3 (D)		-> Mat 17 (R4)
+SR4  4 (E)		-> Mat 16 (R5)
+SR4  5 (F)		-> Mat 15 (R6)
+SR4  6 (G)		-> Mat 16 (R7)
+SR4  7 (H)		-> Mat 13 (R8)
+SR4  8 GND		-> GND
+SR4  9 (H')		-> SR5 14 (DATA)
+SR4 10 (/CLR)	-> VCC
+SR4 11 (CLOCK)	-> AVR    (PB5)
+SR4 12 (LATCH)	-> AVR    (PB6)
+SR4 13 (/OE)	-> GND
+SR4 14 (DATA)	-> SR3  9 (H')
+SR4 15 (A)		-> Mat 10 (R1)
+SR4 16 (VCC)	-> VCC
+
+SR5  1 (B)		-> Mat  2 (ROW2)
+SR5  2 (C)		-> Mat  3 (ROW3)
+SR5  3 (D)		-> Mat  4 (ROW4)
+SR5  4 (E)		-> Mat 21 (ROW5)
+SR5  5 (F)		-> Mat 22 (ROW6)
+SR5  6 (G)		-> Mat 23 (ROW7)
+SR5  7 (H)		-> Mat 24 (ROW8)
+SR5  8 GND		-> GND
+SR5  9 (H')		-> GND
+SR5 10 (/CLR)	-> VCC
+SR5 11 (CLOCK)	-> AVR    (PB5)
+SR5 12 (LATCH)	-> AVR    (PB6)
+SR5 13 (/OE)	-> GND
+SR5 14 (DATA)	-> SR4  9 (H')
+SR5 15 (A)		-> Mat  1 (ROW1)
+SR5 16 (VCC)	-> VCC
+
+Mat  1 (ROW1)	-> SR5 15 (A)
+Mat  2 (ROW2)	-> SR5  1 (B)
+Mat  3 (ROW3)	-> SR5  2 (C)
+Mat  4 (ROW4)	-> SR5  3 (D)
+Mat  5 (G1)		-> SR3 15 (A)
+Mat  6 (G2)		-> SR3  1 (B)
+Mat  7 (G3)		-> SR3  2 (C)
+Mat  8 (G4)		-> SR3  3 (D)
+Mat  9 (G5)		-> SR3  4 (E)
+Mat 10 (G6)		-> SR3  5 (F)
+Mat 11 (G7)		-> SR3  6 (G)
+Mat 12 (G8)		-> SR3  7 (H)
+Mat 13 (R8)		-> SR4  7 (H)
+Mat 14 (R7)		-> SR4  6 (G)
+Mat 15 (R6)		-> SR4  5 (F)
+Mat 16 (R5)		-> SR4  4 (E)
+Mat 17 (R4)		-> SR4  3 (D)
+Mat 18 (R3)		-> SR4  2 (C)
+Mat 19 (R2)		-> SR4  1 (B)
+Mat 20 (R1)		-> SR4 15 (A)
+Mat 21 (ROW5)	-> SR5  4 (E)
+Mat 22 (ROW6)	-> SR5  5 (F)
+Mat 23 (ROW7)	-> SR5  6 (G)
+Mat 24 (ROW8)	-> SR5  7 (H)
