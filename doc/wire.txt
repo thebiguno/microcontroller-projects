@@ -80,7 +80,7 @@ SR4 11 (CLOCK)	-> AVR    (PB5)
 SR4 12 (LATCH)	-> AVR    (PB6)
 SR4 13 (/OE)	-> GND
 SR4 14 (DATA)	-> SR3  9 (H')
-SR4 15 (A)		-> Mat 10 (R1)
+SR4 15 (A)		-> Mat 20 (R1)
 SR4 16 (VCC)	-> VCC
 
 SR5  1 (B)		-> Mat  2 (ROW2)
