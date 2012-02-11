@@ -152,4 +152,8 @@ void segment_draw(char c[], uint8_t flags) {
 	if (!bit_is_set(flags,3)) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
+	
+	segment_data(0x00);
+	segment_data(0xFF);
+	segment_latch();
 }
