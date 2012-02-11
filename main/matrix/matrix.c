@@ -45,16 +45,17 @@ void matrix_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t
 }
 		
 		
-void matrix_draw(uint8_t *red, uint8_t *green) {
-	for (int i = 0; i < 0x8; i++) {
-		// get column i out of the buffer
-		uint8_t r = red[i];
-		uint8_t g = green[i];
-		for (int j = 0; j < 0x8; j++) {
-			matrix_data(r);			// column i red
-			matrix_data(g);			// column i green
-			matrix_data(_BV(j)); 	// row j
+void matrix_draw(uint8_t red[], uint8_t green[]) {
+	for (int c = 0; c < 8; c++) {
+		for (int r = 0; r < 8; r++) {
+			matrix_data(0xFF - _BV(r));
+			matrix_data(red[c]);
+			matrix_data(green[c]);
 			matrix_latch();
 		}
 	}
+	matrix_data(0xFF);
+	matrix_data(0x00);
+	matrix_data(0x00);
+	matrix_latch();
 }
