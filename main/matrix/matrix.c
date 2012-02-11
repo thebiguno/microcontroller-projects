@@ -46,13 +46,11 @@ void matrix_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t
 		
 		
 void matrix_draw(uint8_t red[], uint8_t green[]) {
-	for (int c = 0; c < 8; c++) {
-		for (int r = 0; r < 8; r++) {
-			matrix_data(0xFF - _BV(r));
-			matrix_data(red[c]);
-			matrix_data(green[c]);
-			matrix_latch();
-		}
+	for (int i = 0; i < 8; i++) {
+		matrix_data(0xFF-_BV(i));
+		matrix_data(red[i]);
+		matrix_data(green[i]);
+		matrix_latch();
 	}
 	matrix_data(0xFF);
 	matrix_data(0x00);
