@@ -123,8 +123,8 @@ void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_
 void segment_draw(char c[], uint8_t flags) {
 	uint8_t b = SEG_DIG1;
 
-	if (bit_is_set(flags,4)) b |= SEG_L1L2;
-	if (bit_is_set(flags,5)) b |= SEG_L3;
+	if (!bit_is_set(flags,4)) b += SEG_L1L2;
+	if (!bit_is_set(flags,5)) b += SEG_L3;
 
 	segment_data(b);
 	b = lookup(c[0]);
