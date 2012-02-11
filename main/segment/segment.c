@@ -18,7 +18,7 @@ static uint8_t lookup(char c) {
 		case 0x1: case '1':
 		return SEG_A + SEG_D + SEG_E + SEG_F + SEG_G;
 		case 0x2: case '2':
-		return SEG_C + SEG_C;
+		return SEG_C + SEG_F;
 		case 0x3: case '3':
 		return SEG_E + SEG_F;
 		case 0x4: case '4':
@@ -33,14 +33,14 @@ static uint8_t lookup(char c) {
 		return 0x00;
 		case 0x9: case '9':
 		return SEG_D + SEG_E;
-		case 0xA: case 'A': case 'a':
+		case 0xA: case 'a': case 'A':
 		return SEG_D;
-		case 0xB: case 'B': case 'b':
+		case 0xB: case 'b': case 'B':
 		return SEG_A + SEG_B;
-		case 0xC: case 'C': case 'c':
+		case 0xC: case 'c': case 'C':
 		return SEG_B + SEG_C + SEG_G;
-		case 0xD: case 'D': case 'd':
-		return SEG_A + SEG_F + SEG_G;
+		case 0xD: case 'd': case 'D':
+		return SEG_A + SEG_F;
 		case 0xE: case 'e': case 'E':
 		return SEG_B + SEG_C;
 		case 0xF: case 'f': case 'F':
@@ -49,18 +49,28 @@ static uint8_t lookup(char c) {
 		return SEG_B + SEG_G;
 		case 'h': case 'H':
 		return SEG_A + SEG_D;
-		case 'j': case 'J':
+		case 'j':
 		return SEG_A + SEG_E + SEG_F + SEG_G;
+		case 'J':
+		return SEG_A + SEG_F + SEG_G;
 		case 'l': case 'L':
 		return SEG_A + SEG_B + SEG_C + SEG_G;
+		case 'n':
+		return SEG_A + SEG_B + SEG_D + SEG_F;
+		case 'N':
+		return SEG_D + SEG_G;
 		case 'o': case 'O':
 		return SEG_A + SEG_B + SEG_F;
 		case 'r': case 'R':
 		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_F;
 		case 't': case 'T':
 		return SEG_A + SEG_B + SEG_C;
-		case 'u': case 'U':
+		case 'u':
+		return SEG_A + SEG_B + SEG_F + SEG_G;
+		case 'U':
 		return SEG_A + SEG_G;
+		case 'y': case 'Y':
+		return SEG_A + SEG_E;
 		case '-':
 		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F;
 		case '_':
@@ -92,7 +102,7 @@ static void segment_data(uint8_t data) {
 }
 
 static void segment_latch() {
-	*_latch_port &= ~_BV(_latch_pin);	
+	*_latch_port &= ~_BV(_latch_pin);
 	*_latch_port |= _BV(_latch_pin);
 }
 
@@ -110,36 +120,36 @@ void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_
 	_latch_pin = latch_pin;
 }
 
-void segment_draw(char chars[], uint8_t flags) {
+void segment_draw(char c[], uint8_t flags) {
 	uint8_t b = SEG_DIG1;
 
 	if (bit_is_set(flags,4)) b |= SEG_L1L2;
 	if (bit_is_set(flags,5)) b |= SEG_L3;
 
 	segment_data(b);
-	b = lookup(chars[0]);
-	if (bit_is_set(flags,0)) b -= SEG_DP;
+	b = lookup(c[0]);
+	if (!bit_is_set(flags,0)) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG2;
 	segment_data(b);
-	b = lookup(chars[1]);
-	if (bit_is_set(flags,1)) b -= SEG_DP;
+	b = lookup(c[1]);
+	if (!bit_is_set(flags,1)) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG3;
 	segment_data(b);
-	b = lookup(chars[2]);
-	if (bit_is_set(flags,2)) b-= SEG_DP;
+	b = lookup(c[2]);
+	if (!bit_is_set(flags,2)) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG4;
 	segment_data(b);
-	b = lookup(chars[3]);
-	if (bit_is_set(flags,3)) b-= SEG_DP;
+	b = lookup(c[3]);
+	if (!bit_is_set(flags,3)) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 }

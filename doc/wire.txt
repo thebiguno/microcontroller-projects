@@ -1,10 +1,10 @@
 SR1  1 (B)		-> Seg  5 (E)
 SR1  2 (C)		-> Seg  3 (D)
 SR1  3 (D)		-> Seg 11 (F)
-SR1  4 (E)		-> Seg 13 ()
-SR1  5 (F)		-> Seg  ()
-SR1  6 (G)		-> Seg  ()
-SR1  7 (H)		-> Seg  ()
+SR1  4 (E)		-> Seg 13 (C)
+SR1  5 (F)		-> Seg 14 (A)
+SR1  6 (G)		-> Seg 15 (G)
+SR1  7 (H)		-> Seg 16 (B)
 SR1  8 GND		-> GND
 SR1  9 (H')		-> SR2 14 (DATA)
 SR1 10 (/CLR)	-> VCC
@@ -12,15 +12,15 @@ SR1 11 (CLOCK)	-> AVR (PB1)
 SR1 12 (LATCH)	-> AVR (PB2)
 SR1 13 (/OE)	-> GND
 SR1 14 (DATA)	-> AVR (PB0)
-SR1 15 (A)		-> Seg ()
+SR1 15 (A)		-> Seg 7 (DP)
 SR1 16 (VCC)	-> VCC
 
-SR2  1 (B)		-> Seg (DIG1)
-SR2  2 (C)		-> Seg (DIG2)
-SR2  3 (D)		-> Seg (DIG3)
-SR2  4 (E)		-> Seg (DIG3)
-SR2  5 (F)		-> Seg  (L1L2)
-SR2  6 (G)		-> Seg  (L3)
+SR2  1 (B)		-> Seg 1 (DIG1)
+SR2  2 (C)		-> Seg 2 (DIG2)
+SR2  3 (D)		-> Seg 6 (DIG3)
+SR2  4 (E)		-> Seg 8 (DIG3)
+SR2  5 (F)		-> Seg (L1L2)
+SR2  6 (G)		-> Seg (L3)
 SR2  7 (H)		-> NC
 SR2  8 GND		-> GND
 SR2  9 (H')		-> GND
