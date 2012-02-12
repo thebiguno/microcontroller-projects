@@ -133,17 +133,19 @@ void clock_vigesimal(uint32_t ms) {
 void clock_hexadecimal(uint32_t ms) {
 	//milliseconds to hexadecimal (F:F:F:F)
 	uint8_t hr = ms / 5400000;	// 1/16 day (hex hour)
-	ms -= hr * 5400000;
+	ms -= 5400000 * (uint16_t) hr;
 	uint8_t mx = ms / 337500;	// 1/256 day (hex maxime)
-	ms -= mx * 337500;
-	uint8_t mn = ms / 21094;	// 1/4096 day (hex minute)
-	ms -= mn * 21094;
+	ms -= 337500 * (uint16_t) mx;
+	uint8_t mn = ms / 21093;	// 1/4096 day (hex minute)
+	ms -= 21093 * (uint16_t) mn;
 	uint8_t sc = ms / 1318;		// 1/65536 day (hex second)
 	
 	_segments[0] = hr;
 	_segments[1] = mx;
 	_segments[2] = mn;
 	_segments[3] = sc;
+	
+	clock_clear_matrix();
 
 	// 2x2 pixels for each bit, hr on top, sc on bottom
 	for (uint8_t i = 0; i < 4; i++) {
@@ -151,10 +153,10 @@ void clock_hexadecimal(uint32_t ms) {
 		int v = _segments[i];
 		for (uint8_t j = 0; j < 4; j++) {
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[(i*2)+0] |= 1 << ((j*2)+0);
-				_matrix_red[(i*2)+1] |= 1 << ((j*2)+1);
-				_matrix_red[(i*2)+0] |= 1 << ((j*2)+0);
-				_matrix_red[(i*2)+1] |= 1 << ((j*2)+1);
+				_matrix_red[(i*2)+0] |= 1 << (7-(j*2));
+				_matrix_red[(i*2)+1] |= 1 << (7-(j*2));
+				_matrix_red[(i*2)+0] |= 1 << (6-(j*2));
+				_matrix_red[(i*2)+1] |= 1 << (6-(j*2));
 			}
 		}
 	}
