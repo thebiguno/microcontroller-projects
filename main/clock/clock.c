@@ -38,45 +38,58 @@ void clock_clear_matrix() {
 }
 
 void clock_traditional(uint32_t ms) {
-	//milliseconds to traditional (24:59)
+	//milliseconds to traditional (24:59:59)
 	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
 	ms -= hr * 3600000;
 	uint8_t mn = ms / 60000;	// 1/1440 day (minute)
-	ms -= mn / 60000;
+	ms -= mn * 60000;
 	uint8_t sc = ms / 1000;		// 1/86400 day (second)	
 	
-	clock_clear_matrix();
-	
-	if (hr >= 20) {
-		_segments[0] = 2;
-		hr -= 20;
-	} else if (hr >= 10) {
-		_segments[0] = 1;
-		hr -= 10;
-	} else {
-		_segments[0] = 0;
+	_segments[0] = 0;
+	for (uint8_t i = 1; i < 3; i++) {
+		if (hr >= 10) {
+			_segments[0] = i;
+			hr -= 10;
+		}
 	}
 	_segments[1] = hr;
 	
-	if (mn >= 50) {
-		_segments[2] = 5;
-		mn -= 50;
-	} else if (mn >= 40) {
-		_segments[2] = 4;
-		mn -= 40;
-	} else if (mn >= 30) {
-		_segments[2] = 3;
-		mn -= 30;
-	} else if (mn >= 20) {
-		_segments[2] = 2;
-		mn -= 20;
-	} else if (mn >= 10) {
-		_segments[2] = 1;
-		mn -= 10;
-	} else {
-		_segments[2] = 0;
+	_segments[2] = 0;
+	for (uint8_t i = 1; i < 6; i++) {
+		if (mn >= 10) {
+			_segments[2] = i;
+			mn -= 10;
+		}
 	}
 	_segments[3] = mn;
+	
+	_segments[4] = 0;
+	for (uint8_t i = 1; i < 6; i++) {
+		if (sc >= 10) {
+			_segments[4] = i;
+			sc -= 10;
+		}
+	}
+	_segments[5] = sc;
+
+	clock_clear_matrix();
+	
+	// 3 2x8 bars with a space sparating them, hr on top, sec on bottom
+	
+	for (int i = 0; i < 6; i++) { // segments (rows)
+		// build a 1x6 bar
+		int v = _segments[i];
+		for (int j = 0; j < 8; j++) { // bits (cols)
+			uint8_t offset = 0;
+			if (i > 1) offset++;
+			if (i > 3) offset++;
+			if (i == 2 || i == 3) offset += 8; // overflow hack to draw into green matrix instead of red matrix
+			if ((v & _BV(j)) != 0) {
+				_matrix_red[i+offset] |= 1 << (7-(j*2));
+				_matrix_red[i+offset] |= 1 << (6-(j*2));
+			}
+		}
+	}
 }
 
 void clock_vigesimal(uint32_t ms) {
@@ -96,7 +109,7 @@ void clock_vigesimal(uint32_t ms) {
 
 	clock_clear_matrix();
 
-	for (uint8_t i = 0; i < 4; i ++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		// build a 4x4 mayan number square
 		uint8_t sq[4] = {0,0,0,0};
 		uint8_t v = _segments[i];
@@ -137,7 +150,7 @@ void clock_hexadecimal(uint32_t ms) {
 	msd -= 5400000 * hr;
 	uint8_t mx = msd / 337500;		// 1/256 day (hex maxime)
 	msd -= 337500 * mx;
-	uint8_t mn = msd / 21093.75;		// 1/4096 day (hex minute)
+	uint8_t mn = msd / 21093.75;	// 1/4096 day (hex minute)
 	msd -= 21093.75 * mn;
 	uint8_t sc = msd / 1318.359375;	// 1/65536 day (hex second)
 	
@@ -149,36 +162,42 @@ void clock_hexadecimal(uint32_t ms) {
 	clock_clear_matrix();
 
 	// 2x2 pixels for each bit, hr on top, sc on bottom
-	for (uint8_t i = 0; i < 4; i++) {
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
 		// build a 1x8 bar
 		int v = _segments[i];
-		for (uint8_t j = 0; j < 4; j++) {
+		for (uint8_t j = 0; j < 4; j++) { // bits (cols)
+			uint8_t offset = i % 2 == 0 ? 0 : 8; // overflow hack to draw into green matrix instead of red matrix
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[(i*2)+0] |= 1 << (7-(j*2));
-				_matrix_red[(i*2)+1] |= 1 << (7-(j*2));
-				_matrix_red[(i*2)+0] |= 1 << (6-(j*2));
-				_matrix_red[(i*2)+1] |= 1 << (6-(j*2));
+				_matrix_red[(i*2)+0+offset] |= 1 << (7-(j*2));
+				_matrix_red[(i*2)+1+offset] |= 1 << (7-(j*2));
+				_matrix_red[(i*2)+0+offset] |= 1 << (6-(j*2));
+				_matrix_red[(i*2)+1+offset] |= 1 << (6-(j*2));
 			}
 		}
 	}
 }
 
 void clock_decimal(uint32_t ms) {
-	//milliseconds to decimal (9:9:9:9)
+	//milliseconds to decimal (9:9:9:9:9)
 	int dd = ms / 8640000;	// 1/10 day (deciday)
 	ms -= dd * 8640000;
 	int cd = ms / 864000;	// 1/100 day (centiday)
 	ms -= cd * 864000;
 	int md = ms / 86400;	// 1/1000 day (milliday)
 	ms -= md * 86400;
-	int ud = ms / 8640;		// 1/10000 day (microday)
+	int ud = ms / 8640;		// 1/10000 day (microday??)
+	ms -= ud * 86400;
+	int nd = ms / 864;		// 1/100000 day (nanoday??)
 	
 	_segments[0] = dd;
 	_segments[1] = cd;
 	_segments[2] = md;
 	_segments[3] = ud;
+	_segments[4] = nd;
 	
 	clock_clear_matrix();
+	
+	//
 }
 
 void clock_octal(uint32_t ms) {
@@ -206,13 +225,14 @@ void clock_octal(uint32_t ms) {
 	clock_clear_matrix();
 	
 	// 1x2 pixels for each bit, a on top, f on bottom
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) { // segments (rows)
 		// build a 1x6 bar
 		int v = _segments[i];
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++) { // bits (cols)
+			uint8_t offset = i % 2 == 0 ? 0 : 8; // overflow hack to draw into green matrix instead of red matrix
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[6-(j*2)] |= (2 << i);
-				_matrix_red[5-(j*2)] |= (2 << i);
+				_matrix_red[i+1+offset] |= 2 << (7-(j*2));
+				_matrix_red[i+1+offset] |= 2 << (6-(j*2));
 			}
 		}
 	}

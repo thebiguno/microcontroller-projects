@@ -18,7 +18,7 @@ int main() {
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
-	clock_mode(4);
+	clock_mode(0);
 	
 	while(1) {
 		uint32_t ms = timer_millis();
