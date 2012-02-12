@@ -46,9 +46,40 @@ void clock_traditional(uint16_t ms) {
 	uint8_t sc = ms / 1000;		// 1/86400 day (second)	
 	
 	clock_clear_matrix();
+	
+	if (hr >= 20) {
+		_segments[0] = 2;
+		hr -= 20;
+	} else if (hr >= 10) {
+		_segments[0] = 1;
+		hr -= 10;
+	} else {
+		_segments[0] = 0;
+	}
+	_segments[1] = hr;
+	
+	if (mn >= 50) {
+		_segments[2] = 5;
+		mn -= 50;
+	} else if (mn >= 40) {
+		_segments[2] = 4;
+		mn -= 40;
+	} else if (mn >= 30) {
+		_segments[2] = 3;
+		mn -= 30;
+	} else if (mn >= 20) {
+		_segments[2] = 2;
+		mn -= 20;
+	} else if (mn >= 10) {
+		_segments[2] = 1;
+		mn -= 10;
+	} else {
+		_segments[2] = 0;
+	}
+	_segments[3] = mn;
 }
 
-void clock_vigesimal(uint16_t ms) {
+void clock_vigesimal(uint32_t ms) {
 	//milliseconds to vigesimal (19:19:19:19)
 	uint8_t a = ms / 4320000;	// 1/20 day
 	ms -= a * 4320000;
