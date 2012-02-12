@@ -18,11 +18,11 @@ int main() {
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
-	clock_mode(2);
+	clock_mode(4);
 	
 	while(1) {
 		uint32_t ms = timer_millis();
-		if (ms % 200 == 0) {
+		if (ms % 100 == 0) {
 			clock_update(ms);
 			clock_segments(c);
 			clock_matrix(red, grn);

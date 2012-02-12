@@ -3,7 +3,7 @@
 #include <avr/sfr_defs.h>
 
 static uint8_t _mode = 0;
-static char _segments[4];
+static char _segments[6];
 static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
 static uint8_t _matrix_grn[8] = {0,0,0,0,0,0,0,0};
 
@@ -131,19 +131,20 @@ void clock_vigesimal(uint32_t ms) {
 }
 
 void clock_hexadecimal(uint32_t ms) {
+	double msd = ms;
 	//milliseconds to hexadecimal (F:F:F:F)
-	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour)
-	ms -= 5400000 * hr;
-	uint8_t mx = ms / 337500;		// 1/256 day (hex maxime)
-	ms -= 337500 * mx;
-	double mn = ms / 21093.75;		// 1/4096 day (hex minute)
-	double msd = ms - (mn / 21093.75);
-	double sc = msd / 1318.359375;	// 1/65536 day (hex second)
+	uint8_t hr = msd / 5400000;		// 1/16 day (hex hour)
+	msd -= 5400000 * hr;
+	uint8_t mx = msd / 337500;		// 1/256 day (hex maxime)
+	msd -= 337500 * mx;
+	uint8_t mn = msd / 21093.75;		// 1/4096 day (hex minute)
+	msd -= 21093.75 * mn;
+	uint8_t sc = msd / 1318.359375;	// 1/65536 day (hex second)
 	
-	_segments[0] = hr & 0xF;
-	_segments[1] = mx & 0xF;
-	_segments[2] = ((uint8_t) mn) & 0xF;
-	_segments[3] = ((uint8_t) sc) & 0xF;
+	_segments[0] = hr;
+	_segments[1] = mx;
+	_segments[2] = mn;
+	_segments[3] = sc;
 	
 	clock_clear_matrix();
 
@@ -181,32 +182,37 @@ void clock_decimal(uint32_t ms) {
 }
 
 void clock_octal(uint32_t ms) {
+	double msd = ms;
 	//milliseconds to octal (7:7:7:7:7:7)
-	int a = ms / 10800000;	// 1/8 day
-	ms -= a * 10800000;
-	int b = ms / 1350000;	// 1/64 day
-	ms -= b * 1350000;
-	int c = ms / 168750;	// 1/512 day
-	ms -= c * 168750;
-	int d = ms / 21094;		// 1/4096 day
-	ms -= d * 21094;
-	int e = ms / 2637;		// 1/32768 day
-	ms -= e * 21094;
-	int f = ms / 330;		// 1/262144 day
+	uint8_t a = ms / 10800000;	// 1/8 day
+	msd -= a * 10800000;
+	uint8_t b = msd / 1350000;	// 1/64 day
+	msd -= b * 1350000;
+	uint8_t c = msd / 168750;	// 1/512 day
+	msd -= c * 168750;
+	uint8_t d = msd / 21093.75;	// 1/4096 day
+	msd -= d * 21093.75;
+	uint8_t e = msd / 2636.71875;	// 1/32768 day
+	msd -= e * 2636.71875;
+	uint8_t f = msd / 329.58984375;	// 1/262144 day
 	
 	_segments[0] = a;
 	_segments[1] = b;
 	_segments[2] = c;
 	_segments[3] = d;
+	_segments[4] = e;
+	_segments[5] = f;
 	
-	// 1x2 pixels for each bit, hr on top, sc on bottom
-	for (int i = 0; i < 4; i++) {
-		// build a 1x8 bar
+	clock_clear_matrix();
+	
+	// 1x2 pixels for each bit, a on top, f on bottom
+	for (int i = 0; i < 6; i++) {
+		// build a 1x6 bar
 		int v = _segments[i];
-		for (int j = 0; j < 4; j++) {
+		for (int j = 0; j < 3; j++) {
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[(i*2)+1] |= 2 << (j*2);
- 				_matrix_red[(i*2)+2] |= 2 << (j*2);
+				_matrix_red[6-(j*2)] |= (2 << i);
+				_matrix_red[5-(j*2)] |= (2 << i);
 			}
 		}
 	}
