@@ -109,37 +109,27 @@ void clock_vigesimal(uint32_t ms) {
 
 	clock_clear_matrix();
 
-	for (uint8_t i = 0; i < 4; i++) {
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
 		// build a 4x4 mayan number square
-		uint8_t sq[4] = {0,0,0,0};
-		uint8_t v = _segments[i];
-		uint8_t m = v % 5;
-		if (m > 3) sq[3] = 8;
-		if (m > 2) sq[2] = 8;
-		if (m > 1) sq[1] = 8;
-		if (m > 0) sq[0] = 8;
-		for (uint8_t j = 0; j < 4; j++) {
-			if (v > 14) {
-				sq[j] = sq[j] >> 3;
-				sq[j] |= 7;
-			} else if (v > 9) {
-				sq[j] = sq[j] >> 2;
-				sq[j] |= 3;
-			} else if (v > 4) {
-				sq[j] = sq[j] >> 1;
-				sq[j] |= 1;
-			}
-			if (i == 0 || i == 2) {
-				sq[j] = sq[j] >> 4;
-			}
-		}
 		
-		// copy the 4x4 square into the matrix
-		uint8_t offset = 0;
-		if (i == 1 || i == 3) offset = 4;
-		for (int i = 0; i < 4; i++) {
-			_matrix_red[i + offset] |= sq[i];
-		}
+		uint8_t v = _segments[i];
+		int row = 3;
+		if (v > 4) row--;
+		if (v > 9) row--;
+		if (v > 14) row--;
+		if (i > 1) row += 4; // move down 4 rows for c and d
+		
+		// draw the dots
+		uint8_t sh = (i % 2 == 1) ? 4 : 0;
+		if (v % 5 > 0) _matrix_red[row] |= (0x01 << sh);
+		if (v % 5 > 1) _matrix_red[row] |= (0x02 << sh);
+		if (v % 5 > 2) _matrix_red[row] |= (0x04 << sh);
+		if (v % 5 > 3) _matrix_red[row] |= (0x08 << sh);
+		
+		// draw the lines
+		if (v > 4) _matrix_grn[row+1] |= (0x0F << sh); 
+		if (v > 9) _matrix_grn[row+2] |= (0x0F << sh); 
+		if (v > 14) _matrix_grn[row+3] |= (0x0F << sh); 
 	}
 }
 
