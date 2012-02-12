@@ -16,7 +16,7 @@ void clock_mode(uint8_t mode);
 /*
  * Recalculates the segment and matrix state.
  */
-void clock_update(uint16_t millis);
+void clock_update(uint32_t millis);
 
 /*
  * Sets a char array according to the time in the given mode.

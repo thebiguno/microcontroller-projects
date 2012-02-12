@@ -3,7 +3,7 @@
 #include <avr/sfr_defs.h>
 
 static uint8_t _mode = 0;
-static char _segments[5];
+static char _segments[4];
 static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
 static uint8_t _matrix_grn[8] = {0,0,0,0,0,0,0,0};
 
@@ -37,7 +37,7 @@ void clock_clear_matrix() {
 	}
 }
 
-void clock_traditional(uint16_t ms) {
+void clock_traditional(uint32_t ms) {
 	//milliseconds to traditional (24:59)
 	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
 	ms -= hr * 3600000;
@@ -130,7 +130,7 @@ void clock_vigesimal(uint32_t ms) {
 	}
 }
 
-void clock_hexadecimal(uint16_t ms) {
+void clock_hexadecimal(uint32_t ms) {
 	//milliseconds to hexadecimal (F:F:F:F)
 	uint8_t hr = ms / 5400000;	// 1/16 day (hex hour)
 	ms -= hr * 5400000;
@@ -160,7 +160,7 @@ void clock_hexadecimal(uint16_t ms) {
 	}
 }
 
-void clock_decimal(uint16_t ms) {
+void clock_decimal(uint32_t ms) {
 	//milliseconds to decimal (9:9:9:9)
 	int dd = ms / 8640000;	// 1/10 day (deciday)
 	ms -= dd * 8640000;
@@ -178,7 +178,7 @@ void clock_decimal(uint16_t ms) {
 	clock_clear_matrix();
 }
 
-void clock_octal(uint16_t ms) {
+void clock_octal(uint32_t ms) {
 	//milliseconds to octal (7:7:7:7:7:7)
 	int a = ms / 10800000;	// 1/8 day
 	ms -= a * 10800000;
@@ -210,7 +210,7 @@ void clock_octal(uint16_t ms) {
 	}
 }
 
-void clock_dni(uint16_t ms) {
+void clock_dni(uint32_t ms) {
 	//milliseconds to d'ni (25:25:25:25)
 	int a = ms / 3456000;	// 1/25 day
 	ms -= a * 3456000;
@@ -221,12 +221,12 @@ void clock_dni(uint16_t ms) {
 	int d = ms / 221;		// 1/390625 day
 }
 
-void clock_update(uint16_t ms) {
+void clock_update(uint32_t ms) {
 	switch (_mode) {
-		case 0: clock_traditional(ms);
-		case 1: clock_vigesimal(ms);
-		case 2: clock_hexadecimal(ms);
-		case 3: clock_decimal(ms);
-		case 4: clock_octal(ms);
+		case 0: clock_traditional(ms); break;
+		case 1: clock_vigesimal(ms); break;
+		case 2: clock_hexadecimal(ms); break;
+		case 3: clock_decimal(ms); break;
+		case 4: clock_octal(ms); break;
 	}
 }
