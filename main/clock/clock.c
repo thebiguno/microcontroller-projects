@@ -40,9 +40,9 @@ void clock_clear_matrix() {
 void clock_traditional(uint32_t ms) {
 	//milliseconds to traditional (24:59:59)
 	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
-	ms -= hr * 3600000;
+	ms -= 3600000 * (uint32_t) hr;
 	uint8_t mn = ms / 60000;	// 1/1440 day (minute)
-	ms -= mn * 60000;
+	ms -= 60000 * (uint32_t) mn;
 	uint8_t sc = ms / 1000;		// 1/86400 day (second)	
 	
 	_segments[0] = 0;
@@ -95,11 +95,11 @@ void clock_traditional(uint32_t ms) {
 void clock_vigesimal(uint32_t ms) {
 	//milliseconds to vigesimal (19:19:19:19)
 	uint8_t a = ms / 4320000;	// 1/20 day
-	ms -= a * 4320000;
+	ms -= 4320000 * (uint32_t) a;
 	uint8_t b = ms / 216000;	// 1/400 day
-	ms -= b * 216000;
+	ms -= 216000 * (uint32_t) b;
 	uint8_t c = ms / 10800;		// 1/8000 day
-	ms -= c * 10800;
+	ms -= 10800 * (uint32_t) c;
 	uint8_t d = ms / 540;		// 1/160000 day
 	
 	_segments[0] = a;
@@ -137,11 +137,11 @@ void clock_hexadecimal(uint32_t ms) {
 	double msd = ms;
 	//milliseconds to hexadecimal (F:F:F:F)
 	uint8_t hr = msd / 5400000;		// 1/16 day (hex hour)
-	msd -= 5400000 * hr;
+	msd -= 5400000 * (double) hr;
 	uint8_t mx = msd / 337500;		// 1/256 day (hex maxime)
-	msd -= 337500 * mx;
+	msd -= 337500 * (double) mx;
 	uint8_t mn = msd / 21093.75;	// 1/4096 day (hex minute)
-	msd -= 21093.75 * mn;
+	msd -= 21093.75 * (double) mn;
 	uint8_t sc = msd / 1318.359375;	// 1/65536 day (hex second)
 	
 	_segments[0] = hr;
@@ -170,13 +170,13 @@ void clock_hexadecimal(uint32_t ms) {
 void clock_decimal(uint32_t ms) {
 	//milliseconds to decimal (9:9:9:9:9)
 	int dd = ms / 8640000;	// 1/10 day (deciday)
-	ms -= dd * 8640000;
+	ms -= 8640000 * (uint32_t) dd;
 	int cd = ms / 864000;	// 1/100 day (centiday)
-	ms -= cd * 864000;
+	ms -= 864000 * (uint32_t) cd;
 	int md = ms / 86400;	// 1/1000 day (milliday)
-	ms -= md * 86400;
+	ms -= 86400 * (uint32_t) md;
 	int ud = ms / 8640;		// 1/10000 day (microday??)
-	ms -= ud * 86400;
+	ms -= 86400 * (uint32_t) ud;
 	int nd = ms / 864;		// 1/100000 day (nanoday??)
 	
 	_segments[0] = dd;
@@ -194,15 +194,15 @@ void clock_octal(uint32_t ms) {
 	double msd = ms;
 	//milliseconds to octal (7:7:7:7:7:7)
 	uint8_t a = ms / 10800000;	// 1/8 day
-	msd -= a * 10800000;
+	msd -= 10800000 * (double) a ;
 	uint8_t b = msd / 1350000;	// 1/64 day
-	msd -= b * 1350000;
+	msd -= 1350000 * (double) b;
 	uint8_t c = msd / 168750;	// 1/512 day
-	msd -= c * 168750;
+	msd -= 168750 * (double) c;
 	uint8_t d = msd / 21093.75;	// 1/4096 day
-	msd -= d * 21093.75;
+	msd -= 21093.75 * (double) d;
 	uint8_t e = msd / 2636.71875;	// 1/32768 day
-	msd -= e * 2636.71875;
+	msd -= 2636.71875 * (double) e;
 	uint8_t f = msd / 329.58984375;	// 1/262144 day
 	
 	_segments[0] = a;
