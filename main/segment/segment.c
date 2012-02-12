@@ -45,11 +45,13 @@ static uint8_t lookup(char c) {
 		return SEG_B + SEG_C;
 		case 0xF: case 'f': case 'F':
 		return SEG_B + SEG_C + SEG_D;
-		case 'g': case 'G':
+		case 0x10: case 'g': case 'G':
 		return SEG_B + SEG_G;
-		case 'h': case 'H':
+		case 0x11: case 'h': case 'H':
 		return SEG_A + SEG_D;
-		case 'j':
+		case 0x12: case 'i': case 'I':
+		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_F + SEG_G;
+		case 0x13: case 'j':
 		return SEG_A + SEG_E + SEG_F + SEG_G;
 		case 'J':
 		return SEG_A + SEG_F + SEG_G;
