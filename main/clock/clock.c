@@ -132,18 +132,18 @@ void clock_vigesimal(uint32_t ms) {
 
 void clock_hexadecimal(uint32_t ms) {
 	//milliseconds to hexadecimal (F:F:F:F)
-	uint8_t hr = ms / 5400000;	// 1/16 day (hex hour)
-	ms -= 5400000 * (uint16_t) hr;
-	uint8_t mx = ms / 337500;	// 1/256 day (hex maxime)
-	ms -= 337500 * (uint16_t) mx;
-	uint8_t mn = ms / 21093;	// 1/4096 day (hex minute)
-	ms -= 21093 * (uint16_t) mn;
-	uint8_t sc = ms / 1318;		// 1/65536 day (hex second)
+	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour)
+	ms -= 5400000 * hr;
+	uint8_t mx = ms / 337500;		// 1/256 day (hex maxime)
+	ms -= 337500 * mx;
+	double mn = ms / 21093.75;		// 1/4096 day (hex minute)
+	double msd = ms - (mn / 21093.75);
+	double sc = msd / 1318.359375;	// 1/65536 day (hex second)
 	
-	_segments[0] = hr;
-	_segments[1] = mx;
-	_segments[2] = mn;
-	_segments[3] = sc;
+	_segments[0] = hr & 0xF;
+	_segments[1] = mx & 0xF;
+	_segments[2] = ((uint8_t) mn) & 0xF;
+	_segments[3] = ((uint8_t) sc) & 0xF;
 	
 	clock_clear_matrix();
 
