@@ -1,14 +1,6 @@
-/*
- * Low resolution implementation of timer using a 8 bit clock with prescaler, 
- * etc.  Clicks approximately every millisecond.  Microseconds are not available, 
- * and any queries to the function will just return milliseconds * 1000.
- * You can use this file when you don't need high resolution timing, and don't care
- * about slight clock drift, inaccuracy, etc.  For timing most human-related activities,
- * though, it should be more than sufficient.
- */
 #include "timer.h"
 
-static volatile uint64_t _timer_millis;
+static volatile uint32_t _timer_millis;
 
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
@@ -33,7 +25,8 @@ void timer_init(){
 
 	TIMSK = _BV(OCIE0A);
 	
-#elif defined(__AVR_ATmega168__)   || \
+#elif defined(__AVR_ATtiny2313__)  || \
+	defined(__AVR_ATmega168__)     || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)    || \
 	defined(__AVR_ATmega324P__)    || \
@@ -51,7 +44,7 @@ void timer_init(){
 	_timer_millis = 0;
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
-#ifndef oå
+#ifndef
 	sei();
 #endif
 	
@@ -60,20 +53,11 @@ void timer_init(){
 
 /*
  * Returns the number of milliseconds which have elapsed since the 
- * last time timer_init() was called.  Overflows after about 49 days.
+ * last time timer_init() was called.
  */
 uint64_t timer_millis(){
 	return _timer_millis;
 }
-
-/*
- * Returns the number of microseconds which have elapsed since the 
- * last time timer_init() was called.  Overflows after about 71 minutes.
- */
-uint64_t timer_micros(){
-	return (_timer_millis * 1000);
-}
-
 
 /* 
  * The ISR for timer0 overflow.  Increment the _timer_count here, and do the calculcations
@@ -90,7 +74,9 @@ uint64_t timer_micros(){
 EMPTY_INTERRUPT(TIM0_COMPB_vect)
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
-#elif defined(__AVR_ATmega168__)   || \
+#elif
+	defined(__AVR_ATtiny2313__)    || \
+	defined(__AVR_ATmega168__)     || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)    || \
 	defined(__AVR_ATmega324P__)    || \
@@ -107,4 +93,5 @@ ISR(TIMER0_COMPA_vect){
 #endif
 	TCNT0 = 0;
 	_timer_millis++;
+	if (_timer_millis > 86400000) _timer_millis = 0;
 }
