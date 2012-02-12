@@ -44,7 +44,7 @@ void timer_init(){
 	_timer_millis = 0;
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
-#ifndef
+#ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif
 	
@@ -74,8 +74,7 @@ uint64_t timer_millis(){
 EMPTY_INTERRUPT(TIM0_COMPB_vect)
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
-#elif
-	defined(__AVR_ATtiny2313__)    || \
+#elif defined(__AVR_ATtiny2313__)  || \
 	defined(__AVR_ATmega168__)     || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)    || \

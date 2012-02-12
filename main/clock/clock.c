@@ -1,7 +1,11 @@
-uint8_t _mode = 0;
-char _segments[4];
-uint8_t _matrix_red[8];
-uint8_t _matrix_grn[8];
+#include "clock.h"
+
+#include <avr/sfr_defs.h>
+
+static uint8_t _mode = 0;
+static char _segments[5];
+static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
+static uint8_t _matrix_grn[8] = {0,0,0,0,0,0,0,0};
 
 void clock_mode(uint8_t mode) {
 	_mode = mode;
@@ -10,22 +14,28 @@ void clock_mode(uint8_t mode) {
 /*
  * Sets a char array according to the time in the given mode.
  */
-void clock_segments(char[] result) {
-	for (int = 0; i < 4; i++) {
-		result = _segments;
+void clock_segments(char result[]) {
+	for (uint8_t i = 0; i < 4; i++) {
+		result[i] = _segments[i];
 	}
 }
 
 /*
  * Sets a matrix array according to the time in the given mode.
  */
-void clock_matrix(uint8_t[] red, uint8_t[] grn) {
-	for (int = 0; i < 8; i++) {
+void clock_matrix(uint8_t red[], uint8_t grn[]) {
+	for (uint8_t i = 0; i < 8; i++) {
 		red[i] = _matrix_red[i];
 		grn[i] = _matrix_grn[i];
 	}
 }
 
+void clock_clear_matrix() {
+	for (uint8_t i = 0; i < 8; i++) {
+		_matrix_red[i] = 0;
+		_matrix_grn[i] = 0;
+	}
+}
 
 void clock_traditional(uint16_t ms) {
 	//milliseconds to traditional (24:59)
@@ -35,6 +45,7 @@ void clock_traditional(uint16_t ms) {
 	ms -= mn / 60000;
 	uint8_t sc = ms / 1000;		// 1/86400 day (second)	
 	
+	clock_clear_matrix();
 }
 
 void clock_vigesimal(uint16_t ms) {
@@ -52,30 +63,30 @@ void clock_vigesimal(uint16_t ms) {
 	_segments[2] = c;
 	_segments[3] = d;
 
-	_matrix = {0,0,0,0,0,0,0,0};
-	uint8_t dot = { 0x80 };
-	for (int i = 0; i < 4; i ++) {
+	clock_clear_matrix();
+
+	for (uint8_t i = 0; i < 4; i ++) {
 		// build a 4x4 mayan number square
-		uint8_t sq[4];
+		uint8_t sq[4] = {0,0,0,0};
 		uint8_t v = _segments[i];
 		uint8_t m = v % 5;
-		if (m == 1) sq = {8,0,0,0};
-		else if (m == 2) sq = {8,8,0,0};
-		else if (m == 3) sq = {8,8,8,0};
-		else if (m == 4) sq = {8,8,8,8};
-		for (j = 0; j < 4; j++) {
+		if (m > 3) sq[3] = 8;
+		if (m > 2) sq[2] = 8;
+		if (m > 1) sq[1] = 8;
+		if (m > 0) sq[0] = 8;
+		for (uint8_t j = 0; j < 4; j++) {
 			if (v > 14) {
 				sq[j] = sq[j] >> 3;
 				sq[j] |= 7;
 			} else if (v > 9) {
 				sq[j] = sq[j] >> 2;
-				sqj[] |= 3;
+				sq[j] |= 3;
 			} else if (v > 4) {
 				sq[j] = sq[j] >> 1;
 				sq[j] |= 1;
 			}
 			if (i == 0 || i == 2) {
-				sq[j] = sq[j] >> 4
+				sq[j] = sq[j] >> 4;
 			}
 		}
 		
@@ -83,36 +94,36 @@ void clock_vigesimal(uint16_t ms) {
 		uint8_t offset = 0;
 		if (i == 1 || i == 3) offset = 4;
 		for (int i = 0; i < 4; i++) {
-			_matrix[i + offset] |= sq[i];
+			_matrix_red[i + offset] |= sq[i];
 		}
 	}
 }
 
 void clock_hexadecimal(uint16_t ms) {
 	//milliseconds to hexadecimal (F:F:F:F)
-	int hr - ms / 5400000;	// 1/16 day (hex hour)
+	uint8_t hr = ms / 5400000;	// 1/16 day (hex hour)
 	ms -= hr * 5400000;
-	int mx = ms / 337500;	// 1/256 day (hex maxime)
+	uint8_t mx = ms / 337500;	// 1/256 day (hex maxime)
 	ms -= mx * 337500;
-	int mn = ms / 21094;	// 1/4096 day (hex minute)
+	uint8_t mn = ms / 21094;	// 1/4096 day (hex minute)
 	ms -= mn * 21094;
-	int sc = ms / 1318;		// 1/65536 day (hex second)
+	uint8_t sc = ms / 1318;		// 1/65536 day (hex second)
 	
 	_segments[0] = hr;
 	_segments[1] = mx;
 	_segments[2] = mn;
 	_segments[3] = sc;
 
-	// 2x2 pixels for each bit
-	uint8_t[] bars = { 0xC0, 0x30, 0x0C, 0x03 };
-	for (int i = 0; i < 4; i++) {
+	// 2x2 pixels for each bit, hr on top, sc on bottom
+	for (uint8_t i = 0; i < 4; i++) {
+		// build a 1x8 bar
 		int v = _segments[i];
-		_matrix[(i*2)+0] = 0x00;
-		_matrix[(i*2)+1] = 0x00;
-		for (int j = 0; j < 4; j++) {
-			if (bit_is_set(i,j)) {
-				_matrix[(i*2)+0] += bars[j];
-				_matrix[(i*2)+1] += bars[j];
+		for (uint8_t j = 0; j < 4; j++) {
+			if ((v & _BV(j)) != 0) {
+				_matrix_red[(i*2)+0] |= 1 << ((j*2)+0);
+				_matrix_red[(i*2)+1] |= 1 << ((j*2)+1);
+				_matrix_red[(i*2)+0] |= 1 << ((j*2)+0);
+				_matrix_red[(i*2)+1] |= 1 << ((j*2)+1);
 			}
 		}
 	}
@@ -132,10 +143,12 @@ void clock_decimal(uint16_t ms) {
 	_segments[1] = cd;
 	_segments[2] = md;
 	_segments[3] = ud;
+	
+	clock_clear_matrix();
 }
 
 void clock_octal(uint16_t ms) {
-	//milliseconds to octal (8:8:8:8:8:8)
+	//milliseconds to octal (7:7:7:7:7:7)
 	int a = ms / 10800000;	// 1/8 day
 	ms -= a * 10800000;
 	int b = ms / 1350000;	// 1/64 day
@@ -153,6 +166,17 @@ void clock_octal(uint16_t ms) {
 	_segments[2] = c;
 	_segments[3] = d;
 	
+	// 1x2 pixels for each bit, hr on top, sc on bottom
+	for (int i = 0; i < 4; i++) {
+		// build a 1x8 bar
+		int v = _segments[i];
+		for (int j = 0; j < 4; j++) {
+			if ((v & _BV(j)) != 0) {
+				_matrix_red[(i*2)+1] |= 2 << (j*2);
+ 				_matrix_red[(i*2)+2] |= 2 << (j*2);
+			}
+		}
+	}
 }
 
 void clock_dni(uint16_t ms) {
@@ -163,17 +187,15 @@ void clock_dni(uint16_t ms) {
 	ms -= b * 138240;
 	int c = ms / 5530;		// 1/15625 day
 	ms -= c * 5530;
-	int d = ms / 221;		// 1/390625 day	
+	int d = ms / 221;		// 1/390625 day
 }
 
-void update(uint16_t ms) {
+void clock_update(uint16_t ms) {
 	switch (_mode) {
 		case 0: clock_traditional(ms);
 		case 1: clock_vigesimal(ms);
 		case 2: clock_hexadecimal(ms);
 		case 3: clock_decimal(ms);
 		case 4: clock_octal(ms);
-	}
-}
 	}
 }

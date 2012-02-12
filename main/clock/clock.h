@@ -1,3 +1,8 @@
+#ifndef CLOCK_H
+#define CLOCK_H
+
+#include <stdint.h>
+
 /*
  * Sets the clock mode.
  * 0: traditional (24:59:59)
@@ -16,9 +21,11 @@ void clock_update(uint16_t millis);
 /*
  * Sets a char array according to the time in the given mode.
  */
-void clock_segments(char[] result);
+void clock_segments(char result[]);
 
 /*
  * Sets a matrix array according to the time in the given mode.
  */
-void clock_matrix(uint8_t[] result);
+void clock_matrix(uint8_t red[], uint8_t grn[]);
+
+#endif

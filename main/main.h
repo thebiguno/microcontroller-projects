@@ -6,5 +6,7 @@
 
 #include "segment/segment.h"
 #include "matrix/matrix.h"
+#include "timer/timer.h"
+#include "clock/clock.h"
 
 #endif
