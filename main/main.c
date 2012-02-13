@@ -18,7 +18,7 @@ int main() {
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
-	clock_mode(0);
+	clock_mode(2);
 	
 	while(1) {
 		uint32_t ms = timer_millis();
@@ -28,7 +28,7 @@ int main() {
 			clock_matrix(red, grn);
 		}
 
-		segment_draw(c, 0x20);
-		matrix_draw(&red[0],&grn[0]);
+		segment_draw(c, 0x00);
+		matrix_draw(red,grn);
 	}
 }

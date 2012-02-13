@@ -35,4 +35,12 @@
 #define PORT_MATRIX_LATCH		PORTB
 #define PIN_MATRIX_LATCH		PINB5
 
+// define these according the wiring of the three buttons
+#define PORT_BUTTON_HR			PORTD
+#define PIN_BUTTON_HR			PIND5
+#define PORT_BUTTON_MN			PORTD
+#define PIN_BUTTON_MN			PIND6
+#define PORT_BUTTON_MODE		PORT7
+#define PIN_BUTTON_MODE			PIND7
+
 #endif

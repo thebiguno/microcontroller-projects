@@ -8,5 +8,6 @@
 #include "matrix/matrix.h"
 #include "timer/timer.h"
 #include "clock/clock.h"
+#include "button/button.h"
 
 #endif
