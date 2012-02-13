@@ -119,7 +119,7 @@ void segment_draw(char c[], uint8_t flags) {
 	}
 	
 	seg++;
-	if (seg > 3 + 8) {
+	if (seg > 3 + 32) {
 		seg = 0;
 	}
 }
