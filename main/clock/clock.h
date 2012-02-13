@@ -8,7 +8,7 @@
  * 0: traditional (24:59:59)
  * 1: vigesimal(19:19:19:19)
  * 2: hexadecimal (F:F:F:F)
- * 3: decimal (9:9:9:9)
+ * 3: decimal (9:9:9:9:9)
  * 4: octal (8:8:8:8:8:8)
  */
 void clock_mode(uint8_t mode);
