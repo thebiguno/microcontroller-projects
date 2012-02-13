@@ -1,14 +1,7 @@
 #include "segment.h"
-
+#include "../pins.h"
+#include "../shift/shift.h"
 #include <avr/sfr_defs.h>
-
-static volatile uint8_t *_data_port = 0;
-static volatile uint8_t *_clock_port = 0;
-static volatile uint8_t *_latch_port = 0;
-
-static uint8_t _data_pin = 0;
-static uint8_t _clock_pin = 0;
-static uint8_t _latch_pin = 0;
 
 static uint8_t lookup(char c) {
 	// high = off; so the lookup is defined by what segments are off, not what segments are on
@@ -88,41 +81,6 @@ static uint8_t lookup(char c) {
 	}
 }
 
-static void segment_data(uint8_t data) {
-	for (int i = 0; i < 8; i++) {
-		//Clear the pin first...
-		*_data_port &= ~_BV(_data_pin);
-		//... then set the bit (if appropriate).  We could probably
-		// do this in one step, but this is more clear, plus speed is 
-		// (probably) not critical here.
-		*_data_port |= (((data >> (7 - i)) & 0x1) << _data_pin);
-		
-		//Pulse clock to shift in
-		*_clock_port &= ~_BV(_clock_pin);
-		*_clock_port |= _BV(_clock_pin);
-	}
-}
-
-static void segment_latch() {
-	*_latch_port &= ~_BV(_latch_pin);
-	*_latch_port |= _BV(_latch_pin);
-}
-
-void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin){
-	_data_port = data_port;
-	_clock_port = clock_port;
-	_latch_port = latch_port;
-
-	// set ddr output
-	*(_data_port - 0x1) |= _BV(data_pin);
-	*(_clock_port - 0x1) |= _BV(clock_pin);
-	*(_latch_port - 0x1) |= _BV(latch_pin);
-	
-	_data_pin = data_pin;
-	_clock_pin = clock_pin;
-	_latch_pin = latch_pin;
-}
-
 void segment_draw(char c[], uint8_t flags) {
 	static uint8_t seg = 0;
 
@@ -133,36 +91,31 @@ void segment_draw(char c[], uint8_t flags) {
 		if (flags & _BV(4)) b += SEG_L1L2;
 		if (flags & _BV(5)) b += SEG_L3;
 
-		segment_data(b);
+		shift_data(b);
 		b = lookup(c[0]);
 		if (!(flags & _BV(0))) b += SEG_DP;
-		segment_data(b);
-		segment_latch();
+		shift_data(b);
 	} else if (seg == 1) {
 		b = SEG_DIG2;
-		segment_data(b);
+		shift_data(b);
 		b = lookup(c[1]);
 		if (!(flags & _BV(1))) b += SEG_DP;
-		segment_data(b);
-		segment_latch();
+		shift_data(b);
 	} else if (seg == 2) {
 		b = SEG_DIG3;
-		segment_data(b);
+		shift_data(b);
 		b = lookup(c[2]);
 		if (!(flags & _BV(2))) b += SEG_DP;
-		segment_data(b);
-		segment_latch();
+		shift_data(b);
 	} else if (seg == 3) {	
 		b = SEG_DIG4;
-		segment_data(b);
+		shift_data(b);
 		b = lookup(c[3]);
 		if (!(flags & _BV(3))) b += SEG_DP;
-		segment_data(b);
-		segment_latch();
+		shift_data(b);
 	} else {
-		segment_data(0x00);
-		segment_data(0xFF);
-		segment_latch();
+		shift_data(0x00);
+		shift_data(0xFF);
 	}
 	
 	seg++;

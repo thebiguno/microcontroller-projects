@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include "pins.h"
 
+#include "shift/shift.h"
 #include "segment/segment.h"
 #include "matrix/matrix.h"
 #include "timer/timer.h"

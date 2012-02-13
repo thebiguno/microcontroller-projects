@@ -20,20 +20,12 @@
 #define SEG_L3   0X80
 
 // define this according to the wiring of SR1 (and SR3) to AVR
-#define PORT_SEGMENT_DATA		PORTB
-#define PIN_SEGMENT_DATA		PINB0
-#define PORT_SEGMENT_CLOCK		PORTB
-#define PIN_SEGMENT_CLOCK		PINB1
-#define PORT_SEGMENT_LATCH		PORTB
-#define PIN_SEGMENT_LATCH		PINB2
-
-// define this according to the wiring of SR3 (and SR4 and SR5) to the AVR
-#define PORT_MATRIX_DATA		PORTB
-#define PIN_MATRIX_DATA			PINB3
-#define PORT_MATRIX_CLOCK		PORTB
-#define PIN_MATRIX_CLOCK		PINB4
-#define PORT_MATRIX_LATCH		PORTB
-#define PIN_MATRIX_LATCH		PINB5
+#define PORT_SHIFT_DATA		PORTB
+#define PIN_SHIFT_DATA		PINB3
+#define PORT_SHIFT_CLOCK	PORTB
+#define PIN_SHIFT_CLOCK		PINB5
+#define PORT_SHIFT_LATCH	PORTB
+#define PIN_SHIFT_LATCH		PINB2
 
 // define these according the wiring of the three buttons
 #define PORT_BUTTON_HOUR		PORTD

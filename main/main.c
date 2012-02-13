@@ -2,8 +2,7 @@
 
 int main() {
 	
-	segment_init(&PORT_SEGMENT_DATA, PIN_SEGMENT_DATA, &PORT_SEGMENT_CLOCK, PIN_SEGMENT_CLOCK, &PORT_SEGMENT_LATCH, PIN_SEGMENT_LATCH);
-	matrix_init(&PORT_MATRIX_DATA, PIN_MATRIX_DATA, &PORT_MATRIX_CLOCK, PIN_MATRIX_CLOCK, &PORT_MATRIX_LATCH, PIN_MATRIX_LATCH);
+	shift_init(&PORT_SHIFT_DATA, PIN_SHIFT_DATA, &PORT_SHIFT_CLOCK, PIN_SHIFT_CLOCK, &PORT_SHIFT_LATCH, PIN_SHIFT_LATCH);
 	button_init(&PORT_BUTTON_HOUR, PIN_BUTTON_HOUR, &PORT_BUTTON_MIN, PIN_BUTTON_MIN, &PORT_BUTTON_MODE, PIN_BUTTON_MODE);
 	timer_init();
 	
@@ -20,6 +19,7 @@ int main() {
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
 	uint8_t mode = 3;
+	uint8_t flag = 1;
 	
 	clock_mode(mode);
 	
@@ -36,12 +36,18 @@ int main() {
 		}
 		
 		if ((uint8_t) ms == 0) {
-			clock_update(ms);
-			clock_segments(c);
-			clock_matrix(red, grn);
+			if (flag == 1) {
+				clock_update(ms);
+				clock_segments(c);
+				clock_matrix(red, grn);
+				flag = 0;
+			}
+		} else {
+			flag = 1;
 		}
 
 		segment_draw(c, 0x00);
 		matrix_draw(red,grn);
+		shift_latch();
 	}
 }
