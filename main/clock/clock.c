@@ -176,7 +176,7 @@ void clock_decimal(uint32_t ms) {
 	int md = ms / 86400;	// 1/1000 day (milliday)
 	ms -= 86400 * (uint32_t) md;
 	int ud = ms / 8640;		// 1/10000 day (microday??)
-	ms -= 86400 * (uint32_t) ud;
+	ms -= 8640 * (uint32_t) ud;
 	int nd = ms / 864;		// 1/100000 day (nanoday??)
 	
 	_segments[0] = dd;
@@ -187,7 +187,59 @@ void clock_decimal(uint32_t ms) {
 	
 	clock_clear_matrix();
 	
-	//
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
+		// build a 3x3 number square
+		
+		uint8_t v = _segments[i];
+		int row = 3;
+		if (i > 1) row += 3; // move md and ud down three rows
+		if (i == 1 || i == 3) row += 8; // make cd and ud green instead of red
+		
+		// draw the dots
+		uint8_t sh = (i % 2 == 1) ? 3 : 0; // shift cd and ud over three cols
+		if (v > 0) _matrix_red[row-0] |= (0x08 << sh);
+		if (v > 1) _matrix_red[row-0] |= (0x04 << sh);
+		if (v > 2) _matrix_red[row-0] |= (0x02 << sh);
+		if (v > 3) _matrix_red[row-1] |= (0x08 << sh);
+		if (v > 4) _matrix_red[row-1] |= (0x04 << sh);
+		if (v > 5) _matrix_red[row-1] |= (0x02 << sh);
+		if (v > 6) _matrix_red[row-2] |= (0x08 << sh);
+		if (v > 7) _matrix_red[row-2] |= (0x04 << sh);
+		if (v > 8) _matrix_red[row-2] |= (0x02 << sh);
+	}
+	
+	// draw the border
+	if (nd > 0) { 
+		_matrix_red[0] |= 0x06; _matrix_grn[0] |= 0x06;
+	}
+	if (nd > 1) { 
+		_matrix_red[0] |= 0x60; _matrix_grn[0] |= 0x60;
+	}
+	if (nd > 2) {
+		_matrix_red[1] |= 0x80; _matrix_grn[1] |= 0x80;
+		_matrix_red[2] |= 0x80; _matrix_grn[2] |= 0x80;
+	}
+	if (nd > 3) {
+		_matrix_red[4] |= 0x80; _matrix_grn[4] |= 0x80;
+		_matrix_red[5] |= 0x80; _matrix_grn[5] |= 0x80;
+	}
+	if (nd > 4) { 
+		_matrix_red[7] |= 0xC0; _matrix_grn[7] |= 0xC0;
+	}
+	if (nd > 5) { 
+		_matrix_red[7] |= 0x18; _matrix_grn[7] |= 0x18;
+	}
+	if (nd > 6) { 
+		_matrix_red[7] |= 0x03; _matrix_grn[7] |= 0x03;
+	}
+	if (nd > 7) {
+		_matrix_red[4] |= 0x01; _matrix_grn[4] |= 0x01;
+		_matrix_red[5] |= 0x01; _matrix_grn[5] |= 0x01;
+	}
+	if (nd > 8) {
+		_matrix_red[1] |= 0x01; _matrix_grn[1] |= 0x01;
+		_matrix_red[2] |= 0x01; _matrix_grn[2] |= 0x01;
+	}
 }
 
 void clock_octal(uint32_t ms) {
