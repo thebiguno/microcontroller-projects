@@ -39,16 +39,16 @@ void button_init(volatile uint8_t *hr_port, uint8_t hr_pin, volatile uint8_t *mn
 void button_read(uint32_t ms) {
 	// sample every 10 ms, debounced state is equal to the last 4 samples (i.e. must be consistent for 40 ms)
 	
-	if (_ms - ms > 10) {
+	if (ms - _ms > 10) {
 		_ms = ms;
 		_samples[_index] = 0;
-		if (*_hr_port & _BV(_hr_pin)) {
+		if (!(*(_hr_port - 0x2) & _BV(_hr_pin))) {
 			_samples[_index] |= BUTTON_HOUR;
 		}
-		if (*_mn_port & _BV(_mn_pin)) {
+		if (!(*(_mn_port - 0x2) & _BV(_mn_pin))) {
 			_samples[_index] |= BUTTON_MIN;
 		}
-		if (*_mode_port & _BV(_mode_pin)) {
+		if (!(*(_mode_port - 0x2) & _BV(_mode_pin))) {
 			_samples[_index] |= BUTTON_MODE;
 		}
 		_index++;
