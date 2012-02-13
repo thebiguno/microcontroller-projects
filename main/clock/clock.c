@@ -80,13 +80,13 @@ void clock_traditional(uint32_t ms) {
 		// build a 1x6 bar
 		int v = _segments[i];
 		for (int j = 0; j < 8; j++) { // bits (cols)
-			uint8_t offset = 0;
-			if (i > 1) offset++;
-			if (i > 3) offset++;
-			if (i == 2 || i == 3) offset += 8; // overflow hack to draw into green matrix instead of red matrix
+			uint8_t row = i;
+			if (i > 1) row++;
+			if (i > 3) row++;
+			if (i == 2 || i == 3) row += 8; // overflow hack to draw into green matrix instead of red matrix
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[i+offset] |= 1 << (7-(j*2));
-				_matrix_red[i+offset] |= 1 << (6-(j*2));
+				_matrix_red[row] |= 1 << (7-(j*2));
+				_matrix_red[row] |= 1 << (6-(j*2));
 			}
 		}
 	}
