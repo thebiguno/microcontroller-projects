@@ -46,13 +46,10 @@ void matrix_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t
 }
 
 uint8_t bits_set(uint8_t v) {
-	uint8_t result = 0;
-	for (uint8_t i = 0; i < 8; i++) {
-		if (v & _BV(i)) {
-			result++;
-		} 
-	}
-	return result;
+	uint8_t c = v - ((v >> 1) & 0x55);
+	c = ((c >> 0x02) & 0x33) + (c & 0x33);
+	c = ((c >> 0x04) + c) & 0x0F;
+	return c;
 }
 
 void matrix_draw(uint8_t red[], uint8_t green[]) {
