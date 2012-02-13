@@ -139,10 +139,11 @@ void clock_hexadecimal(uint32_t ms) {
 	ms -= 5400000 * (uint32_t) hr;
 	uint8_t mx = ms / 337500;		// 1/256 day (hex maxime)
 	ms -= 337500 * (uint32_t) mx;
-	double msd = ms;
-	uint8_t mn = msd / 21093.75;	// 1/4096 day (hex minute)
-	msd -= 21093.75 * (double) mn;
-	uint8_t sc = msd / 1318.359375;	// 1/65536 day (hex second)
+	ms *= 100;						// bump up the precision
+	uint8_t mn = ms / 2109375;		// 1/4096 day (hex minute)
+	ms -= 2109375 * (uint32_t) mn;
+	ms *= 100;						// bump up the precision again
+	uint8_t sc = ms / 13183593;		// 1/65536 day (hex second)
 	
 	_segments[0] = hr;
 	_segments[1] = mx;
@@ -250,12 +251,14 @@ void clock_octal(uint32_t ms) {
 	ms -= 1350000 * (uint32_t) b;
 	uint8_t c = ms / 168750;	// 1/512 day
 	ms -= 168750 * (uint32_t) c;
-	double msd = ms;
-	uint8_t d = msd / 21093.75;	// 1/4096 day
-	msd -= 21093.75 * (double) d;
-	uint8_t e = msd / 2636.71875;	// 1/32768 day
-	msd -= 2636.71875 * (double) e;
-	uint8_t f = msd / 329.58984375;	// 1/262144 day
+	ms *= 100;					// bump up the precision
+	uint8_t d = ms / 2109375;	// 1/4096 day
+	ms -= 2109375 * (uint32_t) d;
+	ms *= 100;					// bump up the precision again
+	uint8_t e = ms / 26367187;	// 1/32768 day
+	ms -= 26367187 * (uint32_t) e;
+	ms *= 100;					// bump up the precision again
+	uint8_t f = ms / 329589843;	// 1/262144 day
 	
 	_segments[0] = a;
 	_segments[1] = b;
