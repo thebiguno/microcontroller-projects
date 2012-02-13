@@ -117,10 +117,10 @@ void clock_vigesimal(uint32_t ms) {
 		if (v > 4) row--;
 		if (v > 9) row--;
 		if (v > 14) row--;
-		if (i > 1) row += 4; // move down 4 rows for c and d
+		if (i > 1) row += 4; // mode c and d down four rows
 		
 		// draw the dots
-		uint8_t sh = (i % 2 == 1) ? 4 : 0;
+		uint8_t sh = (i % 2 == 1) ? 4 : 0; // shift b and d over 4 cols
 		if (v % 5 > 0) _matrix_red[row] |= (0x01 << sh);
 		if (v % 5 > 1) _matrix_red[row] |= (0x02 << sh);
 		if (v % 5 > 2) _matrix_red[row] |= (0x04 << sh);
