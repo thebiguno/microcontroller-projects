@@ -228,16 +228,16 @@ void clock_octal(uint32_t ms) {
 	}
 }
 
-void clock_dni(uint32_t ms) {
-	//milliseconds to d'ni (25:25:25:25)
-	int a = ms / 3456000;	// 1/25 day
-	ms -= a * 3456000;
-	int b = ms / 138240;	// 1/625 day
-	ms -= b * 138240;
-	int c = ms / 5530;		// 1/15625 day
-	ms -= c * 5530;
-	int d = ms / 221;		// 1/390625 day
-}
+// void clock_dni(uint32_t ms) {
+// 	//milliseconds to d'ni (25:25:25:25)
+// 	int a = ms / 3456000;	// 1/25 day
+// 	ms -= a * 3456000;
+// 	int b = ms / 138240;	// 1/625 day
+// 	ms -= b * 138240;
+// 	int c = ms / 5530;		// 1/15625 day
+// 	ms -= c * 5530;
+// 	int d = ms / 221;		// 1/390625 day
+// }
 
 void clock_update(uint32_t ms) {
 	switch (_mode) {
