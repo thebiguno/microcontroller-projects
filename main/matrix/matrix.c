@@ -35,6 +35,7 @@ void matrix_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t
 	_clock_port = clock_port;
 	_latch_port = latch_port;
 
+	// set ddr output
 	*(_data_port - 0x1) |= _BV(data_pin);
 	*(_clock_port - 0x1) |= _BV(clock_pin);
 	*(_latch_port - 0x1) |= _BV(latch_pin);
