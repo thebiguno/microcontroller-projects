@@ -11,7 +11,7 @@ static uint8_t _clock_pin = 0;
 static uint8_t _latch_pin = 0;
 
 static void matrix_data(uint8_t data){
-	for (int i = 0; i < 8; i++){
+	for (uint8_t i = 0; i < 8; i++){
 		//Clear the pin first...
 		*_data_port &= ~_BV(_data_pin);
 		//... then set the bit (if appropriate).  We could probably
@@ -44,17 +44,40 @@ void matrix_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t
 	_clock_pin = clock_pin;
 	_latch_pin = latch_pin;
 }
-		
-		
-void matrix_draw(uint8_t red[], uint8_t green[]) {
-	for (int i = 0; i < 8; i++) {
-		matrix_data(0xFF-_BV(i));
-		matrix_data(red[i]);
-		matrix_data(green[i]);
-		matrix_latch();
+
+uint8_t bits_set(uint8_t v) {
+	uint8_t result = 0;
+	for (uint8_t i = 0; i < 8; i++) {
+		if (v & _BV(i)) {
+			result++;
+		} 
 	}
-	matrix_data(0xFF);
-	matrix_data(0x00);
-	matrix_data(0x00);
+	return result;
+}
+
+void matrix_draw(uint8_t red[], uint8_t green[]) {
+	static uint8_t row = 0;
+	static uint8_t dc_r[8];
+	static uint8_t dc_g[8];
+	
+	matrix_data(0xFF-_BV(row));
+	if (bits_set(red[row]) >= dc_r[row]) {
+		matrix_data(red[row]);
+	} else {
+		matrix_data(0x00);
+	}
+	if (bits_set(green[row]) >= dc_g[row]) {
+		matrix_data(green[row]);
+	} else {
+		matrix_data(0x00);
+	}
 	matrix_latch();
+	
+	dc_r[row]++;
+	if (dc_r[row] > 7) dc_r[row] = 0;
+	dc_g[row]++;
+	if (dc_g[row] > 7) dc_g[row] = 0;
+	
+	row++;
+	if (row > 7) row = 0;
 }

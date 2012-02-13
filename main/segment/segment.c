@@ -124,39 +124,49 @@ void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_
 }
 
 void segment_draw(char c[], uint8_t flags) {
-	uint8_t b = SEG_DIG1;
+	static uint8_t seg = 0;
 
-	if (flags & _BV(4)) b += SEG_L1L2;
-	if (flags & _BV(5)) b += SEG_L3;
+	uint8_t b = 0;
+	if (seg == 0) {
+		b = SEG_DIG1;
 
-	segment_data(b);
-	b = lookup(c[0]);
-	if (!(flags & _BV(0))) b += SEG_DP;
-	segment_data(b);
-	segment_latch();
+		if (flags & _BV(4)) b += SEG_L1L2;
+		if (flags & _BV(5)) b += SEG_L3;
+
+		segment_data(b);
+		b = lookup(c[0]);
+		if (!(flags & _BV(0))) b += SEG_DP;
+		segment_data(b);
+		segment_latch();
+	} else if (seg == 1) {
+		b = SEG_DIG2;
+		segment_data(b);
+		b = lookup(c[1]);
+		if (!(flags & _BV(1))) b += SEG_DP;
+		segment_data(b);
+		segment_latch();
+	} else if (seg == 2) {
+		b = SEG_DIG3;
+		segment_data(b);
+		b = lookup(c[2]);
+		if (!(flags & _BV(2))) b += SEG_DP;
+		segment_data(b);
+		segment_latch();
+	} else if (seg == 3) {	
+		b = SEG_DIG4;
+		segment_data(b);
+		b = lookup(c[3]);
+		if (!(flags & _BV(3))) b += SEG_DP;
+		segment_data(b);
+		segment_latch();
+	} else {
+		segment_data(0x00);
+		segment_data(0xFF);
+		segment_latch();
+	}
 	
-	b = SEG_DIG2;
-	segment_data(b);
-	b = lookup(c[1]);
-	if (!(flags & _BV(1))) b += SEG_DP;
-	segment_data(b);
-	segment_latch();
-	
-	b = SEG_DIG3;
-	segment_data(b);
-	b = lookup(c[2]);
-	if (!(flags & _BV(2))) b += SEG_DP;
-	segment_data(b);
-	segment_latch();
-	
-	b = SEG_DIG4;
-	segment_data(b);
-	b = lookup(c[3]);
-	if (!(flags & _BV(3))) b += SEG_DP;
-	segment_data(b);
-	segment_latch();
-	
-	segment_data(0x00);
-	segment_data(0xFF);
-	segment_latch();
+	seg++;
+	if (seg > 3 + 8) {
+		seg = 0;
+	}
 }
