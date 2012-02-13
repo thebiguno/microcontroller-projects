@@ -113,6 +113,7 @@ void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_
 	_clock_port = clock_port;
 	_latch_port = latch_port;
 
+	// set ddr output
 	*(_data_port - 0x1) |= _BV(data_pin);
 	*(_clock_port - 0x1) |= _BV(clock_pin);
 	*(_latch_port - 0x1) |= _BV(latch_pin);
@@ -125,33 +126,33 @@ void segment_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_
 void segment_draw(char c[], uint8_t flags) {
 	uint8_t b = SEG_DIG1;
 
-	if (!bit_is_set(flags,4)) b += SEG_L1L2;
-	if (!bit_is_set(flags,5)) b += SEG_L3;
+	if (flags & _BV(4)) b += SEG_L1L2;
+	if (flags & _BV(5)) b += SEG_L3;
 
 	segment_data(b);
 	b = lookup(c[0]);
-	if (!bit_is_set(flags,0)) b += SEG_DP;
+	if (!(flags & _BV(0))) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG2;
 	segment_data(b);
 	b = lookup(c[1]);
-	if (!bit_is_set(flags,1)) b += SEG_DP;
+	if (!(flags & _BV(1))) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG3;
 	segment_data(b);
 	b = lookup(c[2]);
-	if (!bit_is_set(flags,2)) b += SEG_DP;
+	if (!(flags & _BV(2))) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
 	b = SEG_DIG4;
 	segment_data(b);
 	b = lookup(c[3]);
-	if (!bit_is_set(flags,3)) b += SEG_DP;
+	if (!(flags & _BV(3))) b += SEG_DP;
 	segment_data(b);
 	segment_latch();
 	
