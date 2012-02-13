@@ -157,12 +157,18 @@ void clock_hexadecimal(uint32_t ms) {
 		// build a 1x8 bar
 		int v = _segments[i];
 		for (uint8_t j = 0; j < 4; j++) { // bits (cols)
-			uint8_t offset = (i % 2 == 0) ? 0 : 8; // overflow hack to draw into green matrix instead of red matrix
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[(i*2)+0+offset] |= 1 << (7-(j*2));
-				_matrix_red[(i*2)+1+offset] |= 1 << (7-(j*2));
-				_matrix_red[(i*2)+0+offset] |= 1 << (6-(j*2));
-				_matrix_red[(i*2)+1+offset] |= 1 << (6-(j*2));
+				if (i == 1 || i == 3) {
+					_matrix_grn[(i*2)+0] |= 1 << (7-(j*2));
+					_matrix_grn[(i*2)+1] |= 1 << (7-(j*2));
+					_matrix_grn[(i*2)+0] |= 1 << (6-(j*2));
+					_matrix_grn[(i*2)+1] |= 1 << (6-(j*2));
+				} else {
+					_matrix_red[(i*2)+0] |= 1 << (7-(j*2));
+					_matrix_red[(i*2)+1] |= 1 << (7-(j*2));
+					_matrix_red[(i*2)+0] |= 1 << (6-(j*2));
+					_matrix_red[(i*2)+1] |= 1 << (6-(j*2));
+				}
 			}
 		}
 	}
@@ -274,10 +280,14 @@ void clock_octal(uint32_t ms) {
 		// build a 1x6 bar
 		int v = _segments[i];
 		for (int j = 0; j < 3; j++) { // bits (cols)
-			uint8_t offset = (i % 2 == 0) ? 0 : 8; // overflow hack to draw into green matrix instead of red matrix
 			if ((v & _BV(j)) != 0) {
-				_matrix_red[i+1+offset] |= 2 << (5-(j*2));
-				_matrix_red[i+1+offset] |= 2 << (4-(j*2));
+				if (i == 1 || i == 3 || i == 5) {
+					_matrix_grn[i+1] |= 2 << (5-(j*2));
+					_matrix_grn[i+1] |= 2 << (4-(j*2));
+				} else {
+					_matrix_red[i+1] |= 2 << (5-(j*2));
+					_matrix_red[i+1] |= 2 << (4-(j*2));
+				}
 			}
 		}
 	}
