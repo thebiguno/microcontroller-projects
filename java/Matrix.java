@@ -28,7 +28,7 @@ public class Matrix extends JFrame {
 					
 					for (int h = 0; h < 8; h++) {
 						final JCheckBox checkBox = (JCheckBox) col.getComponent(h);
-						if (checkBox.isSelected()) value = value.setBit(h);
+						if (checkBox.isSelected()) value = value.setBit(7-h);
 					}
 
 					if (w > 0) sb.append(", ");
@@ -56,14 +56,17 @@ public class Matrix extends JFrame {
 		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				String t = valueField.getText();
-//				t = t.replaceAll("0x", "").replaceAll(",", "");
-//				value = new BigInteger(t, 16);
-//				
-//				for (int i = 0; i < width * height; i++){
-//					JCheckBox item = (JCheckBox) checkPanel.getComponent(i);
-//					item.setSelected(value.testBit(item.getIconTextGap()));
-//				}
+				final String t = valueField.getText();
+				final String[] a = t.split(", ");
+				
+				for (int w = 0; w < 8; w++) {
+					final BigInteger v = new BigInteger(a[w].replaceAll("0x",""),16);
+					final JPanel col = (JPanel) row.getComponent(w);
+					for (int h = 0; h < 8; h++) {
+						final JCheckBox checkBox = (JCheckBox) col.getComponent(h);
+						checkBox.setSelected(v.testBit(7-h));
+					}
+				}
 			}
 		});
 		buttonPanel.add(valueField, BorderLayout.CENTER);
