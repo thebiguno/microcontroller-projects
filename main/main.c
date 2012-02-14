@@ -5,6 +5,8 @@ int main() {
 	shift_init(&PORT_SHIFT_DATA, PIN_SHIFT_DATA, &PORT_SHIFT_CLOCK, PIN_SHIFT_CLOCK, &PORT_SHIFT_LATCH, PIN_SHIFT_LATCH);
 	button_init(&PORT_BUTTON_HOUR, PIN_BUTTON_HOUR, &PORT_BUTTON_MIN, PIN_BUTTON_MIN, &PORT_BUTTON_MODE, PIN_BUTTON_MODE);
 	timer_init();
+	sei();
+	shift_enable();
 	
 	// 	uint8_t MATRIX_BOX[8] = { 0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF };
 	// 	uint8_t MATRIX_X[8] = { 0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81 };
@@ -40,14 +42,12 @@ int main() {
 				clock_update(ms);
 				clock_segments(c);
 				clock_matrix(red, grn);
+				segment_draw(c, 0x00);
+				matrix_draw(red,grn);
 				flag = 0;
 			}
 		} else {
 			flag = 1;
 		}
-
-		segment_draw(c, 0x00);
-		matrix_draw(red,grn);
-		shift_latch();
 	}
 }

@@ -91,31 +91,31 @@ void segment_draw(char c[], uint8_t flags) {
 		if (flags & _BV(4)) b += SEG_L1L2;
 		if (flags & _BV(5)) b += SEG_L3;
 
-		shift_data(b);
+		shift_data(b,0);
 		b = lookup(c[0]);
 		if (!(flags & _BV(0))) b += SEG_DP;
-		shift_data(b);
+		shift_data(b,1);
 	} else if (seg == 1) {
 		b = SEG_DIG2;
-		shift_data(b);
+		shift_data(b,0);
 		b = lookup(c[1]);
 		if (!(flags & _BV(1))) b += SEG_DP;
-		shift_data(b);
+		shift_data(b,1);
 	} else if (seg == 2) {
 		b = SEG_DIG3;
-		shift_data(b);
+		shift_data(b,0);
 		b = lookup(c[2]);
 		if (!(flags & _BV(2))) b += SEG_DP;
-		shift_data(b);
+		shift_data(b,1);
 	} else if (seg == 3) {	
 		b = SEG_DIG4;
-		shift_data(b);
+		shift_data(b,0);
 		b = lookup(c[3]);
 		if (!(flags & _BV(3))) b += SEG_DP;
-		shift_data(b);
+		shift_data(b,1);
 	} else {
-		shift_data(0x00);
-		shift_data(0xFF);
+		shift_data(0x00,0);
+		shift_data(0xFF,1);
 	}
 	
 	seg++;
