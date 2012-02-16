@@ -18,8 +18,8 @@ int main() {
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
-	uint8_t mode = 3;
-	uint8_t flag = 1;
+	uint8_t mode = 0;
+	uint8_t flag = 0;
 	
 	clock_mode(mode);
 	
@@ -34,16 +34,17 @@ int main() {
 			if (mode > 4) mode = 0;
 			clock_mode(mode);
 		}
-		
 		if ((uint8_t) ms == 0) {
-			if (flag == 1) {
+			if (flag == 0) {
+				flag = 1;
+
+				//scroll_draw(red, grn);
 				clock_update(ms);
 				clock_segments(c);
 				clock_matrix(red, grn);
-				flag = 0;
 			}
 		} else {
-			flag = 1;
+			flag = 0;
 		}
 
 		segment_draw(c, 0x00);
