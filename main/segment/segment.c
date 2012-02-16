@@ -82,7 +82,7 @@ static uint8_t lookup(char c) {
 }
 
 void segment_draw(char c[], uint8_t flags) {
-	static uint8_t seg = 0;
+	static uint8_t seg;
 
 	uint8_t b = 0;
 	if (seg == 0) {
