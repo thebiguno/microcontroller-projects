@@ -2,6 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.math.BigInteger;
 
 import javax.swing.JButton;
@@ -50,31 +52,29 @@ public class Matrix extends JFrame {
 			row.add(col);
 		}
 		
-		final JPanel buttonPanel = new JPanel(new BorderLayout());
-		
-		final JButton submit = new JButton("Set");
-		submit.addActionListener(new ActionListener() {
+		valueField.addKeyListener(new KeyAdapter() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				final String t = valueField.getText();
-				final String[] a = t.split(", ");
+			public void keyTyped(KeyEvent e) {
+				try {
+					final String t = valueField.getText();
+					final String[] a = t.split(", ");
 				
-				for (int w = 0; w < 8; w++) {
-					final BigInteger v = new BigInteger(a[w].replaceAll("0x",""),16);
-					final JPanel col = (JPanel) row.getComponent(w);
-					for (int h = 0; h < 8; h++) {
-						final JCheckBox checkBox = (JCheckBox) col.getComponent(h);
-						checkBox.setSelected(v.testBit(7-h));
+					for (int w = 0; w < a.length; w++) {
+						final BigInteger v = new BigInteger(a[w].replaceAll("0x",""),16);
+						final JPanel col = (JPanel) row.getComponent(w);
+						for (int h = 0; h < 8; h++) {
+							final JCheckBox checkBox = (JCheckBox) col.getComponent(h);
+							checkBox.setSelected(v.testBit(7-h));
+						}
 					}
+				} catch (Throwable t) {
+					;
 				}
 			}
 		});
-		buttonPanel.add(valueField, BorderLayout.CENTER);
-		buttonPanel.add(submit, BorderLayout.EAST);
-		
 		this.setLayout(new BorderLayout());
 		this.add(row, BorderLayout.CENTER);
-		this.add(buttonPanel, BorderLayout.SOUTH);
+		this.add(valueField, BorderLayout.SOUTH);
 				
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
