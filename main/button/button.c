@@ -10,11 +10,8 @@ static uint8_t _hr_pin = 0;
 static uint8_t _mn_pin = 0;
 static uint8_t _mode_pin = 0;
 
-static uint32_t _ms = 0;
 static uint8_t _state = 0;
 static uint8_t _changed = 0;
-static uint8_t _index = 0;
-static uint8_t _samples[4];
 
 void button_init(volatile uint8_t *hr_port, uint8_t hr_pin, volatile uint8_t *mn_port, uint8_t mn_pin, volatile uint8_t *mode_port, uint8_t mode_pin) {
 	_hr_port = hr_port;
@@ -37,28 +34,39 @@ void button_init(volatile uint8_t *hr_port, uint8_t hr_pin, volatile uint8_t *mn
 }
 
 void button_read(uint32_t ms) {
-	// sample every 10 ms, debounced state is equal to the last 4 samples (i.e. must be consistent for 40 ms)
+	// sample every 5 ms, debounced state is equal to the last 4 samples (i.e. must be consistent for 40 ms)
 	
-	if (ms - _ms > 10) {
-		_ms = ms;
-		_samples[_index] = 0;
-		if (!(*(_hr_port - 0x2) & _BV(_hr_pin))) {
-			_samples[_index] |= BUTTON_HOUR;
+	static uint32_t _ms;
+	static uint8_t _index;
+	static uint8_t _samples[8];
+	static uint8_t flag;
+	
+	if (ms - _ms > 5) {
+		if (flag == 0) {
+			flag = 1;
+
+			_ms = ms;
+			_samples[_index] = 0;
+			// if (!(*(_hr_port - 0x2) & _BV(_hr_pin))) {
+			// 			_samples[_index] |= BUTTON_HOUR;
+			// 		}
+			// 		if (!(*(_mn_port - 0x2) & _BV(_mn_pin))) {
+			// 			_samples[_index] |= BUTTON_MIN;
+			// 		}
+			if (!(*(_mode_port - 0x2) & _BV(_mode_pin))) {
+				_samples[_index] |= BUTTON_MODE;
+			}
+			_index++;
+			if (_index > 8) _index = 0;
+			uint8_t debounced = 0xff;
+			for (uint8_t i = 0; i < 8; i++) {
+				debounced &= _samples[i];
+			}
+			_changed = _state ^ debounced;
+			_state = debounced;
 		}
-		if (!(*(_mn_port - 0x2) & _BV(_mn_pin))) {
-			_samples[_index] |= BUTTON_MIN;
-		}
-		if (!(*(_mode_port - 0x2) & _BV(_mode_pin))) {
-			_samples[_index] |= BUTTON_MODE;
-		}
-		_index++;
-		if (_index > 4) _index = 0;
-		uint8_t debounced = 0xff;
-		for (uint8_t i = 0; i < 4; i++) {
-			debounced &= _samples[_index];
-		}
-		_changed = _state ^ debounced;
-		_state = debounced;
+	} else {
+		flag = 0;
 	}
 }
 
