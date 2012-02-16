@@ -11,8 +11,8 @@ uint8_t bits_set(uint8_t v) {
 }
 
 void matrix_draw(uint8_t red[], uint8_t green[]) {
-	static uint8_t color = 0;
-	static uint8_t row = 0;
+	static uint8_t color;
+	static uint8_t row;
 	static uint8_t dc_r[8];
 	static uint8_t dc_g[8];
 	
