@@ -22,26 +22,27 @@ int main() {
 	uint8_t flag = 0;
 	
 	clock_mode(mode);
+	char str[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
+	scroll_update(str, sizeof(str) - 1);
 	
 	while(1) {
 		uint32_t ms = timer_millis();
 		
-		button_read(ms);
-		uint8_t changed = button_changed();
-		uint8_t state = button_state();
-		if ((changed & BUTTON_MODE) && (state & BUTTON_MODE)) {
-			mode++;
-			if (mode > 4) mode = 0;
-			clock_mode(mode);
-		}
+		// button_read(ms);
+		// uint8_t changed = button_changed();
+		// uint8_t state = button_state();
+		// if ((changed & _BV(BUTTON_MODE)) && (state & _BV(BUTTON_MODE))) {
+		// 	mode++;
+		// 	if (mode > 4) mode = 0;
+		// 	clock_mode(mode);
+		// }
 		if ((uint8_t) ms == 0) {
 			if (flag == 0) {
 				flag = 1;
-
-				//scroll_draw(red, grn);
 				clock_update(ms);
 				clock_segments(c);
-				clock_matrix(red, grn);
+				// clock_matrix(red, grn);
+				scroll_draw(red, grn);
 			}
 		} else {
 			flag = 0;

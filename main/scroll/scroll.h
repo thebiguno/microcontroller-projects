@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void scroll_update(char s[], uint8_t l);
 void scroll_draw(uint8_t red[], uint8_t green[]);
 
 #endif
