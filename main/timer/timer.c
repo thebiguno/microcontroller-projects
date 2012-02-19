@@ -60,6 +60,10 @@ uint64_t timer_millis() {
 	return _timer_millis;
 }
 
+void timer_add(uint32_t millis) {
+	_timer_millis += millis;
+}
+
 /* 
  * The ISR for timer0 overflow.  Increment the _timer_count here, and do the calculcations
  * to increment _timer_millis as needed.
@@ -94,6 +98,4 @@ ISR(TIMER0_COMPA_vect){
 	TCNT0 = 0;
 	_timer_millis++;
 	if (_timer_millis > 86400000) _timer_millis = 0;
-	
-	button_sample();
 }

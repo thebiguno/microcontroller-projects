@@ -14,10 +14,11 @@ int main() {
 	// 	uint8_t MATRIX_OFF[8] = { 0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0 };
 	// 	uint8_t MATRIX_ON[8] = { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF };
 
-	char c[] = "1230";
+	char c[] = "    ";
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
-	
+
+	uint32_t prev_ms = 0;
 	uint8_t mode = 0;
 	uint8_t flag = 0;
 	
@@ -28,6 +29,10 @@ int main() {
 	while(1) {
 		uint32_t ms = timer_millis();
 		
+		if (prev_ms != ms) { // limit button sampling to 1 ms
+			prev_ms = ms;
+			button_sample();
+		}
 		uint8_t changed = button_changed();
 		uint8_t state = button_state();
 		if ((changed & _BV(BUTTON_MODE)) && (state & _BV(BUTTON_MODE))) {
@@ -35,7 +40,14 @@ int main() {
 			if (mode > 4) mode = 0;
 			clock_mode(mode);
 		}
-		if ((uint8_t) ms == 0) {
+		if ((changed & _BV(BUTTON_HOUR)) && (state & _BV(BUTTON_HOUR))) {
+			timer_add(clock_size_b());
+		}
+		if ((changed & _BV(BUTTON_MIN)) && (state & _BV(BUTTON_MIN))) {
+			timer_add(clock_size_d());
+		}
+		
+		if ((uint8_t) ms == 0) { // every 256 ms
 			if (flag == 0) {
 				flag = 1;
 				clock_update(ms);

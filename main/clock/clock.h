@@ -28,4 +28,7 @@ void clock_segments(char result[]);
  */
 void clock_matrix(uint8_t red[], uint8_t grn[]);
 
+uint32_t clock_size_b();
+uint32_t clock_size_d();
+
 #endif

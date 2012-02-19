@@ -16,5 +16,6 @@ void timer_init();
  */
 uint64_t timer_millis();
 
+void timer_add(uint32_t millis);
 
 #endif
