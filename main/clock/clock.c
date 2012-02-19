@@ -188,15 +188,15 @@ void clock_decimal(uint32_t ms) {
 	uint8_t lsd = _segments[4];
 	
 	//milliseconds to decimal (9:9:9:9:9)
-	int dd = ms / 8640000;	// 1/10 day (deciday)
+	uint8_t dd = ms / 8640000;	// 1/10 day (deciday)
 	ms -= 8640000 * (uint32_t) dd;
-	int cd = ms / 864000;	// 1/100 day (centiday)
+	uint8_t cd = ms / 864000;	// 1/100 day (centiday)
 	ms -= 864000 * (uint32_t) cd;
-	int md = ms / 86400;	// 1/1000 day (milliday)
+	uint8_t md = ms / 86400;	// 1/1000 day (milliday)
 	ms -= 86400 * (uint32_t) md;
-	int ud = ms / 8640;		// 1/10000 day (microday??)
+	uint8_t ud = ms / 8640;		// 1/10000 day (microday??)
 	ms -= 8640 * (uint32_t) ud;
-	int nd = ms / 864;		// 1/100000 day (nanoday??)
+	uint8_t nd = ms / 864;		// 1/100000 day (nanoday??)
 	
 	_segments[0] = dd;
 	_segments[1] = cd;
@@ -213,19 +213,30 @@ void clock_decimal(uint32_t ms) {
 			uint8_t v = _segments[i];
 			int row = 3;
 			if (i > 1) row += 3; // move md and ud down three rows
-			if (i == 1 || i == 2) row += 8; // make cd and md green instead of red
-		
 			// draw the dots
-			uint8_t sh = (i % 2 == 1) ? 3 : 0; // shift cd and ud over three cols
-			if (v > 0) _matrix_red[row-0] |= (0x08 << sh);
-			if (v > 1) _matrix_red[row-0] |= (0x04 << sh);
-			if (v > 2) _matrix_red[row-0] |= (0x02 << sh);
-			if (v > 3) _matrix_red[row-1] |= (0x08 << sh);
-			if (v > 4) _matrix_red[row-1] |= (0x04 << sh);
-			if (v > 5) _matrix_red[row-1] |= (0x02 << sh);
-			if (v > 6) _matrix_red[row-2] |= (0x08 << sh);
-			if (v > 7) _matrix_red[row-2] |= (0x04 << sh);
-			if (v > 8) _matrix_red[row-2] |= (0x02 << sh);
+			if (i == 1 || i == 2) { // make cd and md green instead of red
+				uint8_t sh = (i == 1) ? 3 : 0; // shift cd over three cols
+				if (v > 0) _matrix_grn[row-0] |= (0x08 << sh);
+				if (v > 1) _matrix_grn[row-0] |= (0x04 << sh);
+				if (v > 2) _matrix_grn[row-0] |= (0x02 << sh);
+				if (v > 3) _matrix_grn[row-1] |= (0x08 << sh);
+				if (v > 4) _matrix_grn[row-1] |= (0x04 << sh);
+				if (v > 5) _matrix_grn[row-1] |= (0x02 << sh);
+				if (v > 6) _matrix_grn[row-2] |= (0x08 << sh);
+				if (v > 7) _matrix_grn[row-2] |= (0x04 << sh);
+				if (v > 8) _matrix_grn[row-2] |= (0x02 << sh);
+			} else {
+				uint8_t sh = (i == 3) ? 3 : 0; // shift ud over three cols
+				if (v > 0) _matrix_red[row-0] |= (0x08 << sh);
+				if (v > 1) _matrix_red[row-0] |= (0x04 << sh);
+				if (v > 2) _matrix_red[row-0] |= (0x02 << sh);
+				if (v > 3) _matrix_red[row-1] |= (0x08 << sh);
+				if (v > 4) _matrix_red[row-1] |= (0x04 << sh);
+				if (v > 5) _matrix_red[row-1] |= (0x02 << sh);
+				if (v > 6) _matrix_red[row-2] |= (0x08 << sh);
+				if (v > 7) _matrix_red[row-2] |= (0x04 << sh);
+				if (v > 8) _matrix_red[row-2] |= (0x02 << sh);
+			}
 		}
 	
 		// draw the border
@@ -293,10 +304,10 @@ void clock_octal(uint32_t ms) {
 		clock_clear_matrix();
 	
 		// 1x2 pixels for each bit, a on top, f on bottom
-		for (int i = 0; i < 6; i++) { // segments (rows)
+		for (uint8_t i = 0; i < 6; i++) { // segments (rows)
 			// build a 1x6 bar
-			int v = _segments[i];
-			for (int j = 0; j < 3; j++) { // bits (cols)
+			uint8_t v = _segments[i];
+			for (uint8_t j = 0; j < 3; j++) { // bits (cols)
 				if ((v & _BV(j)) != 0) {
 					if (i == 1 || i == 3 || i == 5) {
 						_matrix_grn[i+1] |= 2 << (5-(j*2));
