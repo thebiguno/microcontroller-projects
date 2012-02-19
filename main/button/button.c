@@ -13,6 +13,8 @@ static uint8_t _mode_pin = 0;
 static uint8_t _state = 0;
 static uint8_t _changed = 0;
 
+static uint8_t _registers[3];
+
 void button_init(volatile uint8_t *hr_port, uint8_t hr_pin, volatile uint8_t *mn_port, uint8_t mn_pin, volatile uint8_t *mode_port, uint8_t mode_pin) {
 	_hr_port = hr_port;
 	_mn_port = mn_port;
@@ -31,43 +33,38 @@ void button_init(volatile uint8_t *hr_port, uint8_t hr_pin, volatile uint8_t *mn
 	_hr_pin = hr_pin;
 	_mn_pin = mn_pin;
 	_mode_pin = mode_pin;
+	
+	// initialize registers to 0xFF (unpressed for last 8 samples)
+	for (uint8_t i = 0; i < 3; i++) {
+		_registers[i] = 0xFF;
+	}
 }
 
-void button_read(uint32_t ms) {
-	// sample every 5 ms, debounced state is equal to the last 4 samples (i.e. must be consistent for 40 ms)
-	
-	static uint32_t _ms;
-	static uint8_t _index;
-	static uint8_t _samples[8];
-	static uint8_t flag;
-	
-	if (ms - _ms > 5) {
-		if (flag == 0) {
-			flag = 1;
-
-			_ms = ms;
-			_samples[_index] = 0;
-			// if (!(*(_hr_port - 0x2) & _BV(_hr_pin))) {
-			// 			_samples[_index] |= BUTTON_HOUR;
-			// 		}
-			// 		if (!(*(_mn_port - 0x2) & _BV(_mn_pin))) {
-			// 			_samples[_index] |= BUTTON_MIN;
-			// 		}
-			if (!(*(_mode_port - 0x2) & _BV(_mode_pin))) {
-				_samples[_index] |= BUTTON_MODE;
-			}
-			_index++;
-			if (_index > 8) _index = 0;
-			uint8_t debounced = 0xff;
-			for (uint8_t i = 0; i < 8; i++) {
-				debounced &= _samples[i];
-			}
-			_changed = _state ^ debounced;
-			_state = debounced;
-		}
-	} else {
-		flag = 0;
+// this method should be called every millisecond
+void button_sample() {
+	// shift registers towards the most significant bit
+	for (uint8_t i = 0; i < 3; i++) {
+		_registers[i] <<= 1;
 	}
+	
+	// set the least significant bit to the current switch state
+	if (*(_hr_port - 0x2) & _BV(_hr_pin)) {
+		_registers[BUTTON_HOUR] |= 1;
+	}
+	if (*(_mn_port - 0x2) & _BV(_mn_pin)) {
+		_registers[BUTTON_MIN] |= 1;
+	}
+	if (*(_mode_port - 0x2) & _BV(_mode_pin)) {
+		_registers[BUTTON_MODE] |= 1;
+	}
+	
+	uint8_t debounced = 0;
+	for (uint8_t i = 0; i < 3; i++) {
+		// if register value is 0 then set debounced to pressed
+		if (_registers[i] == 0) debounced |= _BV(i);
+	}
+	_changed = debounced ^ _state;
+	_state = debounced;
 }
 
 uint8_t button_state() {

@@ -1,4 +1,5 @@
 #include "timer.h"
+#include "../button/button.h"
 
 static volatile uint32_t _timer_millis;
 
@@ -55,7 +56,7 @@ void timer_init(){
  * Returns the number of milliseconds which have elapsed since the 
  * last time timer_init() was called.
  */
-uint64_t timer_millis(){
+uint64_t timer_millis() {
 	return _timer_millis;
 }
 
@@ -93,4 +94,6 @@ ISR(TIMER0_COMPA_vect){
 	TCNT0 = 0;
 	_timer_millis++;
 	if (_timer_millis > 86400000) _timer_millis = 0;
+	
+	button_sample();
 }
