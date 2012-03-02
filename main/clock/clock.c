@@ -38,8 +38,6 @@ void clock_clear_matrix() {
 }
 
 void clock_traditional(uint32_t ms) {
-	uint8_t lsd = _segments[5];
-	
 	//milliseconds to traditional (24:59:59)
 	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
 	ms -= 3600000 * (uint32_t) hr;
@@ -69,25 +67,23 @@ void clock_traditional(uint32_t ms) {
 	_segments[5] = sc;
 
 	
-	if (lsd != sc) {
-		clock_clear_matrix();
+	clock_clear_matrix();
 
-		// 3 2x8 bars with a space sparating them, hr on top, sec on bottom
-		for (int i = 0; i < 6; i++) { // segments (rows)
-			// build a 1x6 bar
-			int v = _segments[i];
-			for (int j = 0; j < 8; j++) { // bits (cols)
-				uint8_t row = i;
-				if (i > 1) row++; // blank rows
-				if (i > 3) row++;
-				if ((v & _BV(j)) != 0) {
-					if (i == 2 || i == 3) {
-						_matrix_grn[row] |= 1 << (7-(j*2));
-						_matrix_grn[row] |= 1 << (6-(j*2));
-					} else {
-						_matrix_red[row] |= 1 << (7-(j*2));
-						_matrix_red[row] |= 1 << (6-(j*2));
-					}
+	// 3 2x8 bars with a space sparating them, hr on top, sec on bottom
+	for (int i = 0; i < 6; i++) { // segments (rows)
+		// build a 1x6 bar
+		int v = _segments[i];
+		for (int j = 0; j < 8; j++) { // bits (cols)
+			uint8_t row = i;
+			if (i > 1) row++; // blank rows
+			if (i > 3) row++;
+			if ((v & _BV(j)) != 0) {
+				if (i == 2 || i == 3) {
+					_matrix_grn[row] |= 1 << (7-(j*2));
+					_matrix_grn[row] |= 1 << (6-(j*2));
+				} else {
+					_matrix_red[row] |= 1 << (7-(j*2));
+					_matrix_red[row] |= 1 << (6-(j*2));
 				}
 			}
 		}
@@ -95,8 +91,6 @@ void clock_traditional(uint32_t ms) {
 }
 
 void clock_vigesimal(uint32_t ms) {
-	uint8_t lsd = _segments[3];
-	
 	//milliseconds to vigesimal (19:19:19:19)
 	uint8_t a = ms / 4320000;	// 1/20 day
 	ms -= 4320000 * (uint32_t) a;
@@ -111,37 +105,33 @@ void clock_vigesimal(uint32_t ms) {
 	_segments[2] = c;
 	_segments[3] = d;
 	
-	if (lsd != d) {
-		clock_clear_matrix();
+	clock_clear_matrix();
 
-		for (uint8_t i = 0; i < 4; i++) { // segments (rows)
-			// build a 4x4 mayan number square
-		
-			uint8_t v = _segments[i];
-			int row = 3;
-			if (v > 4) row--;
-			if (v > 9) row--;
-			if (v > 14) row--;
-			if (i > 1) row += 4; // mode c and d down four rows
-		
-			// draw the dots
-			uint8_t sh = (i % 2 == 1) ? 4 : 0; // shift b and d over 4 cols
-			if (v % 5 > 0) _matrix_red[row] |= (0x01 << sh);
-			if (v % 5 > 1) _matrix_red[row] |= (0x02 << sh);
-			if (v % 5 > 2) _matrix_red[row] |= (0x04 << sh);
-			if (v % 5 > 3) _matrix_red[row] |= (0x08 << sh);
-		
-			// draw the lines
-			if (v > 4) _matrix_grn[row+1] |= (0x0F << sh); 
-			if (v > 9) _matrix_grn[row+2] |= (0x0F << sh); 
-			if (v > 14) _matrix_grn[row+3] |= (0x0F << sh); 
-		}
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
+		// build a 4x4 mayan number square
+	
+		uint8_t v = _segments[i];
+		int row = 3;
+		if (v > 4) row--;
+		if (v > 9) row--;
+		if (v > 14) row--;
+		if (i > 1) row += 4; // mode c and d down four rows
+	
+		// draw the dots
+		uint8_t sh = (i % 2 == 1) ? 4 : 0; // shift b and d over 4 cols
+		if (v % 5 > 0) _matrix_red[row] |= (0x01 << sh);
+		if (v % 5 > 1) _matrix_red[row] |= (0x02 << sh);
+		if (v % 5 > 2) _matrix_red[row] |= (0x04 << sh);
+		if (v % 5 > 3) _matrix_red[row] |= (0x08 << sh);
+	
+		// draw the lines
+		if (v > 4) _matrix_grn[row+1] |= (0x0F << sh); 
+		if (v > 9) _matrix_grn[row+2] |= (0x0F << sh); 
+		if (v > 14) _matrix_grn[row+3] |= (0x0F << sh); 
 	}
 }
 
 void clock_hexadecimal(uint32_t ms) {
-	uint8_t lsd = _segments[3];
-	
 	//milliseconds to hexadecimal (F:F:F:F)
 	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour)
 	ms -= 5400000 * (uint32_t) hr;
@@ -158,26 +148,24 @@ void clock_hexadecimal(uint32_t ms) {
 	_segments[2] = mn;
 	_segments[3] = sc;
 	
-	if (lsd != sc) {
-		clock_clear_matrix();
+	clock_clear_matrix();
 
-		// 2x2 pixels for each bit, hr on top, sc on bottom
-		for (uint8_t i = 0; i < 4; i++) { // segments (rows)
-			// build a 1x8 bar
-			int v = _segments[i];
-			for (uint8_t j = 0; j < 4; j++) { // bits (cols)
-				if ((v & _BV(j)) != 0) {
-					if (i == 1 || i == 3) {
-						_matrix_grn[(i*2)+0] |= 1 << (7-(j*2));
-						_matrix_grn[(i*2)+1] |= 1 << (7-(j*2));
-						_matrix_grn[(i*2)+0] |= 1 << (6-(j*2));
-						_matrix_grn[(i*2)+1] |= 1 << (6-(j*2));
-					} else {
-						_matrix_red[(i*2)+0] |= 1 << (7-(j*2));
-						_matrix_red[(i*2)+1] |= 1 << (7-(j*2));
-						_matrix_red[(i*2)+0] |= 1 << (6-(j*2));
-						_matrix_red[(i*2)+1] |= 1 << (6-(j*2));
-					}
+	// 2x2 pixels for each bit, hr on top, sc on bottom
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
+		// build a 1x8 bar
+		int v = _segments[i];
+		for (uint8_t j = 0; j < 4; j++) { // bits (cols)
+			if ((v & _BV(j)) != 0) {
+				if (i == 1 || i == 3) {
+					_matrix_grn[(i*2)+0] |= 1 << (7-(j*2));
+					_matrix_grn[(i*2)+1] |= 1 << (7-(j*2));
+					_matrix_grn[(i*2)+0] |= 1 << (6-(j*2));
+					_matrix_grn[(i*2)+1] |= 1 << (6-(j*2));
+				} else {
+					_matrix_red[(i*2)+0] |= 1 << (7-(j*2));
+					_matrix_red[(i*2)+1] |= 1 << (7-(j*2));
+					_matrix_red[(i*2)+0] |= 1 << (6-(j*2));
+					_matrix_red[(i*2)+1] |= 1 << (6-(j*2));
 				}
 			}
 		}
@@ -185,8 +173,6 @@ void clock_hexadecimal(uint32_t ms) {
 }
 
 void clock_decimal(uint32_t ms) {
-	uint8_t lsd = _segments[4];
-	
 	//milliseconds to decimal (9:9:9:9:9)
 	uint8_t dd = ms / 8640000;	// 1/10 day (deciday)
 	ms -= 8640000 * (uint32_t) dd;
@@ -204,79 +190,116 @@ void clock_decimal(uint32_t ms) {
 	_segments[3] = ud;
 	_segments[4] = nd;
 	
-	if (lsd != nd) {
-		clock_clear_matrix();
+	clock_clear_matrix();
+
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
+		// build a 3x3 number square
 	
-		for (uint8_t i = 0; i < 4; i++) { // segments (rows)
-			// build a 3x3 number square
-		
-			uint8_t v = _segments[i];
-			int row = 3;
-			if (i > 1) row += 3; // move md and ud down three rows
-			// draw the dots
-			if (i == 1 || i == 2) { // make cd and md green instead of red
-				uint8_t sh = (i == 1) ? 3 : 0; // shift cd over three cols
-				if (v > 0) _matrix_grn[row-0] |= (0x08 << sh);
-				if (v > 1) _matrix_grn[row-0] |= (0x04 << sh);
-				if (v > 2) _matrix_grn[row-0] |= (0x02 << sh);
-				if (v > 3) _matrix_grn[row-1] |= (0x08 << sh);
-				if (v > 4) _matrix_grn[row-1] |= (0x04 << sh);
-				if (v > 5) _matrix_grn[row-1] |= (0x02 << sh);
-				if (v > 6) _matrix_grn[row-2] |= (0x08 << sh);
-				if (v > 7) _matrix_grn[row-2] |= (0x04 << sh);
-				if (v > 8) _matrix_grn[row-2] |= (0x02 << sh);
-			} else {
-				uint8_t sh = (i == 3) ? 3 : 0; // shift ud over three cols
-				if (v > 0) _matrix_red[row-0] |= (0x08 << sh);
-				if (v > 1) _matrix_red[row-0] |= (0x04 << sh);
-				if (v > 2) _matrix_red[row-0] |= (0x02 << sh);
-				if (v > 3) _matrix_red[row-1] |= (0x08 << sh);
-				if (v > 4) _matrix_red[row-1] |= (0x04 << sh);
-				if (v > 5) _matrix_red[row-1] |= (0x02 << sh);
-				if (v > 6) _matrix_red[row-2] |= (0x08 << sh);
-				if (v > 7) _matrix_red[row-2] |= (0x04 << sh);
-				if (v > 8) _matrix_red[row-2] |= (0x02 << sh);
-			}
-		}
-	
-		// draw the border
-		if (nd > 0) { 
-			_matrix_red[0] |= 0x06; _matrix_grn[0] |= 0x06;
-		}
-		if (nd > 1) { 
-			_matrix_red[0] |= 0x60; _matrix_grn[0] |= 0x60;
-		}
-		if (nd > 2) {
-			_matrix_red[1] |= 0x80; _matrix_grn[1] |= 0x80;
-			_matrix_red[2] |= 0x80; _matrix_grn[2] |= 0x80;
-		}
-		if (nd > 3) {
-			_matrix_red[4] |= 0x80; _matrix_grn[4] |= 0x80;
-			_matrix_red[5] |= 0x80; _matrix_grn[5] |= 0x80;
-		}
-		if (nd > 4) { 
-			_matrix_red[7] |= 0xC0; _matrix_grn[7] |= 0xC0;
-		}
-		if (nd > 5) { 
-			_matrix_red[7] |= 0x18; _matrix_grn[7] |= 0x18;
-		}
-		if (nd > 6) { 
-			_matrix_red[7] |= 0x03; _matrix_grn[7] |= 0x03;
-		}
-		if (nd > 7) {
-			_matrix_red[4] |= 0x01; _matrix_grn[4] |= 0x01;
-			_matrix_red[5] |= 0x01; _matrix_grn[5] |= 0x01;
-		}
-		if (nd > 8) {
-			_matrix_red[1] |= 0x01; _matrix_grn[1] |= 0x01;
-			_matrix_red[2] |= 0x01; _matrix_grn[2] |= 0x01;
+		uint8_t v = _segments[i];
+		int row = 2;
+		if (i > 1) row += 5; // move md and ud down three rows
+		// draw the dots
+		if (i == 1 || i == 2) { // make cd and md green instead of red
+			uint8_t sh = (i == 1) ? 5 : 0; // shift cd over three cols
+			if (v > 0) _matrix_grn[row-0] |= (0x04 << sh);
+			if (v > 1) _matrix_grn[row-0] |= (0x02 << sh);
+			if (v > 2) _matrix_grn[row-0] |= (0x01 << sh);
+			if (v > 3) _matrix_grn[row-1] |= (0x04 << sh);
+			if (v > 4) _matrix_grn[row-1] |= (0x02 << sh);
+			if (v > 5) _matrix_grn[row-1] |= (0x01 << sh);
+			if (v > 6) _matrix_grn[row-2] |= (0x04 << sh);
+			if (v > 7) _matrix_grn[row-2] |= (0x02 << sh);
+			if (v > 8) _matrix_grn[row-2] |= (0x01 << sh);
+		} else {
+			uint8_t sh = (i == 3) ? 5 : 0; // shift ud over three cols
+			if (v > 0) _matrix_red[row-0] |= (0x04 << sh);
+			if (v > 1) _matrix_red[row-0] |= (0x02 << sh);
+			if (v > 2) _matrix_red[row-0] |= (0x01 << sh);
+			if (v > 3) _matrix_red[row-1] |= (0x04 << sh);
+			if (v > 4) _matrix_red[row-1] |= (0x02 << sh);
+			if (v > 5) _matrix_red[row-1] |= (0x01 << sh);
+			if (v > 6) _matrix_red[row-2] |= (0x04 << sh);
+			if (v > 7) _matrix_red[row-2] |= (0x02 << sh);
+			if (v > 8) _matrix_red[row-2] |= (0x01 << sh);
 		}
 	}
+
+	if (nd == 1 || nd == 5) {
+		_matrix_red[0] |= 0x18;
+		_matrix_red[1] |= 0x18;
+		_matrix_red[2] |= 0x18;
+		_matrix_red[3] |= 0x18;
+	}
+	if (nd == 2 || nd == 5) {
+		_matrix_red[3] |= 0xF0; 
+		_matrix_red[4] |= 0xF0;
+	}
+	if (nd == 3 || nd == 5) {
+		_matrix_red[4] |= 0x18;
+		_matrix_red[5] |= 0x18;
+		_matrix_red[6] |= 0x18;
+		_matrix_red[7] |= 0x18;
+	}
+	if (nd == 4 || nd == 5) {
+		_matrix_red[3] |= 0x0F; 
+		_matrix_red[4] |= 0x0F;
+	}
+	if (nd == 6 || nd == 5) {
+		_matrix_grn[0] |= 0x18;
+		_matrix_grn[1] |= 0x18;
+		_matrix_grn[2] |= 0x18;
+		_matrix_grn[3] |= 0x18;
+	}
+	if (nd == 7 || nd == 5) {
+		_matrix_grn[3] |= 0xF0; 
+		_matrix_grn[4] |= 0xF0;
+	}
+	if (nd == 8 || nd == 5) {
+		_matrix_grn[4] |= 0x18;
+		_matrix_grn[5] |= 0x18;
+		_matrix_grn[6] |= 0x18;
+		_matrix_grn[7] |= 0x18;
+	}
+	if (nd == 9 || nd == 5) {
+		_matrix_grn[3] |= 0x0F; 
+		_matrix_grn[4] |= 0x0F;
+	}
+
+	// draw the border
+	// if (nd > 0) { 
+	// 	_matrix_red[0] |= 0x06; _matrix_grn[0] |= 0x06;
+	// }
+	// if (nd > 1) { 
+	// 	_matrix_red[0] |= 0x60; _matrix_grn[0] |= 0x60;
+	// }
+	// if (nd > 2) {
+	// 	_matrix_red[1] |= 0x80; _matrix_grn[1] |= 0x80;
+	// 	_matrix_red[2] |= 0x80; _matrix_grn[2] |= 0x80;
+	// }
+	// if (nd > 3) {
+	// 	_matrix_red[4] |= 0x80; _matrix_grn[4] |= 0x80;
+	// 	_matrix_red[5] |= 0x80; _matrix_grn[5] |= 0x80;
+	// }
+	// if (nd > 4) { 
+	// 	_matrix_red[7] |= 0xC0; _matrix_grn[7] |= 0xC0;
+	// }
+	// if (nd > 5) { 
+	// 	_matrix_red[7] |= 0x18; _matrix_grn[7] |= 0x18;
+	// }
+	// if (nd > 6) { 
+	// 	_matrix_red[7] |= 0x03; _matrix_grn[7] |= 0x03;
+	// }
+	// if (nd > 7) {
+	// 	_matrix_red[4] |= 0x01; _matrix_grn[4] |= 0x01;
+	// 	_matrix_red[5] |= 0x01; _matrix_grn[5] |= 0x01;
+	// }
+	// if (nd > 8) {
+	// 	_matrix_red[1] |= 0x01; _matrix_grn[1] |= 0x01;
+	// 	_matrix_red[2] |= 0x01; _matrix_grn[2] |= 0x01;
+	// }
 }
 
 void clock_octal(uint32_t ms) {
-	uint8_t lsd = _segments[5];
-	
 	//milliseconds to octal (7:7:7:7:7:7)
 	uint8_t a = ms / 10800000;	// 1/8 day
 	ms -= 10800000 * (uint32_t) a ;
@@ -300,22 +323,20 @@ void clock_octal(uint32_t ms) {
 	_segments[4] = e;
 	_segments[5] = f;
 	
-	if (lsd != f) {
-		clock_clear_matrix();
-	
-		// 1x2 pixels for each bit, a on top, f on bottom
-		for (uint8_t i = 0; i < 6; i++) { // segments (rows)
-			// build a 1x6 bar
-			uint8_t v = _segments[i];
-			for (uint8_t j = 0; j < 3; j++) { // bits (cols)
-				if ((v & _BV(j)) != 0) {
-					if (i == 1 || i == 3 || i == 5) {
-						_matrix_grn[i+1] |= 2 << (5-(j*2));
-						_matrix_grn[i+1] |= 2 << (4-(j*2));
-					} else {
-						_matrix_red[i+1] |= 2 << (5-(j*2));
-						_matrix_red[i+1] |= 2 << (4-(j*2));
-					}
+	clock_clear_matrix();
+
+	// 1x2 pixels for each bit, a on top, f on bottom
+	for (uint8_t i = 0; i < 6; i++) { // segments (rows)
+		// build a 1x6 bar
+		uint8_t v = _segments[i];
+		for (uint8_t j = 0; j < 3; j++) { // bits (cols)
+			if ((v & _BV(j)) != 0) {
+				if (i == 1 || i == 3 || i == 5) {
+					_matrix_grn[i+1] |= 2 << (5-(j*2));
+					_matrix_grn[i+1] |= 2 << (4-(j*2));
+				} else {
+					_matrix_red[i+1] |= 2 << (5-(j*2));
+					_matrix_red[i+1] |= 2 << (4-(j*2));
 				}
 			}
 		}
