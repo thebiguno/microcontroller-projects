@@ -27,12 +27,16 @@ int main() {
 	scroll_update(str, sizeof(str) - 1);
 	
 	while(1) {
+		// get number of millis since midnight
 		uint32_t ms = timer_millis();
 		
+		// sample buttons
 		if (prev_ms != ms) { // limit button sampling to 1 ms
 			prev_ms = ms;
 			button_sample();
 		}
+		
+		// do something on button press
 		uint8_t changed = button_changed();
 		uint8_t state = button_state();
 		if ((changed & _BV(BUTTON_MODE)) && (state & _BV(BUTTON_MODE))) {
@@ -47,6 +51,7 @@ int main() {
 			timer_add(clock_size_d());
 		}
 		
+		// update the clock segments
 		if ((uint8_t) ms == 0) { // every 256 ms
 			if (flag == 0) {
 				flag = 1;
