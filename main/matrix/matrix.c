@@ -3,6 +3,8 @@
 
 #include <avr/sfr_defs.h>
 
+
+/* see http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel */
 uint8_t bits_set(uint8_t v) {
 	uint8_t c = v - ((v >> 1) & 0x55);
 	c = ((c >> 0x02) & 0x33) + (c & 0x33);
