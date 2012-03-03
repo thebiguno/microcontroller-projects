@@ -11,5 +11,6 @@
 #include "clock/clock.h"
 #include "button/button.h"
 #include "scroll/scroll.h"
+#include "life/life.h"
 
 #endif

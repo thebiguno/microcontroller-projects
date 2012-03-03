@@ -194,7 +194,8 @@ void clock_decimal(uint32_t ms) {
 
 	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
 		// build a 3x3 number square
-	
+		// dice patters would also be nice here but it would be a lot more code
+		
 		uint8_t v = _segments[i];
 		int row = 2;
 		if (i > 1) row += 5; // move md and ud down three rows

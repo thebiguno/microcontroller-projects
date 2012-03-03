@@ -43,26 +43,30 @@ static uint8_t lookup(char c) {
 		case 0x11: case 'h': case 'H':
 		return SEG_A + SEG_D;
 		case 0x12: case 'i': case 'I':
-		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_F + SEG_G;
-		case 0x13: case 'j':
-		return SEG_A + SEG_E + SEG_F + SEG_G;
-		case 'J':
+		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_G;
+		case 0x13: case 'j': case 'J':
 		return SEG_A + SEG_F + SEG_G;
-		case 'l': case 'L':
+		case 0x14: case 'k': case 'K':
+		return SEG_B + SEG_D;
+		case 0x15: case 'l': case 'L':
 		return SEG_A + SEG_B + SEG_C + SEG_G;
-		case 'n':
-		return SEG_A + SEG_B + SEG_D + SEG_F;
-		case 'N':
+		case 0x16: case 'm': case 'M':
+		return SEG_B + SEG_D + SEG_F + SEG_G;
+		case 0x17: case 'n': case 'N':
 		return SEG_D + SEG_G;
-		case 'o': case 'O':
+		case 0x18: case 'o': case 'O':
 		return SEG_A + SEG_B + SEG_F;
-		case 'r': case 'R':
-		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_F;
-		case 't': case 'T':
+		case 0x19: case 'p': case 'P':
+		return SEG_C + SEG_D;
+		case 0x1A: case 'q': case 'Q':
+		return SEG_C + SEG_E;
+		case 0x1B: case 'r': case 'R':
+		return SEG_C + SEG_D + SEG_G;
+		case 0x1C: case 's': case 'S':
+		return SEG_A + SEG_B + SEG_E;
+		case 0x1D: case 't': case 'T':
 		return SEG_A + SEG_B + SEG_C;
-		case 'u':
-		return SEG_A + SEG_B + SEG_F + SEG_G;
-		case 'U':
+		case 0x1E: case 'u': case 'U': case 0x1F: case 'v': case 'V':
 		return SEG_A + SEG_G;
 		case 'y': case 'Y':
 		return SEG_A + SEG_E;

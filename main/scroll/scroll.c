@@ -111,7 +111,7 @@ void scroll_update(char s[], uint8_t l) {
 	}
 }
 
-void scroll_draw(uint8_t red[], uint8_t grn[]) {
+void scroll_matrix(uint8_t red[], uint8_t grn[]) {
 	static uint8_t x;
 	
 	for (uint8_t i = 0; i < 8; i++) {

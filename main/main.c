@@ -25,6 +25,7 @@ int main() {
 	clock_mode(mode);
 	char str[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
 	scroll_update(str, sizeof(str) - 1);
+	life_randomize();
 	
 	while(1) {
 		// get number of millis since midnight
@@ -43,6 +44,7 @@ int main() {
 			mode++;
 			if (mode > 4) mode = 0;
 			clock_mode(mode);
+			life_randomize();
 		}
 		if ((changed & _BV(BUTTON_HOUR)) && (state & _BV(BUTTON_HOUR))) {
 			timer_add(clock_size_b());
@@ -57,8 +59,10 @@ int main() {
 				flag = 1;
 				clock_update(ms);
 				clock_segments(c);
-				clock_matrix(red, grn);
+				life_update();
+				//clock_matrix(red, grn);
 				//scroll_draw(red, grn);
+				life_matrix(red, grn);
 			}
 		} else {
 			flag = 0;
