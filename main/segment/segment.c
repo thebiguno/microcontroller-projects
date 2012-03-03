@@ -3,6 +3,9 @@
 #include "../shift/shift.h"
 #include <avr/sfr_defs.h>
 
+#define REG_DIG 0
+#define REG_SEG 1
+
 static uint8_t lookup(char c) {
 	// high = off; so the lookup is defined by what segments are off, not what segments are on
 	switch (c) {
@@ -86,44 +89,36 @@ static uint8_t lookup(char c) {
 }
 
 void segment_draw(char c[], uint8_t flags) {
-	static uint8_t seg;
+	for (uint8_t seg = 0; seg < 4; seg++) {
+		uint8_t b = 0;
+		if (seg == 0) {
+			b = SEG_DIG1;
 
-	uint8_t b = 0;
-	if (seg == 0) {
-		b = SEG_DIG1;
+			if (flags & _BV(4)) b += SEG_L1L2;
+			if (flags & _BV(5)) b += SEG_L3;
 
-		if (flags & _BV(4)) b += SEG_L1L2;
-		if (flags & _BV(5)) b += SEG_L3;
-
-		shift_data(b);
-		b = lookup(c[0]);
-		if (!(flags & _BV(0))) b += SEG_DP;
-		shift_data(b);
-	} else if (seg == 1) {
-		b = SEG_DIG2;
-		shift_data(b);
-		b = lookup(c[1]);
-		if (!(flags & _BV(1))) b += SEG_DP;
-		shift_data(b);
-	} else if (seg == 2) {
-		b = SEG_DIG3;
-		shift_data(b);
-		b = lookup(c[2]);
-		if (!(flags & _BV(2))) b += SEG_DP;
-		shift_data(b);
-	} else if (seg == 3) {	
-		b = SEG_DIG4;
-		shift_data(b);
-		b = lookup(c[3]);
-		if (!(flags & _BV(3))) b += SEG_DP;
-		shift_data(b);
-	} else {
-		shift_data(0x00);
-		shift_data(0xFF);
-	}
-	
-	seg++;
-	if (seg > 3 + 32) {
-		seg = 0;
+			shift_data(REG_DIG, seg, b);
+			b = lookup(c[0]);
+			if (!(flags & _BV(0))) b += SEG_DP;
+			shift_data(REG_SEG, seg, b);
+		} else if (seg == 1) {
+			b = SEG_DIG2;
+			shift_data(REG_DIG, seg, b);
+			b = lookup(c[1]);
+			if (!(flags & _BV(1))) b += SEG_DP;
+			shift_data(REG_SEG, seg, b);
+		} else if (seg == 2) {
+			b = SEG_DIG3;
+			shift_data(REG_DIG, seg, b);
+			b = lookup(c[2]);
+			if (!(flags & _BV(2))) b += SEG_DP;
+			shift_data(REG_SEG, seg, b);
+		} else if (seg == 3) {	
+			b = SEG_DIG4;
+			shift_data(REG_DIG, seg, b);
+			b = lookup(c[3]);
+			if (!(flags & _BV(3))) b += SEG_DP;
+			shift_data(REG_SEG, seg, b);
+		}
 	}
 }

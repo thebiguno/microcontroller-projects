@@ -13,7 +13,10 @@ void shift_init(
 		volatile uint8_t *clock_port, uint8_t clock_pin, 
 		volatile uint8_t *latch_port, uint8_t latch_pin);
 
-void shift_data(uint8_t data);
-void shift_latch();
+void shift_enable();
+
+void shift_data(uint8_t i, uint8_t t, uint8_t data);
+
+void shift_do();
 
 #endif
