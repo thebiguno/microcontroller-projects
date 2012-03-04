@@ -89,36 +89,39 @@ static uint8_t lookup(char c) {
 }
 
 void segment_draw(char c[], uint8_t flags) {
-	for (uint8_t seg = 0; seg < 4; seg++) {
-		uint8_t b = 0;
-		if (seg == 0) {
-			b = SEG_DIG1;
+	for (uint8_t i = 0; i < 16; i++) {
+		for (uint8_t seg = 0; seg < 4; seg++) {
+			uint8_t j = seg + (i * 4);
+			uint8_t b = 0;
+			if (seg == 0) {
+				b = SEG_DIG1;
 
-			if (flags & _BV(4)) b += SEG_L1L2;
-			if (flags & _BV(5)) b += SEG_L3;
+				if (flags & _BV(4)) b += SEG_L1L2;
+				if (flags & _BV(5)) b += SEG_L3;
 
-			shift_data(REG_DIG, seg, b);
-			b = lookup(c[0]);
-			if (!(flags & _BV(0))) b += SEG_DP;
-			shift_data(REG_SEG, seg, b);
-		} else if (seg == 1) {
-			b = SEG_DIG2;
-			shift_data(REG_DIG, seg, b);
-			b = lookup(c[1]);
-			if (!(flags & _BV(1))) b += SEG_DP;
-			shift_data(REG_SEG, seg, b);
-		} else if (seg == 2) {
-			b = SEG_DIG3;
-			shift_data(REG_DIG, seg, b);
-			b = lookup(c[2]);
-			if (!(flags & _BV(2))) b += SEG_DP;
-			shift_data(REG_SEG, seg, b);
-		} else if (seg == 3) {	
-			b = SEG_DIG4;
-			shift_data(REG_DIG, seg, b);
-			b = lookup(c[3]);
-			if (!(flags & _BV(3))) b += SEG_DP;
-			shift_data(REG_SEG, seg, b);
+				shift_data(REG_DIG, j, b);
+				b = lookup(c[0]);
+				if (!(flags & _BV(0))) b += SEG_DP;
+				shift_data(REG_SEG, j, b);
+			} else if (seg == 1) {
+				b = SEG_DIG2;
+				shift_data(REG_DIG, j, b);
+				b = lookup(c[1]);
+				if (!(flags & _BV(1))) b += SEG_DP;
+				shift_data(REG_SEG, j, b);
+			} else if (seg == 2) {
+				b = SEG_DIG3;
+				shift_data(REG_DIG, j, b);
+				b = lookup(c[2]);
+				if (!(flags & _BV(2))) b += SEG_DP;
+				shift_data(REG_SEG, j, b);
+			} else if (seg == 3) {	
+				b = SEG_DIG4;
+				shift_data(REG_DIG, j, b);
+				b = lookup(c[3]);
+				if (!(flags & _BV(3))) b += SEG_DP;
+				shift_data(REG_SEG, j, b);
+			}
 		}
 	}
 }

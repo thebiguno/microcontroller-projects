@@ -6,10 +6,9 @@ int main() {
 	button_init(&PORT_BUTTON_HOUR, PIN_BUTTON_HOUR, &PORT_BUTTON_MIN, PIN_BUTTON_MIN, &PORT_BUTTON_MODE, PIN_BUTTON_MODE);
 	timer_init();
 	sei();
-	shift_enable();
-	
-	// 	uint8_t MATRIX_BOX[8] = { 0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF };
-	// 	uint8_t MATRIX_X[8] = { 0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81 };
+		
+	uint8_t MATRIX_BOX[8] = { 0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF };
+	uint8_t MATRIX_X[8] = { 0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81 };
 	// 	uint8_t MATRIX_CTR[8] = { 0x00,0x00,0x00,0x18,0x18,0x00,0x00,0x00 };
 	// 	uint8_t MATRIX_GRN[8] = { 0x55,0xAA,0x55,0xAA,0x55,0xAA,0x55,0xAA };
 	// 	uint8_t MATRIX_RED[8] = { 0xAA,0x55,0xAA,0x55,0xAA,0x55,0xAA,0x55 };
@@ -22,7 +21,7 @@ int main() {
 
 	uint32_t prev_ms = 0;
 	uint8_t mode = 0;
-	uint8_t flag = 0;
+	// uint8_t flag = 0;
 	
 	clock_mode(mode);
 //	char str[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -30,6 +29,7 @@ int main() {
 //	life_randomize();
 
 	segment_draw(c, 0x00);
+	// matrix_draw(MATRIX_BOX,MATRIX_X);
 	
 	while(1) {
 		// get number of millis since midnight
@@ -39,8 +39,8 @@ int main() {
 		if (prev_ms != ms) { // limit button sampling to 1 ms
 			prev_ms = ms;
 			button_sample();
-			clock_update(ms);
- 			clock_segments(c);
+			// clock_update(ms);
+			// clock_segments(c);
 			// segment_draw(c, 0x00);
 		}
 		
@@ -59,6 +59,9 @@ int main() {
 		if ((changed & _BV(BUTTON_MIN)) && (state & _BV(BUTTON_MIN))) {
 			timer_add(clock_size_d());
 		}
+		
+		shift_do();
+		
 		
 		// update the clock segments
 		// if ((uint8_t) ms == 0) { // every 256 ms
