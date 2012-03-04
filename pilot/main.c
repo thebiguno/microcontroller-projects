@@ -33,11 +33,11 @@ int main(){
 	//Time variables	
 	uint64_t millis = 0;			//Last measured millis
 	uint64_t curr_millis;			//Current ms counter
-	uint64_t dt;					//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
-	uint64_t t = 0;					//Time since last signal was received
-	uint64_t last_telemetry = 0;	//Time the last telemetry was sent
-	uint64_t last_status_clear = 0;	//Time last status clear was sent
-	uint64_t last_battery = 0;		//Time last battery state was sent
+	uint8_t dt;						//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
+	uint16_t t = 0;					//Time since last signal was received
+
+	//Flags for last telemetry values; bit 1 is attitude, bit 2 is status clear, bit 3 is battery
+	uint8_t last_telemetry = 0;		//Time the last telemetry was sent
 
 	//State variables
 	uint8_t cmd_type;				//Can be any of the flight command types (a superset of armed_type)
@@ -61,7 +61,7 @@ int main(){
 	//Main program loop
 	while (1) {
 		curr_millis = timer_millis();
-		dt = curr_millis - millis;
+		dt = (uint8_t) (curr_millis - millis);
 		millis = curr_millis;
 		t += dt;
 		
@@ -86,6 +86,7 @@ int main(){
 			sp.z = flight_command_data[3];
 			
 			//Check for communication timeouts
+			//TODO optimize for 64 bit vars
 			if (t > 3000) {
 				status_clear(STATUS_ARMED);
 				
@@ -144,28 +145,40 @@ int main(){
 		// Intermittent I/O
 		//********************
 
-		//Every 100 ms
-		if (curr_millis - last_telemetry > 100){
-			status_toggle(STATUS_HEARTBEAT);
-
-			protocol_send_telemetry(pv, motor);
-			protocol_send_raw(g, a);
-			last_telemetry = curr_millis;			
+		//Every 128 ms
+		if ((((uint8_t) curr_millis) & 0x7F) == 0x7F){
+			if (last_telemetry & _BV(1)){
+				last_telemetry &= ~_BV(1);
+				status_toggle(STATUS_HEARTBEAT);
+	
+				protocol_send_telemetry(pv, motor);
+				protocol_send_raw(g, a);
+			}
 		}
-
-		//Every 500ms
-		if (curr_millis - last_status_clear > 500){
-			status_clear(STATUS_MESSAGE_RX);
-			status_clear(STATUS_MESSAGE_TX);
-			
-			last_status_clear = curr_millis;
+		else {
+			last_telemetry |= _BV(1);
+		}
+		//Every 512 ms
+		if ((((uint16_t) curr_millis) & 0x1FF) == 0x1FF){
+			if (last_telemetry & _BV(2)){
+				last_telemetry &= ~_BV(2);
+				status_clear(STATUS_MESSAGE_RX);
+				status_clear(STATUS_MESSAGE_TX);
+			}
+		}
+		else {
+			last_telemetry |= _BV(2);
 		}
 		
-		//Every 5 seconds
-		if (curr_millis - last_battery > 5000){
-			protocol_send_battery(battery_level());
-
-			last_battery = curr_millis;
+		//Every 4096 ms
+		if ((((uint16_t) curr_millis) & 0xFFF) == 0xFFF){
+			if (last_telemetry & _BV(3)){
+				last_telemetry &= ~_BV(3);
+				protocol_send_battery(battery_level());
+			}
+		}
+		else {
+			last_telemetry |= _BV(3);
 		}
 	}
 }
