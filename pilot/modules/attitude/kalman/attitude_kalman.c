@@ -54,11 +54,11 @@ void attitude_write_tuning() {
 	uint8_t data[24];
 	
 	convert_double_to_bytes(state_x.q_angle, data, 0);
-	convert_double_to_bytes(state_y.q_angle, data, 4);
-	convert_double_to_bytes(state_x.q_gyro, data, 8);
+	convert_double_to_bytes(state_x.q_gyro, data, 4);
+	convert_double_to_bytes(state_x.r_angle, data, 8);
 	
-	convert_double_to_bytes(state_y.q_gyro, data, 12);
-	convert_double_to_bytes(state_x.r_angle, data, 16);
+	convert_double_to_bytes(state_y.q_angle, data, 12);
+	convert_double_to_bytes(state_y.q_gyro, data, 16);
 	convert_double_to_bytes(state_y.r_angle, data, 20);
 	
 	persist_write(PERSIST_SECTION_ATTITUDE, data, 24);
