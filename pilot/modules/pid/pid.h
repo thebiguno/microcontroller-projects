@@ -12,7 +12,7 @@ void pid_init();
  * DT - delta T in millis
  * MV - the manipulated variable (the correction) in radians
  */
-vector_t pid_mv(vector_t sp, vector_t pv, double dt);
+vector_t pid_mv(vector_t sp, vector_t pv, uint8_t dt);
 void pid_reset();
 
 void pid_send_tuning();

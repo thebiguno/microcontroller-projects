@@ -32,15 +32,15 @@ void pid_read_tuning() {
 		state_y.kd = convert_bytes_to_double(data, 28);
 		// state_z.kd = convert_bytes_to_double(data, 32);
 	} else {
-		state_x.kp = 0.7;
-		state_y.kp = 0.7;
-		// state_z.kp = 0.7;
-		state_x.ki = 0.001;
-		state_y.ki = 0.001;
-		// state_z.ki = 0.001;
-		state_x.kd = 0.0;
-		state_y.kd = 0.0;
-		// state_z.kd = 0.0;
+		state_x.kp = 0.14;
+		state_y.kp = 0.14;
+		// state_z.kp = 0.14;
+		state_x.ki = 0.0012;
+		state_y.ki = 0.0012;
+		// state_z.ki = 0.0012;
+		state_x.kd = 0.03;
+		state_y.kd = 0.03;
+		// state_z.kd = 0.03;
 	}
 }
 
@@ -103,7 +103,7 @@ double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	return mv;
 }
 
-vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
+vector_t pid_mv(vector_t sp, vector_t pv, uint8_t dt) {
 	vector_t mv;
 
 	if (dt > 0) {
