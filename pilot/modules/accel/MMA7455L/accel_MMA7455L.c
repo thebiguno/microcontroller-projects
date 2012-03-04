@@ -42,7 +42,6 @@ void accel_init(){
 	// Reset the offset drift to zero; this can be re-calibrated later.
 	// We read the last calibration from EEPROM; probably won't be 
 	// perfect, but it will be better than 0x00 for everything.
-	
 	uint8_t calibration_data[6];
 	uint8_t length = persist_read(PERSIST_SECTION_ACCEL, calibration_data, 6);
 	if (length == 6) {
@@ -161,11 +160,11 @@ void accel_calibrate(){
 	//Store calibration bytes to EEPROM
 	uint8_t calibration_data[6];
 	calibration_data[0] = (uint8_t) offset[0]; 			// x LSB
-	calibration_data[1] = (uint8_t) (offset[0] >> 8);	// x MSB
+	calibration_data[1] = (uint8_t) ((uint16_t) offset[0] >> 8);	// x MSB
 	calibration_data[2] = (uint8_t) offset[1]; 			// y LSB
-	calibration_data[3] = (uint8_t) (offset[1] >> 8);	// y MSB
+	calibration_data[3] = (uint8_t) ((uint16_t) offset[1] >> 8);	// y MSB
 	calibration_data[4] = (uint8_t) offset[2];			// z LSB
-	calibration_data[5] = (uint8_t) (offset[2] >> 8);	// z MSB
+	calibration_data[5] = (uint8_t) ((uint16_t) offset[2] >> 8);	// z MSB
 	
 	persist_write(PERSIST_SECTION_ACCEL, calibration_data, 6);
 }
