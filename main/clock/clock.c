@@ -3,7 +3,7 @@
 #include <avr/sfr_defs.h>
 
 static uint8_t _mode = 0;
-static char _segments[6];
+static char _segments[6] = {0,0,0,0,0,0};
 static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
 static uint8_t _matrix_grn[8] = {0,0,0,0,0,0,0,0};
 

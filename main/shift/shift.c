@@ -11,7 +11,7 @@
 static volatile uint8_t *_latch_port = 0;
 static uint8_t _latch_pin = 0;
 
-static volatile uint8_t _buffer[SIZE][DEPTH]; // marked as volatile because it's used in the IVR
+static volatile uint8_t _buffer[SIZE][DEPTH];
 
 void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin){
 	_latch_port = latch_port;
@@ -43,14 +43,14 @@ void shift_do() {
 	static uint8_t j;
 	
 		if (i < SIZE) {
+			if(!(SPSR & (1<<SPIF)));
 			SPDR = _buffer[i++][j];
-			//while(!(SPSR & (1<<SPIF)));
 		} else {
-				*_latch_port &= ~_BV(_latch_pin);	
-				*_latch_port |= _BV(_latch_pin);
-				i = 0;
+			*_latch_port &= ~_BV(_latch_pin);	
+			*_latch_port |= _BV(_latch_pin);
+			i = 0;
 
-				j++;
-				if (j == 8) j = 0;
+			j++;
+			if (j == DEPTH) j = 0;
 		}
 }

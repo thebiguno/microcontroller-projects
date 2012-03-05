@@ -60,18 +60,16 @@ int main() {
 			timer_add(clock_size_d());
 		}
 		
-		shift_do();
-		
-		
 		// update the clock segments
 		// if ((uint8_t) ms == 0) { // every 256 ms
 		// 	if (flag == 0) {
 		// 		flag = 1;
-		// 		clock_segments(c);
-		// 		clock_matrix(red, grn);
-		// 		segment_draw(c, 0x00);
+				clock_update(ms);
+		 		clock_segments(c);
+		 		// clock_matrix(red, grn);
+		 		segment_draw(c, 0x00);
 				// matrix_draw(red,grn);
-//				shift_do();
+				//shift_do();
 				// life_update();
 				//scroll_draw(red, grn);
 				// life_matrix(red, grn);
