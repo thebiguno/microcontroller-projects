@@ -3,7 +3,7 @@
 int main() {
 	
 	shift_init(&PORT_SHIFT_DATA, PIN_SHIFT_DATA, &PORT_SHIFT_CLOCK, PIN_SHIFT_CLOCK, &PORT_SHIFT_LATCH, PIN_SHIFT_LATCH);
-	button_init(&PORT_BUTTON_HOUR, PIN_BUTTON_HOUR, &PORT_BUTTON_MIN, PIN_BUTTON_MIN, &PORT_BUTTON_MODE, PIN_BUTTON_MODE);
+	button_init(&PORT_BUTTON_HOUR, PIN_BUTTON_HOUR, &PORT_BUTTON_MIN, PIN_BUTTON_MIN, &PORT_BUTTON_MIN, PIN_BUTTON_MODE);
 	timer_init();
 	sei();
 		
@@ -15,7 +15,7 @@ int main() {
 	// 	uint8_t MATRIX_OFF[8] = { 0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0 };
 	// 	uint8_t MATRIX_ON[8] = { 0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF };
 
-	char c[] = "ABCD";
+	char c[] = {1,2,3,4};
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 
@@ -39,9 +39,9 @@ int main() {
 		if (prev_ms != ms) { // limit button sampling to 1 ms
 			prev_ms = ms;
 			button_sample();
-			// clock_update(ms);
-			// clock_segments(c);
-			// segment_draw(c, 0x00);
+			clock_update(ms);
+			clock_segments(c);
+			segment_draw(c, 0x00);
 		}
 		
 		// do something on button press
@@ -64,10 +64,8 @@ int main() {
 		// if ((uint8_t) ms == 0) { // every 256 ms
 		// 	if (flag == 0) {
 		// 		flag = 1;
-				clock_update(ms);
-		 		clock_segments(c);
 		 		// clock_matrix(red, grn);
-		 		segment_draw(c, 0x00);
+		 		// segment_draw(c, 0x00);
 				// matrix_draw(red,grn);
 				//shift_do();
 				// life_update();

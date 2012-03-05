@@ -6,7 +6,7 @@
 
 // 5 shift registers and 64 bytes for each color (8 rows * 8 columns)
 #define SIZE 5
-#define DEPTH 128
+#define DEPTH 64
 
 static volatile uint8_t *_latch_port = 0;
 static uint8_t _latch_pin = 0;
@@ -51,6 +51,6 @@ void shift_do() {
 			i = 0;
 
 			j++;
-			if (j == DEPTH) j = 0;
+			if (j == 64) j = 0;
 		}
 }

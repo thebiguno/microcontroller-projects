@@ -5,12 +5,12 @@
 static volatile uint32_t _timer_millis;
 
 void timer_init(){
-	//Set up the timer to run at F_CPU / 256, in normal mode (we reset TCNT0 in the ISR)
+	//Set up the timer to run at F_CPU / 256, in normal mode (TCNT0 is reset in the ISR)
 	TCCR0A = 0x0;			// output a = normal mode; output b = normal mode; waveform generation = normal
-	TCCR0B |= _BV(CS02);	// clock select = F_CPU / 256
+	TCCR0B |= _BV(CS02);	// clock select = CLK / 256 (prescaler)
 	
 	OCR0A = F_CPU / 256 / 1000;		// interrupt A = every millisecond
-	OCR0B = 1;		// interrupt B = every 1/4 millisecond
+	OCR0B = 10;		// interrupt B = 
 	
 	TIMSK0 = _BV(OCIE0A) | _BV(OCIE0B);
 
@@ -18,7 +18,8 @@ void timer_init(){
 	sei();
 #endif
 	
-//	DDRB = 0xFF;
+	_timer_millis = 0;
+	DDRB = 0xFF;
 }
 
 uint64_t timer_millis() {
@@ -34,13 +35,13 @@ EMPTY_INTERRUPT(TIMER0_OVF_vect)
 
 ISR(TIMER0_COMPA_vect) {
 	TCNT0 = 0;						// reset counter to zero
-	OCR0B = 0;						// reset other compare value to zero
+	OCR0B = 10;						// reset other compare value to zero
 	_timer_millis++;
 	
 	if (_timer_millis > 86400000) _timer_millis = 0;
 }
 
-ISR(TIMER0_COMPB_vect) {
+ISR(TIMER0_COMPB_vect, ISR_NOBLOCK) {
+	OCR0B += 10;	// increment compare value
 	shift_do();
-	OCR0B++;	// increment compare value
 }
