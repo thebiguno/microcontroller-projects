@@ -41,7 +41,9 @@ int main() {
 			button_sample();
 			clock_update(ms);
 			clock_segments(c);
+			clock_matrix(red, grn);
 			segment_draw(c, 0x00);
+			matrix_draw(red,grn);
 		}
 		
 		// do something on button press

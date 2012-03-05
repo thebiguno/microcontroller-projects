@@ -10,7 +10,7 @@ void timer_init(){
 	TCCR0B |= _BV(CS02);	// clock select = CLK / 256 (prescaler)
 	
 	OCR0A = F_CPU / 256 / 1000;		// interrupt A = every millisecond
-	OCR0B = 10;		// interrupt B = 
+	OCR0B = 2;		// interrupt B = 
 	
 	TIMSK0 = _BV(OCIE0A) | _BV(OCIE0B);
 
@@ -35,13 +35,13 @@ EMPTY_INTERRUPT(TIMER0_OVF_vect)
 
 ISR(TIMER0_COMPA_vect) {
 	TCNT0 = 0;						// reset counter to zero
-	OCR0B = 10;						// reset other compare value to zero
+	OCR0B = 2;						// reset other compare value to zero
 	_timer_millis++;
 	
 	if (_timer_millis > 86400000) _timer_millis = 0;
 }
 
 ISR(TIMER0_COMPB_vect, ISR_NOBLOCK) {
-	OCR0B += 10;	// increment compare value
+	OCR0B += 2;	// increment compare value
 	shift_do();
 }

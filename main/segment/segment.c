@@ -89,7 +89,7 @@ static uint8_t lookup(char c) {
 }
 
 void segment_draw(char c[], uint8_t flags) {
-	for (uint8_t i = 0; i < 64; i = i + 4) {
+	for (uint8_t i = 0; i < 64; i = i + 16) {
 		for (uint8_t seg = 0; seg < 4; seg++) {
 			uint8_t j = seg + i;
 			uint8_t b = 0;
