@@ -4,13 +4,10 @@
 #include <avr/io.h>
 #include "pins.h"
 
+#include "display/display.h"
 #include "shift/shift.h"
-#include "segment/segment.h"
-#include "matrix/matrix.h"
 #include "timer/timer.h"
 #include "clock/clock.h"
 #include "button/button.h"
-#include "scroll/scroll.h"
-#include "life/life.h"
 
 #endif

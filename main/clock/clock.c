@@ -4,6 +4,7 @@
 
 static uint8_t _mode = 0;
 static char _segments[6] = {0,0,0,0,0,0};
+static uint8_t _segment_flags = 0;
 static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
 static uint8_t _matrix_grn[8] = {0,0,0,0,0,0,0,0};
 
@@ -19,6 +20,11 @@ void clock_segments(char result[]) {
 		result[i] = _segments[i];
 	}
 }
+
+uint8_t clock_segment_flags() {
+	return _segment_flags;
+}
+
 
 /*
  * Sets a matrix array according to the time in the given mode.

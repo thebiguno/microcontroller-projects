@@ -7,8 +7,8 @@ int main() {
 	timer_init();
 	sei();
 		
-	uint8_t MATRIX_BOX[8] = { 0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF };
-	uint8_t MATRIX_X[8] = { 0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81 };
+	//	uint8_t MATRIX_BOX[8] = { 0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF };
+	//	uint8_t MATRIX_X[8] = { 0x81,0x42,0x24,0x18,0x18,0x24,0x42,0x81 };
 	// 	uint8_t MATRIX_CTR[8] = { 0x00,0x00,0x00,0x18,0x18,0x00,0x00,0x00 };
 	// 	uint8_t MATRIX_GRN[8] = { 0x55,0xAA,0x55,0xAA,0x55,0xAA,0x55,0xAA };
 	// 	uint8_t MATRIX_RED[8] = { 0xAA,0x55,0xAA,0x55,0xAA,0x55,0xAA,0x55 };
@@ -20,7 +20,7 @@ int main() {
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 
 	uint32_t prev_ms = 0;
-	uint8_t mode = 0;
+	uint8_t mode = 3;
 	// uint8_t flag = 0;
 	
 	clock_mode(mode);
@@ -28,7 +28,6 @@ int main() {
 //	scroll_update(str, sizeof(str) - 1);
 //	life_randomize();
 
-	segment_draw(c, 0x00);
 	// matrix_draw(MATRIX_BOX,MATRIX_X);
 	
 	while(1) {
@@ -42,8 +41,8 @@ int main() {
 			clock_update(ms);
 			clock_segments(c);
 			clock_matrix(red, grn);
-			segment_draw(c, 0x00);
-			matrix_draw(red,grn);
+			display_set_segments(c, 0x00);
+			display_set_matrix(red, grn);
 		}
 		
 		// do something on button press
@@ -61,21 +60,5 @@ int main() {
 		if ((changed & _BV(BUTTON_MIN)) && (state & _BV(BUTTON_MIN))) {
 			timer_add(clock_size_d());
 		}
-		
-		// update the clock segments
-		// if ((uint8_t) ms == 0) { // every 256 ms
-		// 	if (flag == 0) {
-		// 		flag = 1;
-		 		// clock_matrix(red, grn);
-		 		// segment_draw(c, 0x00);
-				// matrix_draw(red,grn);
-				//shift_do();
-				// life_update();
-				//scroll_draw(red, grn);
-				// life_matrix(red, grn);
-		// 	}
-		// } else {
-		// 	flag = 0;
-		// }
 	}
 }

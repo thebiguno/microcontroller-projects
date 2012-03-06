@@ -23,6 +23,8 @@ void clock_update(uint32_t millis);
  */
 void clock_segments(char result[]);
 
+uint8_t clock_segment_flags();
+
 /*
  * Sets a matrix array according to the time in the given mode.
  */
