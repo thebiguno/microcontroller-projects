@@ -1,7 +1,7 @@
 /*
  * Low resolution implementation of timer using a 8 bit clock with prescaler, 
- * etc.  Clicks approximately every millisecond.  Microseconds are not available, 
- * and any queries to the function will just return milliseconds * 1000.
+ * etc.  Clicks approximately every millisecond.  Sub-millisecond resolution is available
+ * on demand, and has approximately 12µs resolution at 20MHz.
  * You can use this file when you don't need high resolution timing, and don't care
  * about slight clock drift, inaccuracy, etc.  For timing most human-related activities,
  * though, it should be more than sufficient.
