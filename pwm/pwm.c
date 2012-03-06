@@ -6,7 +6,7 @@
 #include "pwm.h"
 
 //Macro to convert VALUE (in µs) to a clock tick count with a specified prescaler.
-#define PWM_US_TO_CLICKS(value,prescaler) (F_CPU / 1000000) * (value / prescaler)
+#define PWM_US_TO_CLICKS(value, prescaler) (F_CPU / 1000000) * (value / prescaler)
 
 //Current values are here
 static uint16_t _values[PWM_MAX_PINS];
@@ -24,6 +24,48 @@ static uint8_t _count;								//How many pins should be used
 
 static uint16_t _prescaler = 0x0;
 static uint8_t _prescaler_mask = 0x0;
+
+//Figure out which registers to use, depending on the chip in use
+#if defined(__AVR_ATtiny25__)   || \
+	defined(__AVR_ATtiny45__)   || \
+	defined(__AVR_ATtiny85__)
+
+#define PWM_8_BIT
+#define TCCRA			TCCR0A
+#define TCCRB			TCCR0B
+#define OCRA			OCR0A
+#define OCRB			OCR0B
+#define TIMSKR			TIMSK
+#define OCIEA			OCIE0A
+#define OCIEB			OCIE0B
+#define FIR				TIFR	//Force Interrupt Register
+#define FOCA			OCF0A
+#define TCNT			TCNT0
+
+#elif defined(__AVR_ATmega168__)   || \
+	defined(__AVR_ATmega328__)     || \
+	defined(__AVR_ATmega328P__)    || \
+	defined(__AVR_ATmega324P__)    || \
+	defined(__AVR_ATmega644__)     || \
+	defined(__AVR_ATmega644P__)    || \
+	defined(__AVR_ATmega644PA__)   || \
+	defined(__AVR_ATmega1284P__)
+
+#define TCCRA			TCCR1A
+#define TCCRB			TCCR1B
+#define OCRA			OCR1A
+#define OCRB			OCR1B
+#define TIMSKR 			TIMSK1
+#define OCIEA			OCIE1A
+#define OCIEB			OCIE1B
+#define FIR				TCCR1C
+#define FOCA			FOC1A
+#define TCNT			TCNT1
+
+#else
+	#error You must confirm PWM setup for your chip!  Please verify that MMCU is set correctly, and that there is a matching check definition in pwm.h
+#endif
+
 
 /*
  * Note: We extrapolate the DDR registers based off of the associated PORT 
@@ -46,31 +88,40 @@ void pwm_init(volatile uint8_t *ports[],
 		_pins[i] = pins[i];
 	}
 	
-	//Rule of thumb, using 20MHz as the largest F_CPU value.  If running on
-	// a slower clock, speeds can probably be tweaked, but this is probably
-	// good enough.
-	if (period < 3200){
+	//This is calculated by the focumula:
+	// CUTOFF_VALUE = PRESCALER * MAX_VALUE / (F_CPU / 1000000)
+	// where CUTOFF_VALUE is the period comparison for each if block,
+	// PRESCALER is the prescaler in the datasheet for a given CSx selection,
+	// and MAX_VALUE is the largest integer of the selected bit depth (256 / 65536).
+
+#ifdef PWM_8_BIT
+	uint32_t max_value = 255;
+#else
+	uint32_t max_value = 65535;
+#endif
+	
+	if (period < (1 * max_value / (F_CPU / 1000000))){
 		_prescaler = 1;
 		_prescaler_mask = _BV(CS10);
 	}
-	else if (period < 25600){
+	else if (period < (8 * max_value / (F_CPU / 1000000))){
 		_prescaler = 8;
 		_prescaler_mask = _BV(CS11);	
 	}
-	else if (period < 204800){
+	else if (period < (64 * max_value / (F_CPU / 1000000))){
 		_prescaler = 64;
 		_prescaler_mask = _BV(CS11) | _BV(CS10);
 	}
-	else if (period < 838656){
+	else if (period < (256 * max_value / (F_CPU / 1000000))){
 		_prescaler = 256;
 		_prescaler_mask = _BV(CS12);
 	}
-	else if (period < 3354624){
+	else if (period < (1024 * max_value / (F_CPU / 1000000))){
 		_prescaler = 1024;
 		_prescaler_mask = _BV(CS12) | _BV(CS10);
 	}
 	else {
-		period = 3354624; //The largest possible period (given 20MHz clock)
+		period = (1024 * max_value / (F_CPU / 1000000)); //The largest possible period
 		_prescaler = 1024;
 		_prescaler_mask = _BV(CS12) | _BV(CS10);
 	}
@@ -82,36 +133,35 @@ void pwm_init(volatile uint8_t *ports[],
 		_new_values[i] = 0;
 	}
 				
-	//Set up the timer to run at F_CPU / prescaler, in normal mode.
-	TCCR1A = 0x0;
-	TCCR1B |= _prescaler_mask;
+	TCCRA = 0x00;
+	TCCRB |= _prescaler_mask;
 	
-	//OCR1A controls the PWM period
-	OCR1A = PWM_US_TO_CLICKS(period, _prescaler);
-	//OCR1B controls the PWM phase.  It is initialized later.
+	//OCRA controls the PWM period
+	OCRA = PWM_US_TO_CLICKS(period, _prescaler);
+	//OCRB controls the PWM phase.  It is initialized later.
 	
 	//Enable compare interrupt on both channels
-	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
+	TIMSKR = _BV(OCIEA) | _BV(OCIEB);
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif
-	
+
 	//Force interrupt on compare A initially
-	TCCR1C |= _BV(FOC1A);	
+	FIR |= _BV(FOCA);
 }
 
 void pwm_start(){
-	TCNT1 = 0;
-	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
-	TCCR1B |= _prescaler_mask;
+	TCNT = 0x00;	//Restart timer counter
+	TIMSKR = _BV(OCIEA) | _BV(OCIEB);	//Enable output compare match interrupt enable
+	TCCRB |= _prescaler_mask;	//Enable 
 }
 
 void pwm_stop(){
-	TCCR1B = 0x00;
-	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
-	
+	TCCRB = 0x00;
+	TIMSKR |= _BV(OCIEA) | _BV(OCIEB);
+
 	//Set pins low
 	for (uint8_t i = 0; i < _count; i++){
 		*_ports[i] &= ~_BV(_pins[i]);
@@ -132,10 +182,15 @@ void pwm_set_period(uint32_t period){
 /* 
  * The frequency comparison.  When it overflows, we reset the timer to 0.
  */
+#ifdef PWM_8_BIT
+EMPTY_INTERRUPT(TIM0_OVF_vect)
+ISR(TIM0_COMPA_vect){
+#else
 ISR(TIMER1_COMPA_vect){
+#endif
 	//Turn off clock to avoid timing issues
-	TCCR1B = 0x00;
-		
+	TCCRB = 0x00;
+	
 	//Update values if needed
 	if (_new_value_set){
 		for (uint8_t i = 0; i < _count; i++){
@@ -144,7 +199,7 @@ ISR(TIMER1_COMPA_vect){
 		_new_value_set = 0;
 	}
 	if (_new_period){
-		OCR1A = PWM_US_TO_CLICKS(_new_period, _prescaler);
+		OCRA = PWM_US_TO_CLICKS(_new_period, _prescaler);
 		_new_period = 0;
 	}
 	
@@ -155,31 +210,36 @@ ISR(TIMER1_COMPA_vect){
 		}
 	}
 
-	//Trigger OCR1B to interrupt 'Real Soon Now'.  Set this as low as possible while still
+	//Trigger OCRB to interrupt 'Real Soon Now'.  Set this as low as possible while still
 	// retailing stability.  5 seems to be about the lowest number, we leave it at 10
 	// to be sure.
-	OCR1B = 0x2;
+	OCRB = 0xA;
 	
 	//Reset counter
-	TCNT1 = 0;
+	TCNT = 0;
 	
 	//Re-enable clock
-	TCCR1B |= _prescaler_mask;
+	TCCRB |= _prescaler_mask;
 }
 
 
 /* 
  * The phase comparison.  When it overflows, we find the next highest value.
  */
+#ifdef PWM_8_BIT
+ISR(TIM0_COMPB_vect){
+#else
 ISR(TIMER1_COMPB_vect){
+#endif
+
 	//Turn off clock to avoid timing issues
-	TCCR1B = 0x00;
+	TCCRB = 0x00;
 	
 	//Find the next value to trigger overflow
 	uint16_t value = 0xFFFF;
 	for (uint8_t i = 0; i < _count; i++){
 		//Have we already passed the end of this phase?
-		if (_values[i] <= TCNT1){
+		if (_values[i] <= TCNT){
 			*_ports[i] &= ~_BV(_pins[i]); //Turn off matching pins
 		}
 		//If not, is it the next lowest available value?
@@ -189,9 +249,9 @@ ISR(TIMER1_COMPB_vect){
 	}
 	
 	//Set the timer for the next lowest value
-	OCR1B = value;
-	if (OCR1B <= TCNT1 + 1) OCR1B = TCNT1;
+	OCRB = value;
+	if (OCRB <= TCNT + 1) OCRB = TCNT;
 
 	//Re-enable clock
-	TCCR1B |= _prescaler_mask;	
+	TCCRB |= _prescaler_mask;
 }

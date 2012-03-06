@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <math.h>
 
 //The absolute maximum number of pins defined.  The actual 'used' count is passed
 // into pwm_init, and there is no problem with having a larger number here than is
@@ -13,6 +14,7 @@
 #ifndef PWM_MAX_PINS
 #define PWM_MAX_PINS 8
 #endif
+
 
 /*
  * Initializes the PWM library at a given period, using the specified ports.
