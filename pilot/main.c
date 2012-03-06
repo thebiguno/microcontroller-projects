@@ -59,12 +59,7 @@ int main(){
 
 	//Main program loop
 	while (1) {
-		curr_seconds = timer_micros() / (double) 1000000;
-		dt = curr_seconds - seconds;
-		seconds = curr_seconds;
-		
 		protocol_poll();
-		
 		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed_type = cmd_type;
@@ -74,6 +69,12 @@ int main(){
 
 		g = gyro_get();
 		a = accel_get();
+
+		//Compute dt as close to use time as possible
+		curr_seconds = timer_micros() / 1000000.0;
+		dt = curr_seconds - seconds;
+		seconds = curr_seconds;
+		
 		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
 		if (armed_type == 'A') {						// attitude command
@@ -83,6 +84,11 @@ int main(){
 			sp.x = flight_command_data[1];
 			sp.y = flight_command_data[2];
 			sp.z = flight_command_data[3];
+			
+			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
+			
+			motor_percent(throttle, mv, motor);
+			esc_set(motor);
 			
 			//Watchdog: check for communication timeouts
 			if (t > WATCHDOG_ALERT) {
@@ -107,11 +113,6 @@ int main(){
 			if (throttle < 0.01) {
 				pid_reset();
 			}
-			
-			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
-			
-			motor_percent(throttle, mv, motor);
-			esc_set(motor);
 		} else if (armed_type == 'M') {				// motor command
 			for (uint8_t i = 0; i < 4; i++) {
 				motor[i] = flight_command_data[i];
@@ -138,6 +139,9 @@ int main(){
 			pid_reset();		// since pid isn't used for motor commands, take this opportunity to clear any accumulated error
 			esc_set(motor);
 			throttle = 0;
+		}
+		else {
+			pid_reset();
 		}
 
 		//********************
