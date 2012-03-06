@@ -42,7 +42,6 @@ int main(){
 	uint8_t armed_type = 0x00;		//Will be either 'A' or 'M'; initialized to 0x00 until the first command is received.
 	double flight_command_data[4];	//Data packet received with a flight command
 	double throttle = 0.0;			//Throttle as sent from controller
-	uint8_t throttle_back;			//Used for lost signal throttle decrease
 	vector_t sp = { 0,0,0 };		// Attitude set point
 	double motor[4];				// Motor set point
 	
@@ -94,12 +93,13 @@ int main(){
 				sp.y = 0;
 				sp.z = 0;
 				
-				// NOTE: this will go from full throttle to off in about two minutes
-				throttle_back += dt;
-				if (throttle > 0 && throttle_back >= 500) {
+				//This should go from full throttle to off in about 20 seconds.  We are assuming 
+				// that the main loop will execute every 1ms or so (TODO verify).  The maximum throttle 
+				// is 0.8, so to reduce from 0.8 to 0.0 in 20000 iterations (1ms per loop * 20 seconds),
+				// so we want to throttle back by 0.8 / 20000 == 0.00004 each iteration.
+				if (throttle > 0.0) {
 					// scale back throttle
-					throttle_back = 0;
-					throttle--;
+					throttle -= 0.00004;
 				}
 			}
 			
@@ -146,7 +146,7 @@ int main(){
 
 		heartbeat_overflow++;
 		if (!heartbeat_overflow){
-			//Watchdog timer; we assume this is about 250ms, so three seconds overflow 
+			//Watchdog timer; we assume this is about 250ms (TODO verify), so three seconds overflow 
 			//will be t = WATCHDOG_ALERT (12), which we check for in the comm timeout code.
 			t++;	
 			
