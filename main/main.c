@@ -18,15 +18,16 @@ int main() {
 	char c[] = {1,2,3,4};
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
-
-	uint32_t prev_ms = 0;
-	uint8_t mode = 3;
+	
+	uint8_t life_count = 0;
+	uint8_t life_reset = 0;
+	uint8_t mode = 0;
 	// uint8_t flag = 0;
 	
 	clock_mode(mode);
 //	char str[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
 //	scroll_update(str, sizeof(str) - 1);
-//	life_randomize();
+	life_randomize();
 
 	// matrix_draw(MATRIX_BOX,MATRIX_X);
 	
@@ -34,16 +35,25 @@ int main() {
 		// get number of millis since midnight
 		uint32_t ms = timer_millis();
 		
-		// sample buttons
-		if (prev_ms != ms) { // limit button sampling to 1 ms
-			prev_ms = ms;
-			button_sample();
-			clock_update(ms);
-			clock_segments(c);
+		clock_update(ms);
+		clock_segments(c);
+		display_set_segments(c, clock_segment_flags());
+		if (mode > 0) {
 			clock_matrix(red, grn);
-			display_set_segments(c, 0x00);
 			display_set_matrix(red, grn);
 		}
+
+		if (mode == 0 && life_count++ == 0) {
+			life_update();
+			life_matrix(red, grn);
+			display_set_matrix(red, grn);
+			
+			life_reset += 10;
+			if (life_reset < 10) {
+				life_randomize();
+			}
+ 		}
+		
 		
 		// do something on button press
 		uint8_t changed = button_changed();

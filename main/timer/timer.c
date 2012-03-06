@@ -38,6 +38,8 @@ ISR(TIMER0_COMPA_vect) {
 	_timer_millis++;
 	
 	if (_timer_millis > 86400000) _timer_millis = 0;
+	
+	button_sample();
 }
 
 ISR(TIMER0_COMPB_vect, ISR_NOBLOCK) {

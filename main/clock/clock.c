@@ -72,6 +72,10 @@ void clock_traditional(uint32_t ms) {
 	}
 	_segments[5] = sc;
 
+	_segment_flags = 0;
+	if ((sc & _BV(0)) == _BV(0)) {
+		_segment_flags |= _BV(4);
+	}
 	
 	clock_clear_matrix();
 
@@ -110,6 +114,8 @@ void clock_vigesimal(uint32_t ms) {
 	_segments[1] = b;
 	_segments[2] = c;
 	_segments[3] = d;
+	
+	_segment_flags = 0;
 	
 	clock_clear_matrix();
 
@@ -154,6 +160,8 @@ void clock_hexadecimal(uint32_t ms) {
 	_segments[2] = mn;
 	_segments[3] = sc;
 	
+	_segment_flags = 0;
+	
 	clock_clear_matrix();
 
 	// 2x2 pixels for each bit, hr on top, sc on bottom
@@ -195,6 +203,11 @@ void clock_decimal(uint32_t ms) {
 	_segments[2] = md;
 	_segments[3] = ud;
 	_segments[4] = nd;
+	
+	_segment_flags = 0;
+	if ((nd & _BV(0)) == _BV(0)) {
+		_segment_flags |= _BV(4);
+	}
 	
 	clock_clear_matrix();
 
@@ -329,6 +342,11 @@ void clock_octal(uint32_t ms) {
 	_segments[3] = d;
 	_segments[4] = e;
 	_segments[5] = f;
+	
+	_segment_flags = 0;
+	if ((e & _BV(0)) == _BV(0)) {
+		_segment_flags |= _BV(4);
+	}
 	
 	clock_clear_matrix();
 
