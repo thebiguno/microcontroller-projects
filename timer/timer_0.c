@@ -9,6 +9,7 @@
 #include "timer.h"
 
 static volatile uint64_t _timer_millis;
+static uint32_t _timer_micro_divisor;
 
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
@@ -18,6 +19,9 @@ void timer_init(){
 	//Set up the timer to run at F_CPU / 256, in normal mode (we reset TCNT0 in the ISR)
 	TCCR0A = 0x0;
 	TCCR0B |= _BV(CS02);
+	
+	//Every _timer_micro_divisor clock ticks is one microsecond.
+	_timer_micro_divisor = F_CPU / 1000000; 
 	
 	//Set compare value to be F_CPU / 1000 -- fire interrupt every millisecond
 	OCR0A = F_CPU / 256 / 1000;
@@ -71,7 +75,11 @@ uint64_t timer_millis(){
  * last time timer_init() was called.  Overflows after about 71 minutes.
  */
 uint64_t timer_micros(){
-	return (_timer_millis * 1000);
+	//TCNT0 is a value between 0 and 78 (assuming a 20MHz clock; see OCR0A for where this is calculated), and is
+	// the total number of clock ticks in one millisecond.
+	//We have a theoretical resolution of about 12 microseconds (at 20MHz) here; in practice it will be less
+	// since the division itself will take a fair bit of time.
+	return (_timer_millis * 1000) + (((uint16_t) TCNT0 * 256) / _timer_micro_divisor);
 }
 
 
