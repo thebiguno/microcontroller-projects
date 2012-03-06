@@ -1,6 +1,8 @@
 #include <util/delay.h>
 #include "main.h"
 
+#define WATCHDOG_ALERT	12
+
 int main(){
 	//********************
 	// Module Init
@@ -28,16 +30,12 @@ int main(){
 	//********************
 	// Variable Declarations
 	//********************
-	
 
 	//Time variables	
-	uint64_t millis = 0;			//Last measured millis
-	uint64_t curr_millis;			//Current ms counter
-	uint8_t dt;						//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
-	uint16_t t = 0;					//Time since last signal was received
-
-	//Flags for last telemetry values; bit 1 is attitude, bit 2 is status clear, bit 3 is battery
-	uint8_t last_telemetry = 0;		//Time the last telemetry was sent
+	double seconds = 0;				//Last measured seconds (with close-to-microsecond resolution)
+	double curr_seconds;			//Current seconds
+	double dt;						//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
+	uint8_t t = 0;					//Time since last signal was received
 
 	//State variables
 	uint8_t cmd_type;				//Can be any of the flight command types (a superset of armed_type)
@@ -47,6 +45,8 @@ int main(){
 	uint8_t throttle_back;			//Used for lost signal throttle decrease
 	vector_t sp = { 0,0,0 };		// Attitude set point
 	double motor[4];				// Motor set point
+	
+	uint8_t heartbeat_overflow = 0;	//When this overflows we do heartbeat and telemetry
 		
 	//Variables used in calculations
 	vector_t g;						//Gyro readings
@@ -60,16 +60,16 @@ int main(){
 
 	//Main program loop
 	while (1) {
-		curr_millis = timer_millis();
-		dt = (uint8_t) (curr_millis - millis);
-		millis = curr_millis;
-		t += dt;
+		curr_seconds = timer_micros() / (double) 1000000;
+		dt = curr_seconds - seconds;
+		seconds = curr_seconds;
 		
 		protocol_poll();
 		
 		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed_type = cmd_type;
+			//Reset watchdog
 			t = 0;
 		}
 
@@ -85,9 +85,8 @@ int main(){
 			sp.y = flight_command_data[2];
 			sp.z = flight_command_data[3];
 			
-			//Check for communication timeouts
-			//TODO optimize for 64 bit vars
-			if (t > 3000) {
+			//Watchdog: check for communication timeouts
+			if (t > WATCHDOG_ALERT) {
 				status_clear(STATUS_ARMED);
 				
 				// level out 
@@ -126,8 +125,8 @@ int main(){
 				status_set(STATUS_ARMED);
 			}
 			
-			//Check for communication timeouts
-			if (t > 3000) {
+			//Watchdog: check for communication timeouts
+			if (t > WATCHDOG_ALERT) {
 				status_clear(STATUS_ARMED);
 
 				// kill the motors completely
@@ -145,40 +144,20 @@ int main(){
 		// Intermittent I/O
 		//********************
 
-		//Every 128 ms
-		if ((((uint8_t) curr_millis) & 0x7F) == 0x7F){
-			if (last_telemetry & _BV(1)){
-				last_telemetry &= ~_BV(1);
-				status_toggle(STATUS_HEARTBEAT);
-	
-				protocol_send_telemetry(pv, motor);
-				protocol_send_raw(g, a);
-			}
-		}
-		else {
-			last_telemetry |= _BV(1);
-		}
-		//Every 512 ms
-		if ((((uint16_t) curr_millis) & 0x1FF) == 0x1FF){
-			if (last_telemetry & _BV(2)){
-				last_telemetry &= ~_BV(2);
-				status_clear(STATUS_MESSAGE_RX);
-				status_clear(STATUS_MESSAGE_TX);
-			}
-		}
-		else {
-			last_telemetry |= _BV(2);
-		}
-		
-		//Every 4096 ms
-		if ((((uint16_t) curr_millis) & 0xFFF) == 0xFFF){
-			if (last_telemetry & _BV(3)){
-				last_telemetry &= ~_BV(3);
-				protocol_send_battery(battery_level());
-			}
-		}
-		else {
-			last_telemetry |= _BV(3);
+		heartbeat_overflow++;
+		if (!heartbeat_overflow){
+			//Watchdog timer; we assume this is about 250ms, so three seconds overflow 
+			//will be t = WATCHDOG_ALERT (12), which we check for in the comm timeout code.
+			t++;	
+			
+			status_toggle(STATUS_HEARTBEAT);
+			
+			status_clear(STATUS_MESSAGE_RX);
+			status_clear(STATUS_MESSAGE_TX);
+			
+			protocol_send_battery(battery_level());
+			protocol_send_telemetry(pv, motor);
+			protocol_send_raw(g, a);
 		}
 	}
 }

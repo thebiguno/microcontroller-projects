@@ -103,22 +103,15 @@ double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	return mv;
 }
 
-vector_t pid_mv(vector_t sp, vector_t pv, uint8_t dt) {
+vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
 	vector_t mv;
 
-	if (dt > 0) {
-		double dt_s = dt * 0.001;
+	// for x and y, values are in radians
+	mv.x = _pid_mv(sp.x, pv.x, &state_x, dt);
+	mv.y = _pid_mv(sp.y, pv.y, &state_y, dt);
 
-		// for x and y, values are in radians
-		mv.x = _pid_mv(sp.x, pv.x, &state_x, dt_s);
-		mv.y = _pid_mv(sp.y, pv.y, &state_y, dt_s);
-
-		last_mv.x = mv.x;
-		last_mv.y = mv.y;
-	} else {
-		mv.x = last_mv.x;
-		mv.y = last_mv.y;
-	}
+	last_mv.x = mv.x;
+	last_mv.y = mv.y;
 
 	// for z, values are in radians / second
 	mv.z = sp.z;
