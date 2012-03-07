@@ -70,7 +70,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 't':
 			pid_send_tuning();
 			attitude_send_tuning();
-			motor_send_tuning();
 			protocol_send_diag("tuning sent");
 			break;
 		case 'E':
@@ -82,7 +81,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'W':
 			pid_write_tuning();
 			attitude_write_tuning();
-			motor_write_tuning();
 			protocol_send_diag("tuning persisted");
 			break;
 		case 'p':
@@ -91,8 +89,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			protocol_send_diag("pid received");
 			break;
 		case 'm':
-			motor_receive_tuning(_buf);
-			motor_write_tuning();
 			protocol_send_diag("motor received");
 			break;
 		case 'k':

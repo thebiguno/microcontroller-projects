@@ -1,6 +1,8 @@
 #include <util/delay.h>
 #include "main.h"
 
+#define WATCHDOG_ALERT	30
+
 int main(){
 	//********************
 	// Module Init
@@ -28,25 +30,24 @@ int main(){
 	//********************
 	// Variable Declarations
 	//********************
-	
 
 	//Time variables	
-	uint64_t millis = 0;			//Last measured millis
-	uint64_t curr_millis;			//Current ms counter
-	uint64_t dt;					//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
-	uint64_t t = 0;					//Time since last signal was received
-	uint64_t last_telemetry = 0;	//Time the last telemetry was sent
-	uint64_t last_status_clear = 0;	//Time last status clear was sent
-	uint64_t last_battery = 0;		//Time last battery state was sent
+	double seconds = 0;				//Last measured seconds (with close-to-microsecond resolution)
+	double curr_seconds;			//Current seconds
+	double dt;						//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
+	uint8_t t = 0;					//Time since last signal was received
 
 	//State variables
 	uint8_t cmd_type;				//Can be any of the flight command types (a superset of armed_type)
 	uint8_t armed_type = 0x00;		//Will be either 'A' or 'M'; initialized to 0x00 until the first command is received.
 	double flight_command_data[4];	//Data packet received with a flight command
 	double throttle = 0.0;			//Throttle as sent from controller
-	uint8_t throttle_back;			//Used for lost signal throttle decrease
 	vector_t sp = { 0,0,0 };		// Attitude set point
 	double motor[4];				// Motor set point
+	
+	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches 128 (approx 1/2 second) we send heartbeat and telemetry
+	uint8_t battery_overflow = 0;	//This is incremented every time heartbeat_overflow overflows (i.e. just under every second); when this gets to 6 (about 3 seconds) we send battery info
+
 		
 	//Variables used in calculations
 	vector_t g;						//Gyro readings
@@ -60,21 +61,22 @@ int main(){
 
 	//Main program loop
 	while (1) {
-		curr_millis = timer_millis();
-		dt = curr_millis - millis;
-		millis = curr_millis;
-		t += dt;
-		
 		protocol_poll();
-		
 		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A' || cmd_type == 'M') {
 			armed_type = cmd_type;
+			//Reset watchdog
 			t = 0;
 		}
 
 		g = gyro_get();
 		a = accel_get();
+
+		//Compute dt as close to use time as possible
+		curr_seconds = timer_micros() / 1000000.0;
+		dt = curr_seconds - seconds;
+		seconds = curr_seconds;
+		
 		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
 		if (armed_type == 'A') {						// attitude command
@@ -85,8 +87,13 @@ int main(){
 			sp.y = flight_command_data[2];
 			sp.z = flight_command_data[3];
 			
-			//Check for communication timeouts
-			if (t > 3000) {
+			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
+			
+			motor_percent(throttle, mv, motor);
+			esc_set(motor);
+			
+			//Watchdog: check for communication timeouts
+			if (t > WATCHDOG_ALERT) {
 				status_clear(STATUS_ARMED);
 				
 				// level out 
@@ -94,12 +101,16 @@ int main(){
 				sp.y = 0;
 				sp.z = 0;
 				
-				// NOTE: this will go from full throttle to off in about two minutes
-				throttle_back += dt;
-				if (throttle > 0 && throttle_back >= 500) {
+				//This should go from full throttle to off in about 20 seconds.  We are assuming 
+				// that this (the main loop) will execute every 10ms or so.  The maximum throttle 
+				// is 0.8, so to reduce from 0.8 to 0.0 in 2000 iterations (10ms per loop * 20 seconds),
+				// we want to throttle back by 0.8 / 2000 == 0.00004 each iteration.
+				if (throttle > 0.0) {
 					// scale back throttle
-					throttle_back = 0;
-					throttle--;
+					throttle = throttle - 0.0004;
+				}
+				else {
+					throttle = 0.0;
 				}
 			}
 			
@@ -107,11 +118,6 @@ int main(){
 			if (throttle < 0.01) {
 				pid_reset();
 			}
-			
-			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
-			
-			motor_percent(throttle, mv, motor);
-			esc_set(motor);
 		} else if (armed_type == 'M') {				// motor command
 			for (uint8_t i = 0; i < 4; i++) {
 				motor[i] = flight_command_data[i];
@@ -125,8 +131,8 @@ int main(){
 				status_set(STATUS_ARMED);
 			}
 			
-			//Check for communication timeouts
-			if (t > 3000) {
+			//Watchdog: check for communication timeouts
+			if (t > WATCHDOG_ALERT) {
 				status_clear(STATUS_ARMED);
 
 				// kill the motors completely
@@ -139,33 +145,35 @@ int main(){
 			esc_set(motor);
 			throttle = 0;
 		}
+		else {
+			pid_reset();
+		}
 
 		//********************
 		// Intermittent I/O
 		//********************
 
-		//Every 100 ms
-		if (curr_millis - last_telemetry > 100){
+		heartbeat_overflow++;
+		if (heartbeat_overflow >= 32){
+			heartbeat_overflow = 0;
+			//Watchdog timer; at heartbeat overflow = 32, we run this loop approx. every 1/10s, 
+			// so three seconds overflow will be t = WATCHDOG_ALERT (30), which we check for 
+			// in the comm timeout code.
+			t++;
+			
 			status_toggle(STATUS_HEARTBEAT);
-
-			protocol_send_telemetry(pv, motor);
-			protocol_send_raw(g, a);
-			last_telemetry = curr_millis;			
-		}
-
-		//Every 500ms
-		if (curr_millis - last_status_clear > 500){
+			
 			status_clear(STATUS_MESSAGE_RX);
 			status_clear(STATUS_MESSAGE_TX);
 			
-			last_status_clear = curr_millis;
-		}
-		
-		//Every 5 seconds
-		if (curr_millis - last_battery > 5000){
-			protocol_send_battery(battery_level());
-
-			last_battery = curr_millis;
+			protocol_send_telemetry(pv, motor);
+//			protocol_send_raw(g, a);
+			
+			battery_overflow++;
+			if (battery_overflow >= 4){
+				battery_overflow = 0;
+				protocol_send_battery(battery_level());
+			}
 		}
 	}
 }
