@@ -22,7 +22,7 @@ int main() {
 	uint8_t life_count = 0;
 	uint8_t life_reset = 0;
 	uint8_t mode = 0;
-	// uint8_t flag = 0;
+	uint32_t prev_ms = 0;
 	
 	clock_mode(mode);
 //	char str[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -35,6 +35,11 @@ int main() {
 		// get number of millis since midnight
 		uint32_t ms = timer_millis();
 		
+		if (ms != prev_ms) {
+			prev_ms = ms;
+			button_sample();
+		}
+
 		clock_update(ms);
 		clock_segments(c);
 		display_set_segments(c, clock_segment_flags());
