@@ -90,20 +90,6 @@ void status_init_mode_pid(){
 	glcd_write_buffer();
 }
 
-void status_init_mode_motor(){
-	//Clear buffer
-	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
-
-	//Write text labels
-	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Motor Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "A", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "B", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "C", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 3 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "D", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-
-	glcd_write_buffer();
-}
-
 void status_init_mode_kalman(){
 	//TODO set up kalman mode
 	//Clear buffer
@@ -311,42 +297,6 @@ void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pi
 	glcd_write_buffer_bounds(
 			STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 			STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, 
-			STATUS_CONFIG_MODE_TEXT_X + 4 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
-			STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT
-	);
-}
-
-void status_set_motor_values(uint8_t col, double motors[]){
-
-	for (uint8_t i = 0; i < 4; i++){
-		sprintf(temp, "%1.2f", motors[i]);
-		//Either clear the last value, or highlight the selected value
-		glcd_draw_rectangle(
-				STATUS_CONFIG_MODE_TEXT_X + i * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
-				STATUS_CONFIG_MODE_TEXT_Y + STATUS_CONFIG_MODE_ROW_HEIGHT, 
-				STATUS_CONFIG_MODE_TEXT_X + (i + 1) * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
-				STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT, 
-				DRAW_FILLED, 
-				(col == i ? OVERLAY_OR : OVERLAY_NAND)
-		);
-		
-		//Show values
-		glcd_draw_text(
-				STATUS_CONFIG_MODE_TEXT_X + i * STATUS_CONFIG_MODE_COLUMN_WIDTH + 1, 
-				STATUS_CONFIG_MODE_TEXT_Y + STATUS_CONFIG_MODE_ROW_HEIGHT, 
-				temp, 
-				FONT_XSMALL_WIDTH, 
-				FONT_XSMALL_HEIGHT, 
-				font_xsmall, 
-				codepage_ascii_caps, 
-				OVERLAY_XOR
-		);
-	}
-
-	//Flush	
-	glcd_write_buffer_bounds(
-			STATUS_CONFIG_MODE_TEXT_X, 
-			STATUS_CONFIG_MODE_TEXT_Y + STATUS_CONFIG_MODE_ROW_HEIGHT, 
 			STATUS_CONFIG_MODE_TEXT_X + 4 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 			STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT
 	);

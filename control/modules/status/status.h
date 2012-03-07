@@ -20,7 +20,6 @@ void status_init();
 void status_init_mode_flight();
 void status_init_mode_calibrate();
 void status_init_mode_pid();
-void status_init_mode_motor();
 void status_init_mode_kalman();
 
 
@@ -63,12 +62,6 @@ void status_set_motors(double left, double front, double right, double back);
  * Sets PID values for pitch (x) and roll (y).  row / col specifies the selected value.
  */
 void status_set_pid_values(uint8_t col, uint8_t row, vector_t p, vector_t i, vector_t d);
-
-/////// Motor mode functions
-/*
- * Sets motor tuning values for 4 motors.  col specifies the selected value.
- */
-void status_set_motor_values(uint8_t col, double motors[]);
 
 /////// Kalman mode functions
 /*

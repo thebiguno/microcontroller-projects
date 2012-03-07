@@ -4,23 +4,20 @@
 #define MODE_FLIGHT		0
 #define MODE_CALIBRATE	1
 #define MODE_PID		2
-#define MODE_MOTOR		3
-#define MODE_KALMAN		4
+#define MODE_KALMAN		3
 
 	
 //Controller mode state.  Modes are as follows:
 // 0: Flight mode (armed / disarmed, shows throttle, telemetry, battery, etc)
 // 1: Calibration mode (calibrate gyro + accel)
 // 2: PID mode (read / write PID values)
-// 3: Motor tuning mode (read / write motor tuning values)
-// 4: Kalman mode (read / write Kalman tuning values)
+// 3: Kalman mode (read / write Kalman tuning values)
 //Modes are incremented / decremented using Circle / Square buttons respectively.
 int8_t mode = MODE_FLIGHT;
 
 //Variables used in non-flight-mode modes
 int8_t tuning_row, tuning_col;				//Reset to 0 when mode is changed; this is used to determine which element is being changed
 vector_t pid_p, pid_i, pid_d;				//Volatile PID values; sent with X, modified with up / down pad
-double motors[4] = {1.0, 1.0, 1.0, 1.0};	//Volatile motor tuning values; sent with X, modified with up / down pad
 vector_t kalman_qa, kalman_qg, kalman_ra;	//Volatile Kalman values; sent with X, modified with up / down pad
 
 
@@ -34,9 +31,6 @@ void init_display(){
 	else if (mode == MODE_PID){
 		status_init_mode_pid();	
 	}
-	else if (mode == MODE_MOTOR){
-		status_init_mode_motor();	
-	}
 	else if (mode == MODE_KALMAN){
 		status_init_mode_kalman();
 	}
@@ -48,9 +42,6 @@ void update_display(){
 	}
 	else if (mode == MODE_PID){
 		status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);
-	}
-	else if (mode == MODE_MOTOR){
-		status_set_motor_values(tuning_col, motors);			
 	}
 	else if (mode == MODE_KALMAN){
 		status_set_kalman_values(tuning_col, tuning_row, kalman_qa, kalman_qg, kalman_ra);			
@@ -88,15 +79,6 @@ void adjust_pid(int8_t value){
 	if (pid_p.y > 1.0) pid_p.y = 1.0;
 	if (pid_i.y > 0.1) pid_i.y = 0.1;
 	if (pid_d.y > 1.0) pid_d.y = 1.0;
-}
-
-void adjust_motor(int8_t value){
-	//Adjust the selected value by the step
-	motors[tuning_col] += value * 0.01;	//1% step
-	
-	//Sanity checks; valid values are between 70% and 130%
-	if (motors[tuning_col] < 0.7) motors[tuning_col] = 0.7;
-	if (motors[tuning_col] > 1.3) motors[tuning_col] = 1.3;
 }
 
 void adjust_kalman(int8_t value){
@@ -153,9 +135,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		else if (mode == MODE_PID){
 			protocol_send_pid_tuning(pid_p, pid_i, pid_d);
 		}
-		else if (mode == MODE_MOTOR){
-			protocol_send_motor_tuning(motors);
-		}
 		else if (mode == MODE_KALMAN){
 			protocol_send_kalman_tuning(kalman_qa, kalman_qg, kalman_ra);
 		}
@@ -175,9 +154,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 	else if (button_state & VALUE_UP || button_state & VALUE_DOWN) {
 		if (mode == MODE_PID){
 			adjust_pid((button_state & VALUE_UP) ? 1 : -1);			
-		}
-		else if (mode == MODE_MOTOR){
-			adjust_motor((button_state & VALUE_UP) ? 1 : -1);
 		}
 		else if (mode == MODE_KALMAN){
 			adjust_kalman((button_state & VALUE_UP) ? 1 : -1);			
@@ -202,14 +178,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 			}
 			else if (tuning_row >= 2){
 				tuning_row = 0;
-			}
-		}
-		else if (mode == MODE_MOTOR){
-			if (tuning_col < 0){
-				tuning_col = 3;
-			}
-			else if (tuning_col >= 4){
-				tuning_col = 0;
 			}
 		}
 		else if (mode == MODE_KALMAN){
@@ -277,7 +245,6 @@ int main (void){
 		
 		//Check for tuning requests from the poll'd protocol
 		protocol_get_pid_tuning(&pid_p, &pid_i, &pid_d);
-		protocol_get_motor_tuning(motors);
 		protocol_get_pid_tuning(&kalman_qa, &kalman_qg, &kalman_ra);
 
 		control_update();
