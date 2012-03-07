@@ -2,11 +2,6 @@
 
 #define MOTOR_LIMIT(x, t) (t > 0.01 ? (x > 1.0 ? 1.0 : (x < 0.0 ? 0.0 : x)) : 0.0)
 
-static double motor_a_tuning = 1.0;
-static double motor_b_tuning = 1.0;
-static double motor_c_tuning = 1.0;
-static double motor_d_tuning = 1.0;
-
 void motor_percent(double throttle, vector_t mv, double result[]) {
     result[0] = MOTOR_LIMIT(throttle + mv.y + mv.z, throttle); // left, A
     result[1] = MOTOR_LIMIT(throttle + mv.x - mv.z, throttle); // front, B
