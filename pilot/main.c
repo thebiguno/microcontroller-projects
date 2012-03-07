@@ -1,7 +1,8 @@
 #include <util/delay.h>
 #include "main.h"
 
-#define WATCHDOG_ALERT	30
+#define WATCHDOG_ALERT	13
+#define HEARTBEAT_OVERFLOW	128
 
 int main(){
 	//********************
@@ -154,10 +155,10 @@ int main(){
 		//********************
 
 		heartbeat_overflow++;
-		if (heartbeat_overflow >= 32){
+		if (heartbeat_overflow >= HEARTBEAT_OVERFLOW){
 			heartbeat_overflow = 0;
-			//Watchdog timer; at heartbeat overflow = 32, we run this loop approx. every 1/10s, 
-			// so three seconds overflow will be t = WATCHDOG_ALERT (30), which we check for 
+			//Watchdog timer; at heartbeat overflow = HEARTBEAT_OVERFLOW (128), we run this loop at just under 4.5Hz, 
+			// so three seconds overflow will be t = WATCHDOG_ALERT = 4.5 * 3 = 13, which we check for 
 			// in the comm timeout code.
 			t++;
 			
