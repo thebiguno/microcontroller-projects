@@ -1,7 +1,7 @@
 #include <util/delay.h>
 #include "main.h"
 
-#define WATCHDOG_ALERT	12
+#define WATCHDOG_ALERT	30
 
 int main(){
 	//********************
@@ -45,7 +45,9 @@ int main(){
 	vector_t sp = { 0,0,0 };		// Attitude set point
 	double motor[4];				// Motor set point
 	
-	uint8_t heartbeat_overflow = 0;	//When this overflows we do heartbeat and telemetry
+	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches 128 (approx 1/2 second) we send heartbeat and telemetry
+	uint8_t battery_overflow = 0;	//This is incremented every time heartbeat_overflow overflows (i.e. just under every second); when this gets to 6 (about 3 seconds) we send battery info
+
 		
 	//Variables used in calculations
 	vector_t g;						//Gyro readings
@@ -100,12 +102,15 @@ int main(){
 				sp.z = 0;
 				
 				//This should go from full throttle to off in about 20 seconds.  We are assuming 
-				// that the main loop will execute every 1ms or so (TODO verify).  The maximum throttle 
-				// is 0.8, so to reduce from 0.8 to 0.0 in 20000 iterations (1ms per loop * 20 seconds),
-				// so we want to throttle back by 0.8 / 20000 == 0.00004 each iteration.
+				// that this (the main loop) will execute every 10ms or so.  The maximum throttle 
+				// is 0.8, so to reduce from 0.8 to 0.0 in 2000 iterations (10ms per loop * 20 seconds),
+				// we want to throttle back by 0.8 / 2000 == 0.00004 each iteration.
 				if (throttle > 0.0) {
 					// scale back throttle
-					throttle -= 0.00004;
+					throttle = throttle - 0.0004;
+				}
+				else {
+					throttle = 0.0;
 				}
 			}
 			
@@ -149,19 +154,26 @@ int main(){
 		//********************
 
 		heartbeat_overflow++;
-		if (!heartbeat_overflow){
-			//Watchdog timer; we assume this is about 250ms (TODO verify), so three seconds overflow 
-			//will be t = WATCHDOG_ALERT (12), which we check for in the comm timeout code.
-			t++;	
+		if (heartbeat_overflow >= 32){
+			heartbeat_overflow = 0;
+			//Watchdog timer; at heartbeat overflow = 32, we run this loop approx. every 1/10s, 
+			// so three seconds overflow will be t = WATCHDOG_ALERT (30), which we check for 
+			// in the comm timeout code.
+			t++;
 			
 			status_toggle(STATUS_HEARTBEAT);
 			
 			status_clear(STATUS_MESSAGE_RX);
 			status_clear(STATUS_MESSAGE_TX);
 			
-			protocol_send_battery(battery_level());
 			protocol_send_telemetry(pv, motor);
-			protocol_send_raw(g, a);
+//			protocol_send_raw(g, a);
+			
+			battery_overflow++;
+			if (battery_overflow >= 4){
+				battery_overflow = 0;
+				protocol_send_battery(battery_level());
+			}
 		}
 	}
 }
