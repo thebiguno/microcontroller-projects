@@ -14,7 +14,7 @@ LFUSE=0xF7
 
 CDEFS += -DADC_PRESCALER_MASK=0x7 -DNO_INTERRUPT_ENABLE
 CLIBS += -lm
-CFLAGS += -Wl,--relax,--gc-sections -mcall-prologues -ffunction-sections -O3
+CFLAGS += -Wl,--relax,--gc-sections -O3
 
 #Include each module
 include modules/status/module.mk
