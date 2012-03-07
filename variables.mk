@@ -21,6 +21,6 @@ LFUSE=0x42
 COMPILER=avr-gcc
 OBJCOPY=avr-objcopy
 
-CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99 -mcall-prologues --combine -fwhole-program -Wl,--relax
+CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99
 CDEFS=-DF_CPU=$(F_CPU)
 #CLIBS=
