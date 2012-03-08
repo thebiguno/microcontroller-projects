@@ -8,8 +8,8 @@
  */
 #define ADDRESS 0x1D
 
-#define AVERAGE_SAMPLE_SIZE 0x8
-#define READ_INTERVAL_RATE 64
+#define AVERAGE_SAMPLE_SIZE 0x3
+#define READ_INTERVAL_RATE 4
 
 //Running average of values
 static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
