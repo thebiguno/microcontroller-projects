@@ -300,7 +300,7 @@ int main (void){
 		}
 		
 		//Update the status display
-		if ((millis - millis_last_status) > 200){
+		if ((millis - millis_last_status) > 100){
 			millis_last_status = millis;
 
 			if (mode == MODE_FLIGHT){			

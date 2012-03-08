@@ -2,7 +2,7 @@
 #include "main.h"
 
 #define WATCHDOG_ALERT	13
-#define HEARTBEAT_OVERFLOW	128
+#define HEARTBEAT_OVERFLOW	64
 
 int main(){
 	//********************
