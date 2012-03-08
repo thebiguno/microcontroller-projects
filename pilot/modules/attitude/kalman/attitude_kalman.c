@@ -77,8 +77,8 @@ void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 	// B = [dt, 0]
 	// C = [1, 0]'
 	// x = [alpha bias]'
-	// u = gyro measurement
-	// y = accel measurement
+	// u = gyro measurement (rad/s)
+	// y = accel measurement (m/s/s)
 	
 	// Update the state x of the model (x = A · x + B · u)
 	// Simplifies to alpha[k]= alpha[k-1] + (_u_[k] – bias);
