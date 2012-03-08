@@ -2,9 +2,6 @@
 #include <util/delay.h>
 
 #include "../../../main.h"
-#include "../../protocol/protocol.h"
-#include "../../persist/persist.h"
-#include "../../util/convert.h"
 
 typedef struct kalman {
 	// x
