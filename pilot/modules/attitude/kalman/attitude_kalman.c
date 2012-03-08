@@ -7,16 +7,18 @@
 #include "../../util/convert.h"
 
 typedef struct kalman {
-	// state
-	double angle;
+	// x
+	double alpha;
 	double bias;
+	// P
 	double p00;
 	double p01;
 	double p10;
 	double p11;
-	// tuning
-	double q_gyro;
-	double q_angle;
+	// Sw
+	double q_gyro;		// E(alpha^2)
+	double q_angle;		// E(bias^2)
+	// Sz
 	double r_angle;
 } kalman_t;
 
@@ -71,19 +73,46 @@ void attitude_init(vector_t gyro, vector_t accel) {
 void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 	// http://tom.pycke.be/mav/71/kalman-filtering-of-imu-data
 	
-	state->angle += dt * (gyro - state->bias);
+	// A = [1, -dt][0, 1]
+	// B = [dt, 0]
+	// C = [1, 0]'
+	// x = [alpha bias]'
+	// u = gyro measurement
+	// y = accel measurement
+	
+	// Update the state x of the model (x = A · x + B · u)
+	// Simplifies to alpha[k]= alpha[k-1] + (_u_[k] – bias);
+	state->alpha += dt * (gyro - state->bias);
+
+	// Calculate the covariance of the prediction error
+	// P = A · P · A' – K · C · P · A' + Sw
+	// See the link above for more details
 	state->p00 +=  - dt * (state->p10 + state->p01) + state->q_angle * dt;
 	state->p01 +=  - dt * state->p11;
 	state->p10 +=  - dt * state->p11;
 	state->p11 +=  + state->q_gyro * dt;
 
-	double y = accel - state->angle;
+	// Calculate the difference between the second value and the value predicted by our model
+	// This is called the innovation
+	// Inn = y – C · x
+	// The C matrix is the one that extracts the ouput from the state matrix. In our case, this is (1 0)': alpha = C · x
+	double inno = accel - state->alpha;
+
+	// Calculate the covariance
+	// s = C · P · C' + Sz
+	// Sz is the measurement process noise covariance in radians = E(z[k] * z[k]^T); i.e. accel jitter
 	double s = state->p00 + state->r_angle;
+	
+	// Calculate the kalman gain
+	// K = A · P · C' · inv(_s_)
 	double k0 = state->p00 / s;
 	double k1 = state->p10 / s;
 
-	state->angle +=  k0 * y;
-	state->bias +=  k1 * y;
+	// Correct the prediction of the state
+	// x = x + K · Inn
+	state->alpha +=  k0 * inno;
+	state->bias +=  k1 * inno;
+	
 	state->p00 -= k0 * state->p00;
 	state->p01 -= k0 * state->p01;
 	state->p10 -= k1 * state->p00;
@@ -94,10 +123,10 @@ vector_t attitude(vector_t gyro, vector_t accel, double dt) {
 	_attitude(gyro.x, accel.x, &state_x, dt);
 	_attitude(gyro.y, accel.y, &state_y, dt);
 	
-	static vector_t angle;
-	angle.x = state_x.angle;
-	angle.y = state_y.angle;
-	return angle;
+	static vector_t result;
+	result.x = state_x.alpha;
+	result.y = state_y.alpha;
+	return result;
 }
 
 uint8_t attitude_get_id() {
@@ -105,8 +134,8 @@ uint8_t attitude_get_id() {
 }
 
 void attitude_reset() {
-	state_x.angle = 0.0;
-	state_y.angle = 0.0;
+	state_x.alpha = 0.0;
+	state_y.alpha = 0.0;
 }
 
 void attitude_send_tuning() {
