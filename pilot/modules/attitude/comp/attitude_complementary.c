@@ -17,18 +17,18 @@ uint64_t millis;
 void attitude_read_tuning() {
 	uint8_t data[24];
 	
-	// uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 8);
-	// if (length == 8) {
-	// 	k.x = convert_bytes_to_double(data, 0);
-	// 	k.y = convert_bytes_to_double(data, 4);
-	// } else {
-	// 	status_error(STATUS_ERR_ATTITUDE_CHECKSUM);
-	// 	_delay_ms(1000);
-	// 	status_error(0x00);
+	uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 8);
+	if (length == 8) {
+		k.x = convert_bytes_to_double(data, 0);
+		k.y = convert_bytes_to_double(data, 4);
+	} else {
+		status_error(STATUS_ERR_ATTITUDE_CHECKSUM);
+		_delay_ms(1000);
+		status_error(0x00);
 		
 		k.x = 1;
 		k.y = 1;
-	// }
+	}
 }
 
 void attitude_write_tuning() {
