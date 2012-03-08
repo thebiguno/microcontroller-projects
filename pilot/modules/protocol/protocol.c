@@ -91,11 +91,16 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'm':
 			protocol_send_diag("motor received");
 			break;
+		case 'c':
 		case 'k':
 			if (attitude_get_id() == 'K') {
 				attitude_receive_tuning(_buf);
 				attitude_write_tuning();
 				protocol_send_diag("kalman received");				
+			} else if (attitude_get_id() == 'C') {
+				attitude_receive_tuning(_buf);
+				attitude_write_tuning();
+				protocol_send_diag("complementary received");
 			}
 			break;
 		}
