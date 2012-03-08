@@ -107,6 +107,21 @@ void status_init_mode_kalman(){
 	glcd_write_buffer();
 }
 
+void status_init_mode_comp(){
+	//Clear buffer
+	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write text labels
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Complementary Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "K", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+
+	glcd_write_buffer();
+	
+}
+
 void status_init(){
 	st7565r_init(&PORT_LCD_DATA, PIN_LCD_DATA, 
 			&PORT_LCD_CLOCK, PIN_LCD_CLOCK, 
@@ -298,7 +313,7 @@ void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pi
 			STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 			STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, 
 			STATUS_CONFIG_MODE_TEXT_X + 4 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
-			STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT
+			STATUS_CONFIG_MODE_TEXT_Y + 3 * STATUS_CONFIG_MODE_ROW_HEIGHT
 	);
 }
 
@@ -344,9 +359,51 @@ void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vect
 			STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 			STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, 
 			STATUS_CONFIG_MODE_TEXT_X + 4 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
-			STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT
+			STATUS_CONFIG_MODE_TEXT_Y + 3 * STATUS_CONFIG_MODE_ROW_HEIGHT
 	);
 }
+
+void status_set_comp_values(uint8_t row, vector_t k) {
+	double value = 0;
+	for (uint8_t i = 0; i < 2; i++){
+		if (i == 0) value = k.x;
+		if (i == 1) value = k.y;
+		
+		sprintf(temp, "%1.2f", value);
+		
+		//Either clear the last value, or highlight the selected value
+		glcd_draw_rectangle(
+				STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
+				STATUS_CONFIG_MODE_TEXT_Y + (i + 1) * STATUS_CONFIG_MODE_ROW_HEIGHT, 
+				STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
+				STATUS_CONFIG_MODE_TEXT_Y + (i + 2) * STATUS_CONFIG_MODE_ROW_HEIGHT, 
+				DRAW_FILLED,
+				(row == i ? OVERLAY_OR : OVERLAY_NAND)
+		);
+		
+		//Show values
+		glcd_draw_text(
+				STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH + 1, 
+				STATUS_CONFIG_MODE_TEXT_Y + (i + 1) * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, 
+				temp, 
+				FONT_XSMALL_WIDTH, 
+				FONT_XSMALL_HEIGHT, 
+				font_xsmall, 
+				codepage_ascii_caps, 
+				OVERLAY_XOR
+		);
+	}
+
+	//Flush	
+	glcd_write_buffer_bounds(
+			STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
+			STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, 
+			STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
+			STATUS_CONFIG_MODE_TEXT_Y + 3 * STATUS_CONFIG_MODE_ROW_HEIGHT
+	);
+	
+}
+
 
 void status_persist_values(uint8_t invert){
 	glcd_set_display_inverted(invert);

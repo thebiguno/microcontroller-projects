@@ -20,6 +20,7 @@ void status_init();
 void status_init_mode_flight();
 void status_init_mode_calibrate();
 void status_init_mode_pid();
+void status_init_mode_comp();
 void status_init_mode_kalman();
 
 
@@ -62,6 +63,12 @@ void status_set_motors(double left, double front, double right, double back);
  * Sets PID values for pitch (x) and roll (y).  row / col specifies the selected value.
  */
 void status_set_pid_values(uint8_t col, uint8_t row, vector_t p, vector_t i, vector_t d);
+
+/////// Complementary mode functions
+/*
+ * Sets complementary tuning values.  row specifies the selected value.
+ */
+void status_set_comp_values(uint8_t row, vector_t k);
 
 /////// Kalman mode functions
 /*

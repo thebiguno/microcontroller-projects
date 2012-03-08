@@ -29,6 +29,7 @@ void protocol_send_diag(char *);
  */
 void protocol_send_pid_tuning(vector_t p, vector_t i, vector_t d);
 void protocol_send_motor_tuning(double motors[]);
+void protocol_send_comp_tuning(vector_t k);
 void protocol_send_kalman_tuning(vector_t qa, vector_t qg, vector_t ra);
 
 /*
@@ -36,6 +37,7 @@ void protocol_send_kalman_tuning(vector_t qa, vector_t qg, vector_t ra);
  */
 void protocol_get_pid_tuning(vector_t *p, vector_t *i, vector_t *d);
 void protocol_get_motor_tuning(double *motor);
+void protocol_get_comp_tuning(vector_t *k);
 void protocol_get_kalman_tuning(vector_t *qa, vector_t *qg, vector_t *ra);
 
 /*
