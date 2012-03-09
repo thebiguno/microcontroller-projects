@@ -5,7 +5,7 @@
 typedef struct pid {
 	// state
 	double i;	// the integrated error
-	double pv;	// the last pv
+	double e;	// the last error
 	// tuning
 	double kp;
 	double ki;
@@ -94,11 +94,14 @@ void pid_receive_tuning(uint8_t *buf) {
 }
 
 double _pid_mv(double sp, double pv, pid_t *state, double dt){
-	double e = sp - pv;
-	double mv = (state->kp * e) + (state->ki * state->i) + (state->kd * (state->pv - pv) / dt);
+	double error = sp - pv;
+	double integral = state->i + (error * dt);
+	double derivative = (error - state->e) / dt;
+	
+	double mv = (state->kp * error) + (state->ki * integral) + (state->kd * derivative);
 
-	state->i += e * dt;
-	state->pv = pv;
+	state->i += integral;
+	state->e = error;
 
 	return mv;
 }
@@ -121,10 +124,8 @@ vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
 
 void pid_reset() {
 	state_x.i = 0;
-	state_x.pv = 0;
+	state_x.e = 0;
 	state_y.i = 0;
-	state_y.pv = 0;
-//	state_z.i = 0;
-//	state_z.pv = 0;
+	state_y.e = 0;
 }
 
