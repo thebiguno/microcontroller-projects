@@ -2,7 +2,7 @@
 #include "main.h"
 
 #define WATCHDOG_ALERT	13
-#define HEARTBEAT_OVERFLOW	64
+#define HEARTBEAT_OVERFLOW	16
 
 int main(){
 	//********************
@@ -157,7 +157,7 @@ int main(){
 		heartbeat_overflow++;
 		if (heartbeat_overflow >= HEARTBEAT_OVERFLOW){
 			heartbeat_overflow = 0;
-			//Watchdog timer; at heartbeat overflow = HEARTBEAT_OVERFLOW (128), we run this loop at just under 4.5Hz, 
+			//Watchdog timer; at heartbeat overflow = HEARTBEAT_OVERFLOW (16), we run this loop at just under 4.5Hz, 
 			// so three seconds overflow will be t = WATCHDOG_ALERT = 4.5 * 3 = 13, which we check for 
 			// in the comm timeout code.
 			t++;
@@ -168,7 +168,7 @@ int main(){
 			status_clear(STATUS_MESSAGE_TX);
 			
 			protocol_send_telemetry(pv, motor);
-//			protocol_send_raw(g, a);
+			protocol_send_raw(g, a);
 			
 			battery_overflow++;
 			if (battery_overflow >= 4){

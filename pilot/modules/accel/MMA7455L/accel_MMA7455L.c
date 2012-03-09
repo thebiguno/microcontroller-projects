@@ -8,8 +8,7 @@
  */
 #define ADDRESS 0x1D
 
-#define AVERAGE_SAMPLE_SIZE 0x3
-#define READ_INTERVAL_RATE 4
+#define AVERAGE_SAMPLE_SIZE 0x8
 
 //Running average of values
 static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
@@ -171,14 +170,9 @@ void accel_calibrate(){
 }
 
 vector_t accel_get() {
-	static uint8_t c;
-
-	c++;
 	//Don't wait around if the data is not ready...
-	if (c < READ_INTERVAL_RATE || !_accel_data_is_ready()) return result;
+	if (!_accel_data_is_ready()) return result;
 	
-	//Once c exceeds the rate check, we reset it and update i2c
-	c = 0;
 	_accel_do_read(running_average[running_average_pointer]);
 	running_average_pointer = (running_average_pointer + 1) % AVERAGE_SAMPLE_SIZE;
 
