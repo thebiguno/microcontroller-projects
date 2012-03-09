@@ -1,1 +1,1 @@
-include modules/attitude/comp/module.mk
+include modules/attitude/kalman/module.mk
