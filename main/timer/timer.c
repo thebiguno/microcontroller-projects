@@ -32,9 +32,6 @@ void timer_add(uint32_t millis) {
 	_timer_millis += millis;
 }
 
-EMPTY_INTERRUPT(TIMER0_OVF_vect)
-//EMPTY_INTERRUPT(TIMER0_COMPB_vect)
-
 ISR(TIMER0_COMPA_vect) {
 	TCNT0 = 0;						// reset counter to zero
 	OCR0B = COMPB;					// reset other compare value to zero

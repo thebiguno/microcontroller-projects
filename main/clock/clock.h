@@ -3,13 +3,14 @@
 
 #include <stdint.h>
 
+#define CLOCK_MODES 4
+
 /*
  * Sets the clock mode.
  * 0: traditional (24:59:59)
  * 1: vigesimal(19:19:19:19)
  * 2: hexadecimal (F:F:F:F)
  * 3: decimal (9:9:9:9:9)
- * 4: octal (8:8:8:8:8:8)
  */
 void clock_mode(uint8_t mode);
 

@@ -24,9 +24,6 @@ void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t 
 	
 	// setup SPI (enable, master)
 	SPCR = (1<<SPE) | (1<<MSTR);
-	
-	// pull LATCH low
-	//*latch_port &= ~_BV(latch_pin);
 }
 
 void shift_do() {

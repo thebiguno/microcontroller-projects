@@ -56,18 +56,14 @@ uint8_t display_next_shift() {
 			color = ~color;
 			break;
 		case REG_RED:
-//			if (color) {
-				result = red[row];
-//			}
+			result = red[row];
 			break;
 		case REG_GRN:
-//			if (!color) {
-				result = grn[row];
+			result = grn[row];
 
-				row++;
-				if (row > 7) row = 0;
-				break;
-//			}
+			row++;
+			if (row > 7) row = 0;
+			break;
 	}
 	reg++;
 	if (reg == 5) reg = 0;

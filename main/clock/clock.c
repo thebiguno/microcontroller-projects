@@ -2,7 +2,7 @@
 
 #include <avr/sfr_defs.h>
 
-static uint8_t _mode = 0;
+static volatile uint8_t _mode = 0;
 static char _segments[6] = {0,0,0,0,0,0};
 static uint8_t _segment_flags = 0;
 static uint8_t _matrix_red[8] = {0,0,0,0,0,0,0,0};
@@ -284,100 +284,7 @@ void clock_decimal(uint32_t ms) {
 		_matrix_grn[3] |= 0x0F; 
 		_matrix_grn[4] |= 0x0F;
 	}
-
-	// draw the border
-	// if (nd > 0) { 
-	// 	_matrix_red[0] |= 0x06; _matrix_grn[0] |= 0x06;
-	// }
-	// if (nd > 1) { 
-	// 	_matrix_red[0] |= 0x60; _matrix_grn[0] |= 0x60;
-	// }
-	// if (nd > 2) {
-	// 	_matrix_red[1] |= 0x80; _matrix_grn[1] |= 0x80;
-	// 	_matrix_red[2] |= 0x80; _matrix_grn[2] |= 0x80;
-	// }
-	// if (nd > 3) {
-	// 	_matrix_red[4] |= 0x80; _matrix_grn[4] |= 0x80;
-	// 	_matrix_red[5] |= 0x80; _matrix_grn[5] |= 0x80;
-	// }
-	// if (nd > 4) { 
-	// 	_matrix_red[7] |= 0xC0; _matrix_grn[7] |= 0xC0;
-	// }
-	// if (nd > 5) { 
-	// 	_matrix_red[7] |= 0x18; _matrix_grn[7] |= 0x18;
-	// }
-	// if (nd > 6) { 
-	// 	_matrix_red[7] |= 0x03; _matrix_grn[7] |= 0x03;
-	// }
-	// if (nd > 7) {
-	// 	_matrix_red[4] |= 0x01; _matrix_grn[4] |= 0x01;
-	// 	_matrix_red[5] |= 0x01; _matrix_grn[5] |= 0x01;
-	// }
-	// if (nd > 8) {
-	// 	_matrix_red[1] |= 0x01; _matrix_grn[1] |= 0x01;
-	// 	_matrix_red[2] |= 0x01; _matrix_grn[2] |= 0x01;
-	// }
 }
-
-void clock_octal(uint32_t ms) {
-	//milliseconds to octal (7:7:7:7:7:7)
-	uint8_t a = ms / 10800000;	// 1/8 day
-	ms -= 10800000 * (uint32_t) a ;
-	uint8_t b = ms / 1350000;	// 1/64 day
-	ms -= 1350000 * (uint32_t) b;
-	uint8_t c = ms / 168750;	// 1/512 day
-	ms -= 168750 * (uint32_t) c;
-	ms *= 100;					// bump up the precision
-	uint8_t d = ms / 2109375;	// 1/4096 day
-	ms -= 2109375 * (uint32_t) d;
-	ms *= 100;					// bump up the precision again
-	uint8_t e = ms / 26367187;	// 1/32768 day
-	ms -= 26367187 * (uint32_t) e;
-	ms *= 100;					// bump up the precision again
-	uint8_t f = ms / 329589843;	// 1/262144 day
-	
-	_segments[0] = a;
-	_segments[1] = b;
-	_segments[2] = c;
-	_segments[3] = d;
-	_segments[4] = e;
-	_segments[5] = f;
-	
-	_segment_flags = 0;
-	if ((e & _BV(0)) == _BV(0)) {
-		_segment_flags |= _BV(4);
-	}
-	
-	clock_clear_matrix();
-
-	// 1x2 pixels for each bit, a on top, f on bottom
-	for (uint8_t i = 0; i < 6; i++) { // segments (rows)
-		// build a 1x6 bar
-		uint8_t v = _segments[i];
-		for (uint8_t j = 0; j < 3; j++) { // bits (cols)
-			if ((v & _BV(j)) != 0) {
-				if (i == 1 || i == 3 || i == 5) {
-					_matrix_grn[i+1] |= 2 << (5-(j*2));
-					_matrix_grn[i+1] |= 2 << (4-(j*2));
-				} else {
-					_matrix_red[i+1] |= 2 << (5-(j*2));
-					_matrix_red[i+1] |= 2 << (4-(j*2));
-				}
-			}
-		}
-	}
-}
-
-// void clock_dni(uint32_t ms) {
-// 	//milliseconds to d'ni (25:25:25:25)
-// 	int a = ms / 3456000;	// 1/25 day
-// 	ms -= a * 3456000;
-// 	int b = ms / 138240;	// 1/625 day
-// 	ms -= b * 138240;
-// 	int c = ms / 5530;		// 1/15625 day
-// 	ms -= c * 5530;
-// 	int d = ms / 221;		// 1/390625 day
-// }
 
 void clock_update(uint32_t ms) {
 	switch (_mode) {
@@ -385,7 +292,6 @@ void clock_update(uint32_t ms) {
 		case 1: clock_vigesimal(ms); break;
 		case 2: clock_hexadecimal(ms); break;
 		case 3: clock_decimal(ms); break;
-		case 4: clock_octal(ms); break;
 	}
 }
 
@@ -395,7 +301,6 @@ uint32_t clock_size_b() {
 		case 1: return 216000;
 		case 2: return 337500;
 		case 3: return 864000;
-		case 4: return 1350000;
 	}
 	return 0;
 }
@@ -406,8 +311,6 @@ uint32_t clock_size_d() {
 		case 1: return 540;
 		case 2: return 1318;
 		case 3: return 8640;
-		case 4: return 21094;
 	}
 	return 0;
 }
-
