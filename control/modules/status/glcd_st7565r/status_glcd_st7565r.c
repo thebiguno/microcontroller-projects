@@ -112,11 +112,11 @@ void status_init_mode_comp(){
 	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
 
 	//Write text labels
-	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Complementary Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "K", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Comp Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, font_small, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "k", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 	
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
 
 	glcd_write_buffer();
 	
@@ -273,8 +273,8 @@ void status_set_motors(double left, double front, double right, double back){
 
 void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pid_i, vector_t pid_d){
 	double value = 0;
-	for (uint8_t i = 0; i < 3; i++){
-		for (uint8_t j = 0; j < 2; j++){
+	for (uint8_t i = 0; i < 3; i++){	//Col
+		for (uint8_t j = 0; j < 2; j++){	//Row
 			if (i == 0 && j == 0) value = pid_p.x;
 			if (i == 1 && j == 0) value = pid_i.x;
 			if (i == 2 && j == 0) value = pid_d.x;
