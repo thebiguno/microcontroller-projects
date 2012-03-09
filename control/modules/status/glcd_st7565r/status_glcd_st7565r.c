@@ -282,7 +282,7 @@ void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pi
 			if (i == 1 && j == 1) value = pid_i.y;
 			if (i == 2 && j == 1) value = pid_d.y;
 			
-			sprintf(temp, (i == 1 ? "%1.4f" : "%1.2f"), value);
+			sprintf(temp, (i == 1 ? "%1.4f" : "%1.3f"), value);
 			
 			//Either clear the last value, or highlight the selected value
 			glcd_draw_rectangle(

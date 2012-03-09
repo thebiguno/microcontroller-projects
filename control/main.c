@@ -59,16 +59,16 @@ void update_display(){
 void adjust_pid(int8_t value){
 	//Adjust the selected value by the step
 	if (tuning_col == 0){			//P
-		if (tuning_row == 0) pid_p.x += value * 0.01;
-		else if (tuning_row == 1) pid_p.y += value * 0.01;
+		if (tuning_row == 0) pid_p.x += value * 0.001;
+		else if (tuning_row == 1) pid_p.y += value * 0.001;
 	}
 	else if (tuning_col == 1){		//I
 		if (tuning_row == 0) pid_i.x += value * 0.0001;
 		else if (tuning_row == 1) pid_i.y += value * 0.0001;	
 	}
 	else if (tuning_col == 2){		//D
-		if (tuning_row == 0) pid_d.x += value * 0.01;
-		else if (tuning_row == 1) pid_d.y += value * 0.01;
+		if (tuning_row == 0) pid_d.x += value * 0.001;
+		else if (tuning_row == 1) pid_d.y += value * 0.001;
 	}
 	
 	//Sanity checks
