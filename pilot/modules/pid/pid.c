@@ -2,11 +2,21 @@
 #include "../persist/persist.h"
 #include "../util/convert.h"
 
+// See http://www.eetimes.com/ContentEETimes/Documents/Embedded.com/2000/f-wescot.pdf for code which
+// this has been based off of.
+
+//Integrator state bounds.  
+// TODO this needs to be adjusted; perhaps this should be a tuning value as well?  Or perhaps
+// use them in conjunction with the tuning values?
+#define I_MAX 2.0
+#define I_MIN -2.0
+
 typedef struct pid {
 	// state
-	double i;	// the integrated error
-	double e;	// the last error
-	// tuning
+	double d;			// Last position input
+	double i;			// Integrator state
+
+	// tuning gain values
 	double kp;
 	double ki;
 	double kd;
@@ -95,15 +105,23 @@ void pid_receive_tuning(uint8_t *buf) {
 
 double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	double error = sp - pv;
-	double integral = state->i + (error * dt);
-	double derivative = (error - state->e) / dt;
+	double pTerm = state->kp * error;
 	
-	double mv = (state->kp * error) + (state->ki * integral) + (state->kd * derivative);
+	//Accumulate the integral state, within given bounds
+	state->i += error;
+	if (state->i > I_MAX) state->i = I_MAX;
+	else if (state->i < I_MIN) state->i = I_MIN;
+	
+	double iTerm = state->ki * state->i;
 
-	state->i += integral;
-	state->e = error;
-
-	return mv;
+	//PID for non-PHDs does not divide by dt (in fact does not use dt at all); I assume this
+	// is because the paper states that you must have internal consistency in the reading
+	// period.  TODO check chiindii reading consistency to make sure that we are reading at
+	// a consistent rate, and if not, then take dt into account as well.
+	double dTerm = state->kd * (state->d - pv);
+	state->d = pv;
+	
+	return pTerm + iTerm + dTerm;
 }
 
 vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
@@ -124,8 +142,8 @@ vector_t pid_mv(vector_t sp, vector_t pv, double dt) {
 
 void pid_reset() {
 	state_x.i = 0;
-	state_x.e = 0;
+	state_x.d = 0;
 	state_y.i = 0;
-	state_y.e = 0;
+	state_y.d = 0;
 }
 
