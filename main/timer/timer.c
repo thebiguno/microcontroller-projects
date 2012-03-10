@@ -2,7 +2,7 @@
 #include "../button/button.h"
 #include "../shift/shift.h"
 
-#define COMPA F_CPU / 256 / 1000
+#define COMPA (F_CPU / 256 / 1000) - 1
 #define COMPB 4
 
 static volatile uint32_t _timer_millis;
