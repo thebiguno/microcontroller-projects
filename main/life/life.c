@@ -11,7 +11,6 @@ void life_update() {
 	
 	for (uint8_t i = 0; i < ROWS; i++) {
 		for (uint8_t j = 0; j < COLS; j++) {
-			new_state[i][j] = 0;
 			// count up the neighborhood
 			uint8_t ct = 0;
 			if (i > 0 && i < ROWS - 1) {
