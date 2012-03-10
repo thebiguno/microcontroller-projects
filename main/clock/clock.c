@@ -212,77 +212,90 @@ void clock_decimal(uint32_t ms) {
 	clock_clear_matrix();
 
 	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
-		// build a 3x3 number square
-		// dice patters would also be nice here but it would be a lot more code
-		
 		uint8_t v = _segments[i];
 		int row = 2;
-		if (i > 1) row += 5; // move md and ud down three rows
+		if (i > 1) row += 5; // move md and ud down five rows
 		// draw the dots
 		if (i == 1 || i == 2) { // make cd and md green instead of red
 			uint8_t sh = (i == 1) ? 5 : 0; // shift cd over three cols
-			if (v > 0) _matrix_grn[row-0] |= (0x04 << sh);
-			if (v > 1) _matrix_grn[row-0] |= (0x02 << sh);
-			if (v > 2) _matrix_grn[row-0] |= (0x01 << sh);
-			if (v > 3) _matrix_grn[row-1] |= (0x04 << sh);
-			if (v > 4) _matrix_grn[row-1] |= (0x02 << sh);
-			if (v > 5) _matrix_grn[row-1] |= (0x01 << sh);
-			if (v > 6) _matrix_grn[row-2] |= (0x04 << sh);
-			if (v > 7) _matrix_grn[row-2] |= (0x02 << sh);
-			if (v > 8) _matrix_grn[row-2] |= (0x01 << sh);
+			if (v == 1) {
+				_matrix_grn[row-1] = (0x02 << sh);
+			} else if (v == 2) {
+				_matrix_grn[row-0] = (0x01 << sh);
+				_matrix_grn[row-2] = (0x04 << sh);
+			} else if (v == 3) {
+				_matrix_grn[row-0] = (0x01 << sh);
+				_matrix_grn[row-1] = (0x02 << sh);
+				_matrix_grn[row-2] = (0x04 << sh);
+			} else if (v == 4) {
+				_matrix_grn[row-0] = (0x05 << sh);
+				_matrix_grn[row-2] = (0x05 << sh);
+			} else if (v == 5) {
+				_matrix_grn[row-0] = (0x05 << sh);
+				_matrix_grn[row-1] = (0x02 << sh);
+				_matrix_grn[row-2] = (0x05 << sh);
+			} else if (v == 6) {
+				_matrix_grn[row-0] = (0x05 << sh);
+				_matrix_grn[row-1] = (0x05 << sh);
+				_matrix_grn[row-2] = (0x05 << sh);
+			} else if (v == 7) {
+				_matrix_grn[row-0] = (0x05 << sh);
+				_matrix_grn[row-1] = (0x07 << sh);
+				_matrix_grn[row-2] = (0x05 << sh);
+			} else if (v == 8) {
+				_matrix_grn[row-0] = (0x07 << sh);
+				_matrix_grn[row-1] = (0x05 << sh);
+				_matrix_grn[row-2] = (0x07 << sh);
+			} else if (v == 9) {
+				_matrix_grn[row-0] = (0x07 << sh);
+				_matrix_grn[row-1] = (0x07 << sh);
+				_matrix_grn[row-2] = (0x07 << sh);
+			}
 		} else {
 			uint8_t sh = (i == 3) ? 5 : 0; // shift ud over three cols
-			if (v > 0) _matrix_red[row-0] |= (0x04 << sh);
-			if (v > 1) _matrix_red[row-0] |= (0x02 << sh);
-			if (v > 2) _matrix_red[row-0] |= (0x01 << sh);
-			if (v > 3) _matrix_red[row-1] |= (0x04 << sh);
-			if (v > 4) _matrix_red[row-1] |= (0x02 << sh);
-			if (v > 5) _matrix_red[row-1] |= (0x01 << sh);
-			if (v > 6) _matrix_red[row-2] |= (0x04 << sh);
-			if (v > 7) _matrix_red[row-2] |= (0x02 << sh);
-			if (v > 8) _matrix_red[row-2] |= (0x01 << sh);
+			if (v == 1) {
+				_matrix_red[row-1] = (0x02 << sh);
+			} else if (v == 2) {
+				_matrix_red[row-0] = (0x01 << sh);
+				_matrix_red[row-2] = (0x04 << sh);
+			} else if (v == 3) {
+				_matrix_red[row-0] = (0x01 << sh);
+				_matrix_red[row-1] = (0x02 << sh);
+				_matrix_red[row-2] = (0x04 << sh);
+			} else if (v == 4) {
+				_matrix_red[row-0] = (0x05 << sh);
+				_matrix_red[row-2] = (0x05 << sh);
+			} else if (v == 5) {
+				_matrix_red[row-0] = (0x05 << sh);
+				_matrix_red[row-1] = (0x02 << sh);
+				_matrix_red[row-2] = (0x05 << sh);
+			} else if (v == 6) {
+				_matrix_red[row-0] = (0x05 << sh);
+				_matrix_red[row-1] = (0x05 << sh);
+				_matrix_red[row-2] = (0x05 << sh);
+			} else if (v == 7) {
+				_matrix_red[row-0] = (0x05 << sh);
+				_matrix_red[row-1] = (0x07 << sh);
+				_matrix_red[row-2] = (0x05 << sh);
+			} else if (v == 8) {
+				_matrix_red[row-0] = (0x07 << sh);
+				_matrix_red[row-1] = (0x05 << sh);
+				_matrix_red[row-2] = (0x07 << sh);
+			} else if (v == 9) {
+				_matrix_red[row-0] = (0x07 << sh);
+				_matrix_red[row-1] = (0x07 << sh);
+				_matrix_red[row-2] = (0x07 << sh);
+			}
 		}
 	}
 
-	if (nd == 1 || nd == 5) {
-		_matrix_red[0] |= 0x18;
-		_matrix_red[1] |= 0x18;
-		_matrix_red[2] |= 0x18;
-		_matrix_red[3] |= 0x18;
+	if (nd == 1 || nd == 4 || nd == 7 || nd == 3 || nd == 6 || nd == 9) {
+		_matrix_red[3] = 0x18;
+		_matrix_red[4] = 0x18;
 	}
-	if (nd == 2 || nd == 5) {
-		_matrix_red[3] |= 0xF0; 
-		_matrix_red[4] |= 0xF0;
-	}
-	if (nd == 3 || nd == 5) {
-		_matrix_red[4] |= 0x18;
-		_matrix_red[5] |= 0x18;
-		_matrix_red[6] |= 0x18;
-		_matrix_red[7] |= 0x18;
-	}
-	if (nd == 4 || nd == 5) {
-		_matrix_red[3] |= 0x0F; 
-		_matrix_red[4] |= 0x0F;
-	}
-	if (nd == 6 || nd == 5) {
-		_matrix_grn[0] |= 0x18;
-		_matrix_grn[1] |= 0x18;
-		_matrix_grn[2] |= 0x18;
-		_matrix_grn[3] |= 0x18;
-	}
-	if (nd == 7 || nd == 5) {
-		_matrix_grn[3] |= 0xF0; 
-		_matrix_grn[4] |= 0xF0;
-	}
-	if (nd == 8 || nd == 5) {
-		_matrix_grn[4] |= 0x18;
-		_matrix_grn[5] |= 0x18;
-		_matrix_grn[6] |= 0x18;
-		_matrix_grn[7] |= 0x18;
-	}
-	if (nd == 9 || nd == 5) {
-		_matrix_grn[3] |= 0x0F; 
-		_matrix_grn[4] |= 0x0F;
+	if (nd == 2 || nd == 5 || nd == 8 || nd == 3 || nd == 6 || nd == 9) {
+		_matrix_grn[3] = 0x18;
+		_matrix_grn[4] = 0x18;
 	}
 }
 
