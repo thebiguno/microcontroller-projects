@@ -142,7 +142,8 @@ void adjust_comp(int8_t value){
 
 void check_buttons(uint16_t button_state, uint16_t button_changed){
 	//Change mode using next (circle) and prev (square) buttons
-	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) || ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
+	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) 
+			|| ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
 		mode += ((button_state & MODE_NEXT) ? 1 : -1);
 		if (mode > MODE_KALMAN) mode = MODE_FLIGHT;
 		if (mode < MODE_FLIGHT) mode = MODE_KALMAN;
@@ -176,7 +177,8 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 	}
 	//Request (X) button is pressed
 	else if ((button_state & MODE_RESET) && (button_changed & MODE_RESET)) {
-		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you ask for it in flight mode, etc.
+		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you
+		// ask for it in flight mode, etc.
 		protocol_request_tuning();
 	}
 	//Up / down
