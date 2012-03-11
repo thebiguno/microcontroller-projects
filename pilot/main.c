@@ -161,7 +161,7 @@ int main(){
 			//Watchdog timer; at heartbeat overflow = HEARTBEAT_OVERFLOW = 16, we run this loop at just under 8.6Hz, 
 			// so three seconds overflow will be t = WATCHDOG_ALERT = 8.6 * 3 = 25, which we check for 
 			// in the comm timeout code.
-//			t++;
+			t++;
 			
 			status_toggle(STATUS_HEARTBEAT);
 			
