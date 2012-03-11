@@ -2,7 +2,8 @@
 #include "main.h"
 
 #define WATCHDOG_ALERT		25
-#define HEARTBEAT_OVERFLOW	16
+#define HEARTBEAT_OVERFLOW	32
+#define BATTERY_OVERFLOW	4
 
 int main(){
 	//********************
@@ -46,7 +47,7 @@ int main(){
 	vector_t sp = { 0,0,0 };		// Attitude set point
 	double motor[4];				// Motor set point
 	
-	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches 128 (approx 1/2 second) we send heartbeat and telemetry
+	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches HEARTBEAT_OVERFLOW (approx 1/5 second) we send heartbeat and telemetry
 	uint8_t battery_overflow = 0;	//This is incremented every time heartbeat_overflow overflows (i.e. just under every second); when this gets to 6 (about 3 seconds) we send battery info
 
 		
@@ -160,7 +161,7 @@ int main(){
 			//Watchdog timer; at heartbeat overflow = HEARTBEAT_OVERFLOW = 16, we run this loop at just under 8.6Hz, 
 			// so three seconds overflow will be t = WATCHDOG_ALERT = 8.6 * 3 = 25, which we check for 
 			// in the comm timeout code.
-			t++;
+//			t++;
 			
 			status_toggle(STATUS_HEARTBEAT);
 			
@@ -171,7 +172,7 @@ int main(){
 			protocol_send_raw(g, a);
 			
 			battery_overflow++;
-			if (battery_overflow >= 4){
+			if (battery_overflow >= BATTERY_OVERFLOW){
 				battery_overflow = 0;
 				protocol_send_battery(battery_level());
 			}
