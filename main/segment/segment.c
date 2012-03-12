@@ -40,7 +40,7 @@ uint8_t segment_lookup(char c) {
 		case 0x10: case 'g': case 'G':
 		return SEG_B + SEG_G;
 		case 0x11: case 'h': case 'H':
-		return SEG_A + SEG_D;
+		return SEG_A + SEG_B + SEG_D;
 		case 0x12: case 'i': case 'I':
 		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_G;
 		case 0x13: case 'j': case 'J':
@@ -69,6 +69,10 @@ uint8_t segment_lookup(char c) {
 		return SEG_A + SEG_G;
 		case 'y': case 'Y':
 		return SEG_A + SEG_E;
+		case 'x': case 'X':
+		return SEG_A + SEG_D;
+		case ' ':
+		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G;
 		case '-':
 		return SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F;
 		case '_':
@@ -79,6 +83,10 @@ uint8_t segment_lookup(char c) {
 		return SEG_A + SEG_C + SEG_D + SEG_F;
 		case '\\':
 		return SEG_A + SEG_B + SEG_D + SEG_E;
+		case ':':
+		return SEG_B + SEG_F;
+		case ';':
+		return SEG_A + SEG_D + SEG_G;
 		default: 
 		return 0xFF;
 	}
