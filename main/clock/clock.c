@@ -101,27 +101,31 @@ void clock_traditional(uint32_t ms) {
 			}
 		}
 	}
+	
+	if (_segments[0] == 0) {
+		_segments[0] = ' ';
+	}
 }
 
 /*
  * This method was used by the ancient Mayans
  */
 void clock_vigesimal(uint32_t ms) {
-	//milliseconds to vigesimal (19:19:19:19)
-	uint8_t a = ms / 4320000;	// 1/20 day
+	//milliseconds to vigesimal (19.19.19.19)
+	uint8_t a = ms / 4320000;	// 1/20 day = 1 h 12 m
 	ms -= 4320000 * (uint32_t) a;
-	uint8_t b = ms / 216000;	// 1/400 day
+	uint8_t b = ms / 216000;	// 1/400 day = 3 m 36 s
 	ms -= 216000 * (uint32_t) b;
-	uint8_t c = ms / 10800;		// 1/8000 day
+	uint8_t c = ms / 10800;		// 1/8000 day = 10.8 s
 	ms -= 10800 * (uint32_t) c;
-	uint8_t d = ms / 540;		// 1/160000 day
+	uint8_t d = ms / 540;		// 1/160000 day = .54 s
 	
 	_segments[0] = a;
 	_segments[1] = b;
 	_segments[2] = c;
 	_segments[3] = d;
 	
-	_segment_flags = 0;
+	_segment_flags = 0x00;
 	
 	clock_clear_matrix();
 
@@ -147,22 +151,34 @@ void clock_vigesimal(uint32_t ms) {
 		if (v > 9) _matrix_grn[row+2] |= (0x0F << sh); 
 		if (v > 14) _matrix_grn[row+3] |= (0x0F << sh); 
 	}
+	
+	if (_segments[0] == 0) {
+		_segments[0] = ' ';
+		
+		if (_segments[1] == 0) {
+			_segments[1] = ' ';
+			
+			if (_segments[2] == 0) {
+				_segments[2] = ' ';
+			}
+		}
+	}
 }
 
 /*
  * This method was first proposed in the 1850s by John W. Nystrom
  */
 void clock_hexadecimal(uint32_t ms) {
-	//milliseconds to hexadecimal (F:F:F:F)
-	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour)
+	//milliseconds to hexadecimal (F_FF_F)
+	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour) = 1 h 30 m
 	ms -= 5400000 * (uint32_t) hr;
-	uint8_t mx = ms / 337500;		// 1/256 day (hex maxime)
+	uint8_t mx = ms / 337500;		// 1/256 day (hex maxime) = 5 m 37.5 s
 	ms -= 337500 * (uint32_t) mx;
 	ms *= 100;						// bump up the precision
-	uint8_t mn = ms / 2109375;		// 1/4096 day (hex minute)
+	uint8_t mn = ms / 2109375;		// 1/4096 day (hex minute) ~= 21 seconds
 	ms -= 2109375 * (uint32_t) mn;
 	ms *= 100;						// bump up the precision again
-	uint8_t sc = ms / 13183593;		// 1/65536 day (hex second)
+	uint8_t sc = ms / 13183593;		// 1/65536 day (hex second) ~= 1.32 seconds
 	
 	_segments[0] = hr;
 	_segments[1] = mx;
@@ -308,6 +324,13 @@ void clock_decimal(uint32_t ms) {
 	if (nd == 2 || nd == 5 || nd == 8 || nd == 3 || nd == 6 || nd == 9) {
 		_matrix_grn[3] = 0x18;
 		_matrix_grn[4] = 0x18;
+	}
+	
+	if (_segments[0] == 0) {
+		_segments[0] = ' ';
+		if (_segments[1] == 0) {
+			_segments[1] = ' ';
+		}
 	}
 }
 
