@@ -311,7 +311,9 @@ void clock_duodecimal(uint32_t ms) {
 	ms -= 600000 * (uint32_t) b;
 	uint8_t c = ms / 50000;	// 1/1728 day = 50 s
 	ms -= 50000 * (uint32_t) c;
-	uint8_t d = ms / 4167;		// 1/20736 day = 4.167 s
+	uint8_t d = ms / 4167;		// 1/20736 day ~= 4.167 s
+	ms -= 4167 * (uint32_t) ud;
+	uint8_t e = ms / 347;		// 1/248832 day ~= .347 s
 	
 	_segments[0] = a;
 	_segments[1] = b;
@@ -319,6 +321,9 @@ void clock_duodecimal(uint32_t ms) {
 	_segments[3] = d;
 
 	_segment_flags = _BV(2);
+	if ((e & _BV(0)) == _BV(0)) {
+		_segment_flags |= _BV(5);
+	}
 	
 	for (uint8_t i = 0; i < 8; i++) {
 		_matrix_red[i] = _b12[a][i];
