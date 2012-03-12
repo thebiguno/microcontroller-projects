@@ -19,7 +19,7 @@ void display_set_segments(char _segments[], uint8_t _flags) {
 	uint8_t b = 0;
 	for (uint8_t i = 0; i < 4; i++) {
 		b = segment_lookup(_segments[i]);
-		if (!(_flags & _BV(0))) b += SEG_DP;
+		if (!(_flags & _BV(i))) b += SEG_DP;
 		segments[i] = b;
 	}
 	flags = _flags;
