@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define CLOCK_MODES 5
+#define CLOCK_MODES 6
 
 /*
  * Sets the clock mode.
