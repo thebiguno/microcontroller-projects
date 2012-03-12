@@ -209,6 +209,108 @@ void clock_hexadecimal(uint32_t ms) {
 			}
 		}
 	}
+	
+	_segments[3] = mn;
+	_segments[2] = mx;
+	if ((sc & _BV(0)) == _BV(0)) {
+		_segments[1] = '_';
+	} else {
+		_segments[1] = ' ';
+	}
+}
+
+/*
+ * This method was used in China through most of it's history
+ */
+void clock_duodecimal(uint32_t ms) {
+	//milliseconds to decimal (BBBB)
+	uint8_t a = ms / 7200000;	// 1/12 day = 2 h (shichen)
+	ms -= 7200000 * (uint32_t) a;
+	uint8_t b = ms / 600000;	// 1/144 day = 10 m
+	ms -= 600000 * (uint32_t) b;
+	uint8_t c = ms / 50000;	// 1/1728 day = 50 s
+	ms -= 50000 * (uint32_t) c;
+	uint8_t d = ms / 4167;		// 1/20736 day = 4.167 s
+	
+	_segments[0] = a;
+	_segments[1] = b;
+	_segments[2] = c;
+	_segments[3] = d;
+
+	_segment_flags = _BV(2);
+	
+	clock_clear_matrix();
+
+	// 2x2 pixels for each bit, hr on top, sc on bottom
+	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
+		// build a 1x8 bar
+		int v = _segments[i];
+		for (uint8_t j = 0; j < 6; j++) { // columns
+			if (i == 1 || i == 3) {
+				if (v == 0 || v == 6) {
+					_matrix_grn[(i*2)+0] = 0x80;
+					_matrix_grn[(i*2)+1] = 0x80;
+				} else if (v == 1 || v == 7) {
+					_matrix_grn[(i*2)+0] = 0x40;
+					_matrix_grn[(i*2)+1] = 0x40;
+				} else if (v == 2 || v == 8) {
+					_matrix_grn[(i*2)+0] = 0x20;
+					_matrix_grn[(i*2)+1] = 0x20;
+				} else if (v == 3 || v == 9) {
+					_matrix_grn[(i*2)+0] = 0x10;
+					_matrix_grn[(i*2)+1] = 0x10;
+				} else if (v == 4 || v == 10) {
+					_matrix_grn[(i*2)+0] = 0x08;
+					_matrix_grn[(i*2)+1] = 0x08;
+				} else if (v == 5 || v == 11) {
+					_matrix_grn[(i*2)+0] = 0x04;
+					_matrix_grn[(i*2)+1] = 0x04;
+				}
+			} else {
+				if (v == 0 || v == 6) {
+					_matrix_red[(i*2)+0] = 0x80;
+					_matrix_red[(i*2)+1] = 0x80;
+				} else if (v == 1 || v == 7) {
+					_matrix_red[(i*2)+0] = 0x40;
+					_matrix_red[(i*2)+1] = 0x40;
+				} else if (v == 2 || v == 8) {
+					_matrix_red[(i*2)+0] = 0x20;
+					_matrix_red[(i*2)+1] = 0x20;
+				} else if (v == 3 || v == 9) {
+					_matrix_red[(i*2)+0] = 0x10;
+					_matrix_red[(i*2)+1] = 0x10;
+				} else if (v == 4 || v == 10) {
+					_matrix_red[(i*2)+0] = 0x08;
+					_matrix_red[(i*2)+1] = 0x08;
+				} else if (v == 5 || v == 11) {
+					_matrix_red[(i*2)+0] = 0x04;
+					_matrix_red[(i*2)+1] = 0x04;
+				}
+			}
+		}
+		if (v > 5) {
+			_matrix_grn[(i*2)+0] |= 0x03;
+			_matrix_grn[(i*2)+1] |= 0x03;
+			_matrix_red[(i*2)+0] |= 0x03;
+			_matrix_red[(i*2)+1] |= 0x03;
+		}
+	}
+	
+	// use alternative symbols for 10 and 11
+	for (uint8_t i = 0; i < 4; i++) {
+		if (_segments[i] == 10) {
+			_segments[i] = 'X';
+		} else if (_segments[i] == 11) {
+			_segments[i] = 'E';
+		}
+	}
+	
+	if (_segments[0] == 0) {
+		_segments[0] = ' ';
+		if (_segments[1] == 0) {
+			_segments[1] = ' ';
+		}
+	}
 }
 
 /*
@@ -339,7 +441,8 @@ void clock_update(uint32_t ms) {
 		case 0: clock_traditional(ms); break;
 		case 1: clock_vigesimal(ms); break;
 		case 2: clock_hexadecimal(ms); break;
-		case 3: clock_decimal(ms); break;
+		case 3: clock_duodecimal(ms); break;
+		case 4: clock_decimal(ms); break;
 	}
 }
 
@@ -348,7 +451,8 @@ uint32_t clock_size_b() {
 		case 0: return 3600000;
 		case 1: return 216000;
 		case 2: return 337500;
-		case 3: return 864000;
+		case 3: return 600000;
+		case 4: return 864000;
 	}
 	return 0;
 }
@@ -357,8 +461,9 @@ uint32_t clock_size_d() {
 	switch(_mode) {
 		case 0: return 60000;
 		case 1: return 540;
-		case 2: return 1318;
-		case 3: return 8640;
+		case 2: return 21094;
+		case 3: return 4167;
+		case 4: return 86400;
 	}
 	return 0;
 }
