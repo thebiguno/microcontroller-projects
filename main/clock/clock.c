@@ -43,6 +43,9 @@ void clock_clear_matrix() {
 	}
 }
 
+/*
+ * This is the normal method of keeping time used worldwide
+ */
 void clock_traditional(uint32_t ms) {
 	//milliseconds to traditional (24:59:59)
 	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
@@ -100,6 +103,9 @@ void clock_traditional(uint32_t ms) {
 	}
 }
 
+/*
+ * This method was used by the ancient Mayans
+ */
 void clock_vigesimal(uint32_t ms) {
 	//milliseconds to vigesimal (19:19:19:19)
 	uint8_t a = ms / 4320000;	// 1/20 day
@@ -143,6 +149,9 @@ void clock_vigesimal(uint32_t ms) {
 	}
 }
 
+/*
+ * This method was first proposed in the 1850s by John W. Nystrom
+ */
 void clock_hexadecimal(uint32_t ms) {
 	//milliseconds to hexadecimal (F:F:F:F)
 	uint8_t hr = ms / 5400000;		// 1/16 day (hex hour)
@@ -186,6 +195,9 @@ void clock_hexadecimal(uint32_t ms) {
 	}
 }
 
+/*
+ * This method was introduced during the French Revolution in 1793
+ */
 void clock_decimal(uint32_t ms) {
 	//milliseconds to decimal (9:9:9:9:9)
 	uint8_t dd = ms / 8640000;	// 1/10 day (deciday)
