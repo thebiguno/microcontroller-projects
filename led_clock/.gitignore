@@ -1,0 +1,4 @@
+*.out
+*.hex
+*.class
+.DS_Store
