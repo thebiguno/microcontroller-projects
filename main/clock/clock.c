@@ -232,9 +232,9 @@ void clock_decimal(uint32_t ms) {
 	_segments[3] = ud;
 	_segments[4] = nd;
 	
-	_segment_flags = 0;
+	_segment_flags = _BV(2);
 	if ((nd & _BV(0)) == _BV(0)) {
-		_segment_flags |= _BV(4);
+		_segment_flags |= _BV(5);
 	}
 	
 	clock_clear_matrix();
