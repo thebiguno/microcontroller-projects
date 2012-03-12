@@ -215,16 +215,16 @@ void clock_hexadecimal(uint32_t ms) {
  * This method was introduced during the French Revolution in 1793
  */
 void clock_decimal(uint32_t ms) {
-	//milliseconds to decimal (9:9:9:9:9)
-	uint8_t dd = ms / 8640000;	// 1/10 day (deciday)
+	//milliseconds to decimal (999.99)
+	uint8_t dd = ms / 8640000;	// 1/10 day (deciday) = 2 h 24 m
 	ms -= 8640000 * (uint32_t) dd;
-	uint8_t cd = ms / 864000;	// 1/100 day (centiday)
+	uint8_t cd = ms / 864000;	// 1/100 day (centiday) = 14 m 24 s
 	ms -= 864000 * (uint32_t) cd;
-	uint8_t md = ms / 86400;	// 1/1000 day (milliday)
+	uint8_t md = ms / 86400;	// 1/1000 day (milliday; beat) = 1 m 26.4 s
 	ms -= 86400 * (uint32_t) md;
-	uint8_t ud = ms / 8640;		// 1/10000 day (microday??)
+	uint8_t ud = ms / 8640;		// 1/10000 day = 8.64 s
 	ms -= 8640 * (uint32_t) ud;
-	uint8_t nd = ms / 864;		// 1/100000 day (nanoday??)
+	uint8_t nd = ms / 864;		// 1/100000 day (centibeat) / .864 s
 	
 	_segments[0] = dd;
 	_segments[1] = cd;
