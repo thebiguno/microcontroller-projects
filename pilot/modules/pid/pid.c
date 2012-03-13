@@ -95,12 +95,11 @@ void pid_receive_tuning(uint8_t *buf) {
 
 double _pid_mv(double sp, double pv, pid_t *state, double dt){
 	double error = sp - pv;
-	double integral = state->i + (error * dt);
+	state->i += (error * dt);
 	double derivative = (error - state->e) / dt;
 	
-	double mv = (state->kp * error) + (state->ki * integral) + (state->kd * derivative);
+	double mv = (state->kp * error) + (state->ki * state->i) + (state->kd * derivative);
 
-	state->i += integral;
 	state->e = error;
 
 	return mv;
