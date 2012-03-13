@@ -20,9 +20,9 @@
 #include "../../../lib/timer/timer.h"
 
 //Throttle scale to a rate of change per second
-#define MAX_THROTTLE 0.25				//Max throttle rate of change is 25% / second
-#define M_THROTTLE (2 * MAX_THROTTLE) / 128
-#define B_THROTTLE MAX_THROTTLE * -1
+#define MAX_THROTTLE_RATE 0.25				//Max throttle rate of change is 25% / second
+#define M_THROTTLE (2 * MAX_THROTTLE_RATE) / 128
+#define B_THROTTLE MAX_THROTTLE_RATE * -1
 
 void control_init(){
 	psx_init(&PORT_PSX_DATA, PIN_PSX_DATA, //Data (Brown)
@@ -68,9 +68,8 @@ control_t control_read_analog() {
 	
 	// Throttle is a Relative Linear Control
 	// Ignore the points around the centre of the stick
-	// Scale into +/- MAX_THROTTLE% change / second range
+	// Scale into +/- MAX_THROTTLE_RATE% change / second range
 	// Multiply by -1 to invert; up is more throttle, down is reverse throttle
-	// Don't let the throttle exceed 80%; this leaves some overhead to pitch and roll and "full" throttle
 	uint8_t t = psx_stick(PSS_LY);
 	if (t < 64 || t > 191) {
 		double delta = (M_THROTTLE * t + B_THROTTLE) * -1 * (dt * 0.001);
