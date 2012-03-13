@@ -84,7 +84,7 @@ int main(){
 		if (armed_type == 'A') {						// attitude command
 			status_set(STATUS_ARMED);
 			
-			throttle = flight_command_data[0];
+			throttle = flight_command_data[0] * 0.8;	// scale the requested value to allow for manoeverability at 100% throttle
 			sp.x = flight_command_data[1];
 			sp.y = flight_command_data[2];
 			sp.z = flight_command_data[3];
