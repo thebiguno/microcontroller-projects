@@ -15,12 +15,9 @@ static volatile uint8_t flags;
 static volatile uint8_t red[8];
 static volatile uint8_t grn[8];
 
-void display_set_segments(char _segments[], uint8_t _flags) {
-	uint8_t b = 0;
+void display_set_segments(uint8_t _segments[], uint8_t _flags) {
 	for (uint8_t i = 0; i < 4; i++) {
-		b = segment_lookup(_segments[i]);
-		if (!(_flags & _BV(i))) b += SEG_DP;
-		segments[i] = b;
+		segments[i] = _segments[i];
 	}
 	flags = _flags;
 }
@@ -41,8 +38,8 @@ uint8_t display_next_shift() {
 		case REG_DIG:
 			result = digits[dig];
 			if (dig == 0) {
-				if (flags & _BV(4)) result += SEG_L1L2;
-				if (flags & _BV(5)) result += SEG_L3;
+				if (flags & _BV(0)) result += SEG_L1L2;
+				if (flags & _BV(1)) result += SEG_L3;
 			}
 			break;
 		case REG_SEG:

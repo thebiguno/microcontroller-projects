@@ -7,7 +7,7 @@ int main() {
 	timer_init();
 	sei();
 		
-	char c[] = {1,2,3,4};
+	uint8_t segments[4];
 	uint8_t red[8] = {0,0,0,0,0,0,0,0};
 	uint8_t grn[8] = {0,0,0,0,0,0,0,0};
 	
@@ -25,8 +25,8 @@ int main() {
 		
 		if (ms != prev_ms) {
 			clock_update(ms);
-			clock_segments(c);
-			display_set_segments(c, clock_segment_flags());
+			clock_segments(segments);
+			display_set_segments(segments, clock_segment_flags());
 			if (mode > 0) {
 				clock_matrix(red, grn);
 				display_set_matrix(red, grn);

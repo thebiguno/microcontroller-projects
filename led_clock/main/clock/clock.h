@@ -20,10 +20,14 @@ void clock_mode(uint8_t mode);
 void clock_update(uint32_t millis);
 
 /*
- * Sets a char array according to the time in the given mode.
+ * Gets the four segments according to the time in the given mode.
  */
-void clock_segments(char result[]);
+void clock_segments(uint8_t result[]);
 
+/*
+ * Gets the segment flags to the time in the given mode.
+ * Bit 1 is the colon.  Bit 2 is the extra dot.
+ */
 uint8_t clock_segment_flags();
 
 /*
