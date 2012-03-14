@@ -142,7 +142,8 @@ void adjust_comp(int8_t value){
 
 void check_buttons(uint16_t button_state, uint16_t button_changed){
 	//Change mode using next (circle) and prev (square) buttons
-	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) || ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
+	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) 
+			|| ((button_state & MODE_PREV) && (button_changed & MODE_PREV))) { // rising edge, 0->1
 		mode += ((button_state & MODE_NEXT) ? 1 : -1);
 		if (mode > MODE_KALMAN) mode = MODE_FLIGHT;
 		if (mode < MODE_FLIGHT) mode = MODE_KALMAN;
@@ -176,7 +177,8 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 	}
 	//Request (X) button is pressed
 	else if ((button_state & MODE_RESET) && (button_changed & MODE_RESET)) {
-		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you ask for it in flight mode, etc.
+		//Regardless of what mode we are in, ask for tuning... it can't hurt anything if you
+		// ask for it in flight mode, etc.
 		protocol_request_tuning();
 	}
 	//Up / down
@@ -353,11 +355,10 @@ int main (void){
 		if ((millis - millis_last_status) > 200){
 			millis_last_status = millis;
 
-			if (mode == MODE_FLIGHT){			
+			if (mode == MODE_FLIGHT){				
 				//Control Battery
 				status_set_control_battery_level(battery_level());
-				status_error_battery(battery_level() < 0.2);
-	
+
 				//Pitch / Roll
 				buffer_vector = protocol_get_vector();
 				status_set_telemetry(buffer_vector.x, buffer_vector.y);
@@ -381,13 +382,15 @@ int main (void){
 			}
 		}
 		
-		if ((millis - millis_last_battery) > 2000){
+		if ((millis - millis_last_battery) > 1000){
 			if (mode == MODE_FLIGHT){			
 				millis_last_battery = millis;
 				
 				buffer_array[0] = protocol_get_battery();
 				status_set_pilot_battery_level(buffer_array[0]);
-				status_error_battery(buffer_array[0] < 0.2 && buffer_array[0] >= 0);
+				
+				//Turn on error buzzer if either control or pilot battery is low
+				status_error_battery((battery_level() < 0.2) || (buffer_array[0] < 0.2 && buffer_array[0] >= 0));
 			}
 		}
     }

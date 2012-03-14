@@ -3,6 +3,7 @@
 #include "main.h"
 
 #define HEARTBEAT_OVERFLOW	16
+#define BATTERY_OVERFLOW	4
 
 //State variables, used in both main and WDT ISR
 static volatile double throttle = 0.0;			//Throttle as sent from controller
@@ -50,7 +51,7 @@ int main(){
 	double flight_command_data[4];	//Data packet received with a flight command
 	double motor[4];				//Motor set point; used as an output from the motor module and input to ESC module
 	
-	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches 128 (approx 1/2 second) we send heartbeat and telemetry
+	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches HEARTBEAT_OVERFLOW (approx 1/5 second) we send heartbeat and telemetry
 	uint8_t battery_overflow = 0;	//This is incremented every time heartbeat_overflow overflows (i.e. just under every second); when this gets to 6 (about 3 seconds) we send battery info
 
 		
@@ -92,7 +93,7 @@ int main(){
 		if (armed) {
 			status_set(STATUS_ARMED);
 			
-			throttle = flight_command_data[0];
+			throttle = flight_command_data[0] * 0.8;	// scale the requested value to allow for manoeverability at 100% throttle
 			sp.x = flight_command_data[1];
 			sp.y = flight_command_data[2];
 			sp.z = flight_command_data[3];
@@ -131,7 +132,7 @@ int main(){
 			protocol_send_raw(g, a);
 			
 			battery_overflow++;
-			if (battery_overflow >= 4){
+			if (battery_overflow >= BATTERY_OVERFLOW){
 				battery_overflow = 0;
 				protocol_send_battery(battery_level());
 			}
