@@ -7,18 +7,18 @@ checksum	1 byte
 
 FLIGHT ( ->)
 frame start	1 byte	(0x7e)
-length		1 byte  (0x06 = 6 bytes)
-cmd		1 byte	(A = attitude, M = motor)
-L / T		1 byte
-T / R		1 byte
-R / P		1 byte
-B / Y		1 byte
+length		1 byte  (0x05 = 5 bytes)
+cmd		1 byte	(A = attitude)
+throttle	1 byte
+roll		1 byte
+pitch		1 byte
+yaw		1 byte
 checksum	1 byte
 
 COMMAND ( ->)
 frame start	1 byte	(0x7e)
 length		1 byte  (0x01 = 1 bytes)
-cmd		1 byte	(R = reset attitude, C = calibrate, t = request tuning, E = telemetry on, e = telemetry off, W = write EEPROM)
+cmd		1 byte	(M = disarM, R = reset attitude, C = calibrate, t = request tuning, E = telemetry toggle, r = raw data toggle)
 checksum	1 byte
 
 TUNING (<->)
@@ -50,12 +50,14 @@ checksum	1 byte
 DIAG (<- )
 frame start	1 byte	(0x7e)
 length		1 bype (variable)
-cmd			1 byte (D = DIAG)
+cmd		1 byte (D = DIAG)
 string		variable length
 checksum
 
+The framing, checksum, and escape mechanism are inspired by the Xbee API mode.
+
 Length
-The length is just the number of bytes in the payload, it does not include the frame start, command, length, or checksum.
+The length is just the number of bytes in the command + payload, it does not include the frame start, length, or checksum.
 
 Checksum
 To calculate: Not including frame delimiters and length, add all bytes keeping only the lowest 8 bits of the result and subtract from 0xFF.
@@ -67,26 +69,3 @@ Bytes to be escaped:
 0x11	xon	(reserved for future flow control)
 0x13	xoff	(reserved for future flow control)
 To escape a character, insert a 0x7d and follow it with the byte to be escaped xor'd with 0x20.
-
-RANDOM NOTES:
-Messages originating in the same control loop are batched together provided that the total bytes does not exceed the Xbee packet size of 100 bytes.
-
-The framing, checksum, and escape mechanism are inspired by the Xbee API mode.
-
-The ideal crystal we should be using for this project i think is 16 MHz.  This matches the XBee clock speed and allows communication at any baud rate without error (the Xbee uses a 16 MHz crystal).  For a link with the PC the rate of 76800 would be the most reliable.  If faster clock speeds on the AVR are beneficial, then 19.6608 MHz or 20.8896 MHz are ideal with a baud rate of 76800.
-
-Setting ATRO=1 with a baud rate of 76800 will mean packetization of messages will happen on a delay of ~0.13 ms.
-Setting ATMM=1 (802.15.4 no acks) reduces header size and completely eliminates packet retries at both the 802 layer and the digi layer
-The XBee has a packet size of 100 bytes in transparent mode and does not perform any checksum -- so we should definitely add checksums to our messages
-After laying out all the packet formats, I can see that combining all messages from a given command loop will not exceed 100 bytes.
-100 characters / (76800 / 8) = ~ 13 ms (doesn't account for 802.15.4 headers (18 bytes??) or energy scan retries)
-Any time the control requests to send telemetry or pid it should ensure that it does not send more frequently than every 10ms to allow for the return message to be sent.  (I'm assuming that in the field tuning and operation via PC are desirable over the wireless link -- which i think I'd like to have).
-
-comm library requirements
-
-a buffer for the control loop to accumulate outgoing data into
-
-a mailbox slot for each type of incoming message
-when a new message is fully received, it is placed into the appropriate slot
-the control loop reads values from the slot -- there is no harm in duplicate reads
-
