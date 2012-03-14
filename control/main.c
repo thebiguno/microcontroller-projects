@@ -355,11 +355,10 @@ int main (void){
 		if ((millis - millis_last_status) > 200){
 			millis_last_status = millis;
 
-			if (mode == MODE_FLIGHT){			
+			if (mode == MODE_FLIGHT){				
 				//Control Battery
 				status_set_control_battery_level(battery_level());
-				status_error_battery(battery_level() < 0.2);
-	
+
 				//Pitch / Roll
 				buffer_vector = protocol_get_vector();
 				status_set_telemetry(buffer_vector.x, buffer_vector.y);
@@ -383,13 +382,15 @@ int main (void){
 			}
 		}
 		
-		if ((millis - millis_last_battery) > 2000){
+		if ((millis - millis_last_battery) > 1000){
 			if (mode == MODE_FLIGHT){			
 				millis_last_battery = millis;
 				
 				buffer_array[0] = protocol_get_battery();
 				status_set_pilot_battery_level(buffer_array[0]);
-				status_error_battery(buffer_array[0] < 0.2 && buffer_array[0] >= 0);
+				
+				//Turn on error buzzer if either control or pilot battery is low
+				status_error_battery((battery_level() < 0.2) || (buffer_array[0] < 0.2 && buffer_array[0] >= 0));
 			}
 		}
     }
