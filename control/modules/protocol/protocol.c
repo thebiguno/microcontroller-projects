@@ -27,14 +27,12 @@ static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid rang
 static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
 
 #define MAILBOX_PID		_BV(0)
-#define MAILBOX_MOTOR	_BV(1)
-#define MAILBOX_COMP	_BV(2)
-#define MAILBOX_KALMAN	_BV(3)
+#define MAILBOX_COMP	_BV(1)
+#define MAILBOX_KALMAN	_BV(2)
 static uint8_t mailbox_flag = 0;	//Check bits for what message types are available
 
 static vector_t _vector;
 static vector_t pid_p, pid_i, pid_d;					//Mailbox for received PID tuning values
-static double motor_tune[4] = {1.0, 1.0, 1.0, 1.0};		//Mailbox for received motor tuning values
 static vector_t kalman_qa, kalman_qg, kalman_ra;		//Mailbox for received kalman tuning values
 static vector_t comp_k;									//Mailbox for received complementary tuning values
 
@@ -108,12 +106,7 @@ void protocol_send_control(control_t control){
 	protocol_send_message_to_pilot('A', packet, 4);
 }
 void protocol_send_kill() {
-	uint8_t packet[4];
-	packet[0] = convert_percent_to_byte(0);
-	packet[1] = convert_percent_to_byte(0);
-	packet[2] = convert_percent_to_byte(0);
-	packet[3] = convert_percent_to_byte(0);
-	protocol_send_message_to_pilot('M', packet, 4);
+	protocol_send_message_to_pilot('M', dummy, 0);
 }
 
 void protocol_send_calibrate(){
@@ -172,13 +165,6 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 			kalman_qg.y = convert_bytes_to_double(pilot.buf, 16);
 			kalman_ra.y = convert_bytes_to_double(pilot.buf, 20);
 			mailbox_flag |= MAILBOX_KALMAN;
-			break;
-		case 'm':
-			motor_tune[0] = convert_bytes_to_double(pilot.buf, 0);
-			motor_tune[1] = convert_bytes_to_double(pilot.buf, 4);
-			motor_tune[2] = convert_bytes_to_double(pilot.buf, 8);
-			motor_tune[3] = convert_bytes_to_double(pilot.buf, 12);
-			mailbox_flag |= MAILBOX_MOTOR;
 			break;
 	}
 }
@@ -285,17 +271,6 @@ void protocol_get_pid_tuning(vector_t *p, vector_t *i, vector_t *d){
 	mailbox_flag &= ~MAILBOX_PID;
 }
 
-void protocol_get_motor_tuning(double *motor){
-	if (mailbox_flag & MAILBOX_MOTOR){
-		for (uint8_t i = 0; i < 4; i++){
-			motor[i] = motor_tune[i];
-		}
-	}
-	
-	//Reset flag
-	mailbox_flag &= ~MAILBOX_MOTOR;
-}
-
 void protocol_get_comp_tuning(vector_t *k){
 	if (mailbox_flag & MAILBOX_COMP){
 		k->x = comp_k.x;
@@ -334,15 +309,6 @@ void protocol_send_pid_tuning(vector_t p, vector_t i, vector_t d){
 	convert_double_to_bytes(d.y, data, 28);
 	//z is ignored					
 	protocol_send_message_to_pilot('p', data, 36);
-}
-
-void protocol_send_motor_tuning(double motors[]){
-	uint8_t data[16];
-	convert_double_to_bytes(motors[0], data, 0);
-	convert_double_to_bytes(motors[1], data, 4);
-	convert_double_to_bytes(motors[2], data, 8);
-	convert_double_to_bytes(motors[3], data, 12);
-	protocol_send_message_to_pilot('m', data, 16);
 }
 
 void protocol_send_comp_tuning(vector_t k){

@@ -56,10 +56,12 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 	status_set(STATUS_MESSAGE_RX);
 	switch(cmd) {
 		case 'A':
-		case 'M':
 			for (uint8_t i = 0; i < 4; i++) {
 				_last_flight_val[i] = (_buf)[i];
 			}
+			_last_flight_cmd = cmd;
+			break;
+		case 'M':
 			_last_flight_cmd = cmd;
 			break;
 		case 'C':
@@ -78,28 +80,17 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'r':
 			_raw_enabled = _raw_enabled ? 0x00 : 0x01;
 			break;
-		case 'W':
-			pid_write_tuning();
-			attitude_write_tuning();
-			protocol_send_diag("tuning persisted");
-			break;
 		case 'p':
 			pid_receive_tuning(_buf);
-			pid_write_tuning();
 			protocol_send_diag("pid received");
-			break;
-		case 'm':
-			protocol_send_diag("motor received");
 			break;
 		case 'c':
 		case 'k':
 			if (attitude_get_id() == 'K') {
 				attitude_receive_tuning(_buf);
-				attitude_write_tuning();
 				protocol_send_diag("kalman received");				
 			} else if (attitude_get_id() == 'C') {
 				attitude_receive_tuning(_buf);
-				attitude_write_tuning();
 				protocol_send_diag("complementary received");
 			}
 			break;
@@ -179,10 +170,10 @@ uint8_t protocol_receive_flight_command(double values[])
 		_last_flight_cmd = 0x00;
 		return 'A';
 	} else if (_last_flight_cmd == 'M') {
-		values[0] = convert_byte_to_percent(_last_flight_val[0]);
-		values[1] = convert_byte_to_percent(_last_flight_val[1]);
-		values[2] = convert_byte_to_percent(_last_flight_val[2]);
-		values[3] = convert_byte_to_percent(_last_flight_val[3]);
+		values[0] = 0.0;
+		values[1] = 0.0;
+		values[2] = 0.0;
+		values[3] = 0.0;
 		_last_flight_cmd = 0x00;
 		return 'M';
 	} else {

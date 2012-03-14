@@ -18,7 +18,4 @@ void pid_reset();
 void pid_send_tuning();
 void pid_receive_tuning(uint8_t *buf);
 
-void pid_read_tuning();
-void pid_write_tuning();
-
 #endif

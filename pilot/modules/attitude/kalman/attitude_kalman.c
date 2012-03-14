@@ -22,7 +22,7 @@ typedef struct kalman {
 static kalman_t state_x;
 static kalman_t state_y;
 
-void attitude_read_tuning() {
+void _attitude_read_tuning() {
 	uint8_t data[24];
 	
 	uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 24);
@@ -49,7 +49,7 @@ void attitude_read_tuning() {
 	}
 }
 
-void attitude_write_tuning() {
+void _attitude_write_tuning() {
 	uint8_t data[24];
 	
 	convert_double_to_bytes(state_x.q_angle, data, 0);
@@ -64,7 +64,7 @@ void attitude_write_tuning() {
 }
 
 void attitude_init(vector_t gyro, vector_t accel) {
-	attitude_read_tuning();
+	_attitude_read_tuning();
 }
 
 void _attitude (double gyro, double accel, kalman_t *state, double dt) {
@@ -158,5 +158,7 @@ void attitude_receive_tuning(uint8_t *buf) {
 	state_y.q_angle = convert_bytes_to_double(buf, 12);
 	state_y.q_gyro = convert_bytes_to_double(buf, 16);
 	state_y.r_angle = convert_bytes_to_double(buf, 20);
+	
+	_attitude_write_tuning();
 }
 

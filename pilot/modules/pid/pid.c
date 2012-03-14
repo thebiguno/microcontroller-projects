@@ -17,7 +17,7 @@ static pid_t state_y;
 // static pid_t state_z;
 static vector_t last_mv; // used when dt == 0
 
-void pid_read_tuning() {
+void _pid_read_tuning() {
 	uint8_t data[36];
 	
 	uint8_t length = persist_read(PERSIST_SECTION_PID, data, 36);
@@ -44,7 +44,7 @@ void pid_read_tuning() {
 	}
 }
 
-void pid_write_tuning() {
+void _pid_write_tuning() {
 	uint8_t data[36];
 	
 	convert_double_to_bytes(state_x.kp, data, 0);
@@ -61,7 +61,7 @@ void pid_write_tuning() {
 }
 
 void pid_init() {
-	pid_read_tuning();
+	_pid_read_tuning();
 }
 
 void pid_send_tuning() {
@@ -91,6 +91,8 @@ void pid_receive_tuning(uint8_t *buf) {
 	state_x.kd = convert_bytes_to_double(buf, 24);
 	state_y.kd = convert_bytes_to_double(buf, 28);
 	// state_z.kd = convert_bytes_to_double(buf, 32);
+	
+	_pid_write_tuning();
 }
 
 double _pid_mv(double sp, double pv, pid_t *state, double dt){

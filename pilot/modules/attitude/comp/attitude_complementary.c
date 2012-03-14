@@ -14,7 +14,7 @@ static vector_t filter;    // complementary filter output (and output of second 
 static vector_t k;         // tuning paramater -- bandwidth of filter
 uint64_t millis;
 
-void attitude_read_tuning() {
+void _attitude_read_tuning() {
 	uint8_t data[24];
 	
 	uint8_t length = persist_read(PERSIST_SECTION_ATTITUDE, data, 8);
@@ -31,7 +31,7 @@ void attitude_read_tuning() {
 	}
 }
 
-void attitude_write_tuning() {
+void _attitude_write_tuning() {
 	uint8_t data[8];
 	
 	convert_double_to_bytes(k.x, data, 0);
@@ -41,7 +41,7 @@ void attitude_write_tuning() {
 }
 
 void attitude_init(vector_t gyro, vector_t accel) {
-	attitude_read_tuning();
+	_attitude_read_tuning();
 
     filter.x = accel.x;
     filter.y = accel.y;
@@ -97,4 +97,6 @@ void attitude_send_tuning() {
 void attitude_receive_tuning(uint8_t *buf) {
 	k.x = convert_bytes_to_double(buf, 0);
 	k.y = convert_bytes_to_double(buf, 4);
+	
+	_attitude_write_tuning();
 }
