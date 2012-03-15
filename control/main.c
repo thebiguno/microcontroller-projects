@@ -276,10 +276,10 @@ int main (void){
 	
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
-	    
-    //Init the text / graphics used in flight mode
-    status_init_mode_flight();
-    
+		
+	//Init the text / graphics used in flight mode
+	status_init_mode_flight();
+
 	PORTD &= ~_BV(PIND5);		// off
 	DDRD |= _BV(PIND5);			// set armed pin to output mode
 
@@ -393,6 +393,6 @@ int main (void){
 				status_error_battery((battery_level() < 0.2) || (buffer_array[0] < 0.2 && buffer_array[0] >= 0));
 			}
 		}
-    }
+	}
 }
 
