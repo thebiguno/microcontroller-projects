@@ -1,13 +1,8 @@
-#include <avr/wdt.h>
 #include <util/delay.h>
 #include "main.h"
 
-#define HEARTBEAT_OVERFLOW	16
+#define HEARTBEAT_OVERFLOW	32
 #define BATTERY_OVERFLOW	4
-
-//State variables, used in both main and WDT ISR
-static volatile double throttle = 0.0;			//Throttle as sent from controller
-static volatile vector_t sp = { 0,0,0 };		//Attitude set point
 
 int main(){
 	//********************
@@ -33,9 +28,6 @@ int main(){
 	_delay_ms(500);
 	//Statup status is cleared after all init is completed
 
-	wdt_reset();
-	wdt_enable(WDTO_1S);
-
 	//********************
 	// Variable Declarations
 	//********************
@@ -46,15 +38,18 @@ int main(){
 	double dt;						//Time since last loop execution (how long the loop took; used for time sensitive calculations like Kalman)
 
 	//State variables
+	double throttle = 0.0;			//Throttle as sent from controller
+	vector_t sp = { 0,0,0 };		//Attitude set point
 	uint8_t cmd_type;				//Can be any of the flight command types (a superset of armed_type)
 	uint8_t armed = 0;				//Boolean; 0 = not armed, !0 = armed
+	double armed_timeout = 0.0;		//Delta time in seconds since last 'A' command recieved
 	double flight_command_data[4];	//Data packet received with a flight command
 	double motor[4];				//Motor set point; used as an output from the motor module and input to ESC module
 	
 	uint8_t heartbeat_overflow = 0;	//This increments on every loop; when this reaches HEARTBEAT_OVERFLOW (approx 1/5 second) we send heartbeat and telemetry
 	uint8_t battery_overflow = 0;	//This is incremented every time heartbeat_overflow overflows (i.e. just under every second); when this gets to 6 (about 3 seconds) we send battery info
 
-		
+
 	//Variables used in calculations
 	vector_t g;						//Gyro readings
 	vector_t a;						//Accel readings
@@ -70,14 +65,16 @@ int main(){
 		protocol_poll();
 		cmd_type = protocol_receive_flight_command(flight_command_data);
 		if (cmd_type == 'A') {
+			armed_timeout = 0.0;
 			armed = 1;
-			//Reset watchdog; if we go 1 second without resetting, we hit the ISR
-			wdt_reset();
+
+			throttle = flight_command_data[0] * 0.8;	// scale the requested value to allow for manoeverability at 100% throttle
+			sp.x = flight_command_data[1];
+			sp.y = flight_command_data[2];
+			sp.z = flight_command_data[3];
 		}
 		else if (cmd_type == 'M') {
 			armed = 0;
-			//Reset watchdog if we are unarmed, so that we don't constantly run the ISR
-			wdt_reset();
 		}
 
 		g = gyro_get();
@@ -91,12 +88,8 @@ int main(){
 		pv = attitude(g, a, dt);					// compute PID process variable for x and y using Kalman
 
 		if (armed) {
+			armed_timeout += dt;
 			status_set(STATUS_ARMED);
-			
-			throttle = flight_command_data[0] * 0.8;	// scale the requested value to allow for manoeverability at 100% throttle
-			sp.x = flight_command_data[1];
-			sp.y = flight_command_data[2];
-			sp.z = flight_command_data[3];
 			
 			mv = pid_mv(sp, pv, dt);					// PID manipulated variable
 			
@@ -107,12 +100,39 @@ int main(){
 			if (throttle < 0.01) {
 				pid_reset();
 			}
+			
+			if (armed_timeout > 1.0){
+				// level out 
+				sp.x = 0.0;
+				sp.y = 0.0;
+				sp.z = 0.0;
+				
+				//This should go from full throttle to off in about 10 seconds.
+				if (throttle > 0.0) {
+					throttle = throttle - 0.1;
+				}
+			
+				//Verify that throttle is not negative
+				if (throttle <= 0.0) {
+					throttle = 0.0;
+				}
+				
+				armed_timeout = 0.0;
+			}
 		}
 		else {
 			status_clear(STATUS_ARMED);
-		
-			//Reset PID if not armed
+			
+			//Reset PID, since it is not armed
 			pid_reset();
+
+			//Kill throttle
+			throttle = 0.0;
+			motor[0] = 0.0;
+			motor[1] = 0.0;
+			motor[2] = 0.0;
+			motor[3] = 0.0;
+			esc_set(motor);
 		}
 
 		//********************
@@ -139,24 +159,3 @@ int main(){
 		}
 	}
 }
-
-ISR(WDT_vect) { 
-	status_clear(STATUS_ARMED);
-	
-	// level out 
-	sp.x = 0.0;
-	sp.y = 0.0;
-	sp.z = 0.0;
-	
-	//This should go from full throttle to off in about 10 seconds.
-	if (throttle > 0.0) {
-		throttle = throttle - 0.1;
-	}
-
-	//Verify that it is not negative
-	if (throttle <= 0.0) {
-		throttle = 0.0;
-	}
-
-	wdt_reset();
-} 
