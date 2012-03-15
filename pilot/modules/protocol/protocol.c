@@ -9,12 +9,12 @@
 
 #define MAX_SIZE 40
 
-static uint8_t _pos;       // current position in the frame
-static uint8_t _len;       // frame length
-static uint8_t _api;       // frame api code
-static uint8_t _chk;       // checksum
-static uint8_t _esc;       // escape byte seen, unescape next byte
-static uint8_t _err;       // error condition, ignore bytes until next frame start byte
+static uint8_t _pos;	   // current position in the frame
+static uint8_t _len;	   // frame length
+static uint8_t _api;	   // frame api code
+static uint8_t _chk;	   // checksum
+static uint8_t _esc;	   // escape byte seen, unescape next byte
+static uint8_t _err;	   // error condition, ignore bytes until next frame start byte
 static uint8_t _buf[MAX_SIZE];
 
 static uint8_t _last_flight_cmd; // only for Attitude and Motor messages
@@ -24,12 +24,12 @@ static uint8_t _raw_enabled = 0;
 
 void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
-    if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
-        comm_write(ESCAPE);
-        comm_write(b ^ 0x20);
-    } else {
-        comm_write(b);
-    }
+	if (escape && (b == START || b == ESCAPE || b == XON || b == XOFF)) {
+		comm_write(ESCAPE);
+		comm_write(b ^ 0x20);
+	} else {
+		comm_write(b);
+	}
 }
 
 void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
@@ -99,65 +99,65 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 
 void protocol_poll()
 {
-    uint8_t b;
-    while (comm_available() && comm_read(&b)) {
-        if (_err > 0 && b == START) {
+	uint8_t b;
+	while (comm_available() && comm_read(&b)) {
+		if (_err > 0 && b == START) {
 			// recover from error condition
 			status_error(0x00);
 			_err = 0;
 			_pos = 0;
-        } else if (_err > 0) {
-            continue;
-        }
-        
-        if (_pos > 0 && b == START) {
+		} else if (_err > 0) {
+			continue;
+		}
+		
+		if (_pos > 0 && b == START) {
 			// unexpected start of frame
 			status_error(STATUS_ERR_PROTOCOL);
 			_err = 1;
 			continue;
-        }
-        if (_pos > 0 && b == ESCAPE) {
+		}
+		if (_pos > 0 && b == ESCAPE) {
 			// unescape next byte
 			_esc = 1;
 			continue;
-        }
-        if (_esc) {
+		}
+		if (_esc) {
 			// unescape current byte
 			b = 0x20 ^ b;
 			_esc = 0;
-        }
-        if (_pos > 1) { // start byte and length byte not included in checksum
-            _chk += b;
-        }
-        
-        switch(_pos) {
-            case 0: // start frame
-                _pos++;
-                continue;
-            case 1: // length
-                _len = b;
-                _pos++;
-                continue;
-            case 2:
-                _api = b;
-                _pos++;
-                continue;
-            default:
-                if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
-                if (_pos == (_len + 2)) {
-                    if (_chk == 0xff) {
+		}
+		if (_pos > 1) { // start byte and length byte not included in checksum
+			_chk += b;
+		}
+		
+		switch(_pos) {
+			case 0: // start frame
+				_pos++;
+				continue;
+			case 1: // length
+				_len = b;
+				_pos++;
+				continue;
+			case 2:
+				_api = b;
+				_pos++;
+				continue;
+			default:
+				if (_pos > MAX_SIZE) continue; // this probably can't happen since the xbee packet size is larger than any of our messages
+				if (_pos == (_len + 2)) {
+					if (_chk == 0xff) {
 						_protocol_dispatch(_api, _len - 1);
 					} else {
 						status_error(STATUS_ERR_PROTOCOL);
 						_err = 1;
-                    }
-                    _pos = 0;
-                    _chk = 0;
-                } else {
-                    _buf[_pos++ - 3] = b;
-                }
-        }
-    }
+					}
+					_pos = 0;
+					_chk = 0;
+				} else {
+					_buf[_pos++ - 3] = b;
+				}
+		}
+	}
 }
 
 uint8_t protocol_receive_flight_command(double values[])
@@ -170,10 +170,6 @@ uint8_t protocol_receive_flight_command(double values[])
 		_last_flight_cmd = 0x00;
 		return 'A';
 	} else if (_last_flight_cmd == 'M') {
-		values[0] = 0.0;
-		values[1] = 0.0;
-		values[2] = 0.0;
-		values[3] = 0.0;
 		_last_flight_cmd = 0x00;
 		return 'M';
 	} else {
