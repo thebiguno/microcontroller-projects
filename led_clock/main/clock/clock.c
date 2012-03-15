@@ -112,10 +112,11 @@ void clock_traditional(uint32_t ms) {
 		_segments[0] = segment_character(' ');
 	}
 	
-	_segment_flags = 0x00;
 	// flash the colon
 	if ((sc & _BV(0)) == _BV(0)) {
-		_segment_flags |= _BV(0);
+		_segment_flags = _BV(0);
+	} else {
+		_segment_flags = 0x00;
 	}
 	
 	clock_clear_matrix();
@@ -148,32 +149,49 @@ void clock_dni(uint32_t ms) {
 	ms -= 3456000 * (uint32_t) a;
 	uint8_t b = ms / 138240;	// 1/625 day = 2 m 18.24 s
 	ms -= 138240 * (uint32_t) b;
-	ms *= 10;				// bump up the precision
+	ms *= 10;					// bump up the precision
 	uint8_t c = ms / 55296;		// 1/15625 day ~= 5.5 s
 	ms -= 55296 * (uint32_t) c;
 	uint8_t d = ms / 2212;		// 1/390625 day ~= .22 s
 	
-	_segments[0] = 0xFF;
-	_segments[1] = 0xFF;
-	_segments[2] = 0xFF;
-	_segments[3] = 0xFF;
+	uint8_t digits[6];
+	digits[1] = a;
+	digits[0] = 0;
+	while (digits[1] > 9) {
+		digits[0] += 1;
+		digits[1] -= 10;
+	}
 	
-	_segment_flags = 0x00;
+	digits[3] = b;
+	digits[2] = 0;
+	while (digits[3] > 9) {
+		digits[2] += 1;
+		digits[3] -= 10;
+	}
 	
-	if (d < 8) {
+	for(uint8_t i = 0; i < 4; i++) {
+		_segments[i] = segment_decimal(digits[i]);
+	}
+	if (_segments[0] == 0) {
+		_segments[0] = segment_character(' ');
+	}
+	
+	// flash the colon
+	if ((c & _BV(0)) == _BV(0)) {
+		_segment_flags = _BV(0);
+	} else {
+		_segment_flags = 0x00;
+	}
+	
+	if (d < 12) {
 		for (uint8_t i = 0; i < 8; i++) {
 			_matrix_red[i] = _b25[a][i];
 			_matrix_grn[i] = 0x00;
 		}
-	} else if (d < 16) {
+	} else {
 		for (uint8_t i = 0; i < 8; i++) {
 			_matrix_red[i] = 0x00;
 			_matrix_grn[i] = _b25[b][i];
-		}
-	} else {
-		for (uint8_t i = 0; i < 8; i++) {
-			_matrix_red[i] = _b25[c][i];
-			_matrix_grn[i] = _b25[c][i];
 		}
 	}
 }
@@ -294,7 +312,7 @@ void clock_duodecimal(uint32_t ms) {
 	ms -= 4167 * (uint32_t) digits[3];
 	digits[4] = ms / 347;		// 1/248832 day ~= .347 s
 	
-	for (uint8_t i = 0; i < 0; i++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		_segments[i] = segment_decimal(digits[i]);
 	}
 	if (digits[0] == 0) {
@@ -309,9 +327,13 @@ void clock_duodecimal(uint32_t ms) {
 
 	// flash the extra dot for digit 5
 	if ((digits[4] & _BV(0)) == _BV(0)) {
-		_segment_flags |= _BV(1);
+		_segment_flags = _BV(1);
+	} else {
+		_segment_flags = 0x00;
 	}
 	
+	clock_clear_matrix();
+
 	// draws 3x3 dice patterns in each cornern
 	// draws a flashing dot in the middle for centibeats
 	for (uint8_t i = 0; i < 4; i++) { // segments (rows)
@@ -392,7 +414,7 @@ void clock_decimal(uint32_t ms) {
 	ms -= 8640 * (uint32_t) digits[3];
 	digits[4] = ms / 864;		// 1/100000 day (centibeat) / .864 s
 	
-	for (uint8_t i = 0; i < 0; i++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		_segments[i] = segment_decimal(digits[i]);
 	}
 	if (digits[0] == 0) {
@@ -407,8 +429,10 @@ void clock_decimal(uint32_t ms) {
 
 	// flash the extra dot for digit 5
 	if ((digits[4] & _BV(0)) == _BV(0)) {
-		_segment_flags |= _BV(1);
-	}
+		_segment_flags = _BV(1);
+	} else {
+		_segment_flags = 0x00;
+	}	
 	
 	clock_clear_matrix();
 
@@ -520,7 +544,7 @@ uint32_t clock_size_b() {
 		case 2: return 337500;
 		case 3: return 600000;
 		case 4: return 864000;
-		case 5: return 138240;
+		case 5: return 3456000;
 	}
 	return 0;
 }
@@ -532,7 +556,7 @@ uint32_t clock_size_d() {
 		case 2: return 21094;
 		case 3: return 4167;
 		case 4: return 86400;
-		case 5: return 55296;
+		case 5: return 138240;
 	}
 	return 0;
 }
