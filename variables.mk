@@ -18,9 +18,17 @@ AVRDUDE_UPLOAD_RATE=19200
 HFUSE=0x99
 LFUSE=0x42
 
-COMPILER=avr-gcc
+ifndef COMPILER 
+	COMPILER=avr-gcc
+endif
+
 OBJCOPY=avr-objcopy
 
-CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -std=gnu99
+CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall
+
+ifeq ($(COMPILER), 'avr-gcc')
+	CFLAGS += -std=gnu99
+endif
+
 CDEFS=-DF_CPU=$(F_CPU)
 #CLIBS=
