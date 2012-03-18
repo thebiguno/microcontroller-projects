@@ -1,29 +1,39 @@
 #include "button.h"
 using namespace std;
 
-Button::Button(volatile uint8_t **ports, uint8_t *pins, uint8_t size = 1, uint8_t count = 8){
-	this->size = size;
-	this->count = count;
-	this->counters = (uint8_t*) malloc(size);
-	this->ports = ports;
-	this->pins = pins;
+Button::Button(volatile uint8_t *port, uint8_t idx, uint8_t debounceCount){
+	this->debounceCount = debounceCount;
+	this->counter = 0;
+	this->port = port;
+	this->pin = port - 0x2;
+	this->idx = _BV(idx);
+	this->lastState = 0;
+	
+	*port |= _BV(idx);
 }
 
 void Button::poll(){
-	for (uint8_t i = 0; i < this->size; i++){
-		if ((*this->ports[i] | this->pins[i]) == 0){
-			this->counters[i]++;
-			//Prevent counter overflow
-			if (this->counters[i] > this->count) this->counters[i] = this->count;
-		}
-		else {
-			this->counters[i] = 0;
-		}
+	if ((*this->pin & this->idx) == 0){
+		this->counter++;
+		//Prevent counter overflow
+		if (this->counter > this->debounceCount) this->counter = this->debounceCount;
+	}
+	else {
+		this->counter = 0;
 	}
 }
 
-uint8_t Button::isPressed(uint8_t index){
-	if (index > this->size) return 0;
-	
-	return (this->counters[index] > this->count);
+uint8_t Button::isChanged(){
+	uint8_t state = this->isPressed();
+	if (state != this->lastState){
+		this->lastState = state;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+uint8_t Button::isPressed(){
+	return (this->counter >= this->debounceCount);
 }

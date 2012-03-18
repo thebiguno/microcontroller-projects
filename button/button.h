@@ -5,27 +5,26 @@
 #include <stdlib.h>
 
 /*
- * C++ implementation of button reading / debounce library.  It can handle an arbitrary 
- * number of buttons, and will debounce each and return state when queried.
+ * C++ implementation of button reading / debounce library.  It handles a single button,
+ * and requires a poll() to keep state.  Probably not suitable for production code,
+ * but is a simple POC for C++.
  */
 class Button {
 	private:
-		uint8_t size;				//The number of buttons
-		uint8_t count;				//The debounce count 
-		uint8_t *counters;			//An array of counters to track each button debounce
-		volatile uint8_t **ports;	//The ports for each button
-		uint8_t *pins;				//The pins for each button
+		uint8_t debounceCount;				//The debounce count 
+		uint8_t counter;					//A counter to track the button debounce
+		volatile uint8_t *port;				//The PORT for the button
+		volatile uint8_t *pin;				//The PIN for the button
+		uint8_t idx;						//The index for the button
+		uint8_t lastState;					//The last state, used for change events
 
 	public:
 		/*
-		 * Constructor for a group of buttons with a specified count; the
-		 * button has to read 'pressed' for this many iterations before it
-		 * counts as pressed.
+		 * Constructor for a button at specified port / pin.  The
+		 * button has to read 'pressed' for this many iterations 
+		 * for it to report as pressed.
 		 *
-		 * ports and pins are required; size defaults to 1 and count defaults to 8.
-		 *
-		 * To initialize this, you must pass in references to each of the PORTs, DDRs, and
-		 * the values of each pin.  You can do it like this:
+		 * To initialize this, you must pass in references to the port and pin:
 		 * 
 		 *    volatile uint8_t *ports[6];
 		 *    ports[0] = &PORTB;
@@ -38,13 +37,13 @@ class Button {
 		 *    ....
 		 *    pins[5] = 3;
 		 *
-		 *    new Button(ports, pins, 6);
+		 *    Button b(&PORTB, 1, 16);
 		 */
-		Button(volatile uint8_t **ports, uint8_t *pins, uint8_t size, uint8_t count);
+		Button(volatile uint8_t *port, uint8_t idx, uint8_t debounceCount);
 		
 		/*
-		 * Polls all defined buttons.  You should do this as frequently
-		 * as possible.  A button has to read 'pressed' for 'count' iterations
+		 * Polls the button.  You should do this as frequently as possible.  
+		 * A button has to read 'pressed' for 'debugCount' iterations
 		 * in a row before it reports as pressed in isPressed();
 		 */
 		void poll();
@@ -53,8 +52,13 @@ class Button {
 		 * Returns zero if the debounced button is not pressed, non-zero if it 
 		 * is pressed.
 		 */
-		uint8_t isPressed(uint8_t index);
-	
-} button;
+		uint8_t isPressed();
+		
+		/*
+		 * Returns non-zero if the button has changed from the last time isPressed()
+		 * was called, zero if it is unchanged.
+		 */
+		uint8_t isChanged();
+} ;
 
 #endif
