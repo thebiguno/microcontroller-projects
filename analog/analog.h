@@ -36,7 +36,7 @@
  * analog pins that you need to use.
  *
  * The aref argument can be one of three things:
- *  ANALOG_AREF0: Use AREF, internal Vref turned off
+ *  ANALOG_AREF: Use AREF, internal Vref turned off
  *  ANALOG_AVCC: Use AVCC with external cap at AREF pin
  *  ANALOG_INTERNAL: Use internal 1.1V reference with external cap at AREF pin
  *  ANALOG_INTERNAL_256: Same as ANALOG_INTERNAL, but with 2.56v instead of 1.1v.
