@@ -1,28 +1,29 @@
 /*
- * Sample skeleton source file.
+ * Proof of concept C++ program, using a C++ library.
+ * Hardware: RBBB or similar, with a button tied to ground on 
+ * pin D9 (PORTB1).  A serial link is used to show button state.
  */
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <lib/button/button.h>
-using namespace std;
+#include <lib/serial/serial.h>
 
 int main (void){
 	//Do setup here
-	volatile uint8_t *ports[1];
-	ports[0] = &PORTB;
-	uint8_t pins[1];
-	pins[0] = PORTB1;
-	Button b (ports, pins);
-	
+	Button b (&PORTB, PORTB1, 8);
+	serial_init_b(57600);
+
 	//Main program loop
 	for (;;){
 		b.poll();
-		if (b.isPressed(0)){
-			PORTB |= _BV(2);
-		}
-		else {
-			PORTB &= ~_BV(2);
+		if (b.isChanged()){
+			if (b.isPressed()){
+				serial_write_s((char*) "Pressed\r\n");
+			}
+			else {
+				serial_write_s((char*) "Released\r\n");
+			}
 		}
 	}
 }
