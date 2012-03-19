@@ -1,4 +1,12 @@
+ifndef COMPILER 
+	COMPILER=avr-gcc
+endif
+ifeq 'avr-gcc' '$(COMPILER)'
+	CFLAGS += -std=gnu99
+endif
+
 # Default target.
+
 all: clean build size
 
 build: $(PROJECT).hex
@@ -13,7 +21,7 @@ $(PROJECT).out: $(SOURCES)
 
 
 program: $(PROJECT).hex
-	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
+	$(AVRDUDE) -V -F -p $(MMCU) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE)  \
 		-U flash:w:$(PROJECT).hex 
 		
