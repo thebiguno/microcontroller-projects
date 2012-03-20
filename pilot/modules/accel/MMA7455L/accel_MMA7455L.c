@@ -114,8 +114,8 @@ void accel_calibrate(){
 	
 	_accel_read_multiple(avg);
 	
-	//At most, loop for 20 iterations
-	while ( ((abs(avg[0]) > 2) || (abs(avg[1]) > 2) || (abs(avg[2] - 64) > 2)) && (loop < 20)) {
+	//At most, loop for 40 iterations
+	while ( ((abs(avg[0]) > 0) || (abs(avg[1]) > 0) || (abs(avg[2] - 64) > 0)) && (loop < 40)) {
 		
 		//Each offset value is calculated as (DESIRED_VALUE - ACTUAL_VALUE) * MULT_FACTOR
 		// where DESIRED_VALUE is the theoretical reading (assuming the device is flat,
