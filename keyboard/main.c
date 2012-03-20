@@ -175,6 +175,19 @@ uint16_t read_columns(){
 	result = result << 8;
 	result += PINB;
 	result = ~result;
+	
+	/*
+	if (result != 0){
+		_delay_ms(5);
+		uint16_t result_verify = PINC;
+		result_verify = result_verify << 8;
+		result_verify += PINB;
+		result_verify = ~result_verify;	
+		//If the key was not pressed for 10ms+, it was not pressed.
+		result = result & result_verify;
+	}
+	*/
+	
 	return result;
 }
 
@@ -193,6 +206,7 @@ void update_report(){
 
 	for (uint8_t row = 0; row < 8; row++){	
 		set_row(row);
+		_delay_us(10);
 		columns = read_columns();
 	
 		if (columns != 0x00){
