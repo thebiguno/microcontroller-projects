@@ -1,0 +1,88 @@
+http://babryce.com/slidedigitizer.html
+
+Shutter release extension cable	$8
+http://www.gadgetinfinity.com/product.php?productid=16677&cat=278&page=4
+
+2.5 mm jack
+http://www.ebay.ca/itm/5pcs-Panel-Mount-2-5mm-Female-Stereo-Audio-Cable-Plug-Jack-Socket-Adapter-J24-/300601731753?pt=LH_DefaultDomain_0&hash=item45fd426aa9#ht_2544wt_1165
+
+
+
+
+5	AtMeta48		ATMEGA48PV-10PU-ND	
+5	Socket			A100210-ND
+
+1	Barrel Audio	2.5mm	ebay?
+1	Barrel Audio	3.5mm	CP1-3513-ND		1.60	3.20
+
+2	Relay			CLA274-ND		2.42	4.84
+25	NPN			2N3904FS-ND		0.44	0.88
+
+5	Barrel Power		CP-065A-ND		2.32	2.32
+
+10	Shift Register		497-1789-5-ND		0.65	1.30
+10	Shift Register
+
+10	2 Terminal Block	281-2888-ND		0.47	4.70
+10	3 Terminal Block	281-2882-ND		0.715	7.15
+
+10	1" Standoff		3475K-ND		0.58
+100	1/4" Standoff		492-1104-ND		0.034	3.48
+
+50	10 Ω Resistor		CF14JT10R0CT-ND
+50	20 Ω Resistor		S20QCT-ND
+50	51 Ω Resistor		CF14JT51R0CT-ND
+50	100 Ω Resistor		CF14JT100RCT-ND
+50	200 Ω Resistor		CF14JT200RCT-ND
+50	510 Ω Resistor		CF14JT510RCT-ND
+50	1K Ω Resistor		CF14JT1K00CT-ND
+50	2K Ω Resistor		CF14JT2K00CT-ND
+50	5.1K Ω Resistor		CF14JT5K10CT-ND
+50	10K Ω Resistor		CF14JT10K0CT-ND
+50	20K Ω Resistor		S20KQCT-ND
+50	51K Ω Resistor		CF14JT51K0CT-ND
+
+	
+
+
+
+pinout
+1 reset button
+1 mode button
+1 play button
+2 transistor / relay
+3 shift register / led
+
+slide on time up to 775 ms (step 25 ms)
+delay one time up to 3875 ms (step 125 ms)
+camera on time up to 775 ms (step 25 ms)
+delay two time up to 3875 ms (step 125 ms)
+
+mode switch: delay 1 -> delay 2 -> # slides -> run
+prog switch: 500 -> 1000, 1500, 2000, 2500, 3000, 3500
+             36 -> 80 -> 140 -> cont
+             play -> pause
+
+
+
+
+2 4"x2"		g2v5g5v3g
+1 2 3/4"x2"	A-Q,1-24
+
+Wyatt's
+
+5x      ATMEGA48PV-10PU-ND (ATmega48)                   $10
+1x      ENC28J60-I/SP-ND (Ethernet Controller)          $4
+3x      296-2048-5-ND   (12 bit Counter)                $2
+10x     568-7951-1-ND   (3.6v Zener Diode)              $2
+10x     568-5802-1-ND   (3.3v Zener Diode)              $2
+5x      490-5385-ND     (4.7uF Capacitor)               $3
+20x     497-1789-5-ND   (Shift register)                $5
+20x     497-6328-5-ND   (High current drain shift reg.) $9
+50x     S10QCT-ND       (10 Ohm Resistors)              $2
+50x     S20QCT-ND       (20 Ohm Resistors)              $2
+50x     S51QCT-ND       (51 Ohm Resistors)              $2
+50x     S100QCT-ND      (100 Ohm Resistors)             $2
+3x      CP-065A-ND      (Panel mount power barrel)      $8
+8x      J151-ND         (Banana jack, Red)              $7
+8x      J152-ND         (Banana jack, Black)            $7
