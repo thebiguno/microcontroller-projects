@@ -8,12 +8,6 @@
  */
 #define ADDRESS 0x1D
 
-#define AVERAGE_SAMPLE_SIZE 0x8
-
-//Running average of values
-static uint8_t running_average[AVERAGE_SAMPLE_SIZE][3]; //x, y, z as last index
-static uint8_t running_average_pointer = 0;
-
 static uint8_t message[8]; //Temporary array used for i2c communications
 
 static vector_t result; //Accel values passed back
@@ -59,11 +53,6 @@ void accel_init(){
 		_delay_ms(1000);
 		status_error(0x00);
 	}
-
-	//Read in AVERAGE_SAMPLE_SIZE readings so that our initial average is sane.
-	for (uint8_t i = 0; i < AVERAGE_SAMPLE_SIZE; i++){
-		accel_get(message);
-	}	
 }
 
 /*
@@ -157,13 +146,13 @@ void accel_calibrate(){
 		loop++;
 	}
 
-	//Store calibration bytes to EEPROM
+	//Store offset drift calibration bytes to EEPROM
 	uint8_t calibration_data[6];
-	calibration_data[0] = (uint8_t) offset[0]; 			// x LSB
+	calibration_data[0] = (uint8_t) offset[0]; 						// x LSB
 	calibration_data[1] = (uint8_t) ((uint16_t) offset[0] >> 8);	// x MSB
-	calibration_data[2] = (uint8_t) offset[1]; 			// y LSB
+	calibration_data[2] = (uint8_t) offset[1]; 						// y LSB
 	calibration_data[3] = (uint8_t) ((uint16_t) offset[1] >> 8);	// y MSB
-	calibration_data[4] = (uint8_t) offset[2];			// z LSB
+	calibration_data[4] = (uint8_t) offset[2];						// z LSB
 	calibration_data[5] = (uint8_t) ((uint16_t) offset[2] >> 8);	// z MSB
 	
 	persist_write(PERSIST_SECTION_ACCEL, calibration_data, 6);
@@ -173,21 +162,15 @@ vector_t accel_get() {
 	//Don't wait around if the data is not ready...
 	if (!_accel_data_is_ready()) return result;
 	
-	_accel_do_read(running_average[running_average_pointer]);
-	running_average_pointer = (running_average_pointer + 1) % AVERAGE_SAMPLE_SIZE;
-
-	int16_t totals[3] = {0};
-	for (uint8_t i = 0; i < AVERAGE_SAMPLE_SIZE; i++){
-		for (uint8_t j = 0; j < 3; j++){
-			totals[j] += ((int8_t) running_average[i][j]);
-		}
-	}
+	static uint8_t reading[3];
+	
+	_accel_do_read(reading);
 
 	//Calculate the actual g values; for 2g sensitivity (which we are using), 
 	// there are 64 intervals per g value.
-	result.x = (double) totals[0] / AVERAGE_SAMPLE_SIZE / 0x3F;
-	result.y = (double) totals[1] / AVERAGE_SAMPLE_SIZE / 0x3F;
-	result.z = (double) totals[2] / AVERAGE_SAMPLE_SIZE / 0x3F;
+	result.x = (double) ((int8_t) reading[0]) / 0x3F;
+	result.y = (double) ((int8_t) reading[1]) / 0x3F;
+	result.z = (double) ((int8_t) reading[2]) / 0x3F;
 	
 	return result;
 }
