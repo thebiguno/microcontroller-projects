@@ -1,0 +1,8 @@
+EESchema-DOCLIB  Version 2.0  Date: Thu 29 Mar 2012 05:20:51 PM MDT
+#
+$CMP STPIC6D595
+D Shift Register / Open Drain
+K shift
+$ENDCMP
+#
+#End Doc Library
