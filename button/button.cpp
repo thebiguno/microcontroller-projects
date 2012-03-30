@@ -1,5 +1,6 @@
 #include "button.h"
-using namespace std;
+
+using namespace digitalcave;
 
 Button::Button(volatile uint8_t *port, uint8_t idx, uint8_t debounceCount){
 	this->debounceCount = debounceCount;
