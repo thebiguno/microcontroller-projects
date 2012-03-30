@@ -9,6 +9,8 @@
 #include <lib/button/button.h>
 #include <lib/serial/serial.h>
 
+using namespace digitalcave;
+
 int main (void){
 	//Do setup here
 	Button b (&PORTB, PORTB1, 8);
