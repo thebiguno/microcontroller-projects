@@ -8,18 +8,17 @@
 static volatile uint8_t *_latch_port = 0;
 static uint8_t _latch_pin = 0;
 
-void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin){
+void shift_init(volatile uint8_t *latch_port, uint8_t latch_pin){
 	_latch_port = latch_port;
 	_latch_pin = latch_pin;
 
-	// set ddr output
-	*(data_port - 0x1) |= _BV(data_pin);
-	*(clock_port - 0x1) |= _BV(clock_pin);
-	*(latch_port - 0x1) |= _BV(latch_pin);
+	// set MOSI as an output
+	DDRB |= _BV(PB3);
+	// set SCK as an output
+	DDRB |= _BV(PB5);
 	
-	// pull pins low
-	*data_port &= ~_BV(data_pin);
-	*clock_port &= ~_BV(clock_pin);
+	// set ddr output, set latch low
+	*(latch_port - 0x1) |= _BV(latch_pin);
 	*latch_port &= ~_BV(latch_pin);
 	
 	// setup SPI (enable, master)
