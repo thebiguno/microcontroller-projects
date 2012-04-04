@@ -95,7 +95,7 @@ uint8_t segment_character(char c) {
 }
 
 uint8_t segment_decimal(uint8_t v) {
-	static uint8_t table[12] = {
+	static uint8_t table[10] = {
 		SEG_DP + SEG_G,
 		SEG_DP + SEG_A + SEG_D + SEG_E + SEG_F + SEG_G,
 		SEG_DP + SEG_C + SEG_F,

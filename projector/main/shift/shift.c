@@ -1,48 +1,52 @@
 #include "shift.h"
-#include "../display/display.h"
 
 #include <avr/sfr_defs.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
-#define SIZE 2
+//static volatile uint8_t _digit;
 
-static volatile uint8_t *_latch_port = 0;
-static uint8_t _latch_pin = 0;
+void shift_init(){
+	DDRC = (1<<PC0) | (1<<PC1) | (1<<PC2) | (1<<PC3);
 
-static volatile uint8_t buffer[SIZE];
-
-void shift_init(volatile uint8_t *data_port, uint8_t data_pin, volatile uint8_t *clock_port, uint8_t clock_pin, volatile uint8_t *latch_port, uint8_t latch_pin){
-	_latch_port = latch_port;
-	_latch_pin = latch_pin;
-
-	// set ddr output
-	*(data_port - 0x1) |= _BV(data_pin);
-	*(clock_port - 0x1) |= _BV(clock_pin);
-	*(latch_port - 0x1) |= _BV(latch_pin);
+	// Set MOSI and SCK output, all others input
+	DDRB = (1<<PB3) | (1<<PB5);
 	
-	// pull pins low
-	*data_port &= ~_BV(data_pin);
-	*clock_port &= ~_BV(clock_pin);
-	*latch_port &= ~_BV(latch_pin);
-	
-	// setup SPI (enable, master)
-	SPCR = (1<<SPE) | (1<<MSTR);
+	/* Enable SPI, Master, Interrupt, set clock rate fck/16 */
+	// SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPIE) | (1<<SPR0);
 }
 
-void shift_set(uint8_t index, uint8_t value) {
-	buffer[index] = value;
+void shift_set(uint8_t segments, uint8_t digit) {
+	PORTC = 0x00;
+
+	// if(!(SPSR & (1<<SPIF)));
+	// _digit = digit; // remember the second byte
+	// SPDR = segments; // shift the first byte
+	
+	for (int i = 0; i < 8; i++){
+				//Clear the pin first...
+				PORTB &= ~_BV(PB3);
+				//... then set the bit (if appropriate).  We could probably
+				// do this in one step, but this is more clear, plus speed is 
+				// (probably) not critical here.
+				PORTB |= (((segments >> (7 - i)) & 0x1) << PB3);
+				// _delay_ms(1);
+				
+				//Pulse clock to shift in
+				PORTB &= ~_BV(PB5);
+				// _delay_ms(1);
+				PORTB |= _BV(PB5);
+			}
+		
+			PORTC = _BV(digit);
 }
 
-void shift_do() {
-	static uint8_t i;
-	
-	if (i < SIZE) {
-		if(!(SPSR & (1<<SPIF)));
-		SPDR = buffer[i++];
-	} else {
-		*_latch_port &= ~_BV(_latch_pin);	
-		*_latch_port |= _BV(_latch_pin);
-		i = 0;
-	}
-}
+/////////// interrupts ///////////////
+
+// ISR(SPI_STC_vect) {
+// 	if (_digit != 0) {
+// 		SPDR = _digit; // shift the second byte
+// 		_digit = 0;
+// 	}
+// } 
