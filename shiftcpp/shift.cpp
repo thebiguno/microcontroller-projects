@@ -5,6 +5,14 @@
 #include "shift.h"
 #include <stdlib.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
+#include "../serial/serial.h"
+
+
+// TODO make this conditional on the chip
+#define DD_MOSI DDB3
+#define DD_SCK DDB5
+#define DDR_SPI DDRB
 
 // non-class variables for the ISR
 static volatile uint8_t _i;
@@ -19,8 +27,12 @@ Shift::Shift(uint8_t size) {
 	_size = size - 1;
 	_buf = (uint8_t*) malloc(_size);
 	
-	// setup SPI (enable, master, interrupts)
-	SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPIE);
+	DDR_SPI |= _BV(DD_SCK);
+	DDR_SPI |= _BV(DD_MOSI);
+	// DDR_SPI |= _BV(DDB4);
+	
+	// setup SPI (enable, master, interrupts) (clk/128)
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPIE) | _BV(SPR0) | _BV(SPR1);
 
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
@@ -37,9 +49,11 @@ void Shift::setLatch(volatile uint8_t *port, uint8_t pin) {
 	_latch_pin = pin;
 	
 	if (_latch_port != 0) {
-		*(_latch_port - 0x1) |= _BV(_latch_pin);
-		*_latch_port &= ~_BV(_latch_pin); // set LOW
+		*(port - 0x1) |= _BV(pin);
+		*port |= _BV(pin); // set HIGH
 	}
+	
+//	SPCR |= _BV(MSTR);
 }
 	
 void Shift::setEnable(volatile uint8_t *port, uint8_t pin) {
@@ -63,7 +77,11 @@ void Shift::setClear(volatile uint8_t *port, uint8_t pin) {
 }
 
 void Shift::shift(uint8_t b[]) {
-	if(!(SPSR & (1<<SPIF))) return;
+	SPCR |= _BV(MSTR);
+	char temp[32];
+	itoa(SPCR,temp,16);
+	serial_write_s(temp);
+	// if(!(SPSR & (1<<SPIF))) return;
 
 	for (int i = 0; i < _size; i++) {
 		_buf[i] = b[i+1];
@@ -89,11 +107,13 @@ void Shift::disable() {
 /////////// interrupts ///////////////
 
 ISR(SPI_STC_vect) {
+	serial_write_s("ISR\n\r");
 	if (_i < _size) {
 		SPDR = _buf[_i++];
-	} else if (_latch_port != 0 && _i == _size) {
+	} else if (_i == _size) {
 		if (_latch_port != 0) {
 			*_latch_port &= ~_BV(_latch_pin);
+			_delay_ms(100);
 			*_latch_port |= _BV(_latch_pin);
 		}
 		if (_callback != 0) {
