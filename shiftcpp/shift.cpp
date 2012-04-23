@@ -5,8 +5,6 @@
 #include "shift.h"
 #include <stdlib.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
-#include "../serial/serial.h"
 
 
 // TODO make this conditional on the chip
@@ -52,8 +50,6 @@ void Shift::setLatch(volatile uint8_t *port, uint8_t pin) {
 		*(port - 0x1) |= _BV(pin);
 		*port |= _BV(pin); // set HIGH
 	}
-	
-//	SPCR |= _BV(MSTR);
 }
 	
 void Shift::setEnable(volatile uint8_t *port, uint8_t pin) {
@@ -77,10 +73,7 @@ void Shift::setClear(volatile uint8_t *port, uint8_t pin) {
 }
 
 void Shift::shift(uint8_t b[]) {
-	SPCR |= _BV(MSTR);
-	char temp[32];
-	itoa(SPCR,temp,16);
-	serial_write_s(temp);
+	SPCR |= _BV(MSTR); // this shouldn't be required but something keeps clearing MSTR
 	// if(!(SPSR & (1<<SPIF))) return;
 
 	for (int i = 0; i < _size; i++) {
@@ -107,13 +100,11 @@ void Shift::disable() {
 /////////// interrupts ///////////////
 
 ISR(SPI_STC_vect) {
-	serial_write_s("ISR\n\r");
 	if (_i < _size) {
 		SPDR = _buf[_i++];
 	} else if (_i == _size) {
 		if (_latch_port != 0) {
 			*_latch_port &= ~_BV(_latch_pin);
-			_delay_ms(100);
 			*_latch_port |= _BV(_latch_pin);
 		}
 		if (_callback != 0) {
