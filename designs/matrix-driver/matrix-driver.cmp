@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Mon 07 May 2012 01:59:52 PM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Thu 26 Apr 2012 05:51:09 PM MDT
 
 BeginCmp
 TimeStamp = /4FA0A62C;
@@ -95,112 +95,112 @@ BeginCmp
 TimeStamp = /4FA15D08;
 Reference = R1;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EA2;
 Reference = R2;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EA5;
 Reference = R3;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EA7;
 Reference = R4;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EAA;
 Reference = R5;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EAE;
 Reference = R6;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EB0;
 Reference = R7;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EB3;
 Reference = R8;
 ValeurCmp = 150;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EB6;
 Reference = R9;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ECE;
 Reference = R10;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ED1;
 Reference = R11;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ED3;
 Reference = R12;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ED5;
 Reference = R13;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ED7;
 Reference = R14;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15ED9;
 Reference = R15;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FA15EE0;
 Reference = R16;
 ValeurCmp = 180;
-IdModule  = R1;
+IdModule  = R1-Mini;
 EndCmp
 
 BeginCmp
