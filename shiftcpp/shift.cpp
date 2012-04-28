@@ -27,10 +27,9 @@ Shift::Shift(uint8_t size) {
 	
 	DDR_SPI |= _BV(DD_SCK);
 	DDR_SPI |= _BV(DD_MOSI);
-	// DDR_SPI |= _BV(DDB4);
 	
-	// setup SPI (enable, master, interrupts) (clk/128)
-	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPIE) | _BV(SPR0) | _BV(SPR1);
+	// setup SPI (enable, master, interrupts)
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPIE);
 
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
