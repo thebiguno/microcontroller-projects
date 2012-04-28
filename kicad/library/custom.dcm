@@ -1,0 +1,12 @@
+EESchema-DOCLIB  Version 2.0  Date: Thu 29 Mar 2012 05:42:26 PM MDT
+#
+$CMP LE-MM103
+D 8x8 LED Matrix Bi-Color Red Green
+$ENDCMP
+#
+$CMP STPIC6D595
+D Shift Register / Open Drain
+K shift
+$ENDCMP
+#
+#End Doc Library
