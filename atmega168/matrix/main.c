@@ -2,15 +2,19 @@
 #include <util/delay.h>
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/interrupt.h>
+// #include "lib/serial/serial.h"
 
 static Shift shift(2);
-static uint8_t a[8] = { 0x69, 0x96, 0x69, 0x96, 0x69, 0x96, 0x69, 0x96 };
-static uint8_t b[8] = { 0x96, 0x69, 0x96, 0x69, 0x96, 0x69, 0x96, 0x69 };
+static uint8_t a[8] = { 0x00, 0x96, 0xFF, 0x96, 0x00, 0x96, 0xFF, 0x96 };
+static uint8_t b[8] = { 0xFF, 0x69, 0x00, 0x69, 0xFF, 0x69, 0x00, 0x69 };
 static volatile uint8_t row;
 
 #define B_BITMASK 0x03
 #define D_BITMASK 0xFC
 
+uint8_t data[2];
+char temp[32];
 
 // void translate(uint8_t red, uint8_t green) {
 // 	
@@ -57,42 +61,43 @@ void set_row(uint8_t r) {
 	}
 }
 
-void go() {
-	// SPCR |= _BV(MSTR); // this shouldn't be required but something keeps clearing MSTR
-	// set_row(-1);
-	// PORTB &= ~_BV(PB2);
-	// _delay_us(5);
-	// PORTB |= _BV(PB2);
-	set_row(row);
+void callback() {
+	set_row(-1);
+	PORTC &= ~_BV(PC0);
+ 	PORTC |= _BV(PC0);
+	set_row(row++);
 	if (row < 8) {
-		uint8_t data[2];
-		data[0] = 0x96; //a[row];
-		data[1] = 0x96; //b[row];
+		data[0] = a[row];
+		data[1] = b[row];
 		shift.shift(data);
-		row++;
 	}
-	if (row == 8) row = 0;
 }
 
 int main (void){
-	DDRD = _BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5) | _BV(DDD6) | _BV(DDD7);
-	DDRB = _BV(DDB0) | _BV(DDB1);
+	DDRD |= _BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5) | _BV(DDD6) | _BV(DDD7);
+	DDRB |= _BV(DDB0) | _BV(DDB1);
 
+	DDRC |= _BV(DDC0);
 
-	shift.setLatch(&PORTB,PINB2); // use SS as the latch clock
-	shift.setCallback(go);
+	// shift.setLatch(&PORTC,PINC0);
+	shift.setCallback(callback);
+	
+	// serial_init_b(9600);
+	sei();
 
-	uint16_t ov = 0;
-
-	go();
+	row = 8;
 	while (1) {
-		;
-		// row = 0;
-		
+		if (row == 8) {
+			row = 0;
+			// shift in row 0
+			data[0] = a[row];
+			data[1] = b[row];
+			shift.shift(data);
+		}
 		// if (ov++ == 0) {
 		// 	data[0]++;
 		// 	data[1]++;
 		// }
-		// _delay_ms(2);
+		 // _delay_ms(2);
 	}
 }
