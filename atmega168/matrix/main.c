@@ -6,15 +6,19 @@
 // #include "lib/serial/serial.h"
 
 static Shift shift(2);
-static uint8_t red[8] = { 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55 };
-static uint8_t green[8] = { 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA };
+static uint8_t red[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static uint8_t grn[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static uint8_t r1[8] = { 0x00, 0x00, 0xFF, 0xFF, 0x0F, 0x00, 0x0F, 0x0F };
+static uint8_t r0[8] = { 0x00, 0xFF, 0x00, 0xFF, 0x0F, 0x0F, 0x00, 0x0F };
+static uint8_t g1[8] = { 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x00, 0xFF, 0xFF };
+static uint8_t g0[8] = { 0x00, 0xF0, 0x00, 0xF0, 0x0F, 0xFF, 0x00, 0xFF };
 static volatile uint8_t row;
 
 #define B_BITMASK 0x03
 #define D_BITMASK 0xFC
 
 uint8_t data[2];
-char temp[32];
+uint8_t dc;
 
 void translate(uint8_t red, uint8_t green, uint8_t *data) {
 	data[0] = 0x00;
@@ -79,13 +83,34 @@ void set_row(uint8_t r) {
 	}
 }
 
+void set_dc() {
+	if (dc < 20) {
+		for (uint8_t i = 0; i < 8; i++) {
+			red[i] = r1[i] | r0[i];
+			grn[i] = g1[i] | g0[i];
+		}
+	} else if (dc < 40) {
+		for (uint8_t i = 0; i < 8; i++) {
+			red[i] = r1[i];
+			grn[i] = g1[i];
+		}
+	} else {
+		for (uint8_t i = 0; i < 8; i++) {
+			red[i] = r1[i] & r0[i];
+			grn[i] = g1[i] & g0[i];
+		}
+	}
+	dc++;
+	if (dc == 60) dc = 0;
+}
+
 void callback() {
 	set_row(-1);
 	PORTC &= ~_BV(PC0);
  	PORTC |= _BV(PC0);
 	set_row(row++);
 	if (row < 8) {
-		translate(red[row], green[row], data);
+		translate(red[row], grn[row], data);
 		shift.shift(data);
 	} else if (row == 8) {
 		data[0] = 0x00;
@@ -107,11 +132,14 @@ int main (void){
 	sei();
 
 	row = 8;
+	
 	while (1) {
 		if (row == 8 && shift.cts()) {
+			set_dc();
 			row = 0;
+			
 			// shift in row 0
-			translate(red[row], green[row], data);
+			translate(red[row], grn[row], data);
 			shift.shift(data);
 		}
 		// if (ov++ == 0) {
