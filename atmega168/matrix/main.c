@@ -6,8 +6,8 @@
 // #include "lib/serial/serial.h"
 
 static Shift shift(2);
-static uint8_t a[8] = { 0x00, 0x96, 0xFF, 0x96, 0x00, 0x96, 0xFF, 0x96 };
-static uint8_t b[8] = { 0xFF, 0x69, 0x00, 0x69, 0xFF, 0x69, 0x00, 0x69 };
+static uint8_t red[8] = { 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55 };
+static uint8_t green[8] = { 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA };
 static volatile uint8_t row;
 
 #define B_BITMASK 0x03
@@ -16,9 +16,27 @@ static volatile uint8_t row;
 uint8_t data[2];
 char temp[32];
 
-// void translate(uint8_t red, uint8_t green) {
-// 	
-// }
+void translate(uint8_t red, uint8_t green, uint8_t *data) {
+	data[0] = 0x00;
+	data[1] = 0x00;
+	
+	if (red & _BV(0)) data[0] |= _BV(0);
+	if (green & _BV(0)) data[0] |= _BV(1);
+	if (red & _BV(1)) data[0] |= _BV(6);
+	if (green & _BV(1)) data[0] |= _BV(7);
+	if (red & _BV(2)) data[1] |= _BV(0);
+	if (green & _BV(2)) data[1] |= _BV(1);
+	if (red & _BV(3)) data[1] |= _BV(6);
+	if (green & _BV(3)) data[1] |= _BV(7);
+	if (red & _BV(4)) data[0] |= _BV(3);
+	if (green & _BV(4)) data[0] |= _BV(2);
+	if (red & _BV(5)) data[0] |= _BV(5);
+	if (green & _BV(5)) data[0] |= _BV(4);
+	if (red & _BV(6)) data[1] |= _BV(3);
+	if (green & _BV(6)) data[1] |= _BV(2);
+	if (red & _BV(7)) data[1] |= _BV(5);
+	if (green & _BV(7)) data[1] |= _BV(4);
+}
 
 void set_row(uint8_t r) {
 	switch(r) {
@@ -67,8 +85,7 @@ void callback() {
  	PORTC |= _BV(PC0);
 	set_row(row++);
 	if (row < 8) {
-		data[0] = a[row];
-		data[1] = b[row];
+		translate(red[row], green[row], data);
 		shift.shift(data);
 	}
 }
@@ -90,8 +107,7 @@ int main (void){
 		if (row == 8) {
 			row = 0;
 			// shift in row 0
-			data[0] = a[row];
-			data[1] = b[row];
+			translate(red[row], green[row], data);
 			shift.shift(data);
 		}
 		// if (ov++ == 0) {
