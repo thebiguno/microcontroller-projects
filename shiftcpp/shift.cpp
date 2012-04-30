@@ -4,10 +4,12 @@
 
 #include "shift.h"
 #include <stdlib.h>
+#include <util/delay.h>
 #include <avr/interrupt.h>
 
 
 // TODO make this conditional on the chip
+#define DD_SS DDB2
 #define DD_MOSI DDB3
 #define DD_SCK DDB5
 #define DDR_SPI DDRB
@@ -19,19 +21,26 @@ static volatile uint8_t *_buf;
 static volatile uint8_t *_latch_port;
 static uint8_t _latch_pin;
 static void (*_callback)();
-
+static uint8_t _cts = 1;
 
 Shift::Shift(uint8_t size) {
 	_size = size - 1;
 	_buf = (uint8_t*) malloc(_size);
 	
-	DDR_SPI |= _BV(DD_SCK);
-	DDR_SPI |= _BV(DD_MOSI);
+	// configure MOSI, SCK, SS as output pins
+	DDR_SPI |= _BV(DD_SCK) | _BV(DD_MOSI) | _BV(DD_SS);
 	
 	// setup SPI (enable, master, interrupts)
 	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPIE);
 
-	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+	// clear SPI interrupt flag by reading SPSR and SPDR
+	// uint8_t x = SPSR;
+	// x = SPDR;
+	
+	// set SS high
+	PORTB |= _BV(DD_SS);
+
+	//Enable global interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif	
@@ -72,15 +81,21 @@ void Shift::setClear(volatile uint8_t *port, uint8_t pin) {
 }
 
 void Shift::shift(uint8_t b[]) {
-	SPCR |= _BV(MSTR); // this shouldn't be required but something keeps clearing MSTR
-	// if(!(SPSR & (1<<SPIF))) return;
-
-	for (int i = 0; i < _size; i++) {
-		_buf[i] = b[i+1];
-	}
+	if (_cts) {
+		//SPCR |= _BV(MSTR); // re-enable master mode; disbled when SS is set low
+		_cts = 0;
+		
+		for (int i = 0; i < _size; i++) {
+			_buf[i] = b[i+1];
+		}
 	
-	_i = 0;
-	SPDR = b[0];
+		_i = 0;
+		SPDR = b[0];
+	}
+}
+
+uint8_t Shift::cts() {
+	return _cts;
 }
 
 void Shift::clear() {
@@ -100,12 +115,15 @@ void Shift::disable() {
 
 ISR(SPI_STC_vect) {
 	if (_i < _size) {
+		// copy next byte to the SPDR register
 		SPDR = _buf[_i++];
 	} else if (_i == _size) {
 		if (_latch_port != 0) {
 			*_latch_port &= ~_BV(_latch_pin);
+			// _delay_us(5);
 			*_latch_port |= _BV(_latch_pin);
 		}
+		_cts = 1;
 		if (_callback != 0) {
 			((*_callback)());
 		}

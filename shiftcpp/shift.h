@@ -6,6 +6,7 @@
 /*
  * Shift register library - this is designed for 74595 and compatible shift registers.
  * You need a minimum of two wires to control a shift register, or three wires to control a shift register with latch.
+ * This library uses MOSI, SCK, and SS.  (SS is not actually used but must be held high for interrupts to work properly).
  *
  * 74HC595 pinout:
  * Pin 1 - 7: Outputs B - H
@@ -80,6 +81,11 @@ class Shift {
 		 * Shifts all the bytes in the byte array into the shift register chain, latching at the end if latch is configured.
 		 */
 		void shift(uint8_t b[]);
+		
+		/*
+		 * Returns 1 if it's clear to send; 0 if bytes are still being transmitted.
+		 */
+		uint8_t cts();
 	
 		/*
 		 * Enables output, if OE is configured.
