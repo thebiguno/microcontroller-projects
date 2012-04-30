@@ -87,7 +87,7 @@ void callback() {
 	if (row < 8) {
 		translate(red[row], green[row], data);
 		shift.shift(data);
-	} else {
+	} else if (row == 8) {
 		data[0] = 0x00;
 		data[1] = 0x00;
 		shift.shift(data);
@@ -108,7 +108,7 @@ int main (void){
 
 	row = 8;
 	while (1) {
-		if (row == 8) {
+		if (row == 8 && shift.cts()) {
 			row = 0;
 			// shift in row 0
 			translate(red[row], green[row], data);
@@ -118,6 +118,6 @@ int main (void){
 		// 	data[0]++;
 		// 	data[1]++;
 		// }
-		 _delay_ms(2);
+		//_delay_ms(10);
 	}
 }
