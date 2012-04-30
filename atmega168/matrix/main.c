@@ -24,22 +24,29 @@ void translate(uint8_t red, uint8_t green, uint8_t *data) {
 	data[0] = 0x00;
 	data[1] = 0x00;
 	
-	if (red & _BV(0)) data[0] |= _BV(0);
-	if (green & _BV(0)) data[0] |= _BV(1);
-	if (red & _BV(1)) data[0] |= _BV(6);
-	if (green & _BV(1)) data[0] |= _BV(7);
-	if (red & _BV(2)) data[1] |= _BV(0);
-	if (green & _BV(2)) data[1] |= _BV(1);
-	if (red & _BV(3)) data[1] |= _BV(6);
-	if (green & _BV(3)) data[1] |= _BV(7);
-	if (red & _BV(4)) data[0] |= _BV(3);
-	if (green & _BV(4)) data[0] |= _BV(2);
-	if (red & _BV(5)) data[0] |= _BV(5);
-	if (green & _BV(5)) data[0] |= _BV(4);
-	if (red & _BV(6)) data[1] |= _BV(3);
-	if (green & _BV(6)) data[1] |= _BV(2);
-	if (red & _BV(7)) data[1] |= _BV(5);
-	if (green & _BV(7)) data[1] |= _BV(4);
+	if (red & _BV(0)) data[1] |= _BV(0);
+	if (green & _BV(0)) data[1] |= _BV(1);
+	
+	if (red & _BV(1)) data[1] |= _BV(6);
+	if (green & _BV(1)) data[1] |= _BV(7);
+	
+	if (red & _BV(2)) data[0] |= _BV(0);
+	if (green & _BV(2)) data[0] |= _BV(1);
+	
+	if (red & _BV(3)) data[0] |= _BV(6);
+	if (green & _BV(3)) data[0] |= _BV(7);
+	
+	if (red & _BV(4)) data[1] |= _BV(3);
+	if (green & _BV(4)) data[1] |= _BV(2);
+	
+	if (red & _BV(5)) data[1] |= _BV(5);
+	if (green & _BV(5)) data[1] |= _BV(4);
+	
+	if (red & _BV(6)) data[0] |= _BV(3);
+	if (green & _BV(6)) data[0] |= _BV(2);
+	
+	if (red & _BV(7)) data[0] |= _BV(5);
+	if (green & _BV(7)) data[0] |= _BV(4);
 }
 
 void set_row(uint8_t r) {
