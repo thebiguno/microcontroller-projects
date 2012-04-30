@@ -91,12 +91,13 @@ void set_row(uint8_t r) {
 }
 
 void set_dc() {
-	if (dc < 20) {
+	uint8_t m = dc % 9;
+	if (m == 1) {
 		for (uint8_t i = 0; i < 8; i++) {
 			red[i] = r1[i] | r0[i];
 			grn[i] = g1[i] | g0[i];
 		}
-	} else if (dc < 40) {
+	} else if (m == 3 || m == 5) {
 		for (uint8_t i = 0; i < 8; i++) {
 			red[i] = r1[i];
 			grn[i] = g1[i];
@@ -108,7 +109,7 @@ void set_dc() {
 		}
 	}
 	dc++;
-	if (dc == 60) dc = 0;
+	if (dc == 9) dc = 0;
 }
 
 void callback() {
