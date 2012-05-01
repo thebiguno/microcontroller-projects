@@ -117,43 +117,41 @@ void callback() {
 	PORTC &= ~_BV(PC0);
  	PORTC |= _BV(PC0);
 	set_row(row++);
-	if (row < 8) {
-		translate(red[row], grn[row], data);
-		shift.shift(data);
-	} else if (row == 8) {
-		data[0] = 0x00;
-		data[1] = 0x00;
-		shift.shift(data);
-	}
+
+	if (row == 8) row = 0;
 }
 
 int main (void){
+	TCCR0A = 0x0;					// output a = normal mode; output b = normal mode; waveform generation = normal
+	TCCR0B |= _BV(CS02);			// clock select = CLK / 256 (prescaler)
+	
+	OCR0A = F_CPU / 256 / 4000;		// interrupt A = every 1/4 millisecond
+	
+	TIMSK0 = _BV(OCIE0A);
+	
+	// set up PORTB and PORTD as row drivers
 	DDRD |= _BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5) | _BV(DDD6) | _BV(DDD7);
 	DDRB |= _BV(DDB0) | _BV(DDB1);
 
 	DDRC |= _BV(DDC0);
 
-	// shift.setLatch(&PORTC,PINC0);
 	shift.setCallback(callback);
 	
 	// serial_init_b(9600);
+
 	sei();
 
-	row = 8;
-	
 	while (1) {
-		if (row == 8 && shift.cts()) {
-			set_dc();
-			row = 0;
-			
-			// shift in row 0
-			translate(red[row], grn[row], data);
-			shift.shift(data);
-		}
-		// if (ov++ == 0) {
-		// 	data[0]++;
-		// 	data[1]++;
-		// }
-		//_delay_ms(10);
+		;
+	}
+}
+
+ISR(TIMER0_COMPA_vect) {
+	TCNT0 = 0;						// reset counter to zero
+
+	if (shift.cts()) {
+		set_dc();
+		translate(red[row], grn[row], data);
+		shift.shift(data);
 	}
 }
