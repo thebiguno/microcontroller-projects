@@ -3,7 +3,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
-// #include "lib/serial/serial.h"
+#include "lib/serial/serial.h"
 
 static Shift shift(2);
 static uint8_t red[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -14,7 +14,7 @@ static uint8_t g1[8] = { 0x08, 0x00, 0xF0, 0xF0, 0x00, 0x00, 0xFF, 0xFF };
 static uint8_t g0[8] = { 0x08, 0xF0, 0x00, 0xF0, 0x0F, 0xFF, 0x00, 0xFF };
 static volatile uint8_t row;
 
-#define B_BITMASK 0x03
+#define C_BITMASK 0x03
 #define D_BITMASK 0xFC
 
 uint8_t data[2];
@@ -52,39 +52,39 @@ void translate(uint8_t red, uint8_t green, uint8_t *data) {
 void set_row(uint8_t r) {
 	switch(r) {
 		case 0: 
-			PORTB = (PORTB & ~B_BITMASK) | _BV(0);
-			PORTD = (PORTD & ~D_BITMASK);
-			break;
-		case 1:
-			PORTB = (PORTB & ~B_BITMASK) | _BV(1);
-			PORTD = (PORTD & ~D_BITMASK);
-			break;
-		case 2:
-			PORTB = (PORTB & ~B_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(2);
-			break;
-		case 3:
-			PORTB = (PORTB & ~B_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK);
 			PORTD = (PORTD & ~D_BITMASK) | _BV(3);
 			break;
-		case 4:
-			PORTB = (PORTB & ~B_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(4);
+		case 1:
+			PORTC = (PORTC & ~C_BITMASK);
+			PORTD = (PORTD & ~D_BITMASK) | _BV(2);
 			break;
-		case 5:
-			PORTB = (PORTB & ~B_BITMASK);
+		case 2:
+			PORTC = (PORTC & ~C_BITMASK);
 			PORTD = (PORTD & ~D_BITMASK) | _BV(5);
 			break;
+		case 3:
+			PORTC = (PORTC & ~C_BITMASK);
+			PORTD = (PORTD & ~D_BITMASK) | _BV(4);
+			break;
+		case 4:
+			PORTD = (PORTD & ~D_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK) | _BV(0);
+			break;
+		case 5:
+			PORTD = (PORTD & ~D_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK) | _BV(1);
+			break;
 		case 6:
-			PORTB = (PORTB & ~B_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(6);
+			PORTD = (PORTD & ~D_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK) | _BV(4);
 			break;
 		case 7:
-			PORTB = (PORTB & ~B_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(7);
+			PORTD = (PORTD & ~D_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK) | _BV(5);
 			break;
 		default:
-			PORTB = (PORTB & ~B_BITMASK);
+			PORTC = (PORTC & ~C_BITMASK);
 			PORTD = (PORTD & ~D_BITMASK);
 			break;
 	}
@@ -129,9 +129,9 @@ int main (void){
 	
 	TIMSK0 = _BV(OCIE0A);
 	
-	// set up PORTB and PORTD as row drivers
-	DDRD |= _BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5) | _BV(DDD6) | _BV(DDD7);
-	DDRB |= _BV(DDB0) | _BV(DDB1);
+	// set up PORTC and PORTD as row drivers
+	DDRD |= _BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5);
+	DDRC |= _BV(DDC0) | _BV(DDC1) | _BV(DDC4) | _BV(DDC5);
 
 	DDRC |= _BV(DDC0);
 
@@ -142,16 +142,13 @@ int main (void){
 	sei();
 
 	while (1) {
-		;
-	}
-}
-
-ISR(TIMER0_COMPA_vect) {
-	TCNT0 = 0;						// reset counter to zero
-
-	if (shift.cts()) {
-		set_dc();
-		translate(red[row], grn[row], data);
-		shift.shift(data);
+//		if (shift.cts()) {
+			set_dc();
+			translate(red[row], grn[row], data);
+			set_row(-1);
+			shift.shift(data);
+			set_row(row++ & 0x7);
+//		}
+		_delay_ms(100);
 	}
 }

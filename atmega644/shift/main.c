@@ -10,23 +10,11 @@
 #include "lib/shift/shift.h"
 
 int main (void){
-	shift_init(&PORTD, PIND4, &PORTD, PIND5, &PORTD, PIND6);
-	
-	int data = 1;
-	int mode = 1;
+	shift_init(&PORTB, PIND5, &PORTB, PIND7, &PORTB, PIND3);
 	
 	//Main program loop
 	while (1){
-		shift_out(data);
-		
-		if (mode == -1) data = data >> 1;
-		if (mode == 1) data = data << 1;
-		if (data == 128){
-			mode = -1;
-		}
-		if (data == 1){
-			mode = 1;
-		}
+		shift_out(0xFF);
 		_delay_ms(50);
 	}
 }
