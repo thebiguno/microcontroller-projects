@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Tue 15 May 2012 01:18:37 AM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Wed 02 May 2012 12:17:43 AM MDT
 
 BeginCmp
 TimeStamp = /4FB1C4D9;
@@ -38,7 +38,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4FE29185;
 Reference = C6;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = C1;
 EndCmp
 
@@ -52,7 +52,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4FDD1D14;
 Reference = IC1;
-ValeurCmp = ATMEGA8-P;
+ValeurCmp = AVR;
 IdModule  = DIP-28__300;
 EndCmp
 
@@ -101,7 +101,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4FB1BE1A;
 Reference = L1;
-ValeurCmp = INDUCTOR;
+ValeurCmp = 220uH;
 IdModule  = R1;
 EndCmp
 
@@ -162,13 +162,6 @@ IdModule  = PINTST;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDD2106;
-Reference = OUTB2;
-ValeurCmp = CONN_1;
-IdModule  = PINTST;
-EndCmp
-
-BeginCmp
 TimeStamp = /4F99F8BE;
 Reference = OUTC1;
 ValeurCmp = CONN_1;
@@ -197,9 +190,16 @@ IdModule  = PINTST;
 EndCmp
 
 BeginCmp
+TimeStamp = /4FDD2106;
+Reference = OUTROW1;
+ValeurCmp = CONN_1;
+IdModule  = PINTST;
+EndCmp
+
+BeginCmp
 TimeStamp = /4FDD15D5;
 Reference = P1;
-ValeurCmp = ISP6;
+ValeurCmp = ISP;
 IdModule  = pin_array_3x2;
 EndCmp
 
@@ -227,15 +227,43 @@ EndCmp
 BeginCmp
 TimeStamp = /4FB1E5F0;
 Reference = P5;
-ValeurCmp = CONN_8;
+ValeurCmp = PORTD;
 IdModule  = BB8;
 EndCmp
 
 BeginCmp
 TimeStamp = /4FB20312;
 Reference = P6;
-ValeurCmp = CONN_8;
+ValeurCmp = PORTC;
 IdModule  = BB8;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FA0D087;
+Reference = P7;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FA0D094;
+Reference = P8;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FA0D099;
+Reference = P9;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FA0D098;
+Reference = P10;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
 EndCmp
 
 BeginCmp
@@ -1046,7 +1074,7 @@ EndCmp
 BeginCmp
 TimeStamp = /4FDD1E91;
 Reference = R108;
-ValeurCmp = 1K;
+ValeurCmp = 1k;
 IdModule  = R1;
 EndCmp
 

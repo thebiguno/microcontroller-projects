@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Tue 15 May 2012 03:30:38 AM MDT
+EESchema Schematic File Version 2  date Wed 02 May 2012 12:04:17 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "15 may 2012"
+Date "2 may 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -722,10 +722,10 @@ F 1 "PWR" V 12600 8100 40  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_1 OUTB2
+L CONN_1 OUTROW1
 U 1 1 4FDD2106
 P 2950 9950
-F 0 "OUTB2" H 3030 9950 40  0000 L CNN
+F 0 "OUTROW1" H 3030 9950 40  0000 L CNN
 F 1 "CONN_1" H 2950 10005 30  0001 C CNN
 	1    2950 9950
 	1    0    0    -1  
@@ -753,7 +753,7 @@ L R R108
 U 1 1 4FDD1E91
 P 7800 7300
 F 0 "R108" V 7880 7300 50  0000 C CNN
-F 1 "1K" V 7800 7300 50  0000 C CNN
+F 1 "1k" V 7800 7300 50  0000 C CNN
 	1    7800 7300
 	1    0    0    -1  
 $EndComp
