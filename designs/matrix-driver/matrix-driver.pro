@@ -1,4 +1,4 @@
-update=Tue 01 May 2012 08:57:51 PM MDT
+update=Tue 01 May 2012 09:12:00 PM MDT
 version=1
 last_client=eeschema
 [cvpcb]
@@ -81,7 +81,7 @@ LibName10=dip_sockets
 version=1
 [eeschema]
 version=1
-LibDir=/home/wyatt/Documents/Programming/avr/lib/kicad/library
+LibDir=../../library
 NetFmt=1
 HPGLSpd=20
 HPGLDm=15
