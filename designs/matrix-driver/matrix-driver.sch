@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 02 May 2012 10:28:47 AM MDT
+EESchema Schematic File Version 2  date Sun 06 May 2012 12:54:27 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:matrix-driver-cache
 EELAYER 25  0
 EELAYER END
 $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "2 may 2012"
+Date "6 may 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -44,44 +45,80 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 1900 3650 0    60   ~ 0
+GND
+Text Label 1900 3550 0    60   ~ 0
+RCLK
+Text Label 1900 3350 0    60   ~ 0
+VCC
+Text Label 1900 3250 0    60   ~ 0
+SRCLK
+Text Label 1900 2000 0    60   ~ 0
+RCLK
+Text Label 1900 2100 0    60   ~ 0
+GND
+Text Label 1900 1800 0    60   ~ 0
+VCC
+Text Label 1900 1700 0    60   ~ 0
+SRCLK
+Text Label 1900 1500 0    60   ~ 0
+SER
 Wire Wire Line
-	2300 3050 2300 2750
+	2300 3650 1900 3650
 Wire Wire Line
-	2300 2750 3700 2750
+	1900 3350 2300 3350
 Wire Wire Line
-	3700 2750 3700 2400
+	1900 2100 2300 2100
 Wire Wire Line
-	4900 2000 5150 2000
+	1900 1800 2300 1800
 Wire Wire Line
-	4900 1800 5150 1800
+	2300 1700 1900 1700
 Wire Wire Line
-	4900 1600 5150 1600
-Wire Wire Line
-	5150 2200 4900 2200
-Wire Wire Line
-	4900 1500 5150 1500
-Wire Wire Line
-	5150 1700 4900 1700
-Wire Wire Line
-	5150 1900 4900 1900
-Wire Wire Line
-	5150 2100 4900 2100
-Wire Wire Line
-	5150 3100 4900 3100
-Wire Wire Line
-	5150 2900 4900 2900
-Wire Wire Line
-	5150 2700 4900 2700
-Wire Wire Line
-	4900 2500 5150 2500
-Wire Wire Line
-	5150 3200 4900 3200
-Wire Wire Line
-	4900 2600 5150 2600
+	4900 3000 5150 3000
 Wire Wire Line
 	4900 2800 5150 2800
 Wire Wire Line
-	4900 3000 5150 3000
+	4900 2600 5150 2600
+Wire Wire Line
+	5150 3200 4900 3200
+Wire Wire Line
+	4900 2500 5150 2500
+Wire Wire Line
+	5150 2700 4900 2700
+Wire Wire Line
+	5150 2900 4900 2900
+Wire Wire Line
+	5150 3100 4900 3100
+Wire Wire Line
+	5150 2100 4900 2100
+Wire Wire Line
+	5150 1900 4900 1900
+Wire Wire Line
+	5150 1700 4900 1700
+Wire Wire Line
+	4900 1500 5150 1500
+Wire Wire Line
+	5150 2200 4900 2200
+Wire Wire Line
+	4900 1600 5150 1600
+Wire Wire Line
+	4900 1800 5150 1800
+Wire Wire Line
+	4900 2000 5150 2000
+Wire Wire Line
+	3700 2400 3700 2750
+Wire Wire Line
+	3700 2750 2300 2750
+Wire Wire Line
+	2300 2750 2300 3050
+Wire Wire Line
+	1900 1500 2300 1500
+Wire Wire Line
+	2300 2000 1900 2000
+Wire Wire Line
+	1900 3250 2300 3250
+Wire Wire Line
+	1900 3550 2300 3550
 Text Label 3700 3750 0    60   ~ 0
 GRN4
 Text Label 3700 3650 0    60   ~ 0
