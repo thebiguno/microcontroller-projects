@@ -299,14 +299,14 @@ void clock_hexadecimal(uint32_t ms) {
 	}
 }
 
-void clock_duodecimal(uint32_t ms) {
+void clock_dozenal(uint32_t ms) {
 	uint8_t digits[5];
 	//milliseconds to decimal (BBB.BB)
-	digits[0] = ms / 7200000;	// 1/12 day = 2 h (duotet)
+	digits[0] = ms / 7200000;	// 1/12 day = 2 h
 	ms -= 7200000 * (uint32_t) digits[0];
-	digits[1] = ms / 600000;	// 1/144 day = 10 m (octet)
+	digits[1] = ms / 600000;	// 1/144 day = 10 m
 	ms -= 600000 * (uint32_t) digits[1];
-	digits[2] = ms / 50000;		// 1/1728 day = 50 s (quartet)
+	digits[2] = ms / 50000;		// 1/1728 day = 50 s
 	ms -= 50000 * (uint32_t) digits[2];
 	digits[3] = ms / 4167;		// 1/20736 day ~= 4.167 s
 	ms -= 4167 * (uint32_t) digits[3];
@@ -400,6 +400,7 @@ void clock_duodecimal(uint32_t ms) {
 
 /*
  * This method was introduced during the French Revolution in 1793
+ * It's also equivalent to Swatch time
  */
 void clock_decimal(uint32_t ms) {
 	uint8_t digits[5];
@@ -408,9 +409,9 @@ void clock_decimal(uint32_t ms) {
 	ms -= 8640000 * (uint32_t) digits[0];
 	digits[1] = ms / 864000;	// 1/100 day (centiday) = 14 m 24 s
 	ms -= 864000 * (uint32_t) digits[1];
-	digits[2] = ms / 86400;	// 1/1000 day (milliday; beat) = 1 m 26.4 s
+	digits[2] = ms / 86400;		// 1/1000 day (milliday; beat) = 1 m 26.4 s
 	ms -= 86400 * (uint32_t) digits[2];
-	digits[3] = ms / 8640;		// 1/10000 day = 8.64 s
+	digits[3] = ms / 8640;		// 1/10000 day (decibeat)= 8.64 s
 	ms -= 8640 * (uint32_t) digits[3];
 	digits[4] = ms / 864;		// 1/100000 day (centibeat) / .864 s
 	
@@ -526,37 +527,98 @@ void clock_decimal(uint32_t ms) {
 	}
 }
 
+void clock_octal(uint32_t ms) {
+	//milliseconds to octal (777.777)
+	uint8_t digits[6];
+	digits[0] = ms / 10800000;		// 1/8 day = 3 h
+	ms -= 10800000 * (uint32_t) digits[0] ;
+	digits[1] = ms / 1350000;		// 1/64 day = 22 m 30 s
+	ms -= 1350000 * (uint32_t) digits[1];
+	digits[2] = ms / 168750;		// 1/512 day ~= 2 m 49 s
+	ms -= 168750 * (uint32_t) digits[2];
+	ms *= 100;						// bump up the precision
+	digits[3] = ms / 2109375;		// 1/4096 day ~= 21 s
+	ms -= 2109375 * (uint32_t) digits[3];
+	ms *= 100;						// bump up the precision again
+	digits[4] = ms / 26367187;		// 1/32768 day ~= 2.63 s
+	ms -= 26367187 * (uint32_t) digits[4];
+	ms *= 100;						// bump up the precision again
+	digits[5] = ms / 329589843;		// 1/262144 day ~= .329 s
+
+	for (uint8_t i = 0; i < 4; i++) {
+		_segments[i] = segment_decimal(digits[i]);
+	}
+	if (digits[0] == 0) {
+		_segments[0] = segment_character(' ');
+		if (digits[1] == 0) {
+			_segments[1] = segment_character(' ');
+		}
+	}
+	
+	// add the decimal place
+	_segments[2] = segment_dp(_segments[2]);
+
+	// flash the extra dot for digit 5
+	if ((digits[4] & _BV(0)) == _BV(0)) {
+		_segment_flags = _BV(1);
+	} else {
+		_segment_flags = 0x00;
+	}
+
+	clock_clear_matrix();
+
+	// 1x2 pixels for each bit, a on top, f on bottom
+	for (uint8_t i = 0; i < 6; i++) { // segments (rows)
+		// build a 1x6 bar
+		uint8_t v = _segments[i];
+		for (uint8_t j = 0; j < 3; j++) { // bits (cols)
+			if ((v & _BV(j)) != 0) {
+				if (i == 1 || i == 3 || i == 5) {
+					_matrix_grn[i+1] |= 2 << (5-(j*2));
+					_matrix_grn[i+1] |= 2 << (4-(j*2));
+				} else {
+					_matrix_red[i+1] |= 2 << (5-(j*2));
+					_matrix_red[i+1] |= 2 << (4-(j*2));
+				}
+			}
+		}
+	}
+}
+
 void clock_update(uint32_t ms) {
 	switch (_mode) {
 		case 0: clock_traditional(ms); break;
 		case 1: clock_vigesimal(ms); break;
 		case 2: clock_hexadecimal(ms); break;
-		case 3: clock_duodecimal(ms); break;
+		case 3: clock_dozenal(ms); break;
 		case 4: clock_decimal(ms); break;
-		case 5: clock_dni(ms); break;
+		case 5: clock_octal(ms); break;
+		case 6: clock_dni(ms); break;
 	}
 }
 
 uint32_t clock_size_b() {
 	switch (_mode) {
-		case 0: return 3600000;
-		case 1: return 216000;
-		case 2: return 337500;
-		case 3: return 600000;
-		case 4: return 864000;
-		case 5: return 3456000;
+		case 0: return 3600000;  // traditional 1/24 day = 1 h
+		case 1: return 216000;   // vigesimal 1/20 day = 1 h 12 m
+		case 2: return 337500;   // hexadecimal 1/256 day = 1 h 30 m
+		case 3: return 600000;   // dozenal 1/144 day = 10 m
+		case 4: return 864000;   // decimal 1/100 day = 14 m 24 s
+		case 5: return 1350000;  // octal 1/64 day = 22 m 30 s
+		case 6: return 138240;   // d'ni 1/625 day = 2 m 18.24 s
 	}
 	return 0;
 }
 
 uint32_t clock_size_d() {
 	switch(_mode) {
-		case 0: return 60000;
-		case 1: return 540;
-		case 2: return 21094;
-		case 3: return 4167;
-		case 4: return 86400;
-		case 5: return 138240;
+		case 0: return 60000;   // traditional 1/1440 day = 1 m
+		case 1: return 540;     // vigesimal 1/160000 day = .54 s
+		case 2: return 1318;    // hexadecimal 1/65536 day ~= 1.32 seconds
+		case 3: return 4167;    // dozenal 1/20736 day ~= 4.167 s
+		case 4: return 8640;    // decimal 1/10000 day = 8.64 s
+		case 5: return 21094;   // octal 1/4096 day ~= 21 s
+		case 6: return 2212;    // d'ni 1/390625 day ~= .22 s
 	}
 	return 0;
 }
