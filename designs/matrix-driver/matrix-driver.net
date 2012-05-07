@@ -1,0 +1,297 @@
+# EESchema Netlist Version 1.1 created  Mon 07 May 2012 01:59:52 PM MDT
+(
+ ( /4FA0A62C LE-MM103 L1 LE-MM103
+  ( 1 N-000018 )
+  ( 2 N-000017 )
+  ( 3 /R5 )
+  ( 4 N-000015 )
+  ( 5 N-000014 )
+  ( 6 /R6 )
+  ( 7 N-000012 )
+  ( 8 N-000019 )
+  ( 9 /R7 )
+  ( 10 N-000033 )
+  ( 11 N-000011 )
+  ( 12 /R8 )
+  ( 13 /R4 )
+  ( 14 N-000020 )
+  ( 15 N-000026 )
+  ( 16 /R3 )
+  ( 17 N-000024 )
+  ( 18 N-000023 )
+  ( 19 /R2 )
+  ( 20 N-000032 )
+  ( 21 N-000031 )
+  ( 22 /R1 )
+  ( 23 N-000028 )
+  ( 24 N-000027 )
+ )
+ ( /4FA7D58C PINTST P1 CONN_1
+  ( 1 /DIN1 )
+ )
+ ( /4FA7D599 PINTST P2 CONN_1
+  ( 1 /DOUT1 )
+ )
+ ( /4FA7DAC0 PIN_ARRAY-6X1 P3 CONN_6
+  ( 1 /VCC )
+  ( 2 /ROW1 )
+  ( 3 /ROW2 )
+  ( 4 /ROW3 )
+  ( 5 /ROW4 )
+  ( 6 /SRCLK )
+ )
+ ( /4FA7DACE PIN_ARRAY-6X1 P4 CONN_6
+  ( 1 /GND )
+  ( 2 /ROW5 )
+  ( 3 /ROW6 )
+  ( 4 /ROW7 )
+  ( 5 /ROW8 )
+  ( 6 /RCLK )
+ )
+ ( /4FA743FC SIP3-75 Q1 PNP
+  ( 1 /VCC )
+  ( 2 /ROW1 )
+  ( 3 /R1 )
+ )
+ ( /4FA743F2 SIP3-75 Q2 PNP
+  ( 1 /VCC )
+  ( 2 /ROW2 )
+  ( 3 /R2 )
+ )
+ ( /4FA743B2 SIP3-75 Q3 PNP
+  ( 1 /VCC )
+  ( 2 /ROW3 )
+  ( 3 /R3 )
+ )
+ ( /4FA743BC SIP3-75 Q4 PNP
+  ( 1 /VCC )
+  ( 2 /ROW4 )
+  ( 3 /R4 )
+ )
+ ( /4FA743A5 SIP3-75 Q5 PNP
+  ( 1 /VCC )
+  ( 2 /ROW5 )
+  ( 3 /R5 )
+ )
+ ( /4FA74394 SIP3-75 Q6 PNP
+  ( 1 /VCC )
+  ( 2 /ROW6 )
+  ( 3 /R6 )
+ )
+ ( /4FA7437E SIP3-75 Q7 PNP
+  ( 1 /VCC )
+  ( 2 /ROW7 )
+  ( 3 /R7 )
+ )
+ ( /4FA742C5 SIP3-75 Q8 PNP
+  ( 1 /VCC )
+  ( 2 /ROW8 )
+  ( 3 /R8 )
+ )
+ ( /4FA15D08 R1 R1 150
+  ( 1 N-000011 )
+  ( 2 /RED8 )
+ )
+ ( /4FA15EA2 R1 R2 150
+  ( 1 N-000019 )
+  ( 2 /RED7 )
+ )
+ ( /4FA15EA5 R1 R3 150
+  ( 1 N-000014 )
+  ( 2 /RED6 )
+ )
+ ( /4FA15EA7 R1 R4 150
+  ( 1 N-000017 )
+  ( 2 /RED5 )
+ )
+ ( /4FA15EAA R1 R5 150
+  ( 1 N-000020 )
+  ( 2 /RED4 )
+ )
+ ( /4FA15EAE R1 R6 150
+  ( 1 N-000024 )
+  ( 2 /RED3 )
+ )
+ ( /4FA15EB0 R1 R7 150
+  ( 1 N-000032 )
+  ( 2 /RED2 )
+ )
+ ( /4FA15EB3 R1 R8 150
+  ( 1 N-000028 )
+  ( 2 /RED1 )
+ )
+ ( /4FA15EB6 R1 R9 180
+  ( 1 N-000033 )
+  ( 2 /GRN8 )
+ )
+ ( /4FA15ECE R1 R10 180
+  ( 1 N-000012 )
+  ( 2 /GRN7 )
+ )
+ ( /4FA15ED1 R1 R11 180
+  ( 1 N-000015 )
+  ( 2 /GRN6 )
+ )
+ ( /4FA15ED3 R1 R12 180
+  ( 1 N-000018 )
+  ( 2 /GRN5 )
+ )
+ ( /4FA15ED5 R1 R13 180
+  ( 1 N-000026 )
+  ( 2 /GRN4 )
+ )
+ ( /4FA15ED7 R1 R14 180
+  ( 1 N-000023 )
+  ( 2 /GRN3 )
+ )
+ ( /4FA15ED9 R1 R15 180
+  ( 1 N-000031 )
+  ( 2 /GRN2 )
+ )
+ ( /4FA15EE0 R1 R16 180
+  ( 1 N-000027 )
+  ( 2 /GRN1 )
+ )
+ ( /4FA7D62A DIP-16__300 U1 STPIC6D595
+  ( 1 /VCC )
+  ( 2 /DIN1 )
+  ( 3 /RED2 )
+  ( 4 /GRN2 )
+  ( 5 /GRN6 )
+  ( 6 /RED6 )
+  ( 7 /VCC )
+  ( 8 /GND )
+  ( 9 N-000036 )
+  ( 10 /RCLK )
+  ( 11 /RED5 )
+  ( 12 /GRN5 )
+  ( 13 /GRN1 )
+  ( 14 /RED1 )
+  ( 15 /SRCLK )
+  ( 16 /GND )
+ )
+ ( /4FA7D62E DIP-16__300 U2 STPIC6D595
+  ( 1 /VCC )
+  ( 2 N-000036 )
+  ( 3 /RED4 )
+  ( 4 /GRN4 )
+  ( 5 /GRN8 )
+  ( 6 /RED8 )
+  ( 7 /VCC )
+  ( 8 /GND )
+  ( 9 /DOUT1 )
+  ( 10 /RCLK )
+  ( 11 /RED7 )
+  ( 12 /GRN7 )
+  ( 13 /GRN3 )
+  ( 14 /RED3 )
+  ( 15 /SRCLK )
+  ( 16 /GND )
+ )
+)
+*
+{ Allowed footprints by component:
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R14
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R16
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component U1
+ 16-DIP
+$endlist
+$component U2
+ 16-DIP
+$endlist
+$endfootprintlist
+}

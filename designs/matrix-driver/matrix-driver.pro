@@ -1,4 +1,4 @@
-update=Sun 06 May 2012 01:07:00 PM MDT
+update=Sun 06 May 2012 09:03:34 PM MDT
 version=1
 last_client=pcbnew
 [cvpcb]
@@ -92,7 +92,7 @@ DrawLar=150
 EdgeLar=150
 TxtLar=120
 MSegLar=150
-LastNetListRead=
+LastNetListRead=matrix-driver.net
 [pcbnew/libraries]
 LibDir=../../modules
 LibName1=sockets
