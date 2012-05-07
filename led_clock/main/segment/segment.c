@@ -113,8 +113,8 @@ uint8_t segment_decimal(uint8_t v) {
 }
 	
 uint8_t segment_hexadecimal(uint8_t v) {
-	// symbals are from http://mackwai.blogspot.com/2009/07/alternative-hexadecimal-digits.html 
-	// segment B+C is 1 (odd); E+F is not 1 (even); D is 1; G is 4; A is 8
+	// symbols are from http://mackwai.blogspot.com/2009/07/alternative-hexadecimal-digits.html 
+	// segment B+C is 1 (odd); E+F is not 1 (even); D is 2; G is 4; A is 8
 	static uint8_t table[16] = {
 		SEG_DP + SEG_G, // same as 0
 		SEG_DP + SEG_A + SEG_D + SEG_E + SEG_F + SEG_G, // same as 1
