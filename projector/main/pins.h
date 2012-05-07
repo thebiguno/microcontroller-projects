@@ -18,15 +18,15 @@
 #define SEG_DIG4 0X08
 
 // define these according to the wiring of the three buttons
-#define PORT_BUTTON_PLAY_PAUSE	PORTD
-#define PIN_BUTTON_PLAY_PAUSE	PIND2
-#define PORT_BUTTON_SLIDE_COUNT	PORTD
-#define PIN_BUTTON_SLIDE_COUNT	PIND3
+#define PORT_BUTTON_PLAY_PAUSE	PORTB
+#define PIN_BUTTON_PLAY_PAUSE	PB0
+#define PORT_BUTTON_SLIDE_COUNT	PORTB
+#define PIN_BUTTON_SLIDE_COUNT	PB1
 
 // define these according to the wiring of the two relays
-#define PORT_RELAY_1			PORTD
-#define PIN_RELAY_1				PIND4
-#define PORT_RELAY_2			PORTD
-#define PIN_RELAY_2				PIND5
+#define PORT_RELAY_1			PORTB
+#define PIN_RELAY_1				PB6
+#define PORT_RELAY_2			PORTB
+#define PIN_RELAY_2				PB7
 
 #endif
