@@ -3,7 +3,7 @@ include ../build/variables.mk
 PROJECT=projector
 MMCU=atmega48
 F_CPU=1000000
-SOURCES=main.c shift/shift.c segment/segment.c timer/timer.c button/button.c
+SOURCES=main.c segment/segment.c timer/timer.c button/button.c
 AVRDUDE_PROGRAMMER=usbtiny
 CDEFS+=-DNO_INTERRUPT_ENABLE
 
