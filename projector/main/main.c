@@ -1,17 +1,20 @@
 #include "main.h"
 
-#include "segment/segment.h"
-
 // projector switch on; project advance; camera switch on; camera shutter;
 #define T0 255
-#define T1 2048
+#define T1 512
 #define T2 255
-#define T3 512
+#define T3 2048
 
 
 int main() {
 	
-	shift_init();
+	DDRC = 0x0F; // PC0 ~ PC3 output digit source; PC4 ~ PC6 unused
+	DDRD = 0xFF; // PD0 ~ PD7 output segment sink
+	
+	*(&PORT_RELAY_1 - 0x1) |= _BV(PIN_RELAY_1); // output
+	*(&PORT_RELAY_2 - 0x1) |= _BV(PIN_RELAY_2); // output
+	
 	button_init(&PORT_BUTTON_PLAY_PAUSE, PIN_BUTTON_PLAY_PAUSE, &PORT_BUTTON_SLIDE_COUNT, PIN_BUTTON_SLIDE_COUNT);
 	timer_init();
 	sei();
@@ -26,9 +29,6 @@ int main() {
 	uint8_t digit = 0;
 	uint8_t segments[4];
 
-	// DDR output
-	*(&PORT_RELAY_1 - 0x1) |= _BV(PIN_RELAY_1);
-	*(&PORT_RELAY_2 - 0x1) |= _BV(PIN_RELAY_2);
 	
 	while(1) {
 		ms = timer_millis();
@@ -63,6 +63,7 @@ int main() {
 				segments[0] = segment_character('^');
 		
 				if (step == 0) {
+					// take the picture
 					PORT_RELAY_1 |= _BV(PIN_RELAY_1);
 					PORT_RELAY_2 &= ~_BV(PIN_RELAY_2);
 					if (delay == 0) {
@@ -70,6 +71,7 @@ int main() {
 						delay = T1;
 					}
 				} else if (step == 1) {
+					// wait
 					PORT_RELAY_1 &= ~_BV(PIN_RELAY_1);
 					PORT_RELAY_2 &= ~_BV(PIN_RELAY_2);
 					if (delay == 0) {
@@ -77,6 +79,7 @@ int main() {
 						delay = T2;
 					}
 				} else if (step == 2) {
+					// advance the carousel
 					PORT_RELAY_1 &= ~_BV(PIN_RELAY_1);
 					PORT_RELAY_2 |= _BV(PIN_RELAY_2);
 					if (delay == 0) {
@@ -84,6 +87,7 @@ int main() {
 						delay = T3;
 					}
 				} else {
+					// wait
 					PORT_RELAY_1 &= ~_BV(PIN_RELAY_1);
 					PORT_RELAY_2 &= ~_BV(PIN_RELAY_2);
 					if (delay == 0) {
@@ -101,8 +105,9 @@ int main() {
 				PORT_RELAY_2 &= ~_BV(PIN_RELAY_2);
 				segments[0] = segment_character('_');
 			}
-			
-			shift_set(segments[digit], digit++);
+
+			PORTC = _BV(digit);
+			PORTD = segments[digit++];
 			if (digit == 4) digit = 0;
 
 			button_sample();
