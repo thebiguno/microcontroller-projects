@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 07 May 2012 12:53:03 PM MDT
+EESchema Schematic File Version 2  date Mon 07 May 2012 03:22:21 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -347,27 +347,27 @@ Text Label 600  1600 0    60   ~ 0
 GND
 Text Label 600  1500 0    60   ~ 0
 VCC
-Text Label 8150 2450 0    60   ~ 0
-ROW8
-Text Label 8150 2350 0    60   ~ 0
-ROW7
-Text Label 8150 2250 0    60   ~ 0
-ROW6
-Text Label 8150 2150 0    60   ~ 0
-ROW5
-Text Label 6900 2450 0    60   ~ 0
-ROW4
 Text Label 6900 2350 0    60   ~ 0
-ROW3
+ROW8
+Text Label 6900 2450 0    60   ~ 0
+ROW7
+Text Label 8150 2150 0    60   ~ 0
+ROW6
+Text Label 8150 2350 0    60   ~ 0
+ROW5
 Text Label 6900 2250 0    60   ~ 0
+ROW4
+Text Label 6900 2550 0    60   ~ 0
+ROW3
+Text Label 8150 2050 0    60   ~ 0
 ROW2
-Text Label 6900 2150 0    60   ~ 0
+Text Label 8150 2250 0    60   ~ 0
 ROW1
 Text Label 8150 2550 0    60   ~ 0
 RCLK
-Text Label 6900 2550 0    60   ~ 0
+Text Label 8150 2450 0    60   ~ 0
 SRCLK
-Text Label 8150 2050 0    60   ~ 0
+Text Label 6900 2150 0    60   ~ 0
 GND
 Text Label 6900 2050 0    60   ~ 0
 VCC
