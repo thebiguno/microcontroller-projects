@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 07 May 2012 03:22:21 PM MDT
+EESchema Schematic File Version 2  date Mon 07 May 2012 08:02:49 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "7 may 2012"
+Date "8 may 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -367,9 +367,9 @@ Text Label 8150 2550 0    60   ~ 0
 RCLK
 Text Label 8150 2450 0    60   ~ 0
 SRCLK
-Text Label 6900 2150 0    60   ~ 0
-GND
 Text Label 6900 2050 0    60   ~ 0
+GND
+Text Label 6900 2150 0    60   ~ 0
 VCC
 Text Label 2950 2850 0    60   ~ 0
 DOUT1
