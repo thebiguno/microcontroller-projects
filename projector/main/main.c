@@ -48,15 +48,16 @@ int main() {
 			}
 			c = temp;
 
+			segments[1] = segment_decimal(a);
+			segments[2] = segment_decimal(b);
+			segments[3] = segment_decimal(c);
+
 			if (a == 0) {
 				segments[1] = segment_character(' ');
 				if (b == 0) {
 					segments[2] = segment_character(' ');
 				}
 			}
-			segments[1] = segment_decimal(a);
-			segments[2] = segment_decimal(b);
-			segments[3] = segment_decimal(c);
 			
 			if (play) {
 				if (delay > 0) delay--;
@@ -106,8 +107,9 @@ int main() {
 				segments[0] = segment_character('_');
 			}
 
-			PORTC = _BV(digit);
-			PORTD = segments[digit++];
+			PORTC = 0x00;
+			PORTD = segments[digit];
+			PORTC = _BV(digit++);
 			if (digit == 4) digit = 0;
 
 			button_sample();
