@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Wed 20 Jun 2012 09:15:53 PM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Tue 15 May 2012 01:18:37 AM MDT
 
 BeginCmp
 TimeStamp = /4FB1C4D9;
@@ -11,7 +11,7 @@ BeginCmp
 TimeStamp = /4FB1C455;
 Reference = C2;
 ValeurCmp = 470pF;
-IdModule  = C2;
+IdModule  = C1;
 EndCmp
 
 BeginCmp
@@ -222,6 +222,20 @@ TimeStamp = /4FE29127;
 Reference = P4;
 ValeurCmp = PWR;
 IdModule  = JACK_ALIM;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FB1E5F0;
+Reference = P5;
+ValeurCmp = CONN_8;
+IdModule  = BB8;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FB20312;
+Reference = P6;
+ValeurCmp = CONN_8;
+IdModule  = BB8;
 EndCmp
 
 BeginCmp

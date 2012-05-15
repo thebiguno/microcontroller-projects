@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 20 Jun 2012 09:21:16 PM MDT
+EESchema Schematic File Version 2  date Tue 15 May 2012 03:30:38 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "21 jun 2012"
+Date "15 may 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,12 +45,86 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 13600 8500 2    60   ~ 0
+GND
+Text Label 13600 8400 2    60   ~ 0
+VCC
+$Comp
+L CONN_8 P6
+U 1 1 4FB20312
+P 13950 8750
+F 0 "P6" V 13900 8750 60  0000 C CNN
+F 1 "PORTC" V 14000 8750 60  0000 C CNN
+	1    13950 8750
+	1    0    0    -1  
+$EndComp
+Text Label 13600 9100 2    60   ~ 0
+C5
+Text Label 13600 9000 2    60   ~ 0
+C4
+Text Label 13600 8900 2    60   ~ 0
+C3
+Text Label 13600 8800 2    60   ~ 0
+C2
+Text Label 13600 8700 2    60   ~ 0
+C1
+Text Label 13600 8600 2    60   ~ 0
+C0
+Text Label 13600 8150 2    60   ~ 0
+D7
+Text Label 13600 8050 2    60   ~ 0
+D6
+Text Label 13600 7950 2    60   ~ 0
+D5
+Text Label 13600 7850 2    60   ~ 0
+D4
+Text Label 13600 7750 2    60   ~ 0
+D3
+Text Label 13600 7650 2    60   ~ 0
+D2
+Text Label 13600 7550 2    60   ~ 0
+RX
+Text Label 13600 7450 2    60   ~ 0
+TX
+$Comp
+L CONN_8 P5
+U 1 1 4FB1E5F0
+P 13950 7800
+F 0 "P5" V 13900 7800 60  0000 C CNN
+F 1 "PORTD" V 14000 7800 60  0000 C CNN
+	1    13950 7800
+	1    0    0    -1  
+$EndComp
+Text Label 9700 9150 0    60   ~ 0
+D7
+Text Label 9700 9050 0    60   ~ 0
+D6
+Text Label 9700 8950 0    60   ~ 0
+D5
+Text Label 9700 8850 0    60   ~ 0
+D4
+Text Label 9700 8750 0    60   ~ 0
+D3
+Text Label 9700 8650 0    60   ~ 0
+D2
+Text Label 9700 8050 0    60   ~ 0
+C5
+Text Label 9700 7950 0    60   ~ 0
+C4
+Text Label 9700 7850 0    60   ~ 0
+C3
+Text Label 9700 7750 0    60   ~ 0
+C2
+Text Label 9700 7650 0    60   ~ 0
+C1
+Text Label 9700 7550 0    60   ~ 0
+C0
 $Comp
 L C C6
 U 1 1 4FE29185
 P 7600 7550
 F 0 "C6" H 7650 7650 50  0000 L CNN
-F 1 "C" H 7650 7450 50  0000 L CNN
+F 1 "0.1uF" H 7650 7450 50  0000 L CNN
 	1    7600 7550
 	0    1    1    0   
 $EndComp
@@ -697,7 +771,7 @@ L ATMEGA8-P IC1
 U 1 1 4FDD1D14
 P 8700 8650
 F 0 "IC1" H 8000 9900 50  0000 L BNN
-F 1 "ATMEGA8-P" H 8950 7250 50  0000 L BNN
+F 1 "AVR" H 8950 7250 50  0000 L BNN
 F 2 "DIL28" H 9200 7175 50  0001 C CNN
 	1    8700 8650
 	1    0    0    -1  
@@ -740,7 +814,7 @@ L CONN_3X2 P1
 U 1 1 4FDD15D5
 P 12550 7550
 F 0 "P1" H 12550 7800 50  0000 C CNN
-F 1 "ISP6" V 12550 7600 40  0000 C CNN
+F 1 "ISP" V 12550 7600 40  0000 C CNN
 	1    12550 7550
 	1    0    0    -1  
 $EndComp
@@ -819,7 +893,7 @@ L INDUCTOR L1
 U 1 1 4FB1BE1A
 P 6150 10050
 F 0 "L1" V 6100 10050 40  0000 C CNN
-F 1 "INDUCTOR" V 6250 10050 40  0000 C CNN
+F 1 "220uH" V 6250 10050 40  0000 C CNN
 	1    6150 10050
 	0    1    1    0   
 $EndComp
