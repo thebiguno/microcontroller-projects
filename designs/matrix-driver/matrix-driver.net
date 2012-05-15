@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Mon 14 May 2012 04:08:42 PM MDT
+# EESchema Netlist Version 1.1 created  Mon 14 May 2012 05:18:34 PM MDT
 (
  ( /4F99F93C $noname  LB1 LE-MM103 {Lib=LE-MM103}
   (    1 N-000157 )
@@ -125,8 +125,8 @@
   (    8 /GND )
   (    9 /DOUTB )
   (   10 /RCLK )
-  (   11 /GRNB7 )
-  (   12 /REDB7 )
+  (   11 /REDB7 )
+  (   12 /GRNB7 )
   (   13 /GRNB3 )
   (   14 /REDB3 )
   (   15 /SRCLK )
@@ -143,8 +143,8 @@
   (    8 /GND )
   (    9 /DOUTD )
   (   10 /RCLK )
-  (   11 /GRND7 )
-  (   12 /REDD7 )
+  (   11 /REDD7 )
+  (   12 /GRND7 )
   (   13 /GRND3 )
   (   14 /REDD3 )
   (   15 /SRCLK )
@@ -389,8 +389,8 @@
   (    8 /GND )
   (    9 /DOUTF )
   (   10 /RCLK )
-  (   11 /GRNF7 )
-  (   12 /REDF7 )
+  (   11 /REDF7 )
+  (   12 /GRNF7 )
   (   13 /GRNF3 )
   (   14 /REDF3 )
   (   15 /SRCLK )
@@ -407,8 +407,8 @@
   (    8 /GND )
   (    9 /DOUTE )
   (   10 /RCLK )
-  (   11 /GRNE7 )
-  (   12 /REDE7 )
+  (   11 /REDE7 )
+  (   12 /GRNE7 )
   (   13 /GRNE3 )
   (   14 /REDE3 )
   (   15 /SRCLK )
@@ -653,8 +653,8 @@
   (    8 /GND )
   (    9 /DOUTC )
   (   10 /RCLK )
-  (   11 /GRNC7 )
-  (   12 /REDC7 )
+  (   11 /REDC7 )
+  (   12 /GRNC7 )
   (   13 /GRNC3 )
   (   14 /REDC3 )
   (   15 /SRCLK )
@@ -687,8 +687,8 @@
   (    8 /GND )
   (    9 /DOUTA )
   (   10 /RCLK )
-  (   11 /GRNA7 )
-  (   12 /REDA7 )
+  (   11 /REDA7 )
+  (   12 /GRNA7 )
   (   13 /GRNA3 )
   (   14 /REDA3 )
   (   15 /SRCLK )
@@ -1467,8 +1467,8 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 1 "" ""
- LE1 23
  R72 1
+ LE1 23
 Net 2 "" ""
  R68 1
  LE1 2
@@ -1479,8 +1479,8 @@ Net 4 "" ""
  LE1 17
  R70 1
 Net 5 "" ""
- LE1 20
  R71 1
+ LE1 20
 Net 6 "" ""
  R67 1
  LE1 5
@@ -1488,23 +1488,23 @@ Net 7 "" ""
  R73 1
  LE1 10
 Net 8 "" ""
- R74 1
  LE1 7
+ R74 1
 Net 9 "" ""
- R75 1
  LE1 4
+ R75 1
 Net 10 "" ""
  LE1 1
  R76 1
 Net 11 "" ""
- R65 1
  LE1 11
+ R65 1
 Net 12 "" ""
- R66 1
  LE1 8
+ R66 1
 Net 13 "/GRNE5" "GRNE5"
- UE1 12
  R76 2
+ UE1 12
 Net 14 "/GRNE4" "GRNE4"
  R77 2
  UE2 3
@@ -1524,29 +1524,29 @@ Net 19 "" ""
  LE1 21
  R79 1
 Net 20 "/GRNE1" "GRNE1"
- R80 2
  UE1 13
+ R80 2
 Net 21 "" ""
  LE1 24
  R80 1
 Net 22 "/REDE3" "REDE3"
  R70 2
  UE2 14
-Net 23 "/REDE7" "REDE7"
- R66 2
+Net 23 "/GRNE7" "GRNE7"
  UE2 12
+ R74 2
 Net 24 "" ""
  LC1 17
  R38 1
 Net 25 "" ""
- LC1 7
  R42 1
+ LC1 7
 Net 26 "" ""
- LC1 10
  R41 1
+ LC1 10
 Net 27 "" ""
- LC1 23
  R40 1
+ LC1 23
 Net 28 "" ""
  LC1 20
  R39 1
@@ -1554,8 +1554,8 @@ Net 29 "" ""
  LC1 4
  R43 1
 Net 30 "" ""
- R37 1
  LC1 14
+ R37 1
 Net 31 "" ""
  R36 1
  LC1 2
@@ -1584,8 +1584,8 @@ Net 39 "/REDC1" "REDC1"
  UC1 14
  R40 2
 Net 40 "" ""
- R48 1
  LC1 24
+ R48 1
 Net 41 "" ""
  LC1 21
  R47 1
@@ -1676,7 +1676,7 @@ Net 59 "/GRNF3" "GRNF3"
  UF2 13
 Net 60 "/GRNF7" "GRNF7"
  R90 2
- UF2 11
+ UF2 12
 Net 61 "/GRNF8" "GRNF8"
  R89 2
  UF2 6
@@ -1684,7 +1684,7 @@ Net 62 "/REDF8" "REDF8"
  R81 2
  UF2 5
 Net 63 "/REDF7" "REDF7"
- UF2 12
+ UF2 11
  R82 2
 Net 64 "/REDF4" "REDF4"
  UF2 4
@@ -1696,8 +1696,8 @@ Net 66 "/REDE5" "REDE5"
  R68 2
  UE1 11
 Net 67 "/REDE8" "REDE8"
- R65 2
  UE2 5
+ R65 2
 Net 68 "/REDE4" "REDE4"
  UE2 4
  R69 2
@@ -1719,81 +1719,81 @@ Net 69 "/GND" "GND"
  UB1 8
  UC2 16
  UB1 16
- UF1 8
- UE2 16
- UE1 16
- UF1 16
  UE2 8
+ UF1 8
+ UE1 16
+ UE2 16
+ UF1 16
  UF2 8
  UE1 8
  UF2 16
 Net 70 "/SRCLK" "SRCLK"
- UF2 15
- UD1 15
- UF1 15
- P4 5
- UD2 15
- UC2 15
- UA1 15
- UE1 15
- UA2 15
- UB2 15
- UB1 15
- UE2 15
  UC1 15
+ UA2 15
+ UF1 15
+ UD1 15
+ UD2 15
+ UF2 15
+ P4 5
+ UC2 15
+ UE1 15
+ UA1 15
+ UB1 15
+ UB2 15
+ UE2 15
 Net 71 "/REDF3" "REDF3"
- R86 2
  UF2 14
+ R86 2
 Net 72 "/GRNE8" "GRNE8"
  UE2 6
  R73 2
 Net 73 "/RCLK" "RCLK"
- UC2 10
- P4 6
  UA2 10
  UB2 10
+ UC2 10
+ P4 6
  UA1 10
  UE2 10
- UC1 10
+ UF1 10
+ UB1 10
+ UD1 10
  UE1 10
  UD2 10
- UB1 10
  UF2 10
- UD1 10
- UF1 10
+ UC1 10
 Net 74 "/GRNE6" "GRNE6"
  R75 2
  UE1 6
 Net 75 "/REDE6" "REDE6"
- UE1 5
  R67 2
+ UE1 5
 Net 76 "/REDE2" "REDE2"
  UE1 4
  R71 2
 Net 77 "/DINE" "DINE"
- INE1 1
  UE1 2
+ INE1 1
 Net 78 "/REDC7" "REDC7"
- UC2 12
+ UC2 11
  R34 2
-Net 79 "/GRNE7" "GRNE7"
+Net 79 "/REDE7" "REDE7"
  UE2 11
- R74 2
+ R66 2
 Net 80 "/DOUTE" "DOUTE"
- UE2 9
  OUTE1 1
+ UE2 9
 Net 81 "/ROW6" "ROW6"
- Q6 2
  P4 2
+ Q6 2
 Net 82 "/ROW5" "ROW5"
- Q5 2
  P4 4
+ Q5 2
 Net 83 "/ROW3" "ROW3"
- P3 6
  Q3 2
+ P3 6
 Net 84 "/ROW7" "ROW7"
- P3 5
  Q7 2
+ P3 5
 Net 85 "/ROW4" "ROW4"
  P3 3
  Q4 2
@@ -1807,8 +1807,8 @@ Net 88 "" ""
  R2 1
  LA1 8
 Net 89 "" ""
- R3 1
  LA1 5
+ R3 1
 Net 90 "" ""
  R11 1
  LA1 4
@@ -1825,17 +1825,17 @@ Net 94 "" ""
  LA1 7
  R10 1
 Net 95 "" ""
- LA1 14
  R5 1
+ LA1 14
 Net 96 "" ""
- LA1 17
  R6 1
+ LA1 17
 Net 97 "" ""
- R14 1
  LA1 18
+ R14 1
 Net 98 "" ""
- LA1 15
  R13 1
+ LA1 15
 Net 99 "" ""
  R16 1
  LA1 24
@@ -1855,23 +1855,23 @@ Net 104 "/GRNA2" "GRNA2"
  UA1 3
  R15 2
 Net 105 "/GRNC2" "GRNC2"
- R47 2
  UC1 3
+ R47 2
 Net 106 "/GRNC4" "GRNC4"
  R45 2
  UC2 3
 Net 107 "/DOUTC" "DOUTC"
- UC2 9
  OUTC1 1
+ UC2 9
 Net 108 "/GRNC5" "GRNC5"
- R44 2
  UC1 12
+ R44 2
 Net 109 "" ""
- UC1 9
  UC2 2
+ UC1 9
 Net 110 "/GRNC6" "GRNC6"
- UC1 6
  R43 2
+ UC1 6
 Net 111 "/GRNC1" "GRNC1"
  UC1 13
  R48 2
@@ -1880,7 +1880,7 @@ Net 112 "/GRNC3" "GRNC3"
  UC2 13
 Net 113 "/GRNC7" "GRNC7"
  R42 2
- UC2 11
+ UC2 12
 Net 114 "/GRNC8" "GRNC8"
  UC2 6
  R41 2
@@ -1900,17 +1900,17 @@ Net 119 "/GRNA5" "GRNA5"
  UA1 12
  R12 2
 Net 120 "/REDA5" "REDA5"
- UA1 11
  R4 2
+ UA1 11
 Net 121 "/DINA" "DINA"
- UA1 2
  INA1 1
+ UA1 2
 Net 122 "/GRNA6" "GRNA6"
  UA1 6
  R11 2
 Net 123 "/REDA6" "REDA6"
- R3 2
  UA1 5
+ R3 2
 Net 124 "/REDA2" "REDA2"
  R7 2
  UA1 4
@@ -1923,11 +1923,11 @@ Net 126 "/REDA3" "REDA3"
 Net 127 "/GRNA3" "GRNA3"
  R14 2
  UA2 13
-Net 128 "/REDA7" "REDA7"
- UA2 12
- R2 2
-Net 129 "/GRNA7" "GRNA7"
+Net 128 "/GRNA7" "GRNA7"
  R10 2
+ UA2 12
+Net 129 "/REDA7" "REDA7"
+ R2 2
  UA2 11
 Net 130 "/DOUTA" "DOUTA"
  UA2 9
@@ -1945,8 +1945,8 @@ Net 134 "" ""
  UA2 2
  UA1 9
 Net 135 "/ROW8" "ROW8"
- Q8 2
  P3 4
+ Q8 2
 Net 136 "" ""
  R19 1
  LB1 5
@@ -1960,14 +1960,14 @@ Net 139 "" ""
  R22 1
  LB1 17
 Net 140 "/REDB4" "REDB4"
- R21 2
  UB2 4
+ R21 2
 Net 141 "" ""
  LB1 14
  R21 1
 Net 142 "/REDB5" "REDB5"
- R20 2
  UB1 11
+ R20 2
 Net 143 "" ""
  LB1 2
  R20 1
@@ -1975,7 +1975,7 @@ Net 144 "" ""
  LB1 23
  R24 1
 Net 145 "/REDB7" "REDB7"
- UB2 12
+ UB2 11
  R18 2
 Net 146 "" ""
  LB1 8
@@ -2005,8 +2005,8 @@ Net 154 "/GRNB3" "GRNB3"
  UB2 13
  R30 2
 Net 155 "/GRNB4" "GRNB4"
- R29 2
  UB2 3
+ R29 2
 Net 156 "" ""
  R29 1
  LB1 15
@@ -2020,7 +2020,7 @@ Net 159 "" ""
  R27 1
  LB1 4
 Net 160 "/GRNB7" "GRNB7"
- UB2 11
+ UB2 12
  R26 2
 Net 161 "" ""
  LB1 7
@@ -2053,35 +2053,35 @@ Net 170 "" ""
  UB1 9
  UB2 2
 Net 171 "/DOUTB" "DOUTB"
- UB2 9
  OUTB1 1
+ UB2 9
 Net 172 "/DINB" "DINB"
- UB1 2
  INB1 1
+ UB1 2
 Net 173 "" ""
- UE2 2
  UE1 9
+ UE2 2
 Net 174 "" ""
- LD1 14
  R53 1
+ LD1 14
 Net 175 "" ""
- R54 1
  LD1 17
+ R54 1
 Net 176 "" ""
  R55 1
  LD1 20
 Net 177 "" ""
- R56 1
  LD1 23
+ R56 1
 Net 178 "" ""
- LD1 10
  R57 1
+ LD1 10
 Net 179 "" ""
- LD1 7
  R58 1
+ LD1 7
 Net 180 "" ""
- R59 1
  LD1 4
+ R59 1
 Net 181 "" ""
  R60 1
  LD1 1
@@ -2089,14 +2089,14 @@ Net 182 "" ""
  LD1 15
  R61 1
 Net 183 "" ""
- R50 1
  LD1 8
+ R50 1
 Net 184 "" ""
  LD1 5
  R51 1
 Net 185 "" ""
- R52 1
  LD1 2
+ R52 1
 Net 186 "" ""
  LD1 18
  R62 1
@@ -2119,43 +2119,43 @@ Net 192 "" ""
  LF1 20
  R87 1
 Net 193 "" ""
- LF1 17
  R86 1
+ LF1 17
 Net 194 "" ""
- LF1 14
  R85 1
+ LF1 14
 Net 195 "" ""
  R84 1
  LF1 2
 Net 196 "" ""
- LF1 5
  R83 1
+ LF1 5
 Net 197 "" ""
  LF1 8
  R82 1
 Net 198 "" ""
- R81 1
  LF1 11
+ R81 1
 Net 199 "/R2" "R2"
+ LF1 19
+ LE1 19
+ LA1 19
+ LB1 19
  LC1 19
  LD1 19
- LF1 19
- LB1 19
- LE1 19
  Q2 3
- LA1 19
 Net 200 "" ""
- R94 1
  LF1 18
+ R94 1
 Net 201 "" ""
- LF1 24
  R96 1
+ LF1 24
 Net 202 "" ""
- LF1 21
  R95 1
+ LF1 21
 Net 203 "" ""
- R93 1
  LF1 15
+ R93 1
 Net 204 "" ""
  R92 1
  LF1 1
@@ -2167,102 +2167,102 @@ Net 206 "" ""
  LF1 7
 Net 207 "/R5" "R5"
  LF1 3
- LE1 3
- LA1 3
  LC1 3
  Q5 3
- LB1 3
+ LA1 3
+ LE1 3
  LD1 3
+ LB1 3
 Net 208 "/R8" "R8"
- LA1 12
  LF1 12
- LB1 12
- LD1 12
- Q8 3
  LE1 12
+ LD1 12
+ LA1 12
+ Q8 3
+ LB1 12
  LC1 12
 Net 209 "/R3" "R3"
- LB1 16
- LD1 16
  LE1 16
- LF1 16
- Q3 3
- LA1 16
+ LB1 16
  LC1 16
+ LD1 16
+ LA1 16
+ Q3 3
+ LF1 16
 Net 210 "/R4" "R4"
- LA1 13
- LE1 13
- LF1 13
- LD1 13
- Q4 3
  LC1 13
+ LA1 13
+ LD1 13
  LB1 13
+ Q4 3
+ LF1 13
+ LE1 13
 Net 211 "/R1" "R1"
- LB1 22
- LA1 22
- Q1 3
- LC1 22
  LE1 22
- LD1 22
  LF1 22
+ LC1 22
+ LA1 22
+ LB1 22
+ LD1 22
+ Q1 3
 Net 212 "/R7" "R7"
- LB1 9
- Q7 3
  LE1 9
+ LB1 9
+ LD1 9
+ Q7 3
+ LA1 9
  LC1 9
  LF1 9
- LD1 9
- LA1 9
 Net 213 "/R6" "R6"
- LB1 6
- LF1 6
- LC1 6
- Q6 3
- LD1 6
  LA1 6
+ LB1 6
+ Q6 3
  LE1 6
+ LC1 6
+ LD1 6
+ LF1 6
 Net 214 "/REDB6" "REDB6"
- R19 2
  UB1 5
+ R19 2
 Net 215 "/REDB2" "REDB2"
  R23 2
  UB1 4
 Net 216 "/GRNB2" "GRNB2"
- R31 2
  UB1 3
+ R31 2
 Net 217 "/REDD1" "REDD1"
  UD1 14
  R56 2
 Net 218 "/GRND5" "GRND5"
- UD1 12
  R60 2
+ UD1 12
 Net 219 "/REDD5" "REDD5"
- R52 2
  UD1 11
+ R52 2
 Net 220 "/GRND6" "GRND6"
  UD1 6
  R59 2
 Net 221 "/REDD6" "REDD6"
- UD1 5
  R51 2
+ UD1 5
 Net 222 "/GRND4" "GRND4"
- UD2 3
  R61 2
-Net 223 "/REDD7" "REDD7"
+ UD2 3
+Net 223 "/GRND7" "GRND7"
  UD2 12
- R50 2
+ R58 2
 Net 224 "/REDD2" "REDD2"
  UD1 4
  R55 2
 Net 225 "/REDD3" "REDD3"
  UD2 14
  R54 2
-Net 226 "/GRND7" "GRND7"
+Net 226 "/REDD7" "REDD7"
+ R50 2
  UD2 11
- R58 2
 Net 227 "/DOUTD" "DOUTD"
- OUTD1 1
  UD2 9
+ OUTD1 1
 Net 228 "/GRND8" "GRND8"
  UD2 6
  R57 2

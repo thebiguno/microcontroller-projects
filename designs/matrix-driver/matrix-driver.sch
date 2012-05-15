@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 14 May 2012 04:38:52 PM MDT
+EESchema Schematic File Version 2  date Mon 14 May 2012 05:18:35 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -30,6 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:matrix-driver-cache
 EELAYER 25  0
 EELAYER END
 $Descr User 17000 11000
@@ -774,9 +775,9 @@ REDB8
 Text Label 2450 5650 0    60   ~ 0
 GRNB8
 Text Label 2450 5750 0    60   ~ 0
-GRNB7
-Text Label 2450 5850 0    60   ~ 0
 REDB7
+Text Label 2450 5850 0    60   ~ 0
+GRNB7
 Text Label 2450 5950 0    60   ~ 0
 GRNB3
 Text Label 2450 6050 0    60   ~ 0
@@ -958,9 +959,9 @@ REDD3
 Text Label 7050 5950 0    60   ~ 0
 GRND3
 Text Label 7050 5850 0    60   ~ 0
-REDD7
-Text Label 7050 5750 0    60   ~ 0
 GRND7
+Text Label 7050 5750 0    60   ~ 0
+REDD7
 Text Label 7050 5650 0    60   ~ 0
 GRND8
 Text Label 7050 5550 0    60   ~ 0
@@ -1380,9 +1381,9 @@ REDF8
 Text Label 11650 5650 0    60   ~ 0
 GRNF8
 Text Label 11650 5750 0    60   ~ 0
-GRNF7
-Text Label 11650 5850 0    60   ~ 0
 REDF7
+Text Label 11650 5850 0    60   ~ 0
+GRNF7
 Text Label 11650 5950 0    60   ~ 0
 GRNF3
 Text Label 11650 6050 0    60   ~ 0
@@ -1564,9 +1565,9 @@ REDE3
 Text Label 11650 2900 0    60   ~ 0
 GRNE3
 Text Label 11650 2800 0    60   ~ 0
-REDE7
-Text Label 11650 2700 0    60   ~ 0
 GRNE7
+Text Label 11650 2700 0    60   ~ 0
+REDE7
 Text Label 11650 2600 0    60   ~ 0
 GRNE8
 Text Label 11650 2500 0    60   ~ 0
@@ -1986,9 +1987,9 @@ REDC8
 Text Label 7050 2600 0    60   ~ 0
 GRNC8
 Text Label 7050 2700 0    60   ~ 0
-GRNC7
-Text Label 7050 2800 0    60   ~ 0
 REDC7
+Text Label 7050 2800 0    60   ~ 0
+GRNC7
 Text Label 7050 2900 0    60   ~ 0
 GRNC3
 Text Label 7050 3000 0    60   ~ 0
@@ -2318,9 +2319,9 @@ REDA3
 Text Label 2450 2900 0    60   ~ 0
 GRNA3
 Text Label 2450 2800 0    60   ~ 0
-REDA7
-Text Label 2450 2700 0    60   ~ 0
 GRNA7
+Text Label 2450 2700 0    60   ~ 0
+REDA7
 Text Label 2450 2600 0    60   ~ 0
 GRNA8
 Text Label 2450 2500 0    60   ~ 0
