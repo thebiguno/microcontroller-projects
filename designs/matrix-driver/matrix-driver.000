@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Mon 14 May 2012 09:58:18 PM MDT
+PCBNEW-BOARD Version 1 date Mon 14 May 2012 10:02:19 PM MDT
 
 # Created by Pcbnew(2011-05-25)-stable
 
@@ -1048,7 +1048,7 @@ $NCLASS
 Name "Default"
 Desc "This is the default net class."
 Clearance 60
-TrackWidth 80
+TrackWidth 100
 ViaDia 240
 ViaDrill 120
 uViaDia 200
@@ -1301,8 +1301,8 @@ $EndNCLASS
 $NCLASS
 Name "Seeed"
 Desc ""
-Clearance 80
-TrackWidth 80
+Clearance 60
+TrackWidth 100
 ViaDia 240
 ViaDrill 120
 uViaDia 200

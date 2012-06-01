@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 14 May 2012 09:02:13 PM MDT
+EESchema Schematic File Version 2  date Thu 31 May 2012 11:23:04 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "15 may 2012"
+Date "1 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,6 +45,16 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 8150 9950 0    60   ~ 0
+GND
+Text Label 7250 7550 2    60   ~ 0
+GND
+Text Label 7250 7650 2    60   ~ 0
+VCC
+Text Label 7250 7750 2    60   ~ 0
+VCC
+Text Label 8150 7050 0    60   ~ 0
+VCC
 Text Label 6450 10050 0    60   ~ 0
 VCC
 Wire Wire Line
