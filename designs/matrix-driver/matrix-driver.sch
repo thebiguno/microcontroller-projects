@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 16 Jun 2012 07:27:16 PM MDT
+EESchema Schematic File Version 2  date Sat 16 Jun 2012 10:27:21 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,23 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+NoConn ~ 10500 8700
+NoConn ~ 10500 8300
+Text Label 10500 8800 2    60   ~ 0
+GND
+Text Label 10500 8600 2    60   ~ 0
+VCC
+$Comp
+L CONN_6 P3
+U 1 1 4FDD5C07
+P 10850 8550
+F 0 "P3" V 10800 8550 60  0000 C CNN
+F 1 "FTDI" V 10900 8550 60  0000 C CNN
+	1    10850 8550
+	1    0    0    -1  
+$EndComp
+Text Label 10500 8400 2    60   ~ 0
+RX
 Text Label 9700 8550 0    60   ~ 0
 TX
 Text Label 9700 8450 0    60   ~ 0
@@ -592,19 +609,8 @@ Wire Wire Line
 	7450 8450 7800 8450
 Wire Wire Line
 	2850 5850 3300 5850
-Text Label 10500 8550 2    60   ~ 0
+Text Label 10500 8500 2    60   ~ 0
 TX
-Text Label 10500 8350 2    60   ~ 0
-RX
-$Comp
-L CONN_2 P3
-U 1 1 4FDD31FB
-P 10850 8450
-F 0 "P3" V 10800 8450 40  0000 C CNN
-F 1 "CONN_2" V 10900 8450 40  0000 C CNN
-	1    10850 8450
-	1    0    0    -1  
-$EndComp
 Text Label 10500 8100 2    60   ~ 0
 GND
 Text Label 10500 7900 2    60   ~ 0
@@ -614,7 +620,7 @@ L CONN_2 P2
 U 1 1 4FDD31C5
 P 10850 8000
 F 0 "P2" V 10800 8000 40  0000 C CNN
-F 1 "CONN_2" V 10900 8000 40  0000 C CNN
+F 1 "PWR" V 10900 8000 40  0000 C CNN
 	1    10850 8000
 	1    0    0    -1  
 $EndComp
@@ -711,7 +717,7 @@ L CONN_3X2 P1
 U 1 1 4FDD15D5
 P 10850 7500
 F 0 "P1" H 10850 7750 50  0000 C CNN
-F 1 "CONN_3X2" V 10850 7550 40  0000 C CNN
+F 1 "ISP6" V 10850 7550 40  0000 C CNN
 	1    10850 7500
 	1    0    0    -1  
 $EndComp
