@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 16 Jun 2012 06:43:17 PM MDT
+EESchema Schematic File Version 2  date Sat 16 Jun 2012 07:27:16 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,10 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 9700 8550 0    60   ~ 0
+TX
+Text Label 9700 8450 0    60   ~ 0
+RX
 Wire Wire Line
 	2300 9950 2800 9950
 Wire Wire Line
@@ -588,6 +592,32 @@ Wire Wire Line
 	7450 8450 7800 8450
 Wire Wire Line
 	2850 5850 3300 5850
+Text Label 10500 8550 2    60   ~ 0
+TX
+Text Label 10500 8350 2    60   ~ 0
+RX
+$Comp
+L CONN_2 P3
+U 1 1 4FDD31FB
+P 10850 8450
+F 0 "P3" V 10800 8450 40  0000 C CNN
+F 1 "CONN_2" V 10900 8450 40  0000 C CNN
+	1    10850 8450
+	1    0    0    -1  
+$EndComp
+Text Label 10500 8100 2    60   ~ 0
+GND
+Text Label 10500 7900 2    60   ~ 0
++25
+$Comp
+L CONN_2 P2
+U 1 1 4FDD31C5
+P 10850 8000
+F 0 "P2" V 10800 8000 40  0000 C CNN
+F 1 "CONN_2" V 10900 8000 40  0000 C CNN
+	1    10850 8000
+	1    0    0    -1  
+$EndComp
 $Comp
 L CONN_1 OUTB2
 U 1 1 4FDD2106
