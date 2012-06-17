@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 16 Jun 2012 10:27:21 PM MDT
+EESchema Schematic File Version 2  date Sat 16 Jun 2012 11:30:26 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -62,9 +62,9 @@ F 1 "FTDI" V 10900 8550 60  0000 C CNN
 $EndComp
 Text Label 10500 8400 2    60   ~ 0
 RX
-Text Label 9700 8550 0    60   ~ 0
-TX
 Text Label 9700 8450 0    60   ~ 0
+TX
+Text Label 9700 8550 0    60   ~ 0
 RX
 Wire Wire Line
 	2300 9950 2800 9950
