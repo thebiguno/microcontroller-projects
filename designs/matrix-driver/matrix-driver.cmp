@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Mon 14 May 2012 09:02:09 PM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Sat 16 Jun 2012 06:20:21 PM MDT
 
 BeginCmp
 TimeStamp = /4FB1C4D9;
@@ -22,6 +22,20 @@ IdModule  = C1V8;
 EndCmp
 
 BeginCmp
+TimeStamp = /4FDD1C5A;
+Reference = C4;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDD1C60;
+Reference = C5;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
 TimeStamp = /4FB1BDF3;
 Reference = D1;
 ValeurCmp = DIODESCH;
@@ -29,7 +43,7 @@ IdModule  = D3;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FB1B0B4;
+TimeStamp = /4FDD1D14;
 Reference = IC1;
 ValeurCmp = ATMEGA8-P;
 IdModule  = DIP-28__300;
@@ -141,6 +155,13 @@ IdModule  = PINTST;
 EndCmp
 
 BeginCmp
+TimeStamp = /4FDD2106;
+Reference = OUTB2;
+ValeurCmp = CONN_1;
+IdModule  = PINTST;
+EndCmp
+
+BeginCmp
 TimeStamp = /4F99F8BE;
 Reference = OUTC1;
 ValeurCmp = CONN_1;
@@ -166,6 +187,13 @@ TimeStamp = /4F99F900;
 Reference = OUTF1;
 ValeurCmp = CONN_1;
 IdModule  = PINTST;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDD15D5;
+Reference = P1;
+ValeurCmp = CONN_3X2;
+IdModule  = pin_array_3x2;
 EndCmp
 
 BeginCmp
@@ -974,6 +1002,13 @@ IdModule  = R1;
 EndCmp
 
 BeginCmp
+TimeStamp = /4FDD1E91;
+Reference = R108;
+ValeurCmp = 1K;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
 TimeStamp = /4FB1BD76;
 Reference = U1;
 ValeurCmp = MC34063A;
@@ -1069,6 +1104,13 @@ TimeStamp = /4FB1B0F1;
 Reference = UROW1;
 ValeurCmp = 74LS595;
 IdModule  = DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDD158D;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = HC-18UV;
 EndCmp
 
 EndListe
