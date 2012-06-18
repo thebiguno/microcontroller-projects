@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sun 17 Jun 2012 11:53:21 PM MDT
+EESchema Schematic File Version 2  date Mon 18 Jun 2012 12:40:59 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -46,7 +46,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 Text Label 5050 2200 0    60   ~ 0
-DGT4
+A0
 Text Label 2650 1900 2    60   ~ 0
 RTS#
 Text Label 7150 4200 0    60   ~ 0
@@ -116,33 +116,33 @@ D3
 Text Label 5050 3500 0    60   ~ 0
 D4
 Text Label 5050 3600 0    60   ~ 0
-D5
+DGT3
 Text Label 5050 3700 0    60   ~ 0
-D6
+DGT2
 Text Label 5050 3800 0    60   ~ 0
-D7
+DGT4
 Text Label 5050 4000 0    60   ~ 0
-D8
+DGT1
 Text Label 5050 4100 0    60   ~ 0
 D9
 Text Label 7300 2600 0    60   ~ 0
 D11'
 Text Label 7800 2400 0    60   ~ 0
-B
-Text Label 7800 2300 0    60   ~ 0
-E
-Text Label 7800 2200 0    60   ~ 0
-D
-Text Label 7800 2100 0    60   ~ 0
-DP
-Text Label 7800 2000 0    60   ~ 0
-C
-Text Label 7800 1900 0    60   ~ 0
-G
-Text Label 7800 1800 0    60   ~ 0
-F
-Text Label 7800 1700 0    60   ~ 0
 A
+Text Label 7800 2300 0    60   ~ 0
+F
+Text Label 7800 2200 0    60   ~ 0
+G
+Text Label 7800 2100 0    60   ~ 0
+C
+Text Label 7800 2000 0    60   ~ 0
+DP
+Text Label 7800 1900 0    60   ~ 0
+D
+Text Label 7800 1800 0    60   ~ 0
+E
+Text Label 7800 1700 0    60   ~ 0
+B
 Text Label 5900 1700 2    60   ~ 0
 MOSI
 Text Label 5900 2300 2    60   ~ 0
@@ -179,11 +179,11 @@ A5
 Text Label 5050 2600 0    60   ~ 0
 A4
 Text Label 5050 2500 0    60   ~ 0
-DGT1
+A3
 Text Label 5050 2400 0    60   ~ 0
-DGT2
+A2
 Text Label 5050 2300 0    60   ~ 0
-DGT3
+A1
 $Comp
 L GND #PWR02
 U 1 1 4FDE3137

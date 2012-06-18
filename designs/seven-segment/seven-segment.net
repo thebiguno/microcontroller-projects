@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Sun 17 Jun 2012 11:53:25 PM MDT
+# EESchema Netlist Version 1.1 created  Mon 18 Jun 2012 12:41:04 AM MDT
 (
  ( /4FDE87BD $noname  P2 CONN_2 {Lib=CONN_2}
   (    1 /+12 )
@@ -11,9 +11,9 @@
  ( /4FDE71B4 $noname  U3 74HC595 {Lib=74HC595}
   (    1 N-000010 )
   (    2 N-000009 )
-  (    3 N-000007 )
+  (    3 N-000008 )
   (    4 N-000006 )
-  (    5 N-000004 )
+  (    5 N-000005 )
   (    6 N-000001 )
   (    7 N-000003 )
   (    8 GND )
@@ -23,7 +23,7 @@
   (   12 /RCK )
   (   13 GND )
   (   14 /MOSI )
-  (   15 N-000030 )
+  (   15 N-000031 )
   (   16 VCC )
  )
  ( /4FDE30FB $noname  C2 C {Lib=C}
@@ -63,36 +63,36 @@
   (    2 /RTS# )
  )
  ( /4FDE2CFA $noname  R9 R {Lib=R}
-  (    1 /B )
+  (    1 /A )
   (    2 N-000003 )
  )
  ( /4FDE2CF6 $noname  R8 R {Lib=R}
-  (    1 /E )
+  (    1 /F )
   (    2 N-000001 )
  )
  ( /4FDE2CAC $noname  R7 R {Lib=R}
-  (    1 /D )
-  (    2 N-000004 )
+  (    1 /G )
+  (    2 N-000005 )
  )
  ( /4FDE2C9F $noname  R6 R {Lib=R}
-  (    1 /DP )
+  (    1 /C )
   (    2 N-000006 )
  )
  ( /4FDE2C95 $noname  R5 R {Lib=R}
-  (    1 /C )
-  (    2 N-000007 )
+  (    1 /DP )
+  (    2 N-000008 )
  )
  ( /4FDE2C8F $noname  R4 R {Lib=R}
-  (    1 /G )
+  (    1 /D )
   (    2 N-000009 )
  )
  ( /4FDE2C85 $noname  R3 R {Lib=R}
-  (    1 /F )
+  (    1 /E )
   (    2 N-000010 )
  )
  ( /4FDE2C3A $noname  R2 R {Lib=R}
-  (    1 /A )
-  (    2 N-000030 )
+  (    1 /B )
+  (    2 N-000031 )
  )
  ( /4FDE2C19 $noname  U2 LCQ-5642TW11 {Lib=LCQ-5642TW11}
   (    1 /E )
@@ -124,10 +124,10 @@
   (    8 GND )
   (    9 N-000014 )
   (   10 N-000015 )
-  (   11 ? )
-  (   12 ? )
-  (   13 ? )
-  (   14 ? )
+  (   11 /DGT3 )
+  (   12 /DGT2 )
+  (   13 /DGT4 )
+  (   14 /DGT1 )
   (   15 ? )
   (   16 ? )
   (   17 /MOSI )
@@ -136,10 +136,10 @@
   (   20 VCC )
   (   21 ? )
   (   22 GND )
-  (   23 /DGT4 )
-  (   24 /DGT3 )
-  (   25 /DGT2 )
-  (   26 /DGT1 )
+  (   23 ? )
+  (   24 ? )
+  (   25 ? )
+  (   26 ? )
   (   27 ? )
   (   28 ? )
  )
@@ -238,83 +238,83 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 1 "" ""
- U3 6
  R8 2
+ U3 6
 Net 2 "" ""
- R1 1
  IC1 1
+ R1 1
 Net 3 "" ""
  U3 7
  R9 2
-Net 4 "" ""
- U3 5
+Net 4 "/G" "G"
+ U2 5
+ R7 1
+Net 5 "" ""
  R7 2
-Net 5 "/DP" "DP"
- U2 3
- R6 1
+ U3 5
 Net 6 "" ""
  R6 2
  U3 4
-Net 7 "" ""
+Net 7 "/DP" "DP"
+ R5 1
+ U2 3
+Net 8 "" ""
  R5 2
  U3 3
-Net 8 "/G" "G"
- U2 5
- R4 1
 Net 9 "" ""
- R4 2
  U3 2
+ R4 2
 Net 10 "" ""
- R3 2
  U3 1
+ R3 2
 Net 11 "/RTS#" "RTS#"
- R1 2
  P1 1
  C3 2
+ R1 2
+Net 13 "/DGT1" "DGT1"
+ IC1 14
+ U2 12
 Net 14 "" ""
- X1 1
- C1 1
  IC1 9
+ C1 1
+ X1 1
 Net 15 "" ""
- C2 1
  IC1 10
  X1 2
-Net 21 "/DGT3" "DGT3"
+ C2 1
+Net 16 "/DGT3" "DGT3"
  U2 8
- IC1 24
-Net 23 "/DGT2" "DGT2"
- IC1 25
+ IC1 11
+Net 18 "/DGT2" "DGT2"
  U2 9
-Net 25 "/DGT1" "DGT1"
- IC1 26
- U2 12
-Net 28 "/SCK" "SCK"
+ IC1 12
+Net 19 "/DGT4" "DGT4"
+ IC1 13
+ U2 6
+Net 29 "/SCK" "SCK"
  IC1 19
  U3 11
-Net 29 "/F" "F"
+Net 30 "/F" "F"
  U2 10
- R3 1
-Net 30 "" ""
- R2 2
- U3 15
-Net 31 "/E" "E"
- U2 1
  R8 1
-Net 32 "/D" "D"
+Net 31 "" ""
+ U3 15
+ R2 2
+Net 32 "/E" "E"
+ U2 1
+ R3 1
+Net 33 "/D" "D"
+ R4 1
  U2 2
- R7 1
-Net 33 "/C" "C"
- R5 1
+Net 34 "/C" "C"
+ R6 1
  U2 4
-Net 34 "/DGT4" "DGT4"
- IC1 23
- U2 6
 Net 35 "/B" "B"
- U2 7
- R9 1
-Net 36 "/A" "A"
- U2 11
  R2 1
+ U2 7
+Net 36 "/A" "A"
+ R9 1
+ U2 11
 Net 37 "/TXD" "TXD"
  IC1 2
  P1 3
@@ -322,35 +322,35 @@ Net 38 "/RXD" "RXD"
  IC1 3
  P1 2
 Net 41 "VCC" "VCC"
+ IC1 7
  IC1 20
  P1 4
- IC1 7
  C5 1
- U1 VO
- U3 10
  C6 1
  C3 1
  U3 16
+ U3 10
+ U1 VO
 Net 42 "GND" "GND"
- P1 6
- C1 2
- IC1 8
- C5 2
  U3 8
  U3 13
+ P1 6
  C4 2
- U1 GND
+ C5 2
+ C1 2
  P2 2
+ U1 GND
  C2 2
  IC1 22
+ IC1 8
  C6 2
 Net 43 "/+12" "+12"
- P2 1
  U1 VI
+ P2 1
  C4 1
 Net 45 "/RCK" "RCK"
- IC1 18
  U3 12
+ IC1 18
 Net 46 "/MOSI" "MOSI"
  U3 14
  IC1 17
