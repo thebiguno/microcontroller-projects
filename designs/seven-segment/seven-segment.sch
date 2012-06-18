@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 18 Jun 2012 01:19:50 AM MDT
+EESchema Schematic File Version 2  date Mon 18 Jun 2012 01:48:22 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,89 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 9250 4500 3    60   ~ 0
+D10
+Text Label 9150 4500 3    60   ~ 0
+D9
+Text Label 9050 4500 3    60   ~ 0
+D4
+$Comp
+L CONN_3 K2
+U 1 1 4FDEDD1B
+P 9150 4150
+F 0 "K2" V 9100 4150 50  0000 C CNN
+F 1 "CONN_3" V 9200 4150 40  0000 C CNN
+	1    9150 4150
+	0    -1   -1   0   
+$EndComp
+Text Label 8250 4500 3    60   ~ 0
++12
+Text Label 8450 4500 3    60   ~ 0
+GND
+$Comp
+L CONN_2 P5
+U 1 1 4FDEDCD7
+P 8350 4150
+F 0 "P5" V 8300 4150 40  0000 C CNN
+F 1 "CONN_2" V 8400 4150 40  0000 C CNN
+	1    8350 4150
+	0    -1   -1   0   
+$EndComp
+Text Label 10500 4550 3    60   ~ 0
+D11'
+Text Label 10400 4550 3    60   ~ 0
+VCC
+Text Label 10300 4550 3    60   ~ 0
+SCK
+Text Label 10200 4550 3    60   ~ 0
+RCK
+Text Label 10100 4550 3    60   ~ 0
+GND
+$Comp
+L CONN_5 P4
+U 1 1 4FDED9B5
+P 10300 4150
+F 0 "P4" V 10250 4150 50  0000 C CNN
+F 1 "CONN_5" V 10350 4150 50  0000 C CNN
+	1    10300 4150
+	0    -1   -1   0   
+$EndComp
+Text Label 9900 4500 3    60   ~ 0
+A0
+Text Label 9800 4500 3    60   ~ 0
+A1
+Text Label 9700 4500 3    60   ~ 0
+A2
+Text Label 9600 4500 3    60   ~ 0
+A3
+Text Label 9500 4500 3    60   ~ 0
+A4
+Text Label 9400 4500 3    60   ~ 0
+A5
+Text Label 8850 4500 3    60   ~ 0
+VCC
+Text Label 8750 4500 3    60   ~ 0
+AREF
+Text Label 8650 4500 3    60   ~ 0
+GND
+$Comp
+L CONN_6 P3
+U 1 1 4FDED930
+P 9650 4150
+F 0 "P3" V 9600 4150 60  0000 C CNN
+F 1 "CONN_6" V 9700 4150 60  0000 C CNN
+	1    9650 4150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CONN_3 K1
+U 1 1 4FDED920
+P 8750 4150
+F 0 "K1" V 8700 4150 50  0000 C CNN
+F 1 "CONN_3" V 8800 4150 40  0000 C CNN
+	1    8750 4150
+	0    -1   -1   0   
+$EndComp
 Wire Wire Line
 	9600 2500 9600 2750
 Connection ~ 9600 2750
@@ -103,9 +186,9 @@ Text Label 2650 1900 2    60   ~ 0
 RTS#
 Text Label 7150 4200 0    60   ~ 0
 VCC
-Text Label 8100 4500 0    60   ~ 0
+Text Label 8100 4500 3    60   ~ 0
 GND
-Text Label 7900 4500 2    60   ~ 0
+Text Label 7900 4500 3    60   ~ 0
 +12
 Text Label 6050 4200 2    60   ~ 0
 +12
@@ -119,10 +202,10 @@ F 1 "CONN_2" V 8050 4150 40  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR01
+L GND #PWR2
 U 1 1 4FDE8148
 P 4050 4850
-F 0 "#PWR01" H 4050 4850 30  0001 C CNN
+F 0 "#PWR2" H 4050 4850 30  0001 C CNN
 F 1 "GND" H 4050 4780 30  0001 C CNN
 	1    4050 4850
 	1    0    0    -1  
@@ -212,10 +295,10 @@ A2
 Text Label 5050 2300 0    60   ~ 0
 A1
 $Comp
-L GND #PWR02
+L GND #PWR1
 U 1 1 4FDE3137
 P 2050 3900
-F 0 "#PWR02" H 2050 3900 30  0001 C CNN
+F 0 "#PWR1" H 2050 3900 30  0001 C CNN
 F 1 "GND" H 2050 3830 30  0001 C CNN
 	1    2050 3900
 	1    0    0    -1  
@@ -293,10 +376,10 @@ F 1 "CONN_6" V 6600 950 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR03
+L GND #PWR3
 U 1 1 4FDE2F8B
 P 6450 4750
-F 0 "#PWR03" H 6450 4750 30  0001 C CNN
+F 0 "#PWR3" H 6450 4750 30  0001 C CNN
 F 1 "GND" H 6450 4680 30  0001 C CNN
 	1    6450 4750
 	1    0    0    -1  
