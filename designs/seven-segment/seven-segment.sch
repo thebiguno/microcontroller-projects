@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sun 17 Jun 2012 08:17:13 PM MDT
+EESchema Schematic File Version 2  date Sun 17 Jun 2012 11:53:21 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,12 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 5050 2200 0    60   ~ 0
+DGT4
+Text Label 2650 1900 2    60   ~ 0
+RTS#
+Text Label 7150 4200 0    60   ~ 0
+VCC
 Text Label 8100 4500 0    60   ~ 0
 GND
 Text Label 7900 4500 2    60   ~ 0
@@ -121,22 +127,22 @@ Text Label 5050 4100 0    60   ~ 0
 D9
 Text Label 7300 2600 0    60   ~ 0
 D11'
-Text Label 7300 2400 0    60   ~ 0
-G
-Text Label 7300 2300 0    60   ~ 0
-F
-Text Label 7300 2200 0    60   ~ 0
-E
-Text Label 7300 2100 0    60   ~ 0
-D
-Text Label 7300 2000 0    60   ~ 0
-C
-Text Label 7300 1900 0    60   ~ 0
+Text Label 7800 2400 0    60   ~ 0
 B
-Text Label 7300 1800 0    60   ~ 0
-A
-Text Label 7300 1700 0    60   ~ 0
+Text Label 7800 2300 0    60   ~ 0
+E
+Text Label 7800 2200 0    60   ~ 0
+D
+Text Label 7800 2100 0    60   ~ 0
 DP
+Text Label 7800 2000 0    60   ~ 0
+C
+Text Label 7800 1900 0    60   ~ 0
+G
+Text Label 7800 1800 0    60   ~ 0
+F
+Text Label 7800 1700 0    60   ~ 0
+A
 Text Label 5900 1700 2    60   ~ 0
 MOSI
 Text Label 5900 2300 2    60   ~ 0
@@ -173,13 +179,11 @@ A5
 Text Label 5050 2600 0    60   ~ 0
 A4
 Text Label 5050 2500 0    60   ~ 0
-DGT4
-Text Label 5050 2400 0    60   ~ 0
-DGT3
-Text Label 5050 2300 0    60   ~ 0
-DGT2
-Text Label 5050 2200 0    60   ~ 0
 DGT1
+Text Label 5050 2400 0    60   ~ 0
+DGT2
+Text Label 5050 2300 0    60   ~ 0
+DGT3
 $Comp
 L GND #PWR02
 U 1 1 4FDE3137
@@ -224,22 +228,22 @@ Text Label 5900 3050 2    60   ~ 0
 DGT2
 Text Label 5900 2950 2    60   ~ 0
 DGT1
-Text Label 7500 3750 0    60   ~ 0
+Text Label 7000 3750 0    60   ~ 0
 DP
-Text Label 7500 3550 0    60   ~ 0
-D
-Text Label 7500 3450 0    60   ~ 0
-F
-Text Label 7500 3350 0    60   ~ 0
-A
-Text Label 7500 3250 0    60   ~ 0
-B
-Text Label 7500 3150 0    60   ~ 0
-C
-Text Label 7500 3050 0    60   ~ 0
-E
-Text Label 7500 2950 0    60   ~ 0
+Text Label 7000 3550 0    60   ~ 0
 G
+Text Label 7000 3450 0    60   ~ 0
+F
+Text Label 7000 3350 0    60   ~ 0
+E
+Text Label 7000 3250 0    60   ~ 0
+D
+Text Label 7000 3150 0    60   ~ 0
+C
+Text Label 7000 3050 0    60   ~ 0
+B
+Text Label 7000 2950 0    60   ~ 0
+A
 Text Label 3150 2400 2    60   ~ 0
 GND
 Text Label 6800 1300 3    60   ~ 0
@@ -317,73 +321,73 @@ TXD
 $Comp
 L R R9
 U 1 1 4FDE2CFA
-P 7250 3750
-F 0 "R9" V 7250 3850 50  0000 C CNN
-F 1 "R" V 7250 3650 50  0000 C CNN
-	1    7250 3750
+P 7550 2400
+F 0 "R9" V 7550 2500 50  0000 C CNN
+F 1 "R" V 7550 2300 50  0000 C CNN
+	1    7550 2400
 	0    1    1    0   
 $EndComp
 $Comp
 L R R8
 U 1 1 4FDE2CF6
-P 7250 3550
-F 0 "R8" V 7250 3650 50  0000 C CNN
-F 1 "R" V 7250 3450 50  0000 C CNN
-	1    7250 3550
+P 7550 2300
+F 0 "R8" V 7550 2400 50  0000 C CNN
+F 1 "R" V 7550 2200 50  0000 C CNN
+	1    7550 2300
 	0    1    1    0   
 $EndComp
 $Comp
 L R R7
 U 1 1 4FDE2CAC
-P 7250 3450
-F 0 "R7" V 7250 3550 50  0000 C CNN
-F 1 "R" V 7250 3350 50  0000 C CNN
-	1    7250 3450
+P 7550 2200
+F 0 "R7" V 7550 2300 50  0000 C CNN
+F 1 "R" V 7550 2100 50  0000 C CNN
+	1    7550 2200
 	0    1    1    0   
 $EndComp
 $Comp
 L R R6
 U 1 1 4FDE2C9F
-P 7250 3350
-F 0 "R6" V 7250 3450 50  0000 C CNN
-F 1 "R" V 7250 3250 50  0000 C CNN
-	1    7250 3350
+P 7550 2100
+F 0 "R6" V 7550 2200 50  0000 C CNN
+F 1 "R" V 7550 2000 50  0000 C CNN
+	1    7550 2100
 	0    1    1    0   
 $EndComp
 $Comp
 L R R5
 U 1 1 4FDE2C95
-P 7250 3250
-F 0 "R5" V 7250 3350 50  0000 C CNN
-F 1 "R" V 7250 3150 50  0000 C CNN
-	1    7250 3250
+P 7550 2000
+F 0 "R5" V 7550 2100 50  0000 C CNN
+F 1 "R" V 7550 1900 50  0000 C CNN
+	1    7550 2000
 	0    1    1    0   
 $EndComp
 $Comp
 L R R4
 U 1 1 4FDE2C8F
-P 7250 3150
-F 0 "R4" V 7250 3250 50  0000 C CNN
-F 1 "R" V 7250 3050 50  0000 C CNN
-	1    7250 3150
+P 7550 1900
+F 0 "R4" V 7550 2000 50  0000 C CNN
+F 1 "R" V 7550 1800 50  0000 C CNN
+	1    7550 1900
 	0    1    1    0   
 $EndComp
 $Comp
 L R R3
 U 1 1 4FDE2C85
-P 7250 3050
-F 0 "R3" V 7250 3150 50  0000 C CNN
-F 1 "R" V 7250 2950 50  0000 C CNN
-	1    7250 3050
+P 7550 1800
+F 0 "R3" V 7550 1900 50  0000 C CNN
+F 1 "R" V 7550 1700 50  0000 C CNN
+	1    7550 1800
 	0    1    1    0   
 $EndComp
 $Comp
 L R R2
 U 1 1 4FDE2C3A
-P 7250 2950
-F 0 "R2" V 7250 3050 50  0000 C CNN
-F 1 "R" V 7250 2850 50  0000 C CNN
-	1    7250 2950
+P 7550 1700
+F 0 "R2" V 7550 1800 50  0000 C CNN
+F 1 "R" V 7550 1600 50  0000 C CNN
+	1    7550 1700
 	0    1    1    0   
 $EndComp
 $Comp
