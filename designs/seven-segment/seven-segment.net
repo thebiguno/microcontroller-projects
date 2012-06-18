@@ -1,5 +1,13 @@
-# EESchema Netlist Version 1.1 created  Mon 18 Jun 2012 12:41:04 AM MDT
+# EESchema Netlist Version 1.1 created  Mon 18 Jun 2012 01:20:04 AM MDT
 (
+ ( /4FDED3D3 $noname  SW2 SW_PUSH {Lib=SW_PUSH}
+  (    1 /BTN1 )
+  (    2 GND )
+ )
+ ( /4FDED3D1 $noname  SW1 SW_PUSH {Lib=SW_PUSH}
+  (    1 /BTN0 )
+  (    2 GND )
+ )
  ( /4FDE87BD $noname  P2 CONN_2 {Lib=CONN_2}
   (    1 /+12 )
   (    2 GND )
@@ -9,13 +17,13 @@
   (    2 /RTS# )
  )
  ( /4FDE71B4 $noname  U3 74HC595 {Lib=74HC595}
-  (    1 N-000010 )
-  (    2 N-000009 )
-  (    3 N-000008 )
-  (    4 N-000006 )
-  (    5 N-000005 )
-  (    6 N-000001 )
-  (    7 N-000003 )
+  (    1 N-000028 )
+  (    2 N-000007 )
+  (    3 N-000006 )
+  (    4 N-000005 )
+  (    5 N-000004 )
+  (    6 N-000003 )
+  (    7 N-000002 )
   (    8 GND )
   (    9 ? )
   (   10 VCC )
@@ -23,20 +31,20 @@
   (   12 /RCK )
   (   13 GND )
   (   14 /MOSI )
-  (   15 N-000031 )
+  (   15 N-000029 )
   (   16 VCC )
  )
  ( /4FDE30FB $noname  C2 C {Lib=C}
-  (    1 N-000015 )
+  (    1 N-000013 )
   (    2 GND )
  )
  ( /4FDE30F7 $noname  C1 C {Lib=C}
-  (    1 N-000014 )
+  (    1 N-000012 )
   (    2 GND )
  )
  ( /4FDE30E6 $noname  X1 CRYSTAL {Lib=CRYSTAL}
-  (    1 N-000014 )
-  (    2 N-000015 )
+  (    1 N-000012 )
+  (    2 N-000013 )
  )
  ( /4FDE2FFC $noname  P1 CONN_6 {Lib=CONN_6}
   (    1 /RTS# )
@@ -59,40 +67,40 @@
   (    2 GND )
  )
  ( /4FDE2EC3 $noname  R1 10K {Lib=R}
-  (    1 N-000002 )
+  (    1 N-000001 )
   (    2 /RTS# )
  )
  ( /4FDE2CFA $noname  R9 R {Lib=R}
   (    1 /A )
-  (    2 N-000003 )
+  (    2 N-000002 )
  )
  ( /4FDE2CF6 $noname  R8 R {Lib=R}
   (    1 /F )
-  (    2 N-000001 )
+  (    2 N-000003 )
  )
  ( /4FDE2CAC $noname  R7 R {Lib=R}
   (    1 /G )
-  (    2 N-000005 )
+  (    2 N-000004 )
  )
  ( /4FDE2C9F $noname  R6 R {Lib=R}
   (    1 /C )
-  (    2 N-000006 )
+  (    2 N-000005 )
  )
  ( /4FDE2C95 $noname  R5 R {Lib=R}
   (    1 /DP )
-  (    2 N-000008 )
+  (    2 N-000006 )
  )
  ( /4FDE2C8F $noname  R4 R {Lib=R}
   (    1 /D )
-  (    2 N-000009 )
+  (    2 N-000007 )
  )
  ( /4FDE2C85 $noname  R3 R {Lib=R}
   (    1 /E )
-  (    2 N-000010 )
+  (    2 N-000028 )
  )
  ( /4FDE2C3A $noname  R2 R {Lib=R}
   (    1 /B )
-  (    2 N-000031 )
+  (    2 N-000029 )
  )
  ( /4FDE2C19 $noname  U2 LCQ-5642TW11 {Lib=LCQ-5642TW11}
   (    1 /E )
@@ -114,16 +122,16 @@
   (   VO VCC )
  )
  ( /4FDE0F4D DIL28  IC1 ATMEGA8-P {Lib=ATMEGA8-P}
-  (    1 N-000002 )
+  (    1 N-000001 )
   (    2 /TXD )
   (    3 /RXD )
-  (    4 ? )
-  (    5 ? )
+  (    4 /BTN0 )
+  (    5 /BTN1 )
   (    6 ? )
   (    7 VCC )
   (    8 GND )
-  (    9 N-000014 )
-  (   10 N-000015 )
+  (    9 N-000012 )
+  (   10 N-000013 )
   (   11 /DGT3 )
   (   12 /DGT2 )
   (   13 /DGT4 )
@@ -238,121 +246,129 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 1 "" ""
- R8 2
- U3 6
-Net 2 "" ""
  IC1 1
  R1 1
-Net 3 "" ""
+Net 2 "" ""
  U3 7
  R9 2
-Net 4 "/G" "G"
- U2 5
- R7 1
-Net 5 "" ""
- R7 2
+Net 3 "" ""
+ R8 2
+ U3 6
+Net 4 "" ""
  U3 5
-Net 6 "" ""
- R6 2
+ R7 2
+Net 5 "" ""
  U3 4
-Net 7 "/DP" "DP"
- R5 1
- U2 3
-Net 8 "" ""
+ R6 2
+Net 6 "" ""
  R5 2
  U3 3
-Net 9 "" ""
- U3 2
+Net 7 "" ""
  R4 2
-Net 10 "" ""
- U3 1
- R3 2
-Net 11 "/RTS#" "RTS#"
- P1 1
+ U3 2
+Net 8 "/RTS#" "RTS#"
  C3 2
+ P1 1
  R1 2
-Net 13 "/DGT1" "DGT1"
- IC1 14
- U2 12
-Net 14 "" ""
+Net 12 "" ""
  IC1 9
- C1 1
  X1 1
-Net 15 "" ""
+ C1 1
+Net 13 "" ""
  IC1 10
  X1 2
  C2 1
-Net 16 "/DGT3" "DGT3"
- U2 8
- IC1 11
-Net 18 "/DGT2" "DGT2"
- U2 9
- IC1 12
-Net 19 "/DGT4" "DGT4"
+Net 15 "/DGT4" "DGT4"
  IC1 13
  U2 6
-Net 29 "/SCK" "SCK"
- IC1 19
+Net 16 "/BTN1" "BTN1"
+ SW2 1
+ IC1 5
+Net 22 "/MOSI" "MOSI"
+ IC1 17
+ U3 14
+Net 24 "/RCK" "RCK"
+ U3 12
+ IC1 18
+Net 26 "/SCK" "SCK"
  U3 11
-Net 30 "/F" "F"
- U2 10
- R8 1
-Net 31 "" ""
+ IC1 19
+Net 27 "/DGT3" "DGT3"
+ U2 8
+ IC1 11
+Net 28 "" ""
+ U3 1
+ R3 2
+Net 29 "" ""
  U3 15
  R2 2
-Net 32 "/E" "E"
+Net 30 "/E" "E"
  U2 1
  R3 1
-Net 33 "/D" "D"
- R4 1
+Net 31 "/D" "D"
  U2 2
-Net 34 "/C" "C"
- R6 1
+ R4 1
+Net 32 "/DP" "DP"
+ U2 3
+ R5 1
+Net 33 "/C" "C"
  U2 4
+ R6 1
+Net 34 "/G" "G"
+ R7 1
+ U2 5
 Net 35 "/B" "B"
- R2 1
  U2 7
-Net 36 "/A" "A"
+ R2 1
+Net 36 "/DGT2" "DGT2"
+ IC1 12
+ U2 9
+Net 37 "/F" "F"
+ R8 1
+ U2 10
+Net 38 "/A" "A"
  R9 1
  U2 11
-Net 37 "/TXD" "TXD"
- IC1 2
+Net 39 "/DGT1" "DGT1"
+ U2 12
+ IC1 14
+Net 40 "/TXD" "TXD"
  P1 3
-Net 38 "/RXD" "RXD"
- IC1 3
+ IC1 2
+Net 41 "/RXD" "RXD"
  P1 2
-Net 41 "VCC" "VCC"
- IC1 7
- IC1 20
- P1 4
- C5 1
- C6 1
- C3 1
- U3 16
- U3 10
- U1 VO
-Net 42 "GND" "GND"
- U3 8
- U3 13
+ IC1 3
+Net 42 "/BTN0" "BTN0"
+ SW1 1
+ IC1 4
+Net 43 "/+12" "+12"
+ U1 VI
+ C4 1
+ P2 1
+Net 44 "GND" "GND"
+ C2 2
+ IC1 22
+ C1 2
+ IC1 8
  P1 6
  C4 2
  C5 2
- C1 2
- P2 2
- U1 GND
- C2 2
- IC1 22
- IC1 8
+ U3 8
  C6 2
-Net 43 "/+12" "+12"
- U1 VI
- P2 1
- C4 1
-Net 45 "/RCK" "RCK"
- U3 12
- IC1 18
-Net 46 "/MOSI" "MOSI"
- U3 14
- IC1 17
+ U3 13
+ SW2 2
+ U1 GND
+ SW1 2
+ P2 2
+Net 45 "VCC" "VCC"
+ U1 VO
+ U3 16
+ C6 1
+ U3 10
+ C5 1
+ IC1 20
+ IC1 7
+ P1 4
+ C3 1
 }
 #End

@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 18 Jun 2012 12:40:59 AM MDT
+EESchema Schematic File Version 2  date Mon 18 Jun 2012 01:19:50 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,27 +45,9 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 5050 2200 0    60   ~ 0
-A0
-Text Label 2650 1900 2    60   ~ 0
-RTS#
-Text Label 7150 4200 0    60   ~ 0
-VCC
-Text Label 8100 4500 0    60   ~ 0
-GND
-Text Label 7900 4500 2    60   ~ 0
-+12
-Text Label 6050 4200 2    60   ~ 0
-+12
-$Comp
-L CONN_2 P2
-U 1 1 4FDE87BD
-P 8000 4150
-F 0 "P2" V 7950 4150 40  0000 C CNN
-F 1 "CONN_2" V 8050 4150 40  0000 C CNN
-	1    8000 4150
-	0    -1   -1   0   
-$EndComp
+Wire Wire Line
+	9600 2500 9600 2750
+Connection ~ 9600 2750
 Wire Wire Line
 	4050 4850 4050 4800
 Wire Wire Line
@@ -91,6 +73,51 @@ Wire Wire Line
 Wire Wire Line
 	2050 3900 2050 2900
 Connection ~ 2050 3500
+Text Label 9000 2750 2    60   ~ 0
+BTN1
+Text Label 9000 2500 2    60   ~ 0
+BTN0
+Text Label 9600 2750 0    60   ~ 0
+GND
+$Comp
+L SW_PUSH SW2
+U 1 1 4FDED3D3
+P 9300 2750
+F 0 "SW2" H 9450 2860 50  0000 C CNN
+F 1 "SW_PUSH" H 9300 2670 50  0000 C CNN
+	1    9300 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L SW_PUSH SW1
+U 1 1 4FDED3D1
+P 9300 2500
+F 0 "SW1" H 9450 2610 50  0000 C CNN
+F 1 "SW_PUSH" H 9300 2420 50  0000 C CNN
+	1    9300 2500
+	1    0    0    -1  
+$EndComp
+Text Label 5050 2200 0    60   ~ 0
+A0
+Text Label 2650 1900 2    60   ~ 0
+RTS#
+Text Label 7150 4200 0    60   ~ 0
+VCC
+Text Label 8100 4500 0    60   ~ 0
+GND
+Text Label 7900 4500 2    60   ~ 0
++12
+Text Label 6050 4200 2    60   ~ 0
++12
+$Comp
+L CONN_2 P2
+U 1 1 4FDE87BD
+P 8000 4150
+F 0 "P2" V 7950 4150 40  0000 C CNN
+F 1 "CONN_2" V 8050 4150 40  0000 C CNN
+	1    8000 4150
+	0    -1   -1   0   
+$EndComp
 $Comp
 L GND #PWR01
 U 1 1 4FDE8148
@@ -110,9 +137,9 @@ F 1 ".1uF" H 2900 1800 50  0000 L CNN
 	0    1    1    0   
 $EndComp
 Text Label 5050 3300 0    60   ~ 0
-D2
+BTN0
 Text Label 5050 3400 0    60   ~ 0
-D3
+BTN1
 Text Label 5050 3500 0    60   ~ 0
 D4
 Text Label 5050 3600 0    60   ~ 0
