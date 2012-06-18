@@ -1,11 +1,11 @@
-# EESchema Netlist Version 1.1 created  Mon 18 Jun 2012 01:48:51 AM MDT
+# EESchema Netlist Version 1.1 created  Mon 18 Jun 2012 02:19:19 AM MDT
 (
  ( /4FDE30F7 C1 C1 C
   ( 1 N-000009 )
   ( 2 GND )
  )
  ( /4FDE30FB C1 C2 C
-  ( 1 N-000039 )
+  ( 1 N-000010 )
   ( 2 GND )
  )
  ( /4FDE72D5 C1 C3 .1uF
@@ -24,6 +24,10 @@
   ( 1 VCC )
   ( 2 GND )
  )
+ ( /4FDEE361 R1 D1 DIODE
+  ( 1 GND )
+  ( 2 VCC )
+ )
  ( /4FDE0F4D DIP-28__300 IC1 ATMEGA8-P
   ( 1 N-000006 )
   ( 2 /TXD )
@@ -34,7 +38,7 @@
   ( 7 VCC )
   ( 8 GND )
   ( 9 N-000009 )
-  ( 10 N-000039 )
+  ( 10 N-000010 )
   ( 11 /DGT3 )
   ( 12 /DGT2 )
   ( 13 /DGT4 )
@@ -101,31 +105,31 @@
  )
  ( /4FDE2C3A R1 R2 R
   ( 1 /B )
-  ( 2 N-000027 )
+  ( 2 N-000028 )
  )
  ( /4FDE2C85 R1 R3 R
   ( 1 /E )
-  ( 2 N-000026 )
+  ( 2 N-000027 )
  )
  ( /4FDE2C8F R1 R4 R
   ( 1 /D )
-  ( 2 N-000025 )
+  ( 2 N-000026 )
  )
  ( /4FDE2C95 R1 R5 R
   ( 1 /DP )
-  ( 2 N-000024 )
+  ( 2 N-000025 )
  )
  ( /4FDE2C9F R1 R6 R
   ( 1 /C )
-  ( 2 N-000023 )
+  ( 2 N-000024 )
  )
  ( /4FDE2CAC R1 R7 R
   ( 1 /G )
-  ( 2 N-000022 )
+  ( 2 N-000023 )
  )
  ( /4FDE2CF6 R1 R8 R
   ( 1 /F )
-  ( 2 N-000021 )
+  ( 2 N-000022 )
  )
  ( /4FDE2CFA R1 R9 R
   ( 1 /A )
@@ -159,12 +163,12 @@
   ( 12 /DGT1 )
  )
  ( /4FDE71B4 DIP-16__300 U3 74HC595
-  ( 1 N-000026 )
-  ( 2 N-000025 )
-  ( 3 N-000024 )
-  ( 4 N-000023 )
-  ( 5 N-000022 )
-  ( 6 N-000021 )
+  ( 1 N-000027 )
+  ( 2 N-000026 )
+  ( 3 N-000025 )
+  ( 4 N-000024 )
+  ( 5 N-000023 )
+  ( 6 N-000022 )
   ( 7 N-000007 )
   ( 8 GND )
   ( 9 /D11' )
@@ -173,12 +177,12 @@
   ( 12 /RCK )
   ( 13 GND )
   ( 14 /MOSI )
-  ( 15 N-000027 )
+  ( 15 N-000028 )
   ( 16 VCC )
  )
  ( /4FDE30E6 HC-18UV X1 CRYSTAL
   ( 1 N-000009 )
-  ( 2 N-000039 )
+  ( 2 N-000010 )
  )
 )
 *
@@ -212,6 +216,10 @@ $component C6
  SM*
  C?
  C1-1
+$endlist
+$component D1
+ D?
+ S*
 $endlist
 $component IC1
  28DIP-ELL600

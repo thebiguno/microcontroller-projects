@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Mon 18 Jun 2012 01:48:51 AM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Mon 18 Jun 2012 02:19:19 AM MDT
 
 BeginCmp
 TimeStamp = /4FDE30F7;
@@ -40,6 +40,13 @@ TimeStamp = /4FDE2F5F;
 Reference = C6;
 ValeurCmp = .1uF;
 IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDEE361;
+Reference = D1;
+ValeurCmp = DIODE;
+IdModule  = R1;
 EndCmp
 
 BeginCmp

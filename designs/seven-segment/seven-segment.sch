@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 18 Jun 2012 01:48:22 AM MDT
+EESchema Schematic File Version 2  date Mon 18 Jun 2012 02:15:11 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,45 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Connection ~ 7150 4600
+Wire Wire Line
+	7500 4600 6050 4600
+Wire Wire Line
+	9600 2500 9600 2750
+Connection ~ 9600 2750
+Wire Wire Line
+	4050 4850 4050 4800
+Wire Wire Line
+	3050 1900 4050 1900
+Wire Wire Line
+	3150 3100 2850 3100
+Wire Wire Line
+	2850 3100 2850 3500
+Wire Wire Line
+	2850 3500 2450 3500
+Wire Wire Line
+	6450 4500 6450 4750
+Connection ~ 6450 4600
+Connection ~ 6850 4600
+Wire Wire Line
+	2650 1900 2650 2200
+Wire Wire Line
+	2450 2900 3150 2900
+Wire Wire Line
+	2050 3900 2050 2900
+Connection ~ 2050 3500
+Wire Wire Line
+	7500 4200 6850 4200
+Connection ~ 7150 4200
+$Comp
+L DIODE D?
+U 1 1 4FDEE361
+P 7500 4400
+F 0 "D?" H 7500 4500 40  0000 C CNN
+F 1 "DIODE" H 7500 4300 40  0000 C CNN
+	1    7500 4400
+	0    -1   -1   0   
+$EndComp
 Text Label 9250 4500 3    60   ~ 0
 D10
 Text Label 9150 4500 3    60   ~ 0
@@ -128,34 +167,6 @@ F 1 "CONN_3" V 8800 4150 40  0000 C CNN
 	1    8750 4150
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	9600 2500 9600 2750
-Connection ~ 9600 2750
-Wire Wire Line
-	4050 4850 4050 4800
-Wire Wire Line
-	3050 1900 4050 1900
-Wire Wire Line
-	3150 3100 2850 3100
-Wire Wire Line
-	2850 3100 2850 3500
-Wire Wire Line
-	2850 3500 2450 3500
-Wire Wire Line
-	6850 4200 7150 4200
-Wire Wire Line
-	6450 4500 6450 4750
-Connection ~ 6450 4600
-Wire Wire Line
-	7150 4600 6050 4600
-Connection ~ 6850 4600
-Wire Wire Line
-	2650 1900 2650 2200
-Wire Wire Line
-	2450 2900 3150 2900
-Wire Wire Line
-	2050 3900 2050 2900
-Connection ~ 2050 3500
 Text Label 9000 2750 2    60   ~ 0
 BTN1
 Text Label 9000 2500 2    60   ~ 0
