@@ -1,0 +1,157 @@
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Sun 17 Jun 2012 08:17:11 PM MDT
+
+BeginCmp
+TimeStamp = /4FDE30F7;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE30FB;
+Reference = C2;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE72D5;
+Reference = C3;
+ValeurCmp = .1uF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2F2D;
+Reference = C4;
+ValeurCmp = 47uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2F33;
+Reference = C5;
+ValeurCmp = 47uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2F5F;
+Reference = C6;
+ValeurCmp = .1uF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE0F4D;
+Reference = IC1;
+ValeurCmp = ATMEGA8-P;
+IdModule  = DIP-28__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2FFC;
+Reference = P1;
+ValeurCmp = CONN_6;
+IdModule  = PIN_ARRAY-6X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE87BD;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = JACK_ALIM;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2EC3;
+Reference = R1;
+ValeurCmp = 10K;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C3A;
+Reference = R2;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C85;
+Reference = R3;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C8F;
+Reference = R4;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C95;
+Reference = R5;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C9F;
+Reference = R6;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2CAC;
+Reference = R7;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2CF6;
+Reference = R8;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2CFA;
+Reference = R9;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE0F7D;
+Reference = U1;
+ValeurCmp = 7805;
+IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE2C19;
+Reference = U2;
+ValeurCmp = LCQ-5642TW11;
+IdModule  = LCQ-5642TW11;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE71B4;
+Reference = U3;
+ValeurCmp = 74HC595;
+IdModule  = DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FDE30E6;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = HC-18UV;
+EndCmp
+
+EndListe

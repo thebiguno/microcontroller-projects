@@ -1,0 +1,238 @@
+# EESchema Netlist Version 1.1 created  Sun 17 Jun 2012 08:17:11 PM MDT
+(
+ ( /4FDE30F7 C1 C1 C
+  ( 1 N-000020 )
+  ( 2 GND )
+ )
+ ( /4FDE30FB C1 C2 C
+  ( 1 N-000021 )
+  ( 2 GND )
+ )
+ ( /4FDE72D5 C1 C3 .1uF
+  ( 1 VCC )
+  ( 2 N-000040 )
+ )
+ ( /4FDE2F2D C1V5 C4 47uF
+  ( 1 /+12 )
+  ( 2 GND )
+ )
+ ( /4FDE2F33 C1V5 C5 47uF
+  ( 1 N-000016 )
+  ( 2 GND )
+ )
+ ( /4FDE2F5F C1 C6 .1uF
+  ( 1 N-000016 )
+  ( 2 GND )
+ )
+ ( /4FDE0F4D DIP-28__300 IC1 ATMEGA8-P
+  ( 1 N-000002 )
+  ( 2 /TXD )
+  ( 3 /RXD )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+  ( 7 VCC )
+  ( 8 GND )
+  ( 9 N-000020 )
+  ( 10 N-000021 )
+  ( 11 ? )
+  ( 12 ? )
+  ( 13 ? )
+  ( 14 ? )
+  ( 15 ? )
+  ( 16 ? )
+  ( 17 /MOSI )
+  ( 18 /RCK )
+  ( 19 /SCK )
+  ( 20 VCC )
+  ( 21 ? )
+  ( 22 GND )
+  ( 23 /DGT1 )
+  ( 24 /DGT2 )
+  ( 25 /DGT3 )
+  ( 26 /DGT4 )
+  ( 27 ? )
+  ( 28 ? )
+ )
+ ( /4FDE2FFC PIN_ARRAY-6X1 P1 CONN_6
+  ( 1 ? )
+  ( 2 /RXD )
+  ( 3 /TXD )
+  ( 4 VCC )
+  ( 5 ? )
+  ( 6 GND )
+ )
+ ( /4FDE87BD JACK_ALIM P2 CONN_2
+  ( 1 /+12 )
+  ( 2 GND )
+ )
+ ( /4FDE2EC3 R1 R1 10K
+  ( 1 N-000002 )
+  ( 2 N-000040 )
+ )
+ ( /4FDE2C3A R1 R2 R
+  ( 1 /G )
+  ( 2 N-000035 )
+ )
+ ( /4FDE2C85 R1 R3 R
+  ( 1 /E )
+  ( 2 N-000012 )
+ )
+ ( /4FDE2C8F R1 R4 R
+  ( 1 /C )
+  ( 2 N-000010 )
+ )
+ ( /4FDE2C95 R1 R5 R
+  ( 1 /B )
+  ( 2 N-000008 )
+ )
+ ( /4FDE2C9F R1 R6 R
+  ( 1 /A )
+  ( 2 N-000006 )
+ )
+ ( /4FDE2CAC R1 R7 R
+  ( 1 /F )
+  ( 2 N-000004 )
+ )
+ ( /4FDE2CF6 R1 R8 R
+  ( 1 /D )
+  ( 2 N-000001 )
+ )
+ ( /4FDE2CFA R1 R9 R
+  ( 1 /DP )
+  ( 2 N-000003 )
+ )
+ ( /4FDE0F7D TO92 U1 7805
+  ( GND GND )
+  ( VI /+12 )
+  ( VO N-000016 )
+ )
+ ( /4FDE2C19 LCQ-5642TW11 U2 LCQ-5642TW11
+  ( 1 N-000006 )
+  ( 2 N-000008 )
+  ( 3 N-000003 )
+  ( 4 N-000010 )
+  ( 5 N-000001 )
+  ( 6 /DGT4 )
+  ( 7 N-000012 )
+  ( 8 /DGT3 )
+  ( 9 /DGT2 )
+  ( 10 N-000004 )
+  ( 11 N-000035 )
+  ( 12 /DGT1 )
+ )
+ ( /4FDE71B4 DIP-16__300 U3 74HC595
+  ( 1 /A )
+  ( 2 /B )
+  ( 3 /C )
+  ( 4 /D )
+  ( 5 /E )
+  ( 6 /F )
+  ( 7 /G )
+  ( 8 GND )
+  ( 9 ? )
+  ( 10 VCC )
+  ( 11 /SCK )
+  ( 12 /RCK )
+  ( 13 GND )
+  ( 14 /MOSI )
+  ( 15 /DP )
+  ( 16 VCC )
+ )
+ ( /4FDE30E6 HC-18UV X1 CRYSTAL
+  ( 1 N-000020 )
+  ( 2 N-000021 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C5
+ SM*
+ C?
+ C1-1
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component IC1
+ 28DIP-ELL600
+ 28dip600
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$endfootprintlist
+}
