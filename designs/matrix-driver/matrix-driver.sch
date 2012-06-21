@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 16 Jun 2012 11:30:26 PM MDT
+EESchema Schematic File Version 2  date Wed 20 Jun 2012 09:21:16 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "17 jun 2012"
+Date "21 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,22 +45,45 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-NoConn ~ 10500 8700
-NoConn ~ 10500 8300
-Text Label 10500 8800 2    60   ~ 0
+$Comp
+L C C6
+U 1 1 4FE29185
+P 7600 7550
+F 0 "C6" H 7650 7650 50  0000 L CNN
+F 1 "C" H 7650 7450 50  0000 L CNN
+	1    7600 7550
+	0    1    1    0   
+$EndComp
+Text Label 12200 8750 2    60   ~ 0
+/RST
+Text Label 12200 8550 2    60   ~ 0
 GND
-Text Label 10500 8600 2    60   ~ 0
+Text Label 12200 8350 2    60   ~ 0
++25
+$Comp
+L CONN_2 P4
+U 1 1 4FE29127
+P 12550 8450
+F 0 "P4" V 12500 8450 40  0000 C CNN
+F 1 "PWR" V 12600 8450 40  0000 C CNN
+	1    12550 8450
+	1    0    0    -1  
+$EndComp
+NoConn ~ 12200 9150
+Text Label 12200 9250 2    60   ~ 0
+GND
+Text Label 12200 9050 2    60   ~ 0
 VCC
 $Comp
 L CONN_6 P3
 U 1 1 4FDD5C07
-P 10850 8550
-F 0 "P3" V 10800 8550 60  0000 C CNN
-F 1 "FTDI" V 10900 8550 60  0000 C CNN
-	1    10850 8550
+P 12550 9000
+F 0 "P3" V 12500 9000 60  0000 C CNN
+F 1 "FTDI" V 12600 9000 60  0000 C CNN
+	1    12550 9000
 	1    0    0    -1  
 $EndComp
-Text Label 10500 8400 2    60   ~ 0
+Text Label 12200 8850 2    60   ~ 0
 RX
 Text Label 9700 8450 0    60   ~ 0
 TX
@@ -609,19 +632,19 @@ Wire Wire Line
 	7450 8450 7800 8450
 Wire Wire Line
 	2850 5850 3300 5850
-Text Label 10500 8500 2    60   ~ 0
+Text Label 12200 8950 2    60   ~ 0
 TX
-Text Label 10500 8100 2    60   ~ 0
+Text Label 12200 8200 2    60   ~ 0
 GND
-Text Label 10500 7900 2    60   ~ 0
+Text Label 12200 8000 2    60   ~ 0
 +25
 $Comp
 L CONN_2 P2
 U 1 1 4FDD31C5
-P 10850 8000
-F 0 "P2" V 10800 8000 40  0000 C CNN
-F 1 "PWR" V 10900 8000 40  0000 C CNN
-	1    10850 8000
+P 12550 8100
+F 0 "P2" V 12500 8100 40  0000 C CNN
+F 1 "PWR" V 12600 8100 40  0000 C CNN
+	1    12550 8100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -649,7 +672,7 @@ Text Label 9700 9550 0    60   ~ 0
 RCLK
 Text Label 7800 7050 0    60   ~ 0
 VCC
-Text Label 7800 7550 2    60   ~ 0
+Text Label 7400 7550 2    60   ~ 0
 /RST
 $Comp
 L R R108
@@ -700,25 +723,25 @@ Text Label 9700 9850 0    60   ~ 0
 SRCLK
 Text Label 9700 9750 0    60   ~ 0
 MISO
-Text Label 11250 7550 0    60   ~ 0
+Text Label 12950 7600 0    60   ~ 0
 GND
-Text Label 11250 7450 0    60   ~ 0
+Text Label 12950 7500 0    60   ~ 0
 MOSI
-Text Label 11250 7350 0    60   ~ 0
+Text Label 12950 7400 0    60   ~ 0
 VCC
-Text Label 10450 7550 2    60   ~ 0
+Text Label 12150 7600 2    60   ~ 0
 /RST
-Text Label 10450 7450 2    60   ~ 0
+Text Label 12150 7500 2    60   ~ 0
 SRCLK
-Text Label 10450 7350 2    60   ~ 0
+Text Label 12150 7400 2    60   ~ 0
 MISO
 $Comp
 L CONN_3X2 P1
 U 1 1 4FDD15D5
-P 10850 7500
-F 0 "P1" H 10850 7750 50  0000 C CNN
-F 1 "ISP6" V 10850 7550 40  0000 C CNN
-	1    10850 7500
+P 12550 7550
+F 0 "P1" H 12550 7800 50  0000 C CNN
+F 1 "ISP6" V 12550 7600 40  0000 C CNN
+	1    12550 7550
 	1    0    0    -1  
 $EndComp
 $Comp
