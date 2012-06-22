@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Tue 15 May 2012 04:11:39 AM MDT
+EESchema Schematic File Version 2  date Fri 22 Jun 2012 01:18:46 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -45,6 +45,17 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L CONN_1 P10
+U 1 1 4FB23144
+P 14800 8350
+F 0 "P10" H 14880 8350 40  0000 L CNN
+F 1 "CONN_1" H 14800 8405 30  0001 C CNN
+	1    14800 8350
+	1    0    0    -1  
+$EndComp
+Text Label 14650 8350 2    60   ~ 0
+GND
 Text Label 14650 8200 2    60   ~ 0
 GND
 Text Label 14650 8050 2    60   ~ 0
@@ -52,28 +63,28 @@ GND
 Text Label 14650 7900 2    60   ~ 0
 GND
 $Comp
-L CONN_1 P?
+L CONN_1 P9
 U 1 1 4FB22BC1
 P 14800 8200
-F 0 "P?" H 14880 8200 40  0000 L CNN
+F 0 "P9" H 14880 8200 40  0000 L CNN
 F 1 "CONN_1" H 14800 8255 30  0001 C CNN
 	1    14800 8200
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_1 P?
+L CONN_1 P8
 U 1 1 4FB22BBB
 P 14800 8050
-F 0 "P?" H 14880 8050 40  0000 L CNN
+F 0 "P8" H 14880 8050 40  0000 L CNN
 F 1 "CONN_1" H 14800 8105 30  0001 C CNN
 	1    14800 8050
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_1 P?
+L CONN_1 P7
 U 1 1 4FB22BAF
 P 14800 7900
-F 0 "P?" H 14880 7900 40  0000 L CNN
+F 0 "P7" H 14880 7900 40  0000 L CNN
 F 1 "CONN_1" H 14800 7955 30  0001 C CNN
 	1    14800 7900
 	1    0    0    -1  
