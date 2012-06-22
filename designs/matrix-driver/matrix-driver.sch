@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 02 May 2012 12:04:17 AM MDT
+EESchema Schematic File Version 2  date Tue 15 May 2012 04:11:39 AM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "2 may 2012"
+Date "15 may 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,6 +45,57 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Label 14650 8200 2    60   ~ 0
+GND
+Text Label 14650 8050 2    60   ~ 0
+GND
+Text Label 14650 7900 2    60   ~ 0
+GND
+$Comp
+L CONN_1 P?
+U 1 1 4FB22BC1
+P 14800 8200
+F 0 "P?" H 14880 8200 40  0000 L CNN
+F 1 "CONN_1" H 14800 8255 30  0001 C CNN
+	1    14800 8200
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P?
+U 1 1 4FB22BBB
+P 14800 8050
+F 0 "P?" H 14880 8050 40  0000 L CNN
+F 1 "CONN_1" H 14800 8105 30  0001 C CNN
+	1    14800 8050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P?
+U 1 1 4FB22BAF
+P 14800 7900
+F 0 "P?" H 14880 7900 40  0000 L CNN
+F 1 "CONN_1" H 14800 7955 30  0001 C CNN
+	1    14800 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 4FB22608
+P 7400 7850
+F 0 "#PWR01" H 7400 7850 30  0001 C CNN
+F 1 "GND" H 7400 7780 30  0001 C CNN
+	1    7400 7850
+	0    1    1    0   
+$EndComp
+$Comp
+L C C7
+U 1 1 4FB225F5
+P 7600 7850
+F 0 "C7" H 7650 7950 50  0000 L CNN
+F 1 "1uF" H 7650 7750 50  0000 L CNN
+	1    7600 7850
+	0    1    1    0   
+$EndComp
 Text Label 13600 8500 2    60   ~ 0
 GND
 Text Label 13600 8400 2    60   ~ 0
@@ -829,8 +880,6 @@ F 1 "CRYSTAL" H 6900 8400 60  0000 C CNN
 $EndComp
 Text Label 8700 10150 3    60   ~ 0
 GND
-Text Label 7800 7850 2    60   ~ 0
-VCC
 Text Label 8700 7250 1    60   ~ 0
 VCC
 Text Label 7800 7950 2    60   ~ 0

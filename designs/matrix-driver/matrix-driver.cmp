@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Wed 02 May 2012 12:17:43 AM MDT
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Tue 15 May 2012 04:35:14 AM MDT
 
 BeginCmp
 TimeStamp = /4FB1C4D9;
@@ -39,6 +39,13 @@ BeginCmp
 TimeStamp = /4FE29185;
 Reference = C6;
 ValeurCmp = 0.1uF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FB225F5;
+Reference = C7;
+ValeurCmp = 1uF;
 IdModule  = C1;
 EndCmp
 
@@ -239,31 +246,31 @@ IdModule  = BB8;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FA0D087;
+TimeStamp = /4FB22BAF;
 Reference = P7;
 ValeurCmp = CONN_1;
-IdModule  = 1pin;
+IdModule  = MOUNT_HOLE;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FA0D094;
+TimeStamp = /4FB22BBB;
 Reference = P8;
 ValeurCmp = CONN_1;
-IdModule  = 1pin;
+IdModule  = MOUNT_HOLE;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FA0D099;
+TimeStamp = /4FB22BC1;
 Reference = P9;
 ValeurCmp = CONN_1;
-IdModule  = 1pin;
+IdModule  = MOUNT_HOLE;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FA0D098;
+TimeStamp = /4FB23144;
 Reference = P10;
 ValeurCmp = CONN_1;
-IdModule  = 1pin;
+IdModule  = MOUNT_HOLE;
 EndCmp
 
 BeginCmp
