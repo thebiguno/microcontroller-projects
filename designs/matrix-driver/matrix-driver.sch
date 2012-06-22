@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Fri 22 Jun 2012 01:18:46 PM MDT
+EESchema Schematic File Version 2  date Fri 22 Jun 2012 02:23:31 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "15 may 2012"
+Date "22 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,6 +45,66 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+$Comp
+L CONN_1 P13
+U 1 1 4FE4CE9D
+P 14650 9500
+F 0 "P13" H 14730 9500 40  0000 L CNN
+F 1 "CONN_1" H 14650 9555 30  0001 C CNN
+	1    14650 9500
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_1 P12
+U 1 1 4FE4CE99
+P 14650 9200
+F 0 "P12" H 14730 9200 40  0000 L CNN
+F 1 "CONN_1" H 14650 9255 30  0001 C CNN
+	1    14650 9200
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_1 P11
+U 1 1 4FE4CE8F
+P 14650 8900
+F 0 "P11" H 14730 8900 40  0000 L CNN
+F 1 "CONN_1" H 14650 8955 30  0001 C CNN
+	1    14650 8900
+	-1   0    0    1   
+$EndComp
+Text Label 15800 9500 0    60   ~ 0
+GND
+Text Label 15800 9200 0    60   ~ 0
+GND
+Text Label 15800 8900 0    60   ~ 0
+GND
+$Comp
+L SPST SW3
+U 1 1 4FE4CA8A
+P 15300 9500
+F 0 "SW3" H 15300 9600 70  0000 C CNN
+F 1 "SPST" H 15300 9400 70  0000 C CNN
+	1    15300 9500
+	1    0    0    -1  
+$EndComp
+$Comp
+L SPST SW2
+U 1 1 4FE4CA84
+P 15300 9200
+F 0 "SW2" H 15300 9300 70  0000 C CNN
+F 1 "SPST" H 15300 9100 70  0000 C CNN
+	1    15300 9200
+	1    0    0    -1  
+$EndComp
+$Comp
+L SPST SW1
+U 1 1 4FE4CA7C
+P 15300 8900
+F 0 "SW1" H 15300 9000 70  0000 C CNN
+F 1 "SPST" H 15300 8800 70  0000 C CNN
+	1    15300 8900
+	1    0    0    -1  
+$EndComp
 $Comp
 L CONN_1 P10
 U 1 1 4FB23144
