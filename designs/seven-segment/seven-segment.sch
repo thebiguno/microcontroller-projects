@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Mon 18 Jun 2012 02:51:33 AM MDT
+EESchema Schematic File Version 2  date Thu 21 Jun 2012 10:06:26 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr A4 11700 8267
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "18 jun 2012"
+Date "22 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -85,9 +85,9 @@ F 1 "DIODE" H 7500 4300 40  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Text Label 9250 4500 3    60   ~ 0
-D10
+B2
 Text Label 9150 4500 3    60   ~ 0
-D9
+B1
 Text Label 9050 4500 3    60   ~ 0
 D4
 $Comp
@@ -132,17 +132,17 @@ F 1 "CONN_5" V 10350 4150 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Text Label 9900 4500 3    60   ~ 0
-A0
+C0
 Text Label 9800 4500 3    60   ~ 0
-A1
+C1
 Text Label 9700 4500 3    60   ~ 0
-A2
+C2
 Text Label 9600 4500 3    60   ~ 0
-A3
+C3
 Text Label 9500 4500 3    60   ~ 0
-A4
+C4
 Text Label 9400 4500 3    60   ~ 0
-A5
+C5
 Text Label 8850 4500 3    60   ~ 0
 VCC
 Text Label 8750 4500 3    60   ~ 0
@@ -192,7 +192,7 @@ F 1 "SW_PUSH" H 9300 2420 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 5050 2200 0    60   ~ 0
-A0
+C0
 Text Label 2650 1900 2    60   ~ 0
 RTS#
 Text Label 7150 4200 0    60   ~ 0
@@ -245,7 +245,7 @@ DGT4
 Text Label 5050 4000 0    60   ~ 0
 DGT1
 Text Label 5050 4100 0    60   ~ 0
-D9
+B1
 Text Label 7300 2600 0    60   ~ 0
 D11'
 Text Label 7800 2400 0    60   ~ 0
@@ -284,7 +284,7 @@ F 1 "74HC595" H 6600 1550 70  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 5050 4200 0    60   ~ 0
-D10
+B2
 Text Label 5050 4300 0    60   ~ 0
 MOSI
 Text Label 5050 4400 0    60   ~ 0
@@ -296,15 +296,15 @@ VCC
 Text Label 3150 2500 2    60   ~ 0
 AREF
 Text Label 5050 2700 0    60   ~ 0
-A5
+C5
 Text Label 5050 2600 0    60   ~ 0
-A4
+C4
 Text Label 5050 2500 0    60   ~ 0
-A3
+C3
 Text Label 5050 2400 0    60   ~ 0
-A2
+C2
 Text Label 5050 2300 0    60   ~ 0
-A1
+C1
 $Comp
 L GND #PWR02
 U 1 1 4FDE3137
