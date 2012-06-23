@@ -52,40 +52,40 @@ void translate(uint8_t red, uint8_t green, uint8_t *data) {
 void set_row(uint8_t r) {
 	switch(r) {
 		case 0: 
-			PORTC = (PORTC & ~C_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(3);
+			PORTC = C_BITMASK;
+			PORTD = D_BITMASK & ~_BV(3);
 			break;
 		case 1:
-			PORTC = (PORTC & ~C_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(2);
+			PORTC = C_BITMASK;
+			PORTD = D_BITMASK & ~_BV(2);
 			break;
 		case 2:
-			PORTC = (PORTC & ~C_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(5);
+			PORTC = C_BITMASK;
+			PORTD = D_BITMASK & ~_BV(5);
 			break;
 		case 3:
-			PORTC = (PORTC & ~C_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK) | _BV(4);
+			PORTC = C_BITMASK;
+			PORTD = D_BITMASK & ~_BV(4);
 			break;
 		case 4:
-			PORTD = (PORTD & ~D_BITMASK);
-			PORTC = (PORTC & ~C_BITMASK) | _BV(0);
+			PORTD = D_BITMASK;
+			PORTC = C_BITMASK & ~_BV(0);
 			break;
 		case 5:
-			PORTD = (PORTD & ~D_BITMASK);
-			PORTC = (PORTC & ~C_BITMASK) | _BV(1);
+			PORTD = D_BITMASK;
+			PORTC = C_BITMASK & ~_BV(1);
 			break;
 		case 6:
-			PORTD = (PORTD & ~D_BITMASK);
-			PORTC = (PORTC & ~C_BITMASK) | _BV(4);
+			PORTD = D_BITMASK;
+			PORTC = C_BITMASK & ~_BV(4);
 			break;
 		case 7:
-			PORTD = (PORTD & ~D_BITMASK);
-			PORTC = (PORTC & ~C_BITMASK) | _BV(5);
+			PORTD = D_BITMASK;
+			PORTC = C_BITMASK & ~_BV(5);
 			break;
 		default:
-			PORTC = (PORTC & ~C_BITMASK);
-			PORTD = (PORTD & ~D_BITMASK);
+			PORTC = C_BITMASK;
+			PORTD = D_BITMASK;
 			break;
 	}
 }
