@@ -111,65 +111,16 @@ void setup() {
   pinMode(A0, INPUT); //Optional trimpot for analog station control
 
   Serial.begin(57600);
-  Serial.println("Test");
+  Serial.println();
 
-  Serial.println("Initializing I2C and Si4703");
-  
-  pinMode(resetPin, OUTPUT);
-  pinMode(SDIO, OUTPUT); //SDIO is connected to A4 for I2C
-  digitalWrite(SDIO, LOW); //A low SDIO indicates a 2-wire interface
-  digitalWrite(resetPin, LOW); //Put Si4703 into reset
+  si4703_init(); //Init the Si4703 - we need to toggle SDIO before Wire.begin takes over.
 
-  Serial.println("1");
-
-  delay(1); //Some delays while we allow pins to settle
-  digitalWrite(resetPin, HIGH); //Bring Si4703 out of reset with SDIO set to low and SEN pulled high with on-board resistor
-  Serial.println("2");
-  delay(1); //Allow Si4703 to come out of reset
-
-  Wire.begin(); //Now that the unit is reset and I2C inteface mode, we need to begin I2C
-  Serial.println("3");
-
-  si4703_readRegisters(); //Read the current register set
-  
-    Serial.println("4");
-
-  //si4703_registers[0x07] = 0xBC04; //Enable the oscillator, from AN230 page 9, rev 0.5 (DOES NOT WORK, wtf Silicon Labs datasheet?)
-  si4703_registers[0x07] = 0x8100; //Enable the oscillator, from AN230 page 9, rev 0.61 (works)
-  si4703_updateRegisters(); //Update
-
-  Serial.println("5");
-
-
-  delay(500); //Wait for clock to settle - from AN230 page 9
-
-  Serial.println("6");
-
-  si4703_readRegisters(); //Read the current register set
-  si4703_registers[POWERCFG] = 0x4001; //Enable the IC
-  //  si4703_registers[POWERCFG] |= (1<<SMUTE) | (1<<DMUTE); //Disable Mute, disable softmute
-  si4703_registers[SYSCONFIG1] |= (1<<RDS); //Enable RDS
-
-#ifdef IN_EUROPE
-    si4703_registers[SYSCONFIG1] |= (1<<DE); //50kHz Europe setup
-  si4703_registers[SYSCONFIG2] |= (1<<SPACE0); //100kHz channel spacing for Europe
-#else
-  si4703_registers[SYSCONFIG2] &= ~(1<<SPACE1 | 1<<SPACE0) ; //Force 200kHz channel spacing for USA
-#endif
-
-  si4703_registers[SYSCONFIG2] &= 0xFFF0; //Clear volume bits
-  si4703_registers[SYSCONFIG2] |= 0x0001; //Set volume to lowest
-  si4703_updateRegisters(); //Update
-
-  delay(110); //Max powerup time, from datasheet page 13
-
-//  si4703_init(); //Init the Si4703 - we need to toggle SDIO before Wire.begin takes over.
 }
 
 void loop() {
   char option;
   char vol = 15;
-  int currentChannel = 973; //Default the unit to a known good local radio station
+  int currentChannel = 977; //Default the unit to a known good local radio station
 
   gotoChannel(currentChannel);
 
@@ -514,9 +465,7 @@ byte seek(byte seekDirection){
 //To get the Si4703 inito 2-wire mode, SEN needs to be high and SDIO needs to be low after a reset
 //The breakout board has SEN pulled high, but also has SDIO pulled high. Therefore, after a normal power up
 //The Si4703 will be in an unknown state. RST must be controlled
-/*
-void si4703_init() {
-  Serial.println("Test2");
+void si4703_init(void) {
   Serial.println("Initializing I2C and Si4703");
   
   pinMode(resetPin, OUTPUT);
@@ -554,7 +503,6 @@ void si4703_init() {
 
   delay(110); //Max powerup time, from datasheet page 13
 }
-*/
 
 //Write the current 9 control registers (0x02 to 0x07) to the Si4703
 //It's a little weird, you don't write an I2C addres
@@ -569,8 +517,8 @@ byte si4703_updateRegisters(void) {
     byte high_byte = si4703_registers[regSpot] >> 8;
     byte low_byte = si4703_registers[regSpot] & 0x00FF;
 
-    Wire.write(high_byte); //Upper 8 bits
-    Wire.write(low_byte); //Lower 8 bits
+    Wire.send(high_byte); //Upper 8 bits
+    Wire.send(low_byte); //Lower 8 bits
   }
 
   //End this transmission
@@ -585,30 +533,21 @@ byte si4703_updateRegisters(void) {
 }
 
 //Read the entire register control set from 0x00 to 0x0F
-void si4703_readRegisters(){
+void si4703_readRegisters(void){
 
-  Serial.println("read reg 1");
-
-  
   //Si4703 begins reading from register upper register of 0x0A and reads to 0x0F, then loops to 0x00.
   Wire.requestFrom(SI4703, 32); //We want to read the entire register set from 0x0A to 0x09 = 32 bytes.
-
-  Serial.println("read reg 2");
 
   while(Wire.available() < 32) ; //Wait for 16 words/32 bytes to come back from slave I2C device
   //We may want some time-out error here
 
-  Serial.println("read reg 3");
-
   //Remember, register 0x0A comes in first so we have to shuffle the array around a bit
   for(int x = 0x0A ; ; x++) { //Read in these 32 bytes
     if(x == 0x10) x = 0; //Loop back to zero
-    si4703_registers[x] = Wire.read() << 8;
-    si4703_registers[x] |= Wire.read();
+    si4703_registers[x] = Wire.receive() << 8;
+    si4703_registers[x] |= Wire.receive();
     if(x == 0x09) break; //We're done!
   }
-  
-  Serial.println("read reg 4");
 }
 
 void si4703_printRegisters(void) {
@@ -621,4 +560,16 @@ void si4703_printRegisters(void) {
     Serial.println(printBuffer);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
