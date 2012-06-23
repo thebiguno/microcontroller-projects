@@ -7,7 +7,7 @@
 #include "../i2c/i2c_master.h"
 #include "../serial/serial.h"
 
-#define SI4703_ADDRESS	0x20
+#define SI4703_ADDRESS	0x10
 
 //Define the register names
 #define DEVICEID 0x00
@@ -68,6 +68,10 @@ namespace digitalcave {
 			 * Initializes the FM tuner player, using the given port / pin for /RST.
 			 */
 			FM(volatile uint8_t *resetPort, uint8_t resetPin);
+			int getChannel();
+			uint16_t seek(uint8_t seekDirection);
+			void setChannel(uint16_t channel);
+			void setVolume(uint8_t volume);
 	};
 }
 
