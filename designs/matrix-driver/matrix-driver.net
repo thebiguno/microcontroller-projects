@@ -1,1085 +1,1067 @@
-# EESchema Netlist Version 1.1 created  Fri 22 Jun 2012 02:00:27 PM MDT
+# EESchema Netlist Version 1.1 created  Sat 23 Jun 2012 07:10:16 PM MDT
 (
- ( /4FB1C4D9 C1V8 C1 100uF
-  ( 1 /+25 )
-  ( 2 GND )
- )
- ( /4FB1C455 C1 C2 470pF
-  ( 1 N-000241 )
-  ( 2 GND )
- )
- ( /4FB1C4EC C1V8 C3 470uF
-  ( 1 VCC )
-  ( 2 GND )
- )
- ( /4FDD1C5A C1 C4 C
-  ( 1 N-000208 )
-  ( 2 GND )
- )
- ( /4FDD1C60 C1 C5 C
-  ( 1 GND )
-  ( 2 N-000196 )
- )
- ( /4FE29185 C1 C6 0.1uF
-  ( 1 N-000203 )
-  ( 2 //RST )
- )
- ( /4FB225F5 C1 C7 1uF
-  ( 1 N-000204 )
-  ( 2 GND )
- )
- ( /4FB1BDF3 D3 D1 DIODESCH
-  ( 1 GND )
-  ( 2 N-000198 )
- )
- ( /4FDD1D14 DIP-28__300 IC1 AVR
-  ( 1 N-000203 )
-  ( 2 /TX )
-  ( 3 /RX )
-  ( 4 /D2 )
-  ( 5 /D3 )
-  ( 6 /D4 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000208 )
-  ( 10 N-000196 )
-  ( 11 /D5 )
-  ( 12 /D6 )
-  ( 13 /D7 )
-  ( 14 ? )
-  ( 15 ? )
-  ( 16 /RCLK )
-  ( 17 /MOSI )
-  ( 18 /MISO )
-  ( 19 /SRCLK )
-  ( 20 VCC )
-  ( 21 N-000204 )
-  ( 22 GND )
-  ( 23 /C0 )
-  ( 24 /C1 )
-  ( 25 /C2 )
-  ( 26 /C3 )
-  ( 27 /C4 )
-  ( 28 /C5 )
- )
- ( /4FA7D58C PINTST INA1 CONN_1
-  ( 1 /DINA )
- )
- ( /4F99F92B PINTST INB1 CONN_1
-  ( 1 /DINB )
- )
- ( /4F99F8BF PINTST INC1 CONN_1
-  ( 1 /DINC )
- )
- ( /4F99F924 PINTST IND1 CONN_1
-  ( 1 /DIND )
- )
- ( /4F99F8F8 PINTST INE1 CONN_1
-  ( 1 /DINE )
- )
- ( /4F99F901 PINTST INF1 CONN_1
-  ( 1 /DINF )
- )
- ( /4FB1BE1A R1 L1 220uH
-  ( 1 VCC )
-  ( 2 N-000198 )
- )
- ( /4FA0A62C LE-MM103 LA1 LE-MM103
-  ( 1 N-000126 )
-  ( 2 N-000125 )
-  ( 3 /R5 )
-  ( 4 N-000140 )
-  ( 5 N-000129 )
-  ( 6 /R6 )
-  ( 7 N-000138 )
-  ( 8 N-000128 )
-  ( 9 /R7 )
-  ( 10 N-000134 )
-  ( 11 N-000127 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000130 )
-  ( 15 N-000136 )
-  ( 16 /R3 )
-  ( 17 N-000131 )
-  ( 18 N-000135 )
-  ( 19 /R2 )
-  ( 20 N-000132 )
-  ( 21 N-000139 )
-  ( 22 /R1 )
-  ( 23 N-000133 )
-  ( 24 N-000137 )
- )
- ( /4F99F93C LE-MM103 LB1 LE-MM103
-  ( 1 N-000228 )
-  ( 2 N-000262 )
-  ( 3 /R5 )
-  ( 4 N-000229 )
-  ( 5 N-000261 )
-  ( 6 /R6 )
-  ( 7 N-000230 )
-  ( 8 N-000256 )
-  ( 9 /R7 )
-  ( 10 N-000238 )
-  ( 11 N-000259 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000257 )
-  ( 15 N-000227 )
-  ( 16 /R3 )
-  ( 17 N-000264 )
-  ( 18 N-000226 )
-  ( 19 /R2 )
-  ( 20 N-000260 )
-  ( 21 N-000225 )
-  ( 22 /R1 )
-  ( 23 N-000258 )
-  ( 24 N-000224 )
- )
- ( /4F99F8D0 LE-MM103 LC1 LE-MM103
-  ( 1 N-000150 )
-  ( 2 N-000157 )
-  ( 3 /R5 )
-  ( 4 N-000151 )
-  ( 5 N-000158 )
-  ( 6 /R6 )
-  ( 7 N-000152 )
-  ( 8 N-000181 )
-  ( 9 /R7 )
-  ( 10 N-000153 )
-  ( 11 N-000183 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000156 )
-  ( 15 N-000149 )
-  ( 16 /R3 )
-  ( 17 N-000155 )
-  ( 18 N-000175 )
-  ( 19 /R2 )
-  ( 20 N-000154 )
-  ( 21 N-000173 )
-  ( 22 /R1 )
-  ( 23 N-000148 )
-  ( 24 N-000171 )
- )
- ( /4F99F913 LE-MM103 LD1 LE-MM103
-  ( 1 N-000057 )
-  ( 2 N-000056 )
-  ( 3 /R5 )
-  ( 4 N-000048 )
-  ( 5 N-000055 )
-  ( 6 /R6 )
-  ( 7 N-000054 )
-  ( 8 N-000053 )
-  ( 9 /R7 )
-  ( 10 N-000052 )
-  ( 11 N-000050 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000071 )
-  ( 15 N-000069 )
-  ( 16 /R3 )
-  ( 17 N-000068 )
-  ( 18 N-000067 )
-  ( 19 /R2 )
-  ( 20 N-000051 )
-  ( 21 N-000049 )
-  ( 22 /R1 )
-  ( 23 N-000072 )
-  ( 24 N-000070 )
- )
- ( /4F99F8E7 LE-MM103 LE1 LE-MM103
-  ( 1 N-000020 )
-  ( 2 N-000029 )
-  ( 3 /R5 )
-  ( 4 N-000019 )
-  ( 5 N-000027 )
-  ( 6 /R6 )
-  ( 7 N-000018 )
-  ( 8 N-000025 )
-  ( 9 /R7 )
-  ( 10 N-000017 )
-  ( 11 N-000030 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000033 )
-  ( 15 N-000015 )
-  ( 16 /R3 )
-  ( 17 N-000035 )
-  ( 18 N-000021 )
-  ( 19 /R2 )
-  ( 20 N-000037 )
-  ( 21 N-000022 )
-  ( 22 /R1 )
-  ( 23 N-000016 )
-  ( 24 N-000023 )
- )
- ( /4F99F912 LE-MM103 LF1 LE-MM103
-  ( 1 N-000066 )
-  ( 2 N-000058 )
-  ( 3 /R5 )
-  ( 4 N-000065 )
-  ( 5 N-000064 )
-  ( 6 /R6 )
-  ( 7 N-000063 )
-  ( 8 N-000062 )
-  ( 9 /R7 )
-  ( 10 N-000061 )
-  ( 11 N-000059 )
-  ( 12 /R8 )
-  ( 13 /R4 )
-  ( 14 N-000093 )
-  ( 15 N-000098 )
-  ( 16 /R3 )
-  ( 17 N-000096 )
-  ( 18 N-000097 )
-  ( 19 /R2 )
-  ( 20 N-000060 )
-  ( 21 N-000084 )
-  ( 22 /R1 )
-  ( 23 N-000100 )
-  ( 24 N-000099 )
- )
- ( /4FA7D599 PINTST OUTA1 CONN_1
-  ( 1 /DOUTA )
- )
- ( /4F99F92A PINTST OUTB1 CONN_1
-  ( 1 /DOUTB )
- )
- ( /4F99F8BE PINTST OUTC1 CONN_1
-  ( 1 /DOUTC )
- )
- ( /4F99F925 PINTST OUTD1 CONN_1
-  ( 1 /DOUTD )
- )
- ( /4F99F8F9 PINTST OUTE1 CONN_1
-  ( 1 /DOUTE )
- )
- ( /4F99F900 PINTST OUTF1 CONN_1
-  ( 1 /DOUTF )
- )
- ( /4FDD2106 PINTST OUTROW1 CONN_1
-  ( 1 N-000194 )
- )
- ( /4FDD15D5 pin_array_3x2 P1 ISP
-  ( 1 /MISO )
-  ( 2 VCC )
-  ( 3 /SRCLK )
-  ( 4 /MOSI )
-  ( 5 //RST )
-  ( 6 GND )
- )
- ( /4FDD31C5 PIN_ARRAY_2X1 P2 PWR
-  ( 1 /+25 )
-  ( 2 GND )
- )
- ( /4FDD5C07 PIN_ARRAY-6X1 P3 FTDI
-  ( 1 //RST )
-  ( 2 /RX )
-  ( 3 /TX )
-  ( 4 VCC )
-  ( 5 ? )
-  ( 6 GND )
- )
- ( /4FE29127 JACK_ALIM P4 PWR
-  ( 1 /+25 )
-  ( 2 GND )
- )
- ( /4FB1E5F0 BB8 P5 PORTD
-  ( 1 /TX )
-  ( 2 /RX )
-  ( 3 /D2 )
-  ( 4 /D3 )
-  ( 5 /D4 )
-  ( 6 /D5 )
-  ( 7 /D6 )
-  ( 8 /D7 )
- )
- ( /4FB20312 BB8 P6 PORTC
-  ( 1 VCC )
-  ( 2 GND )
-  ( 3 /C0 )
-  ( 4 /C1 )
-  ( 5 /C2 )
-  ( 6 /C3 )
-  ( 7 /C4 )
-  ( 8 /C5 )
- )
- ( /4FB22BAF MOUNT_HOLE P7 CONN_1
-  ( 1 GND )
- )
- ( /4FB22BBB MOUNT_HOLE P8 CONN_1
-  ( 1 GND )
- )
- ( /4FB22BC1 MOUNT_HOLE P9 CONN_1
-  ( 1 GND )
- )
- ( /4FB23144 MOUNT_HOLE P10 CONN_1
-  ( 1 GND )
- )
- ( /4FE4CE8F PINTST P11 CONN_1
-  ( 1 N-000205 )
- )
- ( /4FE4CE99 PINTST P12 CONN_1
-  ( 1 N-000206 )
- )
- ( /4FE4CE9D PINTST P13 CONN_1
-  ( 1 N-000207 )
- )
- ( /4FA743FC SIP3-75 Q1 PNP
-  ( 1 VCC )
-  ( 2 /ROW1 )
-  ( 3 /R1 )
- )
- ( /4FA743F2 SIP3-75 Q2 PNP
-  ( 1 VCC )
-  ( 2 /ROW2 )
-  ( 3 /R2 )
- )
- ( /4FA743B2 SIP3-75 Q3 PNP
-  ( 1 VCC )
-  ( 2 /ROW3 )
-  ( 3 /R3 )
- )
- ( /4FA743BC SIP3-75 Q4 PNP
-  ( 1 VCC )
-  ( 2 /ROW4 )
-  ( 3 /R4 )
- )
- ( /4FA743A5 SIP3-75 Q5 PNP
-  ( 1 VCC )
-  ( 2 /ROW5 )
-  ( 3 /R5 )
- )
- ( /4FA74394 SIP3-75 Q6 PNP
-  ( 1 VCC )
-  ( 2 /ROW6 )
-  ( 3 /R6 )
- )
- ( /4FA7437E SIP3-75 Q7 PNP
-  ( 1 VCC )
-  ( 2 /ROW7 )
-  ( 3 /R7 )
- )
- ( /4FA742C5 SIP3-75 Q8 PNP
-  ( 1 VCC )
-  ( 2 /ROW8 )
-  ( 3 /R8 )
- )
- ( /4FA15D08 R1-Mini R1 150
-  ( 1 N-000127 )
-  ( 2 /REDA8 )
- )
- ( /4FA15EA2 R1-Mini R2 150
-  ( 1 N-000128 )
-  ( 2 /REDA7 )
- )
- ( /4FA15EA5 R1-Mini R3 150
-  ( 1 N-000129 )
-  ( 2 /REDA6 )
- )
- ( /4FA15EA7 R1-Mini R4 150
-  ( 1 N-000125 )
-  ( 2 /REDA5 )
- )
- ( /4FA15EAA R1-Mini R5 150
-  ( 1 N-000130 )
-  ( 2 /REDA4 )
- )
- ( /4FA15EAE R1-Mini R6 150
-  ( 1 N-000131 )
-  ( 2 /REDA3 )
- )
- ( /4FA15EB0 R1-Mini R7 150
-  ( 1 N-000132 )
-  ( 2 /REDA2 )
- )
- ( /4FA15EB3 R1-Mini R8 150
-  ( 1 N-000133 )
-  ( 2 /REDA1 )
- )
- ( /4FA15EB6 R1-Mini R9 180
-  ( 1 N-000134 )
-  ( 2 /GRNA8 )
- )
- ( /4FA15ECE R1-Mini R10 180
-  ( 1 N-000138 )
-  ( 2 /GRNA7 )
- )
- ( /4FA15ED1 R1-Mini R11 180
-  ( 1 N-000140 )
-  ( 2 /GRNA6 )
- )
- ( /4FA15ED3 R1-Mini R12 180
-  ( 1 N-000126 )
-  ( 2 /GRNA5 )
- )
- ( /4FA15ED5 R1-Mini R13 180
-  ( 1 N-000136 )
-  ( 2 /GRNA4 )
- )
- ( /4FA15ED7 R1-Mini R14 180
-  ( 1 N-000135 )
-  ( 2 /GRNA3 )
- )
- ( /4FA15ED9 R1-Mini R15 180
-  ( 1 N-000139 )
-  ( 2 /GRNA2 )
- )
- ( /4FA15EE0 R1-Mini R16 180
-  ( 1 N-000137 )
-  ( 2 /GRNA1 )
- )
- ( /4F99F93B R1-Mini R17 150
-  ( 1 N-000259 )
-  ( 2 /REDB8 )
- )
- ( /4F99F93A R1-Mini R18 150
-  ( 1 N-000256 )
-  ( 2 /REDB7 )
- )
- ( /4F99F939 R1-Mini R19 150
-  ( 1 N-000261 )
-  ( 2 /REDB6 )
- )
- ( /4F99F938 R1-Mini R20 150
-  ( 1 N-000262 )
-  ( 2 /REDB5 )
- )
- ( /4F99F937 R1-Mini R21 150
-  ( 1 N-000257 )
-  ( 2 /REDB4 )
- )
- ( /4F99F936 R1-Mini R22 150
-  ( 1 N-000264 )
-  ( 2 /REDB3 )
- )
- ( /4F99F935 R1-Mini R23 150
-  ( 1 N-000260 )
-  ( 2 /REDB2 )
- )
- ( /4F99F934 R1-Mini R24 150
-  ( 1 N-000258 )
-  ( 2 /REDB1 )
- )
- ( /4F99F933 R1-Mini R25 180
-  ( 1 N-000238 )
-  ( 2 /GRNB8 )
- )
- ( /4F99F932 R1-Mini R26 180
-  ( 1 N-000230 )
-  ( 2 /GRNB7 )
- )
- ( /4F99F931 R1-Mini R27 180
-  ( 1 N-000229 )
-  ( 2 /GRNB6 )
- )
- ( /4F99F930 R1-Mini R28 180
-  ( 1 N-000228 )
-  ( 2 /GRNB5 )
- )
- ( /4F99F92F R1-Mini R29 180
-  ( 1 N-000227 )
-  ( 2 /GRNB4 )
- )
- ( /4F99F92E R1-Mini R30 180
-  ( 1 N-000226 )
-  ( 2 /GRNB3 )
- )
- ( /4F99F92D R1-Mini R31 180
-  ( 1 N-000225 )
-  ( 2 /GRNB2 )
- )
- ( /4F99F92C R1-Mini R32 180
-  ( 1 N-000224 )
-  ( 2 /GRNB1 )
- )
- ( /4F99F8CF R1-Mini R33 150
-  ( 1 N-000183 )
-  ( 2 /REDC8 )
- )
- ( /4F99F8CE R1-Mini R34 150
-  ( 1 N-000181 )
-  ( 2 /REDC7 )
- )
- ( /4F99F8CD R1-Mini R35 150
-  ( 1 N-000158 )
-  ( 2 /REDC6 )
- )
- ( /4F99F8CC R1-Mini R36 150
-  ( 1 N-000157 )
-  ( 2 /REDC5 )
- )
- ( /4F99F8CB R1-Mini R37 150
-  ( 1 N-000156 )
-  ( 2 /REDC4 )
- )
- ( /4F99F8CA R1-Mini R38 150
-  ( 1 N-000155 )
-  ( 2 /REDC3 )
- )
- ( /4F99F8C9 R1-Mini R39 150
-  ( 1 N-000154 )
-  ( 2 /REDC2 )
- )
- ( /4F99F8C8 R1-Mini R40 150
-  ( 1 N-000148 )
-  ( 2 /REDC1 )
- )
- ( /4F99F8C7 R1-Mini R41 180
-  ( 1 N-000153 )
-  ( 2 /GRNC8 )
- )
- ( /4F99F8C6 R1-Mini R42 180
-  ( 1 N-000152 )
-  ( 2 /GRNC7 )
- )
- ( /4F99F8C5 R1-Mini R43 180
-  ( 1 N-000151 )
-  ( 2 /GRNC6 )
- )
- ( /4F99F8C4 R1-Mini R44 180
-  ( 1 N-000150 )
-  ( 2 /GRNC5 )
- )
- ( /4F99F8C3 R1-Mini R45 180
-  ( 1 N-000149 )
-  ( 2 /GRNC4 )
- )
- ( /4F99F8C2 R1-Mini R46 180
-  ( 1 N-000175 )
-  ( 2 /GRNC3 )
- )
- ( /4F99F8C1 R1-Mini R47 180
-  ( 1 N-000173 )
-  ( 2 /GRNC2 )
- )
- ( /4F99F8C0 R1-Mini R48 180
-  ( 1 N-000171 )
-  ( 2 /GRNC1 )
- )
- ( /4F99F914 R1-Mini R49 150
-  ( 1 N-000050 )
-  ( 2 /REDD8 )
- )
- ( /4F99F915 R1-Mini R50 150
-  ( 1 N-000053 )
-  ( 2 /REDD7 )
- )
- ( /4F99F916 R1-Mini R51 150
-  ( 1 N-000055 )
-  ( 2 /REDD6 )
- )
- ( /4F99F917 R1-Mini R52 150
-  ( 1 N-000056 )
-  ( 2 /REDD5 )
- )
- ( /4F99F918 R1-Mini R53 150
-  ( 1 N-000071 )
-  ( 2 /REDD4 )
- )
- ( /4F99F919 R1-Mini R54 150
-  ( 1 N-000068 )
-  ( 2 /REDD3 )
- )
- ( /4F99F91A R1-Mini R55 150
-  ( 1 N-000051 )
-  ( 2 /REDD2 )
- )
- ( /4F99F91B R1-Mini R56 150
-  ( 1 N-000072 )
-  ( 2 /REDD1 )
- )
- ( /4F99F91C R1-Mini R57 180
-  ( 1 N-000052 )
-  ( 2 /GRND8 )
- )
- ( /4F99F91D R1-Mini R58 180
-  ( 1 N-000054 )
-  ( 2 /GRND7 )
- )
- ( /4F99F91E R1-Mini R59 180
-  ( 1 N-000048 )
-  ( 2 /GRND6 )
- )
- ( /4F99F91F R1-Mini R60 180
-  ( 1 N-000057 )
-  ( 2 /GRND5 )
- )
- ( /4F99F920 R1-Mini R61 180
-  ( 1 N-000069 )
-  ( 2 /GRND4 )
- )
- ( /4F99F921 R1-Mini R62 180
-  ( 1 N-000067 )
-  ( 2 /GRND3 )
- )
- ( /4F99F922 R1-Mini R63 180
-  ( 1 N-000049 )
-  ( 2 /GRND2 )
- )
- ( /4F99F923 R1-Mini R64 180
-  ( 1 N-000070 )
-  ( 2 /GRND1 )
- )
- ( /4F99F8E8 R1-Mini R65 150
-  ( 1 N-000030 )
-  ( 2 /REDE8 )
- )
- ( /4F99F8E9 R1-Mini R66 150
-  ( 1 N-000025 )
-  ( 2 /REDE7 )
- )
- ( /4F99F8EA R1-Mini R67 150
-  ( 1 N-000027 )
-  ( 2 /REDE6 )
- )
- ( /4F99F8EB R1-Mini R68 150
-  ( 1 N-000029 )
-  ( 2 /REDE5 )
- )
- ( /4F99F8EC R1-Mini R69 150
-  ( 1 N-000033 )
-  ( 2 /REDE4 )
- )
- ( /4F99F8ED R1-Mini R70 150
-  ( 1 N-000035 )
-  ( 2 /REDE3 )
- )
- ( /4F99F8EE R1-Mini R71 150
-  ( 1 N-000037 )
-  ( 2 /REDE2 )
- )
- ( /4F99F8EF R1-Mini R72 150
-  ( 1 N-000016 )
-  ( 2 /REDE1 )
- )
- ( /4F99F8F0 R1-Mini R73 180
-  ( 1 N-000017 )
-  ( 2 /GRNE8 )
- )
- ( /4F99F8F1 R1-Mini R74 180
-  ( 1 N-000018 )
-  ( 2 /GRNE7 )
- )
- ( /4F99F8F2 R1-Mini R75 180
-  ( 1 N-000019 )
-  ( 2 /GRNE6 )
- )
- ( /4F99F8F3 R1-Mini R76 180
-  ( 1 N-000020 )
-  ( 2 /GRNE5 )
- )
- ( /4F99F8F4 R1-Mini R77 180
-  ( 1 N-000015 )
-  ( 2 /GRNE4 )
- )
- ( /4F99F8F5 R1-Mini R78 180
-  ( 1 N-000021 )
-  ( 2 /GRNE3 )
- )
- ( /4F99F8F6 R1-Mini R79 180
-  ( 1 N-000022 )
-  ( 2 /GRNE2 )
- )
- ( /4F99F8F7 R1-Mini R80 180
-  ( 1 N-000023 )
-  ( 2 /GRNE1 )
- )
- ( /4F99F911 R1-Mini R81 150
-  ( 1 N-000059 )
-  ( 2 /REDF8 )
- )
- ( /4F99F910 R1-Mini R82 150
-  ( 1 N-000062 )
-  ( 2 /REDF7 )
- )
- ( /4F99F90F R1-Mini R83 150
-  ( 1 N-000064 )
-  ( 2 /REDF6 )
- )
- ( /4F99F90E R1-Mini R84 150
-  ( 1 N-000058 )
-  ( 2 /REDF5 )
- )
- ( /4F99F90D R1-Mini R85 150
-  ( 1 N-000093 )
-  ( 2 /REDF4 )
- )
- ( /4F99F90C R1-Mini R86 150
-  ( 1 N-000096 )
-  ( 2 /REDF3 )
- )
- ( /4F99F90B R1-Mini R87 150
-  ( 1 N-000060 )
-  ( 2 /REDF2 )
- )
- ( /4F99F90A R1-Mini R88 150
-  ( 1 N-000100 )
-  ( 2 /REDF1 )
- )
- ( /4F99F909 R1-Mini R89 180
-  ( 1 N-000061 )
-  ( 2 /GRNF8 )
- )
- ( /4F99F908 R1-Mini R90 180
-  ( 1 N-000063 )
-  ( 2 /GRNF7 )
- )
- ( /4F99F907 R1-Mini R91 180
-  ( 1 N-000065 )
-  ( 2 /GRNF6 )
- )
- ( /4F99F906 R1-Mini R92 180
-  ( 1 N-000066 )
-  ( 2 /GRNF5 )
- )
- ( /4F99F905 R1-Mini R93 180
-  ( 1 N-000098 )
-  ( 2 /GRNF4 )
- )
- ( /4F99F904 R1-Mini R94 180
-  ( 1 N-000097 )
-  ( 2 /GRNF3 )
- )
- ( /4F99F903 R1-Mini R95 180
-  ( 1 N-000084 )
-  ( 2 /GRNF2 )
- )
- ( /4F99F902 R1-Mini R96 180
-  ( 1 N-000099 )
-  ( 2 /GRNF1 )
- )
- ( /4FB1B380 R1 R97 1k
-  ( 1 /ROW1 )
-  ( 2 N-000263 )
- )
- ( /4FB1B39D R1 R98 1k
-  ( 1 /ROW2 )
-  ( 2 N-000265 )
- )
- ( /4FB1B3A2 R1 R99 1k
-  ( 1 /ROW3 )
-  ( 2 N-000267 )
- )
- ( /4FB1B3A1 R1 R100 1k
-  ( 1 /ROW4 )
-  ( 2 N-000266 )
- )
- ( /4FB1B3AA R1 R101 1k
-  ( 1 /ROW5 )
-  ( 2 N-000271 )
- )
- ( /4FB1B3A9 R1 R102 1k
-  ( 1 /ROW6 )
-  ( 2 N-000270 )
- )
- ( /4FB1B3A7 R1 R103 1k
-  ( 1 /ROW7 )
-  ( 2 N-000268 )
- )
- ( /4FB1B3A8 R1 R104 1k
-  ( 1 /ROW8 )
-  ( 2 N-000269 )
- )
- ( /4FB1BDB8 R1 R105 0.33
-  ( 1 N-000215 )
-  ( 2 /+25 )
- )
- ( /4FB1BE40 R1 R106 3k
-  ( 1 N-000197 )
-  ( 2 VCC )
- )
- ( /4FB1BE3D R1 R107 1k
-  ( 1 GND )
-  ( 2 N-000197 )
- )
- ( /4FDD1E91 R1 R108 1k
-  ( 1 VCC )
-  ( 2 N-000203 )
- )
- ( /4FE4CA7C SW_PUSH_SMALL SW1 SPST
-  ( 1 N-000205 )
-  ( 2 GND )
- )
- ( /4FE4CA84 SW_PUSH_SMALL SW2 SPST
-  ( 1 N-000206 )
-  ( 2 GND )
- )
- ( /4FE4CA8A SW_PUSH_SMALL SW3 SPST
-  ( 1 N-000207 )
-  ( 2 GND )
- )
- ( /4FB1BD76 DIP-8__300 U1 MC34063A
-  ( 1 N-000215 )
-  ( 2 N-000198 )
-  ( 3 N-000241 )
-  ( 4 GND )
-  ( 5 N-000197 )
-  ( 6 /+25 )
-  ( 7 N-000215 )
-  ( 8 N-000215 )
- )
- ( /4FA7D62A DIP-16__300 UA1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DINA )
-  ( 3 /GRNA2 )
-  ( 4 /REDA2 )
-  ( 5 /REDA6 )
-  ( 6 /GRNA6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000186 )
-  ( 10 /RCLK )
-  ( 11 /REDA5 )
-  ( 12 /GRNA5 )
-  ( 13 /GRNA1 )
-  ( 14 /REDA1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4FA7D62E DIP-16__300 UA2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000186 )
-  ( 3 /GRNA4 )
-  ( 4 /REDA4 )
-  ( 5 /REDA8 )
-  ( 6 /GRNA8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTA )
-  ( 10 /RCLK )
-  ( 11 /REDA7 )
-  ( 12 /GRNA7 )
-  ( 13 /GRNA3 )
-  ( 14 /REDA3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F929 DIP-16__300 UB1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DINB )
-  ( 3 /GRNB2 )
-  ( 4 /REDB2 )
-  ( 5 /REDB6 )
-  ( 6 /GRNB6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000214 )
-  ( 10 /RCLK )
-  ( 11 /REDB5 )
-  ( 12 /GRNB5 )
-  ( 13 /GRNB1 )
-  ( 14 /REDB1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F928 DIP-16__300 UB2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000214 )
-  ( 3 /GRNB4 )
-  ( 4 /REDB4 )
-  ( 5 /REDB8 )
-  ( 6 /GRNB8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTB )
-  ( 10 /RCLK )
-  ( 11 /REDB7 )
-  ( 12 /GRNB7 )
-  ( 13 /GRNB3 )
-  ( 14 /REDB3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8BD DIP-16__300 UC1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DINC )
-  ( 3 /GRNC2 )
-  ( 4 /REDC2 )
-  ( 5 /REDC6 )
-  ( 6 /GRNC6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000185 )
-  ( 10 /RCLK )
-  ( 11 /REDC5 )
-  ( 12 /GRNC5 )
-  ( 13 /GRNC1 )
-  ( 14 /REDC1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8BC DIP-16__300 UC2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000185 )
-  ( 3 /GRNC4 )
-  ( 4 /REDC4 )
-  ( 5 /REDC8 )
-  ( 6 /GRNC8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTC )
-  ( 10 /RCLK )
-  ( 11 /REDC7 )
-  ( 12 /GRNC7 )
-  ( 13 /GRNC3 )
-  ( 14 /REDC3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F926 DIP-16__300 UD1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DIND )
-  ( 3 /GRND2 )
-  ( 4 /REDD2 )
-  ( 5 /REDD6 )
-  ( 6 /GRND6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000212 )
-  ( 10 /RCLK )
-  ( 11 /REDD5 )
-  ( 12 /GRND5 )
-  ( 13 /GRND1 )
-  ( 14 /REDD1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F927 DIP-16__300 UD2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000212 )
-  ( 3 /GRND4 )
-  ( 4 /REDD4 )
-  ( 5 /REDD8 )
-  ( 6 /GRND8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTD )
-  ( 10 /RCLK )
-  ( 11 /REDD7 )
-  ( 12 /GRND7 )
-  ( 13 /GRND3 )
-  ( 14 /REDD3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8FA DIP-16__300 UE1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DINE )
-  ( 3 /GRNE2 )
-  ( 4 /REDE2 )
-  ( 5 /REDE6 )
-  ( 6 /GRNE6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000007 )
-  ( 10 /RCLK )
-  ( 11 /REDE5 )
-  ( 12 /GRNE5 )
-  ( 13 /GRNE1 )
-  ( 14 /REDE1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8FB DIP-16__300 UE2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000007 )
-  ( 3 /GRNE4 )
-  ( 4 /REDE4 )
-  ( 5 /REDE8 )
-  ( 6 /GRNE8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTE )
-  ( 10 /RCLK )
-  ( 11 /REDE7 )
-  ( 12 /GRNE7 )
-  ( 13 /GRNE3 )
-  ( 14 /REDE3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8FF DIP-16__300 UF1 STPIC6D595
-  ( 1 VCC )
-  ( 2 /DINF )
-  ( 3 /GRNF2 )
-  ( 4 /REDF2 )
-  ( 5 /REDF6 )
-  ( 6 /GRNF6 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 N-000014 )
-  ( 10 /RCLK )
-  ( 11 /REDF5 )
-  ( 12 /GRNF5 )
-  ( 13 /GRNF1 )
-  ( 14 /REDF1 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4F99F8FE DIP-16__300 UF2 STPIC6D595
-  ( 1 VCC )
-  ( 2 N-000014 )
-  ( 3 /GRNF4 )
-  ( 4 /REDF4 )
-  ( 5 /REDF8 )
-  ( 6 /GRNF8 )
-  ( 7 VCC )
-  ( 8 GND )
-  ( 9 /DOUTF )
-  ( 10 /RCLK )
-  ( 11 /REDF7 )
-  ( 12 /GRNF7 )
-  ( 13 /GRNF3 )
-  ( 14 /REDF3 )
-  ( 15 /SRCLK )
-  ( 16 GND )
- )
- ( /4FB1B0F1 DIP-16__300 UROW1 74LS595
-  ( 1 N-000265 )
-  ( 2 N-000267 )
-  ( 3 N-000266 )
-  ( 4 N-000271 )
-  ( 5 N-000270 )
-  ( 6 N-000268 )
-  ( 7 N-000269 )
-  ( 8 GND )
-  ( 9 N-000194 )
-  ( 10 VCC )
-  ( 11 /SRCLK )
-  ( 12 /RCLK )
-  ( 13 GND )
-  ( 14 /MOSI )
-  ( 15 N-000263 )
-  ( 16 VCC )
- )
- ( /4FDD158D HC-18UV X1 CRYSTAL
-  ( 1 N-000196 )
-  ( 2 N-000208 )
+ ( /4FE4CE9D $noname  P13 CONN_1 {Lib=CONN_1}
+  (    1 N-000207 )
+ )
+ ( /4FE4CE99 $noname  P12 CONN_1 {Lib=CONN_1}
+  (    1 N-000206 )
+ )
+ ( /4FE4CE8F $noname  P11 CONN_1 {Lib=CONN_1}
+  (    1 N-000205 )
+ )
+ ( /4FE4CA8A $noname  SW3 SPST {Lib=SPST}
+  (    1 N-000207 )
+  (    2 GND )
+ )
+ ( /4FE4CA84 $noname  SW2 SPST {Lib=SPST}
+  (    1 N-000206 )
+  (    2 GND )
+ )
+ ( /4FE4CA7C $noname  SW1 SPST {Lib=SPST}
+  (    1 N-000205 )
+  (    2 GND )
+ )
+ ( /4FB23144 $noname  P10 CONN_1 {Lib=CONN_1}
+  (    1 GND )
+ )
+ ( /4FB22BC1 $noname  P9 CONN_1 {Lib=CONN_1}
+  (    1 GND )
+ )
+ ( /4FB22BBB $noname  P8 CONN_1 {Lib=CONN_1}
+  (    1 GND )
+ )
+ ( /4FB22BAF $noname  P7 CONN_1 {Lib=CONN_1}
+  (    1 GND )
+ )
+ ( /4FB225F5 $noname  C7 1uF {Lib=C}
+  (    1 N-000204 )
+  (    2 GND )
+ )
+ ( /4FB20312 $noname  P6 PORTC {Lib=CONN_8}
+  (    1 VCC )
+  (    2 GND )
+  (    3 /C0 )
+  (    4 /C1 )
+  (    5 /C2 )
+  (    6 /C3 )
+  (    7 /C4 )
+  (    8 /C5 )
+ )
+ ( /4FB1E5F0 $noname  P5 PORTD {Lib=CONN_8}
+  (    1 /TX )
+  (    2 /RX )
+  (    3 /D2 )
+  (    4 /D3 )
+  (    5 /D4 )
+  (    6 /D5 )
+  (    7 /D6 )
+  (    8 /D7 )
+ )
+ ( /4FE29185 $noname  C6 0.1uF {Lib=C}
+  (    1 N-000203 )
+  (    2 //RST )
+ )
+ ( /4FE29127 $noname  P4 PWR {Lib=CONN_2}
+  (    1 /+25 )
+  (    2 GND )
+ )
+ ( /4FDD5C07 $noname  P3 FTDI {Lib=CONN_6}
+  (    1 //RST )
+  (    2 /RX )
+  (    3 /TX )
+  (    4 VCC )
+  (    5 ? )
+  (    6 GND )
+ )
+ ( /4FDD31C5 $noname  P2 PWR {Lib=CONN_2}
+  (    1 /+25 )
+  (    2 GND )
+ )
+ ( /4FDD2106 $noname  OUTROW1 CONN_1 {Lib=CONN_1}
+  (    1 N-000194 )
+ )
+ ( /4FDD1E91 $noname  R108 1k {Lib=R}
+  (    1 VCC )
+  (    2 N-000203 )
+ )
+ ( /4FDD1C60 $noname  C5 C {Lib=C}
+  (    1 GND )
+  (    2 N-000196 )
+ )
+ ( /4FDD1D14 DIL28  IC1 AVR {Lib=ATMEGA8-P}
+  (    1 N-000203 )
+  (    2 /TX )
+  (    3 /RX )
+  (    4 /D2 )
+  (    5 /D3 )
+  (    6 /D4 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000208 )
+  (   10 N-000196 )
+  (   11 /D5 )
+  (   12 /D6 )
+  (   13 /D7 )
+  (   14 ? )
+  (   15 ? )
+  (   16 /RCLK )
+  (   17 /MOSI )
+  (   18 /MISO )
+  (   19 /SRCLK )
+  (   20 VCC )
+  (   21 N-000204 )
+  (   22 GND )
+  (   23 /C0 )
+  (   24 /C1 )
+  (   25 /C2 )
+  (   26 /C3 )
+  (   27 /C4 )
+  (   28 /C5 )
+ )
+ ( /4FDD1C5A $noname  C4 C {Lib=C}
+  (    1 N-000208 )
+  (    2 GND )
+ )
+ ( /4FDD15D5 $noname  P1 ISP {Lib=CONN_3X2}
+  (    1 /MISO )
+  (    2 VCC )
+  (    3 /SRCLK )
+  (    4 /MOSI )
+  (    5 //RST )
+  (    6 GND )
+ )
+ ( /4FDD158D $noname  X1 CRYSTAL {Lib=CRYSTAL}
+  (    1 N-000196 )
+  (    2 N-000208 )
+ )
+ ( /4FB1C4EC $noname  C3 470uF {Lib=CP1}
+  (    1 VCC )
+  (    2 GND )
+ )
+ ( /4FB1C4D9 $noname  C1 100uF {Lib=CP1}
+  (    1 /+25 )
+  (    2 GND )
+ )
+ ( /4FB1C455 $noname  C2 470pF {Lib=C}
+  (    1 N-000241 )
+  (    2 GND )
+ )
+ ( /4FB1BE40 $noname  R106 3k {Lib=R}
+  (    1 N-000197 )
+  (    2 VCC )
+ )
+ ( /4FB1BE3D $noname  R107 1k {Lib=R}
+  (    1 GND )
+  (    2 N-000197 )
+ )
+ ( /4FB1BE1A $noname  L1 220uH {Lib=INDUCTOR}
+  (    1 VCC )
+  (    2 N-000198 )
+ )
+ ( /4FB1BDF3 $noname  D1 1N5819 {Lib=DIODESCH}
+  (    1 GND )
+  (    2 N-000198 )
+ )
+ ( /4FB1BDB8 $noname  R105 0.33 {Lib=R}
+  (    1 N-000215 )
+  (    2 /+25 )
+ )
+ ( /4FB1BD76 $noname  U1 MC34063A {Lib=MC34063A}
+  (    1 N-000215 )
+  (    2 N-000198 )
+  (    3 N-000241 )
+  (    4 GND )
+  (    5 N-000197 )
+  (    6 /+25 )
+  (    7 N-000215 )
+  (    8 N-000215 )
+ )
+ ( /4FB1B3AA $noname  R101 1k {Lib=R}
+  (    1 /ROW5 )
+  (    2 N-000271 )
+ )
+ ( /4FB1B3A9 $noname  R102 1k {Lib=R}
+  (    1 /ROW6 )
+  (    2 N-000270 )
+ )
+ ( /4FB1B3A8 $noname  R104 1k {Lib=R}
+  (    1 /ROW8 )
+  (    2 N-000269 )
+ )
+ ( /4FB1B3A7 $noname  R103 1k {Lib=R}
+  (    1 /ROW7 )
+  (    2 N-000268 )
+ )
+ ( /4FB1B3A2 $noname  R99 1k {Lib=R}
+  (    1 /ROW3 )
+  (    2 N-000267 )
+ )
+ ( /4FB1B3A1 $noname  R100 1k {Lib=R}
+  (    1 /ROW4 )
+  (    2 N-000266 )
+ )
+ ( /4FB1B39D $noname  R98 1k {Lib=R}
+  (    1 /ROW2 )
+  (    2 N-000265 )
+ )
+ ( /4FB1B380 $noname  R97 1k {Lib=R}
+  (    1 /ROW1 )
+  (    2 N-000263 )
+ )
+ ( /4FB1B0F1 $noname  UROW1 74LS595 {Lib=74LS595}
+  (    1 N-000265 )
+  (    2 N-000267 )
+  (    3 N-000266 )
+  (    4 N-000271 )
+  (    5 N-000270 )
+  (    6 N-000268 )
+  (    7 N-000269 )
+  (    8 GND )
+  (    9 N-000194 )
+  (   10 VCC )
+  (   11 /SRCLK )
+  (   12 /RCLK )
+  (   13 GND )
+  (   14 /MOSI )
+  (   15 N-000263 )
+  (   16 VCC )
+ )
+ ( /4F99F93C $noname  LB1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000228 )
+  (    2 N-000262 )
+  (    3 /R5 )
+  (    4 N-000229 )
+  (    5 N-000261 )
+  (    6 /R6 )
+  (    7 N-000230 )
+  (    8 N-000256 )
+  (    9 /R7 )
+  (   10 N-000238 )
+  (   11 N-000259 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000257 )
+  (   15 N-000227 )
+  (   16 /R3 )
+  (   17 N-000264 )
+  (   18 N-000226 )
+  (   19 /R2 )
+  (   20 N-000260 )
+  (   21 N-000225 )
+  (   22 /R1 )
+  (   23 N-000258 )
+  (   24 N-000224 )
+ )
+ ( /4F99F93B $noname  R17 150 {Lib=R}
+  (    1 N-000259 )
+  (    2 /REDB8 )
+ )
+ ( /4F99F93A $noname  R18 150 {Lib=R}
+  (    1 N-000256 )
+  (    2 /REDB7 )
+ )
+ ( /4F99F939 $noname  R19 150 {Lib=R}
+  (    1 N-000261 )
+  (    2 /REDB6 )
+ )
+ ( /4F99F938 $noname  R20 150 {Lib=R}
+  (    1 N-000262 )
+  (    2 /REDB5 )
+ )
+ ( /4F99F937 $noname  R21 150 {Lib=R}
+  (    1 N-000257 )
+  (    2 /REDB4 )
+ )
+ ( /4F99F936 $noname  R22 150 {Lib=R}
+  (    1 N-000264 )
+  (    2 /REDB3 )
+ )
+ ( /4F99F935 $noname  R23 150 {Lib=R}
+  (    1 N-000260 )
+  (    2 /REDB2 )
+ )
+ ( /4F99F934 $noname  R24 150 {Lib=R}
+  (    1 N-000258 )
+  (    2 /REDB1 )
+ )
+ ( /4F99F933 $noname  R25 180 {Lib=R}
+  (    1 N-000238 )
+  (    2 /GRNB8 )
+ )
+ ( /4F99F932 $noname  R26 180 {Lib=R}
+  (    1 N-000230 )
+  (    2 /GRNB7 )
+ )
+ ( /4F99F931 $noname  R27 180 {Lib=R}
+  (    1 N-000229 )
+  (    2 /GRNB6 )
+ )
+ ( /4F99F930 $noname  R28 180 {Lib=R}
+  (    1 N-000228 )
+  (    2 /GRNB5 )
+ )
+ ( /4F99F92F $noname  R29 180 {Lib=R}
+  (    1 N-000227 )
+  (    2 /GRNB4 )
+ )
+ ( /4F99F92E $noname  R30 180 {Lib=R}
+  (    1 N-000226 )
+  (    2 /GRNB3 )
+ )
+ ( /4F99F92D $noname  R31 180 {Lib=R}
+  (    1 N-000225 )
+  (    2 /GRNB2 )
+ )
+ ( /4F99F92C $noname  R32 180 {Lib=R}
+  (    1 N-000224 )
+  (    2 /GRNB1 )
+ )
+ ( /4F99F92B $noname  INB1 CONN_1 {Lib=CONN_1}
+  (    1 /DINB )
+ )
+ ( /4F99F92A $noname  OUTB1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTB )
+ )
+ ( /4F99F929 $noname  UB1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DINB )
+  (    3 /GRNB2 )
+  (    4 /REDB2 )
+  (    5 /REDB6 )
+  (    6 /GRNB6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000214 )
+  (   10 /RCLK )
+  (   11 /REDB5 )
+  (   12 /GRNB5 )
+  (   13 /GRNB1 )
+  (   14 /REDB1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F928 $noname  UB2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000214 )
+  (    3 /GRNB4 )
+  (    4 /REDB4 )
+  (    5 /REDB8 )
+  (    6 /GRNB8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTB )
+  (   10 /RCLK )
+  (   11 /REDB7 )
+  (   12 /GRNB7 )
+  (   13 /GRNB3 )
+  (   14 /REDB3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F927 $noname  UD2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000212 )
+  (    3 /GRND4 )
+  (    4 /REDD4 )
+  (    5 /REDD8 )
+  (    6 /GRND8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTD )
+  (   10 /RCLK )
+  (   11 /REDD7 )
+  (   12 /GRND7 )
+  (   13 /GRND3 )
+  (   14 /REDD3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F926 $noname  UD1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DIND )
+  (    3 /GRND2 )
+  (    4 /REDD2 )
+  (    5 /REDD6 )
+  (    6 /GRND6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000212 )
+  (   10 /RCLK )
+  (   11 /REDD5 )
+  (   12 /GRND5 )
+  (   13 /GRND1 )
+  (   14 /REDD1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F925 $noname  OUTD1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTD )
+ )
+ ( /4F99F924 $noname  IND1 CONN_1 {Lib=CONN_1}
+  (    1 /DIND )
+ )
+ ( /4F99F923 $noname  R64 180 {Lib=R}
+  (    1 N-000070 )
+  (    2 /GRND1 )
+ )
+ ( /4F99F922 $noname  R63 180 {Lib=R}
+  (    1 N-000049 )
+  (    2 /GRND2 )
+ )
+ ( /4F99F921 $noname  R62 180 {Lib=R}
+  (    1 N-000067 )
+  (    2 /GRND3 )
+ )
+ ( /4F99F920 $noname  R61 180 {Lib=R}
+  (    1 N-000069 )
+  (    2 /GRND4 )
+ )
+ ( /4F99F91F $noname  R60 180 {Lib=R}
+  (    1 N-000057 )
+  (    2 /GRND5 )
+ )
+ ( /4F99F91E $noname  R59 180 {Lib=R}
+  (    1 N-000048 )
+  (    2 /GRND6 )
+ )
+ ( /4F99F91D $noname  R58 180 {Lib=R}
+  (    1 N-000054 )
+  (    2 /GRND7 )
+ )
+ ( /4F99F91C $noname  R57 180 {Lib=R}
+  (    1 N-000052 )
+  (    2 /GRND8 )
+ )
+ ( /4F99F91B $noname  R56 150 {Lib=R}
+  (    1 N-000072 )
+  (    2 /REDD1 )
+ )
+ ( /4F99F91A $noname  R55 150 {Lib=R}
+  (    1 N-000051 )
+  (    2 /REDD2 )
+ )
+ ( /4F99F919 $noname  R54 150 {Lib=R}
+  (    1 N-000068 )
+  (    2 /REDD3 )
+ )
+ ( /4F99F918 $noname  R53 150 {Lib=R}
+  (    1 N-000071 )
+  (    2 /REDD4 )
+ )
+ ( /4F99F917 $noname  R52 150 {Lib=R}
+  (    1 N-000056 )
+  (    2 /REDD5 )
+ )
+ ( /4F99F916 $noname  R51 150 {Lib=R}
+  (    1 N-000055 )
+  (    2 /REDD6 )
+ )
+ ( /4F99F915 $noname  R50 150 {Lib=R}
+  (    1 N-000053 )
+  (    2 /REDD7 )
+ )
+ ( /4F99F914 $noname  R49 150 {Lib=R}
+  (    1 N-000050 )
+  (    2 /REDD8 )
+ )
+ ( /4F99F913 $noname  LD1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000057 )
+  (    2 N-000056 )
+  (    3 /R5 )
+  (    4 N-000048 )
+  (    5 N-000055 )
+  (    6 /R6 )
+  (    7 N-000054 )
+  (    8 N-000053 )
+  (    9 /R7 )
+  (   10 N-000052 )
+  (   11 N-000050 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000071 )
+  (   15 N-000069 )
+  (   16 /R3 )
+  (   17 N-000068 )
+  (   18 N-000067 )
+  (   19 /R2 )
+  (   20 N-000051 )
+  (   21 N-000049 )
+  (   22 /R1 )
+  (   23 N-000072 )
+  (   24 N-000070 )
+ )
+ ( /4F99F912 $noname  LF1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000066 )
+  (    2 N-000058 )
+  (    3 /R5 )
+  (    4 N-000065 )
+  (    5 N-000064 )
+  (    6 /R6 )
+  (    7 N-000063 )
+  (    8 N-000062 )
+  (    9 /R7 )
+  (   10 N-000061 )
+  (   11 N-000059 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000093 )
+  (   15 N-000098 )
+  (   16 /R3 )
+  (   17 N-000096 )
+  (   18 N-000097 )
+  (   19 /R2 )
+  (   20 N-000060 )
+  (   21 N-000084 )
+  (   22 /R1 )
+  (   23 N-000100 )
+  (   24 N-000099 )
+ )
+ ( /4F99F911 $noname  R81 150 {Lib=R}
+  (    1 N-000059 )
+  (    2 /REDF8 )
+ )
+ ( /4F99F910 $noname  R82 150 {Lib=R}
+  (    1 N-000062 )
+  (    2 /REDF7 )
+ )
+ ( /4F99F90F $noname  R83 150 {Lib=R}
+  (    1 N-000064 )
+  (    2 /REDF6 )
+ )
+ ( /4F99F90E $noname  R84 150 {Lib=R}
+  (    1 N-000058 )
+  (    2 /REDF5 )
+ )
+ ( /4F99F90D $noname  R85 150 {Lib=R}
+  (    1 N-000093 )
+  (    2 /REDF4 )
+ )
+ ( /4F99F90C $noname  R86 150 {Lib=R}
+  (    1 N-000096 )
+  (    2 /REDF3 )
+ )
+ ( /4F99F90B $noname  R87 150 {Lib=R}
+  (    1 N-000060 )
+  (    2 /REDF2 )
+ )
+ ( /4F99F90A $noname  R88 150 {Lib=R}
+  (    1 N-000100 )
+  (    2 /REDF1 )
+ )
+ ( /4F99F909 $noname  R89 180 {Lib=R}
+  (    1 N-000061 )
+  (    2 /GRNF8 )
+ )
+ ( /4F99F908 $noname  R90 180 {Lib=R}
+  (    1 N-000063 )
+  (    2 /GRNF7 )
+ )
+ ( /4F99F907 $noname  R91 180 {Lib=R}
+  (    1 N-000065 )
+  (    2 /GRNF6 )
+ )
+ ( /4F99F906 $noname  R92 180 {Lib=R}
+  (    1 N-000066 )
+  (    2 /GRNF5 )
+ )
+ ( /4F99F905 $noname  R93 180 {Lib=R}
+  (    1 N-000098 )
+  (    2 /GRNF4 )
+ )
+ ( /4F99F904 $noname  R94 180 {Lib=R}
+  (    1 N-000097 )
+  (    2 /GRNF3 )
+ )
+ ( /4F99F903 $noname  R95 180 {Lib=R}
+  (    1 N-000084 )
+  (    2 /GRNF2 )
+ )
+ ( /4F99F902 $noname  R96 180 {Lib=R}
+  (    1 N-000099 )
+  (    2 /GRNF1 )
+ )
+ ( /4F99F901 $noname  INF1 CONN_1 {Lib=CONN_1}
+  (    1 /DINF )
+ )
+ ( /4F99F900 $noname  OUTF1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTF )
+ )
+ ( /4F99F8FF $noname  UF1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DINF )
+  (    3 /GRNF2 )
+  (    4 /REDF2 )
+  (    5 /REDF6 )
+  (    6 /GRNF6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000014 )
+  (   10 /RCLK )
+  (   11 /REDF5 )
+  (   12 /GRNF5 )
+  (   13 /GRNF1 )
+  (   14 /REDF1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F8FE $noname  UF2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000014 )
+  (    3 /GRNF4 )
+  (    4 /REDF4 )
+  (    5 /REDF8 )
+  (    6 /GRNF8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTF )
+  (   10 /RCLK )
+  (   11 /REDF7 )
+  (   12 /GRNF7 )
+  (   13 /GRNF3 )
+  (   14 /REDF3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F8FB $noname  UE2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000007 )
+  (    3 /GRNE4 )
+  (    4 /REDE4 )
+  (    5 /REDE8 )
+  (    6 /GRNE8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTE )
+  (   10 /RCLK )
+  (   11 /REDE7 )
+  (   12 /GRNE7 )
+  (   13 /GRNE3 )
+  (   14 /REDE3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F8FA $noname  UE1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DINE )
+  (    3 /GRNE2 )
+  (    4 /REDE2 )
+  (    5 /REDE6 )
+  (    6 /GRNE6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000007 )
+  (   10 /RCLK )
+  (   11 /REDE5 )
+  (   12 /GRNE5 )
+  (   13 /GRNE1 )
+  (   14 /REDE1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F8F9 $noname  OUTE1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTE )
+ )
+ ( /4F99F8F8 $noname  INE1 CONN_1 {Lib=CONN_1}
+  (    1 /DINE )
+ )
+ ( /4F99F8F7 $noname  R80 180 {Lib=R}
+  (    1 N-000023 )
+  (    2 /GRNE1 )
+ )
+ ( /4F99F8F6 $noname  R79 180 {Lib=R}
+  (    1 N-000022 )
+  (    2 /GRNE2 )
+ )
+ ( /4F99F8F5 $noname  R78 180 {Lib=R}
+  (    1 N-000021 )
+  (    2 /GRNE3 )
+ )
+ ( /4F99F8F4 $noname  R77 180 {Lib=R}
+  (    1 N-000015 )
+  (    2 /GRNE4 )
+ )
+ ( /4F99F8F3 $noname  R76 180 {Lib=R}
+  (    1 N-000020 )
+  (    2 /GRNE5 )
+ )
+ ( /4F99F8F2 $noname  R75 180 {Lib=R}
+  (    1 N-000019 )
+  (    2 /GRNE6 )
+ )
+ ( /4F99F8F1 $noname  R74 180 {Lib=R}
+  (    1 N-000018 )
+  (    2 /GRNE7 )
+ )
+ ( /4F99F8F0 $noname  R73 180 {Lib=R}
+  (    1 N-000017 )
+  (    2 /GRNE8 )
+ )
+ ( /4F99F8EF $noname  R72 150 {Lib=R}
+  (    1 N-000016 )
+  (    2 /REDE1 )
+ )
+ ( /4F99F8EE $noname  R71 150 {Lib=R}
+  (    1 N-000037 )
+  (    2 /REDE2 )
+ )
+ ( /4F99F8ED $noname  R70 150 {Lib=R}
+  (    1 N-000035 )
+  (    2 /REDE3 )
+ )
+ ( /4F99F8EC $noname  R69 150 {Lib=R}
+  (    1 N-000033 )
+  (    2 /REDE4 )
+ )
+ ( /4F99F8EB $noname  R68 150 {Lib=R}
+  (    1 N-000029 )
+  (    2 /REDE5 )
+ )
+ ( /4F99F8EA $noname  R67 150 {Lib=R}
+  (    1 N-000027 )
+  (    2 /REDE6 )
+ )
+ ( /4F99F8E9 $noname  R66 150 {Lib=R}
+  (    1 N-000025 )
+  (    2 /REDE7 )
+ )
+ ( /4F99F8E8 $noname  R65 150 {Lib=R}
+  (    1 N-000030 )
+  (    2 /REDE8 )
+ )
+ ( /4F99F8E7 $noname  LE1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000020 )
+  (    2 N-000029 )
+  (    3 /R5 )
+  (    4 N-000019 )
+  (    5 N-000027 )
+  (    6 /R6 )
+  (    7 N-000018 )
+  (    8 N-000025 )
+  (    9 /R7 )
+  (   10 N-000017 )
+  (   11 N-000030 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000033 )
+  (   15 N-000015 )
+  (   16 /R3 )
+  (   17 N-000035 )
+  (   18 N-000021 )
+  (   19 /R2 )
+  (   20 N-000037 )
+  (   21 N-000022 )
+  (   22 /R1 )
+  (   23 N-000016 )
+  (   24 N-000023 )
+ )
+ ( /4F99F8D0 $noname  LC1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000150 )
+  (    2 N-000157 )
+  (    3 /R5 )
+  (    4 N-000151 )
+  (    5 N-000158 )
+  (    6 /R6 )
+  (    7 N-000152 )
+  (    8 N-000181 )
+  (    9 /R7 )
+  (   10 N-000153 )
+  (   11 N-000183 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000156 )
+  (   15 N-000149 )
+  (   16 /R3 )
+  (   17 N-000155 )
+  (   18 N-000175 )
+  (   19 /R2 )
+  (   20 N-000154 )
+  (   21 N-000173 )
+  (   22 /R1 )
+  (   23 N-000148 )
+  (   24 N-000171 )
+ )
+ ( /4F99F8CF $noname  R33 150 {Lib=R}
+  (    1 N-000183 )
+  (    2 /REDC8 )
+ )
+ ( /4F99F8CE $noname  R34 150 {Lib=R}
+  (    1 N-000181 )
+  (    2 /REDC7 )
+ )
+ ( /4F99F8CD $noname  R35 150 {Lib=R}
+  (    1 N-000158 )
+  (    2 /REDC6 )
+ )
+ ( /4F99F8CC $noname  R36 150 {Lib=R}
+  (    1 N-000157 )
+  (    2 /REDC5 )
+ )
+ ( /4F99F8CB $noname  R37 150 {Lib=R}
+  (    1 N-000156 )
+  (    2 /REDC4 )
+ )
+ ( /4F99F8CA $noname  R38 150 {Lib=R}
+  (    1 N-000155 )
+  (    2 /REDC3 )
+ )
+ ( /4F99F8C9 $noname  R39 150 {Lib=R}
+  (    1 N-000154 )
+  (    2 /REDC2 )
+ )
+ ( /4F99F8C8 $noname  R40 150 {Lib=R}
+  (    1 N-000148 )
+  (    2 /REDC1 )
+ )
+ ( /4F99F8C7 $noname  R41 180 {Lib=R}
+  (    1 N-000153 )
+  (    2 /GRNC8 )
+ )
+ ( /4F99F8C6 $noname  R42 180 {Lib=R}
+  (    1 N-000152 )
+  (    2 /GRNC7 )
+ )
+ ( /4F99F8C5 $noname  R43 180 {Lib=R}
+  (    1 N-000151 )
+  (    2 /GRNC6 )
+ )
+ ( /4F99F8C4 $noname  R44 180 {Lib=R}
+  (    1 N-000150 )
+  (    2 /GRNC5 )
+ )
+ ( /4F99F8C3 $noname  R45 180 {Lib=R}
+  (    1 N-000149 )
+  (    2 /GRNC4 )
+ )
+ ( /4F99F8C2 $noname  R46 180 {Lib=R}
+  (    1 N-000175 )
+  (    2 /GRNC3 )
+ )
+ ( /4F99F8C1 $noname  R47 180 {Lib=R}
+  (    1 N-000173 )
+  (    2 /GRNC2 )
+ )
+ ( /4F99F8C0 $noname  R48 180 {Lib=R}
+  (    1 N-000171 )
+  (    2 /GRNC1 )
+ )
+ ( /4F99F8BF $noname  INC1 CONN_1 {Lib=CONN_1}
+  (    1 /DINC )
+ )
+ ( /4F99F8BE $noname  OUTC1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTC )
+ )
+ ( /4F99F8BD $noname  UC1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DINC )
+  (    3 /GRNC2 )
+  (    4 /REDC2 )
+  (    5 /REDC6 )
+  (    6 /GRNC6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000185 )
+  (   10 /RCLK )
+  (   11 /REDC5 )
+  (   12 /GRNC5 )
+  (   13 /GRNC1 )
+  (   14 /REDC1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4F99F8BC $noname  UC2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000185 )
+  (    3 /GRNC4 )
+  (    4 /REDC4 )
+  (    5 /REDC8 )
+  (    6 /GRNC8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTC )
+  (   10 /RCLK )
+  (   11 /REDC7 )
+  (   12 /GRNC7 )
+  (   13 /GRNC3 )
+  (   14 /REDC3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4FA7D62E $noname  UA2 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 N-000186 )
+  (    3 /GRNA4 )
+  (    4 /REDA4 )
+  (    5 /REDA8 )
+  (    6 /GRNA8 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 /DOUTA )
+  (   10 /RCLK )
+  (   11 /REDA7 )
+  (   12 /GRNA7 )
+  (   13 /GRNA3 )
+  (   14 /REDA3 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4FA7D62A $noname  UA1 STPIC6D595 {Lib=STPIC6D595}
+  (    1 VCC )
+  (    2 /DINA )
+  (    3 /GRNA2 )
+  (    4 /REDA2 )
+  (    5 /REDA6 )
+  (    6 /GRNA6 )
+  (    7 VCC )
+  (    8 GND )
+  (    9 N-000186 )
+  (   10 /RCLK )
+  (   11 /REDA5 )
+  (   12 /GRNA5 )
+  (   13 /GRNA1 )
+  (   14 /REDA1 )
+  (   15 /SRCLK )
+  (   16 GND )
+ )
+ ( /4FA7D599 $noname  OUTA1 CONN_1 {Lib=CONN_1}
+  (    1 /DOUTA )
+ )
+ ( /4FA7D58C $noname  INA1 CONN_1 {Lib=CONN_1}
+  (    1 /DINA )
+ )
+ ( /4FA743FC $noname  Q1 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW1 )
+  (    3 /R1 )
+ )
+ ( /4FA743F2 $noname  Q2 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW2 )
+  (    3 /R2 )
+ )
+ ( /4FA743BC $noname  Q4 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW4 )
+  (    3 /R4 )
+ )
+ ( /4FA743B2 $noname  Q3 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW3 )
+  (    3 /R3 )
+ )
+ ( /4FA743A5 $noname  Q5 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW5 )
+  (    3 /R5 )
+ )
+ ( /4FA74394 $noname  Q6 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW6 )
+  (    3 /R6 )
+ )
+ ( /4FA7437E $noname  Q7 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW7 )
+  (    3 /R7 )
+ )
+ ( /4FA742C5 $noname  Q8 PNP {Lib=PNP}
+  (    1 VCC )
+  (    2 /ROW8 )
+  (    3 /R8 )
+ )
+ ( /4FA15EE0 $noname  R16 180 {Lib=R}
+  (    1 N-000137 )
+  (    2 /GRNA1 )
+ )
+ ( /4FA15ED9 $noname  R15 180 {Lib=R}
+  (    1 N-000139 )
+  (    2 /GRNA2 )
+ )
+ ( /4FA15ED7 $noname  R14 180 {Lib=R}
+  (    1 N-000135 )
+  (    2 /GRNA3 )
+ )
+ ( /4FA15ED5 $noname  R13 180 {Lib=R}
+  (    1 N-000136 )
+  (    2 /GRNA4 )
+ )
+ ( /4FA15ED3 $noname  R12 180 {Lib=R}
+  (    1 N-000126 )
+  (    2 /GRNA5 )
+ )
+ ( /4FA15ED1 $noname  R11 180 {Lib=R}
+  (    1 N-000140 )
+  (    2 /GRNA6 )
+ )
+ ( /4FA15ECE $noname  R10 180 {Lib=R}
+  (    1 N-000138 )
+  (    2 /GRNA7 )
+ )
+ ( /4FA15EB6 $noname  R9 180 {Lib=R}
+  (    1 N-000134 )
+  (    2 /GRNA8 )
+ )
+ ( /4FA15EB3 $noname  R8 150 {Lib=R}
+  (    1 N-000133 )
+  (    2 /REDA1 )
+ )
+ ( /4FA15EB0 $noname  R7 150 {Lib=R}
+  (    1 N-000132 )
+  (    2 /REDA2 )
+ )
+ ( /4FA15EAE $noname  R6 150 {Lib=R}
+  (    1 N-000131 )
+  (    2 /REDA3 )
+ )
+ ( /4FA15EAA $noname  R5 150 {Lib=R}
+  (    1 N-000130 )
+  (    2 /REDA4 )
+ )
+ ( /4FA15EA7 $noname  R4 150 {Lib=R}
+  (    1 N-000125 )
+  (    2 /REDA5 )
+ )
+ ( /4FA15EA5 $noname  R3 150 {Lib=R}
+  (    1 N-000129 )
+  (    2 /REDA6 )
+ )
+ ( /4FA15EA2 $noname  R2 150 {Lib=R}
+  (    1 N-000128 )
+  (    2 /REDA7 )
+ )
+ ( /4FA15D08 $noname  R1 150 {Lib=R}
+  (    1 N-000127 )
+  (    2 /REDA8 )
+ )
+ ( /4FA0A62C $noname  LA1 LE-MM103 {Lib=LE-MM103}
+  (    1 N-000126 )
+  (    2 N-000125 )
+  (    3 /R5 )
+  (    4 N-000140 )
+  (    5 N-000129 )
+  (    6 /R6 )
+  (    7 N-000138 )
+  (    8 N-000128 )
+  (    9 /R7 )
+  (   10 N-000134 )
+  (   11 N-000127 )
+  (   12 /R8 )
+  (   13 /R4 )
+  (   14 N-000130 )
+  (   15 N-000136 )
+  (   16 /R3 )
+  (   17 N-000131 )
+  (   18 N-000135 )
+  (   19 /R2 )
+  (   20 N-000132 )
+  (   21 N-000139 )
+  (   22 /R1 )
+  (   23 N-000133 )
+  (   24 N-000137 )
  )
 )
 *
 { Allowed footprints by component:
-$component C1
- CP*
- SM*
-$endlist
-$component C2
- SM*
- C?
- C1-1
-$endlist
-$component C3
- CP*
- SM*
-$endlist
-$component C4
- SM*
- C?
- C1-1
-$endlist
-$component C5
+$component C7
  SM*
  C?
  C1-1
@@ -1089,110 +1071,107 @@ $component C6
  C?
  C1-1
 $endlist
-$component C7
+$component R108
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component C5
  SM*
  C?
  C1-1
-$endlist
-$component D1
- D?
- S*
 $endlist
 $component IC1
  28DIP-ELL600
  28dip600
 $endlist
-$component R1
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ CP*
+ SM*
+$endlist
+$component C1
+ CP*
+ SM*
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component R106
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R2
+$component R107
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R3
+$component D1
+ D?
+ S*
+$endlist
+$component R105
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R4
+$component U1
+ DIP8
+$endlist
+$component R101
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R5
+$component R102
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R6
+$component R104
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R7
+$component R103
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R8
+$component R99
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R9
+$component R100
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R10
+$component R98
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R11
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R12
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R13
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R14
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R15
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R16
+$component R97
  R?
  SM0603
  SM0805
@@ -1294,181 +1273,19 @@ $component R32
  SM0805
  R?-*
 $endlist
-$component R33
- R?
- SM0603
- SM0805
- R?-*
+$component UB1
+ 16-DIP
 $endlist
-$component R34
- R?
- SM0603
- SM0805
- R?-*
+$component UB2
+ 16-DIP
 $endlist
-$component R35
- R?
- SM0603
- SM0805
- R?-*
+$component UD2
+ 16-DIP
 $endlist
-$component R36
- R?
- SM0603
- SM0805
- R?-*
+$component UD1
+ 16-DIP
 $endlist
-$component R37
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R38
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R39
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R40
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R41
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R42
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R43
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R44
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R45
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R46
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R47
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R48
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R49
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R50
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R51
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R52
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R53
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R54
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R55
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R56
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R57
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R58
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R59
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R60
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R61
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R62
+$component R64
  R?
  SM0603
  SM0805
@@ -1480,103 +1297,85 @@ $component R63
  SM0805
  R?-*
 $endlist
-$component R64
+$component R62
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R65
+$component R61
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R66
+$component R60
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R67
+$component R59
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R68
+$component R58
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R69
+$component R57
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R70
+$component R56
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R71
+$component R55
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R72
+$component R54
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R73
+$component R53
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R74
+$component R52
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R75
+$component R51
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R76
+$component R50
  R?
  SM0603
  SM0805
  R?-*
 $endlist
-$component R77
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R78
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R79
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R80
+$component R49
  R?
  SM0603
  SM0805
@@ -1678,92 +1477,209 @@ $component R96
  SM0805
  R?-*
 $endlist
-$component R97
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R98
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R99
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R100
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R101
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R102
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R103
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R104
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R105
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R106
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R107
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component R108
- R?
- SM0603
- SM0805
- R?-*
-$endlist
-$component U1
- DIP8
-$endlist
-$component UA1
+$component UF1
  16-DIP
 $endlist
-$component UA2
+$component UF2
  16-DIP
 $endlist
-$component UB1
+$component UE2
  16-DIP
 $endlist
-$component UB2
+$component UE1
  16-DIP
+$endlist
+$component R80
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R79
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R78
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R77
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R76
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R75
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R74
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R73
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R72
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R71
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R70
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R69
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R68
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R67
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R66
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R65
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R33
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R34
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R35
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R36
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R37
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R38
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R39
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R40
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R41
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R42
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R43
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R44
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R45
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R46
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R47
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R48
+ R?
+ SM0603
+ SM0805
+ R?-*
 $endlist
 $component UC1
  16-DIP
@@ -1771,23 +1687,1081 @@ $endlist
 $component UC2
  16-DIP
 $endlist
-$component UD1
+$component UA2
  16-DIP
 $endlist
-$component UD2
+$component UA1
  16-DIP
 $endlist
-$component UE1
- 16-DIP
+$component R16
+ R?
+ SM0603
+ SM0805
+ R?-*
 $endlist
-$component UE2
- 16-DIP
+$component R15
+ R?
+ SM0603
+ SM0805
+ R?-*
 $endlist
-$component UF1
- 16-DIP
+$component R14
+ R?
+ SM0603
+ SM0805
+ R?-*
 $endlist
-$component UF2
- 16-DIP
+$component R13
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
 $endlist
 $endfootprintlist
 }
+{ Pin List by Nets
+Net 1 "/DOUTE" "DOUTE"
+ OUTE1 1
+ UE2 9
+Net 2 "/GRNE3" "GRNE3"
+ UE2 13
+ R78 2
+Net 3 "/GRNE7" "GRNE7"
+ UE2 12
+ R74 2
+Net 4 "/REDE7" "REDE7"
+ UE2 11
+ R66 2
+Net 5 "/GRNE8" "GRNE8"
+ R73 2
+ UE2 6
+Net 6 "/REDE8" "REDE8"
+ R65 2
+ UE2 5
+Net 7 "" ""
+ UE2 2
+ UE1 9
+Net 8 "/REDF6" "REDF6"
+ R83 2
+ UF1 5
+Net 9 "/REDF2" "REDF2"
+ UF1 4
+ R87 2
+Net 10 "/GRNF2" "GRNF2"
+ UF1 3
+ R95 2
+Net 11 "GND" "GND"
+ SW1 2
+ P4 2
+ P3 6
+ C7 2
+ P10 1
+ P6 2
+ SW3 2
+ SW2 2
+ P9 1
+ P8 1
+ P7 1
+ UA2 16
+ UC2 8
+ UC2 16
+ UA2 8
+ UC1 8
+ UC1 16
+ UA1 16
+ UA1 8
+ P2 2
+ UD2 8
+ D1 1
+ UE1 8
+ C1 2
+ P1 6
+ UF1 8
+ C3 2
+ R107 1
+ UD1 8
+ UD2 16
+ UB2 8
+ UB2 16
+ UF2 8
+ C4 2
+ UROW1 8
+ UE2 16
+ UROW1 13
+ IC1 22
+ UE2 8
+ U1 4
+ UF2 16
+ C5 1
+ IC1 8
+ C2 2
+ UE1 16
+ UB1 16
+ UB1 8
+ UF1 16
+ UD1 16
+Net 12 "VCC" "VCC"
+ IC1 20
+ UC1 7
+ UC2 7
+ IC1 7
+ UC2 1
+ UA2 7
+ UC1 1
+ UA2 1
+ R106 2
+ L1 1
+ Q7 1
+ UROW1 10
+ UROW1 16
+ P6 1
+ Q8 1
+ Q1 1
+ Q6 1
+ Q5 1
+ Q3 1
+ Q4 1
+ P1 2
+ R108 1
+ UA1 7
+ UA1 1
+ Q2 1
+ UB2 1
+ UB2 7
+ P3 4
+ UD2 1
+ C3 1
+ UD2 7
+ UB1 7
+ UD1 1
+ UD1 7
+ UB1 1
+ UE1 1
+ UF2 1
+ UF1 1
+ UF2 7
+ UE1 7
+ UE2 1
+ UF1 7
+ UE2 7
+Net 13 "/REDF5" "REDF5"
+ R84 2
+ UF1 11
+Net 14 "" ""
+ UF1 9
+ UF2 2
+Net 15 "" ""
+ R77 1
+ LE1 15
+Net 16 "" ""
+ R72 1
+ LE1 23
+Net 17 "" ""
+ R73 1
+ LE1 10
+Net 18 "" ""
+ R74 1
+ LE1 7
+Net 19 "" ""
+ R75 1
+ LE1 4
+Net 20 "" ""
+ LE1 1
+ R76 1
+Net 21 "" ""
+ R78 1
+ LE1 18
+Net 22 "" ""
+ R79 1
+ LE1 21
+Net 23 "" ""
+ LE1 24
+ R80 1
+Net 24 "/REDE1" "REDE1"
+ UE1 14
+ R72 2
+Net 25 "" ""
+ LE1 8
+ R66 1
+Net 26 "/R6" "R6"
+ LD1 6
+ LA1 6
+ LB1 6
+ Q6 3
+ LE1 6
+ LF1 6
+ LC1 6
+Net 27 "" ""
+ LE1 5
+ R67 1
+Net 28 "/R5" "R5"
+ LC1 3
+ LE1 3
+ LA1 3
+ LB1 3
+ Q5 3
+ LD1 3
+ LF1 3
+Net 29 "" ""
+ R68 1
+ LE1 2
+Net 30 "" ""
+ LE1 11
+ R65 1
+Net 31 "/REDE5" "REDE5"
+ UE1 11
+ R68 2
+Net 32 "/REDE4" "REDE4"
+ R69 2
+ UE2 4
+Net 33 "" ""
+ LE1 14
+ R69 1
+Net 34 "/REDE3" "REDE3"
+ R70 2
+ UE2 14
+Net 35 "" ""
+ R70 1
+ LE1 17
+Net 36 "/REDE2" "REDE2"
+ UE1 4
+ R71 2
+Net 37 "" ""
+ LE1 20
+ R71 1
+Net 38 "/SRCLK" "SRCLK"
+ UD1 15
+ UF1 15
+ P1 3
+ UA2 15
+ UB2 15
+ UC1 15
+ UD2 15
+ UA1 15
+ UE2 15
+ UROW1 11
+ UC2 15
+ IC1 19
+ UF2 15
+ UE1 15
+ UB1 15
+Net 39 "/DINE" "DINE"
+ UE1 2
+ INE1 1
+Net 40 "/RCLK" "RCLK"
+ IC1 16
+ UF1 10
+ UD2 10
+ UC2 10
+ UB2 10
+ UA2 10
+ UROW1 12
+ UD1 10
+ UE2 10
+ UE1 10
+ UA1 10
+ UB1 10
+ UC1 10
+ UF2 10
+Net 41 "/GRNE1" "GRNE1"
+ R80 2
+ UE1 13
+Net 42 "/REDE6" "REDE6"
+ UE1 5
+ R67 2
+Net 43 "/GRNE6" "GRNE6"
+ R75 2
+ UE1 6
+Net 44 "/GRNE5" "GRNE5"
+ R76 2
+ UE1 12
+Net 45 "/GRNE4" "GRNE4"
+ R77 2
+ UE2 3
+Net 46 "/GRNE2" "GRNE2"
+ UE1 3
+ R79 2
+Net 47 "/DOUTF" "DOUTF"
+ UF2 9
+ OUTF1 1
+Net 48 "" ""
+ LD1 4
+ R59 1
+Net 49 "" ""
+ R63 1
+ LD1 21
+Net 50 "" ""
+ R49 1
+ LD1 11
+Net 51 "" ""
+ R55 1
+ LD1 20
+Net 52 "" ""
+ LD1 10
+ R57 1
+Net 53 "" ""
+ LD1 8
+ R50 1
+Net 54 "" ""
+ R58 1
+ LD1 7
+Net 55 "" ""
+ LD1 5
+ R51 1
+Net 56 "" ""
+ R52 1
+ LD1 2
+Net 57 "" ""
+ LD1 1
+ R60 1
+Net 58 "" ""
+ R84 1
+ LF1 2
+Net 59 "" ""
+ LF1 11
+ R81 1
+Net 60 "" ""
+ LF1 20
+ R87 1
+Net 61 "" ""
+ R89 1
+ LF1 10
+Net 62 "" ""
+ R82 1
+ LF1 8
+Net 63 "" ""
+ R90 1
+ LF1 7
+Net 64 "" ""
+ LF1 5
+ R83 1
+Net 65 "" ""
+ LF1 4
+ R91 1
+Net 66 "" ""
+ LF1 1
+ R92 1
+Net 67 "" ""
+ R62 1
+ LD1 18
+Net 68 "" ""
+ LD1 17
+ R54 1
+Net 69 "" ""
+ LD1 15
+ R61 1
+Net 70 "" ""
+ LD1 24
+ R64 1
+Net 71 "" ""
+ LD1 14
+ R53 1
+Net 72 "" ""
+ R56 1
+ LD1 23
+Net 73 "/REDD5" "REDD5"
+ R52 2
+ UD1 11
+Net 74 "/REDD6" "REDD6"
+ R51 2
+ UD1 5
+Net 75 "/REDD7" "REDD7"
+ UD2 11
+ R50 2
+Net 76 "/REDD8" "REDD8"
+ UD2 5
+ R49 2
+Net 77 "/GRND1" "GRND1"
+ UD1 13
+ R64 2
+Net 78 "/GRND7" "GRND7"
+ UD2 12
+ R58 2
+Net 79 "/REDD4" "REDD4"
+ R53 2
+ UD2 4
+Net 80 "/REDD3" "REDD3"
+ UD2 14
+ R54 2
+Net 81 "/REDD2" "REDD2"
+ R55 2
+ UD1 4
+Net 82 "/REDD1" "REDD1"
+ UD1 14
+ R56 2
+Net 83 "/GRND8" "GRND8"
+ UD2 6
+ R57 2
+Net 84 "" ""
+ R95 1
+ LF1 21
+Net 85 "/GRND6" "GRND6"
+ UD1 6
+ R59 2
+Net 86 "/GRND5" "GRND5"
+ R60 2
+ UD1 12
+Net 87 "/GRND4" "GRND4"
+ UD2 3
+ R61 2
+Net 88 "/GRND3" "GRND3"
+ R62 2
+ UD2 13
+Net 89 "/GRND2" "GRND2"
+ R63 2
+ UD1 3
+Net 90 "/DINF" "DINF"
+ UF1 2
+ INF1 1
+Net 91 "/GRNF1" "GRNF1"
+ R96 2
+ UF1 13
+Net 92 "/REDF4" "REDF4"
+ UF2 4
+ R85 2
+Net 93 "" ""
+ R85 1
+ LF1 14
+Net 94 "/REDF7" "REDF7"
+ R82 2
+ UF2 11
+Net 95 "/REDF8" "REDF8"
+ UF2 5
+ R81 2
+Net 96 "" ""
+ LF1 17
+ R86 1
+Net 97 "" ""
+ LF1 18
+ R94 1
+Net 98 "" ""
+ LF1 15
+ R93 1
+Net 99 "" ""
+ LF1 24
+ R96 1
+Net 100 "" ""
+ LF1 23
+ R88 1
+Net 101 "/R8" "R8"
+ LA1 12
+ LE1 12
+ LB1 12
+ LD1 12
+ LF1 12
+ Q8 3
+ LC1 12
+Net 102 "/GRNF3" "GRNF3"
+ UF2 13
+ R94 2
+Net 103 "/GRNF4" "GRNF4"
+ UF2 3
+ R93 2
+Net 104 "/GRNF5" "GRNF5"
+ R92 2
+ UF1 12
+Net 105 "/GRNF6" "GRNF6"
+ R91 2
+ UF1 6
+Net 106 "/GRNF7" "GRNF7"
+ R90 2
+ UF2 12
+Net 107 "/GRNF8" "GRNF8"
+ UF2 6
+ R89 2
+Net 108 "/REDF1" "REDF1"
+ UF1 14
+ R88 2
+Net 109 "/REDF3" "REDF3"
+ UF2 14
+ R86 2
+Net 110 "/ROW6" "ROW6"
+ R102 1
+ Q6 2
+Net 111 "/ROW8" "ROW8"
+ R104 1
+ Q8 2
+Net 112 "/ROW7" "ROW7"
+ Q7 2
+ R103 1
+Net 113 "/ROW5" "ROW5"
+ R101 1
+ Q5 2
+Net 114 "/ROW3" "ROW3"
+ R99 1
+ Q3 2
+Net 115 "/ROW4" "ROW4"
+ Q4 2
+ R100 1
+Net 116 "/REDA1" "REDA1"
+ R8 2
+ UA1 14
+Net 117 "/REDA5" "REDA5"
+ UA1 11
+ R4 2
+Net 118 "/GRNA6" "GRNA6"
+ UA1 6
+ R11 2
+Net 119 "/REDA6" "REDA6"
+ R3 2
+ UA1 5
+Net 120 "/REDA2" "REDA2"
+ R7 2
+ UA1 4
+Net 121 "/DINA" "DINA"
+ INA1 1
+ UA1 2
+Net 122 "/REDA3" "REDA3"
+ UA2 14
+ R6 2
+Net 123 "/ROW2" "ROW2"
+ R98 1
+ Q2 2
+Net 124 "/ROW1" "ROW1"
+ Q1 2
+ R97 1
+Net 125 "" ""
+ LA1 2
+ R4 1
+Net 126 "" ""
+ R12 1
+ LA1 1
+Net 127 "" ""
+ LA1 11
+ R1 1
+Net 128 "" ""
+ LA1 8
+ R2 1
+Net 129 "" ""
+ R3 1
+ LA1 5
+Net 130 "" ""
+ R5 1
+ LA1 14
+Net 131 "" ""
+ LA1 17
+ R6 1
+Net 132 "" ""
+ R7 1
+ LA1 20
+Net 133 "" ""
+ LA1 23
+ R8 1
+Net 134 "" ""
+ LA1 10
+ R9 1
+Net 135 "" ""
+ LA1 18
+ R14 1
+Net 136 "" ""
+ LA1 15
+ R13 1
+Net 137 "" ""
+ R16 1
+ LA1 24
+Net 138 "" ""
+ R10 1
+ LA1 7
+Net 139 "" ""
+ LA1 21
+ R15 1
+Net 140 "" ""
+ R11 1
+ LA1 4
+Net 141 "/GRNA7" "GRNA7"
+ R10 2
+ UA2 12
+Net 142 "/GRNA8" "GRNA8"
+ UA2 6
+ R9 2
+Net 143 "/GRNA1" "GRNA1"
+ UA1 13
+ R16 2
+Net 144 "/GRNA5" "GRNA5"
+ UA1 12
+ R12 2
+Net 145 "/GRNA4" "GRNA4"
+ UA2 3
+ R13 2
+Net 146 "/GRNA2" "GRNA2"
+ UA1 3
+ R15 2
+Net 147 "/GRNA3" "GRNA3"
+ R14 2
+ UA2 13
+Net 148 "" ""
+ LC1 23
+ R40 1
+Net 149 "" ""
+ LC1 15
+ R45 1
+Net 150 "" ""
+ LC1 1
+ R44 1
+Net 151 "" ""
+ R43 1
+ LC1 4
+Net 152 "" ""
+ R42 1
+ LC1 7
+Net 153 "" ""
+ R41 1
+ LC1 10
+Net 154 "" ""
+ LC1 20
+ R39 1
+Net 155 "" ""
+ R38 1
+ LC1 17
+Net 156 "" ""
+ R37 1
+ LC1 14
+Net 157 "" ""
+ R36 1
+ LC1 2
+Net 158 "" ""
+ R35 1
+ LC1 5
+Net 159 "/REDC5" "REDC5"
+ R36 2
+ UC1 11
+Net 160 "/GRNC4" "GRNC4"
+ R45 2
+ UC2 3
+Net 161 "/GRNC5" "GRNC5"
+ UC1 12
+ R44 2
+Net 162 "/GRNC6" "GRNC6"
+ UC1 6
+ R43 2
+Net 163 "/GRNC7" "GRNC7"
+ UC2 12
+ R42 2
+Net 164 "/GRNC8" "GRNC8"
+ UC2 6
+ R41 2
+Net 165 "/REDC6" "REDC6"
+ UC1 5
+ R35 2
+Net 166 "/REDC7" "REDC7"
+ R34 2
+ UC2 11
+Net 167 "/REDC4" "REDC4"
+ R37 2
+ UC2 4
+Net 168 "/REDC3" "REDC3"
+ R38 2
+ UC2 14
+Net 169 "/REDC2" "REDC2"
+ UC1 4
+ R39 2
+Net 170 "/REDC1" "REDC1"
+ UC1 14
+ R40 2
+Net 171 "" ""
+ LC1 24
+ R48 1
+Net 172 "/GRNC2" "GRNC2"
+ UC1 3
+ R47 2
+Net 173 "" ""
+ LC1 21
+ R47 1
+Net 174 "/GRNC3" "GRNC3"
+ R46 2
+ UC2 13
+Net 175 "" ""
+ R46 1
+ LC1 18
+Net 176 "/R2" "R2"
+ LB1 19
+ LF1 19
+ LC1 19
+ LE1 19
+ LA1 19
+ Q2 3
+ LD1 19
+Net 177 "/R3" "R3"
+ LF1 16
+ Q3 3
+ LB1 16
+ LA1 16
+ LE1 16
+ LC1 16
+ LD1 16
+Net 178 "/R4" "R4"
+ LA1 13
+ LB1 13
+ LE1 13
+ Q4 3
+ LF1 13
+ LC1 13
+ LD1 13
+Net 179 "/R1" "R1"
+ LB1 22
+ LA1 22
+ LD1 22
+ LF1 22
+ LC1 22
+ Q1 3
+ LE1 22
+Net 180 "/R7" "R7"
+ LA1 9
+ LE1 9
+ LC1 9
+ LB1 9
+ LD1 9
+ Q7 3
+ LF1 9
+Net 181 "" ""
+ R34 1
+ LC1 8
+Net 182 "/REDC8" "REDC8"
+ R33 2
+ UC2 5
+Net 183 "" ""
+ R33 1
+ LC1 11
+Net 184 "/GRNC1" "GRNC1"
+ R48 2
+ UC1 13
+Net 185 "" ""
+ UC2 2
+ UC1 9
+Net 186 "" ""
+ UA1 9
+ UA2 2
+Net 187 "/REDA7" "REDA7"
+ R2 2
+ UA2 11
+Net 188 "/DOUTA" "DOUTA"
+ OUTA1 1
+ UA2 9
+Net 189 "/REDA8" "REDA8"
+ UA2 5
+ R1 2
+Net 190 "/REDA4" "REDA4"
+ UA2 4
+ R5 2
+Net 191 "/DINC" "DINC"
+ UC1 2
+ INC1 1
+Net 192 "/DOUTC" "DOUTC"
+ UC2 9
+ OUTC1 1
+Net 193 "/DINB" "DINB"
+ INB1 1
+ UB1 2
+Net 194 "" ""
+ UROW1 9
+ OUTROW1 1
+Net 195 "/+25" "+25"
+ C1 1
+ R105 2
+ P4 1
+ U1 6
+ P2 1
+Net 196 "" ""
+ X1 1
+ C5 2
+ IC1 10
+Net 197 "" ""
+ R107 2
+ U1 5
+ R106 1
+Net 198 "" ""
+ D1 2
+ U1 2
+ L1 2
+Net 199 "/RX" "RX"
+ IC1 3
+ P3 2
+ P5 2
+Net 201 "/TX" "TX"
+ P3 3
+ P5 1
+ IC1 2
+Net 202 "//RST" "/RST"
+ C6 2
+ P3 1
+ P1 5
+Net 203 "" ""
+ IC1 1
+ R108 2
+ C6 1
+Net 204 "" ""
+ C7 1
+ IC1 21
+Net 205 "" ""
+ P11 1
+ SW1 1
+Net 206 "" ""
+ P12 1
+ SW2 1
+Net 207 "" ""
+ SW3 1
+ P13 1
+Net 208 "" ""
+ IC1 9
+ C4 1
+ X1 2
+Net 209 "/DIND" "DIND"
+ UD1 2
+ IND1 1
+Net 210 "/DOUTD" "DOUTD"
+ OUTD1 1
+ UD2 9
+Net 211 "/DOUTB" "DOUTB"
+ UB2 9
+ OUTB1 1
+Net 212 "" ""
+ UD2 2
+ UD1 9
+Net 213 "/REDB5" "REDB5"
+ UB1 11
+ R20 2
+Net 214 "" ""
+ UB1 9
+ UB2 2
+Net 215 "" ""
+ U1 1
+ R105 1
+ U1 7
+ U1 8
+Net 216 "/REDB2" "REDB2"
+ R23 2
+ UB1 4
+Net 217 "/REDB4" "REDB4"
+ UB2 4
+ R21 2
+Net 218 "/REDB6" "REDB6"
+ R19 2
+ UB1 5
+Net 219 "/REDB1" "REDB1"
+ R24 2
+ UB1 14
+Net 220 "/GRNB1" "GRNB1"
+ R32 2
+ UB1 13
+Net 221 "/GRNB5" "GRNB5"
+ R28 2
+ UB1 12
+Net 222 "/GRNB6" "GRNB6"
+ UB1 6
+ R27 2
+Net 223 "/GRNB2" "GRNB2"
+ UB1 3
+ R31 2
+Net 224 "" ""
+ R32 1
+ LB1 24
+Net 225 "" ""
+ R31 1
+ LB1 21
+Net 226 "" ""
+ LB1 18
+ R30 1
+Net 227 "" ""
+ LB1 15
+ R29 1
+Net 228 "" ""
+ R28 1
+ LB1 1
+Net 229 "" ""
+ R27 1
+ LB1 4
+Net 230 "" ""
+ R26 1
+ LB1 7
+Net 231 "/REDB7" "REDB7"
+ UB2 11
+ R18 2
+Net 232 "/REDB3" "REDB3"
+ UB2 14
+ R22 2
+Net 233 "/GRNB3" "GRNB3"
+ UB2 13
+ R30 2
+Net 234 "/GRNB7" "GRNB7"
+ R26 2
+ UB2 12
+Net 235 "/GRNB8" "GRNB8"
+ R25 2
+ UB2 6
+Net 236 "/REDB8" "REDB8"
+ UB2 5
+ R17 2
+Net 237 "/GRNB4" "GRNB4"
+ R29 2
+ UB2 3
+Net 238 "" ""
+ LB1 10
+ R25 1
+Net 239 "/MOSI" "MOSI"
+ UROW1 14
+ P1 4
+ IC1 17
+Net 240 "/MISO" "MISO"
+ IC1 18
+ P1 1
+Net 241 "" ""
+ U1 3
+ C2 1
+Net 242 "/D5" "D5"
+ IC1 11
+ P5 6
+Net 243 "/D4" "D4"
+ P5 5
+ IC1 6
+Net 244 "/D3" "D3"
+ P5 4
+ IC1 5
+Net 245 "/D2" "D2"
+ P5 3
+ IC1 4
+Net 246 "/D6" "D6"
+ IC1 12
+ P5 7
+Net 247 "/C4" "C4"
+ IC1 27
+ P6 7
+Net 248 "/C5" "C5"
+ IC1 28
+ P6 8
+Net 249 "/C3" "C3"
+ IC1 26
+ P6 6
+Net 250 "/C2" "C2"
+ IC1 25
+ P6 5
+Net 252 "/C1" "C1"
+ IC1 24
+ P6 4
+Net 254 "/C0" "C0"
+ P6 3
+ IC1 23
+Net 255 "/D7" "D7"
+ IC1 13
+ P5 8
+Net 256 "" ""
+ R18 1
+ LB1 8
+Net 257 "" ""
+ R21 1
+ LB1 14
+Net 258 "" ""
+ R24 1
+ LB1 23
+Net 259 "" ""
+ R17 1
+ LB1 11
+Net 260 "" ""
+ LB1 20
+ R23 1
+Net 261 "" ""
+ LB1 5
+ R19 1
+Net 262 "" ""
+ LB1 2
+ R20 1
+Net 263 "" ""
+ UROW1 15
+ R97 2
+Net 264 "" ""
+ LB1 17
+ R22 1
+Net 265 "" ""
+ R98 2
+ UROW1 1
+Net 266 "" ""
+ R100 2
+ UROW1 3
+Net 267 "" ""
+ R99 2
+ UROW1 2
+Net 268 "" ""
+ UROW1 6
+ R103 2
+Net 269 "" ""
+ UROW1 7
+ R104 2
+Net 270 "" ""
+ UROW1 5
+ R102 2
+Net 271 "" ""
+ R101 2
+ UROW1 4
+}
+#End

@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Fri 22 Jun 2012 02:23:31 PM MDT
+EESchema Schematic File Version 2  date Sat 23 Jun 2012 07:10:12 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "22 jun 2012"
+Date "24 jun 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1024,7 +1024,7 @@ L DIODESCH D1
 U 1 1 4FB1BDF3
 P 6050 9800
 F 0 "D1" H 6050 9900 40  0000 C CNN
-F 1 "DIODESCH" H 6050 9700 40  0000 C CNN
+F 1 "1N5819" H 6050 9700 40  0000 C CNN
 	1    6050 9800
 	-1   0    0    1   
 $EndComp
