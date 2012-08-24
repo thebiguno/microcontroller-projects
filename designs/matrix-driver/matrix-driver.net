@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Tue 28 Aug 2012 10:06:16 PM MDT
+# EESchema Netlist Version 1.1 created  Fri 24 Aug 2012 12:57:32 PM MDT
 (
  ( /4FE4CE9D $noname  P13 CONN_1 {Lib=CONN_1}
   (    1 N-000194 )
@@ -80,7 +80,7 @@
  ( /4FDD2106 $noname  OUTROW1 CONN_1 {Lib=CONN_1}
   (    1 N-000199 )
  )
- ( /4FDD1E91 $noname  R108 1k {Lib=R}
+ ( /4FDD1E91 $noname  R108 10k {Lib=R}
   (    1 VCC )
   (    2 //RST )
  )

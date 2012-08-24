@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Tue 28 Aug 2012 10:06:06 PM MDT
+EESchema Schematic File Version 2  date Fri 24 Aug 2012 12:35:33 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "29 aug 2012"
+Date "24 aug 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -884,7 +884,7 @@ L R R108
 U 1 1 4FDD1E91
 P 7800 7300
 F 0 "R108" V 7880 7300 50  0000 C CNN
-F 1 "1k" V 7800 7300 50  0000 C CNN
+F 1 "10k" V 7800 7300 50  0000 C CNN
 	1    7800 7300
 	1    0    0    -1  
 $EndComp
