@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Wed 29 Aug 2012 06:04:05 PM MDT
+EESchema Schematic File Version 2  date Fri 24 Aug 2012 02:17:38 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "29 aug 2012"
+Date "24 aug 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,8 +45,40 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Label 6900 7100 2    60   ~ 0
-FTDI/RST
+Text Label 15550 8050 2    60   ~ 0
+B1
+Text Label 15550 7900 2    60   ~ 0
+B0
+$Comp
+L CONN_1 P15
+U 1 1 5037DBD8
+P 15700 8050
+F 0 "P15" H 15780 8050 40  0000 L CNN
+F 1 "CONN_1" H 15700 8105 30  0001 C CNN
+	1    15700 8050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P14
+U 1 1 5037DBD5
+P 15700 7900
+F 0 "P14" H 15780 7900 40  0000 L CNN
+F 1 "CONN_1" H 15700 7955 30  0001 C CNN
+	1    15700 7900
+	1    0    0    -1  
+$EndComp
+Text Label 9700 9450 0    60   ~ 0
+B1
+Text Label 9700 9350 0    60   ~ 0
+B0
+Wire Wire Line
+	6900 7650 6900 7850
+Wire Wire Line
+	6900 7650 7800 7650
+Wire Wire Line
+	7800 7650 7800 7750
+Wire Wire Line
+	6900 7850 7400 7850
 Connection ~ 7600 7550
 Wire Wire Line
 	7600 7550 7600 7100
@@ -597,6 +629,8 @@ Wire Wire Line
 	2850 5850 3300 5850
 Wire Wire Line
 	7800 7550 7400 7550
+Text Label 6900 7100 2    60   ~ 0
+FTDI/RST
 $Comp
 L CONN_1 P13
 U 1 1 4FE4CE9D
@@ -700,15 +734,6 @@ F 0 "P7" H 14880 7900 40  0000 L CNN
 F 1 "CONN_1" H 14800 7955 30  0001 C CNN
 	1    14800 7900
 	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR01
-U 1 1 4FB22608
-P 7400 7850
-F 0 "#PWR01" H 7400 7850 30  0001 C CNN
-F 1 "GND" H 7400 7780 30  0001 C CNN
-	1    7400 7850
-	0    1    1    0   
 $EndComp
 $Comp
 L C C7
@@ -920,8 +945,6 @@ F 1 "C" H 6950 7950 50  0000 L CNN
 	1    6900 8050
 	-1   0    0    1   
 $EndComp
-Text Label 7800 7750 2    60   ~ 0
-GND
 Text Label 9700 9650 0    60   ~ 0
 MOSI
 Text Label 9700 9850 0    60   ~ 0
