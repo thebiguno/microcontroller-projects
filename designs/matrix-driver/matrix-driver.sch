@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sat 23 Jun 2012 07:10:12 PM MDT
+EESchema Schematic File Version 2  date Tue 28 Aug 2012 10:06:06 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "24 jun 2012"
+Date "29 aug 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,246 +45,13 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-$Comp
-L CONN_1 P13
-U 1 1 4FE4CE9D
-P 14650 9500
-F 0 "P13" H 14730 9500 40  0000 L CNN
-F 1 "CONN_1" H 14650 9555 30  0001 C CNN
-	1    14650 9500
-	-1   0    0    1   
-$EndComp
-$Comp
-L CONN_1 P12
-U 1 1 4FE4CE99
-P 14650 9200
-F 0 "P12" H 14730 9200 40  0000 L CNN
-F 1 "CONN_1" H 14650 9255 30  0001 C CNN
-	1    14650 9200
-	-1   0    0    1   
-$EndComp
-$Comp
-L CONN_1 P11
-U 1 1 4FE4CE8F
-P 14650 8900
-F 0 "P11" H 14730 8900 40  0000 L CNN
-F 1 "CONN_1" H 14650 8955 30  0001 C CNN
-	1    14650 8900
-	-1   0    0    1   
-$EndComp
-Text Label 15800 9500 0    60   ~ 0
-GND
-Text Label 15800 9200 0    60   ~ 0
-GND
-Text Label 15800 8900 0    60   ~ 0
-GND
-$Comp
-L SPST SW3
-U 1 1 4FE4CA8A
-P 15300 9500
-F 0 "SW3" H 15300 9600 70  0000 C CNN
-F 1 "SPST" H 15300 9400 70  0000 C CNN
-	1    15300 9500
-	1    0    0    -1  
-$EndComp
-$Comp
-L SPST SW2
-U 1 1 4FE4CA84
-P 15300 9200
-F 0 "SW2" H 15300 9300 70  0000 C CNN
-F 1 "SPST" H 15300 9100 70  0000 C CNN
-	1    15300 9200
-	1    0    0    -1  
-$EndComp
-$Comp
-L SPST SW1
-U 1 1 4FE4CA7C
-P 15300 8900
-F 0 "SW1" H 15300 9000 70  0000 C CNN
-F 1 "SPST" H 15300 8800 70  0000 C CNN
-	1    15300 8900
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_1 P10
-U 1 1 4FB23144
-P 14800 8350
-F 0 "P10" H 14880 8350 40  0000 L CNN
-F 1 "CONN_1" H 14800 8405 30  0001 C CNN
-	1    14800 8350
-	1    0    0    -1  
-$EndComp
-Text Label 14650 8350 2    60   ~ 0
-GND
-Text Label 14650 8200 2    60   ~ 0
-GND
-Text Label 14650 8050 2    60   ~ 0
-GND
-Text Label 14650 7900 2    60   ~ 0
-GND
-$Comp
-L CONN_1 P9
-U 1 1 4FB22BC1
-P 14800 8200
-F 0 "P9" H 14880 8200 40  0000 L CNN
-F 1 "CONN_1" H 14800 8255 30  0001 C CNN
-	1    14800 8200
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_1 P8
-U 1 1 4FB22BBB
-P 14800 8050
-F 0 "P8" H 14880 8050 40  0000 L CNN
-F 1 "CONN_1" H 14800 8105 30  0001 C CNN
-	1    14800 8050
-	1    0    0    -1  
-$EndComp
-$Comp
-L CONN_1 P7
-U 1 1 4FB22BAF
-P 14800 7900
-F 0 "P7" H 14880 7900 40  0000 L CNN
-F 1 "CONN_1" H 14800 7955 30  0001 C CNN
-	1    14800 7900
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR01
-U 1 1 4FB22608
-P 7400 7850
-F 0 "#PWR01" H 7400 7850 30  0001 C CNN
-F 1 "GND" H 7400 7780 30  0001 C CNN
-	1    7400 7850
-	0    1    1    0   
-$EndComp
-$Comp
-L C C7
-U 1 1 4FB225F5
-P 7600 7850
-F 0 "C7" H 7650 7950 50  0000 L CNN
-F 1 "1uF" H 7650 7750 50  0000 L CNN
-	1    7600 7850
-	0    1    1    0   
-$EndComp
-Text Label 13600 8500 2    60   ~ 0
-GND
-Text Label 13600 8400 2    60   ~ 0
-VCC
-$Comp
-L CONN_8 P6
-U 1 1 4FB20312
-P 13950 8750
-F 0 "P6" V 13900 8750 60  0000 C CNN
-F 1 "PORTC" V 14000 8750 60  0000 C CNN
-	1    13950 8750
-	1    0    0    -1  
-$EndComp
-Text Label 13600 9100 2    60   ~ 0
-C5
-Text Label 13600 9000 2    60   ~ 0
-C4
-Text Label 13600 8900 2    60   ~ 0
-C3
-Text Label 13600 8800 2    60   ~ 0
-C2
-Text Label 13600 8700 2    60   ~ 0
-C1
-Text Label 13600 8600 2    60   ~ 0
-C0
-Text Label 13600 8150 2    60   ~ 0
-D7
-Text Label 13600 8050 2    60   ~ 0
-D6
-Text Label 13600 7950 2    60   ~ 0
-D5
-Text Label 13600 7850 2    60   ~ 0
-D4
-Text Label 13600 7750 2    60   ~ 0
-D3
-Text Label 13600 7650 2    60   ~ 0
-D2
-Text Label 13600 7550 2    60   ~ 0
-RX
-Text Label 13600 7450 2    60   ~ 0
-TX
-$Comp
-L CONN_8 P5
-U 1 1 4FB1E5F0
-P 13950 7800
-F 0 "P5" V 13900 7800 60  0000 C CNN
-F 1 "PORTD" V 14000 7800 60  0000 C CNN
-	1    13950 7800
-	1    0    0    -1  
-$EndComp
-Text Label 9700 9150 0    60   ~ 0
-D7
-Text Label 9700 9050 0    60   ~ 0
-D6
-Text Label 9700 8950 0    60   ~ 0
-D5
-Text Label 9700 8850 0    60   ~ 0
-D4
-Text Label 9700 8750 0    60   ~ 0
-D3
-Text Label 9700 8650 0    60   ~ 0
-D2
-Text Label 9700 8050 0    60   ~ 0
-C5
-Text Label 9700 7950 0    60   ~ 0
-C4
-Text Label 9700 7850 0    60   ~ 0
-C3
-Text Label 9700 7750 0    60   ~ 0
-C2
-Text Label 9700 7650 0    60   ~ 0
-C1
-Text Label 9700 7550 0    60   ~ 0
-C0
-$Comp
-L C C6
-U 1 1 4FE29185
-P 7600 7550
-F 0 "C6" H 7650 7650 50  0000 L CNN
-F 1 "0.1uF" H 7650 7450 50  0000 L CNN
-	1    7600 7550
-	0    1    1    0   
-$EndComp
-Text Label 12200 8750 2    60   ~ 0
-/RST
-Text Label 12200 8550 2    60   ~ 0
-GND
-Text Label 12200 8350 2    60   ~ 0
-+25
-$Comp
-L CONN_2 P4
-U 1 1 4FE29127
-P 12550 8450
-F 0 "P4" V 12500 8450 40  0000 C CNN
-F 1 "PWR" V 12600 8450 40  0000 C CNN
-	1    12550 8450
-	1    0    0    -1  
-$EndComp
-NoConn ~ 12200 9150
-Text Label 12200 9250 2    60   ~ 0
-GND
-Text Label 12200 9050 2    60   ~ 0
-VCC
-$Comp
-L CONN_6 P3
-U 1 1 4FDD5C07
-P 12550 9000
-F 0 "P3" V 12500 9000 60  0000 C CNN
-F 1 "FTDI" V 12600 9000 60  0000 C CNN
-	1    12550 9000
-	1    0    0    -1  
-$EndComp
-Text Label 12200 8850 2    60   ~ 0
-RX
-Text Label 9700 8450 0    60   ~ 0
-TX
-Text Label 9700 8550 0    60   ~ 0
-RX
+Text Label 6900 7100 2    60   ~ 0
+FTDI/RST
+Connection ~ 7600 7550
+Wire Wire Line
+	7600 7550 7600 7100
+Wire Wire Line
+	7600 7100 7300 7100
 Wire Wire Line
 	2300 9950 2800 9950
 Wire Wire Line
@@ -828,6 +595,248 @@ Wire Wire Line
 	7450 8450 7800 8450
 Wire Wire Line
 	2850 5850 3300 5850
+Wire Wire Line
+	7800 7550 7400 7550
+$Comp
+L CONN_1 P13
+U 1 1 4FE4CE9D
+P 14650 9500
+F 0 "P13" H 14730 9500 40  0000 L CNN
+F 1 "CONN_1" H 14650 9555 30  0001 C CNN
+	1    14650 9500
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_1 P12
+U 1 1 4FE4CE99
+P 14650 9200
+F 0 "P12" H 14730 9200 40  0000 L CNN
+F 1 "CONN_1" H 14650 9255 30  0001 C CNN
+	1    14650 9200
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_1 P11
+U 1 1 4FE4CE8F
+P 14650 8900
+F 0 "P11" H 14730 8900 40  0000 L CNN
+F 1 "CONN_1" H 14650 8955 30  0001 C CNN
+	1    14650 8900
+	-1   0    0    1   
+$EndComp
+Text Label 15800 9500 0    60   ~ 0
+GND
+Text Label 15800 9200 0    60   ~ 0
+GND
+Text Label 15800 8900 0    60   ~ 0
+GND
+$Comp
+L SPST SW3
+U 1 1 4FE4CA8A
+P 15300 9500
+F 0 "SW3" H 15300 9600 70  0000 C CNN
+F 1 "SPST" H 15300 9400 70  0000 C CNN
+	1    15300 9500
+	1    0    0    -1  
+$EndComp
+$Comp
+L SPST SW2
+U 1 1 4FE4CA84
+P 15300 9200
+F 0 "SW2" H 15300 9300 70  0000 C CNN
+F 1 "SPST" H 15300 9100 70  0000 C CNN
+	1    15300 9200
+	1    0    0    -1  
+$EndComp
+$Comp
+L SPST SW1
+U 1 1 4FE4CA7C
+P 15300 8900
+F 0 "SW1" H 15300 9000 70  0000 C CNN
+F 1 "SPST" H 15300 8800 70  0000 C CNN
+	1    15300 8900
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P10
+U 1 1 4FB23144
+P 14800 8350
+F 0 "P10" H 14880 8350 40  0000 L CNN
+F 1 "CONN_1" H 14800 8405 30  0001 C CNN
+	1    14800 8350
+	1    0    0    -1  
+$EndComp
+Text Label 14650 8350 2    60   ~ 0
+GND
+Text Label 14650 8200 2    60   ~ 0
+GND
+Text Label 14650 8050 2    60   ~ 0
+GND
+Text Label 14650 7900 2    60   ~ 0
+GND
+$Comp
+L CONN_1 P9
+U 1 1 4FB22BC1
+P 14800 8200
+F 0 "P9" H 14880 8200 40  0000 L CNN
+F 1 "CONN_1" H 14800 8255 30  0001 C CNN
+	1    14800 8200
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P8
+U 1 1 4FB22BBB
+P 14800 8050
+F 0 "P8" H 14880 8050 40  0000 L CNN
+F 1 "CONN_1" H 14800 8105 30  0001 C CNN
+	1    14800 8050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P7
+U 1 1 4FB22BAF
+P 14800 7900
+F 0 "P7" H 14880 7900 40  0000 L CNN
+F 1 "CONN_1" H 14800 7955 30  0001 C CNN
+	1    14800 7900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 4FB22608
+P 7400 7850
+F 0 "#PWR01" H 7400 7850 30  0001 C CNN
+F 1 "GND" H 7400 7780 30  0001 C CNN
+	1    7400 7850
+	0    1    1    0   
+$EndComp
+$Comp
+L C C7
+U 1 1 4FB225F5
+P 7600 7850
+F 0 "C7" H 7650 7950 50  0000 L CNN
+F 1 "1uF" H 7650 7750 50  0000 L CNN
+	1    7600 7850
+	0    1    1    0   
+$EndComp
+Text Label 13600 8500 2    60   ~ 0
+GND
+Text Label 13600 8400 2    60   ~ 0
+VCC
+$Comp
+L CONN_8 P6
+U 1 1 4FB20312
+P 13950 8750
+F 0 "P6" V 13900 8750 60  0000 C CNN
+F 1 "PORTC" V 14000 8750 60  0000 C CNN
+	1    13950 8750
+	1    0    0    -1  
+$EndComp
+Text Label 13600 9100 2    60   ~ 0
+C5
+Text Label 13600 9000 2    60   ~ 0
+C4
+Text Label 13600 8900 2    60   ~ 0
+C3
+Text Label 13600 8800 2    60   ~ 0
+C2
+Text Label 13600 8700 2    60   ~ 0
+C1
+Text Label 13600 8600 2    60   ~ 0
+C0
+Text Label 13600 8150 2    60   ~ 0
+D7
+Text Label 13600 8050 2    60   ~ 0
+D6
+Text Label 13600 7950 2    60   ~ 0
+D5
+Text Label 13600 7850 2    60   ~ 0
+D4
+Text Label 13600 7750 2    60   ~ 0
+D3
+Text Label 13600 7650 2    60   ~ 0
+D2
+Text Label 13600 7550 2    60   ~ 0
+RX
+Text Label 13600 7450 2    60   ~ 0
+TX
+$Comp
+L CONN_8 P5
+U 1 1 4FB1E5F0
+P 13950 7800
+F 0 "P5" V 13900 7800 60  0000 C CNN
+F 1 "PORTD" V 14000 7800 60  0000 C CNN
+	1    13950 7800
+	1    0    0    -1  
+$EndComp
+Text Label 9700 9150 0    60   ~ 0
+D7
+Text Label 9700 9050 0    60   ~ 0
+D6
+Text Label 9700 8950 0    60   ~ 0
+D5
+Text Label 9700 8850 0    60   ~ 0
+D4
+Text Label 9700 8750 0    60   ~ 0
+D3
+Text Label 9700 8650 0    60   ~ 0
+D2
+Text Label 9700 8050 0    60   ~ 0
+C5
+Text Label 9700 7950 0    60   ~ 0
+C4
+Text Label 9700 7850 0    60   ~ 0
+C3
+Text Label 9700 7750 0    60   ~ 0
+C2
+Text Label 9700 7650 0    60   ~ 0
+C1
+Text Label 9700 7550 0    60   ~ 0
+C0
+$Comp
+L C C6
+U 1 1 4FE29185
+P 7100 7100
+F 0 "C6" H 7150 7200 50  0000 L CNN
+F 1 "0.1uF" H 7150 7000 50  0000 L CNN
+	1    7100 7100
+	0    1    1    0   
+$EndComp
+Text Label 12200 8750 2    60   ~ 0
+FTDI/RST
+Text Label 12200 8550 2    60   ~ 0
+GND
+Text Label 12200 8350 2    60   ~ 0
++25
+$Comp
+L CONN_2 P4
+U 1 1 4FE29127
+P 12550 8450
+F 0 "P4" V 12500 8450 40  0000 C CNN
+F 1 "PWR" V 12600 8450 40  0000 C CNN
+	1    12550 8450
+	1    0    0    -1  
+$EndComp
+NoConn ~ 12200 9150
+Text Label 12200 9250 2    60   ~ 0
+GND
+Text Label 12200 9050 2    60   ~ 0
+VCC
+$Comp
+L CONN_6 P3
+U 1 1 4FDD5C07
+P 12550 9000
+F 0 "P3" V 12500 9000 60  0000 C CNN
+F 1 "FTDI" V 12600 9000 60  0000 C CNN
+	1    12550 9000
+	1    0    0    -1  
+$EndComp
+Text Label 12200 8850 2    60   ~ 0
+RX
+Text Label 9700 8450 0    60   ~ 0
+TX
+Text Label 9700 8550 0    60   ~ 0
+RX
 Text Label 12200 8950 2    60   ~ 0
 TX
 Text Label 12200 8200 2    60   ~ 0
