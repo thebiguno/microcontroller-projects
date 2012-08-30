@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Fri 24 Aug 2012 12:35:33 PM MDT
+EESchema Schematic File Version 2  date Wed 29 Aug 2012 06:04:05 PM MDT
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr User 17000 11000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "24 aug 2012"
+Date "29 aug 2012"
 Rev ""
 Comp ""
 Comment1 ""
@@ -2748,7 +2748,7 @@ P 1150 7950
 F 0 "Q1" H 1150 7800 60  0000 R CNN
 F 1 "PNP" H 1150 8100 60  0000 R CNN
 	1    1150 7950
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q2
@@ -2757,7 +2757,7 @@ P 1650 7850
 F 0 "Q2" H 1650 7700 60  0000 R CNN
 F 1 "PNP" H 1650 8000 60  0000 R CNN
 	1    1650 7850
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q4
@@ -2766,7 +2766,7 @@ P 2650 7650
 F 0 "Q4" H 2650 7500 60  0000 R CNN
 F 1 "PNP" H 2650 7800 60  0000 R CNN
 	1    2650 7650
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q3
@@ -2775,7 +2775,7 @@ P 2150 7750
 F 0 "Q3" H 2150 7600 60  0000 R CNN
 F 1 "PNP" H 2150 7900 60  0000 R CNN
 	1    2150 7750
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q5
@@ -2784,7 +2784,7 @@ P 3150 7550
 F 0 "Q5" H 3150 7400 60  0000 R CNN
 F 1 "PNP" H 3150 7700 60  0000 R CNN
 	1    3150 7550
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q6
@@ -2793,7 +2793,7 @@ P 3650 7450
 F 0 "Q6" H 3650 7300 60  0000 R CNN
 F 1 "PNP" H 3650 7600 60  0000 R CNN
 	1    3650 7450
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 $Comp
 L PNP Q7
@@ -2802,7 +2802,7 @@ P 4150 7350
 F 0 "Q7" H 4150 7200 60  0000 R CNN
 F 1 "PNP" H 4150 7500 60  0000 R CNN
 	1    4150 7350
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 Text Label 4650 7450 0    60   ~ 0
 ROW8
@@ -2813,7 +2813,7 @@ P 4650 7250
 F 0 "Q8" H 4650 7100 60  0000 R CNN
 F 1 "PNP" H 4650 7400 60  0000 R CNN
 	1    4650 7250
-	0    -1   -1   0   
+	0    1    -1   0   
 $EndComp
 Text Label 650  3200 0    60   ~ 0
 GND

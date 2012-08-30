@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Fri 24 Aug 2012 12:57:32 PM MDT
+# EESchema Netlist Version 1.1 created  Wed 29 Aug 2012 05:23:40 PM MDT
 (
  ( /4FE4CE9D $noname  P13 CONN_1 {Lib=CONN_1}
   (    1 N-000194 )
@@ -929,44 +929,44 @@
   (    1 /DINA )
  )
  ( /4FA743FC $noname  Q1 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R1 )
   (    2 /ROW1 )
-  (    3 /R1 )
+  (    3 VCC )
  )
  ( /4FA743F2 $noname  Q2 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R2 )
   (    2 /ROW2 )
-  (    3 /R2 )
+  (    3 VCC )
  )
  ( /4FA743BC $noname  Q4 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R4 )
   (    2 /ROW4 )
-  (    3 /R4 )
+  (    3 VCC )
  )
  ( /4FA743B2 $noname  Q3 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R3 )
   (    2 /ROW3 )
-  (    3 /R3 )
+  (    3 VCC )
  )
  ( /4FA743A5 $noname  Q5 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R5 )
   (    2 /ROW5 )
-  (    3 /R5 )
+  (    3 VCC )
  )
  ( /4FA74394 $noname  Q6 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R6 )
   (    2 /ROW6 )
-  (    3 /R6 )
+  (    3 VCC )
  )
  ( /4FA7437E $noname  Q7 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R7 )
   (    2 /ROW7 )
-  (    3 /R7 )
+  (    3 VCC )
  )
  ( /4FA742C5 $noname  Q8 PNP {Lib=PNP}
-  (    1 VCC )
+  (    1 /R8 )
   (    2 /ROW8 )
-  (    3 /R8 )
+  (    3 VCC )
  )
  ( /4FA15EE0 $noname  R16 180 {Lib=R}
   (    1 N-000136 )
@@ -1865,60 +1865,60 @@ Net 11 "GND" "GND"
  UB2 16
  UB1 16
  UD1 8
+ UE1 16
+ UF1 8
+ UE1 8
+ UE2 16
+ UF1 16
  UF2 8
  UF2 16
- UE1 16
- UE1 8
- UF1 16
- UF1 8
- UE2 16
 Net 12 "/DOUTF" "DOUTF"
  UF2 9
  OUTF1 1
 Net 13 "VCC" "VCC"
- UD1 7
- UD1 1
- UD2 1
- P1 2
- UB2 1
  UB2 7
- L1 1
+ UB2 1
  C3 1
+ UD2 1
  UA1 7
+ UA1 1
+ UF1 7
+ P3 4
+ UF1 1
+ P1 2
+ UF2 7
+ UD2 7
+ UF2 1
+ UD1 1
+ UD1 7
+ UE2 7
+ Q4 3
+ UC2 1
+ Q3 3
+ Q5 3
+ UROW1 16
+ Q6 3
+ UE2 1
+ IC1 7
+ UROW1 10
+ Q2 3
+ IC1 20
+ R108 1
+ UE1 1
+ Q1 3
+ P6 1
  UC2 7
+ UE1 7
+ L1 1
  R106 2
+ UB1 1
+ UB1 7
  UA2 7
  UA2 1
  UC1 1
- Q6 1
+ Q8 3
  UC1 7
- Q8 1
- Q7 1
- UF2 7
- UD2 7
- Q5 1
- UF2 1
- UE2 1
- Q1 1
- UB1 7
- UE2 7
- UROW1 16
- R108 1
- UE1 1
- Q3 1
- P6 1
- Q4 1
- IC1 20
- P3 4
- UE1 7
- Q2 1
- UF1 1
- UA1 1
- IC1 7
- UC2 1
- UF1 7
- UROW1 10
- UB1 1
+ Q7 3
 Net 14 "/REDF5" "REDF5"
  R84 2
  UF1 11
@@ -1926,50 +1926,50 @@ Net 15 "" ""
  UF2 2
  UF1 9
 Net 16 "" ""
- LE1 10
  R73 1
+ LE1 10
 Net 17 "" ""
- R74 1
  LE1 7
+ R74 1
 Net 18 "" ""
  R75 1
  LE1 4
 Net 19 "" ""
- LE1 1
  R76 1
+ LE1 1
 Net 20 "" ""
- LE1 15
  R77 1
+ LE1 15
 Net 21 "" ""
  LE1 23
  R72 1
 Net 22 "" ""
- R78 1
  LE1 18
+ R78 1
 Net 23 "" ""
- R79 1
  LE1 21
+ R79 1
 Net 24 "" ""
  LE1 24
  R80 1
 Net 25 "/R6" "R6"
- LA1 6
- LB1 6
- LC1 6
- Q6 3
- LF1 6
  LE1 6
+ LF1 6
+ Q6 1
+ LB1 6
  LD1 6
+ LA1 6
+ LC1 6
 Net 26 "" ""
  LE1 5
  R67 1
 Net 27 "/R5" "R5"
- LA1 3
- Q5 3
  LC1 3
- LD1 3
- LB1 3
  LF1 3
+ LB1 3
+ LD1 3
+ Q5 1
+ LA1 3
  LE1 3
 Net 28 "" ""
  LE1 2
@@ -1996,8 +1996,8 @@ Net 35 "/REDE3" "REDE3"
  R70 2
  UE2 14
 Net 36 "" ""
- R70 1
  LE1 17
+ R70 1
 Net 37 "/REDE2" "REDE2"
  R71 2
  UE1 4
@@ -2019,11 +2019,11 @@ Net 41 "/SRCLK" "SRCLK"
  P1 3
  UF1 15
  UD2 15
- UE1 15
+ IC1 19
  UB1 15
  UB2 15
  UD1 15
- IC1 19
+ UE1 15
  UA1 15
  UA2 15
 Net 42 "/RCLK" "RCLK"
@@ -2095,7 +2095,7 @@ Net 59 "" ""
 Net 60 "/R7" "R7"
  LD1 9
  LC1 9
- Q7 3
+ Q7 1
  LE1 9
  LF1 9
  LB1 9
@@ -2143,8 +2143,8 @@ Net 74 "/REDD5" "REDD5"
  UD1 11
  R52 2
 Net 75 "/REDD6" "REDD6"
- UD1 5
  R51 2
+ UD1 5
 Net 76 "/REDD7" "REDD7"
  UD2 11
  R50 2
@@ -2203,28 +2203,28 @@ Net 94 "/REDF8" "REDF8"
  UF2 5
  R81 2
 Net 95 "" ""
- R81 1
  LF1 11
+ R81 1
 Net 96 "" ""
- R94 1
  LF1 18
+ R94 1
 Net 97 "" ""
  LF1 14
  R85 1
 Net 98 "" ""
- R93 1
  LF1 15
+ R93 1
 Net 99 "" ""
- R88 1
  LF1 23
+ R88 1
 Net 100 "/R8" "R8"
- LD1 12
  LC1 12
- LF1 12
  LE1 12
+ LF1 12
+ LD1 12
+ Q8 1
  LB1 12
  LA1 12
- Q8 3
 Net 101 "" ""
  LF1 21
  R95 1
@@ -2232,8 +2232,8 @@ Net 102 "/GRNF7" "GRNF7"
  R90 2
  UF2 12
 Net 103 "/GRNF3" "GRNF3"
- R94 2
  UF2 13
+ R94 2
 Net 104 "/GRNF4" "GRNF4"
  UF2 3
  R93 2
@@ -2256,8 +2256,8 @@ Net 110 "/ROW8" "ROW8"
  Q8 2
  R104 1
 Net 111 "/ROW7" "ROW7"
- R103 1
  Q7 2
+ R103 1
 Net 112 "/ROW6" "ROW6"
  Q6 2
  R102 1
@@ -2274,11 +2274,11 @@ Net 116 "/ROW2" "ROW2"
  R98 1
  Q2 2
 Net 117 "/REDA1" "REDA1"
- UA1 14
  R8 2
+ UA1 14
 Net 118 "/REDA5" "REDA5"
- UA1 11
  R4 2
+ UA1 11
 Net 119 "/REDA6" "REDA6"
  UA1 5
  R3 2
@@ -2286,11 +2286,11 @@ Net 120 "/REDA2" "REDA2"
  R7 2
  UA1 4
 Net 121 "/DINA" "DINA"
- UA1 2
  INA1 1
+ UA1 2
 Net 122 "/REDA3" "REDA3"
- UA2 14
  R6 2
+ UA2 14
 Net 123 "/ROW1" "ROW1"
  Q1 2
  R97 1
@@ -2307,8 +2307,8 @@ Net 127 "" ""
  LA1 8
  R2 1
 Net 128 "" ""
- LA1 5
  R3 1
+ LA1 5
 Net 129 "" ""
  R5 1
  LA1 14
@@ -2322,38 +2322,38 @@ Net 132 "" ""
  LA1 23
  R8 1
 Net 133 "" ""
- R9 1
  LA1 10
+ R9 1
 Net 134 "" ""
- LA1 18
  R14 1
+ LA1 18
 Net 135 "" ""
- LA1 15
  R13 1
+ LA1 15
 Net 136 "" ""
- R16 1
  LA1 24
+ R16 1
 Net 137 "" ""
  LA1 7
  R10 1
 Net 138 "" ""
- LA1 21
  R15 1
+ LA1 21
 Net 139 "" ""
  R11 1
  LA1 4
 Net 140 "/GRNA7" "GRNA7"
- UA2 12
  R10 2
+ UA2 12
 Net 141 "/GRNA1" "GRNA1"
- UA1 13
  R16 2
+ UA1 13
 Net 142 "/GRNA6" "GRNA6"
- R11 2
  UA1 6
+ R11 2
 Net 143 "/GRNA5" "GRNA5"
- UA1 12
  R12 2
+ UA1 12
 Net 144 "/GRNA4" "GRNA4"
  R13 2
  UA2 3
@@ -2367,20 +2367,20 @@ Net 147 "" ""
  R44 1
  LC1 1
 Net 148 "" ""
- R43 1
  LC1 4
+ R43 1
 Net 149 "" ""
  LC1 7
  R42 1
 Net 150 "" ""
- LC1 10
  R41 1
+ LC1 10
 Net 151 "" ""
- R40 1
  LC1 23
+ R40 1
 Net 152 "" ""
- LC1 15
  R45 1
+ LC1 15
 Net 153 "" ""
  LC1 20
  R39 1
@@ -2391,8 +2391,8 @@ Net 155 "" ""
  R37 1
  LC1 14
 Net 156 "" ""
- LC1 2
  R36 1
+ LC1 2
 Net 157 "" ""
  LC1 5
  R35 1
@@ -2400,11 +2400,11 @@ Net 158 "/REDC4" "REDC4"
  UC2 4
  R37 2
 Net 159 "/GRNC5" "GRNC5"
- R44 2
  UC1 12
+ R44 2
 Net 160 "/GRNC6" "GRNC6"
- UC1 6
  R43 2
+ UC1 6
 Net 161 "/GRNC7" "GRNC7"
  R42 2
  UC2 12
@@ -2450,13 +2450,13 @@ Net 174 "/GRNC4" "GRNC4"
 Net 175 "/R2" "R2"
  LD1 19
  LF1 19
- Q2 3
+ Q2 1
  LA1 19
  LB1 19
  LE1 19
  LC1 19
 Net 176 "/R3" "R3"
- Q3 3
+ Q3 1
  LD1 16
  LF1 16
  LC1 16
@@ -2466,14 +2466,14 @@ Net 176 "/R3" "R3"
 Net 177 "/R4" "R4"
  LB1 13
  LD1 13
- Q4 3
+ Q4 1
  LF1 13
  LA1 13
  LC1 13
  LE1 13
 Net 178 "/R1" "R1"
  LA1 22
- Q1 3
+ Q1 1
  LB1 22
  LC1 22
  LE1 22
