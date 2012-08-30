@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 1 date Thu 30 Aug 2012 02:58:57 PM MDT
+PCBNEW-BOARD Version 1 date Thu 30 Aug 2012 05:42:33 PM MDT
 
 # Created by Pcbnew(2011-05-25)-stable
 
@@ -10,7 +10,7 @@ EnabledLayers 1FFF8001
 Links 446
 NoConn 0
 Di 19956 14924 66049 56030
-Ndraw 27
+Ndraw 28
 Ntrack 1468
 Nzone 0
 BoardThickness 630
@@ -65,7 +65,7 @@ PadSize 600 600
 PadDrill 320
 Pad2MaskClearance 100
 AuxiliaryAxisOrg 0 0
-PcbPlotParams (pcbplotparams (layerselection 3178497) (usegerberextensions true) (excludeedgelayer false) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 2) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory ""))
+PcbPlotParams (pcbplotparams (layerselection 15761409) (usegerberextensions true) (excludeedgelayer false) (linewidth 60) (plotframeref false) (viasonmask false) (mode 1) (useauxorigin false) (hpglpennumber 1) (hpglpenspeed 20) (hpglpendiameter 15) (hpglpenoverlay 0) (pscolor true) (psnegative false) (psa4output false) (plotreference true) (plotvalue true) (plotothertext true) (plotinvisibletext false) (padsonsilk false) (subtractmaskfromsilk false) (outputformat 1) (mirror false) (drillshape 1) (scaleselection 1) (outputdirectory /home/wyatt/Desktop/))
 $EndSETUP
 
 $EQUIPOT
@@ -9996,6 +9996,11 @@ Ro 0.000000 0.000000 0.000000
 $EndSHAPE3D
 $EndMODULE  PINTST
 $TEXTPCB
+Te "Order 58077"
+Po 35750 50500 600 800 120 0
+De 21 1 0 Normal
+$EndTEXTPCB
+$TEXTPCB
 Te "B1"
 Po 32000 52750 400 400 100 0
 De 21 1 0 Normal
@@ -10007,7 +10012,7 @@ De 21 1 0 Normal
 $EndTEXTPCB
 $TEXTPCB
 Te "digitalcave.ca"
-Po 23250 36750 600 800 120 900
+Po 23250 36500 600 800 120 900
 De 21 1 0 Normal
 $EndTEXTPCB
 $TEXTPCB
