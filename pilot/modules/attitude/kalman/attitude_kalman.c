@@ -69,6 +69,7 @@ void attitude_init(vector_t gyro, vector_t accel) {
 
 void _attitude (double gyro, double accel, kalman_t *state, double dt) {
 	// http://tom.pycke.be/mav/71/kalman-filtering-of-imu-data
+	// http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it/
 	
 	// A = [1, -dt][0, 1]
 	// B = [dt, 0]
