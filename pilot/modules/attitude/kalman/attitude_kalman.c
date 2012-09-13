@@ -41,11 +41,11 @@ void _attitude_read_tuning() {
 		
 		state_x.q_angle = 0.001;
 		state_x.q_gyro = 0.003;
-		state_x.r_angle = 0.3;
+		state_x.r_angle = 0.03;
 
 		state_y.q_angle = 0.001;
 		state_y.q_gyro = 0.003;
-		state_y.r_angle = 0.3;
+		state_y.r_angle = 0.03;
 	}
 }
 
