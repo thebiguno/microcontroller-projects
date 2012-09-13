@@ -31,9 +31,9 @@ void gyro_init(){
 		_delay_ms(1000);
 		status_error(0x00);
 
-		//In theory the calibrated value is 382 (1.23v gyro input * 1024 / 3.3v vref).
-		calibrated_values[0] = 382;
-		calibrated_values[1] = 382;
+		//In theory the calibrated value is 492 (1.23v gyro input * 1024 / 2.56v vref).
+		calibrated_values[0] = 492;
+		calibrated_values[1] = 492;
 		// calibrated_values[2] = 382;
 	}
 
@@ -42,18 +42,17 @@ void gyro_init(){
 	pins[1] = PIN_GYRO_Y;
 	pins[2] = ADC_BATTERY;  //We init the battery check here too, since doing analog_init twice will kill first init settings
 			//If you adjust these indices, please change the read index in battery.c module as well.
-	analog_init(pins, 3, ANALOG_AREF);
+	analog_init(pins, 3, ANALOG_INTERNAL_256);
 }
 
 double _gyro_raw_to_rad(uint16_t raw, uint16_t calibrated_zero){
 	//Here we assume that we are using the 4x amplified output.  This gives us a sensitivity
-	// of 3.33mV / degree / second.  (non-amplified output has sensitivity of 0.83).  Given
+	// of 3.33mV / degree / second (from data sheet).  (non-amplified output has sensitivity of 0.83).  Given
 	// that a change of 1 unit in the ADC output theoretically reflects a change of 
-	// 3.2227 mV (10 bits with a reference voltage of 3.3v), we can say that each single
-	// 1 unit change in ADC output translates to just under 1 degree.  We can then say that
-	// radians ~= (raw - calibrated) * (π/180)  (we round the actual value of π/180 up 
-	// slightly to compensate for 1 unit being slightly less than one degree).
-	return 0.01746 * (((int16_t) raw) - (((int16_t) calibrated_zero)));
+	// 2.5 mV (10 bits with a reference voltage of 2.56v), we can say that each single
+	// 1 unit change in ADC output translates to about 0.75 degree (2.5 / 3.33).  We can then say that
+	// radians ~= (raw - calibrated) * 0.75 * (π/180)
+	return 0.01309 * (((int16_t) raw) - (((int16_t) calibrated_zero)));
 }
 
 vector_t gyro_get() {
