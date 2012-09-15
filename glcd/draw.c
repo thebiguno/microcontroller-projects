@@ -57,7 +57,7 @@ void glcd_draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t
 	}
 }
 
-void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, prog_uchar* bitmap, uint8_t o){
+void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* bitmap, uint8_t o){
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
@@ -69,23 +69,41 @@ void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, prog_
 	uint8_t bitCounter = glyphBitCount - 1;
 	uint8_t byteCounter = 0;
 
-	for(uint8_t iy = y; iy < y + height; iy++){
-		for(uint8_t ix = x; ix < x + width; ix++){
-			if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
-				glcd_set_pixel(ix, iy, o);
+	if (orientation == ORIENTATION_NORMAL){
+		for(uint8_t iy = y; iy < y + height; iy++){
+			for(uint8_t ix = x; ix < x + width; ix++){
+				if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
+					glcd_set_pixel(ix, iy, o);
+				}
+				
+				if (bitCounter == 0){
+					byteCounter++;
+					bitCounter = 8;
+				}
+				
+				bitCounter--;
 			}
-			
-			if (bitCounter == 0){
-				byteCounter++;
-				bitCounter = 8;
+		}
+	}
+	else if (orientation == ORIENTATION_DOWN){
+		for(uint8_t ix = x + height - 1; ix >= x; ix--){
+			for(uint8_t iy = y; iy < y + width; iy++){
+				if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
+					glcd_set_pixel(ix, iy, o);
+				}
+				
+				if (bitCounter == 0){
+					byteCounter++;
+					bitCounter = 8;
+				}
+				
+				bitCounter--;
 			}
-			
-			bitCounter--;
 		}
 	}
 }
 
-void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, prog_uchar* font, prog_uchar* codepage, uint8_t o){
+void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* font, prog_uchar* codepage, uint8_t o){
 	uint8_t i = 0;
 	
 	//We need to figure out which bit the beginning of the character is, and how
@@ -100,9 +118,10 @@ void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t hei
 		//Find the entry in the code page
 		uint8_t glyphIndex = pgm_read_byte_near(codepage + (uint8_t) text[i]);
 
-		glcd_draw_bitmap(x, y, width, height, font + (glyphIndex * glyphByteCount), o);
+		glcd_draw_bitmap(x, y, width, height, orientation, font + (glyphIndex * glyphByteCount), o);
 
-		x += (width + 1);
+		if (orientation == ORIENTATION_NORMAL) x += (width + 1);
+		else if (orientation == ORIENTATION_DOWN) y += (width + 1);
 		i++;
 	}
 }
