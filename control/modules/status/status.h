@@ -26,13 +26,13 @@ void status_init_mode_kalman();
 
 /////// Flight mode functions
 /*
- * Sets the battery level for the pilot (double from 0.0 to 1.0 inclusive)
+ * Sets the battery level for the pilot (actual voltage level)
  */
-void status_set_pilot_battery_level(double value);
+void status_set_pilot_battery_level(double voltage);
 /*
- * Sets the battery level for the control (double from 0.0 to 1.0 inclusive)
+ * Sets the battery level for the control (actual voltage level)
  */
-void status_set_control_battery_level(double value);
+void status_set_control_battery_level(double voltage);
 /*
  * Sets the throttle (double from 0.0 to 1.0 inclusive).  If 
  * armed, then show throttle; otherwise show ---

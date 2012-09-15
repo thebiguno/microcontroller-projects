@@ -135,7 +135,7 @@ void protocol_send_diag(char* s) {
 void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 	switch(cmd) {
 		case 'B':
-			battery = convert_byte_to_percent(pilot.buf[0]);
+			battery = convert_bytes_to_double(pilot.buf, 0);
 			battery_misses = 0;
 			break;
 		case 'T':

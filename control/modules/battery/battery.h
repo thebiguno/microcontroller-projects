@@ -14,9 +14,8 @@
 void battery_init();
 
 /*
- * Returns the current battery level.  0 is dead, 255 is full.  Adjust defines to
- * set what the max / min cutoff is.
+ * Returns the current actual battery voltage.
  */
-double battery_level();
+double battery_voltage();
 
 #endif

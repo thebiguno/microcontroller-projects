@@ -154,7 +154,7 @@ int main(){
 			battery_overflow++;
 			if (battery_overflow >= BATTERY_OVERFLOW){
 				battery_overflow = 0;
-				protocol_send_battery(battery_level());
+				protocol_send_battery(battery_voltage());
 			}
 		}
 	}

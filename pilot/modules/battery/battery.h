@@ -15,9 +15,9 @@
 void battery_init();
 
 /*
- * Returns the current battery level.  0 is dead, 255 is full.  Adjust defines to
- * set what the max / min cutoff is.
+ * Returns the current battery level, in volts.  This may need to be calibrated on a 
+ * per-craft basis.
  */
-double battery_level();
+double battery_voltage();
 
 #endif
