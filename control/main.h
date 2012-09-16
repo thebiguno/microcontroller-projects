@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define GIT_VERSION		"1.0.0-2-g826fc6f"
+#define GIT_VERSION		"--GIT_VERSION--"
 
 #include <avr/io.h>
 #include <math.h>
