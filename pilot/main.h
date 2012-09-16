@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#define GIT_VERSION		"--GIT_VERSION--"
+
 #include <avr/io.h>
 #include "../lib/timer/timer.h"
 

@@ -155,6 +155,7 @@ int main(){
 			if (battery_overflow >= BATTERY_OVERFLOW){
 				battery_overflow = 0;
 				protocol_send_battery(battery_voltage());
+				protocol_send_version(GIT_VERSION);
 			}
 		}
 	}

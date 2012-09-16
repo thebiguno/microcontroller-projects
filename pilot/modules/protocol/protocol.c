@@ -217,6 +217,18 @@ void protocol_send_diag(char* s) {
 	protocol_send_message('D', packet, l);
 }
 
+void protocol_send_version(char* s) {
+	uint8_t packet[255];
+	uint8_t l = 0;
+	while (*s != '\0') {
+		packet[l] = *s;
+		l++;
+		s++;
+	}
+	protocol_send_message('V', packet, l);
+}
+
+
 void protocol_send_battery(double voltage) {
 	uint8_t packet[4];
 	convert_double_to_bytes(voltage, packet, 0);

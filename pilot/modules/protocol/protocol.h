@@ -37,6 +37,8 @@ void protocol_send_raw(vector_t gyro, vector_t accel);
 
 void protocol_send_diag(char *);
 
+void protocol_send_version(char *);
+
 void protocol_send_battery(double percent);
 
 #endif
