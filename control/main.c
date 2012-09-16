@@ -21,7 +21,6 @@ int8_t mode = MODE_FLIGHT;
 int8_t tuning_row, tuning_col;				// Reset to 0 when mode is changed; this is used to determine which element is being changed
 vector_t pid_p, pid_i, pid_d;				// PID values; sent with X, modified with up / down pad
 vector_t kalman_qa, kalman_qg, kalman_ra;	// Kalman values; sent with X, modified with up / down pad
-vector_t comp_k;							// Complementary values
 
 void init_display(){
 	if (mode == MODE_FLIGHT){
@@ -35,9 +34,6 @@ void init_display(){
 	}
 	else if (mode == MODE_PID){
 		status_init_mode_pid();	
-	}
-	else if (mode == MODE_COMP){
-		status_init_mode_comp();
 	}
 	else if (mode == MODE_KALMAN){
 		status_init_mode_kalman();
@@ -53,9 +49,6 @@ void update_display(){
 	}
 	else if (mode == MODE_PID){
 		status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);
-	}
-	else if (mode == MODE_COMP) {
-		status_set_comp_values(tuning_row, comp_k);
 	}
 	else if (mode == MODE_KALMAN){
 		status_set_kalman_values(tuning_col, tuning_row, kalman_qa, kalman_qg, kalman_ra);			
@@ -128,24 +121,6 @@ void adjust_kalman(int8_t value){
 	if (kalman_ra.y > 5.0) kalman_ra.y = 5.0;
 }
 
-void adjust_comp(int8_t value){
-	//Adjust the selected value by the step
-	if (tuning_row == 0){			//k x
-		comp_k.x += value * 0.01;
-	}
-	else if (tuning_row == 1){		//k y
-		comp_k.y += value * 0.01;
-	}
-	
-	//Sanity checks
-	if (comp_k.x < 0.0) comp_k.x = 0.0;
-	if (comp_k.y < 0.0) comp_k.y = 0.0;
-
-	if (comp_k.x > 9.99) comp_k.x = 9.99;
-	if (comp_k.y > 9.99) comp_k.y = 9.99;
-}
-
-
 void check_buttons(uint16_t button_state, uint16_t button_changed){
 	//Change mode using next (circle) and prev (square) buttons
 	if (((button_state & MODE_NEXT) && (button_changed & MODE_NEXT)) 
@@ -168,9 +143,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		else if (mode == MODE_PID){
 			protocol_send_pid_tuning(pid_p, pid_i, pid_d);
 		}
-		else if (mode == MODE_COMP){
-			protocol_send_comp_tuning(comp_k);
-		}
 		else if (mode == MODE_KALMAN){
 			protocol_send_kalman_tuning(kalman_qa, kalman_qg, kalman_ra);
 		}
@@ -192,9 +164,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 		if (mode == MODE_PID){
 			adjust_pid((button_state & VALUE_UP) ? 1 : -1);			
 		}
-		else if (mode == MODE_COMP){
-			adjust_comp((button_state & VALUE_UP) ? 1 : -1);			
-		}
 		else if (mode == MODE_KALMAN){
 			adjust_kalman((button_state & VALUE_UP) ? 1 : -1);			
 		}
@@ -209,23 +178,6 @@ void check_buttons(uint16_t button_state, uint16_t button_changed){
 				tuning_col = 2;
 			}
 			else if (tuning_col >= 3){
-				tuning_row++;
-				tuning_col = 0;
-			}
-			
-			if (tuning_row < 0){
-				tuning_row = 1;
-			}
-			else if (tuning_row >= 2){
-				tuning_row = 0;
-			}
-		}
-		else if (mode == MODE_COMP){
-			if (tuning_col < 0){
-				tuning_row--;
-				tuning_col = 0;
-			}
-			else if (tuning_col >= 1){
 				tuning_row++;
 				tuning_col = 0;
 			}
@@ -302,7 +254,6 @@ int main (void){
 		
 		//Check for tuning requests from the poll'd protocol
 		protocol_get_pid_tuning(&pid_p, &pid_i, &pid_d);
-		protocol_get_comp_tuning(&comp_k);
 		protocol_get_kalman_tuning(&kalman_qa, &kalman_qg, &kalman_ra);
 
 		control_update();

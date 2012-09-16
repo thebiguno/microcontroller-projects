@@ -27,15 +27,14 @@ static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid rang
 static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
 
 static char version[32];								//Mailbox for received pilot version strings
+
 #define MAILBOX_PID		_BV(0)
-#define MAILBOX_COMP	_BV(1)
-#define MAILBOX_KALMAN	_BV(2)
+#define MAILBOX_KALMAN	_BV(1)
 static uint8_t mailbox_flag = 0;	//Check bits for what message types are available
 
 static vector_t _vector;
 static vector_t pid_p, pid_i, pid_d;					//Mailbox for received PID tuning values
 static vector_t kalman_qa, kalman_qg, kalman_ra;		//Mailbox for received kalman tuning values
-static vector_t comp_k;									//Mailbox for received complementary tuning values
 
 static double _motors[] = {0,0,0,0};
 
@@ -283,16 +282,6 @@ void protocol_get_pid_tuning(vector_t *p, vector_t *i, vector_t *d){
 	mailbox_flag &= ~MAILBOX_PID;
 }
 
-void protocol_get_comp_tuning(vector_t *k){
-	if (mailbox_flag & MAILBOX_COMP){
-		k->x = comp_k.x;
-		k->y = comp_k.y;
-	}
-	
-	//Reset flag
-	mailbox_flag &= ~MAILBOX_COMP;
-}
-
 void protocol_get_kalman_tuning(vector_t *qa, vector_t *qg, vector_t *ra){
 	if (mailbox_flag & MAILBOX_KALMAN){
 		qa->x = kalman_qa.x;
@@ -321,13 +310,6 @@ void protocol_send_pid_tuning(vector_t p, vector_t i, vector_t d){
 	convert_double_to_bytes(d.y, data, 28);
 	//z is ignored					
 	protocol_send_message_to_pilot('p', data, 36);
-}
-
-void protocol_send_comp_tuning(vector_t k){
-	uint8_t data[8];
-	convert_double_to_bytes(k.x, data, 0);
-	convert_double_to_bytes(k.y, data, 4);
-	protocol_send_message_to_pilot('c', data, 8);	
 }
 
 void protocol_send_kalman_tuning(vector_t qa, vector_t qg, vector_t ra){
