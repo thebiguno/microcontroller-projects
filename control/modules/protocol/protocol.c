@@ -26,6 +26,7 @@ static uint8_t comm_state = 0;
 static double battery = -1;	// < 0 means 'unknown'; 0..1 inclusive is valid range.
 static double battery_misses = 0;	//Counter of how many times battery is read w/o being updated.  If this exceeds 3, we return -1.
 
+static char version[32];								//Mailbox for received pilot version strings
 #define MAILBOX_PID		_BV(0)
 #define MAILBOX_COMP	_BV(1)
 #define MAILBOX_KALMAN	_BV(2)
@@ -137,6 +138,17 @@ void _protocol_dispatch(uint8_t cmd, uint8_t length) {
 		case 'B':
 			battery = convert_bytes_to_double(pilot.buf, 0);
 			battery_misses = 0;
+			break;
+		case 'V':
+			//Iterate through the entire version array
+			for (uint8_t i = 0; i < 32; i++){
+				if (length > i){
+					version[i] = pilot.buf[i];
+				}
+				else {
+					version[i] = '\0';
+				}
+			}
 			break;
 		case 'T':
 			_vector.x = convert_byte_to_radian(pilot.buf[0]);
@@ -343,6 +355,10 @@ double protocol_get_battery() {
 	battery_misses++;
 	if (battery_misses >= 3) battery = -1.0;	//Reset if we have not gotten a reading for a while
 	return temp;
+}
+
+char* protocol_get_version(){
+	return version;
 }
 
 void protocol_get_motors(double motors[]) {

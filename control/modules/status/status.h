@@ -19,6 +19,7 @@ void status_init();
  */
 void status_init_mode_flight();
 void status_init_mode_calibrate();
+void status_init_mode_version();
 void status_init_mode_pid();
 void status_init_mode_comp();
 void status_init_mode_kalman();
@@ -57,6 +58,10 @@ void status_set_motors(double left, double front, double right, double back);
 
 /////// Calibration mode functions
 /* No calibration display needed */
+
+/////// Version mode functions
+
+void status_set_version_values(char* pilot_version, char* control_version);
 
 /////// PID mode functions
 /*

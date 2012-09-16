@@ -56,6 +56,8 @@ uint8_t protocol_comm_state(uint8_t bit);
 
 double protocol_get_battery();
 
+char* protocol_get_version();
+
 void protocol_get_motors(double motors[]);
 
 vector_t protocol_get_vector();

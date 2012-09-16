@@ -74,6 +74,16 @@ void status_init_mode_calibrate(){
 	glcd_write_buffer();
 }
 
+void status_init_mode_version(){
+	//Clear buffer
+	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+
+	//Write text labels
+	glcd_draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Version", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, OVERLAY_OR);
+	
+	glcd_write_buffer();
+}
+
 void status_init_mode_pid(){
 	//Clear buffer
 	glcd_draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
@@ -424,6 +434,15 @@ void status_set_comp_values(uint8_t row, vector_t k) {
 	
 }
 
+void status_set_version_values(char* pilot_version, char* control_version){
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Pilot:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Cntrl:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, pilot_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	glcd_draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, control_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+
+	glcd_write_buffer();
+}
 
 void status_persist_values(uint8_t invert){
 	glcd_set_display_inverted(invert);

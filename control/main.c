@@ -3,16 +3,16 @@
 
 #define MODE_FLIGHT		0
 #define MODE_CALIBRATE	1
-#define MODE_PID		2
-#define MODE_COMP		3
+#define MODE_VERSION	2
+#define MODE_PID		3
 #define MODE_KALMAN		4
 
 	
 //Controller mode state.  Modes are as follows:
 // 0: Flight mode (armed / disarmed, shows throttle, telemetry, battery, etc)
 // 1: Calibration mode (calibrate gyro + accel)
-// 2: PID mode (read / write PID values)
-// 3: Complementary mode (read / write Complementary tuning values)
+// 2: Version display (controller and pilot)
+// 3: PID mode (read / write PID values)
 // 4: Kalman mode (read / write Kalman tuning values)
 //Modes are incremented / decremented using Circle / Square buttons respectively.
 int8_t mode = MODE_FLIGHT;
@@ -30,6 +30,9 @@ void init_display(){
 	else if (mode == MODE_CALIBRATE){
 		status_init_mode_calibrate();
 	}
+	else if (mode == MODE_VERSION){
+		status_init_mode_version();
+	}
 	else if (mode == MODE_PID){
 		status_init_mode_pid();	
 	}
@@ -44,6 +47,9 @@ void init_display(){
 void update_display(){
 	if (mode == MODE_CALIBRATE){
 		//Nop
+	}
+	else if (mode == MODE_VERSION) {
+		status_set_version_values(protocol_get_version(), GIT_VERSION);
 	}
 	else if (mode == MODE_PID){
 		status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);
