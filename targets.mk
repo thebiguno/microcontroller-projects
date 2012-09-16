@@ -20,7 +20,7 @@ $(PROJECT).out: $(SOURCES)
 	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).out $(SOURCES) $(CLIBS)
 
 
-program: $(PROJECT).hex
+program: all
 	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE)  \
 		-U flash:w:$(PROJECT).hex 
