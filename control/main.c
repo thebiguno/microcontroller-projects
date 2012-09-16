@@ -390,8 +390,11 @@ int main (void){
 				buffer_array[0] = protocol_get_battery();
 				status_set_pilot_battery_level(buffer_array[0]);
 				
-				//Turn on error buzzer if either control or pilot battery is low
-				status_error_battery((battery_voltage() < 4.0) || (buffer_array[0] < 9.8 && buffer_array[0] >= 0.1));
+				//Turn on error buzzer if either control or pilot battery is low.  For the pilot, we don't turn the warning on
+				// if the voltage is less than 5v, since a) it will never be that low in real life (and if it is, the LiPo 
+				// batteries are already toast), and b) when running on programmer power it *is* 5-ish volts, and we don't want
+				// the buzzer going off constantly.
+				status_error_battery((battery_voltage() < 4.0) || (buffer_array[0] < 9.8 && buffer_array[0] >= 5.0));
 			}
 		}
 	}
