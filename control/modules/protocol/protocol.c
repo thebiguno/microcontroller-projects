@@ -104,6 +104,7 @@ void protocol_send_control(control_t control){
 	packet[2] = convert_radian_to_byte(control.roll);
 	packet[3] = convert_radian_to_byte(control.yaw);
 	protocol_send_message_to_pilot('A', packet, 4);
+	protocol_send_message_to_pc('A', packet, 4);
 }
 void protocol_send_kill() {
 	protocol_send_message_to_pilot('M', dummy, 0);
