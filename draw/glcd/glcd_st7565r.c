@@ -115,7 +115,7 @@ void glcd_write_buffer(){
  *
  * Sets the pixel at the given location in the buffer, using the given overlay mode.
  */
-void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t o){
+void set_pixel(uint8_t x, uint8_t y, uint8_t o){
 	if (x < LCD_WIDTH && y < LCD_HEIGHT){
 		if (o == OVERLAY_OR){
 			_st7565r_buffer[x][y >> 3] |= _BV(y & 0x7);

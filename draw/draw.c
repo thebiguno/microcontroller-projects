@@ -2,7 +2,7 @@
 
 // Implementation of Bresenham's algorithm; adapted from Lady Ada's GLCD library,
 // which was in turn adapted from Wikpedia.
-void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
+void draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
 
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
 	
@@ -32,10 +32,10 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
 
 	for (; x0 < x1; x0++) {
 		if (steep) {
-			glcd_set_pixel(y0, x0, o);
+			set_pixel(y0, x0, o);
 		}
 		else {
-			glcd_set_pixel(x0, y0, o);
+			set_pixel(x0, y0, o);
 		}
 		err -= dy;
 		if (err < 0) {
@@ -45,19 +45,19 @@ void glcd_draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t o){
 	}
 }
 
-void glcd_draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o){
+void draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t f, uint8_t o){
 	//Make sure that x0,y0 is top left corner.
 	if (x0 > x1) swap(x0, x1);
 	if (y0 > y1) swap(y0, y1);
 
 	for(uint8_t x = x0; x <= x1; x++){
 		for (uint8_t y = y0; y <= y1; y++){
-			if (f || x == x0 || x == x1 || y == y0 || y == y1) glcd_set_pixel(x, y, o);
+			if (f || x == x0 || x == x1 || y == y0 || y == y1) set_pixel(x, y, o);
 		}
 	}
 }
 
-void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* bitmap, uint8_t o){
+void draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* bitmap, uint8_t o){
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
@@ -73,7 +73,7 @@ void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8
 		for(uint8_t iy = y; iy < y + height; iy++){
 			for(uint8_t ix = x; ix < x + width; ix++){
 				if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
-					glcd_set_pixel(ix, iy, o);
+					set_pixel(ix, iy, o);
 				}
 				
 				if (bitCounter == 0){
@@ -89,7 +89,7 @@ void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8
 		for(uint8_t ix = x + height - 1; ix >= x; ix--){
 			for(uint8_t iy = y; iy < y + width; iy++){
 				if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
-					glcd_set_pixel(ix, iy, o);
+					set_pixel(ix, iy, o);
 				}
 				
 				if (bitCounter == 0){
@@ -103,7 +103,7 @@ void glcd_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8
 	}
 }
 
-void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* font, prog_uchar* codepage, uint8_t o){
+void draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* font, prog_uchar* codepage, uint8_t o){
 	uint8_t i = 0;
 	
 	//We need to figure out which bit the beginning of the character is, and how
@@ -118,7 +118,7 @@ void glcd_draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t hei
 		//Find the entry in the code page
 		uint8_t glyphIndex = pgm_read_byte_near(codepage + (uint8_t) text[i]);
 
-		glcd_draw_bitmap(x, y, width, height, orientation, font + (glyphIndex * glyphByteCount), o);
+		draw_bitmap(x, y, width, height, orientation, font + (glyphIndex * glyphByteCount), o);
 
 		if (orientation == ORIENTATION_NORMAL) x += (width + 1);
 		else if (orientation == ORIENTATION_DOWN) y += (width + 1);

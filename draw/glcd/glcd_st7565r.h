@@ -3,6 +3,7 @@
 
 #include <util/delay.h>
 #include "glcd.h"
+#include "../draw.h"
 
 //Half clock period, in micro seconds.  1 should be fine.
 #define CTRL_CLK 1

@@ -1,14 +1,6 @@
 #ifndef GLCD_H
 #define GLCD_H
 
-//Overlay modes.
-#define OVERLAY_NAND	0		//Always remove pixels
-#define OVERLAY_OR 		1		//Always draw pixels
-#define OVERLAY_XOR		2		//XOR new pixels with buffer pixels
-
-#define DRAW_UNFILLED	0		//Draw unfilled shapes
-#define DRAW_FILLED		1		//Draw filled shapes
-
 //The LCD width / height in pixels.  This may be used by driver implementations.
 #define LCD_WIDTH 128
 #define LCD_HEIGHT 32
