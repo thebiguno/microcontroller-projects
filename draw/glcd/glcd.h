@@ -29,10 +29,9 @@ void glcd_write_buffer();
 void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 /*
- * Most basic operation; sets a pixel at the given X, Y co-ordinates.  Existing 
- * data will be 
+ * Most basic operation; sets a pixel at the given X, Y co-ordinates.
  */
-void glcd_set_pixel(uint8_t x, uint8_t y, uint8_t o);
+void set_pixel(uint8_t x, uint8_t y, uint8_t o);
 
 /*
  * Get a a pixel at the given X, Y co-ordinates, using the specified overlay mode.
