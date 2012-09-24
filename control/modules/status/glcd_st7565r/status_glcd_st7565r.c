@@ -36,6 +36,7 @@
 #define STATUS_CONFIG_MODE_COLUMN_WIDTH	31
 #define STATUS_CONFIG_MODE_ROW_HEIGHT	8
 
+#define VALUE_ON	1
 
 //Temp buffer for printf
 char temp[16];
@@ -45,15 +46,15 @@ char temp[16];
  */
 void status_init_mode_flight(){
 	//Clear buffer
-	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 	
 	//Write text labels
-	draw_text(STATUS_PITCH_X, STATUS_PITCH_Y, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_ROLL_X, STATUS_ROLL_Y, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	draw_text(STATUS_PITCH_X, STATUS_PITCH_Y, (char*) "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_ROLL_X, STATUS_ROLL_Y, (char*) "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps,  1,OVERLAY_OR);
 	
 	// degree symbols
-	draw_rectangle(63,  6, 65,  8, DRAW_UNFILLED, OVERLAY_OR);
-	draw_rectangle(63, 23, 65, 25, DRAW_UNFILLED, OVERLAY_OR);
+	draw_rectangle(63,  6, 65,  8, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(63, 23, 65, 25, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
 	
 	//Draw invalid batteries
 	status_set_pilot_battery_level(-1);
@@ -64,38 +65,38 @@ void status_init_mode_flight(){
 
 void status_init_mode_calibrate(){
 	//Clear buffer
-	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write text labels
-	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Calibration", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Ensure craft is level and press", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "triangle to calibrate", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, (char*) "Calibration", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Ensure craft is level and press", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "triangle to calibrate", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 	
 	glcd_write_buffer();
 }
 
 void status_init_mode_version(){
 	//Clear buffer
-	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write text labels
-	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Version", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, (char*) "Version", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
 	
 	glcd_write_buffer();
 }
 
 void status_init_mode_pid(){
 	//Clear buffer
-	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write text labels
-	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "PID Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "P", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "I", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 3 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "D", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, (char*) "PID Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "P", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "I", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 3 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "D", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
 
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 	
 	glcd_write_buffer();
 }
@@ -103,16 +104,16 @@ void status_init_mode_pid(){
 void status_init_mode_kalman(){
 	//TODO set up kalman mode
 	//Clear buffer
-	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write text labels
-	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, "Kalman Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "alpha", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "bias", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 3 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, "sz", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TITLE_X, STATUS_CONFIG_MODE_TITLE_Y, (char*) "Kalman Tuning", FONT_SMALL_WIDTH, FONT_SMALL_HEIGHT, ORIENTATION_NORMAL, font_small, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "alpha", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 2 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "bias", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 3 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 0 * STATUS_CONFIG_MODE_ROW_HEIGHT, (char*) "sz", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
 
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Pitch", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Roll", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 	
 	glcd_write_buffer();
 }
@@ -128,17 +129,17 @@ void status_init(){
 
 void status_set_battery_level(double voltage, uint8_t x, uint8_t y, uint8_t pilot){
 	//Clear existing
-	draw_rectangle(x, y, x + 11, y + 31, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(x, y, x + 11, y + 31, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 	
 	//Redraw edge
-	draw_rectangle(x, y + 1, x + 11, y + 31, DRAW_UNFILLED, OVERLAY_OR);
-	draw_line(x + 3, y, x + 8, y, OVERLAY_OR);
+	draw_rectangle(x, y + 1, x + 11, y + 31, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
+	draw_line(x + 3, y, x + 8, y, VALUE_ON, OVERLAY_OR);
 	
 	//Fill according to level
 	if (voltage < 0.0){
 		//Draw an X for invalid values
-		draw_line(x, y + 1, x + 11, y + 31, OVERLAY_OR);
-		draw_line(x + 11, y + 1, x, y + 31, OVERLAY_OR);
+		draw_line(x, y + 1, x + 11, y + 31, VALUE_ON, OVERLAY_OR);
+		draw_line(x + 11, y + 1, x, y + 31, VALUE_ON, OVERLAY_OR);
 	}
 	else {
 		//We need to convert from voltage to a graph.  For the pilot we assume, 10V is empty, 11.3V is full.  There are 31 lines 
@@ -154,14 +155,14 @@ void status_set_battery_level(double voltage, uint8_t x, uint8_t y, uint8_t pilo
 		int8_t lines = (pilot ? (uint8_t) ((voltage - 10) / 0.04194) : (uint8_t) ((voltage - 4) / 0.026));
 		if (lines > 31) lines = 31;
 		if (lines < 0) lines = 0;
-		draw_rectangle(x + 1, y + 33 - lines, x + 10, y + 31, DRAW_FILLED, OVERLAY_OR);
+		draw_rectangle(x + 1, y + 33 - lines, x + 10, y + 31, DRAW_FILLED, VALUE_ON, OVERLAY_OR);
 
 		//Print name
-		draw_text(x + 2, y + 25, (pilot ? "P" : "C"), FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_XOR);
+		draw_text(x + 2, y + 25, (char*) (pilot ? "P" : "C"), FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_XOR);
 		
 		//Print voltage CW 90 degrees
-		sprintf(temp, "%4.1f", voltage);
-		draw_text(x + 3, y + 7, temp, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_DOWN, font_xsmall, codepage_ascii_caps, OVERLAY_XOR);
+		sprintf(temp, (char*) "%4.1f", voltage);
+		draw_text(x + 3, y + 7, temp, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_DOWN, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_XOR);
 	}
 	
 	//Flush
@@ -178,24 +179,24 @@ void status_set_control_battery_level(double voltage){
 
 void status_set_telemetry(double pitch, double roll){
 	//Clear existing
-	draw_rectangle(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 23, STATUS_PITCH_Y + 15, DRAW_FILLED, OVERLAY_NAND);
-	draw_rectangle(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 23, STATUS_ROLL_Y + 15, DRAW_FILLED, OVERLAY_NAND);	
+	draw_rectangle(STATUS_PITCH_X, STATUS_PITCH_Y + 6, STATUS_PITCH_X + 23, STATUS_PITCH_Y + 15, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
+	draw_rectangle(STATUS_ROLL_X, STATUS_ROLL_Y + 6, STATUS_ROLL_X + 23, STATUS_ROLL_Y + 15, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);	
 
 	//Write values
 	if (pitch > 1000){
-		draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);		
+		draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, (char*) "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);		
 	}
 	else {
-		sprintf(temp, "%3.1d", (int8_t) (pitch * 57.2957795));
-		draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);	
+		sprintf(temp, (char*) "%3.1d", (int8_t) (pitch * 57.2957795));
+		draw_text(STATUS_PITCH_X, STATUS_PITCH_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 	}
 	
 	if (roll > 1000){
-		draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);		
+		draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, (char*) "---", FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);		
 	}
 	else {
-		sprintf(temp, "%3.1d", (int8_t) (roll * 57.2957795));
-		draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);	
+		sprintf(temp, (char*) "%3.1d", (int8_t) (roll * 57.2957795));
+		draw_text(STATUS_ROLL_X, STATUS_ROLL_Y + 6, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 	}
 	
 	//Flush
@@ -207,18 +208,18 @@ void status_set_throttle(double throttle, uint8_t armed){
 	glcd_set_display_inverted(armed);
 
 	//Clear existing
-	draw_rectangle(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 34, STATUS_THROTTLE_Y + 16, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, STATUS_THROTTLE_X + 34, STATUS_THROTTLE_Y + 16, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 	
 	if (armed){
 		if (throttle > 1) throttle = 1;
 		if (throttle < 0) throttle = 0;
 	
 		//Write values
-		sprintf(temp, "%3.2d", (int8_t) (throttle * 100));
-		draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, temp, FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, ORIENTATION_NORMAL, font_xlarge, codepage_xlarge, OVERLAY_OR);
+		sprintf(temp, (char*) "%3.2d", (int8_t) (throttle * 100));
+		draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, temp, FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, ORIENTATION_NORMAL, font_xlarge, codepage_xlarge, VALUE_ON, OVERLAY_OR);
 	}
 	else {
-		draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, "---", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, ORIENTATION_NORMAL, font_xlarge, codepage_xlarge, OVERLAY_OR);
+		draw_text(STATUS_THROTTLE_X, STATUS_THROTTLE_Y, (char*) "---", FONT_XLARGE_WIDTH, FONT_XLARGE_HEIGHT, ORIENTATION_NORMAL, font_xlarge, codepage_xlarge, VALUE_ON, OVERLAY_OR);
 	}
 
 	//Flush
@@ -227,16 +228,16 @@ void status_set_throttle(double throttle, uint8_t armed){
 
 void status_set_armed_time(uint32_t millis){
 	//Clear existing
-	draw_rectangle(STATUS_TIME_X, STATUS_TIME_Y, STATUS_TIME_X + 32, STATUS_TIME_Y + 10, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(STATUS_TIME_X, STATUS_TIME_Y, STATUS_TIME_X + 32, STATUS_TIME_Y + 10, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write values
-	sprintf(temp, "%02d", (uint8_t) (millis / 60000));
-	draw_text(STATUS_TIME_X, STATUS_TIME_Y, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);
-	sprintf(temp, "%02d", (uint8_t) ((millis % 60000) / 1000));
-	draw_text(STATUS_TIME_X + 18, STATUS_TIME_Y, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, OVERLAY_OR);
+	sprintf(temp, (char*) "%02d", (uint8_t) (millis / 60000));
+	draw_text(STATUS_TIME_X, STATUS_TIME_Y, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	sprintf(temp, (char*) "%02d", (uint8_t) ((millis % 60000) / 1000));
+	draw_text(STATUS_TIME_X + 18, STATUS_TIME_Y, temp, FONT_MEDIUM_WIDTH, FONT_MEDIUM_HEIGHT, ORIENTATION_NORMAL, font_medium, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
 	
-	draw_line(17, 23, 17, 25, OVERLAY_OR);
-	draw_line(17, 28, 17, 30, OVERLAY_OR);
+	draw_line(17, 23, 17, 25, VALUE_ON, OVERLAY_OR);
+	draw_line(17, 28, 17, 30, VALUE_ON, OVERLAY_OR);
 	
 	//Flush
 	glcd_write_buffer_bounds(STATUS_TIME_X, STATUS_TIME_Y, STATUS_TIME_X + 32, STATUS_TIME_Y + 10);
@@ -244,11 +245,11 @@ void status_set_armed_time(uint32_t millis){
 
 void status_set_comm_state(uint8_t tx, uint8_t rx){
 	//Clear existing
-	draw_rectangle(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 6, STATUS_COMM_Y + 11, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 6, STATUS_COMM_Y + 11, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
 
 	//Write values
-	if (tx) draw_text(STATUS_COMM_X, STATUS_COMM_Y, "TX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	if (rx) draw_text(STATUS_COMM_X, STATUS_COMM_Y + 7, "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
+	if (tx) draw_text(STATUS_COMM_X, STATUS_COMM_Y, (char*) "TX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	if (rx) draw_text(STATUS_COMM_X, STATUS_COMM_Y + 7, (char*) "RX", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
 	
 	//Flush
 	glcd_write_buffer_bounds(STATUS_COMM_X, STATUS_COMM_Y, STATUS_COMM_X + 6, STATUS_COMM_Y + 10);
@@ -262,22 +263,22 @@ void status_set_motors(double left, double front, double right, double back){
 	uint8_t sm = 3; uint8_t lg = 13;
 	
 	//Clear existing
-	draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, OVERLAY_NAND);
-	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, OVERLAY_NAND);
-	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, OVERLAY_NAND);
-	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_FILLED, OVERLAY_NAND);
+	draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
+	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
+	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
+	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_FILLED, VALUE_ON, OVERLAY_NAND);
  
 	//Redraw edges: left, top, right, bottom
-	draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_UNFILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_UNFILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_UNFILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_UNFILLED, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + lx, STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy, STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + lg, STATUS_MOTORS_Y + ry + sm, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + lg, DRAW_UNFILLED, VALUE_ON, OVERLAY_OR);
 	
 	//Fill according to motor levels
-	draw_rectangle(STATUS_MOTORS_X + lx + lg - (uint8_t) (left * 12), STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy + lg - (uint8_t) (front * 12), STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + (uint8_t) (right * 12), STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, OVERLAY_OR);
-	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + (uint8_t) (back * 12), DRAW_FILLED, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + lx + lg - (uint8_t) (left * 12), STATUS_MOTORS_Y + ly, STATUS_MOTORS_X + lx + lg, STATUS_MOTORS_Y + ly + sm, DRAW_FILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + fx, STATUS_MOTORS_Y + fy + lg - (uint8_t) (front * 12), STATUS_MOTORS_X + fx + sm, STATUS_MOTORS_Y + fy + lg, DRAW_FILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + rx, STATUS_MOTORS_Y + ry, STATUS_MOTORS_X + rx + (uint8_t) (right * 12), STATUS_MOTORS_Y + ry + sm, DRAW_FILLED, VALUE_ON, OVERLAY_OR);
+	draw_rectangle(STATUS_MOTORS_X + bx, STATUS_MOTORS_Y + by, STATUS_MOTORS_X + bx + sm, STATUS_MOTORS_Y + by + (uint8_t) (back * 12), DRAW_FILLED, VALUE_ON, OVERLAY_OR);
 		
  	//Flush
 	glcd_write_buffer_bounds(STATUS_MOTORS_X, STATUS_MOTORS_Y, STATUS_MOTORS_X + 32, STATUS_MOTORS_Y + 32);
@@ -303,6 +304,7 @@ void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pi
 					STATUS_CONFIG_MODE_TEXT_X + (i + 2) * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 					STATUS_CONFIG_MODE_TEXT_Y + (j + 2) * STATUS_CONFIG_MODE_ROW_HEIGHT, 
 					DRAW_FILLED,
+					VALUE_ON, 
 					(col == i && row == j ? OVERLAY_OR : OVERLAY_NAND)
 			);
 			
@@ -316,6 +318,7 @@ void status_set_pid_values(uint8_t col, uint8_t row, vector_t pid_p, vector_t pi
 					ORIENTATION_NORMAL,
 					font_xsmall, 
 					codepage_ascii_caps, 
+					VALUE_ON, 
 					OVERLAY_XOR
 			);
 		}
@@ -350,6 +353,7 @@ void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vect
 					STATUS_CONFIG_MODE_TEXT_X + (i + 2) * STATUS_CONFIG_MODE_COLUMN_WIDTH, 
 					STATUS_CONFIG_MODE_TEXT_Y + (j + 2) * STATUS_CONFIG_MODE_ROW_HEIGHT, 
 					DRAW_FILLED,
+					VALUE_ON, 
 					(col == i && row == j ? OVERLAY_OR : OVERLAY_NAND)
 			);
 			
@@ -363,6 +367,7 @@ void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vect
 					ORIENTATION_NORMAL, 
 					font_xsmall, 
 					codepage_ascii_caps, 
+					VALUE_ON, 
 					OVERLAY_XOR
 			);
 		}
@@ -378,11 +383,11 @@ void status_set_kalman_values(uint8_t col, uint8_t row, vector_t kalman_qa, vect
 }
 
 void status_set_version_values(char* pilot_version, char* control_version){
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Pilot:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, "Cntrl:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Pilot:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 0 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, (char*) "Cntrl:", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, pilot_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);
-	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, control_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, OVERLAY_OR);	
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 1 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, pilot_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);
+	draw_text(STATUS_CONFIG_MODE_TEXT_X + 1 * STATUS_CONFIG_MODE_COLUMN_WIDTH, STATUS_CONFIG_MODE_TEXT_Y + 2 * STATUS_CONFIG_MODE_ROW_HEIGHT + 1, control_version, FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, VALUE_ON, OVERLAY_OR);	
 
 	glcd_write_buffer();
 }

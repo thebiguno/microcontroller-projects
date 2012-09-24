@@ -45,7 +45,7 @@ void update_display(){
 		//Nop
 	}
 	else if (mode == MODE_VERSION) {
-		status_set_version_values(protocol_get_version(), GIT_VERSION);
+		status_set_version_values(protocol_get_version(), (char*) GIT_VERSION);
 	}
 	else if (mode == MODE_PID){
 		status_set_pid_values(tuning_col, tuning_row, pid_p, pid_i, pid_d);

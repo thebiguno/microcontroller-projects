@@ -3,8 +3,9 @@ include ../build/variables.mk
 PROJECT=control
 MMCU=atmega644p
 F_CPU=8000000
-SOURCES=main.c ../lib/timer/timer_0.c ../lib/ring/ring.c
+SOURCES=main.c ../lib/timer/timer_0.c ../lib/Ring/Ring.cpp
 AVRDUDE_PROGRAMMER=usbtiny
+COMPILER=avr-g++
 
 HFUSE=0x91
 LFUSE=0xF7
