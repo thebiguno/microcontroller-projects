@@ -21,14 +21,12 @@
  */
 
 #include "serial.h"
-#include "../ring/ring.h"
+#include "../Ring/Ring.h"
 #include <avr/interrupt.h>
 
-static volatile ring_t tx_buffer;
+static Ring tx_buffer(SERIAL_BUFFER_SIZE);
 
 void _serial1_init_tx(){
-	ring_init(&tx_buffer, SERIAL_BUFFER_SIZE);
-
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -38,7 +36,7 @@ void _serial1_init_tx(){
 void serial1_write_c(char data){
 	//Disable UCSR interrupts temporarily to avoid clobbering the buffer
 	UCSR0B &= ~_BV(UDRIE1);
-	_buffer1_put(&tx_buffer, data);
+	tx_buffer.put(data);
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
 	UCSR1B |= _BV(UDRIE1);
@@ -51,8 +49,8 @@ void serial1_write_s(char *data){
 }
 
 ISR(USART1_UDRE_vect){
-	if (!_buffer_empty(&tx_buffer)){
-		UDR1 = _buffer_get(&tx_buffer);
+	if (!tx_buffer.isEmpty()){
+		UDR1 = tx_buffer.get();
 	}
 	else {
 		//Once the ring buffer is empty (i.e. head == tail), we disable

@@ -21,14 +21,12 @@
  */
 
 #include "serial.h"
-#include "../ring/ring.h"
+#include "../Ring/Ring.h"
 #include <avr/interrupt.h>
 
-static volatile ring_t tx_buffer;
+static Ring tx_buffer(SERIAL_BUFFER_SIZE);
 
 void _serial_init_tx(){
-	ring_init(&tx_buffer, SERIAL_BUFFER_SIZE);
-	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -38,7 +36,7 @@ void _serial_init_tx(){
 void serial_write_c(char data){
 	//Disable UCSR interrupts temporarily to avoid clobbering the buffer
 	UCSR0B &= ~_BV(UDRIE0);
-	ring_buffer_put(&tx_buffer, data);
+	tx_buffer.put(data);
 	
 	//Signal that there is data available; the UDRE interrupt will fire.
 	UCSR0B |= _BV(UDRIE0);
@@ -69,8 +67,8 @@ ISR(USART0_UDRE_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynch_tx.c
 void error2() {
 #endif
-	if (!ring_buffer_empty(&tx_buffer)){
-		UDR0 = ring_buffer_get(&tx_buffer);
+	if (!tx_buffer.isEmpty()){
+		UDR0 = tx_buffer.get();
 	}
 	else {
 		//Once the ring buffer is empty (i.e. head == tail), we disable
