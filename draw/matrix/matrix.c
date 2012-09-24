@@ -8,19 +8,29 @@
 
 
 //The buffer 
-static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 3];
+static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 static Shift shift(13);
+
+void _fill_data(uint8_t* data, uint8_t row, uint8_t dc){
+
+}
 
 void _callback(){
 	//TODO Restart shifting again
 	static uint8_t data[13];
 	static uint8_t row = 0;
+	static uint8_t dc = 0;	//4 bit duty cycle; 2 bits brightness, 2 bits color per pixel.
 	
 	//Set row driver
 	data[12] = ~_BV(row++);
 	if (row > 7) row = 0;
 	
+	dc++;
+	if (dc > 15) dc = 0;
 	
+	//Fill the data array based on current duty cycle, row, and buffer values
+	
+	shift.shift(data);
 }
 
 void matrix_init(){
