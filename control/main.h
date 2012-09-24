@@ -33,9 +33,6 @@ typedef struct vector {
     double z;
 } vector_t;
 
-
-uint16_t dt;
-
 #include "modules/battery/battery.h"
 #include "modules/control/control.h"
 #include "modules/comm/communication.h"

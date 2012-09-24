@@ -38,9 +38,9 @@ void control_init();
 void control_update();
 
 /*
- * Returns Throttle, Pitch, Roll, and Yaw
+ * Returns Throttle, Pitch, Roll, and Yaw.  Requires delta time (dt).
  */
-control_t control_read_analog();
+control_t control_read_analog(uint16_t dt);
 
 /*
  * Returns the value of all buttons.

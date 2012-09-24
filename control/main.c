@@ -232,6 +232,7 @@ int main (void){
 	double buffer_array[] = {0,0,0,0};
 	vector_t buffer_vector;
 	
+	uint16_t dt;
 	uint8_t armed = 0;
 	uint64_t armed_time = 0;
 		
@@ -259,7 +260,7 @@ int main (void){
 		control_update();
 		control_t control;
 		if (armed){
-			control = control_read_analog();
+			control = control_read_analog(dt);
 		}
 		else {
 			control.pitch = 0;

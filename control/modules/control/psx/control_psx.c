@@ -44,7 +44,7 @@ void control_update() {
 	button_state = read;
 }
 
-control_t control_read_analog() {
+control_t control_read_analog(uint16_t dt) {
 	// this code assumes "mode 2" which is the standard in North America
 	// left stick = throttle
 	// right stick = pitch / roll
