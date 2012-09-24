@@ -2,7 +2,7 @@
  * An OO implementation of shift library.
  */
 
-#include "shift.h"
+#include "Shift.h"
 #include <stdlib.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>

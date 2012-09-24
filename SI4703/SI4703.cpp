@@ -1,4 +1,4 @@
-#include "si4703.h"
+#include "SI4703.h"
 
 using namespace digitalcave;
 

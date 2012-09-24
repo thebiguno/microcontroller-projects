@@ -1,4 +1,4 @@
-#include "mp3.h"
+#include "MP3.h"
 
 using namespace digitalcave;
 
