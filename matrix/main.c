@@ -5,22 +5,30 @@
 #include <avr/interrupt.h>
 #include "lib/serial/serial.h"
 
-static Shift shift(2);
-uint8_t data[2];
+static Shift shift(13);
+uint8_t data[13];
 
 int main (void){
 	data[0] = 0xFF;
+	data[1] = 0xFF;
+	data[2] = 0xFF;
+	data[3] = 0xFF;
+	data[4] = 0xFF;
+	data[5] = 0xFF;
+	data[6] = 0xFF;
+	data[7] = 0xFF;
+	data[8] = 0xFF;
+	data[9] = 0xFF;
+	data[10] = 0xFF;
+	data[11] = 0xFF;
+
 	uint8_t row = 0;
-	serial_init_b(57600);
 	shift.setLatch(&PORTB, PORTB2);
 	while (1) {
-		serial_write_s("loop\n\r");
-		if (row > 7) row = 0;
-		data[1] = _BV(row);
 		if (shift.cts()) {
+			data[12] = ~_BV(row++);
+			if (row > 7) row = 0;
 			shift.shift(data);
-			serial_write_s("shift\n\r");
 		}
-		_delay_ms(1000);
 	}
 }
