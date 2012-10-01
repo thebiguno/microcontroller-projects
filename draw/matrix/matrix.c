@@ -14,7 +14,12 @@
 // pixels are therefore at buffer index [x][y >> 1]: even rows are the 4 LSB of this byte, and odd rows 
 // are the MSB of this byte.
 static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
-static Shift shift(13);
+//Data is copies to the working buffer first, and then flushed to _buffer for display by the user.  This
+// prevents flickering when doing animations (and in fact any live drawing).
+static uint8_t _working_buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
+
+//Shift object
+static Shift shift(13);			//TODO change the size to be dynamically calculated based on width and height values
 
 //First index is global value, second is local brightness
 static uint8_t _dc_lookup[4][16] = {
@@ -54,32 +59,32 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	uint8_t* b = _buffer[x] + (y >> 1);
 	uint8_t* l = _dc_lookup[3];		//TODO hardcoded as max global brightness
 	
+	//Since we need to dereference and shift, we store these locally.
 	uint8_t msb0 = b[0] >> 4;
 	uint8_t msb1 = b[1] >> 4;
 	uint8_t msb2 = b[2] >> 4;
 	uint8_t msb3 = b[3] >> 4;
 	
-	if (l[msb0 & 0x0C] > dc)	data[1] |= 0x01;
-	if (l[msb0 & 0x03] > dc)	data[1] |= 0x02;
-	if (l[msb2 & 0x03] > dc)	data[1] |= 0x04;
-	if (l[msb2 & 0x0C] > dc)	data[1] |= 0x08;
-	if (l[b[2] & 0x03] > dc)	data[1] |= 0x10;
-	if (l[b[2] & 0x0C] > dc)	data[1] |= 0x20;
-	if (l[b[0] & 0x0C] > dc)	data[1] |= 0x40;
-	if (l[b[0] & 0x03] > dc)	data[1] |= 0x80;
+	if (l[msb0 & GRN_3] > dc)	data[1] |= 0x01;
+	if (l[msb0 & RED_3] > dc)	data[1] |= 0x02;
+	if (l[msb2 & RED_3] > dc)	data[1] |= 0x04;
+	if (l[msb2 & GRN_3] > dc)	data[1] |= 0x08;
+	if (l[b[2] & RED_3] > dc)	data[1] |= 0x10;
+	if (l[b[2] & GRN_3] > dc)	data[1] |= 0x20;
+	if (l[b[0] & GRN_3] > dc)	data[1] |= 0x40;
+	if (l[b[0] & RED_3] > dc)	data[1] |= 0x80;
 
-	if (l[msb1 & 0x0C] > dc)	data[0] |= 0x01;
-	if (l[msb1 & 0xC3] > dc)	data[0] |= 0x02;
-	if (l[msb3 & 0x03] > dc)	data[0] |= 0x04;
-	if (l[msb3 & 0x0C] > dc)	data[0] |= 0x08;
-	if (l[b[3] & 0x03] > dc)	data[0] |= 0x10;
-	if (l[b[3] & 0x0C] > dc)	data[0] |= 0x20;
-	if (l[b[1] & 0x0C] > dc)	data[0] |= 0x40;
-	if (l[b[1] & 0x03] > dc)	data[0] |= 0x80;
+	if (l[msb1 & GRN_3] > dc)	data[0] |= 0x01;
+	if (l[msb1 & RED_3] > dc)	data[0] |= 0x02;
+	if (l[msb3 & RED_3] > dc)	data[0] |= 0x04;
+	if (l[msb3 & GRN_3] > dc)	data[0] |= 0x08;
+	if (l[b[3] & RED_3] > dc)	data[0] |= 0x10;
+	if (l[b[3] & GRN_3] > dc)	data[0] |= 0x20;
+	if (l[b[1] & GRN_3] > dc)	data[0] |= 0x40;
+	if (l[b[1] & RED_3] > dc)	data[0] |= 0x80;
 }
 
 static void _callback(){
-	//TODO Restart shifting again
 	static uint8_t data[13];
 	static uint8_t row = 0;
 	static uint8_t dc = 0;	//4 bit duty cycle; 2 bits brightness, 2 bits color per pixel.
@@ -105,7 +110,7 @@ static void _callback(){
 }
 
 void matrix_init(){
-	SPCR |= _BV(SPR0);	//Slow SPI down to f/16 so we can do other calculations faster.
+	SPCR |= _BV(SPR0);	//Slow SPI down to fcpu/16 so we can do other calculations faster.
 //	SPDR |= _BV(SPI2X);
 	
 	shift.setLatch(&PORTB, PORTB2);		//TODO Check hardware defines for this
@@ -114,23 +119,32 @@ void matrix_init(){
 	_callback();	//Start shifting
 }
 
+void matrix_flush(){
+	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
+		for (uint8_t y = 0; y < (MATRIX_HEIGHT >> 1); y++){
+			_buffer[x][y] = _working_buffer[x][y];
+		}
+	}
+}
+
 void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 	//Value is a 4 bit value of RG, with R as the 2 MSB and G as the 2 LSB.  Any bits over the 4 LSB are ignored.
 	value = value & 0xF;	//Discard extra stuff
 	if (y & 0x01) value = value << 4;	//If this is an odd row, then it will reside in the 4 MSB in the buffer; otherwise 4 LSB
 	if (overlay == OVERLAY_OR){
-		_buffer[x][y >> 1] |= value;		//Set the value
+		_working_buffer[x][y >> 1] |= value;		//Set the value
 	}
 	else if (overlay == OVERLAY_NAND){
-		_buffer[x][y >> 1] &= ~value;		//Set the value
+		_working_buffer[x][y >> 1] &= ~value;		//Set the value
 	}
 	else if (overlay == OVERLAY_XOR){
-		_buffer[x][y >> 1] ^= value;		//Set the value
+		_working_buffer[x][y >> 1] ^= value;		//Set the value
 	}
 }
 
 uint8_t get_pixel(uint8_t x, uint8_t y){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT >> 1) return 0;
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
 	//If we are on an even y row, then the buffer's 4 LSB are the value; otherwise it is the buffer's 4 MSB.
 	uint8_t ret = _buffer[x][y >> 1];
 	ret = ret & ((y & 0x01) == 0x00 ? 0x0F : 0xF0);
