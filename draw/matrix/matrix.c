@@ -16,35 +16,69 @@
 static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 static Shift shift(13);
 
+//First index is global value, second is local brightness
+static uint8_t _dc_lookup[4][16] = {
+	{
+		0, 1, 1, 1,		//Red
+		1, 0, 0, 0,
+		1, 0, 0, 0,
+		1, 0, 0, 0
+		//Green
+	}, {
+		0, 1, 2, 3,
+		1, 0, 0, 0,
+		2, 0, 0, 0,
+		3, 0, 0, 0
+	}, {
+		0, 2, 4, 6,
+		2, 0, 0, 0,
+		4, 0, 0, 0,
+		6, 0, 0, 0
+	}, {
+		0, 3, 5, 8,	//Red
+		3, 0, 0, 0,
+		5, 0, 0, 0,
+		8, 8, 0, 0
+		//Green
+	}
+};
+
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
-void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
+static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
+	//Clear data initially; we will set individual bits on as needed
 	data[0] = 0x00;
 	data[1] = 0x00;
-
-	if (dc == dc){
-		y = y >> 1;
-		if (_buffer[x][y + 0] & 0xC0)	data[1] |= 0x01;
-		if (_buffer[x][y + 0] & 0x30)	data[1] |= 0x02;
-		if (_buffer[x][y + 2] & 0x30)	data[1] |= 0x04;
-		if (_buffer[x][y + 2] & 0xC0)	data[1] |= 0x08;
-		if (_buffer[x][y + 2] & 0x3)	data[1] |= 0x10;
-		if (_buffer[x][y + 2] & 0xC)	data[1] |= 0x20;
-		if (_buffer[x][y + 0] & 0xC)	data[1] |= 0x40;
-		if (_buffer[x][y + 0] & 0x3)	data[1] |= 0x80;
 	
-		if (_buffer[x][y + 1] & 0xC0)	data[0] |= 0x01;
-		if (_buffer[x][y + 1] & 0x30)	data[0] |= 0x02;
-		if (_buffer[x][y + 3] & 0x30)	data[0] |= 0x04;
-		if (_buffer[x][y + 3] & 0xC0)	data[0] |= 0x08;
-		if (_buffer[x][y + 3] & 0x3)	data[0] |= 0x10;
-		if (_buffer[x][y + 3] & 0xC)	data[0] |= 0x20;
-		if (_buffer[x][y + 1] & 0xC)	data[0] |= 0x40;
-		if (_buffer[x][y + 1] & 0x3)	data[0] |= 0x80;
-	}
+	//Do complex math once to keep things fast
+	uint8_t* b = _buffer[x] + (y >> 1);
+	uint8_t* l = _dc_lookup[3];		//TODO hardcoded as max global brightness
+	
+	uint8_t msb0 = b[0] >> 4;
+	uint8_t msb1 = b[1] >> 4;
+	uint8_t msb2 = b[2] >> 4;
+	uint8_t msb3 = b[3] >> 4;
+	
+	if (l[msb0 & 0x0C] > dc)	data[1] |= 0x01;
+	if (l[msb0 & 0x03] > dc)	data[1] |= 0x02;
+	if (l[msb2 & 0x03] > dc)	data[1] |= 0x04;
+	if (l[msb2 & 0x0C] > dc)	data[1] |= 0x08;
+	if (l[b[2] & 0x03] > dc)	data[1] |= 0x10;
+	if (l[b[2] & 0x0C] > dc)	data[1] |= 0x20;
+	if (l[b[0] & 0x0C] > dc)	data[1] |= 0x40;
+	if (l[b[0] & 0x03] > dc)	data[1] |= 0x80;
+
+	if (l[msb1 & 0x0C] > dc)	data[0] |= 0x01;
+	if (l[msb1 & 0xC3] > dc)	data[0] |= 0x02;
+	if (l[msb3 & 0x03] > dc)	data[0] |= 0x04;
+	if (l[msb3 & 0x0C] > dc)	data[0] |= 0x08;
+	if (l[b[3] & 0x03] > dc)	data[0] |= 0x10;
+	if (l[b[3] & 0x0C] > dc)	data[0] |= 0x20;
+	if (l[b[1] & 0x0C] > dc)	data[0] |= 0x40;
+	if (l[b[1] & 0x03] > dc)	data[0] |= 0x80;
 }
 
-void _callback(){
+static void _callback(){
 	//TODO Restart shifting again
 	static uint8_t data[13];
 	static uint8_t row = 0;
@@ -63,7 +97,7 @@ void _callback(){
 	if (row > 7){
 		row = 0;
 		dc++;
-		if (dc > 15) dc = 0;
+		if (dc > 8) dc = 0;
 	}
 	
 	
