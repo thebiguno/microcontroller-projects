@@ -22,7 +22,7 @@ void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	data[0] = 0x00;
 	data[1] = 0x00;
 
-	if (!dc){
+	if (dc == dc){
 		y = y >> 1;
 		if (_buffer[x][y + 0] & 0xC0)	data[1] |= 0x01;
 		if (_buffer[x][y + 0] & 0x30)	data[1] |= 0x02;
