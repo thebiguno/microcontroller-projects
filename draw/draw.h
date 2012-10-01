@@ -22,6 +22,11 @@
  */
 void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay);
 
+/* 
+ * This must be implemented by the driver.
+ */
+uint8_t get_pixel(uint8_t x, uint8_t y);
+
 /*
  * Get a a pixel at the given X, Y co-ordinates.  This must also be implemented by the driver.  The meaning of the return value
  * depends on the driver implementation, although in general it SHOULD be zero for off and non zero for on (in various 
