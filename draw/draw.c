@@ -30,7 +30,7 @@ void draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t value, ui
 		ystep = -1;
 	}
 
-	for (; x0 < x1; x0++) {
+	for (; x0 <= x1; x0++) {
 		if (steep) {
 			set_pixel(y0, x0, value, o);
 		}
