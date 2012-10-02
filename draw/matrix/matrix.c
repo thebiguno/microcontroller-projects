@@ -146,6 +146,18 @@ void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
 uint8_t get_pixel(uint8_t x, uint8_t y){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
 	//If we are on an even y row, then the buffer's 4 LSB are the value; otherwise it is the buffer's 4 MSB.
+	uint8_t ret = _working_buffer[x][y >> 1];
+	ret = ret & ((y & 0x01) == 0x00 ? 0x0F : 0xF0);
+	if (y & 0x01) ret = ret >> 0x04;
+	return ret;
+}
+
+/*
+ * Identical to get_pixel, except it returns the pixel from the display buffer, rather than the working buffer.
+ */
+uint8_t matrix_get_display_pixel(uint8_t x, uint8_t y){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
+	//If we are on an even y row, then the buffer's 4 LSB are the value; otherwise it is the buffer's 4 MSB.
 	uint8_t ret = _buffer[x][y >> 1];
 	ret = ret & ((y & 0x01) == 0x00 ? 0x0F : 0xF0);
 	if (y & 0x01) ret = ret >> 0x04;

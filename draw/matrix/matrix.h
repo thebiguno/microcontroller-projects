@@ -35,6 +35,11 @@ void matrix_init();
 void matrix_flush();
 
 /*
+ * Identical to get_pixel, except it returns the pixel from the display buffer, rather than the working buffer.
+ */
+uint8_t matrix_get_display_pixel(uint8_t x, uint8_t y);
+
+/*
  * Finished API methods
  */
 
