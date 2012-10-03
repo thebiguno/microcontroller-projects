@@ -5,8 +5,6 @@
 
 
 #include "matrix.h"
-#include "../draw.h"
-#include "../../Shift/Shift.h"
 #include <util/delay.h>
 
 //The buffer contains 2 bit color values for R and G channels.  The LSB 2 bits are R, MSB 2 bits are G.
@@ -19,7 +17,7 @@ static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 static uint8_t _working_buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 
 //Shift object
-static Shift shift(13);			//TODO change the size to be dynamically calculated based on width and height values
+static ShiftRegister shift(13);			//TODO change the size to be dynamically calculated based on width and height values
 
 //First index is global value, second is local brightness
 static uint8_t _dc_lookup[4][16] = {

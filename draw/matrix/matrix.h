@@ -16,6 +16,8 @@
 #define RED_1	0x1
 
 #include <avr/io.h>
+#include "../draw.h"
+#include "../../ShiftRegister/ShiftRegister.h"
 
 /*************
  * IMPORTANT *
