@@ -42,6 +42,11 @@ void matrix_flush();
 uint8_t matrix_get_display_pixel(uint8_t x, uint8_t y);
 
 /*
+ * Raw access to the working buffer.  Use at your own risk.
+ */
+uint8_t* matrix_get_working_buffer();
+
+/*
  * Finished API methods
  */
 

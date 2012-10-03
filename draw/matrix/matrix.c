@@ -161,3 +161,7 @@ uint8_t matrix_get_display_pixel(uint8_t x, uint8_t y){
 	if (y & 0x01) ret = ret >> 0x04;
 	return ret;
 }
+
+uint8_t* matrix_get_working_buffer(){
+	return (uint8_t*) _working_buffer;
+}
