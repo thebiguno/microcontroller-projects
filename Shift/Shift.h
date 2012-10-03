@@ -9,9 +9,11 @@ class Shift {
 		
 		volatile uint8_t *dataPort;
 		volatile uint8_t *dataDDR;
+		volatile uint8_t *dataIn;
 		uint8_t dataPin;
 		volatile uint8_t *clockPort;
 		volatile uint8_t *clockDDR;
+		volatile uint8_t *clockIn;
 		uint8_t clockPin;
 		
 	public:
