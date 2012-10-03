@@ -25,11 +25,11 @@ class Shift {
 		/*
 		 * Sends the data, one byte at a time.  Blocks until the entire array is sent.
 		 */
-		void send(uint8_t data*, uint16_t length);
+		void send(uint8_t *data, uint16_t length);
 
 		/*
 		 * Receives a data array, one byte at a time.  Blocks until the entire requested length is received.
 		 */
-		uint16_t receive(uint8_t data*, uint16_t length);
+		void receive(uint8_t *data, uint16_t length);
 };
 #endif

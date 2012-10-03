@@ -5,7 +5,6 @@
 #include "Shift.h"
 #include <stdlib.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
 
 Shift::Shift(volatile uint8_t *dataPort, uint8_t dataPin, volatile uint8_t *clockPort, uint8_t clockPin) {
 	this->dataPort = dataPort;
@@ -17,10 +16,35 @@ Shift::Shift(volatile uint8_t *dataPort, uint8_t dataPin, volatile uint8_t *cloc
 	this->clockPin = clockPin;
 }
 
-void send(uint8_t data*, uint16_t length){
+void Shift::send(uint8_t *data, uint16_t length){
+	*this->dataDDR |= _BV(this->dataPin);
+	*this->clockDDR |= _BV(this->clockPin);
 
+	for (uint16_t i = 0; i < length; i++){
+		for (uint8_t j = 0; j < 8; j++){
+			if (data[i] & _BV(j))	*this->dataPort |= _BV(this->dataPin);
+			else *this->dataPort &= ~_BV(this->dataPin);
+			*this->clockPort |= _BV(this->clockPin);
+			//TODO do we need a delay here?  Probably not...
+			*this->clockPort &= ~_BV(this->clockPin);
+		}
+	}
 }
 
-uint16_t receive(uint8_t data*, uint16_t length){
-	this->dataDDR |= 
+void Shift::receive(uint8_t *data, uint16_t length){
+	*this->dataDDR &= ~_BV(this->dataPin);
+	*this->clockDDR &= ~_BV(this->clockPin);
+	
+	for (uint16_t i = 0; i < length; i++){
+		uint8_t value = 0;
+		for (uint8_t j = 0; j < 8; j++){
+			while (!*this->clockPort & _BV(this->clockPin));		//Busy-wait while clock is low
+			//Once clock pulses high, read the bit
+			if (*this->dataPort & _BV(this->dataPin)) value |= _BV(j);
+
+			//TODO do we need to busy-wait until clock goes low again?
+			//while (*this->clockPort & _BV(this->clockPin));		//Busy-wait while clock is high
+		}
+		data[i] = value;
+	}
 }
