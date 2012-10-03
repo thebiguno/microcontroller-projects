@@ -80,7 +80,7 @@ void ShiftRegister::setClear(volatile uint8_t *port, uint8_t pin) {
 	}	
 }
 
-void ShiftRegister::ShiftRegister(uint8_t b[]) {
+void ShiftRegister::shift(uint8_t b[]) {
 	if (_cts) {
 		//SPCR |= _BV(MSTR); // re-enable master mode; disbled when SS is set low
 		_cts = 0;
