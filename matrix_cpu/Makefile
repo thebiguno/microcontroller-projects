@@ -2,8 +2,8 @@ include ../../build/variables.mk
 
 PROJECT=matrix
 MMCU=atmega168
-F_CPU=24000000
-SOURCES=main.c lib/draw/matrix/matrix.c lib/Shift/Shift.cpp lib/ShiftRegister/ShiftRegister.cpp
+F_CPU=20000000
+SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/ShiftRegister/ShiftRegister.cpp lib/Shift/Shift.cpp lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c lib/draw/fonts/tall.c lib/timer/timer_1.c lib/analog/analog_synchronous.c
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
