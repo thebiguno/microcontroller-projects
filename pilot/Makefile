@@ -5,6 +5,7 @@ MMCU=atmega644p
 F_CPU=20000000
 SOURCES=main.c ../lib/timer/timer_0.c 
 AVRDUDE_PROGRAMMER=usbtiny
+COMPILER=avr-g++
 
 HFUSE=0x91
 LFUSE=0xF7

@@ -138,7 +138,7 @@ void attitude_reset() {
 
 void attitude_send_tuning() {
 	uint8_t length = 24;
-	uint8_t buf[length];
+	uint8_t buf[24];
 	
 	convert_double_to_bytes(state_x.q_angle, buf, 0);
 	convert_double_to_bytes(state_x.q_gyro, buf, 4);

@@ -66,7 +66,7 @@ void pid_init() {
 
 void pid_send_tuning() {
 	uint8_t length = 36;
-	uint8_t buf[length];
+	uint8_t buf[36];
 	
 	convert_double_to_bytes(state_x.kp, buf, 0);
 	convert_double_to_bytes(state_y.kp, buf, 4);
