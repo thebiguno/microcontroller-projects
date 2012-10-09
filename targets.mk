@@ -7,13 +7,14 @@ endif
 
 # Default target.
 
-all: clean build size
+all: clean build
 
 build: $(PROJECT).hex
 
 $(PROJECT).hex: $(PROJECT).out
 	$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).out $(PROJECT).hex
-	rm -f $(PROJECT).out
+	avr-size -d -C --mcu=$(MMCU) $(PROJECT).out
+	@rm -f $(PROJECT).out
 
 
 $(PROJECT).out: $(SOURCES) 
@@ -34,9 +35,6 @@ readfuse:
 	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
 		-U lfuse:r:-:h -U hfuse:r:-:h
-
-size: build
-	avr-size $(PROJECT).hex
 
 clean:
 	rm -f *.o
