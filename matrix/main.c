@@ -1,20 +1,26 @@
 #include "lib/draw/matrix/matrix.h"
 #include "lib/draw/draw.h"
-#include "lib/Shift/Shift.h"
+#include "lib/TwoWire/TwoWire.h"
+
+void flushBufferCallback(int bytesRecieved){
+	if (Wire.available() == MATRIX_WIDTH * (MATRIX_HEIGHT >> 1)){
+		uint8_t *working_buffer = matrix_get_working_buffer();
+		for (uint8_t y = 0; y < (MATRIX_HEIGHT >> 1); y++){
+			for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
+				working_buffer[x + MATRIX_WIDTH * y] = Wire.receive();
+			}
+		}
+	}
+	
+	matrix_flush();
+}
 
 int main (void){
-	Shift shift(&PORTB, PORTB0, &PORTB, PORTB1);
+	Wire.begin(42);
+	Wire.onReceive(flushBufferCallback);
 	matrix_init();
 	
-	uint8_t incoming;
-
 	while (1) {
-		//Loop until we get the sync frame
-//		while(incoming != 0x42) shift.receive(&incoming, 1);
-		
-		//Read the data directly into the working buffer
-		shift.receive(matrix_get_working_buffer(), MATRIX_WIDTH * (MATRIX_HEIGHT >> 1));
-		
-		matrix_flush();
+		//Nothing to see here... all the work is done in ISRs
 	}
 }

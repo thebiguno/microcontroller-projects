@@ -3,7 +3,7 @@ include ../../build/variables.mk
 PROJECT=matrix
 MMCU=atmega168
 F_CPU=20000000
-SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/ShiftRegister/ShiftRegister.cpp lib/Shift/Shift.cpp lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c lib/draw/fonts/tall.c lib/timer/timer_1.c lib/analog/analog_synchronous.c
+SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/ShiftRegister/ShiftRegister.cpp lib/TwoWire/TwoWire.cpp lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
@@ -12,6 +12,6 @@ COMPILER=avr-g++
 AVRDUDE_PROGRAMMER=usbtiny
 #AVRDUDE_PORT=/dev/tty.usbserial*
 
-#CFLAGS+=-D=NO_INTERRUPT_ENABLE
+CFLAGS+=-DTWI_BUFFER_LENGTH=200 -DMATRIX_WORKING_BUFFER_ONLY
 
 include ../../build/targets.mk
