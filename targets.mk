@@ -26,12 +26,12 @@ program: all
 		-U flash:w:$(PROJECT).hex 
 		
 fuse:
-	$(AVRDUDE) -V -F -p $(MMCU) \
+	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
 
 readfuse: 
-	$(AVRDUDE) -V -F -p $(MMCU) \
+	$(AVRDUDE) -V -F -p $(MMCU) -P $(AVRDUDE_PORT) \
 		-c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_UPLOAD_RATE) \
 		-U lfuse:r:-:h -U hfuse:r:-:h
 
