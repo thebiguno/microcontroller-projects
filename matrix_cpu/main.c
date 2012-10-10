@@ -10,9 +10,8 @@
 
 int main (void){
 	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, RED_3, OVERLAY_OR);
-
-	_delay_ms(50);
-
+	Wire.begin();
+	
 	while (1) {
 //		shift.send(&sync_frame, 1);
 		Wire.beginTransmission(42);

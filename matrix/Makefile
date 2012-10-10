@@ -1,9 +1,9 @@
 include ../../build/variables.mk
 
 PROJECT=matrix
-MMCU=atmega168
+MMCU=atmega48
 F_CPU=24000000
-SOURCES=main.c lib/draw/matrix/matrix.c lib/TwoWire/TwoWire.cpp lib/ShiftRegister/ShiftRegister.cpp
+SOURCES=main.c lib/draw/matrix/matrix_display_buffer.c lib/TwoWire/TwoWire.cpp lib/ShiftRegister/ShiftRegister.cpp
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
@@ -12,6 +12,6 @@ COMPILER=avr-g++
 AVRDUDE_PROGRAMMER=usbtiny
 #AVRDUDE_PORT=/dev/tty.usbserial*
 
-CFLAGS+=-DTWI_BUFFER_LENGTH=200
+CFLAGS+=-DTWI_BUFFER_LENGTH=25
 
 include ../../build/targets.mk

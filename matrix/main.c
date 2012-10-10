@@ -4,15 +4,13 @@
 
 void flushBufferCallback(int bytesRecieved){
 	if (Wire.available() == MATRIX_WIDTH * (MATRIX_HEIGHT >> 1)){
-		uint8_t *working_buffer = matrix_get_working_buffer();
+		uint8_t *buffer = matrix_get_display_buffer();
 		for (uint8_t y = 0; y < (MATRIX_HEIGHT >> 1); y++){
 			for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
-				working_buffer[x + MATRIX_WIDTH * y] = Wire.receive();
+				buffer[x + MATRIX_WIDTH * y] = Wire.receive();
 			}
 		}
 	}
-	
-	matrix_flush();
 }
 
 int main (void){
