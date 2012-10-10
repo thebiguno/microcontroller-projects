@@ -1,9 +1,9 @@
 include ../../build/variables.mk
 
 PROJECT=matrix
-MMCU=atmega48
+MMCU=atmega168
 F_CPU=24000000
-SOURCES=main.c lib/draw/matrix/matrix_display_buffer.c lib/TwoWire/TwoWire.cpp lib/ShiftRegister/ShiftRegister.cpp
+SOURCES=main.c lib/draw/matrix/matrix_display.c lib/TwoWire/TwoWire.cpp lib/ShiftRegister/ShiftRegister.cpp
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
