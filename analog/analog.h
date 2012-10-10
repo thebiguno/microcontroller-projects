@@ -12,7 +12,9 @@
 	#define ANALOG_AREF		1
 	#define ANALOG_INTERNAL	2
 	//TODO Add support for REFS2
-#elif defined(__AVR_ATmega168__)   || \
+#elif defined(__AVR_ATmega48__)   || \
+	defined(__AVR_ATmega88__)   || \
+	defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)
 	#define ANALOG_AREF		0

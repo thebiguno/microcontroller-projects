@@ -57,7 +57,9 @@ uint64_t timer_micros(){
  * The ISR for timer1 overflow.  Increment the _timer_count here, and do the calculcations
  * to increment _timer_millis as needed.
  */
-#if defined(__AVR_ATmega168__)   || \
+#if defined(__AVR_ATmega48__)   || \
+	defined(__AVR_ATmega88__)    || \
+	defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)    || \
 	defined(__AVR_ATmega324P__)    || \
