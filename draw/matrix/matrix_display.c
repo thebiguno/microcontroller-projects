@@ -7,45 +7,18 @@
 #include "matrix.h"
 #include <util/delay.h>
 
-#ifndef MATRIX_WORKING_BUFFER_ONLY
 //The buffer contains 2 bit color values for R and G channels.  The LSB 2 bits are R, MSB 2 bits are G.
 // Each 'pixel' on the display (comprising a RG tuple) therefore takes up 4 bits in the buffer.  The 
 // pixels are therefore at buffer index [x][y >> 1]: even rows are the 4 LSB of this byte, and odd rows 
 // are the MSB of this byte.
 static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
-#endif
-
-//Data is copies to the working buffer first, and then flushed to _buffer for display by the user.  This
-// prevents flickering when doing animations (and in fact any live drawing).
-static uint8_t _working_buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 
 //ShiftRegister object
 static ShiftRegister shift(13);			//TODO change the size to be dynamically calculated based on width and height values
 
-//If we define MATRIX_WORKING_BUFFER_ONLY, then we only use this class as a temporary working buffer,
-// and will be sending it to a slave board (GPU) for actual drawing.  To save RAM + flash, we can 
-// simply comment out a large number of static variables + code.
-#ifndef MATRIX_WORKING_BUFFER_ONLY			
-
 //First index is global value, second is local brightness
-static uint8_t _dc_lookup[4][16] = {
+static uint8_t _dc_lookup[1][16] = {
 	{
-		0, 1, 1, 1,		//Red
-		1, 0, 0, 0,
-		1, 0, 0, 0,
-		1, 0, 0, 0
-		//Green
-	}, {
-		0, 1, 2, 3,
-		1, 0, 0, 0,
-		2, 0, 0, 0,
-		3, 0, 0, 0
-	}, {
-		0, 2, 4, 6,
-		2, 0, 0, 0,
-		4, 0, 0, 0,
-		6, 0, 0, 0
-	}, {
 		0, 3, 5, 8,	//Red
 		3, 0, 0, 0,
 		5, 0, 0, 0,
@@ -63,7 +36,7 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	
 	//Do complex math once to keep things fast
 	uint8_t* b = _buffer[x] + (y >> 1);
-	uint8_t* l = _dc_lookup[3];		//TODO hardcoded as max global brightness
+	uint8_t* l = _dc_lookup[0];		//TODO hardcoded as max global brightness
 	
 	//Since we need to dereference and shift, we store these locally.
 	uint8_t msb0 = b[0] >> 4;
@@ -125,11 +98,9 @@ void matrix_init(){
 	_callback();	//Start shifting
 }
 
-void matrix_flush(){
-	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
-		for (uint8_t y = 0; y < (MATRIX_HEIGHT >> 1); y++){
-			_buffer[x][y] = _working_buffer[x][y];
-		}
+void matrix_flush(uint8_t* working_buffer, uint8_t* display_buffer){
+	for (uint8_t i = 0; i < MATRIX_WIDTH * (MATRIX_HEIGHT >> 1); i++){
+		display_buffer[i] = working_buffer[i];
 	}
 }
 
@@ -146,34 +117,22 @@ uint8_t matrix_get_display_pixel(uint8_t x, uint8_t y){
 	return ret;
 }
 
-#endif
-
-
-void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
+void matrix_set_display_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 	//Value is a 4 bit value of RG, with R as the 2 MSB and G as the 2 LSB.  Any bits over the 4 LSB are ignored.
 	value = value & 0xF;	//Discard extra stuff
 	if (y & 0x01) value = value << 4;	//If this is an odd row, then it will reside in the 4 MSB in the buffer; otherwise 4 LSB
 	if (overlay == OVERLAY_OR){
-		_working_buffer[x][y >> 1] |= value;		//Set the value
+		_buffer[x][y >> 1] |= value;		//Set the value
 	}
 	else if (overlay == OVERLAY_NAND){
-		_working_buffer[x][y >> 1] &= ~value;		//Set the value
+		_buffer[x][y >> 1] &= ~value;		//Set the value
 	}
 	else if (overlay == OVERLAY_XOR){
-		_working_buffer[x][y >> 1] ^= value;		//Set the value
+		_buffer[x][y >> 1] ^= value;		//Set the value
 	}
 }
 
-uint8_t get_pixel(uint8_t x, uint8_t y){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
-	//If we are on an even y row, then the buffer's 4 LSB are the value; otherwise it is the buffer's 4 MSB.
-	uint8_t ret = _working_buffer[x][y >> 1];
-	ret = ret & ((y & 0x01) == 0x00 ? 0x0F : 0xF0);
-	if (y & 0x01) ret = ret >> 0x04;
-	return ret;
-}
-
-uint8_t* matrix_get_working_buffer(){
-	return (uint8_t*) _working_buffer;
+uint8_t* matrix_get_display_buffer(){
+	return (uint8_t*) _buffer;
 }
