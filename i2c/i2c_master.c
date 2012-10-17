@@ -4,7 +4,7 @@
 *
 * Usage:
 * 	Master:
-*		1) Call isc_master_init()
+*		1) Call i2c_master_init()
 *		2) Create a uint8_t message[] of X length, with byte 0 being the 
 *		   slave address (bits 7::1) with bit 0 being R/W (I2C_READ / I2C_WRITE)
 *		   and the other bits being data you wish to send (if write mode) or data
@@ -49,7 +49,7 @@ void i2c_master_init(int16_t i2c_clock_frequency){
 /*
  * Checks if the ISR is busy transmitting.  Used internally.
  */
-uint8_t _i2c_transceiver_busy(){
+static uint8_t _i2c_transceiver_busy(){
 	return ( TWCR & (1<<TWIE) );                  // IF TWI Interrupt is enabled then the Transceiver is busy
 }
 
