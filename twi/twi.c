@@ -21,10 +21,6 @@
 	library (instead of part of TwoWire Arduino library)
 */
 
-#include <math.h>
-#include <stdlib.h>
-#include <inttypes.h>
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <compat/twi.h>
 
