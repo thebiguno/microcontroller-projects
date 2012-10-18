@@ -357,8 +357,7 @@ void twi_release_bus(void)
 	twi_state = TWI_READY;
 }
 
-SIGNAL(TWI_vect)
-{
+ISR(TWI_vect){
 	switch(TW_STATUS){
 		// All Master
 		case TW_START:		 // sent start condition
