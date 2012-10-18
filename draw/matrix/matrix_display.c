@@ -79,12 +79,12 @@ static void _callback(){
 	static uint8_t dc = 0;	//4 bit duty cycle; 2 bits brightness, 2 bits color per pixel.
 	
 	//Fill the data array based on current duty cycle, row, and buffer values
-	_fill_data(&data[0], 0x00 + (7 - row), 0x08, dc);
-	_fill_data(&data[2], 0x08 + (7 - row), 0x08, dc);
-	_fill_data(&data[4], 0x10 + (7 - row), 0x08, dc);
-	_fill_data(&data[6], 0x00 + (7 - row), 0x00, dc);
-	_fill_data(&data[8], 0x08 + (7 - row), 0x00, dc);
-	_fill_data(&data[10], 0x10 + (7 - row), 0x00, dc);
+	_fill_data(&data[0], 0x07 - row, 0x08, dc);
+	_fill_data(&data[2], 0x0F - row, 0x08, dc);
+	_fill_data(&data[4], 0x17 - row, 0x08, dc);
+	_fill_data(&data[6], 0x07 - row, 0x00, dc);
+	_fill_data(&data[8], 0x0F - row, 0x00, dc);
+	_fill_data(&data[10], 0x17 - row, 0x00, dc);
 
 	//Set row driver
 	data[12] = ~_BV(row++);
