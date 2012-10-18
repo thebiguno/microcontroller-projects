@@ -6,6 +6,7 @@
 
 #include "matrix.h"
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 //The buffer contains 2 bit color values for R and G channels.  The LSB 2 bits are R, MSB 2 bits are G.
 // Each 'pixel' on the display (comprising a RG tuple) therefore takes up 4 bits in the buffer.  The 
@@ -75,6 +76,7 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 }
 
 static void _callback(){
+	sei();	//This is a very long ISR handler... let it be interrupted
 	static uint8_t data[13];
 	static uint8_t row = 0;
 	static uint8_t dc = 0;	//4 bit duty cycle; 2 bits brightness, 2 bits color per pixel.
@@ -100,8 +102,8 @@ static void _callback(){
 }
 
 void matrix_init(){
-	SPCR |= _BV(SPR0);	//Slow SPI down to fcpu/16 so we can do other calculations faster.
-//	SPDR |= _BV(SPI2X);
+//	SPCR |= _BV(SPR0);	//Slow SPI down to fcpu/8 so we can do other calculations faster.
+	SPDR |= _BV(SPI2X);	//SPI = fcpu / 2
 	
 	shift.setLatch(&PORTB, PORTB2);		//TODO Check hardware defines for this
 	shift.setCallback(_callback);
