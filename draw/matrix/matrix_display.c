@@ -5,7 +5,6 @@
 
 
 #include "matrix.h"
-#include <util/delay.h>
 #include <avr/interrupt.h>
 
 //The buffer contains 2 bit color values for R and G channels.  The LSB 2 bits are R, MSB 2 bits are G.
