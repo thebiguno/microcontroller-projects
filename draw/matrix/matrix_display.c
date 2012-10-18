@@ -18,12 +18,33 @@ static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 static ShiftRegister shift(13);			//TODO change the size to be dynamically calculated based on width and height values
 
 //First index is global value, second is local brightness
-static uint8_t _dc_lookup[1][16] = {
+static uint8_t _dc_lookup[4][16] = {
+	{
+		0, 1, 1, 1,	//Red
+		1, 0, 0, 0,
+		1, 0, 0, 0,
+		1, 0, 0, 0
+		//Green
+	},
+	{
+		0, 1, 2, 3,	//Red
+		1, 0, 0, 0,
+		2, 0, 0, 0,
+		3, 0, 0, 0
+		//Green
+	},
+	{
+		0, 2, 4, 6,	//Red
+		2, 0, 0, 0,
+		4, 0, 0, 0,
+		6, 0, 0, 0
+		//Green
+	},
 	{
 		0, 3, 5, 8,	//Red
 		3, 0, 0, 0,
 		5, 0, 0, 0,
-		8, 8, 0, 0
+		8, 0, 0, 0
 		//Green
 	}
 };
@@ -35,9 +56,9 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	data[0] = 0x00;
 	data[1] = 0x00;
 	
-	//Do complex math once to keep things fast
+	//Do common math once to keep things as fast as possible
 	uint8_t* b = _buffer[x] + (y >> 1);
-	uint8_t* l = _dc_lookup[0];		//TODO hardcoded as max global brightness
+	uint8_t* l = _dc_lookup[3];		//TODO hardcoded as max global brightness
 	
 	//By checking for non-zero values in b[x], we can potentially reduce the time for a large number of 
 	// updates for blank / sparse rows.
