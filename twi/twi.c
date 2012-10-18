@@ -39,19 +39,29 @@ static volatile uint8_t twi_slarw;
 static volatile uint8_t twi_sendStop;			// should the transaction end with a stop
 static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 
-static void (*twi_onSlaveTransmit)(void);
-static void (*twi_onSlaveReceive)(uint8_t*, uint16_t);
-
+#ifndef TWI_DISABLE_MASTER
+//masterBuffer used for master tx and rx.
 static uint8_t twi_masterBuffer[TWI_BUFFER_LENGTH];
 static volatile uint16_t twi_masterBufferIndex;
 static volatile uint16_t twi_masterBufferLength;
+#endif
 
+#ifndef TWI_DISABLE_SLAVE
+#ifndef TWI_DISABLE_SLAVE_TX
+//Used for slave transmit (filled in twi_transmit())
 static uint8_t twi_txBuffer[TWI_BUFFER_LENGTH];
 static volatile uint16_t twi_txBufferIndex;
 static volatile uint16_t twi_txBufferLength;
+static void (*twi_onSlaveTransmit)(void);
+#endif
 
+#ifndef TWI_DISABLE_SLAVE_RX
+//Used for slave receive (filled in ISR, passed to onSlaveReceive handler)
 static uint8_t twi_rxBuffer[TWI_BUFFER_LENGTH];
 static volatile uint16_t twi_rxBufferIndex;
+static void (*twi_onSlaveReceive)(uint8_t*, uint16_t);
+#endif
+#endif
 
 static volatile uint8_t twi_error;
 
@@ -99,6 +109,7 @@ void twi_set_slave_address(uint8_t address)
 	TWAR = address << 1;
 }
 
+#ifndef TWI_DISABLE_MASTER
 /* 
  * Function twi_readFrom
  * Desc		 attempts to become twi bus master and read a
@@ -249,7 +260,10 @@ uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t wa
 	else
 		return 4;	// other twi error
 }
+#endif
 
+#ifndef TWI_DISABLE_SLAVE
+#ifndef TWI_DISABLE_SLAVE_TX
 /* 
  * Function twi_transmit
  * Desc		 fills slave tx buffer with data
@@ -283,16 +297,6 @@ uint8_t twi_transmit(const uint8_t* data, uint16_t length)
 	return 0;
 }
 
-/* 
- * Function twi_attachSlaveRxEvent
- * Desc		 sets function called before a slave read operation
- * Input		function: callback function to use
- * Output	 none
- */
-void twi_attach_slave_rx_event( void (*function)(uint8_t*, uint16_t) )
-{
-	twi_onSlaveReceive = function;
-}
 
 /* 
  * Function twi_attachSlaveTxEvent
@@ -304,6 +308,21 @@ void twi_attach_slave_tx_event( void (*function)(void) )
 {
 	twi_onSlaveTransmit = function;
 }
+#endif
+
+#ifndef TWI_DISABLE_SLAVE_RX
+/* 
+ * Function twi_attachSlaveRxEvent
+ * Desc		 sets function called before a slave read operation
+ * Input		function: callback function to use
+ * Output	 none
+ */
+void twi_attach_slave_rx_event( void (*function)(uint8_t*, uint16_t) )
+{
+	twi_onSlaveReceive = function;
+}
+#endif
+#endif
 
 /* 
  * Function twi_reply
@@ -311,7 +330,7 @@ void twi_attach_slave_tx_event( void (*function)(void) )
  * Input		ack: byte indicating to ack or to nack
  * Output	 none
  */
-void twi_reply(uint8_t ack)
+static void twi_reply(uint8_t ack)
 {
 	// transmit master read ready signal, with or without ack
 	if(ack){
@@ -367,6 +386,7 @@ ISR(TWI_vect){
 			twi_reply(1);
 			break;
 
+	#ifndef TWI_DISABLE_MASTER
 		// Master Transmitter
 		case TW_MT_SLA_ACK:	// slave receiver acked address
 		case TW_MT_DATA_ACK: // slave receiver acked data
@@ -375,17 +395,19 @@ ISR(TWI_vect){
 				// copy data to output register and ack
 				TWDR = twi_masterBuffer[twi_masterBufferIndex++];
 				twi_reply(1);
-			}else{
-	if (twi_sendStop)
+			} 
+			else{
+				if (twi_sendStop) {
 					twi_stop();
-	else {
-		twi_inRepStart = true;	// we're gonna send the START
-		// don't enable the interrupt. We'll generate the start, but we 
-		// avoid handling the interrupt until we're in the next transaction,
-		// at the point where we would normally issue the start.
-		TWCR = _BV(TWINT) | _BV(TWSTA)| _BV(TWEN) ;
-		twi_state = TWI_READY;
-	}
+				}
+				else {
+					twi_inRepStart = true;	// we're gonna send the START
+					// don't enable the interrupt. We'll generate the start, but we 
+					// avoid handling the interrupt until we're in the next transaction,
+					// at the point where we would normally issue the start.
+					TWCR = _BV(TWINT) | _BV(TWSTA)| _BV(TWEN) ;
+					twi_state = TWI_READY;
+				}
 			}
 			break;
 		case TW_MT_SLA_NACK:	// address sent, nack received
@@ -416,22 +438,26 @@ ISR(TWI_vect){
 		case TW_MR_DATA_NACK: // data received, nack sent
 			// put final byte into buffer
 			twi_masterBuffer[twi_masterBufferIndex++] = TWDR;
-	if (twi_sendStop)
-					twi_stop();
-	else {
-		twi_inRepStart = true;	// we're gonna send the START
-		// don't enable the interrupt. We'll generate the start, but we 
-		// avoid handling the interrupt until we're in the next transaction,
-		// at the point where we would normally issue the start.
-		TWCR = _BV(TWINT) | _BV(TWSTA)| _BV(TWEN) ;
-		twi_state = TWI_READY;
-	}		
-	break;
+			if (twi_sendStop) {
+				twi_stop();
+			}
+			else {
+				twi_inRepStart = true;	// we're gonna send the START
+				// don't enable the interrupt. We'll generate the start, but we 
+				// avoid handling the interrupt until we're in the next transaction,
+				// at the point where we would normally issue the start.
+				TWCR = _BV(TWINT) | _BV(TWSTA)| _BV(TWEN) ;
+				twi_state = TWI_READY;
+			}		
+			break;
 		case TW_MR_SLA_NACK: // address sent, nack received
 			twi_stop();
 			break;
 		// TW_MR_ARB_LOST handled by TW_MT_ARB_LOST case
+	#endif
 
+	#ifndef TWI_DISABLE_SLAVE
+	#ifndef TWI_DISABLE_SLAVE_RX
 		// Slave Receiver
 		case TW_SR_SLA_ACK:	 // addressed, returned ack
 		case TW_SR_GCALL_ACK: // addressed generally, returned ack
@@ -474,7 +500,9 @@ ISR(TWI_vect){
 			// nack back at master
 			twi_reply(0);
 			break;
+	#endif
 		
+	#ifndef TWI_DISABLE_SLAVE_TX
 		// Slave Transmitter
 		case TW_ST_SLA_ACK:					// addressed, returned ack
 		case TW_ST_ARB_LOST_SLA_ACK: // arbitration lost, returned ack
@@ -510,7 +538,9 @@ ISR(TWI_vect){
 			// leave slave receiver state
 			twi_state = TWI_READY;
 			break;
-
+	#endif
+	#endif
+	
 		// All
 		case TW_NO_INFO:	 // no state information
 			break;

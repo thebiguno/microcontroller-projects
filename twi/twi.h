@@ -22,8 +22,6 @@
 
 	#include <inttypes.h>
 
-	//#define ATMEGA8
-
 	#ifndef TWI_FREQ
 	#define TWI_FREQ 400000L
 	#endif
@@ -38,6 +36,13 @@
 	#define TWI_NO_STOP		0
 	#define TWI_BLOCK			1
 	#define TWO_NO_BLOCK		0
+	
+	//Uncomment these (or better, set in Makefile) if you want to disable portions of the TWI
+	// handlers (you can disable master, slave, slave_rx, slave_tx separately.)
+	//#define TWI_DISABLE_MASTER
+	//#define TWI_DISABLE_SLAVE
+	//#define TWI_DISABLE_SLAVE_RX
+	//#define TWI_DISABLE_SLAVE_TX
 
 	#define TWI_READY 0
 	#define TWI_MRX	 1
@@ -52,9 +57,6 @@
 	uint8_t twi_transmit(const uint8_t*, uint16_t);
 	void twi_attach_slave_rx_event( void (*)(uint8_t*, uint16_t) );
 	void twi_attach_slave_tx_event( void (*)(void) );
-	void twi_reply(uint8_t);
-	void twi_stop(void);
-	void twi_release_bus(void);
 
 #endif
 
