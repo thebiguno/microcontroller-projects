@@ -13,6 +13,7 @@
 // are the MSB of this byte.
 static uint8_t _buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> 1];
 
+#ifndef MATRIX_NO_SHIFT
 //ShiftRegister object
 static ShiftRegister shift(13);			//TODO change the size to be dynamically calculated based on width and height values
 
@@ -107,6 +108,7 @@ void matrix_init(){
 	
 	_callback();	//Start shifting
 }
+#endif
 
 void matrix_flush(uint8_t* working_buffer, uint8_t* display_buffer){
 	for (uint8_t i = 0; i < MATRIX_WIDTH * (MATRIX_HEIGHT >> 1); i++){
