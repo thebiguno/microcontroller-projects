@@ -39,21 +39,17 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	uint8_t* b = _buffer[x] + (y >> 1);
 	uint8_t* l = _dc_lookup[0];		//TODO hardcoded as max global brightness
 	
-	//Since we need to dereference and shift, we store these locally.
-	uint8_t msb0 = b[0] >> 4;
-	uint8_t msb1 = b[1] >> 4;
-	uint8_t msb2 = b[2] >> 4;
-	uint8_t msb3 = b[3] >> 4;
-	
 	//By checking for non-zero values in b[x], we can potentially reduce the time for a large number of 
 	// updates for blank / sparse rows.
 	if (b[0]){
+		uint8_t msb0 = b[0] >> 4;
 		if (l[msb0 & GRN_3] > dc)	data[1] |= 0x01;
 		if (l[msb0 & RED_3] > dc)	data[1] |= 0x02;
 		if (l[b[0] & GRN_3] > dc)	data[1] |= 0x40;
 		if (l[b[0] & RED_3] > dc)	data[1] |= 0x80;
 	}
 	if (b[2]){
+		uint8_t msb2 = b[2] >> 4;
 		if (l[msb2 & RED_3] > dc)	data[1] |= 0x04;
 		if (l[msb2 & GRN_3] > dc)	data[1] |= 0x08;
 		if (l[b[2] & RED_3] > dc)	data[1] |= 0x10;
@@ -61,12 +57,14 @@ static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
 	}
 
 	if (b[1]){
+		uint8_t msb1 = b[1] >> 4;
 		if (l[msb1 & GRN_3] > dc)	data[0] |= 0x01;
 		if (l[msb1 & RED_3] > dc)	data[0] |= 0x02;
 		if (l[b[1] & GRN_3] > dc)	data[0] |= 0x40;
 		if (l[b[1] & RED_3] > dc)	data[0] |= 0x80;
 	}
 	if (b[3]){
+		uint8_t msb3 = b[3] >> 4;
 		if (l[msb3 & RED_3] > dc)	data[0] |= 0x04;
 		if (l[msb3 & GRN_3] > dc)	data[0] |= 0x08;
 		if (l[b[3] & RED_3] > dc)	data[0] |= 0x10;
