@@ -41,7 +41,11 @@ static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 
 #ifndef TWI_DISABLE_MASTER
 //masterBuffer used for master tx and rx.
+#ifndef TWI_CUSTOM_BUFFERS
 static uint8_t twi_masterBuffer[TWI_BUFFER_LENGTH];
+#else
+static uint8_t* twi_masterBuffer;
+#endif
 static volatile uint16_t twi_masterBufferIndex;
 static volatile uint16_t twi_masterBufferLength;
 #endif
@@ -49,7 +53,11 @@ static volatile uint16_t twi_masterBufferLength;
 #ifndef TWI_DISABLE_SLAVE
 #ifndef TWI_DISABLE_SLAVE_TX
 //Used for slave transmit (filled in twi_transmit())
+#ifndef TWI_CUSTOM_BUFFERS
 static uint8_t twi_txBuffer[TWI_BUFFER_LENGTH];
+#else
+static uint8_t* twi_txBuffer;
+#endif
 static volatile uint16_t twi_txBufferIndex;
 static volatile uint16_t twi_txBufferLength;
 static void (*twi_onSlaveTransmit)(void);
@@ -57,13 +65,35 @@ static void (*twi_onSlaveTransmit)(void);
 
 #ifndef TWI_DISABLE_SLAVE_RX
 //Used for slave receive (filled in ISR, passed to onSlaveReceive handler)
+#ifndef TWI_CUSTOM_BUFFERS
 static uint8_t twi_rxBuffer[TWI_BUFFER_LENGTH];
+#else
+static uint8_t* twi_rxBuffer;
+#endif
 static volatile uint16_t twi_rxBufferIndex;
 static void (*twi_onSlaveReceive)(uint8_t*, uint16_t);
 #endif
 #endif
 
 static volatile uint8_t twi_error;
+
+#ifdef TWI_CUSTOM_BUFFERS
+#ifndef TWI_DISABLE_MASTER
+	void twi_set_master_buffer(uint8_t* buffer){
+		twi_masterBuffer = buffer;
+	}
+#endif
+#ifndef TWI_DISABLE_SLAVE_RX
+	void twi_set_rx_buffer(uint8_t* buffer){
+		twi_rxBuffer = buffer;
+	}
+#endif
+#ifndef TWI_DISABLE_SLAVE_TX
+	void twi_set_tx_buffer(uint8_t* buffer){
+		twi_txBuffer = buffer;
+	}
+#endif
+#endif
 
 /* 
  * Function twi_init
@@ -199,8 +229,6 @@ uint8_t twi_read_from(uint8_t address, uint8_t* data, uint16_t length, uint8_t s
  */
 uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t wait, uint8_t sendStop)
 {
-	uint8_t i;
-
 	// ensure data will fit into buffer
 	if(TWI_BUFFER_LENGTH < length){
 		return 1;
@@ -219,10 +247,13 @@ uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t wa
 	twi_masterBufferIndex = 0;
 	twi_masterBufferLength = length;
 	
+	//If we have custom buffers we don't need to copy the data.
+#ifndef TWI_CUSTOM_BUFFERS
 	// copy data to twi buffer
-	for(i = 0; i < length; ++i){
+	for(uint8_t i = 0; i < length; ++i){
 		twi_masterBuffer[i] = data[i];
 	}
+#endif
 	
 	// build sla+w, slave device address + w bit
 	twi_slarw = TW_WRITE;

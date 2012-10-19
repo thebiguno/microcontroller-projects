@@ -50,6 +50,12 @@
 	#define TWI_SRX	 3
 	#define TWI_STX	 4
 	
+#ifdef TWI_CUSTOM_BUFFERS
+	void twi_set_master_buffer(uint8_t* buffer);
+	void twi_set_rx_buffer(uint8_t* buffer);
+	void twi_set_tx_buffer(uint8_t* buffer);
+#endif
+	
 	void twi_init();
 	void twi_set_slave_address(uint8_t);
 	uint8_t twi_read_from(uint8_t, uint8_t*, uint16_t, uint8_t);
