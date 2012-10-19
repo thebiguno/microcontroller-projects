@@ -69,6 +69,7 @@ int main (void){
 	uint8_t analog_pins[1] = {5};
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
 	twi_init();
+	twi_set_master_buffer(matrix_get_display_buffer());
 
 	setup();
 		
@@ -131,14 +132,7 @@ int main (void){
 		
 		matrix_flush(matrix_get_working_buffer(), matrix_get_display_buffer());
 		
-		uint8_t data[25];
-		for (uint8_t i = 0; i < (MATRIX_HEIGHT >> 1); i++){
-			data[0] = i;
-			for (uint8_t j = 0; j < 24; j++){
-				data[j + 1] = (matrix_get_display_buffer() + (MATRIX_WIDTH * i))[j];
-			}
-			twi_write_to(42, data, 25, TWI_BLOCK, TWI_STOP);
-		}
+		twi_write_to(42, matrix_get_display_buffer(), 192, TWI_BLOCK, TWI_STOP);
 		
 		//Store board hash
 		for (uint8_t i = RECENT_HASH_COUNT - 1; i > 0; i--){

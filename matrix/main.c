@@ -5,18 +5,14 @@
 #include <util/delay.h>
 
 void flushBufferCallback(uint8_t* data, uint16_t length){
-	if (length == MATRIX_WIDTH + 1){
-		uint8_t *buffer = matrix_get_display_buffer() + (MATRIX_WIDTH * data[0]);
-		for (uint8_t i = 0; i < (length - 1); i++){
-			buffer[i] = data[i + 1];
-		}
-	}
+	//Do nothing... the slave rx buffer *is* the display buffer
 }
 
 int main (void){
 	twi_init();
 	twi_set_slave_address(42);
 	twi_attach_slave_rx_event(flushBufferCallback);
+	twi_set_rx_buffer(matrix_get_display_buffer());
 	matrix_init();
 	
 	while (1) {
