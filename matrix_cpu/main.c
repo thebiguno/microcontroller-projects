@@ -39,10 +39,30 @@ uint16_t get_board_hash(){
 	return hash;
 }
 
+void flash_palette(uint8_t value){
+	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, 0x0F, OVERLAY_NAND);
+	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, value, OVERLAY_OR);
+	matrix_flush(matrix_get_working_buffer(), matrix_get_display_buffer());
+	twi_write_to(42, matrix_get_display_buffer(), 192, TWI_BLOCK, TWI_STOP);
+}
+
 void setup(){
 	uint64_t analog = 0;
 	analog_read_a((uint16_t*) analog);
 	srandom(timer_micros() / analog * random());
+	
+	//Flash palette
+	flash_palette(GRN_1); _delay_ms(100);
+	flash_palette(GRN_2); _delay_ms(100);
+	flash_palette(GRN_3); _delay_ms(100);
+	flash_palette(RED_1 | GRN_3); _delay_ms(100);
+	flash_palette(RED_2 | GRN_3); _delay_ms(100);
+	flash_palette(RED_3 | GRN_3); _delay_ms(100);
+	flash_palette(RED_3 | GRN_2); _delay_ms(100);
+	flash_palette(RED_3 | GRN_1); _delay_ms(100);
+	flash_palette(RED_3); _delay_ms(100);
+	flash_palette(RED_2); _delay_ms(100);
+	flash_palette(RED_1); _delay_ms(100);
 	
 	//Clear board
 	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, 0x0F, OVERLAY_NAND);
