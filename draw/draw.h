@@ -74,5 +74,6 @@ void draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t fill
 /********** Helper defines *************/
 
 #define swap(a, b) { uint8_t t = a; a = b; b = t; }
+#define max(a, b) (a > b ? a : b)
 
 #endif

@@ -125,3 +125,53 @@ void draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, 
 		i++;
 	}
 }
+
+//Implementation of Bresenham Algorithm for a full circle, adapted from Wikipedia sample
+void draw_circle(uint8_t x0, uint8_t y0, uint8_t r, uint8_t fill, uint8_t value, uint8_t overlay){
+	int8_t f = 1 - r;
+	int8_t ddF_x = 1;
+	int8_t ddF_y = -2 * r;
+	int8_t x = 0;
+	int8_t y = r;
+	
+	if (fill){
+		draw_line(max(0, x0), max(0, y0 - r), max(0, x0), max(0, y0 + r), value, overlay);
+		draw_line(max(0, x0 - r), max(0, y0), max(0, x0 + r), max(0, y0), value, overlay);
+	}
+	else {
+		set_pixel(x0, y0 + r, value, overlay);
+		set_pixel(x0, y0 - r, value, overlay);
+		set_pixel(x0 + r, y0, value, overlay);
+		set_pixel(x0 - r, y0, value, overlay);
+	}
+	
+	while(x < y) {
+		// ddF_x == 2 * x + 1;
+		// ddF_y == -2 * y;
+		// f == x*x + y*y - r*r + 2*x - y + 1;
+		if(f >= 0) {
+			y--;
+			ddF_y += 2;
+			f += ddF_y;
+		}
+		x++;
+		ddF_x += 2;
+		f += ddF_x;   
+		if (fill){
+			draw_line(max(0, x0 - x), max(0, y0 + y), max(0, x0 + x), max(0, y0 + y), value, overlay);
+			draw_line(max(0, x0 - x), max(0, y0 - y), max(0, x0 + x), max(0, y0 - y), value, overlay);
+			draw_line(max(0, x0 - y), max(0, y0 + x), max(0, x0 + y), max(0, y0 + x), value, overlay);
+			draw_line(max(0, x0 - y), max(0, y0 - x), max(0, x0 + y), max(0, y0 - x), value, overlay);
+		}
+		else { 
+			set_pixel(x0 + x, y0 + y, value, overlay);
+			set_pixel(x0 - x, y0 + y, value, overlay);
+			set_pixel(x0 + x, y0 - y, value, overlay);
+			set_pixel(x0 - x, y0 - y, value, overlay);
+			set_pixel(x0 + y, y0 + x, value, overlay);
+			set_pixel(x0 - y, y0 + x, value, overlay);
+			set_pixel(x0 + y, y0 - x, value, overlay);
+			set_pixel(x0 - y, y0 - x, value, overlay);
+		}
+	}
+}
