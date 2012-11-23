@@ -3,7 +3,7 @@ include ../../build/variables.mk
 PROJECT=matrix
 MMCU=atmega48
 F_CPU=24000000
-SOURCES=main.c lib/draw/matrix/matrix_display.c lib/twi/twi.c lib/ShiftRegister/ShiftRegister.cpp
+SOURCES=main.c lib/twi/twi.c lib/ShiftRegister/ShiftRegister.cpp
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
