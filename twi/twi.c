@@ -152,7 +152,7 @@ void twi_set_slave_address(uint8_t address)
  */
 uint8_t twi_read_from(uint8_t address, uint8_t* data, uint16_t length, uint8_t sendStop)
 {
-	uint8_t i;
+	uint16_t i;
 
 	// ensure data will fit into buffer
 	if(TWI_BUFFER_LENGTH < length){
@@ -250,7 +250,7 @@ uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t wa
 	//If we have custom buffers we don't need to copy the data.
 #ifndef TWI_CUSTOM_BUFFERS
 	// copy data to twi buffer
-	for(uint8_t i = 0; i < length; ++i){
+	for(uint16_t i = 0; i < length; ++i){
 		twi_masterBuffer[i] = data[i];
 	}
 #endif
@@ -307,7 +307,7 @@ uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t wa
  */
 uint8_t twi_transmit(const uint8_t* data, uint16_t length)
 {
-	uint8_t i;
+	uint16_t i;
 
 	// ensure data will fit into buffer
 	if(TWI_BUFFER_LENGTH < length){
