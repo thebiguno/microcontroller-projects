@@ -8,12 +8,12 @@
 #define MATRIX_HEIGHT 16
 #endif
 
-#define GRN_3	0xC
-#define GRN_2	0x8
-#define GRN_1	0x4
-#define RED_3	0x3
-#define RED_2	0x2
-#define RED_1	0x1
+#define GRN_3	0xF0
+#define GRN_2	0x80
+#define GRN_1	0x40
+#define RED_3	0x0F
+#define RED_2	0x08
+#define RED_1	0x04
 
 #include <avr/io.h>
 #include "../draw.h"
