@@ -12,29 +12,37 @@
 #include "lib/twi/twi.h"
 #include <util/delay.h>
 
+#define GRN_3	0xF0
+#define GRN_2	0x80
+#define GRN_1	0x40
+#define RED_3	0x0F
+#define RED_2	0x08
+#define RED_1	0x04
+
 #define RECENT_HASH_COUNT			5
 #define RECENT_HASH_MATCH_COUNT		20
 
-uint8_t double_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
-uint16_t recent_hashes[RECENT_HASH_COUNT];
-uint8_t recent_hash_match_count = 0;
+static uint8_t double_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 
-static void flush(uint8_t* working_buffer, uint8_t* display_buffer){
-	for (uint8_t i = 0; i < MATRIX_WIDTH * MATRIX_HEIGHT; i++){
-		display_buffer[i] = working_buffer[i];
-	}
+static uint16_t recent_hashes[RECENT_HASH_COUNT];
+static uint8_t recent_hash_match_count = 0;
+
+uint8_t get_double_buffer_value(uint8_t x, uint8_t y){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
+	return double_buffer[x][y];
 }
+
 
 uint8_t get_neighbor_count(uint8_t x, uint8_t y){
 	uint8_t count = 0;
-	if (x >= 1 					&& y >= 1 					&& double_buffer[x - 1][y - 1]) count++;
-	if (x >= 1					&& y >= 0					&& double_buffer[x - 1][y])		count++;
-	if (x >= 1 					&& y < MATRIX_HEIGHT - 1 	&& double_buffer[x - 1][y + 1])	count++;
-	if (x >= 0					&& y >= 1 					&& double_buffer[x][y - 1]) 	count++;
-	if (x >= 0					&& y < MATRIX_HEIGHT - 1	&& double_buffer[x][y + 1]) 	count++;
-	if (x < MATRIX_WIDTH - 1 	&& y >= 1 					&& double_buffer[x + 1][y - 1])	count++;
-	if (x < MATRIX_WIDTH - 1 	&& y <= MATRIX_HEIGHT - 1	&& double_buffer[x + 1][y]) 	count++;
-	if (x < MATRIX_WIDTH - 1 	&& y < MATRIX_HEIGHT - 1 	&& double_buffer[x + 1][y + 1])	count++;
+	if (get_double_buffer_value(x - 1, y - 1)) count++;
+	if (get_double_buffer_value(x - 1, y)) count++;
+	if (get_double_buffer_value(x - 1, y + 1)) count++;
+	if (get_double_buffer_value(x, y - 1)) count++;
+	if (get_double_buffer_value(x, y + 1)) count++;
+	if (get_double_buffer_value(x + 1, y - 1)) count++;
+	if (get_double_buffer_value(x + 1, y)) count++;
+	if (get_double_buffer_value(x + 1, y + 1)) count++;
 	return count;
 }
 
@@ -42,11 +50,17 @@ uint16_t get_board_hash(){
 	uint16_t hash = 0;
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			hash += double_buffer[x][y] + x;
+			hash += get_double_buffer_value(x, y) + x;
 		}
 	}
 	
 	return hash;
+}
+
+void flush(uint8_t* working_buffer, uint8_t* display_buffer){
+    for (uint16_t i = 0; i < MATRIX_WIDTH * MATRIX_HEIGHT; i++){
+        display_buffer[i] = working_buffer[i];
+    }
 }
 
 void flash_palette(uint8_t value){
@@ -102,12 +116,10 @@ int main (void){
 	setup();
 		
 	while (1) {
-		setup();
-	/*
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
 				uint8_t count = get_neighbor_count(x, y);
-				uint8_t alive = double_buffer[x][y];
+				uint8_t alive = get_double_buffer_value(x, y);
 				if (alive) {
 					if (count < 2) set_pixel(x, y, 0xFF, OVERLAY_NAND);
 					else if (count <= 3){
@@ -161,7 +173,6 @@ int main (void){
 		}
 		
 		flush(matrix_get_working_buffer(), (uint8_t*) double_buffer);
-		
 		twi_write_to(42, (uint8_t*) double_buffer, TWI_BUFFER_LENGTH, TWI_BLOCK, TWI_STOP);
 		
 		//Store board hash
@@ -184,6 +195,5 @@ int main (void){
 		}
 		
 		_delay_ms(60);
-		*/
 	}
 }
