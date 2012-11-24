@@ -15,10 +15,9 @@ static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT) >> 5) + 1);
 
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
-inline void _fill_data(uint8_t* data, const uint8_t x, const uint8_t y, const register uint8_t dc){
+void fill_data(uint8_t* data, uint8_t* b, const register uint8_t dc) {
 	
 	//Do common math once to keep things as fast as possible
-	uint8_t* b = _buffer[x] + y;
 	const register uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
 
 	register uint8_t d0 = 0x00;
@@ -59,12 +58,12 @@ static void _callback(){
 	static uint8_t dc = 0;
 	
 	//Fill the data array based on current duty cycle, row, and buffer values
-	_fill_data(&data[0x00], 0x07 - row, 0x08, dc);
-	_fill_data(&data[0x02], 0x0F - row, 0x08, dc);
-	_fill_data(&data[0x04], 0x17 - row, 0x08, dc);
-	_fill_data(&data[0x06], 0x07 - row, 0x00, dc);
-	_fill_data(&data[0x08], 0x0F - row, 0x00, dc);
-	_fill_data(&data[0x0A], 0x17 - row, 0x00, dc);
+	fill_data(&data[0x00], &_buffer[0x07 - row][0x08], dc);
+	fill_data(&data[0x02], &_buffer[0x0F - row][0x08], dc);
+	fill_data(&data[0x04], &_buffer[0x17 - row][0x08], dc);
+	fill_data(&data[0x06], &_buffer[0x07 - row][0x00], dc);
+	fill_data(&data[0x08], &_buffer[0x0F - row][0x00], dc);
+	fill_data(&data[0x0A], &_buffer[0x17 - row][0x00], dc);
 
 	//Set row driver
 	data[0x0C] = ~_BV(row++);
