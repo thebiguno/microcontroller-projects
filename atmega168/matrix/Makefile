@@ -9,8 +9,6 @@ COMPILER=avr-g++
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-AVRDUDE_PORT=/dev/tty.usbserial*
-
 CFLAGS+=-D=NO_INTERRUPT_ENABLE
 
 include ../../build/targets.mk

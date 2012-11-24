@@ -10,7 +10,6 @@ COMPILER=avr-g++
 # the definitions in variables.mk
 
 AVRDUDE_PROGRAMMER=usbtiny
-#AVRDUDE_PORT=/dev/tty.usbserial*
 
 CFLAGS+=-DTWI_BUFFER_LENGTH=192 -DTWI_NO_SLAVE -DTWI_CUSTOM_BUFFERS 
 

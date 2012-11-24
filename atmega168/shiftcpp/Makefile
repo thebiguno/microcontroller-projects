@@ -9,6 +9,4 @@ COMPILER=avr-g++
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-AVRDUDE_PORT=/dev/tty.usbserial-A8007UF6
-
 include ../../build/targets.mk
