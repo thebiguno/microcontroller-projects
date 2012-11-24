@@ -15,34 +15,38 @@ static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT) >> 5) + 1);
 
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
-inline void _fill_data(uint8_t* data, const uint8_t x, const uint8_t y, const uint8_t dc){
-	//Clear data initially; we will set individual bits on as needed
-	data[0] = 0x00;
-	data[1] = 0x00;
+inline void _fill_data(uint8_t* data, const uint8_t x, const uint8_t y, const register uint8_t dc){
 	
 	//Do common math once to keep things as fast as possible
 	uint8_t* b = _buffer[x] + y;
-	const uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
+	const register uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
+
+	register uint8_t d0 = 0x00;
+	register uint8_t d1 = 0x00;
+
+	if (b[0] > gdc)				d1 |= 0x40;
+	if ((b[0] & 0x0F) > dc)		d1 |= 0x80;
+	if (b[1] > gdc)				d1 |= 0x01;
+	if ((b[1] & 0x0F) > dc)		d1 |= 0x02;
+
+	if (b[2] > gdc)				d0 |= 0x40;
+	if ((b[2] & 0x0F) > dc)		d0 |= 0x80;
+	if (b[3] > gdc)				d0 |= 0x01;
+	if ((b[3] & 0x0F) > dc)		d0 |= 0x02;
+
+	if (b[4] > gdc)				d1 |= 0x20;
+	if ((b[4] & 0x0F) > dc)		d1 |= 0x10;
+	if (b[5] > gdc)				d1 |= 0x08;
+	if ((b[5] & 0x0F) > dc)		d1 |= 0x04;
+
+	if (b[6] > gdc)				d0 |= 0x20;
+	if ((b[6] & 0x0F) > dc)		d0 |= 0x10;
+	if (b[7] > gdc)				d0 |= 0x08;
+	if ((b[7] & 0x0F) > dc)		d0 |= 0x04;
 	
-	if (b[1] > gdc)				data[1] |= 0x01;
-	if ((b[1] & 0x0F) > dc)		data[1] |= 0x02;
-	if (b[0] > gdc)				data[1] |= 0x40;
-	if ((b[0] & 0x0F) > dc)		data[1] |= 0x80;
-
-	if ((b[5] & 0x0F) > dc)		data[1] |= 0x04;
-	if (b[5] > gdc)				data[1] |= 0x08;
-	if ((b[4] & 0x0F) > dc)		data[1] |= 0x10;
-	if (b[4] > gdc)				data[1] |= 0x20;
-
-	if (b[3] > gdc)				data[0] |= 0x01;
-	if ((b[3] & 0x0F) > dc)		data[0] |= 0x02;
-	if (b[2] > gdc)				data[0] |= 0x40;
-	if ((b[2] & 0x0F) > dc)		data[0] |= 0x80;
-
-	if ((b[7] & 0x0F) > dc)		data[0] |= 0x04;
-	if (b[7] > gdc)				data[0] |= 0x08;
-	if ((b[6] & 0x0F) > dc)		data[0] |= 0x10;
-	if (b[6] > gdc)				data[0] |= 0x20;
+	//By using temp variables we avoid a lot of dereferencing.  Yay!
+	data[0] = d0;
+	data[1] = d1;
 }
 
 static void _callback(){
