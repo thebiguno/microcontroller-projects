@@ -12,8 +12,7 @@
 #AVRDude options
 AVRDUDE=avrdude
 AVRDUDE_PROGRAMMER=stk500v1
-AVRDUDE_PORT=/dev/tty.usbserial*
-AVRDUDE_UPLOAD_RATE=19200
+#AVRDUDE_ARGS=-P /dev/tty.usbserial* -b 19200
 
 OBJCOPY=avr-objcopy
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall
