@@ -1,6 +1,8 @@
 #ifndef DRAW_H
 #define DRAW_H
 
+#define __PROG_TYPES_COMPAT__
+
 #include <stdlib.h>
 #include <avr/pgmspace.h> 
 
