@@ -10,10 +10,12 @@
 //#define ORIENTATION_UP		2		//Rotated 90 degrees CCW (i.e. 270 degrees CW)
 
 //Overlay modes.
-#define OVERLAY_NAND	0		//Always remove pixels
-#define OVERLAY_OR 		1		//Always draw pixels
-#define OVERLAY_XOR		2		//XOR new pixels with buffer pixels
+#define OVERLAY_REPLACE	0		//Replace value
+#define OVERLAY_NAND	1		//Always remove pixels
+#define OVERLAY_OR 		2		//Always draw pixels
+#define OVERLAY_XOR		3		//XOR new pixels with buffer pixels
 
+//Fill modes.
 #define DRAW_UNFILLED	0		//Draw unfilled shapes
 #define DRAW_FILLED		1		//Draw filled shapes
 

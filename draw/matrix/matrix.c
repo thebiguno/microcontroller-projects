@@ -14,14 +14,17 @@ static uint8_t _working_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 
-	if (overlay == OVERLAY_OR){
-		_working_buffer[x][y] |= value;		//Set the value
+	if (overlay == OVERLAY_REPLACE){
+		_working_buffer[x][y] = value;
+	}
+	else if (overlay == OVERLAY_OR){
+		_working_buffer[x][y] |= value;
 	}
 	else if (overlay == OVERLAY_NAND){
-		_working_buffer[x][y] &= ~value;		//Set the value
+		_working_buffer[x][y] &= ~value;
 	}
 	else if (overlay == OVERLAY_XOR){
-		_working_buffer[x][y] ^= value;		//Set the value
+		_working_buffer[x][y] ^= value;
 	}
 }
 
