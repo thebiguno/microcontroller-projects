@@ -55,15 +55,15 @@ static void _callback(){
 	static uint8_t dc = 0;
 	
 	//Fill the data array based on current duty cycle, row, and buffer values
-	_fill_data(&data[0], 0x07 - row, 0x08, dc);
-	_fill_data(&data[2], 0x0F - row, 0x08, dc);
-	_fill_data(&data[4], 0x17 - row, 0x08, dc);
-	_fill_data(&data[6], 0x07 - row, 0x00, dc);
-	_fill_data(&data[8], 0x0F - row, 0x00, dc);
-	_fill_data(&data[10], 0x17 - row, 0x00, dc);
+	_fill_data(&data[0x00], 0x07 - row, 0x08, dc);
+	_fill_data(&data[0x02], 0x0F - row, 0x08, dc);
+	_fill_data(&data[0x04], 0x17 - row, 0x08, dc);
+	_fill_data(&data[0x06], 0x07 - row, 0x00, dc);
+	_fill_data(&data[0x08], 0x0F - row, 0x00, dc);
+	_fill_data(&data[0x0A], 0x17 - row, 0x00, dc);
 
 	//Set row driver
-	data[12] = ~_BV(row++);
+	data[0x0C] = ~_BV(row++);
 	if (row > 7){
 		row = 0;
 		dc++;
