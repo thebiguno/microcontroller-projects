@@ -4,6 +4,7 @@
 
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 
 //The buffer contains 2 bit color values for R and G channels.  The LSB 4 bits are R, MSB 4 bits are G.
 // Each 'pixel' on the display (comprising a RG tuple) therefore takes up 8 bits in the buffer.
@@ -14,14 +15,14 @@ static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT) >> 5) + 1);
 
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
-static void _fill_data(uint8_t* data, uint8_t x, uint8_t y, uint8_t dc){
+inline void _fill_data(uint8_t* data, const uint8_t x, const uint8_t y, const uint8_t dc){
 	//Clear data initially; we will set individual bits on as needed
 	data[0] = 0x00;
 	data[1] = 0x00;
 	
 	//Do common math once to keep things as fast as possible
 	uint8_t* b = _buffer[x] + y;
-	uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
+	const uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
 	
 	if (b[1] > gdc)				data[1] |= 0x01;
 	if ((b[1] & 0x0F) > dc)		data[1] |= 0x02;
@@ -51,7 +52,7 @@ static void _callback(){
 	
 	static uint8_t data[13];
 	static uint8_t row = 0;
-	static uint8_t dc = 0;	//4 bit duty cycle; 2 bits brightness, 2 bits color per pixel.
+	static uint8_t dc = 0;
 	
 	//Fill the data array based on current duty cycle, row, and buffer values
 	_fill_data(&data[0], 0x07 - row, 0x08, dc);
@@ -69,6 +70,7 @@ static void _callback(){
 		if (dc > 15) dc = 0;
 	}
 	
+	wdt_reset();
 	
 	shift.shift(data);
 }
@@ -82,8 +84,12 @@ int main (void){
 	twi_set_slave_address(42);
 	twi_attach_slave_rx_event(flushBufferCallback);
 	twi_set_rx_buffer((uint8_t*) _buffer);
+	wdt_enable(WDTO_15MS);
 
 	DDRB |= _BV(PORTB0);
+
+	//Make SPI as fast as possible (fcpu / 2)
+	SPDR |= _BV(SPI2X);
 
 	shift.setLatch(&PORTB, PORTB2);
 	shift.setCallback(_callback);
