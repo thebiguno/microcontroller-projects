@@ -3,9 +3,11 @@
 #include "lib/draw/matrix/matrix.h"
 #include "lib/timer/timer.h"
 #include "lib/twi/twi.h"
-#include <util/delay.h>
 
-#define COUNT 3
+#include <util/delay.h>
+#include <avr/wdt.h>
+
+#define COUNT 1
 
 int main (void){
 	timer_init();
@@ -13,6 +15,8 @@ int main (void){
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
 	twi_init();
 	twi_set_master_buffer(matrix_get_working_buffer());
+	
+	wdt_enable(WDTO_500MS);
 
 	srandom(analog_read_p(0) + timer_micros() + timer_millis());
 	
@@ -22,19 +26,6 @@ int main (void){
 	int8_t xd[COUNT];
 	int8_t yd[COUNT];
 	uint8_t v[COUNT];
-	uint8_t o[COUNT];
-	
-	v[0] = GRN_3;
-	v[1] = RED_3;
-	v[2] = GRN_1;
-//	v[3] = GRN_3;
-//	v[4] = RED_3;
-	
-	o[0] = OVERLAY_OR;
-	o[1] = OVERLAY_OR;
-	o[2] = OVERLAY_OR;
-//	o[3] = OVERLAY_XOR;
-//	o[4] = OVERLAY_XOR;
 	
 	for (uint8_t i = 0; i < COUNT; i++){
 		x[i] = random() & 0x0F;
@@ -42,12 +33,14 @@ int main (void){
 		r[i] = (random() & 0x7) + 0x7;
 		xd[i] = ((random() & 0x1) ? 1 : -1) * ((random() & 0x1) ? 2 : 1);
 		yd[i] = ((random() & 0x1) ? 1 : -1) * ((random() & 0x1) ? 2 : 1);
+		v[i] = (i & 0x01) ? 0x0F : 0xF0;
 	}
 
 	while (1) {
+		wdt_reset();
 		srandom(analog_read_p(0) + timer_micros() + timer_millis());
 	
-		draw_rectangle(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT, DRAW_FILLED, 0xF, OVERLAY_NAND);
+		draw_rectangle(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT, DRAW_FILLED, 0xFF, OVERLAY_NAND);
 		
 		for (uint8_t i = 0; i < COUNT; i++){
 			//Bounds checking
@@ -68,14 +61,15 @@ int main (void){
 			if (y[i] <= 0 || y[i] >= MATRIX_WIDTH) yd[i] *= -1;
 	
 			//Draw circle
-			draw_circle(x[i], y[i], r[i], DRAW_FILLED, v[i] & 0x11, o[i]);
-			draw_circle(x[i], y[i], r[i] - 3, DRAW_FILLED, v[i] & 0x11, (o[i] == OVERLAY_OR ? OVERLAY_NAND : OVERLAY_OR));
-			draw_circle(x[i], y[i], r[i] - 3, DRAW_FILLED, v[i] & 0x22, o[i]);
-			draw_circle(x[i], y[i], r[i] - 6, DRAW_FILLED, v[i], o[i]);		
+			draw_circle(x[i], y[i], r[i] - 0, DRAW_FILLED, v[i] & 0x11, OVERLAY_OR);
+			draw_circle(x[i], y[i], r[i] - 1, DRAW_FILLED, v[i] & 0x22, OVERLAY_OR);
+			draw_circle(x[i], y[i], r[i] - 2, DRAW_FILLED, v[i] & 0x33, OVERLAY_OR);
+			draw_circle(x[i], y[i], r[i] - 4, DRAW_FILLED, v[i] & 0x44, OVERLAY_OR);
+			draw_circle(x[i], y[i], r[i] - 5, DRAW_FILLED, v[i] & 0x88, OVERLAY_OR);
 		}
 
 		//Flush buffer
-		twi_write_to(42, matrix_get_working_buffer(), 192, TWI_BLOCK, TWI_STOP);
+		twi_write_to(42, matrix_get_working_buffer(), TWI_BUFFER_LENGTH, TWI_BLOCK, TWI_STOP);
 		
 		_delay_ms(50);
 	}
