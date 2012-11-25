@@ -8,8 +8,10 @@
 
 static uint8_t double_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 
-uint8_t get_double_buffer_value(uint8_t x, uint8_t y){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
+inline uint8_t get_double_buffer_value(uint8_t x, uint8_t y){
+	while (x >= MATRIX_WIDTH) x -= MATRIX_WIDTH;
+	while (y >= MATRIX_HEIGHT) y -= MATRIX_HEIGHT;
+
 	return double_buffer[x][y];
 }
 
