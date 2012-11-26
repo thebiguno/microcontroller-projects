@@ -82,10 +82,116 @@ void flushBufferCallback(uint8_t* data, uint16_t length){
 	//Do nothing... the slave rx buffer *is* the display buffer
 }
 
+//This is called for each byte that is received.
+void fillBufferCallback(uint8_t data, uint16_t currentIndex){
+	static uint8_t mode = 0x00;
+	//The first byte is mode; we copy the remaining bytes as follows:
+	// 0x00: 8 bit color (blind copy of rx buffer data to internal buffer)
+	// 0x01: 4 bit gradient mode
+	// 0x02: 4 bit high contrast mode
+	// 0x03: 2 bit, two color mode (R, Y, G, B, bright color)
+	// 0x04: 2 bit, two color mode (R, Y, G, B, dim color)
+	// 0x05: 2 bit green mode
+	// 0x06: 2 bit yellow mode
+	// 0x07: 2 bit red mode
+	// 0x08: 1 bit green mode
+	// 0x09: 1 bit yellow mode
+	// 0x0A: 1 bit red mode
+	
+	if (currentIndex == 0){
+		//set the mode
+		mode = data;
+	}
+	else {
+		uint8_t i = currentIndex - 1;
+		switch(mode){
+			case 0x00:
+				((uint8_t*) _buffer)[i] = data;
+				break;
+			case 0x01:
+				for (uint8_t j = 0; j < 2; j++){
+					uint8_t v = j == 0 ? data & 0x0F : data >> 4;
+					switch (v){
+						case 0x00: ((uint8_t*) _buffer)[i * 2 + j] = 0x00; break;
+						case 0x01: ((uint8_t*) _buffer)[i * 2 + j] = 0x01; break;
+						case 0x02: ((uint8_t*) _buffer)[i * 2 + j] = 0x02; break;
+						case 0x03: ((uint8_t*) _buffer)[i * 2 + j] = 0x04; break;
+						case 0x04: ((uint8_t*) _buffer)[i * 2 + j] = 0x08; break;
+						case 0x05: ((uint8_t*) _buffer)[i * 2 + j] = 0x0F; break;
+						case 0x06: ((uint8_t*) _buffer)[i * 2 + j] = 0x2F; break;
+						case 0x07: ((uint8_t*) _buffer)[i * 2 + j] = 0x4F; break;
+						case 0x08: ((uint8_t*) _buffer)[i * 2 + j] = 0xFF; break;
+						case 0x09: ((uint8_t*) _buffer)[i * 2 + j] = 0xF4; break;
+						case 0x0A: ((uint8_t*) _buffer)[i * 2 + j] = 0xF2; break;
+						case 0x0B: ((uint8_t*) _buffer)[i * 2 + j] = 0xF0; break;
+						case 0x0C: ((uint8_t*) _buffer)[i * 2 + j] = 0x80; break;
+						case 0x0D: ((uint8_t*) _buffer)[i * 2 + j] = 0x40; break;
+						case 0x0E: ((uint8_t*) _buffer)[i * 2 + j] = 0x20; break;
+						case 0x0F: ((uint8_t*) _buffer)[i * 2 + j] = 0x10; break;
+					}
+				}
+				break;
+/*
+
+			case 0x05:
+				for (uint8_t j = 0; j < 4; j++){
+					uint8_t v = (data >> j * 2) & 0x03;;
+					switch (v){
+						case 0x00: ((uint8_t*) _buffer)[i * 2 + j] = 0x00; break;
+						case 0x01: ((uint8_t*) _buffer)[i * 2 + j] = 0x20; break;
+						case 0x02: ((uint8_t*) _buffer)[i * 2 + j] = 0x60; break;
+						case 0x03: ((uint8_t*) _buffer)[i * 2 + j] = 0xF0; break;
+					}
+				}
+				break;
+			case 0x06:
+				for (uint8_t j = 0; j < 4; j++){
+					uint8_t v = (data >> j * 2) & 0x03;;
+					switch (v){
+						case 0x00: ((uint8_t*) _buffer)[i * 2 + j] = 0x00; break;
+						case 0x01: ((uint8_t*) _buffer)[i * 2 + j] = 0x22; break;
+						case 0x02: ((uint8_t*) _buffer)[i * 2 + j] = 0x66; break;
+						case 0x03: ((uint8_t*) _buffer)[i * 2 + j] = 0xFF; break;
+					}
+				}
+				break;
+			case 0x07:
+				for (uint8_t j = 0; j < 4; j++){
+					uint8_t v = (data >> j * 2) & 0x03;;
+					switch (v){
+						case 0x00: ((uint8_t*) _buffer)[i * 2 + j] = 0x00; break;
+						case 0x01: ((uint8_t*) _buffer)[i * 2 + j] = 0x02; break;
+						case 0x02: ((uint8_t*) _buffer)[i * 2 + j] = 0x06; break;
+						case 0x03: ((uint8_t*) _buffer)[i * 2 + j] = 0x0F; break;
+					}
+				}
+				break;
+*/
+			case 0x08:
+				for (uint8_t j = 0; j < 8; j++){
+					((uint8_t*) _buffer)[i * 8 + j] = data & _BV(j) ? 0xF0 : 0x00;
+				}
+				break;
+			case 0x09:
+				for (uint8_t j = 0; j < 8; j++){
+					((uint8_t*) _buffer)[i * 8 + j] = data & _BV(j) ? 0xFF : 0x00;
+				}
+				break;
+			case 0x0A:
+				for (uint8_t j = 0; j < 8; j++){
+					((uint8_t*) _buffer)[i * 8 + j] = data & _BV(j) ? 0x0F : 0x00;
+				}
+				break;
+		}
+	}
+	
+}
+
 int main (void){
 	twi_init();
 	twi_set_slave_address(42);
 	twi_attach_slave_rx_event(flushBufferCallback);
+	twi_attach_slave_rx_byte_event(fillBufferCallback);
 	twi_set_rx_buffer((uint8_t*) _buffer);
 	wdt_enable(WDTO_15MS);
 
