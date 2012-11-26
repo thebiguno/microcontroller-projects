@@ -64,6 +64,10 @@ static void (*twi_onSlaveTransmit)(void);
 #endif
 
 #ifndef TWI_DISABLE_SLAVE_RX
+//Allows you to override the buffer fill behaviour, i.e. to do something instead of just blindly filling a buffer.
+#ifdef TWI_SLAVE_RX_BYTE_CALLBACK
+static void (*twi_onSlaveReceiveByte)(uint8_t, uint16_t);
+#endif
 //Used for slave receive (filled in ISR, passed to onSlaveReceive handler)
 #ifndef TWI_CUSTOM_BUFFERS
 static uint8_t twi_rxBuffer[TWI_BUFFER_LENGTH];
@@ -341,6 +345,19 @@ void twi_attach_slave_tx_event( void (*function)(void) )
 }
 #endif
 
+#ifdef TWI_SLAVE_RX_BYTE_CALLBACK
+/* 
+ * Function twi_attach_slave_rx_byte_event
+ * Desc		 sets function called when the slave receives a byte; allows you to put it in your own buffer
+ * Input		function: callback function to use.  The function should take two args: a uint8_t (data), and uint16_t (current index)
+ * Output	 none
+ */
+void twi_attach_slave_rx_byte_event( void (*function)(uint8_t, uint16_t) )
+{
+	twi_onSlaveReceiveByte = function;
+}
+#endif
+
 #ifndef TWI_DISABLE_SLAVE_RX
 /* 
  * Function twi_attachSlaveRxEvent
@@ -504,9 +521,15 @@ ISR(TWI_vect){
 		case TW_SR_GCALL_DATA_ACK: // data received generally, returned ack
 			// if there is still room in the rx buffer
 			if(twi_rxBufferIndex < TWI_BUFFER_LENGTH){
-				// put byte in buffer and ack
-				twi_rxBuffer[twi_rxBufferIndex++] = TWDR;
-				twi_reply(1);
+	#ifdef TWI_SLAVE_RX_BYTE_CALLBACK
+			//Call custom callback function to handle the byte, and ack
+			twi_onSlaveReceiveByte(TWDR, twi_rxBufferIndex++);
+			twi_reply(1);
+	#else
+			// put byte in buffer and ack
+			twi_rxBuffer[twi_rxBufferIndex++] = TWDR;
+			twi_reply(1);
+	#endif
 			}else{
 				// otherwise nack
 				twi_reply(0);

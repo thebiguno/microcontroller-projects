@@ -55,7 +55,11 @@
 	void twi_set_rx_buffer(uint8_t* buffer);
 	void twi_set_tx_buffer(uint8_t* buffer);
 #endif
-	
+
+#ifdef TWI_SLAVE_RX_BYTE_CALLBACK
+	void twi_attach_slave_rx_byte_event( void (*function)(uint8_t, uint16_t) );
+#endif
+
 	void twi_init();
 	void twi_set_slave_address(uint8_t);
 	uint8_t twi_read_from(uint8_t, uint8_t*, uint16_t, uint8_t);
