@@ -9,7 +9,7 @@
 
 //Data is copies to the working buffer first, and then flushed to _buffer for display by the user.  This
 // prevents flickering when doing animations (and in fact any live drawing).
-static uint8_t buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
+static uint8_t buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> MATRIX_HEIGHT_SHIFT];
 static uint8_t mode = 0x00;
 
 static uint8_t twi_master_tx_writer(uint16_t i){
@@ -23,7 +23,7 @@ static uint8_t twi_master_tx_writer(uint16_t i){
 
 void matrix_init(){
 	twi_init();
-	twi_atatch_master_tx_writer(twi_master_tx_writer);
+	twi_attach_master_tx_writer(twi_master_tx_writer);
 }
 
 void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){

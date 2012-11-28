@@ -7,10 +7,15 @@
 #ifndef MATRIX_HEIGHT
 #define MATRIX_HEIGHT 16
 #endif
+#ifndef MATRIX_HEIGHT_SHIFT
+#define MATRIX_HEIGHT_SHIFT 0
+#endif
 
 #ifndef MATRIX_DRIVER_SLAVE_ADDRESS
 #define MATRIX_DRIVER_SLAVE_ADDRESS 42
 #endif
+
+#define MATRIX_LENGTH MATRIX_WIDTH * (MATRIX_HEIGHT >> MATRIX_HEIGHT_SHIFT)
 
 #include "../draw.h"
 #include "../../twi/twi.h"
