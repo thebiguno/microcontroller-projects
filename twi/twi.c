@@ -36,7 +36,7 @@ static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 		static void (*twi_master_rx_reader)(uint8_t, uint16_t);
 	#endif
 	#ifdef TWI_MASTER_TX_WRITER
-		static void (*twi_master_tx_writer)(uint8_t, uint16_t);
+		static uint8_t (*twi_master_tx_writer)(uint16_t);
 	#endif
 
 	#ifdef TWI_CUSTOM_BUFFERS
@@ -53,7 +53,11 @@ static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 #ifndef TWI_DISABLE_SLAVE
 	#ifndef TWI_DISABLE_SLAVE_TX
 		#ifdef TWI_SLAVE_TX_WRITER
-			static void (*twi_slave_tx_writer)(uint8_t, uint16_t);
+			//Callback to assemble the message one byte at a time.
+			static uint8_t (*twi_slave_tx_writer)(uint16_t);
+		#else
+			//Callback to assemble the buffer, and send it via twi_transmit().
+			static void (*twi_slave_tx_callback)(void);
 		#endif
 
 		#ifdef TWI_CUSTOM_BUFFERS
@@ -63,14 +67,13 @@ static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 		#endif
 		static volatile uint16_t twi_txBufferIndex;
 		static volatile uint16_t twi_txBufferLength;
-
-		//Callback after the entire buffer has been sent.
-		static void (*twi_onSlaveTransmit)(void);
 	#endif
 	
 	#ifndef TWI_DISABLE_SLAVE_RX
 		#ifdef TWI_SLAVE_RX_READER
 			static void (*twi_slave_rx_reader)(uint8_t, uint16_t);
+		#else
+			static void (*twi_slave_rx_callback)(uint8_t*, uint16_t);
 		#endif
 		
 		#ifdef TWI_CUSTOM_BUFFERS
@@ -80,7 +83,6 @@ static volatile uint8_t twi_inRepStart;			// in the middle of a repeated start
 		#endif
 
 		static volatile uint16_t twi_rxBufferIndex;
-		static void (*twi_onSlaveReceive)(uint8_t*, uint16_t);
 	#endif
 #endif
 
@@ -119,13 +121,13 @@ static volatile uint8_t twi_error;
 #endif
 
 #if !defined(TWI_DISABLE_MASTER) && defined(TWI_MASTER_RX_READER)
-	void twi_attach_slave_rx_reader( void (*function)(uint8_t, uint16_t) ){
-		twi_slave_rx_reader = function;
+	void twi_attach_master_rx_reader( void (*function)(uint8_t, uint16_t) ){
+		twi_master_rx_reader = function;
 	}
 #endif
 #if !defined(TWI_DISABLE_MASTER) && defined(TWI_MASTER_TX_WRITER)
-	void twi_attach_slave_tx_writer( uint8_t (*function)(uint16_t) ){
-		twi_slave_tx_writer = function;
+	void twi_attach_master_tx_writer( uint8_t (*function)(uint16_t) ){
+		twi_master_tx_writer = function;
 	}
 #endif
 
@@ -320,15 +322,15 @@ void twi_init(){
 #endif
 
 
-#if !defined(TWI_DISABLE_SLAVE) && !defined(TWI_DISABLE_SLAVE_TX)
-	void twi_attach_slave_tx_event( void (*function)(void) ){
-		twi_onSlaveTransmit = function;
+#if !defined(TWI_DISABLE_SLAVE) && !defined(TWI_DISABLE_SLAVE_TX) && !defined(TWI_SLAVE_TX_WRITER)
+	void twi_attach_slave_tx_callback( void (*function)(void) ){
+		twi_slave_tx_callback = function;
 	}
 #endif
 
-#if !defined(TWI_DISABLE_SLAVE) && !defined(TWI_DISABLE_SLAVE_RX)
-	void twi_attach_slave_rx_event( void (*function)(uint8_t*, uint16_t) ){
-		twi_onSlaveReceive = function;
+#if !defined(TWI_DISABLE_SLAVE) && !defined(TWI_DISABLE_SLAVE_RX) && !defined(TWI_SLAVE_RX_READER)
+	void twi_attach_slave_rx_callback( void (*function)(uint8_t*, uint16_t) ){
+		twi_slave_rx_callback = function;
 	}
 #endif
 
@@ -490,8 +492,10 @@ ISR(TWI_vect){
 			}
 			// sends ack and stops interface for clock stretching
 			twi_stop();
+		#ifndef TWI_SLAVE_RX_READER
 			// callback to user defined callback
-			twi_onSlaveReceive(twi_rxBuffer, twi_rxBufferIndex);
+			twi_slave_rx_callback(twi_rxBuffer, twi_rxBufferIndex);
+		#endif
 			// since we submit rx buffer to "wire" library, we can reset it
 			twi_rxBufferIndex = 0;
 			// ack future responses and leave slave receiver state
@@ -514,9 +518,11 @@ ISR(TWI_vect){
 			twi_txBufferIndex = 0;
 			// set tx buffer length to be zero, to verify if user changes it
 			twi_txBufferLength = 0;
+		#ifndef TWI_SLAVE_TX_WRITER
 			// request for txBuffer to be filled and length to be set
 			// note: user must call twi_transmit(bytes, length) to do this
-			twi_onSlaveTransmit();
+			twi_slave_tx_callback();
+		#endif
 			// if they didn't change buffer & length, initialize it
 			if(0 == twi_txBufferLength){
 				twi_txBufferLength = 1;

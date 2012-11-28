@@ -111,14 +111,14 @@
 	// be called once for each byte in the incoming message, whereas this one will not be called 
 	// until the entire message is buffered, but there are probably not many scenarios when both 
 	// approaches are valid at the same time.)
-	void twi_attach_slave_rx_event( void (*)(uint8_t*, uint16_t) );
+	void twi_attach_slave_rx_callback( void (*)(uint8_t*, uint16_t) );
 	
 	//Attach the supplied callback function, which is called when the slave receives a tx request.
 	// There are no arguments to the callback function; the callback must assemble the data buffer
 	// and submit it via the twi_transmit() function.  This function is most likely redundant if
 	// TWI_SLAVE_TX_WRITER is defined (that callback will write one byte at a time, whereas this
 	// one will assemble the entire message, but the end result is essentially the same.)
-	void twi_attach_slave_tx_event( void (*)(void) );
+	void twi_attach_slave_tx_callback( void (*)(void) );
 
 #endif
 
