@@ -1,16 +1,21 @@
-#include "lib/draw/buffer/buffer.h"
+#include "lib/draw/matrix/matrix.h"
 #include "lib/draw/draw.h"
 #include "lib/twi/twi.h"
+#include "lib/ShiftRegister/ShiftRegister.h"
 
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
-static uint8_t buffer[BUFFER_WIDTH * BUFFER_HEIGHT];
+#ifndef MATRIX_DRIVER_ADDRESS
+#define MATRIX_DRIVER_ADDRESS 42
+#endif
+
+static uint8_t buffer[MATRIX_WIDTH * MATRIX_HEIGHT];
 //457 bytes free min.
 
 //ShiftRegister object
-static ShiftRegister shift(((BUFFER_WIDTH * BUFFER_HEIGHT >> 0) >> 5) + 1);
+static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT >> 0) >> 5) + 1);
 
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
@@ -57,12 +62,12 @@ static void _callback(){
 	static uint8_t dc = 0;
 	
 	//Fill the data array based on current duty cycle, row, and buffer values
-	fill_data(&data[0x00], buffer + (0x07 - row) * BUFFER_HEIGHT + 0x08, dc);
-	fill_data(&data[0x02], buffer + (0x0F - row) * BUFFER_HEIGHT + 0x08, dc);
-	fill_data(&data[0x04], buffer + (0x17 - row) * BUFFER_HEIGHT + 0x08, dc);
-	fill_data(&data[0x06], buffer + (0x07 - row) * BUFFER_HEIGHT, dc);
-	fill_data(&data[0x08], buffer + (0x0F - row) * BUFFER_HEIGHT, dc);
-	fill_data(&data[0x0A], buffer + (0x17 - row) * BUFFER_HEIGHT, dc);
+	fill_data(&data[0x00], buffer + (0x07 - row) * MATRIX_HEIGHT + 0x08, dc);
+	fill_data(&data[0x02], buffer + (0x0F - row) * MATRIX_HEIGHT + 0x08, dc);
+	fill_data(&data[0x04], buffer + (0x17 - row) * MATRIX_HEIGHT + 0x08, dc);
+	fill_data(&data[0x06], buffer + (0x07 - row) * MATRIX_HEIGHT, dc);
+	fill_data(&data[0x08], buffer + (0x0F - row) * MATRIX_HEIGHT, dc);
+	fill_data(&data[0x0A], buffer + (0x17 - row) * MATRIX_HEIGHT, dc);
 
 	//Set row driver
 	data[0x0C] = ~_BV(row++);
@@ -77,12 +82,8 @@ static void _callback(){
 	shift.shift(data);
 }
 
-void flushBufferCallback(uint8_t* data, uint16_t length){
-	//Do nothing... the slave rx buffer *is* the display buffer
-}
-
 //This is called for each byte that is received.  'data' is the byte read from TWI; 'i' is the index of the data in the transmission
-void fillBufferCallback(uint8_t data, uint16_t i){
+void slave_rx_reader(uint8_t data, uint16_t i){
 	static uint8_t mode = 0x00;
 	static uint16_t max_length = 0x00;
 	//The first byte is mode; we copy the remaining bytes as follows:
@@ -105,23 +106,23 @@ void fillBufferCallback(uint8_t data, uint16_t i){
 		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master sends too much / wrong mode / etc)
 		switch (mode){
 			case 0x00: 
-				max_length = BUFFER_WIDTH * BUFFER_HEIGHT;
+				max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
 				break;
 			case 0x01: 
 			case 0x02: 
-				max_length = BUFFER_WIDTH * (BUFFER_HEIGHT >> 1);
+				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
 				break;
 			case 0x03: 
 			case 0x04: 
 			case 0x05: 
 			case 0x06: 
 			case 0x07: 
-				max_length = BUFFER_WIDTH * (BUFFER_HEIGHT >> 2);
+				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 2);
 				break;
 			case 0x08: 
 			case 0x09: 
 			case 0x0A: 
-				max_length = BUFFER_WIDTH * (BUFFER_HEIGHT >> 3);
+				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 3);
 				break;
 		}
 	}
@@ -168,20 +169,49 @@ void fillBufferCallback(uint8_t data, uint16_t i){
 						case 0x02: buffer[i * 2 + j] = 0x02; break;
 						case 0x03: buffer[i * 2 + j] = 0x04; break;
 						case 0x04: buffer[i * 2 + j] = 0x08; break;
-						case 0x05: buffer[i * 2 + j] = 0x0F; break;
-						case 0x06: buffer[i * 2 + j] = 0x2F; break;
-						case 0x07: buffer[i * 2 + j] = 0x4F; break;
-						case 0x08: buffer[i * 2 + j] = 0xFF; break;
-						case 0x09: buffer[i * 2 + j] = 0xF4; break;
-						case 0x0A: buffer[i * 2 + j] = 0xF2; break;
-						case 0x0B: buffer[i * 2 + j] = 0xF0; break;
-						case 0x0C: buffer[i * 2 + j] = 0x80; break;
-						case 0x0D: buffer[i * 2 + j] = 0x40; break;
-						case 0x0E: buffer[i * 2 + j] = 0x20; break;
-						case 0x0F: buffer[i * 2 + j] = 0x10; break;
+						case 0x05: buffer[i * 2 + j] = 0x11; break;
+						case 0x06: buffer[i * 2 + j] = 0x22; break;
+						case 0x07: buffer[i * 2 + j] = 0x44; break;
+						case 0x08: buffer[i * 2 + j] = 0x88; break;
+						case 0x09: buffer[i * 2 + j] = 0xFF; break;
+						case 0x0A: buffer[i * 2 + j] = 0x10; break;
+						case 0x0B: buffer[i * 2 + j] = 0x20; break;
+						case 0x0C: buffer[i * 2 + j] = 0x40; break;
+						case 0x0D: buffer[i * 2 + j] = 0x60; break;
+						case 0x0E: buffer[i * 2 + j] = 0x90; break;
+						case 0x0F: buffer[i * 2 + j] = 0xF0; break;
 					}
 				}
 				break;
+
+			//2 bit three color bright mode
+			case 0x03:
+				for (uint8_t j = 0; j < 4; j++){
+					uint8_t v = (data >> (j * 2)) & 0x03;
+					switch (v){
+						case 0x00: buffer[i * 4 + j] = 0x00; break;
+						case 0x01: buffer[i * 4 + j] = 0x0F; break;
+						case 0x02: buffer[i * 4 + j] = 0xFF; break;
+						case 0x03: buffer[i * 4 + j] = 0xF0; break;
+					}
+				}
+				break;
+				
+
+			//2 bit three color dim mode
+			case 0x04:
+				for (uint8_t j = 0; j < 4; j++){
+					uint8_t v = (data >> (j * 2)) & 0x03;
+					switch (v){
+						case 0x00: buffer[i * 4 + j] = 0x00; break;
+						case 0x01: buffer[i * 4 + j] = 0x04; break;
+						case 0x02: buffer[i * 4 + j] = 0x44; break;
+						case 0x03: buffer[i * 4 + j] = 0x40; break;
+					}
+				}
+				break;
+				
+
 
 			//2 bit green
 			case 0x05:
@@ -250,11 +280,11 @@ void fillBufferCallback(uint8_t data, uint16_t i){
 
 int main (void){
 	twi_init();
-	twi_set_slave_address(42);
-	twi_attach_slave_rx_event(flushBufferCallback);
-	twi_attach_slave_rx_byte_event(fillBufferCallback);
-	wdt_enable(WDTO_60MS);
-	twi_set_rx_buffer(buffer);
+	twi_set_slave_address(MATRIX_DRIVER_ADDRESS);
+	twi_attach_slave_rx_reader(slave_rx_reader);
+//	twi_set_rx_buffer(buffer);
+
+	wdt_enable(WDTO_15MS);
 
 	DDRB |= _BV(PORTB0);
 
