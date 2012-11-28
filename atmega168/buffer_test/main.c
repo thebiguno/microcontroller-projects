@@ -1,27 +1,29 @@
-#define BUFFER_HEIGHT_SHIFT		2
+#define MATRIX_HEIGHT_SHIFT		0
 
-#include "lib/draw/buffer/buffer.h"
+#include "lib/draw/matrix/matrix.h"
 #include "lib/twi/twi.h"
 
 #include <util/delay.h>
 
 int main (void){
-	twi_init();
-	twi_set_master_buffer(get_buffer());
-	get_buffer()[0] = 0x06;
+	matrix_init();
+	matrix_set_mode(0x00);
 	
-	uint16_t i = 0;
 	uint8_t v = 0xFF;
 
-	for (uint16_t i = 0; i < BUFFER_LENGTH + BUFFER_PROLOG; i++){
-		get_buffer()[i + BUFFER_PROLOG] = i;
-	}
-
 	while (1) {
+		for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
+			for (uint8_t y = 0; y < (MATRIX_HEIGHT >> MATRIX_HEIGHT_SHIFT); y++){
+				set_pixel(x, y, v & (x << 4 | y), OVERLAY_REPLACE);
+			}
+		}
 
 		//Flush buffer
-		twi_write_to(42, get_buffer(), BUFFER_LENGTH + BUFFER_PROLOG, TWI_BLOCK, TWI_STOP);
+		matrix_write_buffer();
 		
-		_delay_ms(1000);
+		if (v) _delay_ms(2000);
+		else _delay_ms(500);
+		
+		v = ~v;
 	}
 }
