@@ -30,7 +30,7 @@ void glcd_write_buffer_bounds(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 
 /*
- * Get a a pixel at the given X, Y co-ordinates, using the specified overlay mode.
+ * Get a pixel at the given X, Y co-ordinates.
  */
 uint8_t glcd_get_pixel(uint8_t x, uint8_t y);
 
