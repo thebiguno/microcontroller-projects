@@ -1,0 +1,308 @@
+# EESchema Netlist Version 1.1 created  Mon 07 Jan 2013 11:02:49 PM MST
+(
+ ( /50EA5F76 $noname  C4 0.1_uF {Lib=C}
+  (    1 +24V )
+  (    2 GND )
+ )
+ ( /50E8A1BE $noname  C7 220uF {Lib=CP1}
+  (    1 N-000016 )
+  (    2 N-000012 )
+ )
+ ( /50E8A1A0 $noname  C6 220uF {Lib=CP1}
+  (    1 N-000010 )
+  (    2 N-000014 )
+ )
+ ( /50E8A18D $noname  C11 2200uF_16V {Lib=CP1}
+  (    1 N-000011 )
+  (    2 N-000001 )
+ )
+ ( /50E8A166 $noname  C10 2200uF_16V {Lib=CP1}
+  (    1 N-000013 )
+  (    2 N-000004 )
+ )
+ ( /50E8A135 $noname  C3 22uF {Lib=CP1}
+  (    1 GND )
+  (    2 N-000017 )
+ )
+ ( /50E8A10F $noname  C2 2.2uF_3V {Lib=CP1}
+  (    1 N-000015 )
+  (    2 N-000002 )
+ )
+ ( /50E8A0F1 $noname  C1 2.2uF_3V {Lib=CP1}
+  (    1 N-000018 )
+  (    2 N-000009 )
+ )
+ ( /50E8A0CE $noname  C5 120uF {Lib=CP1}
+  (    1 +24V )
+  (    2 GND )
+ )
+ ( /50E89CED $noname  VR1 VR {Lib=VR}
+  (    1 N-000026 )
+  (    2 N-000027 )
+ )
+ ( /50E89CCF $noname  F1 250V_SB {Lib=FUSE}
+  (    1 N-000007 )
+  (    2 N-000027 )
+ )
+ ( /50E89C91 $noname  U1 VSK-S25 {Lib=VSK-S25}
+  (    1 N-000024 )
+  (    2 N-000006 )
+  (    3 N-000026 )
+  (    4 ? )
+  (    5 GND )
+  (    6 +24V )
+ )
+ ( /50E89AE1 $noname  K2 MAINS {Lib=CONN_3}
+  (    1 N-000024 )
+  (    2 N-000006 )
+  (    3 N-000007 )
+ )
+ ( /50E8985E $noname  K1 INPUT {Lib=CONN_3}
+  (    1 GND )
+  (    2 N-000008 )
+  (    3 N-000005 )
+ )
+ ( /50E897DA $noname  RV1 100k {Lib=DUAL_POT}
+  (    1 N-000005 )
+  (    2 N-000009 )
+  (    3 GND )
+  (    4 N-000008 )
+  (    5 N-000002 )
+  (    6 GND )
+ )
+ ( /50E89481 $noname  P2 RIGHT {Lib=CONN_2}
+  (    1 N-000001 )
+  (    2 GND )
+ )
+ ( /50E8947C $noname  P1 LEFT {Lib=CONN_2}
+  (    1 N-000004 )
+  (    2 GND )
+ )
+ ( /50E893E4 $noname  R3 18 {Lib=R}
+  (    1 N-000014 )
+  (    2 GND )
+ )
+ ( /50E89310 $noname  R4 18 {Lib=R}
+  (    1 N-000012 )
+  (    2 GND )
+ )
+ ( /50E892F3 $noname  R6 1 {Lib=R}
+  (    1 N-000023 )
+  (    2 GND )
+ )
+ ( /50E892D4 $noname  R5 1 {Lib=R}
+  (    1 N-000022 )
+  (    2 GND )
+ )
+ ( /50E89292 $noname  C9 0.1uF {Lib=C}
+  (    1 N-000011 )
+  (    2 N-000023 )
+ )
+ ( /50E8927C $noname  C8 0.1uF {Lib=C}
+  (    1 N-000013 )
+  (    2 N-000022 )
+ )
+ ( /50E88EAC $noname  R2 1.3k {Lib=R}
+  (    1 N-000011 )
+  (    2 N-000012 )
+ )
+ ( /50E88E7A $noname  R1 1.3k {Lib=R}
+  (    1 N-000013 )
+  (    2 N-000014 )
+ )
+ ( /50E88E4B $noname  U2 TDA2009A {Lib=TDA2009A}
+  (    1 N-000015 )
+  (    2 N-000016 )
+  (    3 N-000017 )
+  (    4 N-000010 )
+  (    5 N-000018 )
+  (    6 GND )
+  (    7 ? )
+  (    8 N-000013 )
+  (    9 +24V )
+  (   10 N-000011 )
+  (   11 ? )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C7
+ CP*
+ SM*
+$endlist
+$component C6
+ CP*
+ SM*
+$endlist
+$component C11
+ CP*
+ SM*
+$endlist
+$component C10
+ CP*
+ SM*
+$endlist
+$component C3
+ CP*
+ SM*
+$endlist
+$component C2
+ CP*
+ SM*
+$endlist
+$component C1
+ CP*
+ SM*
+$endlist
+$component C5
+ CP*
+ SM*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component C9
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ SM*
+ C?
+ C1-1
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "" ""
+ C11 2
+ P2 1
+Net 2 "" ""
+ RV1 5
+ C2 2
+Net 3 "GND" "GND"
+ R3 2
+ R4 2
+ R6 2
+ R5 2
+ U2 6
+ RV1 3
+ C4 2
+ C5 2
+ U1 5
+ C3 1
+ P2 2
+ K1 1
+ RV1 6
+ P1 2
+Net 4 "" ""
+ C10 2
+ P1 1
+Net 5 "" ""
+ K1 3
+ RV1 1
+Net 6 "" ""
+ U1 2
+ K2 2
+Net 7 "" ""
+ F1 1
+ K2 3
+Net 8 "" ""
+ K1 2
+ RV1 4
+Net 9 "" ""
+ RV1 2
+ C1 2
+Net 10 "" ""
+ C6 1
+ U2 4
+Net 11 "" ""
+ R2 1
+ C11 1
+ U2 10
+ C9 1
+Net 12 "" ""
+ C7 2
+ R2 2
+ R4 1
+Net 13 "" ""
+ C8 1
+ C10 1
+ R1 1
+ U2 8
+Net 14 "" ""
+ R1 2
+ C6 2
+ R3 1
+Net 15 "" ""
+ C2 1
+ U2 1
+Net 16 "" ""
+ C7 1
+ U2 2
+Net 17 "" ""
+ C3 2
+ U2 3
+Net 18 "" ""
+ C1 1
+ U2 5
+Net 20 "+24V" "+24V"
+ C4 1
+ U1 6
+ U2 9
+ C5 1
+Net 22 "" ""
+ C8 2
+ R5 1
+Net 23 "" ""
+ R6 1
+ C9 2
+Net 24 "" ""
+ K2 1
+ U1 1
+Net 26 "" ""
+ U1 3
+ VR1 1
+Net 27 "" ""
+ F1 2
+ VR1 2
+}
+#End
