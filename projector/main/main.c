@@ -1,6 +1,6 @@
 #include "main.h"
 
-// projector switch on; project advance; camera switch on; camera shutter;
+// camera switch on; camera shutter; projector switch on; project advance;
 #define T0 255
 #define T1 512
 #define T2 255
@@ -125,8 +125,8 @@ int main() {
 					slide_count = 36;
 				} else if (slide_count < 80) {
 					slide_count = 80;
-				} else if (slide_count < 144) {
-					slide_count = 144;
+				} else if (slide_count < 140) {
+					slide_count = 140;
 				} else {
 					slide_count = 36;
 				}
