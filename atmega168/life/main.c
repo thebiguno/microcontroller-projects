@@ -9,7 +9,6 @@
 #include "lib/draw/draw.h"
 #include "lib/draw/matrix/matrix.h"
 #include "lib/timer/timer.h"
-#include "lib/twi/twi.h"
 #include <util/delay.h>
 
 #define GRN_3	0xF0
@@ -22,27 +21,36 @@
 #define RECENT_HASH_COUNT			5
 #define RECENT_HASH_MATCH_COUNT		20
 
-static uint8_t double_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
+//We write to the scratch buffer, and then flush to the matrix buffer.  We have to
+// do this so that we can check for the current neighborhood, even as we are scanning
+// through rows.  If we just used the matrix buffer, then as soon as we write a value
+// we corrupt the reading of this current generation.
+static uint8_t scratch_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 
 static uint16_t recent_hashes[RECENT_HASH_COUNT];
 static uint8_t recent_hash_match_count = 0;
 
-uint8_t get_double_buffer_value(uint8_t x, uint8_t y){
+uint8_t get_scratch(uint8_t x, uint8_t y){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
-	return double_buffer[x][y];
+	return scratch_buffer[x][y];
+}
+
+void set_scratch(uint8_t x, uint8_t y, uint8_t value){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
+	scratch_buffer[x][y] = value;
 }
 
 
 uint8_t get_neighbor_count(uint8_t x, uint8_t y){
 	uint8_t count = 0;
-	if (get_double_buffer_value(x - 1, y - 1)) count++;
-	if (get_double_buffer_value(x - 1, y)) count++;
-	if (get_double_buffer_value(x - 1, y + 1)) count++;
-	if (get_double_buffer_value(x, y - 1)) count++;
-	if (get_double_buffer_value(x, y + 1)) count++;
-	if (get_double_buffer_value(x + 1, y - 1)) count++;
-	if (get_double_buffer_value(x + 1, y)) count++;
-	if (get_double_buffer_value(x + 1, y + 1)) count++;
+	if (get_scratch(x - 1, y - 1)) count++;
+	if (get_scratch(x - 1, y)) count++;
+	if (get_scratch(x - 1, y + 1)) count++;
+	if (get_scratch(x, y - 1)) count++;
+	if (get_scratch(x, y + 1)) count++;
+	if (get_scratch(x + 1, y - 1)) count++;
+	if (get_scratch(x + 1, y)) count++;
+	if (get_scratch(x + 1, y + 1)) count++;
 	return count;
 }
 
@@ -50,24 +58,33 @@ uint16_t get_board_hash(){
 	uint16_t hash = 0;
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			hash += get_double_buffer_value(x, y) + x;
+			hash += get_scratch(x, y) + x;
 		}
 	}
 	
 	return hash;
 }
 
-void flush(uint8_t* working_buffer, uint8_t* display_buffer){
-    for (uint16_t i = 0; i < MATRIX_WIDTH * MATRIX_HEIGHT; i++){
-        display_buffer[i] = working_buffer[i];
+void clear_scratch(){
+    for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
+	for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
+		set_scratch(x, y, 0);
+	}
+    }	
+}
+
+void flush(){
+    for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
+	for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
+		set_pixel(x, y, get_scratch(x, y), OVERLAY_REPLACE);
+	}
     }
 }
 
 void flash_palette(uint8_t value){
 	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, 0xFF, OVERLAY_NAND);
 	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, value, OVERLAY_OR);
-	flush(matrix_get_working_buffer(), (uint8_t*) double_buffer);
-	twi_write_to(42, (uint8_t*) double_buffer, TWI_BUFFER_LENGTH, TWI_BLOCK, TWI_STOP);
+	matrix_write_buffer();
 }
 
 void setup(){
@@ -87,14 +104,15 @@ void setup(){
 	flash_palette(RED_1); _delay_ms(100);
 	
 	//Clear board
-	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, 0xFF, OVERLAY_NAND);
-	flush(matrix_get_working_buffer(), (uint8_t*) double_buffer);
+	clear_scratch();
+	flush();
+	matrix_write_buffer();
 	_delay_ms(100);
 
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			if ((random() & 0x3) == 0x3){		//25% chance
-				set_pixel(x, y, GRN_1, OVERLAY_OR);
+			if ((random() & 0x7) == 0x7){		//25% chance
+				set_scratch(x, y, GRN_1);
 			}
 		}
 	}
@@ -103,77 +121,68 @@ void setup(){
 		recent_hashes[i] = i;
 	}
 	
-	flush(matrix_get_working_buffer(), (uint8_t*) double_buffer);
+	flush();
+	matrix_write_buffer();
 }
 
 int main (void){
 	timer_init();
 	uint8_t analog_pins[1] = {5};
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
-	twi_init();
-	twi_set_master_buffer((uint8_t*) double_buffer);
-
+	matrix_init();
+	matrix_set_mode(0x00);
+	
 	setup();
 		
 	while (1) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
 				uint8_t count = get_neighbor_count(x, y);
-				uint8_t alive = get_double_buffer_value(x, y);
+				uint8_t alive = get_scratch(x, y);
 				if (alive) {
-					if (count < 2) set_pixel(x, y, 0xFF, OVERLAY_NAND);
+					if (count < 2) set_scratch(x, y, 0x00);
 					else if (count <= 3){
 						if (alive == GRN_1) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_2, OVERLAY_OR);
+							set_scratch(x, y, GRN_2);
 						}
 						if (alive == GRN_2) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_3, OVERLAY_OR);
+							set_scratch(x, y, GRN_3);
 						}
 						if (alive == GRN_3) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_3 | RED_1, OVERLAY_OR);
+							set_scratch(x, y, GRN_3 | RED_1);
 						}
 						else if (alive == (GRN_3 | RED_1)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_3 | RED_2, OVERLAY_OR);
+							set_scratch(x, y, GRN_3 | RED_2);
 						}
 						else if (alive == (GRN_3 | RED_2)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_3 | RED_3, OVERLAY_OR);
+							set_scratch(x, y, GRN_3 | RED_3);
 						}
 						else if (alive == (GRN_3 | RED_3)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_2 | RED_3, OVERLAY_OR);
+							set_scratch(x, y, GRN_2 | RED_3);
 						}
 						else if (alive == (GRN_2 | RED_3)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, GRN_1 | RED_3, OVERLAY_OR);
+							set_scratch(x, y, GRN_1 | RED_3);
 						}
 						else if (alive == (GRN_1 | RED_3)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, RED_3, OVERLAY_OR);
+							set_scratch(x, y, RED_3);
 						}
 						else if (alive == (RED_3)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, RED_2, OVERLAY_OR);
+							set_scratch(x, y, RED_2);
 						}
 						else if (alive == (RED_2)) {
-							set_pixel(x, y, 0xFF, OVERLAY_NAND);
-							set_pixel(x, y, RED_1, OVERLAY_OR);
+							set_scratch(x, y, RED_1);
 						}
 					}
-					else if (count > 3) set_pixel(x, y, 0xFF, OVERLAY_NAND);
+					else if (count > 3) set_scratch(x, y, 0x00);
 				}
 				else if (count == 3){
-					set_pixel(x, y, GRN_1, OVERLAY_OR);
+					set_scratch(x, y, GRN_1);
 				}
 			}
 		}
 		
-		flush(matrix_get_working_buffer(), (uint8_t*) double_buffer);
-		twi_write_to(42, (uint8_t*) double_buffer, TWI_BUFFER_LENGTH, TWI_BLOCK, TWI_STOP);
+		flush();
+		matrix_write_buffer();
 		
 		//Store board hash
 		for (uint8_t i = RECENT_HASH_COUNT - 1; i > 0; i--){
