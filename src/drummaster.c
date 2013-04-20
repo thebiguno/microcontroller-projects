@@ -116,12 +116,12 @@
 
 
 
-//Temp variables; iterators for port and bank; s and v are the selector 
+//Temp variables; iterators for port and bank; channel and velocity are the selector 
 // address (channel) and velocity respectively;	 x and y are truly temp variables, and can be used for
 // anything you wish.	 There are no guarantees that they will keep its value for any length of time,
 // so make sure nothing else stores to them before you read your value.
-uint8_t port, bank, s;
-uint16_t v;
+uint8_t port, bank, channel;
+uint16_t velocity;
 uint64_t x, y;
 
 //Is it time to read active channels?	 Set to true at the beginning of a loop if this is the case, and
@@ -137,10 +137,6 @@ uint8_t consecutive_reads[BUFFER_SIZE];
 //Keep track of active channels, to reduce computations.	Once a channel is set to be active,
 // only a reset will change it back.
 uint8_t active_channel[BUFFER_SIZE];
-
-//Set to the current time at the beginning of each loop, to reduce the number of expensive 
-// calls to timer_millis().
-uint64_t time;
 
 //When was the last time that each channel was read?  Used for debounce.
 uint64_t last_read_time[BUFFER_SIZE];
@@ -158,13 +154,13 @@ char temp[32];
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
  */
-void set_mux_selectors(uint8_t s){
+void set_mux_selectors(uint8_t channel){
 	PORTB &= 0xF8; //Clear bottom three bits
-	//Set bits based on s, making sure we don't set more than 3 bits.
+	//Set bits based on channel, making sure we don't set more than 3 bits.
 	//For PCB layout simplicity, we designed the board such that the MSB is 
 	// PINB0 and LSB is PINB2.  Thus, we need to flip the 3-bit word.
-	s = s & 0x7;
-	PORTB |= ((s & 0x1) << 2) | (s & 0x2) | ((s & 0x4) >> 2);
+	channel = channel & 0x7;
+	PORTB |= ((channel & 0x1) << 2) | (channel & 0x2) | ((channel & 0x4) >> 2);
 }
 
 /*
@@ -281,7 +277,7 @@ void setup() {
 //Loop is called repeatedly after setup has completed.
 void loop() {
 	//We cache the current time to avoid needing to call timer_millis() each time throughout the loop.
-	time = timer_millis();
+	uint64_t time = timer_millis();
 
 	//If ACTIVE_CHANNEL_MIN_POLL_INTERVAL ms have passed since the last time we read active channels,
 	// go ahead and read them now.
@@ -301,16 +297,16 @@ void loop() {
 
 		//Read the analog pins
 		for (bank = 0; bank < 4; bank++){
-			s = get_channel(bank, port);
+			channel = get_channel(bank, port);
 
 			//If the channel is defined to be 'active' (i.e., connected to a device which always
 			// reports its state, such as a hi hat pedal, rather than a device which only reports
 			// state when struck, like a piezo), then we poll less frequently.
-			if (consecutive_reads[s] > MIN_ACTIVE_CHANNEL_POLL_COUNT && !active_channel[s]){
-				active_channel[s] = 1;
+			if (consecutive_reads[channel] > MIN_ACTIVE_CHANNEL_POLL_COUNT && !active_channel[channel]){
+				active_channel[channel] = 1;
 #if DEBUG >= 2
 				serial_write_s("Switching channel ");
-				serial_write_s(itoa(s, temp, 10));
+				serial_write_s(itoa(channel, temp, 10));
 				serial_write_s(" to be 'active'\n\r");
 #endif
 			}
@@ -321,70 +317,63 @@ void loop() {
 			// seems to take upwards of 1ms to read, while a digital sensor is a fraction of that).
 			// Triggers are active if there is a voltage greater than about 0.3v on the corresponding 
 			// analog pin.
-//			if (!active_channel[s] || read_active_channels){
-				if (time - last_read_time[s] > ANALOG_BOUNCE_PERIOD){
-					if ((PIND & _BV(PIND2 + bank)) || active_channel[s]){
-						v = get_velocity(bank);
-						if (!active_channel[s] 
-									|| abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE
-									|| (active_channel[s] && time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL)){
+			if (time - last_read_time[channel] > ANALOG_BOUNCE_PERIOD){
+				if ((PIND & _BV(PIND2 + bank)) || active_channel[channel]){
+					velocity = get_velocity(bank);
+					if (!active_channel[channel] 
+								|| abs(velocity - last_value[channel]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE
+								|| (active_channel[channel] && time - last_read_time[channel] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL)){
 #if DEBUG >= 2
-							if (active_channel[s]){
-								if (abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE){
-									serial_write_s("Large change of value for channel ");
-									serial_write_s(itoa(s, temp, 10));
-									serial_write_s("; old value is ");
-									serial_write_s(itoa(last_value[s], temp, 10));
-									serial_write_s("; new value is ");
-									serial_write_s(itoa(v, temp, 10));
-									serial_write_s("\n\r");
-								}
-								if (time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL){
-									serial_write_s("Timeout for channel ");
-									serial_write_s(itoa(s, temp, 10));
-									serial_write_s("; resending current value of ");
-									serial_write_s(itoa(v, temp, 10));
-									serial_write_s("\n\r");
-								}
-							} 
-#endif
-							//Write data
-							send_data(s, v);
-
-							last_read_time[s] = time;
-							last_value[s] = v;
-
-							//Only bother incrementing consecutive reads for channels not already defined as active.
-							if (!active_channel[s]){
-								consecutive_reads[s] = consecutive_reads[s] + 1;
+						if (active_channel[channel]){
+							if (abs(velocity - last_value[channel]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE){
+								serial_write_s("Large change of value for channel ");
+								serial_write_s(itoa(channel, temp, 10));
+								serial_write_s("; old value is ");
+								serial_write_s(itoa(last_value[channel], temp, 10));
+								serial_write_s("; new value is ");
+								serial_write_s(itoa(velocity, temp, 10));
+								serial_write_s("\n\r");
 							}
+							if (time - last_read_time[channel] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL){
+								serial_write_s("Timeout for channel ");
+								serial_write_s(itoa(channel, temp, 10));
+								serial_write_s("; resending current value of ");
+								serial_write_s(itoa(velocity, temp, 10));
+								serial_write_s("\n\r");
+							}
+						} 
+#endif
+						//Write data
+						send_data(channel, velocity);
+
+						last_read_time[channel] = time;
+						last_value[channel] = velocity;
+
+						//Only bother incrementing consecutive reads for channels not already defined as active.
+						if (!active_channel[channel]){
+							consecutive_reads[channel] = consecutive_reads[channel] + 1;
 						}
 					}
-					else {
-#if DEBUG >= 3
-						//serial_write_s("Resetting consecutive reads for channel ");
-						//serial_write_s(itoa(s, temp, 10));
-						//serial_write_s("\n\r");
-#endif
-						consecutive_reads[s] = 0;
-					}	 
-				}		
-//			}
+				}
+				else {
+					consecutive_reads[channel] = 0;
+				}	 
+			}
 		} //end for bank ...
 
 		//Read the digital pins
 		bank = 4; //Digital pin.	 Change this to a loop if we add another.
-		s = get_channel(bank, port);
-		if (time - last_read_time[s] > DIGITAL_BOUNCE_PERIOD){
+		channel = get_channel(bank, port);
+		if (time - last_read_time[channel] > DIGITAL_BOUNCE_PERIOD){
 			//Remember that digital switches in drum master are reversed, since they 
 			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 When 
 			// sending the readings, we invert the value to make this easy to keep straight.
-			v = (PIND & _BV(PIND6)) >> PIND6;
-			if (v != last_value[s]){
-				send_data(s, (v == 0 ? 1 : 0)); //The actual inversion
+			velocity = (PIND & _BV(PIND6)) >> PIND6;
+			if (velocity != last_value[channel]){
+				send_data(channel, (velocity == 0 ? 1 : 0)); //The actual inversion
 				
-				last_read_time[s] = time;
-				last_value[s] = v;
+				last_read_time[channel] = time;
+				last_value[channel] = velocity;
 			}
 		}
 	}
