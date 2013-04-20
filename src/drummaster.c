@@ -255,9 +255,9 @@ void setup() {
 	analog_init(apins, 4, ANALOG_AREF);
 	
 #if DEBUG >= 1
-	serial_init(9600, 8, 0, 1);
+	serial_init_b(9600);
 #else 
-	serial_init(57600, 8, 0, 1);
+	serial_init_b(57600);
 #endif
 	
 	timer_init();
