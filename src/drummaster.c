@@ -75,7 +75,7 @@
 // is obtained.	 A good default to this is 3; only adjust this if you find you need more
 // accuracy, or you are noticing a great deal of lag.	 Note that each analog read will
 // take approximately 1ms to complete, which is quite expensive.
-#define ANALOG_SAMPLES 3
+#define ANALOG_SAMPLES 1
 //After a hit, don't report the same sensor for this long (ms).	 This is the absolute 
 // shortest 'double hit' which the hardware will report.	Since the slave software will
 // (or at least should) also allow you to pick the double trigger threshold for each zone,

@@ -10,7 +10,7 @@ AVRDUDE_ARGS=-P /dev/tty.usbserial* -b 19200
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DADC_PRESCALER_MASK=5 -DSERIAL_BUFFER_SIZE=512 -DSERIAL_DISABLE_RX
+CDEFS += -DADC_PRESCALER_MASK=7 -DSERIAL_BUFFER_SIZE=512 -DSERIAL_DISABLE_RX
 
 include ../build/targets.mk
 
