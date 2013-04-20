@@ -3,7 +3,9 @@ include ../build/variables.mk
 PROJECT=drummaster
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=drummaster.c ../lib/ring/ring.c ../lib/serial/serial.c ../lib/serial/serial_async_tx.c ../lib/analog/analog_synchronous.c ../lib/timer/timer.c
+SOURCES=drummaster.c ../lib/Ring/Ring.cpp ../lib/serial/serial.c ../lib/serial/serial_async_tx.c ../lib/analog/analog_synchronous.c ../lib/timer/timer.c
+COMPILER=avr-g++
+AVRDUDE_ARGS=-P /dev/tty.usbserial* -b 19200
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
