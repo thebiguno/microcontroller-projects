@@ -150,6 +150,10 @@ uint64_t last_read_active_channels;
 char temp[32];
 #endif
 
+//A bit mask to see which channels are in use.  You can set it to 0xFFFFFFFF and things will just work, but
+// by customizing it you may get better performance.
+// IMPORTANT: IF YOU CHANGE THIS, YOU MUST UPDATE IT IF YOU ADD ANY NEW PADS.
+uint32_t active_channels = 0x11103101;
 
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
@@ -298,6 +302,8 @@ void loop() {
 		//Read the analog pins
 		for (bank = 0; bank < 4; bank++){
 			channel = get_channel(bank, port);
+			
+			if ((active_channels & ((uint32_t) 1) << channel) == 0) continue;	//Check if this channel is configured to 'on'.
 
 			//If the channel is defined to be 'active' (i.e., connected to a device which always
 			// reports its state, such as a hi hat pedal, rather than a device which only reports
