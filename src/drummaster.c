@@ -102,12 +102,12 @@
 // before we report a change over the serial port
 #define MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE 50
 //We must wait at least this long between polling
-#define MIN_ACTIVE_CHANNEL_POLL_INTERVAL 10
+#define MIN_ACTIVE_CHANNEL_POLL_INTERVAL 37
 //We must not wait any longer than this between polling, even if a large change has not happened.
 // This helps to avoid the situation where the change was missed (either from the slave software
 // or the master), but we still want to know what the current state is.	 Larger values here will
 // keep the rest of the system responsive; a good place to start is 1000 or so (1 second).
-#define MAX_ACTIVE_CHANNEL_POLL_INTERVAL 500
+#define MAX_ACTIVE_CHANNEL_POLL_INTERVAL 997
 
 
 //This is used for a number of data buffers.	It should be set to the number of channels (this is
@@ -116,11 +116,11 @@
 
 
 
-//Temp variables; i and j are iterators for port and bank respectively; s and v are the selector 
+//Temp variables; iterators for port and bank; s and v are the selector 
 // address (channel) and velocity respectively;	 x and y are truly temp variables, and can be used for
 // anything you wish.	 There are no guarantees that they will keep its value for any length of time,
 // so make sure nothing else stores to them before you read your value.
-uint8_t i, j, s;
+uint8_t port, bank, s;
 uint16_t v;
 uint64_t x, y;
 
@@ -269,12 +269,12 @@ void setup() {
 	DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
 
 	//Initialize array counters
-	for (i = 0; i < BUFFER_SIZE; i++){
+	for (port = 0; port < BUFFER_SIZE; port++){
 		//Initialize the active consecutive reads counter
-		consecutive_reads[i] = 0;
+		consecutive_reads[port] = 0;
 
 		//Reset the active channels to all 0
-		active_channel[i] = 0;
+		active_channel[port] = 0;
 	}
 }
 
@@ -296,12 +296,12 @@ void loop() {
 	// almost instantaneous), doing it this way can possibly allow people to use slower MUXs
 	// if desired; you could add a couple Microsecond delay after selecting the next port, and
 	// give the MUX time to settle out.
-	for (i = 0; i < 0x8; i++){	//i == port (one channel on a multiplexer)
-		set_mux_selectors(i);
+	for (port = 0; port < 0x8; port++){	//port is one channel on a multiplexer
+		set_mux_selectors(port);
 
 		//Read the analog pins
-		for (j = 0; j < 4; j++){ // j == bank
-			s = get_channel(j, i);
+		for (bank = 0; bank < 4; bank++){
+			s = get_channel(bank, port);
 
 			//If the channel is defined to be 'active' (i.e., connected to a device which always
 			// reports its state, such as a hi hat pedal, rather than a device which only reports
@@ -323,8 +323,8 @@ void loop() {
 			// analog pin.
 //			if (!active_channel[s] || read_active_channels){
 				if (time - last_read_time[s] > ANALOG_BOUNCE_PERIOD){
-					if ((PIND & _BV(PIND2 + j)) || active_channel[s]){
-						v = get_velocity(j);
+					if ((PIND & _BV(PIND2 + bank)) || active_channel[s]){
+						v = get_velocity(bank);
 						if (!active_channel[s] 
 									|| abs(v - last_value[s]) > MIN_ACTIVE_CHANNEL_REQUIRED_CHANGE
 									|| (active_channel[s] && time - last_read_time[s] > MAX_ACTIVE_CHANNEL_POLL_INTERVAL)){
@@ -370,11 +370,11 @@ void loop() {
 					}	 
 				}		
 //			}
-		} //end for j ...
+		} //end for bank ...
 
 		//Read the digital pins
-		j = 4; //Digital pin.	 Change this to a loop if we add another.
-		s = get_channel(j, i);
+		bank = 4; //Digital pin.	 Change this to a loop if we add another.
+		s = get_channel(bank, port);
 		if (time - last_read_time[s] > DIGITAL_BOUNCE_PERIOD){
 			//Remember that digital switches in drum master are reversed, since they 
 			// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 When 
