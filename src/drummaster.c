@@ -158,13 +158,11 @@ uint32_t active_channels = 0x11103101;
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
  */
-void set_mux_selectors(uint8_t channel){
-	PORTB &= 0xF8; //Clear bottom three bits
+void set_port(uint8_t port){
 	//Set bits based on channel, making sure we don't set more than 3 bits.
 	//For PCB layout simplicity, we designed the board such that the MSB is 
 	// PINB0 and LSB is PINB2.  Thus, we need to flip the 3-bit word.
-	channel = channel & 0x7;
-	PORTB |= ((channel & 0x1) << 2) | (channel & 0x2) | ((channel & 0x4) >> 2);
+	PORTB = ((port & 0x1) << 2) | (port & 0x2) | ((port & 0x4) >> 2);
 }
 
 /*
@@ -296,11 +294,11 @@ void loop() {
 	// almost instantaneous), doing it this way can possibly allow people to use slower MUXs
 	// if desired; you could add a couple Microsecond delay after selecting the next port, and
 	// give the MUX time to settle out.
-	for (port = 0; port < 0x8; port++){	//port is one channel on a multiplexer
-		set_mux_selectors(port);
+	for (port = 0; port < 0x08; port++){	//port is one channel on a multiplexer
+		set_port(port);
 
 		//Read the analog pins
-		for (bank = 0; bank < 4; bank++){
+		for (bank = 0; bank < 0x04; bank++){
 			channel = get_channel(bank, port);
 			
 			if ((active_channels & ((uint32_t) 1) << channel) == 0) continue;	//Check if this channel is configured to 'on'.
