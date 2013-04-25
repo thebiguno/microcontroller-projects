@@ -6,7 +6,7 @@ ifeq 'avr-gcc' '$(COMPILER)'
 endif
 
 ifeq 'stk500v1' '$(AVRDUDE_PROGRAMMER)'
-	AVRDUDE_ARGS += -P /dev/usbserial*
+	AVRDUDE_ARGS += -P /dev/tty.usbserial* -b 19200
 endif
 
 # Default target.
