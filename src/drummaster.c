@@ -109,7 +109,7 @@ uint8_t last_value[CHANNEL_COUNT];
 //When we send a value, we reset this to a large positive number (the exact value depends on how
 // long you want to debounce for).  Each iteration after, we decrement.  Once we hit zero we can
 // potentially read the value again.
-uint8_t debounce_counter[CHANNEL_COUNT];
+uint16_t debounce_counter[CHANNEL_COUNT];
 
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
@@ -134,11 +134,7 @@ uint8_t get_channel(uint8_t bank, uint8_t port){
  * Reads the input and returns the 8 MSB.
  */
 uint8_t get_velocity(uint8_t pin){
-	uint16_t total = 0;
-	for (uint8_t i = 0; i < 4; i++){
-		total += (analog_read_p(pin) >> 2);
-	}
-	return total >> 2;
+	return (analog_read_p(pin) >> 2);
 }
 
 /*
@@ -199,37 +195,35 @@ int main (void){
 			for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
 				channel = get_channel(bank, port);
 		
-				if (channel == 2){
-					//Read Hi-Hat Analog Pedal channel
-					velocity = get_velocity(bank);
-					if (debounce_counter[channel] == 0 || abs(last_value[channel] - (int8_t) velocity) > MIN_ACTIVE_CHANGE){
-						send_data(channel, velocity);
-						debounce_counter[channel] = 0x40;	//TODO Change this based on actual measurements.
-					}
-					last_value[channel] = velocity;
-				}
-
 				if (debounce_counter[channel] > 0){
 					debounce_counter[channel]--;
 				}
 				else {
 					if (channel == 2){
-						; //Do nothing; we handle this outside of the debounce_counter if block
+						//Read Hi-Hat Analog Pedal channel
+						velocity = get_velocity(bank);
+						if (abs(last_value[channel] - (int8_t) velocity) > MIN_ACTIVE_CHANGE){
+							send_data(channel, velocity);
+							debounce_counter[channel] = 0x1FF;	//TODO Change this based on actual measurements.
+							last_value[channel] = velocity;
+						}
 					}
 					else if (channel < 12){
-						//Read the analog pins
-						velocity = get_velocity(bank);
-						if (velocity >= MIN_VELOCITY){
-							//We watch the values, and send as it starts to decrease
-							if (last_value[channel] > velocity){
-								send_data(channel, last_value[channel]);
-								debounce_counter[channel] = 0x08;	//TODO Change this based on actual measurements.
-								last_value[channel] = 0;
+						//Read the analog pins, but only if there is something to read (trigger is active)
+//						if (PIND & _BV(PIND2 + bank)){
+							velocity = get_velocity(bank);
+							if (velocity >= MIN_VELOCITY){
+								//We watch the values, and send as it starts to decrease
+								if (last_value[channel] > velocity){
+									send_data(channel, last_value[channel]);
+									debounce_counter[channel] = 0x20;	//TODO Change this based on actual measurements.
+									last_value[channel] = 0;
+								}
+								else {
+									last_value[channel] = velocity;
+								}
 							}
-							else {
-								last_value[channel] = velocity;
-							}
-						}
+//						}
 					}
 					else {
 						//Read the digital pins
