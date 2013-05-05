@@ -92,9 +92,6 @@
 #include "../lib/analog/analog.h"
 #include "../lib/serial/serial.h"
 
-//The smallest ADC value which we will report
-#define MIN_VELOCITY 10
-
 //The smallest ADC value change on an active channel (i.e. HiHat pedal) which we will report
 #define MIN_ACTIVE_CHANGE 10
 
@@ -171,7 +168,7 @@ int main (void){
 	apins[1] = 1;
 	analog_init(apins, 2, ANALOG_AREF);
 	
-	serial_init_b(76800);
+	serial_init_b(9600);
 
 	//Iterators for port and bank; channel and velocity are the selector 
 	// address (channel) and velocity respectively;
@@ -185,14 +182,15 @@ int main (void){
 
 	//Main program loop
 	while (1){
-		for (port = 0x00; port < 0x08; port++){	//port is one channel on a multiplexer
-			set_port(port);
 
-			//The MUX switches pretty much instantly, but it appears that it is helpful to give a bit of time
-			// to let the analog values settle before reading them.  TODO verify timings for this.
-			_delay_us(10);
-
-			for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
+		for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
+			for (port = 0x00; port < 0x08; port++){	//port is one channel on a multiplexer
+				set_port(port);
+				
+				//Give the MUX and the ADC channel a bit of time to settle down from the last hit.  This prevents
+				// a hit on one pad from 'running over' and triggering the next one.
+				_delay_us(50);
+				
 				channel = get_channel(bank, port);
 		
 				if (debounce_counter[channel] > 0){
@@ -209,31 +207,21 @@ int main (void){
 						}
 					}
 					else if (channel < 12){
-						//Read the analog pins, but only if there is something to read (trigger is active)
-//						if (PIND & _BV(PIND2 + bank)){
-							velocity = get_velocity(bank);
-							if (velocity >= MIN_VELOCITY){
-								//We watch the values, and send as it starts to decrease
-								if (last_value[channel] > velocity){
-									send_data(channel, last_value[channel]);
-									debounce_counter[channel] = 0x20;	//TODO Change this based on actual measurements.
-									last_value[channel] = 0;
-								}
-								else {
-									last_value[channel] = velocity;
-								}
-							}
-//						}
+						//Read the analog pins
+						if (get_velocity(bank) > 10){
+							send_data(channel, 0xFF);
+							debounce_counter[channel] = 0x80;	//TODO Change this based on actual measurements.
+						}
 					}
 					else {
 						//Read the digital pins
 						//Remember that digital switches in drum master are reversed, since they 
 						// use pull up resisitors.	Logic 1 is open, logic 0 is closed.	 When 
 						// sending the readings, we invert the value to make this easy to keep straight.
-						velocity = (PIND & _BV(PIND6)) >> PIND6;
+						velocity = PIND & _BV(PIND6);
 						if (velocity != last_value[channel]){
 							send_data(channel, (velocity == 0x00 ? 0xFF : 0x00)); //Invert the value
-							debounce_counter[channel] = 0x3F;	//TODO Change this based on actual measurements.
+							debounce_counter[channel] = 0x20;	//TODO Change this based on actual measurements.
 							last_value[channel] = velocity;
 						}
 					}
