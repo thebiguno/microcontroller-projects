@@ -100,16 +100,16 @@
 
 //This is used for a number of data buffers.	It should be set to the number of channels (this is
 // 40 in default hardware).	 You will only want to change this if you have modified / custom hardware.
-#define BUFFER_SIZE 40
+#define CHANNEL_COUNT 16
 
 
 //What was the last value read from each channel?
-uint8_t last_value[BUFFER_SIZE];
+uint8_t last_value[CHANNEL_COUNT];
 
 //When we send a value, we reset this to a large positive number (the exact value depends on how
 // long you want to debounce for).  Each iteration after, we decrement.  Once we hit zero we can
 // potentially read the value again.
-uint16_t debounce_counter[BUFFER_SIZE];
+uint8_t debounce_counter[CHANNEL_COUNT];
 
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
@@ -134,7 +134,11 @@ uint8_t get_channel(uint8_t bank, uint8_t port){
  * Reads the input and returns the 8 MSB.
  */
 uint8_t get_velocity(uint8_t pin){
-	return (analog_read_p(pin) >> 2);
+	uint16_t total = 0;
+	for (uint8_t i = 0; i < 4; i++){
+		total += (analog_read_p(pin) >> 2);
+	}
+	return total >> 2;
 }
 
 /*
@@ -171,7 +175,7 @@ int main (void){
 	apins[1] = 1;
 	analog_init(apins, 2, ANALOG_AREF);
 	
-	serial_init_b(57600);
+	serial_init_b(76800);
 
 	//Iterators for port and bank; channel and velocity are the selector 
 	// address (channel) and velocity respectively;
@@ -186,26 +190,31 @@ int main (void){
 	//Main program loop
 	while (1){
 		for (port = 0x00; port < 0x08; port++){	//port is one channel on a multiplexer
-			for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
-				set_port(port);
-				
-				//The MUX switches pretty much instantly, but it appears that it is helpful to give a bit of time
-				// to let the analog values settle before reading them.  TODO verify timings for this.
-				_delay_us(10);
+			set_port(port);
 
+			//The MUX switches pretty much instantly, but it appears that it is helpful to give a bit of time
+			// to let the analog values settle before reading them.  TODO verify timings for this.
+			_delay_us(10);
+
+			for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
 				channel = get_channel(bank, port);
 		
+				if (channel == 2){
+					//Read Hi-Hat Analog Pedal channel
+					velocity = get_velocity(bank);
+					if (debounce_counter[channel] == 0 || abs(last_value[channel] - (int8_t) velocity) > MIN_ACTIVE_CHANGE){
+						send_data(channel, velocity);
+						debounce_counter[channel] = 0x40;	//TODO Change this based on actual measurements.
+					}
+					last_value[channel] = velocity;
+				}
+
 				if (debounce_counter[channel] > 0){
 					debounce_counter[channel]--;
 				}
 				else {
 					if (channel == 2){
-						//Read Hi-Hat Analog Pedal channel
-						velocity = get_velocity(bank);
-						if (debounce_counter[channel] == 0 || abs(last_value[channel] - velocity) > MIN_ACTIVE_CHANGE){
-							send_data(channel, last_value[channel]);
-							debounce_counter[channel] = 0xFF;	//TODO Change this based on actual measurements.
-						}
+						; //Do nothing; we handle this outside of the debounce_counter if block
 					}
 					else if (channel < 12){
 						//Read the analog pins
@@ -214,7 +223,7 @@ int main (void){
 							//We watch the values, and send as it starts to decrease
 							if (last_value[channel] > velocity){
 								send_data(channel, last_value[channel]);
-								debounce_counter[channel] = 0xFF;	//TODO Change this based on actual measurements.
+								debounce_counter[channel] = 0x08;	//TODO Change this based on actual measurements.
 								last_value[channel] = 0;
 							}
 							else {
@@ -230,7 +239,7 @@ int main (void){
 						velocity = (PIND & _BV(PIND6)) >> PIND6;
 						if (velocity != last_value[channel]){
 							send_data(channel, (velocity == 0x00 ? 0xFF : 0x00)); //Invert the value
-							debounce_counter[channel] = 0xFF;	//TODO Change this based on actual measurements.
+							debounce_counter[channel] = 0x3F;	//TODO Change this based on actual measurements.
 							last_value[channel] = velocity;
 						}
 					}
