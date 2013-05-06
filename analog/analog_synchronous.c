@@ -9,12 +9,11 @@
 #define ADC_PRESCALER_MASK 0x4
 #endif
 
-//If defined, we will not use the ADC sleep mode to reduce noise, and instead
-// will busy-wait for conversion to complete.  For synchronous analog reads, 
-// ADC sleep mode makes sense for most applications, unless there are other critical
+//If defined, we will use the ADC sleep mode to reduce noise, instead of using
+// busy-wait for conversion to complete.  For synchronous analog reads, using
+// ADC sleep mode makes sense for many applications, unless there are other critical
 // systems which are running in interrupts which may be interfered with by sleeping.
-//Only define this if you have a good reason to.
-//#define ADC_NO_SLEEP_MODE
+//#define ADC_SLEEP_MODE
 
 /*
  * This is a synchronous implementation to read the ADC (synchronous meaning that when you 
@@ -56,7 +55,7 @@ void analog_read_a(uint16_t *data){
 	}
 }
 
-#ifdef ADC_NO_SLEEP_MODE
+#ifndef ADC_SLEEP_MODE
 uint16_t analog_read_p(uint8_t index){
 	//Set up which pin to read
 	ADMUX = (ADMUX & 0xF0) | pins[index];
