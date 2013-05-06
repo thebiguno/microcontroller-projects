@@ -3,13 +3,12 @@ include ../build/variables.mk
 PROJECT=drummaster
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=drummaster.c ../lib/Ring/Ring.cpp ../lib/serial/serial.c ../lib/serial/serial_async_tx.c ../lib/analog/analog_synchronous.c
-COMPILER=avr-g++
+SOURCES=drummaster.c
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DADC_PRESCALER_MASK=3 -DSERIAL_BUFFER_SIZE=255 -DSERIAL_DISABLE_RX
+CDEFS += -DADC_PRESCALER_MASK=3 -DSERIAL_BUFFER_SIZE=255 -DSERIAL_DISABLE_RX -DADC_SLEEP_MODEOFF
 
 include ../build/targets.mk
 

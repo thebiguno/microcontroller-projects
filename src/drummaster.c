@@ -89,8 +89,9 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include "../lib/analog/analog.h"
-#include "../lib/serial/serial.h"
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
+
 
 //The smallest ADC value change on an active channel (i.e. HiHat pedal) which we will report
 #define MIN_ACTIVE_CHANGE 10
@@ -107,6 +108,82 @@ uint8_t last_value[CHANNEL_COUNT];
 // long you want to debounce for).  Each iteration after, we decrement.  Once we hit zero we can
 // potentially read the value again.
 uint16_t debounce_counter[CHANNEL_COUNT];
+
+/***** Serial Hardware *****/
+void serial_init_b(uint32_t baud){
+	//Set baud rate
+	uint16_t calculated_baud = (F_CPU / 16 / baud) - 1;
+	UBRR0H = calculated_baud >> 8;
+	UBRR0L = calculated_baud & 0xFF;
+
+	//Make sure 2x and multi processor comm modes are off
+	UCSR0A &= ~(_BV(U2X0) | _BV(MPCM0));
+	
+	//8 Data bits, no parity, one stop bit
+	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+	
+	//Enable TX
+	UCSR0B |= _BV(TXEN0);
+}
+
+void serial_write_c(char data){
+	//Nop loop to wait until transmit buffer is ready to receive data
+	while (!(UCSR0A & _BV(UDRE0)));
+
+	UDR0 = data;
+
+	//Wait for transmission to complete; this is required when the serial library is used
+	// in conjunction with code that sleeps the CPU, such as synchronous ADC in sleep mode.
+	while (!(UCSR0A & _BV(TXC0)));
+	//Reset transmission complete flag
+	UCSR0A &= _BV(TXC0);
+}
+
+/***** ADC Hardware *****/
+void analog_init(){
+	//Disable digital inputs from ADC channels 0 and 1.
+	DIDR0 |= 0x03;
+
+	//ADC Enable, prescaler as specified
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | ADC_PRESCALER_MASK;
+
+	//Set ADMUX: use AREF, left adjust result, MUX = 0
+	ADMUX = _BV(ADLAR);
+}
+
+uint8_t analog_read_p(uint8_t index){
+	/*
+	//Set up which pin to read
+	ADMUX = (ADMUX & 0xF0) | index;
+
+	set_sleep_mode(SLEEP_MODE_ADC);
+	sleep_enable();
+
+	//Ensure interrupts are enabled, or else CPU will hang until hard reset
+	sei();
+
+	//Go to sleep to start ADC
+	sleep_cpu();
+	
+	//Once we are done, disable sleep mode
+	sleep_disable();
+	*/
+	
+	//Set up which pin to read
+	ADMUX = (ADMUX & 0xF0) | index;
+
+	//Start conversion
+	ADCSRA |= _BV(ADSC);
+
+	//Wait until conversion is complete
+	while (ADCSRA & _BV(ADSC));
+
+
+	//Return conversion result
+	return ADCH;
+}
+
+/***** Drum Master Hardware *****/
 
 /*
  * Sets pins S2 - S0 to select the multiplexer output.
@@ -131,7 +208,7 @@ uint8_t get_channel(uint8_t bank, uint8_t port){
  * Reads the input and returns the 8 MSB.
  */
 uint8_t get_velocity(uint8_t pin){
-	return (analog_read_p(pin) >> 2);
+	return analog_read_p(pin);
 }
 
 /*
@@ -163,16 +240,13 @@ void send_data(uint8_t channel, uint8_t velocity){
 
 int main (void){
 	//Init libraries	
-	uint8_t apins[2];
-	apins[0] = 0;
-	apins[1] = 1;
-	analog_init(apins, 2, ANALOG_AREF);
+	analog_init();
 	
 	serial_init_b(9600);
-
+	
 	//Iterators for port and bank; channel and velocity are the selector 
 	// address (channel) and velocity respectively;
-	uint8_t port, bank = 0, channel, velocity;
+	uint8_t port, bank, channel, velocity;
 
 	//Set the analog triggers (2::5) and digital input (6) to input mode.
 	DDRD &= ~(_BV(DDD2) | _BV(DDD3) | _BV(DDD4) | _BV(DDD5) | _BV(DDD6));
@@ -182,14 +256,13 @@ int main (void){
 
 	//Main program loop
 	while (1){
-
 		for (bank = 0x00; bank < 0x02; bank++){	//bank is one of ADC 0/1 (for channel 0..11) or digital (channel 12..15) input
 			for (port = 0x00; port < 0x08; port++){	//port is one channel on a multiplexer
 				set_port(port);
 				
 				//Give the MUX and the ADC channel a bit of time to settle down from the last hit.  This prevents
 				// a hit on one pad from 'running over' and triggering the next one.
-				_delay_us(50);
+				//_delay_us(10);
 				
 				channel = get_channel(bank, port);
 		
@@ -210,7 +283,7 @@ int main (void){
 						//Read the analog pins
 						if (get_velocity(bank) > 10){
 							send_data(channel, 0xFF);
-							debounce_counter[channel] = 0x80;	//TODO Change this based on actual measurements.
+							debounce_counter[channel] = 0x40;	//TODO Change this based on actual measurements.
 						}
 					}
 					else {
