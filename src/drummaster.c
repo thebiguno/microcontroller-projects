@@ -272,8 +272,9 @@ int main (void){
 					}
 					else if (channel < 12){
 						//Read the analog pins
-						if (get_velocity(bank) > 10){
-							send_data(channel, 0xFF);
+						velocity = get_velocity(bank);
+						if (velocity > 10){
+							send_data(channel, velocity);
 							debounce_counter[channel] = 0x40;	//TODO Change this based on actual measurements.
 						}
 					}
