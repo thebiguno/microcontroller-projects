@@ -26,15 +26,17 @@
  * For more information, please visit http://drummaster.digitalcave.ca.
  * 
  * Changelog:
- * 1.3.0.0 - April 2013:		-Complete rewrite, after using logic probes to verify timings.
+ * 1.3.0.0 - April - July 2013:	-Complete rewrite, after using logic probes to verify timings.  We now loop through all 16 channels in 0.7ms (!)
 								-Completely removed reliance on timer code.  This was 64 / 32 bit code, and was
 								extremely expensive to run (64 bit arithmetic, even simple adds, can take upwards as 
 								long as the ADC conversions themselves)
-								-Eliminated reliance on triggers; use the ADC for all values now.
+								-Eliminated reliance on triggers; use the ADC directly for all values now (the slew rate of 
+								the trigger's op amp was upwards of 10ns, it is almost as fast to just do the ADC conversion)
 								-(Almost) all variables are now 8 bit
 								-Velocity is now 8 bit (drop the 2 LSB of the 10 bit value).  The bottom two bits
-								were just noise anyway, so why waste space sending them?
-								-Use ADC sleep noise reduction mode when reading inputs, to improve accuracy
+								were just noise anyway; no point in wasting time sending them
+								-Use ADC sleep noise reduction mode when reading inputs, to improve accuracy.  As a result we are 
+								also forced to do synchronous serial, since ADC sleep mode is not compatible with serial interrupts.
 								-Simplified transmission protocol, reducing size from 3 bytes to 2.
 								-Reducing number of inputs from 32 to 12, with 4 digital pins.  This gives us a 4 bit channel.
 								-Hard coded pad assignments as follows:
