@@ -152,7 +152,6 @@ void analog_init(){
 }
 
 uint8_t analog_read_p(uint8_t index){
-	/*
 	//Set up which pin to read
 	ADMUX = (ADMUX & 0xF0) | index;
 
@@ -167,21 +166,13 @@ uint8_t analog_read_p(uint8_t index){
 	
 	//Once we are done, disable sleep mode
 	sleep_disable();
-	*/
-	
-	//Set up which pin to read
-	ADMUX = (ADMUX & 0xF0) | index;
-
-	//Start conversion
-	ADCSRA |= _BV(ADSC);
-
-	//Wait until conversion is complete
-	while (ADCSRA & _BV(ADSC));
-
 
 	//Return conversion result
 	return ADCH;
 }
+
+// ADC Interrupt Is Used To Wake Up CPU From Sleep Mode 
+EMPTY_INTERRUPT (ADC_vect);
 
 /***** Drum Master Hardware *****/
 
