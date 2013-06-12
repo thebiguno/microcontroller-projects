@@ -171,8 +171,8 @@ uint8_t analog_read_p(uint8_t index){
 	return ADCH;
 }
 
-// ADC Interrupt Is Used To Wake Up CPU From Sleep Mode 
-EMPTY_INTERRUPT (ADC_vect);
+// The ADC interrupt is used to wake up from sleep mode.  If you don't have one (even if it is empty), it will just hang (or reboot?  Not sure...)
+EMPTY_INTERRUPT (ADC_vect)
 
 /***** Drum Master Hardware *****/
 
