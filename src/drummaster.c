@@ -233,7 +233,7 @@ int main (void){
 	//Init libraries	
 	analog_init();
 	
-	serial_init_b(9600);
+	serial_init_b(76800);
 	
 	//Iterators for port and bank; channel and velocity are the selector 
 	// address (channel) and velocity respectively;
