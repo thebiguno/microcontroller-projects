@@ -14,6 +14,8 @@
 static uint8_t buffer[MATRIX_WIDTH * MATRIX_HEIGHT];
 //457 bytes free min.
 
+static uint8_t dc_max = 0x00;
+
 //ShiftRegister object
 static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT >> 0) >> 5) + 1);
 
@@ -27,24 +29,24 @@ void fill_data(uint8_t* data, uint8_t* b, const register uint8_t dc) {
 	register uint8_t d0 = 0x00;
 	register uint8_t d1 = 0x00;
 
-	if (b[0] > gdc)				d1 |= 0x40;
+	if ((b[0] & 0xF0) > gdc)	d1 |= 0x40;
 	if ((b[0] & 0x0F) > dc)		d1 |= 0x80;
-	if (b[1] > gdc)				d1 |= 0x01;
+	if ((b[1] & 0xF0) > gdc)	d1 |= 0x01;
 	if ((b[1] & 0x0F) > dc)		d1 |= 0x02;
 
-	if (b[2] > gdc)				d0 |= 0x40;
+	if ((b[2] & 0xF0) > gdc)	d0 |= 0x40;
 	if ((b[2] & 0x0F) > dc)		d0 |= 0x80;
-	if (b[3] > gdc)				d0 |= 0x01;
+	if ((b[3] & 0xF0) > gdc)	d0 |= 0x01;
 	if ((b[3] & 0x0F) > dc)		d0 |= 0x02;
 
-	if (b[4] > gdc)				d1 |= 0x20;
+	if ((b[4] & 0xF0) > gdc)	d1 |= 0x20;
 	if ((b[4] & 0x0F) > dc)		d1 |= 0x10;
-	if (b[5] > gdc)				d1 |= 0x08;
+	if ((b[5] & 0xF0) > gdc)	d1 |= 0x08;
 	if ((b[5] & 0x0F) > dc)		d1 |= 0x04;
 
-	if (b[6] > gdc)				d0 |= 0x20;
+	if ((b[6] & 0xF0) > gdc)	d0 |= 0x20;
 	if ((b[6] & 0x0F) > dc)		d0 |= 0x10;
-	if (b[7] > gdc)				d0 |= 0x08;
+	if ((b[7] & 0xF0) > gdc)	d0 |= 0x08;
 	if ((b[7] & 0x0F) > dc)		d0 |= 0x04;
 	
 	//By using temp variables we avoid a lot of dereferencing.  Yay!
@@ -74,7 +76,7 @@ static void _callback(){
 	if (row > 7){
 		row = 0;
 		dc++;
-		if (dc > 15) dc = 0;
+		if (dc > dc_max) dc = 0;
 	}
 	
 	wdt_reset();
@@ -87,42 +89,28 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 	static uint8_t mode = 0x00;
 	static uint16_t max_length = 0x00;
 	//The first byte is mode; we copy the remaining bytes as follows:
-	// 0x00: 8 bit color (blind copy of rx buffer data to internal buffer)
-	// 0x01: 4 bit gradient mode
-	// 0x02: 4 bit high contrast mode
-	// 0x03: 2 bit, two color mode (R, Y, G, B, bright color)
-	// 0x04: 2 bit, two color mode (R, Y, G, B, dim color)
-	// 0x05: 2 bit green mode
-	// 0x06: 2 bit yellow mode
-	// 0x07: 2 bit red mode
-	// 0x08: 1 bit green mode
-	// 0x09: 1 bit yellow mode
-	// 0x0A: 1 bit red mode
+	// 0x00: 8 bit mode GGGGRRRR (gives you 15 shades of red, 15 shades of green, plus black for 226 colors total, dc_max = 15)
+	// 0x01: 4 bit mode GGRR (gives you 3 shades of red, 3 shades of green, plus black for 10 colors total, dc_max = 3)
+	// 0x02: 2 bit mode GR (gives you red, green, yellow, and black pixels, dc_max = 1)
 	
 	if (i == 0){
 		//Set the mode for this write operation
 		mode = data;
 
-		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master sends too much / wrong mode / etc)
+		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master 
+		// sends too much / wrong mode / etc) and dc_max
 		switch (mode){
 			case 0x00: 
 				max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
+				dc_max = 15;
 				break;
 			case 0x01: 
-			case 0x02: 
 				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
+				dc_max = 3;
 				break;
-			case 0x03: 
-			case 0x04: 
-			case 0x05: 
-			case 0x06: 
-			case 0x07: 
+			case 0x02: 
 				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 2);
-				break;
-			case 0x08: 
-			case 0x09: 
-			case 0x0A: 
-				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 3);
+				dc_max = 1;
 				break;
 		}
 	}
@@ -134,58 +122,20 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 				buffer[i] = data;
 				break;
 
-			//4 bit gradient mode
+			//4 bit (10 color) mode
 			case 0x01:
+				
 				for (uint8_t j = 0; j < 2; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 2 + j] = 0x00; break;
-						case 0x01: buffer[i * 2 + j] = 0x01; break;
-						case 0x02: buffer[i * 2 + j] = 0x02; break;
-						case 0x03: buffer[i * 2 + j] = 0x04; break;
-						case 0x04: buffer[i * 2 + j] = 0x08; break;
-						case 0x05: buffer[i * 2 + j] = 0x0F; break;
-						case 0x06: buffer[i * 2 + j] = 0x2F; break;
-						case 0x07: buffer[i * 2 + j] = 0x4F; break;
-						case 0x08: buffer[i * 2 + j] = 0xFF; break;
-						case 0x09: buffer[i * 2 + j] = 0xF4; break;
-						case 0x0A: buffer[i * 2 + j] = 0xF2; break;
-						case 0x0B: buffer[i * 2 + j] = 0xF0; break;
-						case 0x0C: buffer[i * 2 + j] = 0x80; break;
-						case 0x0D: buffer[i * 2 + j] = 0x40; break;
-						case 0x0E: buffer[i * 2 + j] = 0x20; break;
-						case 0x0F: buffer[i * 2 + j] = 0x10; break;
-					}
+					uint8_t pixel = (data >> (j * 4)) & 0x03;		//Gives us 2 red bits
+					pixel |= (data >> (j * 4)) & 0x0C << 2;			//Gives us 2 green bits
+					buffer[i * 2 + j] = pixel;
 				}
+				
 				break;
 
-			//4 bit high contrast mode
+			//2 bit (4 color) mode
 			case 0x02:
-				for (uint8_t j = 0; j < 2; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 2 + j] = 0x00; break;
-						case 0x01: buffer[i * 2 + j] = 0x01; break;
-						case 0x02: buffer[i * 2 + j] = 0x02; break;
-						case 0x03: buffer[i * 2 + j] = 0x04; break;
-						case 0x04: buffer[i * 2 + j] = 0x08; break;
-						case 0x05: buffer[i * 2 + j] = 0x11; break;
-						case 0x06: buffer[i * 2 + j] = 0x22; break;
-						case 0x07: buffer[i * 2 + j] = 0x44; break;
-						case 0x08: buffer[i * 2 + j] = 0x88; break;
-						case 0x09: buffer[i * 2 + j] = 0xFF; break;
-						case 0x0A: buffer[i * 2 + j] = 0x10; break;
-						case 0x0B: buffer[i * 2 + j] = 0x20; break;
-						case 0x0C: buffer[i * 2 + j] = 0x40; break;
-						case 0x0D: buffer[i * 2 + j] = 0x60; break;
-						case 0x0E: buffer[i * 2 + j] = 0x90; break;
-						case 0x0F: buffer[i * 2 + j] = 0xF0; break;
-					}
-				}
-				break;
-
-			//2 bit three color bright mode
-			case 0x03:
+				/*
 				for (uint8_t j = 0; j < 4; j++){
 					uint8_t v = (data >> (j * 2)) & 0x03;
 					switch (v){
@@ -195,87 +145,11 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 						case 0x03: buffer[i * 4 + j] = 0xF0; break;
 					}
 				}
-				break;
-				
-
-			//2 bit three color dim mode
-			case 0x04:
-				for (uint8_t j = 0; j < 4; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 4 + j] = 0x00; break;
-						case 0x01: buffer[i * 4 + j] = 0x04; break;
-						case 0x02: buffer[i * 4 + j] = 0x44; break;
-						case 0x03: buffer[i * 4 + j] = 0x40; break;
-					}
-				}
-				break;
-				
-
-
-			//2 bit green
-			case 0x05:
-				for (uint8_t j = 0; j < 4; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 4 + j] = 0x00; break;
-						case 0x01: buffer[i * 4 + j] = 0x20; break;
-						case 0x02: buffer[i * 4 + j] = 0x60; break;
-						case 0x03: buffer[i * 4 + j] = 0xF0; break;
-					}
-				}
-				break;
-				
-			//2 bit yellow
-			case 0x06:
-				for (uint8_t j = 0; j < 4; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 4 + j] = 0x00; break;
-						case 0x01: buffer[i * 4 + j] = 0x22; break;
-						case 0x02: buffer[i * 4 + j] = 0x66; break;
-						case 0x03: buffer[i * 4 + j] = 0xFF; break;
-					}
-				}
-				break;
-				
-			//2 bit red
-			case 0x07:
-				for (uint8_t j = 0; j < 4; j++){
-					uint8_t v = (data >> (j * 2)) & 0x03;
-					switch (v){
-						case 0x00: buffer[i * 4 + j] = 0x00; break;
-						case 0x01: buffer[i * 4 + j] = 0x02; break;
-						case 0x02: buffer[i * 4 + j] = 0x06; break;
-						case 0x03: buffer[i * 4 + j] = 0x0F; break;
-					}
-				}
-				break;
-
-			//1 bit green
-			case 0x08:
-				for (uint8_t j = 0; j < 8; j++){
-					buffer[i * 8 + j] = (data & _BV(j)) ? 0xF0 : 0x00;
-				}
-				break;
-				
-			//1 bit yellow
-			case 0x09:
-				for (uint8_t j = 0; j < 8; j++){
-					buffer[i * 8 + j] = (data & _BV(j)) ? 0xFF : 0x00;
-				}
-				break;
-				
-			//1 bit red
-			case 0x0A:
-				for (uint8_t j = 0; j < 8; j++){
-					buffer[i * 8 + j] = (data & _BV(j)) ? 0x0F : 0x00;
-				}
+				*/
 				break;
 
 		}
 	}
-	
 }
 
 int main (void){
@@ -284,7 +158,7 @@ int main (void){
 	twi_attach_slave_rx_reader(slave_rx_reader);
 //	twi_set_rx_buffer(buffer);
 
-	wdt_enable(WDTO_15MS);
+	wdt_enable(WDTO_1S);
 
 	DDRB |= _BV(PORTB0);
 
