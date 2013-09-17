@@ -22,7 +22,6 @@ static ShiftRegister shift(((MATRIX_WIDTH * MATRIX_HEIGHT >> 0) >> 5) + 1);
 //We assume the *data is a pointer to the data we need to fill; thus data[0] is the LSB 
 // shift register, and data[1] is the MSB.
 void fill_data(uint8_t* data, uint8_t* b, const register uint8_t dc) {
-	
 	//Do common math once to keep things as fast as possible
 	const register uint8_t gdc = dc << 4;	//dc for green (shift dc once, rather than green many times)
 
@@ -57,7 +56,7 @@ void fill_data(uint8_t* data, uint8_t* b, const register uint8_t dc) {
 static void _callback(){
 	sei();	//This is a very long ISR handler... let it be interrupted
 	
-	PORTB ^= _BV(PORTB0);
+//	PORTB ^= _BV(PORTB0);
 	
 	static uint8_t data[13];
 	static uint8_t row = 0;
@@ -79,7 +78,7 @@ static void _callback(){
 		if (dc > dc_max) dc = 0;
 	}
 	
-	wdt_reset();
+	// wdt_reset();
 	
 	shift.shift(data);
 }
@@ -110,22 +109,20 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 			dc_max = 1;
 		}
 	} else if (i <= max_length){	//Verify that the incoming byte will fit in the buffer, as determined by mode
-		uint8_t idx = i - 1;
+		i--;
 		if (mode == 0x00) {
 			//8 bit mode; raw copy of all values
 			// ggggrrrr -> ggggrrrr
-			buffer[idx] = data;
+			buffer[i] = data;
 		} else if (mode == 0x01) {
 			//4 bit (10 color) mode
 			// ggrrggrr -> xxggxxrr xxggxxrr
-			idx *= 2;
+			uint16_t idx = i * 2;
 			buffer[idx] = (data >> 4) & 0x03; // bits 4,5 for red
 			buffer[idx] |= (data >> 2) & 0x30; // bits 6,7 for green
-//			buffer[idx] = 0x33;
 			idx++;
 			buffer[idx] = (data) & 0x03; // bits 0,1 for red
 			buffer[idx] |= (data << 2) & 0x30; // bits 2,3 for green
-//			buffer[idx] = 0x33;
 		} else {
 			//2 bit (4 color) mode
 				/*
@@ -149,19 +146,26 @@ int main (void){
 	twi_attach_slave_rx_reader(slave_rx_reader);
 //	twi_set_rx_buffer(buffer);
 
-	wdt_enable(WDTO_1S);
+	buffer[0] = 0xFF;
+	buffer[1] = 0xFF;
+	buffer[16] = 0x0F;
+	buffer[17] = 0xF0;
+	
+//	wdt_enable(WDTO_1S);
 
-	DDRB |= _BV(PORTB0);
+	// DDRB |= _BV(PORTB0);
 
 	//Make SPI as fast as possible (fcpu / 2)
 	SPDR |= _BV(SPI2X);
 
 	shift.setLatch(&PORTB, PORTB2);
-	shift.setCallback(_callback);
+	//shift.setCallback(_callback);
 	
-	_callback();	//Start shifting
 
 	while (1) {
+		if (shift.cts()) {
+			_callback();	//Start shifting
+		}
 		//Nothing to see here... all the work is done in ISRs
 	}
 }
