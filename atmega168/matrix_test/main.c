@@ -49,21 +49,23 @@ void test_4bit(){
 //	}
 	matrix_set_mode(0x01);
 	for (uint8_t i = 0; i < 24; i++) {
-		set_pixel(i, 0, 0x01, OVERLAY_REPLACE);
-		set_pixel(i, 1, 0x02, OVERLAY_REPLACE);
-		set_pixel(i, 2, 0x03, OVERLAY_REPLACE);
-		set_pixel(i, 3, 0x04, OVERLAY_REPLACE);
-		set_pixel(i, 4, 0x05, OVERLAY_REPLACE);
-		set_pixel(i, 5, 0x06, OVERLAY_REPLACE);
-		set_pixel(i, 6, 0x07, OVERLAY_REPLACE);
-		set_pixel(i, 7, 0x08, OVERLAY_REPLACE);
-		set_pixel(i, 8, 0x09, OVERLAY_REPLACE);
-		set_pixel(i, 9, 0x0a, OVERLAY_REPLACE);
-		set_pixel(i, 10, 0x0b, OVERLAY_REPLACE);
-		set_pixel(i, 11, 0x0c, OVERLAY_REPLACE);
-		set_pixel(i, 12, 0x0d, OVERLAY_REPLACE);
-		set_pixel(i, 13, 0x0e, OVERLAY_REPLACE);
-		set_pixel(i, 14, 0x0f, OVERLAY_REPLACE);
+		set_pixel(i, 0, 0x00, OVERLAY_REPLACE); // black
+		set_pixel(i, 1, 0x01, OVERLAY_REPLACE); // dark red
+		set_pixel(i, 2, 0x02, OVERLAY_REPLACE); // mid red
+		set_pixel(i, 3, 0x03, OVERLAY_REPLACE); // bright red
+		set_pixel(i, 4, 0x07, OVERLAY_REPLACE); // bright red / dark green
+		set_pixel(i, 5, 0x0b, OVERLAY_REPLACE); // bright red / med green
+		set_pixel(i, 6, 0x0f, OVERLAY_REPLACE); // bright red / bright green (yellow)
+		set_pixel(i, 7, 0x0e, OVERLAY_REPLACE); // med red / bright green
+		
+		set_pixel(i, 8, 0x0d, OVERLAY_REPLACE); // dark red / bright green
+		set_pixel(i, 9, 0x0c, OVERLAY_REPLACE); // bright green
+		set_pixel(i, 10, 0x08, OVERLAY_REPLACE); // med green
+		set_pixel(i, 11, 0x04, OVERLAY_REPLACE); // dark green
+		set_pixel(i, 12, 0x05, OVERLAY_REPLACE); // dark red / dark green (dark yellow)
+		set_pixel(i, 13, 0x0a, OVERLAY_REPLACE); // med red / med green (med yellow)
+		set_pixel(i, 14, 0x06, OVERLAY_REPLACE); // med red / dark green
+		set_pixel(i, 15, 0x09, OVERLAY_REPLACE); // dark red / med green
 	}
 	matrix_write_buffer();
 
@@ -88,7 +90,7 @@ int main (void){
 	
 	while (1) {
 //		test_2bit();
-//		test_4bit();
-		test_8bit();
+		test_4bit();
+//		test_8bit();
 	}
 }
