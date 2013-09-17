@@ -61,7 +61,11 @@ void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
 }
 
 void matrix_write_buffer(){
-	twi_write_to(MATRIX_DRIVER_SLAVE_ADDRESS, (uint8_t*) buffer, MATRIX_LENGTH + 1, TWI_BLOCK, TWI_STOP);
+	uint16_t l = MATRIX_LENGTH;
+	if (mode == 0x01) l = l >> 1;
+	else if (mode == 0x02) l = l >> 2;
+	l++;
+	twi_write_to(MATRIX_DRIVER_SLAVE_ADDRESS, (uint8_t*) buffer, l, TWI_BLOCK, TWI_STOP);
 }
 
 void matrix_set_mode(uint8_t new_mode){
