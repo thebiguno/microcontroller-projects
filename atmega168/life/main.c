@@ -11,12 +11,12 @@
 #include "lib/timer/timer.h"
 #include <util/delay.h>
 
-#define GRN_3	0xF0
-#define GRN_2	0x80
-#define GRN_1	0x40
-#define RED_3	0x0F
-#define RED_2	0x08
-#define RED_1	0x04
+#define GRN_3	0x0C
+#define GRN_2	0x08
+#define GRN_1	0x04
+#define RED_3	0x03
+#define RED_2	0x02
+#define RED_1	0x01
 
 #define RECENT_HASH_COUNT			5
 #define RECENT_HASH_MATCH_COUNT			10
@@ -125,7 +125,7 @@ int main (void){
 	uint8_t analog_pins[1] = {5};
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
 	matrix_init();
-	matrix_set_mode(0x00);
+	matrix_set_mode(0x01);
 	
 	setup();
 		
