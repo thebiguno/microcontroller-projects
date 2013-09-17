@@ -48,9 +48,23 @@ void test_4bit(){
 //		}
 //	}
 	matrix_set_mode(0x01);
-	set_pixel(0, 0, 0x0F, OVERLAY_REPLACE);
-	set_pixel(1, 1, 0x03, OVERLAY_REPLACE);
-	set_pixel(2, 2, 0x0C, OVERLAY_REPLACE);
+	for (uint8_t i = 0; i < 24; i++) {
+		set_pixel(i, 0, 0x01, OVERLAY_REPLACE);
+		set_pixel(i, 1, 0x02, OVERLAY_REPLACE);
+		set_pixel(i, 2, 0x03, OVERLAY_REPLACE);
+		set_pixel(i, 3, 0x04, OVERLAY_REPLACE);
+		set_pixel(i, 4, 0x05, OVERLAY_REPLACE);
+		set_pixel(i, 5, 0x06, OVERLAY_REPLACE);
+		set_pixel(i, 6, 0x07, OVERLAY_REPLACE);
+		set_pixel(i, 7, 0x08, OVERLAY_REPLACE);
+		set_pixel(i, 8, 0x09, OVERLAY_REPLACE);
+		set_pixel(i, 9, 0x0a, OVERLAY_REPLACE);
+		set_pixel(i, 10, 0x0b, OVERLAY_REPLACE);
+		set_pixel(i, 11, 0x0c, OVERLAY_REPLACE);
+		set_pixel(i, 12, 0x0d, OVERLAY_REPLACE);
+		set_pixel(i, 13, 0x0e, OVERLAY_REPLACE);
+		set_pixel(i, 14, 0x0f, OVERLAY_REPLACE);
+	}
 	matrix_write_buffer();
 
 }
@@ -74,7 +88,7 @@ int main (void){
 	
 	while (1) {
 //		test_2bit();
-		test_4bit();
-//		test_8bit();
+//		test_4bit();
+		test_8bit();
 	}
 }
