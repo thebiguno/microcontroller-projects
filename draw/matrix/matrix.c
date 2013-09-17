@@ -17,8 +17,25 @@ static uint8_t twi_master_tx_writer(uint16_t i){
 		return mode;
 	}
 	else {
-		//TODO Inspect mode, and compress values accordingly
-		return ((uint8_t*) buffer)[i - 1];
+		uint8_t idx = i - 1;
+		uint8_t result = 0x00;
+		if (mode == 0x00) {
+			// return the byte as is
+			result = ((uint8_t*) buffer)[i-1];
+		} else if (mode == 0x01) {
+			idx *= 2;
+			//xxggxxrr xxggxxrr -> ggrrggrr
+			//combine two bytes in the buffer into on byte in the message
+			result = ((uint8_t*) buffer)[idx] << 4; // bits 6,7
+			result |= (((uint8_t*) buffer)[idx] << 2) & 0xC0; // bits 4,5
+			idx++;
+			result |= (((uint8_t*) buffer)[idx] >> 2) & 0x0C; // bits 2,3
+			result |= ((uint8_t*) buffer)[idx] & 0x03; // bits 0,1
+//			result = 0x33;
+		} else if (mode == 0x02) {
+//			result = 0x33;
+		}
+		return result;
 	}
 }
 
