@@ -99,42 +99,35 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 
 		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master 
 		// sends too much / wrong mode / etc) and dc_max
-		switch (mode){
-			case 0x00: 
-				max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
-				dc_max = 15;
-				break;
-			case 0x01: 
-				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
-				dc_max = 3;
-				break;
-			case 0x02: 
-				max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 2);
-				dc_max = 1;
-				break;
+		if (mode == 0x00) {
+			max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
+			dc_max = 15;
+		} else if (mode == 0x01) {
+			max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
+			dc_max = 3;
+		} else {
+			max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 2);
+			dc_max = 1;
 		}
-	}
-	else if (i <= max_length){	//Verify that the incoming byte will fit in the buffer, as determined by mode
-		i--;
-		switch(mode){
+	} else if (i <= max_length){	//Verify that the incoming byte will fit in the buffer, as determined by mode
+		uint8_t idx = i - 1;
+		if (mode == 0x00) {
 			//8 bit mode; raw copy of all values
-			case 0x00:
-				buffer[i] = data;
-				break;
-
+			// ggggrrrr -> ggggrrrr
+			buffer[idx] = data;
+		} else if (mode == 0x01) {
 			//4 bit (10 color) mode
-			case 0x01:
-				
-				for (uint8_t j = 0; j < 2; j++){
-					uint8_t pixel = (data >> (j * 4)) & 0x03;		//Gives us 2 red bits
-					pixel |= (data >> (j * 4)) & 0x0C << 2;			//Gives us 2 green bits
-					buffer[i * 2 + j] = pixel;
-				}
-				
-				break;
-
+			// ggrrggrr -> xxggxxrr xxggxxrr
+			idx *= 2;
+			buffer[idx] = (data >> 4) & 0x03; // bits 4,5 for red
+			buffer[idx] |= (data >> 2) & 0x30; // bits 6,7 for green
+//			buffer[idx] = 0x33;
+			idx++;
+			buffer[idx] = (data) & 0x03; // bits 0,1 for red
+			buffer[idx] |= (data << 2) & 0x30; // bits 2,3 for green
+//			buffer[idx] = 0x33;
+		} else {
 			//2 bit (4 color) mode
-			case 0x02:
 				/*
 				for (uint8_t j = 0; j < 4; j++){
 					uint8_t v = (data >> (j * 2)) & 0x03;
@@ -146,8 +139,6 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 					}
 				}
 				*/
-				break;
-
 		}
 	}
 }
