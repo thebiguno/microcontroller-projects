@@ -19,7 +19,7 @@
 #define RED_1	0x04
 
 #define RECENT_HASH_COUNT			5
-#define RECENT_HASH_MATCH_COUNT		20
+#define RECENT_HASH_MATCH_COUNT			10
 
 //We write to the scratch buffer, and then flush to the matrix buffer.  We have to
 // do this so that we can check for the current neighborhood, even as we are scanning
@@ -27,38 +27,32 @@
 // we corrupt the reading of this current generation.
 static uint8_t scratch_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 
-static uint16_t recent_hashes[RECENT_HASH_COUNT];
+static uint32_t recent_hashes[RECENT_HASH_COUNT];
 static uint8_t recent_hash_match_count = 0;
-
-uint8_t get_scratch(uint8_t x, uint8_t y){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
-	return scratch_buffer[x][y];
-}
 
 void set_scratch(uint8_t x, uint8_t y, uint8_t value){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 	scratch_buffer[x][y] = value;
 }
 
-
 uint8_t get_neighbor_count(uint8_t x, uint8_t y){
 	uint8_t count = 0;
-	if (get_scratch(x - 1, y - 1)) count++;
-	if (get_scratch(x - 1, y)) count++;
-	if (get_scratch(x - 1, y + 1)) count++;
-	if (get_scratch(x, y - 1)) count++;
-	if (get_scratch(x, y + 1)) count++;
-	if (get_scratch(x + 1, y - 1)) count++;
-	if (get_scratch(x + 1, y)) count++;
-	if (get_scratch(x + 1, y + 1)) count++;
+	if (get_pixel(x - 1, y - 1)) count++;
+	if (get_pixel(x - 1, y)) count++;
+	if (get_pixel(x - 1, y + 1)) count++;
+	if (get_pixel(x, y - 1)) count++;
+	if (get_pixel(x, y + 1)) count++;
+	if (get_pixel(x + 1, y - 1)) count++;
+	if (get_pixel(x + 1, y)) count++;
+	if (get_pixel(x + 1, y + 1)) count++;
 	return count;
 }
 
-uint16_t get_board_hash(){
-	uint16_t hash = 0;
+uint32_t get_board_hash(){
+	uint32_t hash = 0;
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			hash += get_scratch(x, y) + x;
+			hash += x * y * (get_pixel(x, y) ? 1 : 0);
 		}
 	}
 	
@@ -76,7 +70,7 @@ void clear_scratch(){
 void flush(){
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 	for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-		set_pixel(x, y, get_scratch(x, y), OVERLAY_REPLACE);
+		set_pixel(x, y, scratch_buffer[x][y], OVERLAY_REPLACE);
 	}
     }
 }
@@ -109,9 +103,10 @@ void setup(){
 	matrix_write_buffer();
 	_delay_ms(100);
 
+	//Random start positions
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			if ((random() & 0x7) == 0x7){		//25% chance
+			if ((random() & 0x3) == 0x3){		//25% chance
 				set_scratch(x, y, GRN_1);
 			}
 		}
@@ -138,7 +133,7 @@ int main (void){
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
 				uint8_t count = get_neighbor_count(x, y);
-				uint8_t alive = get_scratch(x, y);
+				uint8_t alive = get_pixel(x, y);
 				if (alive) {
 					if (count < 2) set_scratch(x, y, 0x00);
 					else if (count <= 3){
@@ -203,6 +198,6 @@ int main (void){
 			setup();
 		}
 		
-		_delay_ms(60);
+		_delay_ms(70);
 	}
 }
