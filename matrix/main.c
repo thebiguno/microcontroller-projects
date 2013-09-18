@@ -53,11 +53,7 @@ void fill_data(uint8_t* data, uint8_t* b, const register uint8_t dc) {
 	data[1] = d1;
 }
 
-static void _callback(){
-	sei();	//This is a very long ISR handler... let it be interrupted
-	
-//	PORTB ^= _BV(PORTB0);
-	
+static void load_shift_data(){
 	static uint8_t data[13];
 	static uint8_t row = 0;
 	static uint8_t dc = 0;
@@ -78,7 +74,7 @@ static void _callback(){
 		if (dc > dc_max) dc = 0;
 	}
 	
-	// wdt_reset();
+	wdt_reset();
 	
 	shift.shift(data);
 }
@@ -144,28 +140,17 @@ int main (void){
 	twi_init();
 	twi_set_slave_address(MATRIX_DRIVER_ADDRESS);
 	twi_attach_slave_rx_reader(slave_rx_reader);
-//	twi_set_rx_buffer(buffer);
 
-	buffer[0] = 0xFF;
-	buffer[1] = 0xFF;
-	buffer[16] = 0x0F;
-	buffer[17] = 0xF0;
-	
-//	wdt_enable(WDTO_1S);
-
-	// DDRB |= _BV(PORTB0);
+	wdt_enable(WDTO_1S);
 
 	//Make SPI as fast as possible (fcpu / 2)
 	SPDR |= _BV(SPI2X);
 
 	shift.setLatch(&PORTB, PORTB2);
-	//shift.setCallback(_callback);
-	
 
 	while (1) {
 		if (shift.cts()) {
-			_callback();	//Start shifting
+			load_shift_data();	//Start shifting
 		}
-		//Nothing to see here... all the work is done in ISRs
 	}
 }
