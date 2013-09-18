@@ -1,8 +1,6 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#define __PROG_TYPES_COMPAT__
-
 #include <stdlib.h>
 #include <avr/pgmspace.h> 
 
@@ -45,13 +43,13 @@ uint8_t matrix_get_pixel(uint8_t x, uint8_t y);
  * the given overlay mode.
  * The Width / Height are for the glyphs in the given font.
  */
-void draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* font, prog_uchar* codepage, uint8_t value, uint8_t overlay);
+void draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, uint8_t value, uint8_t overlay);
 
 /*
  * Draws a bitmap on the screen at the specified position, of specified width / height,
  * in the specified overlay mode.
  */
-void draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* bitmap,  uint8_t value,uint8_t overlay);
+void draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap,  uint8_t value,uint8_t overlay);
 
 /*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the

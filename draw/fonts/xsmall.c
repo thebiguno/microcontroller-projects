@@ -8,7 +8,7 @@
  * to the next line.  Each character is represented by two 8bit unsigned integers, with 
  * bit 8 of the first ignored.
  */
-prog_uchar font_xsmall[] PROGMEM = {
+uint8_t font_xsmall[] PROGMEM = {
 	0x00,0x00,	//Space
 	0x24,0x82,	//!
 	0x5a,0x00,	//"
