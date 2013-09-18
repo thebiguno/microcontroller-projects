@@ -1,7 +1,4 @@
-#include <avr/io.h>
-#include <avr/pgmspace.h> 
-
-#include "../draw.h"
+#include "ascii.h"
 
 /*
  * A simple ascii codepage, mapping all printable ascii characters. The index of this array is the value of 

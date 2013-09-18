@@ -1,7 +1,4 @@
-#include <avr/io.h>
-#include <avr/pgmspace.h> 
-
-#include "../draw.h"
+#include "xlarge.h"
 
 /*
  * The font's code page to map chars to glyphs.  The index of this array is the value of 

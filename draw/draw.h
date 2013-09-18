@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h> 
 
+// Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
+#ifdef PROGMEM
+#undef PROGMEM
+#define PROGMEM __attribute__((section(".progmem.data")))
+#endif
+
 //Orientation modes.
 #define ORIENTATION_NORMAL	0		//Normal, left to right
 #define ORIENTATION_DOWN	1		//Rotated 90 degrees CW

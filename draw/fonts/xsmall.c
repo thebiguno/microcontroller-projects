@@ -1,6 +1,4 @@
-#include <avr/io.h>
-#include <avr/pgmspace.h> 
-
+#include "xsmall.h"
 //Use codepage_ascii for this font.
 
 /*

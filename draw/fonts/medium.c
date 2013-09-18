@@ -1,7 +1,4 @@
-#include <avr/io.h>
-#include <avr/pgmspace.h> 
-
-#include "../draw.h"
+#include "medium.h"
 
 /*
  * A 7x9 pixel font.  The bits are read across from top left to top right, then down
