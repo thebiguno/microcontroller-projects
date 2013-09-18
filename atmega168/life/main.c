@@ -9,7 +9,10 @@
 #include "lib/draw/draw.h"
 #include "lib/draw/matrix/matrix.h"
 #include "lib/timer/timer.h"
+#include "lib/draw/fonts/ascii.h"
+#include "lib/draw/fonts/xsmall.h"
 #include <util/delay.h>
+#include <stdlib.h>
 
 #define GRN_3	0x0C
 #define GRN_2	0x08
@@ -76,8 +79,8 @@ void flush(){
 }
 
 void flash_palette(uint8_t value){
-	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, 0xFF, OVERLAY_NAND);
-	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, value, OVERLAY_OR);
+	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, value, OVERLAY_REPLACE);
+	draw_text(2, 5, (char*) "START", FONT_XSMALL_WIDTH, FONT_XSMALL_HEIGHT, ORIENTATION_NORMAL, font_xsmall, codepage_ascii_caps, GRN_3, OVERLAY_REPLACE);
 	matrix_write_buffer();
 }
 
