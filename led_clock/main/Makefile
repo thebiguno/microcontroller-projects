@@ -1,13 +1,16 @@
 include ../build/variables.mk
 
-PROJECT=led
+PROJECT=clock
 MMCU=atmega168
-F_CPU=9216000
-SOURCES=main.c shift/shift.c segment/segment.c timer/timer.c clock/clock.c display/display.c button/button.c life/life.c
+F_CPU=16000000
+SOURCES=main.c timer/timer.c clock/clock.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c
+COMPILER=avr-g++
 AVRDUDE_PROGRAMMER=usbtiny
 CDEFS+=-DNO_INTERRUPT_ENABLE
 
 HFUSE=0xDF
 LFUSE=0xDF
+
+CFLAGS+=-DTWI_BUFFER_LENGTH=193 -DTWI_NO_SLAVE -DTWI_CUSTOM_BUFFERS -DTWI_MASTER_TX_WRITER -DMATRIX_NO_SHIFT 
 
 include ../build/targets.mk

@@ -1,9 +1,6 @@
 #include "timer.h"
-#include "../button/button.h"
-#include "../shift/shift.h"
 
 #define COMPA (F_CPU / 256 / 1000) - 1
-#define COMPB 4
 
 static volatile uint32_t _timer_millis;
 
@@ -13,9 +10,8 @@ void timer_init(){
 	TCCR0B |= _BV(CS02);	// clock select = CLK / 256 (prescaler)
 	
 	OCR0A = COMPA;		// interrupt A = every millisecond
-	OCR0B = COMPB;		// interrupt B = 
 	
-	TIMSK0 = _BV(OCIE0A) | _BV(OCIE0B);
+	TIMSK0 = _BV(OCIE0A);
 
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -34,13 +30,8 @@ void timer_add(uint32_t millis) {
 
 ISR(TIMER0_COMPA_vect) {
 	TCNT0 = 0;						// reset counter to zero
-	OCR0B = COMPB;					// reset other compare value to zero
 	_timer_millis++;
 	
 	if (_timer_millis > 86400000) _timer_millis = 0;
 }
 
-ISR(TIMER0_COMPB_vect, ISR_NOBLOCK) {
-	OCR0B += COMPB;	// increment compare value
-	shift_do();
-}
