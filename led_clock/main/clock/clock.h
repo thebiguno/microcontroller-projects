@@ -12,10 +12,16 @@
 
 #define OFFSET_TRAD_X 0
 #define OFFSET_TRAD_Y 0
-#define OFFSET_MAYAN_X 8
-#define OFFSET_MAYAN_Y 0
+#define OFFSET_VIG_X 8
+#define OFFSET_VIG_Y 0
 #define OFFSET_HEX_X 16
 #define OFFSET_HEX_Y 0
+#define OFFSET_DOZ_X 0
+#define OFFSET_DOZ_Y 8
+#define OFFSET_DEC_X 8
+#define OFFSET_DEC_Y 8
+#define OFFSET_OCT_X 16
+#define OFFSET_OCT_Y 8
 
 void clock_draw(uint32_t ms);
 

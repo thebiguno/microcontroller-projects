@@ -9,7 +9,7 @@ int main() {
 	matrix_init();
 	matrix_set_mode(0x01);
 	timer_init();
-	sei();
+ 	sei();
 		
 	uint32_t prev_ms = 0;
 	
@@ -19,6 +19,7 @@ int main() {
 		
 		if (ms != prev_ms) {
 			clock_draw(ms);
+			matrix_write_buffer();
 		}
 		prev_ms = ms;
 	}
