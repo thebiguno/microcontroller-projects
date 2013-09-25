@@ -43,21 +43,30 @@ void clock_traditional(uint32_t ms) {
 		if (i > 1) col++; // blank columns
 		if (i > 3) col++;
 		
-		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 7, color, OVERLAY_REPLACE); 
+		color = (v & 0x01) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_TRAD_Y + 7, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_TRAD_Y + 6, color, OVERLAY_REPLACE);
 
-		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 5, color, OVERLAY_REPLACE); 
+		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_TRAD_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_TRAD_Y + 4, color, OVERLAY_REPLACE);
 
-		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 3, color, OVERLAY_REPLACE); 
+		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_TRAD_Y + 3, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_TRAD_Y + 2, color, OVERLAY_REPLACE);
 
-		color = (v & 0x08) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 1, color, OVERLAY_REPLACE); 
+		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_TRAD_Y + 1, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_TRAD_Y + 0, color, OVERLAY_REPLACE);
+	}
+}
+
+uint8_t fade_g_to_r(uint8_t curr) {
+	switch (curr) {
+		case GRN_3: return GRN_2 | RED_1;
+		case GRN_2 | RED_1: return GRN_1 | RED_2;
+		case GRN_1 | RED_2: return RED_3;
+		default: return GRN_3;
 	}
 }
 
@@ -79,23 +88,47 @@ void clock_vigesimal(uint32_t ms) {
 		// build a 4x4 mayan number blocks
 	
 		uint8_t col = OFFSET_VIG_X;
-		uint8_t row = OFFSET_VIG_Y;
+		uint8_t row_offset = OFFSET_VIG_Y + (i > 1) ? 4 : 0; // move blocks c and d down four rows
+		uint8_t row = row_offset + 3;
 		uint8_t v = digits[i];
-		if (i > 1) row += 4; // move blocks c and d down four rows
-	
-		// draw the dots
 		if (i % 2 == 1) col = col + 4; // move blocks b and d over 4 cols
-		if (v % 5 > 0) set_pixel(col + 3, row, GRN_3, OVERLAY_REPLACE);
-		if (v % 5 > 1) set_pixel(col + 2, row, GRN_3, OVERLAY_REPLACE);
-		if (v % 5 > 2) set_pixel(col + 1, row, GRN_3, OVERLAY_REPLACE);
-		if (v % 5 > 3) set_pixel(col + 0, row, GRN_3, OVERLAY_REPLACE);
 	
+		uint8_t color = GRN_2 | RED_1;
 		// draw the lines
-		if (v > 4) draw_line(col, row + 3, col + 3, row + 3, GRN_3, OVERLAY_REPLACE);
-		if (v > 9) draw_line(col, row + 2, col + 3, row + 2, GRN_3, OVERLAY_REPLACE);
-		if (v > 14) draw_line(col, row + 1, col + 3, row + 1, GRN_3, OVERLAY_REPLACE);
+		if (v > 14) {
+			row--;
+			draw_line(col, row_offset + 1, col + 3, row_offset + 1, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
+		if (v > 9) {
+			row--;
+			draw_line(col, row_offset + 2, col + 3, row_offset + 2, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
+		if (v > 4) {
+			row--;
+			draw_line(col, row_offset + 3, col + 3, row_offset + 3, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
 		
-		// TODO draw the dots on first blank line in a different color instead of always on the top line
+		// draw the dots
+		color = GRN_3;
+		if (v % 5 > 3) {
+			set_pixel(col + 0, row, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
+		if (v % 5 > 2) {
+			set_pixel(col + 1, row, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
+		if (v % 5 > 1) {
+			set_pixel(col + 2, row, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
+		if (v % 5 > 0) {
+			set_pixel(col + 3, row, color, OVERLAY_REPLACE);
+			color = fade_g_to_r(color);
+		}
 	}
 }
 
@@ -116,33 +149,34 @@ void clock_hexadecimal(uint32_t ms) {
 	digits[3] = ms / 13183593;		// 1/65536 day (hex second) ~= 1.32 seconds
 	
 	uint8_t color = 0x00;
+	
 	for (uint8_t i = 0; i < 4; i++) { // digits
 		uint8_t col = OFFSET_HEX_X + (i * 2);
 		uint8_t v = digits[i];
 
-		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 7, color, OVERLAY_REPLACE); 
+		color = (v & 0x01) ? GRN_3 | RED_3: 0x00;
+		set_pixel(col, OFFSET_HEX_Y + 7, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_HEX_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 6, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_HEX_Y + 7, color & RED_1, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_HEX_Y + 6, color & RED_1, OVERLAY_REPLACE);
 
-		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 5, color, OVERLAY_REPLACE); 
+		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_HEX_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_HEX_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 4, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_HEX_Y + 5, color & RED_1, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_HEX_Y + 4, color & RED_1, OVERLAY_REPLACE);
 
-		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 3, color, OVERLAY_REPLACE); 
+		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_HEX_Y + 3, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_HEX_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 2, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_HEX_Y + 3, color & RED_1, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_HEX_Y + 2, color & RED_1, OVERLAY_REPLACE);
 
-		color = (v & 0x08) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 1, color, OVERLAY_REPLACE); 
+		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_HEX_Y + 1, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_HEX_Y + 0, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 1, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 0, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_HEX_Y + 1, color & RED_1, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_HEX_Y + 0, color & RED_1, OVERLAY_REPLACE);
 	}
 }
 
@@ -160,33 +194,41 @@ void clock_dozenal(uint32_t ms) {
 	digits[4] = ms / 347;		// 1/248832 day ~= .347 s
 
 	uint8_t color = 0x00;
-	for (uint8_t i = 0; i < 4; i++) { // digits
-		uint8_t col = OFFSET_DOZ_X + (i * 2);
+	for (uint8_t i = 0; i < 5; i++) { // digits
+		uint8_t col = OFFSET_DOZ_X + (i < 3 ? i * 2 : i + 3);
 		uint8_t v = digits[i];
 
-		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DOZ_Y + 7, color, OVERLAY_REPLACE); 
+		color = (v & 0x01) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DOZ_Y + 7, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DOZ_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DOZ_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DOZ_Y + 6, color, OVERLAY_REPLACE);
-
-		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DOZ_Y + 5, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DOZ_Y + 7, color & RED_1, OVERLAY_REPLACE);
+			set_pixel(col + 1, OFFSET_DOZ_Y + 6, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DOZ_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DOZ_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DOZ_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DOZ_Y + 4, color, OVERLAY_REPLACE);
-
-		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DOZ_Y + 3, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DOZ_Y + 5, color & RED_1, OVERLAY_REPLACE);
+			set_pixel(col + 1, OFFSET_DOZ_Y + 4, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DOZ_Y + 3, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DOZ_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DOZ_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DOZ_Y + 2, color, OVERLAY_REPLACE);
-
-		color = (v & 0x08) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DOZ_Y + 1, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DOZ_Y + 3, color & RED_1, OVERLAY_REPLACE);
+			set_pixel(col + 1, OFFSET_DOZ_Y + 2, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DOZ_Y + 1, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DOZ_Y + 0, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DOZ_Y + 1, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DOZ_Y + 0, color, OVERLAY_REPLACE);
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DOZ_Y + 1, color & RED_1, OVERLAY_REPLACE);
+			set_pixel(col + 1, OFFSET_DOZ_Y + 0, color & RED_1, OVERLAY_REPLACE);
+		}
 	}
 }
 
@@ -208,33 +250,41 @@ void clock_decimal(uint32_t ms) {
 	digits[4] = ms / 864;		// 1/100000 day (centibeat) / .864 s
 	
 	uint8_t color = 0x00;
-	for (uint8_t i = 0; i < 4; i++) { // digits
-		uint8_t col = OFFSET_DEC_X + (i * 2);
+	for (uint8_t i = 0; i < 5; i++) { // digits
+		uint8_t col = OFFSET_DEC_X + (i < 3 ? i * 2 : i + 3);
 		uint8_t v = digits[i];
 
-		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 7, color, OVERLAY_REPLACE); 
+		color = (v & 0x01) ? GRN_3 | RED_3: 0x00;
+		set_pixel(col, OFFSET_DEC_Y + 7, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DEC_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 6, color, OVERLAY_REPLACE);
-
-		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 5, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DEC_Y + 7, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_DEC_Y + 6, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DEC_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DEC_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 4, color, OVERLAY_REPLACE);
-
-		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 3, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DEC_Y + 5, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_DEC_Y + 4, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DEC_Y + 3, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DEC_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 2, color, OVERLAY_REPLACE);
-
-		color = (v & 0x08) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DEC_Y + 3, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_DEC_Y + 2, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
+		set_pixel(col, OFFSET_DEC_Y + 1, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DEC_Y + 0, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 0, color, OVERLAY_REPLACE);
+		if (i < 3) {
+			set_pixel(col + 1, OFFSET_DEC_Y + 1, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_DEC_Y + 0, color & RED_1, OVERLAY_REPLACE);
+		}
 	}
 
 }
@@ -258,28 +308,34 @@ void clock_octal(uint32_t ms) {
 	digits[5] = ms / 329589843;		// 1/262144 day ~= .329 s
 
 	uint8_t color = 0x00;
-	for (uint8_t i = 0; i < 4; i++) { // digits
-		uint8_t col = OFFSET_OCT_X + (i * 2);
+	for (uint8_t i = 0; i < 6; i++) { // digits
+		uint8_t col = OFFSET_OCT_X + (i < 2 ? i * 2 : i + 2);
 		uint8_t v = digits[i];
 
-		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 7, color, OVERLAY_REPLACE); 
+		color = (v & 0x01) ? GRN_3 | RED_3: 0x00;
+		set_pixel(col, OFFSET_OCT_Y + 7, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_OCT_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_OCT_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_OCT_Y + 6, color, OVERLAY_REPLACE);
-
-		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 5, color, OVERLAY_REPLACE); 
+		if (i < 2) {
+			set_pixel(col + 1, OFFSET_OCT_Y + 7, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_OCT_Y + 6, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x02) ? GRN_3 | RED_3: 0x00;
+		set_pixel(col, OFFSET_OCT_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_OCT_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_OCT_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_OCT_Y + 4, color, OVERLAY_REPLACE);
-
-		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 3, color, OVERLAY_REPLACE); 
+		if (i < 2) {
+			set_pixel(col + 1, OFFSET_OCT_Y + 5, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_OCT_Y + 4, color & RED_1, OVERLAY_REPLACE);
+		}
+		
+		color = (v & 0x04) ? GRN_3 | RED_3: 0x00;
+		set_pixel(col, OFFSET_OCT_Y + 3, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_OCT_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_OCT_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_OCT_Y + 2, color, OVERLAY_REPLACE);
-
+		if (i < 2) {
+			set_pixel(col + 1, OFFSET_OCT_Y + 3, color & RED_1, OVERLAY_REPLACE); 
+			set_pixel(col + 1, OFFSET_OCT_Y + 2, color & RED_1, OVERLAY_REPLACE);
+		}
+		
 		// color = (v & 0x08) ? GRN_3 : 0x00;
 		// set_pixel(col, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
 		// set_pixel(col, OFFSET_DEC_Y + 0, color, OVERLAY_REPLACE);
