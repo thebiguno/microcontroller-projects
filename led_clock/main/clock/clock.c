@@ -259,26 +259,26 @@ void clock_octal(uint32_t ms) {
 
 	uint8_t color = 0x00;
 	for (uint8_t i = 0; i < 4; i++) { // digits
-		uint8_t col = OFFSET_DEC_X + (i * 2);
+		uint8_t col = OFFSET_OCT_X + (i * 2);
 		uint8_t v = digits[i];
 
 		color = (v & 0x01) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_DEC_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 7, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 6, color, OVERLAY_REPLACE);
+		set_pixel(col, OFFSET_OCT_Y + 7, color, OVERLAY_REPLACE); 
+		set_pixel(col, OFFSET_OCT_Y + 6, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_OCT_Y + 7, color, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_OCT_Y + 6, color, OVERLAY_REPLACE);
 
 		color = (v & 0x02) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_DEC_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 5, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 4, color, OVERLAY_REPLACE);
+		set_pixel(col, OFFSET_OCT_Y + 5, color, OVERLAY_REPLACE); 
+		set_pixel(col, OFFSET_OCT_Y + 4, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_OCT_Y + 5, color, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_OCT_Y + 4, color, OVERLAY_REPLACE);
 
 		color = (v & 0x04) ? GRN_3 : 0x00;
-		set_pixel(col, OFFSET_DEC_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_DEC_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_DEC_Y + 3, color, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_DEC_Y + 2, color, OVERLAY_REPLACE);
+		set_pixel(col, OFFSET_OCT_Y + 3, color, OVERLAY_REPLACE); 
+		set_pixel(col, OFFSET_OCT_Y + 2, color, OVERLAY_REPLACE);
+		set_pixel(col + 1, OFFSET_OCT_Y + 3, color, OVERLAY_REPLACE); 
+		set_pixel(col + 1, OFFSET_OCT_Y + 2, color, OVERLAY_REPLACE);
 
 		// color = (v & 0x08) ? GRN_3 : 0x00;
 		// set_pixel(col, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
