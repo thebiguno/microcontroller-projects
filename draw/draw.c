@@ -62,12 +62,14 @@ void draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t or
 	// many bytes are used for a glyph.
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
 	uint8_t glyphBitCount = (width * height) & 0x7; //(w*h)%8
-	if (glyphBitCount != 0){
-		glyphByteCount++;
-	}
 	
-	uint8_t bitCounter = glyphBitCount - 1;
+	uint8_t bitCounter = 8;
 	uint8_t byteCounter = 0;
+
+	if (glyphBitCount != 0) {
+		glyphByteCount++;
+		bitCounter = glyphBitCount - 1; // the padding is at the front of the first byte, so don't start at bit 0
+	}
 
 	if (orientation == ORIENTATION_NORMAL){
 		for(uint8_t iy = y; iy < y + height; iy++){
