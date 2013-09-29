@@ -1,7 +1,7 @@
 include ../../../build/variables.mk
 
 PROJECT=cranky
-MMCU=atmega168
+MMCU=atmega48
 #F_CPU=8000000
 F_CPU=20000000
 SOURCES=main.c
