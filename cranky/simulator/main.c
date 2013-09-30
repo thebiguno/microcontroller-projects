@@ -4,6 +4,20 @@
 static volatile uint8_t ct; // a value from 0 to 143, odd numbers are rising edges
 static volatile uint8_t tooth; // a value from 0 to 35
 
+// hardware map
+// C6	/rst								c5	nc
+// d0	rxd									c4	nc
+// d1	txd									c3	nc
+// d2	int0								c2	nc
+// d3	int1								c1	nc
+// d4										c0	nc
+// b6	xtal								
+// b7	xtal								b5	sck
+// d5	dout								b4	miso
+// d6	dout								b3	mosi/dout	
+// d7	dout								b2	dout		
+// b0	dout	crank output				b1	dout		cam output
+
 int main(void) {
 	
 	// set B0 and B1 as output

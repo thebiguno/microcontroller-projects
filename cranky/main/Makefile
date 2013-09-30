@@ -10,6 +10,9 @@ SOURCES=main.c
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
+HFUSE=0xDF
+LFUSE=0xDF
+
 AVRDUDE_PROGRAMMER=usbtiny
 
 include ../../../build/targets.mk
