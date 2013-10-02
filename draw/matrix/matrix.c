@@ -43,8 +43,8 @@ void matrix_init(){
 	twi_attach_master_tx_writer(twi_master_tx_writer);
 }
 
-void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
+void set_pixel(int16_t x, int16_t y, uint8_t value, uint8_t overlay){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT || x < 0 || y < 0) return;	//Bounds check
 
 	if (overlay == OVERLAY_REPLACE){
 		buffer[x][y] = value;
@@ -72,8 +72,8 @@ void matrix_set_mode(uint8_t new_mode){
 	mode = new_mode;
 }
 
-uint8_t get_pixel(uint8_t x, uint8_t y){
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0;	//Bounds check
+uint8_t get_pixel(int16_t x, int16_t y){
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT || x < 0 || y < 0) return 0;	//Bounds check
 	return buffer[x][y];
 }
 
