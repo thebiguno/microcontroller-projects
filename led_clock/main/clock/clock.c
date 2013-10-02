@@ -61,15 +61,6 @@ void clock_traditional(uint32_t ms) {
 	}
 }
 
-uint8_t fade_g_to_r(uint8_t curr) {
-	switch (curr) {
-		case GRN_3: return GRN_2 | RED_1;
-		case GRN_2 | RED_1: return GRN_1 | RED_2;
-		case GRN_1 | RED_2: return RED_3;
-		default: return GRN_3;
-	}
-}
-
 /*
  * This method was used by the ancient Mayans
  */
@@ -93,41 +84,40 @@ void clock_vigesimal(uint32_t ms) {
 		uint8_t v = digits[i];
 		if (i % 2 == 1) col = col + 4; // move blocks b and d over 4 cols
 	
-		uint8_t color = GRN_2 | RED_1;
+		uint8_t color = GRN_3 | RED_3;
 		// draw the lines
 		if (v > 14) {
 			row--;
 			draw_line(col, row_offset + 1, col + 3, row_offset + 1, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		if (v > 9) {
 			row--;
 			draw_line(col, row_offset + 2, col + 3, row_offset + 2, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		if (v > 4) {
 			row--;
 			draw_line(col, row_offset + 3, col + 3, row_offset + 3, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		
 		// draw the dots
-		color = GRN_3;
+		color = GRN_3 | RED_3;
 		if (v % 5 > 3) {
 			set_pixel(col + 0, row, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		if (v % 5 > 2) {
 			set_pixel(col + 1, row, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		if (v % 5 > 1) {
 			set_pixel(col + 2, row, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
+			color = RED_1;
 		}
 		if (v % 5 > 0) {
 			set_pixel(col + 3, row, color, OVERLAY_REPLACE);
-			color = fade_g_to_r(color);
 		}
 	}
 }
