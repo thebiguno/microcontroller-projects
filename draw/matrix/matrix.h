@@ -17,7 +17,7 @@
 //Bit depths per channel
 #define MATRIX_MODE_4BIT	0x00
 #define MATRIX_MODE_2BIT	0x01
-//#define MATRIX_MODE_1BIT	0x02	//TODO Implement
+#define MATRIX_MODE_1BIT	0x02	//TODO Implement
 
 #include "../draw.h"
 #include "../../twi/twi.h"
