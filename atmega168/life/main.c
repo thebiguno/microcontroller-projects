@@ -128,7 +128,7 @@ int main (void){
 	uint8_t analog_pins[1] = {5};
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
 	matrix_init();
-	matrix_set_mode(0x01);
+	matrix_set_mode(MATRIX_MODE_2BIT);
 	
 	setup();
 		
