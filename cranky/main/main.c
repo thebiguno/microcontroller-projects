@@ -21,7 +21,7 @@ static volatile uint8_t inj[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7)
 // TODO tune these values
 static uint8_t advance[8][8] = {
 	// low load     ...     high load
-	{  8,  8,  5,  3,  2,  1,  1,  0 },		// slow; < 500 rpm
+	{  0,  8,  5,  3,  2,  1,  1,  0 },		// slow; < 500 rpm
 	{ 14, 12, 10,  8,  8,  6,  6,  5 },
 	{ 20, 13, 16, 14, 13, 11, 10,  9 },
 	{ 26, 19, 21, 19, 18, 16, 15, 14 },
@@ -54,10 +54,17 @@ static uint8_t injector[8][8] = {
 // reading material:
 // http://www.vems.hu/wiki/index.php?page=InputTrigger%2FSubaruThirtySixMinusTwoMinusTwoMinusTwo
 
+// teeth
+// C                 C                                   C                 C
+//    4                 1                 3                 2                 4
+// |__|||||||||||||__||||||||||||||||__|__|||||||||||||__||||||||||||||||__|__|||
+//                      0        1         2          3 
+//                      012345678901234567890123456789012345
+
 // hardware map
-// C6	nc 		reset						c5	nc
-// d0	nc		rxd							c4	nc
-// d1	nc		txd							c3	nc
+// C6	/rst								c5	nc
+// d0	rxd									c4	nc
+// d1	txd									c3	nc
 // d2	int0	crank hall effect input		c2	nc
 // d3	int1	cam hall effect input		c1	nc
 // d4			injector #1 output			c0	adc			throttle position
@@ -91,15 +98,15 @@ int main(void) {
 	// 20000 us / 0.4 =  50,000 < 65,535 [ / 8 prescale ]
 	TCCR1A = 0x00;						// OC1A / OC1B disconnected
 	TCCR1B = _BV(CS11);					// clock prescale select = CLK /8
-	TIMSK1 = _BV(OCIE1A);				// interrupt on timer 1 compare A
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	// interrupt on timer 1 compare A and B
 	
 	// timer 2 (8-bit) is used to drive the injector solenoids (high-z)
 	// 20MHz clock = 0.05 us per clock cycle
 	// 256 * 8 = 2048 * 0.05 us = 102 us frequency > 66
-	TCCR2A = 0x00;						// OC2A / OC2B disconnected
-	TCCR2B = _BV(CS21);					// clock precale select = CLK / 8
-	TIMSK2 = _BV(OCIE2A) | _BV(OCIE2B); // interrupt on time 2 compare A and B
-	OCR2A = 165; // 165 * 8 clock cycles = 66 us
+//	TCCR2A = 0x00;						// OC2A / OC2B disconnected
+//	TCCR2B = _BV(CS21);					// clock precale select = CLK / 8
+//	TIMSK2 = _BV(OCIE2A) | _BV(OCIE2B); // interrupt on timer 2 compare A and B
+//	OCR2A = 165; // 165 * 8 clock cycles = 66 us
 	
 	// set up analog
 	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
@@ -115,7 +122,7 @@ int main(void) {
 
 	sei();
 
-	//ADCSRA |= _BV(ADSC);	// start an analog conversion for throttle position
+	ADCSRA |= _BV(ADSC);	// start an analog conversion for throttle position
 
 	while(1) {
 		// do nothing, all code is in an ISR
@@ -155,6 +162,7 @@ ISR(INT0_vect) {
 		// gap detected add the two missing gap teeth
 		tooth = tooth + 2;
 		cam_teeth = cam_teeth + 2;
+		t = t / 3; // approximate the duration of the single tooth, accounting for the length of the gap
 	} else {
 		tooth++;
 		cam_teeth++;
@@ -165,6 +173,7 @@ ISR(INT0_vect) {
 	TCNT0 = 0; // reset timer0 to zero
 	
 	if (tooth > 35) {
+//		PORTB = 0xFF;
 		tooth = 0;
 		
 		// determine rpm zone once per revolution
@@ -190,36 +199,41 @@ ISR(INT0_vect) {
 		// start ADC again -- read throttle position once per revolution
 		//ADCSRA |= _BV(ADSC);
 	} else if (tooth == 13 || tooth == 14 || tooth == 16 || tooth == 17 || tooth == 31 || tooth == 32) {
-		// tooth count is wrong, this always happen when starting, so adjust
-		tooth--;
-//	} else if (tooth == 15 || tooth == 18 || tooth == 33) {
-//		t = t / 3; // approximate the duration of the single tooth, accounting for the length of the gap
+		// tooth count is wrong, this is normal so just try adjusting
+		tooth++;
+		if (tooth == 13 || tooth == 16 || tooth == 31) {
+			tooth++;
+		}
+		
 	} else if (tooth == 30 || tooth == 12) {
 		// now 60 degrees before 0/180 degrees, set the timer for the spark advance
 		uint8_t adv = advance[rpm_zone][load_zone]; // in degrees
-		adv = 0; // TODO 12 degree spark advance, real value will come from throttle position or pressure
+		//adv = 10;
 		// 60 degrees - advance degrees (1024 prescale -> 8 prescale)
+		// t is a /1024 prescaled value and maxes out at about 66 @ 500 rpm
+		// OCR1A is a /8 prescaled value
+		// multiply by 128 to convert form /1024 to /8
 		uint16_t deg = 60 - adv;
+		
 		TCNT1 = 0;	// reset timer1 to zero
-		OCR1A = deg * t / 10 * 128; // set up compare value for timer1
+		// TODO this isn't terribly accurate due to rounding
+		uint16_t comp = deg * t / 10 * 128;
+		OCR1A = comp; // set up compare value for timer1
+		OCR1B = comp + 2048; // TODO  a guess
 	}
 
-	if (tooth == 0 && cam == 2) {
+	if (tooth == 1 && cam == 2) {
 		// #1BDTC; #4 just finished burning, #1 ignition just happened, #3 ignites next, #2 injects next
 		pl = plug[0];
-		PORTB = 0;
-	} else if (tooth == 0 && cam == 0) {
+	} else if (tooth == 1 && cam == 0) {
 		// #2BDTC; #3 just finished burning, #2 ignition just happened, #4 ignites next, #1 injects next
 		pl = plug[1];
-		PORTB = 0;
-	} else if (tooth == 18 && cam == 2) {  // in cam signal gap, so 2 not 3
+	} else if (tooth == 19 && cam == 2) {  // in cam signal gap, so 2 not 3
 		// #3BTDC; #1 just finished burning, #3 ignition just happened, #2 ignites next, #3 injects next
 		pl = plug[2];
-		PORTB = 0;
-	} else if (tooth == 18 && cam == 1) {
+	} else if (tooth == 19 && cam == 1) {
 		// #4BTDC; #2 just finished burning, #4 ignition just happened, #1 ignites next, #4 injects next
 		pl = plug[3];
-		PORTB = 0;
 	} else if (tooth == 15 && cam == 2) {
 		in = inj[0];
 	} else if (tooth == 15 && cam == 0) {
@@ -233,6 +247,7 @@ ISR(INT0_vect) {
 
 // cam sync ISR
 ISR(INT1_vect) {
+	// now on either tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
 	cam++;
 	
@@ -240,13 +255,20 @@ ISR(INT1_vect) {
 	if (cam_teeth > 20) {
 		// gap detected, now at #2BTDC
 		cam = 0;
+		//tooth = 33;
 	}
+	
 	cam_teeth = 0;
 }
 
 // ignition spark event
 ISR(TIMER1_COMPA_vect) {
-	PORTB |= pl;
+	if ((tooth > 12 && tooth < 19) || tooth >= 30 || tooth < 1) {
+		PORTB = pl;
+	}
+}
+ISR(TIMER1_COMPB_vect) {
+	PORTB = 0x00;
 }
 
 // injector pwm frequency

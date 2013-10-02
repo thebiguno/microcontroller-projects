@@ -1,7 +1,7 @@
 include ../../../build/variables.mk
 
 PROJECT=cranky
-MMCU=atmega168
+MMCU=atmega48
 #F_CPU=8000000
 F_CPU=20000000
 SOURCES=main.c
@@ -9,6 +9,9 @@ SOURCES=main.c
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
+
+HFUSE=0xDF
+LFUSE=0xDF
 
 AVRDUDE_PROGRAMMER=usbtiny
 
