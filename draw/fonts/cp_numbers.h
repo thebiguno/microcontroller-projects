@@ -1,5 +1,5 @@
-#ifndef FONT_XLARGE_H
-#define FONT_XLARGE_H
+#ifndef CODEPAGE_NUMBERS_H
+#define CODEPAGE_NUMBERS_H
 
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
@@ -10,11 +10,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern uint8_t codepage_tall[];
-
-extern uint8_t font_tall[];
-
-#define FONT_TALL_WIDTH	5
-#define FONT_TALL_HEIGHT	13
+extern uint8_t codepage_numbers[];
 
 #endif

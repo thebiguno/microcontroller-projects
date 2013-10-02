@@ -1,4 +1,4 @@
-#include "xsmall.h"
+#include "f_3x5.h"
 //Use codepage_ascii for this font.
 
 /*
@@ -6,7 +6,7 @@
  * to the next line.  Each character is represented by two 8bit unsigned integers, with 
  * bit 8 of the first ignored.
  */
-uint8_t font_xsmall[] PROGMEM = {
+uint8_t font_3x5[] PROGMEM = {
 	0x00,0x00,	//Space
 	0x24,0x82,	//!
 	0x5a,0x00,	//"

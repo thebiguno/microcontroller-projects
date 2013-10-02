@@ -1,5 +1,5 @@
-#ifndef FONT_XSMALL_H
-#define FONT_XSMALL_H
+#ifndef CODEPAGE_ASCII_CAPS_H
+#define CODEPAGE_ASCII_CAPS_H
 
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
@@ -10,9 +10,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern uint8_t font_xsmall[];
-
-#define FONT_XSMALL_WIDTH		3
-#define FONT_XSMALL_HEIGHT		5
+extern uint8_t codepage_ascii_caps[];
 
 #endif
