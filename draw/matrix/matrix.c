@@ -18,10 +18,10 @@ static uint8_t twi_master_tx_writer(uint16_t i){
 	}
 	else {
 		uint8_t result = 0x00;
-		if (mode == 0x00) {
+		if (mode == MATRIX_MODE_4BIT) {
 			// return the byte as is
 			result = ((uint8_t*) buffer)[i-1];
-		} else if (mode == 0x01) {
+		} else if (mode == MATRIX_MODE_2BIT) {
 			uint16_t idx = (i - 1) * 2;
 			//xxxxggrr xxxxggrr -> ggrrggrr
 			//combine two bytes in the buffer into on byte in the message
@@ -31,7 +31,7 @@ static uint8_t twi_master_tx_writer(uint16_t i){
 			result |= ((uint8_t*) buffer)[idx] & 0x0C; // bits 2,3
 			result |= ((uint8_t*) buffer)[idx] & 0x03; // bits 0,1
 			// result = 0xc4;
-		} else if (mode == 0x02) {
+		} else if (mode == MATRIX_MODE_1BIT) {
 //			result = 0x33;
 		}
 		return result;
