@@ -1,5 +1,5 @@
-#ifndef FONT_SMALL_H
-#define FONT_SMALL_H
+#ifndef FONT_7X9_H
+#define FONT_7X9_H
 
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
@@ -10,9 +10,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern uint8_t font_small[];
-
-#define FONT_SMALL_WIDTH	5
-#define FONT_SMALL_HEIGHT	7
+extern uint8_t font_7x9[];
 
 #endif

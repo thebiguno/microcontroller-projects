@@ -1,5 +1,5 @@
-#ifndef FONT_MEDIUM_H
-#define FONT_MEDIUM_H
+#ifndef FONT_5x7_H
+#define FONT_5x7_H
 
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
@@ -10,9 +10,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern uint8_t font_medium[];
-
-#define FONT_MEDIUM_WIDTH	7
-#define FONT_MEDIUM_HEIGHT	9
+extern uint8_t font_5x7[];
 
 #endif

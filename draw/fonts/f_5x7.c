@@ -1,4 +1,4 @@
-#include "small.h"
+#include "f_5x7.h"
 
 //Use codepage_ascii for this font.
 
@@ -7,7 +7,7 @@
  * to the next line.  Each character is represented by five 8bit unsigned integers, with 
  * bit 8 of the first ignored.
  */
-uint8_t font_small[] PROGMEM = {
+uint8_t font_5x7[] PROGMEM = {
 	0x00,0x00,0x00,0x00,0x00,	//Space
 	0x01,0x08,0x42,0x10,0x04,	//!
 	0x00,0x14,0xa0,0x00,0x00,	//"
