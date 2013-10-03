@@ -11,6 +11,7 @@
 #endif
 
 extern uint8_t pumpkin[];
+extern uint8_t skeleton[];
 
 #define PUMPKIN_WIDTH	16
 #define PUMPKIN_HEIGHT	16
