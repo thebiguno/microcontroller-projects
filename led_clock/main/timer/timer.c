@@ -27,7 +27,8 @@ uint16_t timer_seconds() {
 	return _timer_seconds;
 }
 uint32_t timer_millis() {
-	return _timer_seconds * 1000 + _timer_millis * 4;
+	return (uint32_t) _timer_seconds * 1000 + ((uint32_t) _timer_millis << 2);
+}
 
 int8_t timer_get_tune() {
 	return OCR1A - COMPA;
@@ -36,10 +37,8 @@ void timer_set_tune(int8_t tune) {
 	OCR1A = COMPA + tune;
 }
 void timer_set(uint32_t millis) {
-	_timer_millis = millis;
-}
-uint32_t timer_millis() {
-	return _timer_millis;
+	_timer_seconds = millis / 1000;
+	_timer_millis = millis >> 2;
 }
 
 ISR(TIMER1_COMPA_vect) {

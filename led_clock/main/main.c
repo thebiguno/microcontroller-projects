@@ -43,13 +43,15 @@ int main() {
 			} else if (action == 'S') { // set
 				union u32 conv;
 				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
-					serial_read_c((char*) &conv.a[i]);
+					serial_read_c(conv.a + i);
 				}
 				timer_set(conv.i);
 			} else if (action == 'T') { // tune
-				uint8_t t = 0;
+				int8_t t = 0;
 				serial_read_c((char*) &t);
-				timer_tune(t);
+				timer_set_tune(t);
+			} else if (action == 'C') {
+				serial_write_c((char) timer_get_tune());
 			}
 		}
 	}
