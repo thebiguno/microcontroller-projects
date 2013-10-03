@@ -1,6 +1,6 @@
 #include "timer.h"
 
-#define COMPA (F_CPU / 1 / 1000 / 4) - 12
+#define COMPA (F_CPU / 1 / 1000 / 4)
 
 // every 4 millis reset every second 
 static volatile uint8_t _timer_millis;
@@ -12,7 +12,7 @@ void timer_init(){
 	TCCR1A = 0x0;			// output a = normal mode; output b = normal mode; waveform generation = normal
 	TCCR1B |= _BV(CS10);	// clock select = CLK / 1 (no prescaler)
 	
-	OCR1A = COMPA;		// interrupt A = every millisecond
+	timer_set_tune(-12);
 	
 	TIMSK1 = _BV(OCIE1A);
 
@@ -28,10 +28,18 @@ uint16_t timer_seconds() {
 }
 uint32_t timer_millis() {
 	return _timer_seconds * 1000 + _timer_millis * 4;
-}
 
-void timer_add(uint32_t millis) {
-	_timer_millis += millis;
+int8_t timer_get_tune() {
+	return OCR1A - COMPA;
+}
+void timer_set_tune(int8_t tune) {
+	OCR1A = COMPA + tune;
+}
+void timer_set(uint32_t millis) {
+	_timer_millis = millis;
+}
+uint32_t timer_millis() {
+	return _timer_millis;
 }
 
 ISR(TIMER1_COMPA_vect) {
