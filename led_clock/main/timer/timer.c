@@ -1,8 +1,11 @@
 #include "timer.h"
 
-#define COMPA (F_CPU / 1 / 1000) - 48
+#define COMPA (F_CPU / 1 / 1000 / 4) - 12
 
-static volatile uint32_t _timer_millis;
+// every 4 millis reset every second 
+static volatile uint8_t _timer_millis;
+// seconds in the day
+static volatile uint16_t _timer_seconds;
 
 void timer_init(){
 	//Set up the timer to run at F_CPU / 256, in normal mode (TCNT0 is reset in the ISR)
@@ -17,11 +20,14 @@ void timer_init(){
 	sei();
 #endif
 	
-	_timer_millis = ((uint32_t) 12 * 60 * 60 * 1000) + ((uint32_t) 01 * 60 * 1000); //0;
+	_timer_seconds = ((uint32_t) 12 * 60 * 60) + ((uint32_t) 01 * 60); //0;
 }
 
-uint64_t timer_millis() {
-	return _timer_millis;
+uint16_t timer_seconds() {
+	return _timer_seconds;
+}
+uint32_t timer_millis() {
+	return _timer_seconds * 1000 + _timer_millis * 4;
 }
 
 void timer_add(uint32_t millis) {
@@ -32,6 +38,9 @@ ISR(TIMER1_COMPA_vect) {
 	TCNT1 = 0;						// reset counter to zero
 	_timer_millis++;
 	
-	if (_timer_millis > 86400000) _timer_millis = 0;
+	if (_timer_millis > 250) {
+		_timer_millis = 0;
+		_timer_seconds++;
+	}
 }
 

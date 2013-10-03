@@ -14,7 +14,7 @@ void timer_init();
  * Returns the number of milliseconds which have elapsed since the 
  * last time timer_init() was called.  Overflows after about 49 days.
  */
-uint64_t timer_millis();
+uint32_t timer_millis();
 
 void timer_add(uint32_t millis);
 
