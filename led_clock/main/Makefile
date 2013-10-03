@@ -3,7 +3,7 @@ include ../build/variables.mk
 PROJECT=clock
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=main.c timer/timer.c clock/clock.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c
+SOURCES=main.c timer/timer.c clock/clock.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c lib/serial/serial.c lib/serial/serial_async_rx.c lib/serial/serial_async_tx.c lib/Ring/Ring.cpp
 COMPILER=avr-g++
 AVRDUDE_PROGRAMMER=usbtiny
 CDEFS+=-DNO_INTERRUPT_ENABLE

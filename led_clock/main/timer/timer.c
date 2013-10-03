@@ -20,7 +20,13 @@ void timer_init(){
 	_timer_millis = ((uint32_t) 12 * 60 * 60 * 1000) + ((uint32_t) 01 * 60 * 1000); //0;
 }
 
-uint64_t timer_millis() {
+void timer_tune(int8_t millis) {
+	; // TODO
+}
+void timer_set(uint32_t millis) {
+	_timer_millis = millis;
+}
+uint32_t timer_millis() {
 	return _timer_millis;
 }
 
