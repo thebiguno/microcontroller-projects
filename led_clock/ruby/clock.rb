@@ -39,7 +39,7 @@ optparse = OptionParser.new do |opts|
   SerialPort.open(options[:port], 9600, 8, 1, SerialPort::NONE) do |sp|
     if options[:action] == :check
       sp.write 'G'
-      millis = sp.read(4).unpack('L'); # convert 4 byte string into a uint32_t
+      millis = sp.read(4).unpack('L')[0]; # convert 4 byte string into a uint32_t
       puts (Time.now.to_i).floor - millis.to_i
     elsif options[:action] == :set
       sp.write 'S'
