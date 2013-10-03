@@ -20,7 +20,8 @@ optparse = OptionParser.new do |opts|
   opts.on('-c', '--check', 'Gets the date/time and displays the drift') do
     options[:action] = :check
   end
-  opts.on('-t', '--tune ADJUST', 'Tune the timer by adding to the compare value') do |v|
+  opts.on('-t', '--tune ADJUST', Integer, 'Tune the timer by adding to the compare value') do |v|
+    options[:adjustment]
   end
   
   opts.parse!
@@ -45,8 +46,8 @@ optparse = OptionParser.new do |opts|
       sp.write 'S'
       sp.write [((Time.now.to_i).floor].pack('L')
     elsif options[:action] == :tune
-      sp.puts 'T'
-      sp.puts 
+      sp.write 'T'
+      sp.write [options[:adjustment]].pack('C')
     end
   end
 end
