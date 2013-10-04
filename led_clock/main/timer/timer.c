@@ -1,11 +1,11 @@
 #include "timer.h"
 
-#define COMPA (F_CPU / 1 / 1000 / 4)
+#define COMPA (F_CPU / 1 / 1000 * 4)
 
 // every 4 millis reset every second 
 static volatile uint8_t _timer_millis;
 // seconds in the day
-static volatile uint16_t _timer_seconds;
+static volatile uint32_t _timer_seconds;
 
 void timer_init(){
 	//Set up the timer to run at F_CPU / 256, in normal mode (TCNT0 is reset in the ISR)
@@ -36,9 +36,9 @@ int8_t timer_get_tune() {
 void timer_set_tune(int8_t tune) {
 	OCR1A = COMPA + tune;
 }
-void timer_set(uint32_t millis) {
-	_timer_seconds = millis / 1000;
-	_timer_millis = millis >> 2;
+void timer_set(uint32_t seconds) {
+	_timer_seconds = seconds;
+	_timer_millis = 0;
 }
 
 ISR(TIMER1_COMPA_vect) {

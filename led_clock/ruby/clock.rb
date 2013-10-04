@@ -44,8 +44,10 @@ optparse = OptionParser.new do |opts|
       millis = sp.read(4).unpack('L')[0]; # convert 4 byte string into a uint32_t
       puts (Time.now.to_i).floor - millis.to_i
     elsif options[:action] == :set
+      t = Time.now
+      sec = t.hour * 60 * 60 + t.min * 60 + t.sec
       sp.write 'S'
-      sp.write [(Time.now.to_i).floor].pack('L')
+      sp.write [sec].pack('L')
     elsif options[:action] == :set_tune
       sp.write 'T'
       sp.write [options[:adjustment]].pack('c')
