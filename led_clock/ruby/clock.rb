@@ -51,9 +51,12 @@ optparse = OptionParser.new do |opts|
       puts Time.new millis
       puts Time.now.to_i - millis
     elsif options[:action] == :set
+      t = Time.now
+      sec = t.hour * 60 * 60 + t.min * 60 + t.sec
       sp.write 'S'
-      sp.write [options[:time].to_i + options[:time].gmt_offset].pack('L')
-      puts options[:time].to_i + options[:time].gmt_offset
+      sec = options[:time].to_i + options[:time].gmt_offset
+      sp.write [sec].pack('L')
+      puts sec
     elsif options[:action] == :set_tune
       sp.write 'T'
       sp.write [options[:adjustment]].pack('c')
