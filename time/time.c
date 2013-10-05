@@ -6,7 +6,7 @@
  */
 
 #ifndef TIME_FIRSTYEAR
-#define TIME_FIRSTYEAR	2000		// start year
+#define TIME_FIRSTYEAR	1970		// start year
 #endif
 
 #ifndef TIME_FIRSTDAY
