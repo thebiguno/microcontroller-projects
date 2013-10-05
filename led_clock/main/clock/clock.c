@@ -1,4 +1,7 @@
 #include "clock.h"
+#include "../lib/draw/draw.h"
+#include "../lib/draw/fonts/f_3x3.h"
+#include "../lib/draw/fonts/cp_ascii.h"
 
 #include <avr/sfr_defs.h>
 
@@ -6,55 +9,49 @@
  * This is the normal method of keeping time used worldwide
  */
 void clock_traditional(struct time_t *t) {
-	uint8_t hr = t->hour;
-	uint8_t mn = t->minute;
-	uint8_t sc = t->second;
+	char year[5];
+	char date[5];
+	char time[5];
 	
-	uint8_t digits[6];
-	digits[0] = 0;
-	while (hr > 9) {
-		digits[0] += 1;
-		hr -= 10;
-	}
-	digits[1] = hr;
+	uint16_t x = t->year;
+	year[0] = (uint8_t) (x / 1000 + 48);
+	x -= x / 1000 * 1000;
+	year[1] = (uint8_t) (x / 100 + 48);
+	x -= x / 100 * 100;
+	year[2] = (uint8_t) (x / 10 + 48);
+	x -= x / 10 * 10;
+	year[3] = (uint8_t) (x + 48);
 	
-	digits[2] = 0;
-	while (mn > 9) {
-		digits[2] += 1;
-		mn -= 10;
-	}
-	digits[3] = mn;
+	year[4] = 0;
+
+	uint8_t y = t->month;
+	date[0] = y / 10 + 48;
+	y -= y / 10 * 10;
+	date[1] = y + 48;
 	
-	digits[4] = 0;
-		while(sc > 9) {
-		digits[4] += 1;
-		sc -= 10;
-	}
-	digits[5] = sc;
+	y = t->day;
+	date[2] = y / 10 + 48;
+	y -= y / 10 * 10;
+	date[3] = y + 48;
+	
+	date[4] = 0;
+	
+	y = t->hour;
+	time[0] = y / 10 + 48;
+	y -= y / 10 * 10;
+	time[1] = y + 48;
+	
+	y = t->minute;
+	time[2] = y / 10 + 48;
+	y -= y / 10 * 10;
+	time[3] = y + 48;
+	
+	time[4] = 0;
 
-	uint8_t color = 0x00;
-	for (uint8_t i = 0; i < 6; i++) { // digits
-		uint8_t v = digits[i];
-		uint8_t col = OFFSET_TRAD_X + i;
-		if (i > 1) col++; // blank columns
-		if (i > 3) col++;
-		
-		color = (v & 0x01) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 7, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_TRAD_Y + 6, color, OVERLAY_REPLACE);
-
-		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 5, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_TRAD_Y + 4, color, OVERLAY_REPLACE);
-
-		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 3, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_TRAD_Y + 2, color, OVERLAY_REPLACE);
-
-		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_TRAD_Y + 1, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_TRAD_Y + 0, color, OVERLAY_REPLACE);
-	}
+	draw_rectangle(0,0,16,16,1,0x00,OVERLAY_REPLACE);
+	draw_text(0, 0, year, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
+	draw_text(0, 4, date, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
+	draw_text(0, 8, time, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
 }
 
 /*

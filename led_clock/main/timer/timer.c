@@ -12,7 +12,7 @@ void timer_init() {
 	TCCR1A = 0x0;			// output a = normal mode; output b = normal mode; waveform generation = normal
 	TCCR1B |= _BV(CS10);	// clock select = CLK / 1 (no prescaler)
 	
-	timer_set_tune(+12);
+	timer_set_tune(-12);
 	
 	TIMSK1 = _BV(OCIE1A);
 
