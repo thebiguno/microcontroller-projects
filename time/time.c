@@ -1,3 +1,5 @@
+#include "time.h"
+
 /*
  * Author: Peter Dannegger <danni@specs.de>
  * http://www.mikrocontroller.net/attachment/8390/TIME.C51
@@ -6,13 +8,14 @@
 #ifndef TIME_FIRSTYEAR
 #define TIME_FIRSTYEAR	2000		// start year
 #endif
+
 #ifndef TIME_FIRSTDAY
 #define TIME_FIRSTDAY	6			// 0 = Sunday
 #endif
 
-uint8_t days = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+uint8_t days[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-void time_summer(struct time *t) {
+void time_summer(struct time_t *t) {
 	uint8_t hour, day, wday, month;			// locals for faster access
 
 	hour = t->hour;
@@ -62,10 +65,10 @@ void time_summer(struct time *t) {
 }
 
 
-void time_get(uint32_t sec, struct time *t) {
+void time_get(uint32_t sec, struct time_t *t) {
 	uint16_t day;
 	uint8_t year;
-	uint8_t dayofyear;
+	uint16_t dayofyear;
 	uint8_t leap400;
 	uint8_t month;
 
@@ -98,8 +101,8 @@ void time_get(uint32_t sec, struct time *t) {
 	if (dayofyear & 1 && day > 58)							// no leap year and after 28.2.
 		day++;												// skip 29.2.
 
-	for (month = 1; day >= DayOfMonth[month-1]; month++)
-		day -= DayOfMonth[month-1];
+	for (month = 1; day >= days[month-1]; month++)
+		day -= days[month-1];
 
 	t->month = month;										// 1..12
 	t->day = day + 1;										// 1..31

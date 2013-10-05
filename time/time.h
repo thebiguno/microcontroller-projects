@@ -1,7 +1,9 @@
 #ifndef TIME_H
 #define TIME_H
 
-struct time {
+#include <stdint.h>
+
+struct time_t {
   uint8_t  second;
   uint8_t  minute;
   uint8_t  hour;
@@ -18,14 +20,14 @@ struct time {
  * define TIME_DST_NA to use North American post-2007 rules
  * otherwise always adjusts the time (useful if you conditionally call this method and you have a physical switch)
  */
-void time_summer(struct time *t);
+void time_summer(struct time_t *t);
 
 /*
  * Turns a number of seconds since epoch into a time struct.
  * define TIME_FIRSTYEAR with your epoch year (default = 2000)
  * define TIME_FIRSTDAY with the offset of days from January 1 of your epoch to the first day of the week (default = 6)
  */
-void time_get(uint32_t sec, struct time *t);
+void time_get(uint32_t sec, struct time_t *t);
 
 #endif
 
