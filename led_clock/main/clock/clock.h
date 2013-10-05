@@ -2,6 +2,7 @@
 #define CLOCK_H
 
 #include "lib/draw/draw.h"
+#include "lib/time/time.h"
 
 #define GRN_3	0x0C
 #define GRN_2	0x08
@@ -23,6 +24,6 @@
 #define OFFSET_OCT_X 16
 #define OFFSET_OCT_Y 8
 
-void clock_draw(uint32_t ms);
+void clock_draw(struct time_t *t, uint32_t ms);
 
 #endif

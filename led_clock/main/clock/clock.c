@@ -4,15 +4,11 @@
 
 /*
  * This is the normal method of keeping time used worldwide
- * Drawn in the top-left corner.
  */
-void clock_traditional(uint32_t ms) {
-	//milliseconds to traditional (24:59:59)
-	uint8_t hr = ms / 3600000;	// 1/24 day (hour)
-	ms -= 3600000 * (uint32_t) hr;
-	uint8_t mn = ms / 60000;	// 1/1440 day (minute)
-	ms -= 60000 * (uint32_t) mn;
-	uint8_t sc = ms / 1000;		// 1/86400 day (second)	
+void clock_traditional(struct time_t *t) {
+	uint8_t hr = t->hour;
+	uint8_t mn = t->minute;
+	uint8_t sc = t->second;
 	
 	uint8_t digits[6];
 	digits[0] = 0;
@@ -62,67 +58,6 @@ void clock_traditional(uint32_t ms) {
 }
 
 /*
- * This method was used by the ancient Mayans
- */
-void clock_vigesimal(uint32_t ms) {
-	uint8_t digits[4];
-	//milliseconds to vigesimal (19.19.19.19)
-	digits[0] = ms / 4320000;	// 1/20 day = 1 h 12 m
-	ms -= 4320000 * (uint32_t) digits[0];
-	digits[1] = ms / 216000;	// 1/400 day = 3 m 36 s
-	ms -= 216000 * (uint32_t) digits[1];
-	digits[2] = ms / 10800;		// 1/8000 day = 10.8 s
-	ms -= 10800 * (uint32_t) digits[2];
-	digits[3] = ms / 540;		// 1/160000 day = .54 s
-	
-	for (uint8_t i = 0; i < 4; i++) { // digits
-		// build a 4x4 mayan number blocks
-	
-		uint8_t col = OFFSET_VIG_X;
-		uint8_t row_offset = OFFSET_VIG_Y + (i > 1) ? 4 : 0; // move blocks c and d down four rows
-		uint8_t row = row_offset + 3;
-		uint8_t v = digits[i];
-		if (i % 2 == 1) col = col + 4; // move blocks b and d over 4 cols
-	
-		uint8_t color = GRN_3 | RED_3;
-		// draw the lines
-		if (v > 14) {
-			row--;
-			draw_line(col, row_offset + 1, col + 3, row_offset + 1, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		if (v > 9) {
-			row--;
-			draw_line(col, row_offset + 2, col + 3, row_offset + 2, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		if (v > 4) {
-			row--;
-			draw_line(col, row_offset + 3, col + 3, row_offset + 3, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		
-		// draw the dots
-		color = GRN_3 | RED_3;
-		if (v % 5 > 3) {
-			set_pixel(col + 0, row, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		if (v % 5 > 2) {
-			set_pixel(col + 1, row, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		if (v % 5 > 1) {
-			set_pixel(col + 2, row, color, OVERLAY_REPLACE);
-			color = RED_1;
-		}
-		if (v % 5 > 0) {
-			set_pixel(col + 3, row, color, OVERLAY_REPLACE);
-		}
-	}
-}
-
-/*
  * This method was first proposed in the 1850s by John W. Nystrom
  */
 void clock_hexadecimal(uint32_t ms) {
@@ -139,34 +74,24 @@ void clock_hexadecimal(uint32_t ms) {
 	digits[3] = ms / 13183593;		// 1/65536 day (hex second) ~= 1.32 seconds
 	
 	uint8_t color = 0x00;
-	
+	uint8_t col = 23;
 	for (uint8_t i = 0; i < 4; i++) { // digits
-		uint8_t col = OFFSET_HEX_X + (i * 2);
 		uint8_t v = digits[i];
+		
+		uint8_t row = i * 4;
+		uint8_t group = i % 2 == 0 ? GRN_3 | RED_3 : RED_3;
+		
+		color = (v & 0x01) ? group: 0x00;
+		set_pixel(col, row + 3, color, OVERLAY_REPLACE); 
 
-		color = (v & 0x01) ? GRN_3 | RED_3: 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 7, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_HEX_Y + 6, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 7, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 6, color & RED_1, OVERLAY_REPLACE);
+		color = (v & 0x02) ? group : 0x00;
+		set_pixel(col, row + 2, color, OVERLAY_REPLACE); 
 
-		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 5, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_HEX_Y + 4, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 5, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 4, color & RED_1, OVERLAY_REPLACE);
+		color = (v & 0x04) ? group : 0x00;
+		set_pixel(col, row + 1, color, OVERLAY_REPLACE); 
 
-		color = (v & 0x04) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 3, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_HEX_Y + 2, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 3, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 2, color & RED_1, OVERLAY_REPLACE);
-
-		color = (v & 0x08) ? GRN_3 | RED_3 : 0x00;
-		set_pixel(col, OFFSET_HEX_Y + 1, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_HEX_Y + 0, color, OVERLAY_REPLACE);
-		set_pixel(col + 1, OFFSET_HEX_Y + 1, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col + 1, OFFSET_HEX_Y + 0, color & RED_1, OVERLAY_REPLACE);
+		color = (v & 0x08) ? group : 0x00;
+		set_pixel(col, row + 0, color, OVERLAY_REPLACE); 
 	}
 }
 
@@ -196,7 +121,7 @@ void clock_dozenal(uint32_t ms) {
 			set_pixel(col + 1, OFFSET_DOZ_Y + 6, color & RED_1, OVERLAY_REPLACE);
 		}
 		
-		color = (v & 0x02) ? GRN_3 | RED_3 : 0x00;
+		color = (v & 0x02) ? GRN_3 | RED_3: 0x00;
 		set_pixel(col, OFFSET_DOZ_Y + 5, color & RED_1, OVERLAY_REPLACE); 
 		set_pixel(col, OFFSET_DOZ_Y + 4, color, OVERLAY_REPLACE);
 		if (i < 3) {
@@ -298,53 +223,35 @@ void clock_octal(uint32_t ms) {
 	digits[5] = ms / 329589843;		// 1/262144 day ~= .329 s
 
 	uint8_t color = 0x00;
-	for (uint8_t i = 0; i < 6; i++) { // digits
-		uint8_t col = OFFSET_OCT_X + (i < 2 ? i * 2 : i + 2);
+	uint8_t col = 22;
+	for (uint8_t i = 0; i < 5; i++) { // digits
 		uint8_t v = digits[i];
+		
+		uint8_t row = i * 3 + 1;
+		uint8_t group = i % 2 == 0 ? GRN_3 | RED_3 : RED_3;
+		
+		color = (v & 0x01) ? group : 0x00;
+		set_pixel(col, row + 2, color, OVERLAY_REPLACE); 
 
-		color = (v & 0x01) ? GRN_3 | RED_3: 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 7, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_OCT_Y + 6, color, OVERLAY_REPLACE);
-		if (i < 2) {
-			set_pixel(col + 1, OFFSET_OCT_Y + 7, color & RED_1, OVERLAY_REPLACE); 
-			set_pixel(col + 1, OFFSET_OCT_Y + 6, color & RED_1, OVERLAY_REPLACE);
-		}
-		
-		color = (v & 0x02) ? GRN_3 | RED_3: 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 5, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_OCT_Y + 4, color, OVERLAY_REPLACE);
-		if (i < 2) {
-			set_pixel(col + 1, OFFSET_OCT_Y + 5, color & RED_1, OVERLAY_REPLACE); 
-			set_pixel(col + 1, OFFSET_OCT_Y + 4, color & RED_1, OVERLAY_REPLACE);
-		}
-		
-		color = (v & 0x04) ? GRN_3 | RED_3: 0x00;
-		set_pixel(col, OFFSET_OCT_Y + 3, color & RED_1, OVERLAY_REPLACE); 
-		set_pixel(col, OFFSET_OCT_Y + 2, color, OVERLAY_REPLACE);
-		if (i < 2) {
-			set_pixel(col + 1, OFFSET_OCT_Y + 3, color & RED_1, OVERLAY_REPLACE); 
-			set_pixel(col + 1, OFFSET_OCT_Y + 2, color & RED_1, OVERLAY_REPLACE);
-		}
-		
-		// color = (v & 0x08) ? GRN_3 : 0x00;
-		// set_pixel(col, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
-		// set_pixel(col, OFFSET_DEC_Y + 0, color, OVERLAY_REPLACE);
-		// set_pixel(col + 1, OFFSET_DEC_Y + 1, color, OVERLAY_REPLACE); 
-		// set_pixel(col + 1, OFFSET_DEC_Y + 0, color, OVERLAY_REPLACE);
+		color = (v & 0x02) ? group : 0x00;
+		set_pixel(col, row + 1, color, OVERLAY_REPLACE); 
+
+		color = (v & 0x04) ? group : 0x00;
+		set_pixel(col, row + 0, color, OVERLAY_REPLACE); 
 	}
 }
 
 /*
  * Sets a matrix array according to the time in the given mode.
  */
-void clock_draw(uint32_t ms) {
-	draw_rectangle(0,0, 15,15, DRAW_FILLED, 0x00, OVERLAY_REPLACE);
+void clock_draw(struct time_t *t, uint32_t ms) {
+//	draw_rectangle(0,0, 15,15, DRAW_FILLED, 0x00, OVERLAY_REPLACE);
 	
-	clock_traditional(ms);
-	clock_vigesimal(ms);
+	clock_traditional(t);
+//	clock_vigesimal(ms);
 	clock_hexadecimal(ms);
-	clock_dozenal(ms);
-	clock_decimal(ms);
+//	clock_dozenal(ms);
+//	clock_decimal(ms);
 	clock_octal(ms);
 }
 

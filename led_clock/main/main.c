@@ -31,7 +31,7 @@ int main() {
 			time_get(seconds, &time);
 			uint32_t ms = ((uint32_t) time.second + (uint32_t) time.minute * 60 + (uint32_t) time.hour * 60 * 60) * 1000 + millis;
 
-			clock_draw(ms);
+			clock_draw(&time, ms);
 			matrix_write_buffer();
 		}
 		prev_ms = millis;
