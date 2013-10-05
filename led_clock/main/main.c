@@ -20,21 +20,21 @@ int main() {
 	serial_init(9600, 8, 0, 1);
  	sei();
 		
-	uint32_t prev_ms = 0;
+	uint16_t prev_ms = 0;
 	time_t time;
 	
 	while(1) {
-		// get number of millis since midnight
-		uint32_t seconds = timer_get_seconds();
 		uint16_t millis = timer_get_millis();
-		time_get(seconds, &time);
-		uint32_t ms = millis + (uint32_t) time.second * 60 * 60 * 24 + (uint32_t) time.minute * 60 * 24 + (uint32_t) time.hour * 24;
-		
-		if (ms != prev_ms) {
+		uint32_t seconds = timer_get_seconds();
+		if (millis != prev_ms) {
+			// get number of millis since midnight
+			time_get(seconds, &time);
+			uint32_t ms = ((uint32_t) time.second + (uint32_t) time.minute * 60 + (uint32_t) time.hour * 60 * 60) * 1000 + millis;
+
 			clock_draw(ms);
 			matrix_write_buffer();
 		}
-		prev_ms = ms;
+		prev_ms = millis;
 		
 		if (serial_available()) {
 			char action;

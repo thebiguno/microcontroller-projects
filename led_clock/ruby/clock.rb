@@ -3,6 +3,7 @@
 require 'optparse'
 require 'rubygems'
 require 'serialport'
+require 'time'
 
 options = {}
 optparse = OptionParser.new do |opts|
@@ -14,7 +15,12 @@ optparse = OptionParser.new do |opts|
     puts p
     options[:port] = p;
   end
-  opts.on('-s', '--set', 'Sets the current date/time') do
+  opts.on('-s', '--set [TIME]', 'Sets the current date/time') do |t|
+    if (t.nil?) then
+      options[:time] = Time.now;
+    else
+      options[:time] = Time.parse t;
+    end
     options[:action] = :set
   end
   opts.on('-c', '--check', 'Gets the date/time and displays the drift') do
@@ -42,10 +48,12 @@ optparse = OptionParser.new do |opts|
     if options[:action] == :check
       sp.write 'G'
       millis = sp.read(4).unpack('L')[0]; # convert 4 byte string into a uint32_t
-      puts (Time.now.to_i).floor - millis.to_i
+      puts Time.new millis
+      puts Time.now.to_i - millis
     elsif options[:action] == :set
       sp.write 'S'
-      sp.write [(Time.now.to_i).floor].pack('L')
+      sp.write [options[:time].to_i + options[:time].gmt_offset].pack('L')
+      puts options[:time].to_i + options[:time].gmt_offset
     elsif options[:action] == :set_tune
       sp.write 'T'
       sp.write [options[:adjustment]].pack('c')
