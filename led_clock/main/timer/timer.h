@@ -10,14 +10,21 @@
  */
 void timer_init();
 
-void timer_set(uint32_t millis);
-void timer_set_tune(int8_t millis);
+/*
+ * Gets the tuning value for the timer compare value.
+ */
 int8_t timer_get_tune();
+void timer_set_tune(int8_t millis);
 
 /*
- * Returns the number of milliseconds which have elapsed since the 
- * last time timer_init() was called.  Overflows after about 49 days.
+ * Gets the number of seconsd since epoch.
  */
-uint32_t timer_millis();
+	uint32_t timer_get_seconds();
+void timer_set_seconds(uint32_t seconds);
+
+/*
+ * Gets the number of millis since the second (0 - 999)
+ */
+uint16_t timer_get_millis();
 
 #endif

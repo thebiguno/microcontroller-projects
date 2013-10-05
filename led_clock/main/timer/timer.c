@@ -4,7 +4,7 @@
 
 // every 4 millis reset every second 
 static volatile uint8_t _timer_millis;
-// seconds in the day
+// seconds since epoch
 static volatile uint16_t _timer_seconds;
 
 void timer_init(){
@@ -20,14 +20,7 @@ void timer_init(){
 	sei();
 #endif
 	
-	_timer_seconds = ((uint32_t) 12 * 60 * 60) + ((uint32_t) 01 * 60); //0;
-}
-
-uint16_t timer_seconds() {
-	return _timer_seconds;
-}
-uint32_t timer_millis() {
-	return (uint32_t) _timer_seconds * 1000 + ((uint32_t) _timer_millis << 2);
+	_timer_seconds = 0;
 }
 
 int8_t timer_get_tune() {
@@ -36,9 +29,17 @@ int8_t timer_get_tune() {
 void timer_set_tune(int8_t tune) {
 	OCR1A = COMPA + tune;
 }
-void timer_set(uint32_t millis) {
-	_timer_seconds = millis / 1000;
-	_timer_millis = millis >> 2;
+
+uint32_t timer_get_seconds() {
+	return _timer_seconds;
+}
+void timer_set_seconds(uint32_t seconds) {
+	_timer_seconds = seconds;
+	_timer_millis = 0;
+}
+
+uint16_t timer_get_millis() {
+	return (uint16_t) _timer_millis << 2;
 }
 
 ISR(TIMER1_COMPA_vect) {

@@ -6,6 +6,7 @@
 #include "lib/draw/matrix/matrix.h"
 
 #include "lib/serial/serial.h"
+#include "lib/time/time.h"
 
 union u32 {
 	uint32_t i;
@@ -20,10 +21,14 @@ int main() {
  	sei();
 		
 	uint32_t prev_ms = 0;
+	time_t time;
 	
 	while(1) {
 		// get number of millis since midnight
-		uint32_t ms = timer_millis();
+		uint32_t seconds = timer_get_seconds();
+		uint16_t millis = timer_get_millis();
+		time_get(seconds, &time);
+		uint32_t ms = millis + (uint32_t) time.second * 60 * 60 * 24 + (uint32_t) time.minute * 60 * 24 + (uint32_t) time.hour * 24;
 		
 		if (ms != prev_ms) {
 			clock_draw(ms);
@@ -36,7 +41,7 @@ int main() {
 			serial_read_c(&action);
 			if (action == 'G') { // get
 				union u32 conv;
-				conv.i = timer_millis();
+				conv.i = seconds;
 				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
 					serial_write_c(conv.a[i]);
 			    }
@@ -45,7 +50,7 @@ int main() {
 				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
 					serial_read_c(conv.a + i);
 				}
-				timer_set(conv.i);
+				timer_set_seconds(conv.i);
 			} else if (action == 'T') { // tune
 				int8_t t = 0;
 				serial_read_c((char*) &t);
