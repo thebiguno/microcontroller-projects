@@ -34,11 +34,9 @@ uint32_t timer_get_seconds() {
 	return _timer_seconds;
 }
 void timer_set_seconds(uint32_t seconds) {
-	OCR1A = 255;
 	TCNT1 = 0;
 	_timer_seconds = seconds;
 	_timer_millis = 0;
-	OCR1A = COMPA + tune;
 }
 
 uint16_t timer_get_millis() {

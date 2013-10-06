@@ -1,57 +1,73 @@
 #include "clock.h"
 #include "../lib/draw/draw.h"
-#include "../lib/draw/fonts/f_3x3.h"
+#include "../lib/draw/fonts/f_3x5.h"
 #include "../lib/draw/fonts/cp_ascii.h"
-
 #include <avr/sfr_defs.h>
 
 /*
  * This is the normal method of keeping time used worldwide
  */
 void clock_traditional(struct time_t *t) {
-	char year[5];
-	char date[5];
-	char time[5];
 	
-	uint16_t x = t->year;
-	year[0] = (uint8_t) (x / 1000 + 48);
-	x -= x / 1000 * 1000;
-	year[1] = (uint8_t) (x / 100 + 48);
-	x -= x / 100 * 100;
-	year[2] = (uint8_t) (x / 10 + 48);
-	x -= x / 10 * 10;
-	year[3] = (uint8_t) (x + 48);
-	
-	year[4] = 0;
+	draw_rectangle(0,0,18,15, 1, 0x00, OVERLAY_REPLACE);
 
-	uint8_t y = t->month;
-	date[0] = y / 10 + 48;
-	y -= y / 10 * 10;
-	date[1] = y + 48;
-	
-	y = t->day;
-	date[2] = y / 10 + 48;
-	y -= y / 10 * 10;
-	date[3] = y + 48;
-	
-	date[4] = 0;
-	
-	y = t->hour;
-	time[0] = y / 10 + 48;
-	y -= y / 10 * 10;
-	time[1] = y + 48;
-	
-	y = t->minute;
-	time[2] = y / 10 + 48;
-	y -= y / 10 * 10;
-	time[3] = y + 48;
-	
-	time[4] = 0;
+	set_pixel(3, 0, GRN_1, OVERLAY_REPLACE);
+	set_pixel(7, 0, GRN_1, OVERLAY_REPLACE);
+	set_pixel(11, 0, GRN_1, OVERLAY_REPLACE);
+	set_pixel(14, 3, GRN_1, OVERLAY_REPLACE);
+	set_pixel(14, 7, GRN_1, OVERLAY_REPLACE);
+	set_pixel(14, 11, GRN_1, OVERLAY_REPLACE);
+	set_pixel(11, 14, GRN_1, OVERLAY_REPLACE);
+	set_pixel(7, 14, GRN_1, OVERLAY_REPLACE);
+	set_pixel(3, 14, GRN_1, OVERLAY_REPLACE);
+	set_pixel(0, 11, GRN_1, OVERLAY_REPLACE);
+	set_pixel(0, 7, GRN_1, OVERLAY_REPLACE);
+	set_pixel(0, 3, GRN_1, OVERLAY_REPLACE);
 
-	draw_rectangle(0,0,16,16,1,0x00,OVERLAY_REPLACE);
-	draw_text(0, 0, year, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
-	draw_text(0, 4, date, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
-	draw_text(0, 8, time, 3, 3, ORIENTATION_NORMAL, font_3X3, codepage_ascii, RED_3, OVERLAY_REPLACE);
+	uint8_t c = RED_3 | GRN_3;
+	uint8_t m = t->minute / 5;
+	switch (m) {
+		case 0: draw_line(7, 7, 7, 0, c, OVERLAY_REPLACE); break; // OK
+		case 1: draw_line(7, 7, 11, 0, c, OVERLAY_REPLACE); break; // OK
+		case 2: draw_line(7, 7, 14, 4, c, OVERLAY_REPLACE); break; // OK
+		case 3: draw_line(7, 7, 14, 7, c, OVERLAY_REPLACE); break; // OK
+		case 4: draw_line(7, 7, 14, 11, c, OVERLAY_REPLACE); break; // OK
+		case 5: draw_line(7, 7, 11, 14, c, OVERLAY_REPLACE); break; // OK
+		case 6: draw_line(7, 7, 7, 14, c, OVERLAY_REPLACE); break; // OK
+		case 7: draw_line(7, 7, 3, 14, c, OVERLAY_REPLACE); break; // OK
+		case 8: draw_line(7, 7, 0, 11, c, OVERLAY_REPLACE); break; // OK
+		case 9: draw_line(7, 7, 0, 7, c, OVERLAY_REPLACE); break; // OK
+		case 10: draw_line(7, 7, 0, 4, c, OVERLAY_REPLACE); break; // OK
+		case 11: draw_line(7, 7, 3, 0, c, OVERLAY_REPLACE); break; // OK
+	}
+	
+	c = RED_3;
+	uint8_t h = t->hour % 12;
+	switch (h) {
+		case 0: draw_line(7, 7, 7, 4, c, OVERLAY_REPLACE); break; // 0-4
+		case 1: draw_line(7, 7, 9, 4, c, OVERLAY_REPLACE); break; // 5-9
+		case 2: draw_line(7, 7, 10, 6, c, OVERLAY_REPLACE); break; // 10-14
+		case 3: draw_line(7, 7, 10, 7, c, OVERLAY_REPLACE); break; // 15-19
+		case 4: draw_line(7, 7, 10, 9, c, OVERLAY_REPLACE); break; // 20-24
+		case 5: draw_line(7, 7, 9, 10, c, OVERLAY_REPLACE); break; // 25-29
+		case 6: draw_line(7, 7, 7, 10, c, OVERLAY_REPLACE); break; // 30-34
+		case 7: draw_line(7, 7, 5, 10, c, OVERLAY_REPLACE); break; // 35-39
+		case 8: draw_line(7, 7, 4, 9, c, OVERLAY_REPLACE); break; // 40-44
+		case 9: draw_line(7, 7, 4, 7, c, OVERLAY_REPLACE); break; // 45-49
+		case 10: draw_line(7, 7, 4, 6, c, OVERLAY_REPLACE); break; // 50-54
+		case 11: draw_line(7, 7, 5, 4, c, OVERLAY_REPLACE); break; // 55-59
+	}
+	
+	switch(t->wday) {
+		case 0: draw_text(15,0,(char*)"U",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 1: draw_text(15,0,(char*)"M",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 2: draw_text(15,0,(char*)"T",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 3: draw_text(15,0,(char*)"W",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 4: draw_text(15,0,(char*)"R",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 5: draw_text(15,0,(char*)"F",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 6: draw_text(15,0,(char*)"S",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+	}
+	
 }
 
 /*
