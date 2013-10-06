@@ -9,7 +9,7 @@
  */
 void clock_traditional(struct time_t *t) {
 	
-	draw_rectangle(0,0,18,15, 1, 0x00, OVERLAY_REPLACE);
+	draw_rectangle(0,0,23,15, 1, 0x00, OVERLAY_REPLACE);
 
 	set_pixel(3, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(7, 0, GRN_1, OVERLAY_REPLACE);
@@ -59,14 +59,22 @@ void clock_traditional(struct time_t *t) {
 	}
 	
 	switch(t->wday) {
-		case 0: draw_text(15,0,(char*)"U",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 1: draw_text(15,0,(char*)"M",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 2: draw_text(15,0,(char*)"T",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 3: draw_text(15,0,(char*)"W",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 4: draw_text(15,0,(char*)"R",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 5: draw_text(15,0,(char*)"F",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
-		case 6: draw_text(15,0,(char*)"S",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 0: draw_text(16,0,(char*)"SU",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 1: draw_text(16,0,(char*)"MO",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 2: draw_text(16,0,(char*)"TU",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 3: draw_text(16,0,(char*)"WE",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 4: draw_text(16,0,(char*)"TH",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 5: draw_text(16,0,(char*)"FR",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
+		case 6: draw_text(16,0,(char*)"SA",3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE); break;
 	}
+	
+	uint8_t x = t->day;
+	char d[3];
+	d[0] = x / 10 + 48;
+	x -= x / 10 * 10;
+	d[1] = x + 48;
+	d[2] = 0;
+	draw_text(16,6,d,3,5,ORIENTATION_NORMAL,font_3x5,codepage_ascii, RED_3, OVERLAY_REPLACE);
 	
 }
 
@@ -87,24 +95,24 @@ void clock_hexadecimal(uint32_t ms) {
 	digits[3] = ms / 13183593;		// 1/65536 day (hex second) ~= 1.32 seconds
 	
 	uint8_t color = 0x00;
-	uint8_t col = 23;
+	uint8_t row = 15;
 	for (uint8_t i = 0; i < 4; i++) { // digits
 		uint8_t v = digits[i];
 		
-		uint8_t row = i * 4;
+		uint8_t col = i * 4;
 		uint8_t group = i % 2 == 0 ? GRN_3 | RED_3 : RED_3;
 		
 		color = (v & 0x01) ? group: 0x00;
-		set_pixel(col, row + 3, color, OVERLAY_REPLACE); 
+		set_pixel(col + 3, row, color, OVERLAY_REPLACE); 
 
 		color = (v & 0x02) ? group : 0x00;
-		set_pixel(col, row + 2, color, OVERLAY_REPLACE); 
+		set_pixel(col + 2, row, color, OVERLAY_REPLACE); 
 
 		color = (v & 0x04) ? group : 0x00;
-		set_pixel(col, row + 1, color, OVERLAY_REPLACE); 
+		set_pixel(col + 1, row, color, OVERLAY_REPLACE); 
 
 		color = (v & 0x08) ? group : 0x00;
-		set_pixel(col, row + 0, color, OVERLAY_REPLACE); 
+		set_pixel(col + 0, row, color, OVERLAY_REPLACE); 
 	}
 }
 
@@ -217,42 +225,7 @@ void clock_decimal(uint32_t ms) {
 
 }
 
-void clock_octal(uint32_t ms) {
-	//milliseconds to octal (777.777)
-	uint8_t digits[6];
-	digits[0] = ms / 10800000;		// 1/8 day = 3 h
-	ms -= 10800000 * (uint32_t) digits[0] ;
-	digits[1] = ms / 1350000;		// 1/64 day = 22 m 30 s
-	ms -= 1350000 * (uint32_t) digits[1];
-	digits[2] = ms / 168750;		// 1/512 day ~= 2 m 49 s
-	ms -= 168750 * (uint32_t) digits[2];
-	ms *= 100;						// bump up the precision
-	digits[3] = ms / 2109375;		// 1/4096 day ~= 21 s
-	ms -= 2109375 * (uint32_t) digits[3];
-	ms *= 100;						// bump up the precision again
-	digits[4] = ms / 26367187;		// 1/32768 day ~= 2.63 s
-	ms -= 26367187 * (uint32_t) digits[4];
-	ms *= 100;						// bump up the precision again
-	digits[5] = ms / 329589843;		// 1/262144 day ~= .329 s
 
-	uint8_t color = 0x00;
-	uint8_t col = 22;
-	for (uint8_t i = 0; i < 5; i++) { // digits
-		uint8_t v = digits[i];
-		
-		uint8_t row = i * 3 + 1;
-		uint8_t group = i % 2 == 0 ? GRN_3 | RED_3 : RED_3;
-		
-		color = (v & 0x01) ? group : 0x00;
-		set_pixel(col, row + 2, color, OVERLAY_REPLACE); 
-
-		color = (v & 0x02) ? group : 0x00;
-		set_pixel(col, row + 1, color, OVERLAY_REPLACE); 
-
-		color = (v & 0x04) ? group : 0x00;
-		set_pixel(col, row + 0, color, OVERLAY_REPLACE); 
-	}
-}
 
 /*
  * Sets a matrix array according to the time in the given mode.
@@ -261,11 +234,9 @@ void clock_draw(struct time_t *t, uint32_t ms) {
 //	draw_rectangle(0,0, 15,15, DRAW_FILLED, 0x00, OVERLAY_REPLACE);
 	
 	clock_traditional(t);
-//	clock_vigesimal(ms);
 	clock_hexadecimal(ms);
 //	clock_dozenal(ms);
 //	clock_decimal(ms);
-	clock_octal(ms);
 }
 
 
