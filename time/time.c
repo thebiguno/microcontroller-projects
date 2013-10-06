@@ -10,7 +10,7 @@
 #endif
 
 #ifndef TIME_FIRSTDAY
-#define TIME_FIRSTDAY	6			// 0 = Sunday
+#define TIME_FIRSTDAY	4			// 0 = Sunday
 #endif
 
 uint8_t days[12] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
