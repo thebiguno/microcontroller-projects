@@ -11,7 +11,6 @@ void clock_traditional(struct time_t *t) {
 	
 	draw_rectangle(0,0,23,15, 1, 0x00, OVERLAY_REPLACE);
 
-	set_pixel(3, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(7, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(11, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(14, 3, GRN_1, OVERLAY_REPLACE);
@@ -23,6 +22,7 @@ void clock_traditional(struct time_t *t) {
 	set_pixel(0, 11, GRN_1, OVERLAY_REPLACE);
 	set_pixel(0, 7, GRN_1, OVERLAY_REPLACE);
 	set_pixel(0, 3, GRN_1, OVERLAY_REPLACE);
+	set_pixel(3, 0, GRN_1, OVERLAY_REPLACE);
 
 	uint8_t c = RED_3 | GRN_3;
 	uint8_t m = t->minute / 5;
@@ -56,6 +56,22 @@ void clock_traditional(struct time_t *t) {
 		case 9: draw_line(7, 7, 4, 7, c, OVERLAY_REPLACE); break; // 45-49
 		case 10: draw_line(7, 7, 4, 6, c, OVERLAY_REPLACE); break; // 50-54
 		case 11: draw_line(7, 7, 5, 4, c, OVERLAY_REPLACE); break; // 55-59
+	}
+	
+	uint8_t s = t->second / 5;
+	switch (s) {
+		case 0: set_pixel(7, 0, c, OVERLAY_REPLACE); break;
+		case 1: set_pixel(11, 0, c, OVERLAY_REPLACE); break;
+		case 2: set_pixel(14, 3, c, OVERLAY_REPLACE); break;
+		case 3: set_pixel(14, 7, c, OVERLAY_REPLACE); break;
+		case 4: set_pixel(14, 11, c, OVERLAY_REPLACE); break;
+		case 5: set_pixel(11, 14, c, OVERLAY_REPLACE); break;
+		case 6: set_pixel(7, 14, c, OVERLAY_REPLACE); break;
+		case 7: set_pixel(3, 14, c, OVERLAY_REPLACE); break;
+		case 8: set_pixel(0, 11, c, OVERLAY_REPLACE); break;
+		case 9: set_pixel(0, 7, c, OVERLAY_REPLACE); break;
+		case 10: set_pixel(0, 3, c, OVERLAY_REPLACE); break;
+		case 11: set_pixel(3, 0, c, OVERLAY_REPLACE); break;
 	}
 	
 	switch(t->wday) {
