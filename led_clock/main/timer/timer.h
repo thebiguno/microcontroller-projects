@@ -26,5 +26,6 @@ void timer_set_seconds(uint32_t seconds);
  * Gets the number of millis since the second (0 - 999)
  */
 uint16_t timer_get_millis();
+void timer_set_millis(uint16_t ms);
 
 #endif

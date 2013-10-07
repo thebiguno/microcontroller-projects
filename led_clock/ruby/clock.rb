@@ -47,15 +47,23 @@ optparse = OptionParser.new do |opts|
   SerialPort.open(options[:port], 9600, 8, 1, SerialPort::NONE) do |sp|
     if options[:action] == :check
       sp.write 'G'
-      millis = sp.read(4).unpack('L')[0]; # convert 4 byte string into a uint32_t
-      puts Time.new millis
-      puts Time.now.to_i - millis
+      n = Time.now
+      a = sp.read(6).unpack('LS')
+      seconds = a[0] + a[1] / 1000.0
+      t = Time.at(seconds - n.gmt_offset)
+      drift = ((t.to_f - n.to_f) * 1000).to_i
+      puts "Computer #{t}"
+      puts "AVR      #{n}"
+      puts "Drift    #{drift} ms"
+      if drift > 0 then puts "Running fast: increase tuning value"
+      else puts "Running slow: decrease tuning value"
+      end
     elsif options[:action] == :set
-      t = Time.now
-      sec = t.hour * 60 * 60 + t.min * 60 + t.sec
       sp.write 'S'
+      t = Time.now
       sec = options[:time].to_i + options[:time].gmt_offset
-      sp.write [sec].pack('L')
+      ms = (options[:time].to_f - options[:time].to_i) * 1000
+      sp.write [sec, ms].pack('LS')
       puts sec
     elsif options[:action] == :set_tune
       sp.write 'T'

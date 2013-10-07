@@ -42,6 +42,9 @@ void timer_set_seconds(uint32_t seconds) {
 uint16_t timer_get_millis() {
 	return (uint16_t) _timer_millis << 2;
 }
+void timer_set_millis(uint16_t ms) {
+	_timer_millis = ms >> 2;
+}
 
 ISR(TIMER1_COMPA_vect) {
 	TCNT1 = 0;						// reset counter to zero

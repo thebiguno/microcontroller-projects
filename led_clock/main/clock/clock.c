@@ -11,6 +11,40 @@ void clock_traditional(struct time_t *t) {
 	
 	draw_rectangle(0,0,23,15, 1, 0x00, OVERLAY_REPLACE);
 
+	uint8_t c = RED_3 | GRN_3;
+	uint8_t m = t->minute / 5;
+	switch (m) {
+		case 0: draw_line(7, 7, 7, 0, c, OVERLAY_REPLACE); break; // OK
+		case 1: draw_line(7, 7, 11, 0, c, OVERLAY_REPLACE); break; // OK
+		case 2: draw_line(7, 7, 14, 3, c, OVERLAY_REPLACE); break; // OK
+		case 3: draw_line(7, 7, 14, 7, c, OVERLAY_REPLACE); break; // OK
+		case 4: draw_line(7, 7, 14, 11, c, OVERLAY_REPLACE); break; // OK
+		case 5: draw_line(7, 7, 11, 14, c, OVERLAY_REPLACE); break; // OK
+		case 6: draw_line(7, 7, 7, 14, c, OVERLAY_REPLACE); break; // OK
+		case 7: draw_line(7, 7, 3, 14, c, OVERLAY_REPLACE); break; // OK
+		case 8: draw_line(7, 7, 0, 11, c, OVERLAY_REPLACE); break; // OK
+		case 9: draw_line(7, 7, 0, 7, c, OVERLAY_REPLACE); break; // OK
+		case 10: draw_line(7, 7, 0, 3, c, OVERLAY_REPLACE); break; // OK
+		case 11: draw_line(7, 7, 3, 0, c, OVERLAY_REPLACE); break; // OK
+	}
+	
+	c = RED_3;
+	uint8_t h = t->hour % 12;
+	switch (h) {
+		case 0: draw_line(7, 7, 7, 4, c, OVERLAY_REPLACE); break; // 0-4
+		case 1: draw_line(7, 7, 9, 4, c, OVERLAY_REPLACE); break; // 5-9
+		case 2: draw_line(7, 7, 10, 5, c, OVERLAY_REPLACE); break; // 10-14
+		case 3: draw_line(7, 7, 10, 7, c, OVERLAY_REPLACE); break; // 15-19
+		case 4: draw_line(7, 7, 10, 9, c, OVERLAY_REPLACE); break; // 20-24
+		case 5: draw_line(7, 7, 9, 10, c, OVERLAY_REPLACE); break; // 25-29
+		case 6: draw_line(7, 7, 7, 10, c, OVERLAY_REPLACE); break; // 30-34
+		case 7: draw_line(7, 7, 5, 10, c, OVERLAY_REPLACE); break; // 35-39
+		case 8: draw_line(7, 7, 4, 9, c, OVERLAY_REPLACE); break; // 40-44
+		case 9: draw_line(7, 7, 4, 7, c, OVERLAY_REPLACE); break; // 45-49
+		case 10: draw_line(7, 7, 4, 5, c, OVERLAY_REPLACE); break; // 50-54
+		case 11: draw_line(7, 7, 5, 4, c, OVERLAY_REPLACE); break; // 55-59
+	}
+	
 	set_pixel(7, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(11, 0, GRN_1, OVERLAY_REPLACE);
 	set_pixel(14, 3, GRN_1, OVERLAY_REPLACE);
@@ -24,40 +58,6 @@ void clock_traditional(struct time_t *t) {
 	set_pixel(0, 3, GRN_1, OVERLAY_REPLACE);
 	set_pixel(3, 0, GRN_1, OVERLAY_REPLACE);
 
-	uint8_t c = RED_3 | GRN_3;
-	uint8_t m = t->minute / 5;
-	switch (m) {
-		case 0: draw_line(7, 7, 7, 0, c, OVERLAY_REPLACE); break; // OK
-		case 1: draw_line(7, 7, 11, 0, c, OVERLAY_REPLACE); break; // OK
-		case 2: draw_line(7, 7, 14, 4, c, OVERLAY_REPLACE); break; // OK
-		case 3: draw_line(7, 7, 14, 7, c, OVERLAY_REPLACE); break; // OK
-		case 4: draw_line(7, 7, 14, 11, c, OVERLAY_REPLACE); break; // OK
-		case 5: draw_line(7, 7, 11, 14, c, OVERLAY_REPLACE); break; // OK
-		case 6: draw_line(7, 7, 7, 14, c, OVERLAY_REPLACE); break; // OK
-		case 7: draw_line(7, 7, 3, 14, c, OVERLAY_REPLACE); break; // OK
-		case 8: draw_line(7, 7, 0, 11, c, OVERLAY_REPLACE); break; // OK
-		case 9: draw_line(7, 7, 0, 7, c, OVERLAY_REPLACE); break; // OK
-		case 10: draw_line(7, 7, 0, 4, c, OVERLAY_REPLACE); break; // OK
-		case 11: draw_line(7, 7, 3, 0, c, OVERLAY_REPLACE); break; // OK
-	}
-	
-	c = RED_3;
-	uint8_t h = t->hour % 12;
-	switch (h) {
-		case 0: draw_line(7, 7, 7, 4, c, OVERLAY_REPLACE); break; // 0-4
-		case 1: draw_line(7, 7, 9, 4, c, OVERLAY_REPLACE); break; // 5-9
-		case 2: draw_line(7, 7, 10, 6, c, OVERLAY_REPLACE); break; // 10-14
-		case 3: draw_line(7, 7, 10, 7, c, OVERLAY_REPLACE); break; // 15-19
-		case 4: draw_line(7, 7, 10, 9, c, OVERLAY_REPLACE); break; // 20-24
-		case 5: draw_line(7, 7, 9, 10, c, OVERLAY_REPLACE); break; // 25-29
-		case 6: draw_line(7, 7, 7, 10, c, OVERLAY_REPLACE); break; // 30-34
-		case 7: draw_line(7, 7, 5, 10, c, OVERLAY_REPLACE); break; // 35-39
-		case 8: draw_line(7, 7, 4, 9, c, OVERLAY_REPLACE); break; // 40-44
-		case 9: draw_line(7, 7, 4, 7, c, OVERLAY_REPLACE); break; // 45-49
-		case 10: draw_line(7, 7, 4, 6, c, OVERLAY_REPLACE); break; // 50-54
-		case 11: draw_line(7, 7, 5, 4, c, OVERLAY_REPLACE); break; // 55-59
-	}
-	
 	uint8_t s = t->second / 5;
 	switch (s) {
 		case 0: set_pixel(7, 0, c, OVERLAY_REPLACE); break;
