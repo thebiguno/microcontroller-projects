@@ -120,7 +120,9 @@ void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, 
 		//Find the entry in the code page
 		uint8_t glyphIndex = pgm_read_byte_near(codepage + (uint8_t) text[i]);
 
-		draw_bitmap(x, y, width, height, orientation, font + (glyphIndex * glyphByteCount), value, o);
+		if (glyphIndex != 0xFF){
+			draw_bitmap(x, y, width, height, orientation, font + (glyphIndex * glyphByteCount), value, o);
+		}
 
 		if (orientation == ORIENTATION_NORMAL) x += (width + 1);
 		else if (orientation == ORIENTATION_DOWN) y += (width + 1);
