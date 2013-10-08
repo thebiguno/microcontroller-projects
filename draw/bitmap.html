@@ -23,7 +23,7 @@ var resize = function() {
 	for (var i = 0; i < h; i++) {
 		html += '<tr>';
 		for (var j = 0; j < w; j++) {
-			html += '<td class="px"></td>';
+			html += '<td title="' + j + ',' + i + '" class="px"></td>';
 		}
 		html += '</tr>';
 	}
