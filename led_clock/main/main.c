@@ -32,9 +32,8 @@ int main() {
 
 		// get number of millis since midnight
 		time_get(seconds, &time);
-		uint32_t ms = ((uint32_t) time.second + (uint32_t) time.minute * 60 + (uint32_t) time.hour * 60 * 60) * 1000 + millis;
 
-		clock_draw(&time, ms);
+		clock_draw(&time);
 		matrix_write_buffer();
 		
 		if (serial_available()) {

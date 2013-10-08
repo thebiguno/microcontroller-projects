@@ -4,6 +4,19 @@
 #include "../lib/draw/fonts/cp_ascii.h"
 #include <avr/sfr_defs.h>
 
+#define OFFSET_TRAD_X 0
+#define OFFSET_TRAD_Y 0
+#define OFFSET_VIG_X 8
+#define OFFSET_VIG_Y 0
+#define OFFSET_HEX_X 16
+#define OFFSET_HEX_Y 0
+#define OFFSET_DOZ_X 0
+#define OFFSET_DOZ_Y 8
+#define OFFSET_DEC_X 8
+#define OFFSET_DEC_Y 8
+#define OFFSET_OCT_X 16
+#define OFFSET_OCT_Y 8
+
 /*
  * This is the normal method of keeping time used worldwide
  */
@@ -246,7 +259,7 @@ void clock_decimal(uint32_t ms) {
 /*
  * Sets a matrix array according to the time in the given mode.
  */
-void clock_draw(struct time_t *t, uint32_t ms) {
+void clock_draw(struct time_t *t) {
 //	draw_rectangle(0,0, 15,15, DRAW_FILLED, 0x00, OVERLAY_REPLACE);
 	
 	clock_traditional(t);
