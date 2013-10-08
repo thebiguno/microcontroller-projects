@@ -13,8 +13,8 @@ void timer_init();
 /*
  * Gets the tuning value for the timer compare value.
  */
-int8_t timer_get_tune();
-void timer_set_tune(int8_t millis);
+int16_t timer_get_tune();
+void timer_set_tune(int16_t millis);
 
 /*
  * Gets the number of seconsd since epoch.
