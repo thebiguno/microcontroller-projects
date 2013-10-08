@@ -33,17 +33,18 @@ void timer_set_tune(int8_t tune) {
 uint32_t timer_get_seconds() {
 	return _timer_seconds;
 }
-void timer_set_seconds(uint32_t seconds) {
-	TCNT1 = 0;
-	_timer_seconds = seconds;
-	_timer_millis = 0;
-}
 
 uint16_t timer_get_millis() {
 	return (uint16_t) _timer_millis << 2;
 }
-void timer_set_millis(uint16_t ms) {
-	_timer_millis = ms >> 2;
+
+void timer_set(uint32_t seconds, uint16_t millis) {
+	cli();
+	_timer_seconds = seconds;
+	_timer_millis = 0;
+	_timer_millis = millis >> 2;
+	TCNT1 = 0;
+	sei();
 }
 
 ISR(TIMER1_COMPA_vect) {

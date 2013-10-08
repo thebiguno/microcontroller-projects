@@ -60,8 +60,7 @@ int main() {
 				for (uint8_t i = 0; i < sizeof(uint16_t); i++) {
 					serial_read_c(conv16.a + i);
 				}
-				timer_set_seconds(conv32.i);
-				timer_set_millis(conv16.i);
+				timer_set(conv32.i, conv16.i);
 			} else if (action == 'T') { // tune
 				int8_t t = 0;
 				serial_read_c((char*) &t);
