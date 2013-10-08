@@ -10,8 +10,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern uint8_t codepage_tall[];
-
-extern uint8_t font_tall[];
+extern uint8_t font_5x13[];
 
 #endif
