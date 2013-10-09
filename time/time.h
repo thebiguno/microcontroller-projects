@@ -4,13 +4,14 @@
 #include <stdint.h>
 
 struct time_t {
-  uint8_t  second;
-  uint8_t  minute;
-  uint8_t  hour;
-  uint8_t  day;
-  uint8_t  month;
-  uint16_t year;
-  uint8_t  wday;
+	uint16_t millis;
+	uint8_t  second;
+	uint8_t  minute;
+	uint8_t  hour;
+	uint8_t  day;
+	uint8_t  month;
+	uint16_t year;
+	uint8_t  wday;
 };
 
 /*
