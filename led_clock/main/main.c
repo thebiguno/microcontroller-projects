@@ -27,11 +27,12 @@ int main() {
 	time_t time;
 	
 	while(1) {
-		uint16_t millis = timer_get_millis();
- 		uint32_t seconds = timer_get_seconds();
-
 		// get number of millis since midnight
+		uint32_t seconds = timer_get_seconds();
+		// convert that into fields
 		time_get(seconds, &time);
+		// add the millis to the struct
+		time.millis = timer_get_millis();
 
 		clock_draw(&time);
 		matrix_write_buffer();
@@ -43,7 +44,7 @@ int main() {
 				union u32 conv32;
 				union u16 conv16;
 				conv32.i = seconds;
-				conv16.i = millis;
+				conv16.i = time.millis;
 				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
 					serial_write_c(conv32.a[i]);
 			    }

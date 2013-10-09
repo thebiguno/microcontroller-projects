@@ -110,7 +110,8 @@ void clock_traditional(struct time_t *t) {
 /*
  * This method was first proposed in the 1850s by John W. Nystrom
  */
-void clock_hexadecimal(uint32_t ms) {
+void clock_hexadecimal(struct time_t *t) {
+	uint32_t ms = (uint32_t) t->millis + t->second * 60 + t->minute * 60 * 60 + t->hour * 60 * 60 * 24;
 	uint8_t digits[4];
 	//milliseconds to hexadecimal (F_FF_F)
 	digits[0] = ms / 5400000;		// 1/16 day (hex hour) = 1 h 30 m
@@ -263,7 +264,7 @@ void clock_draw(struct time_t *t) {
 //	draw_rectangle(0,0, 15,15, DRAW_FILLED, 0x00, OVERLAY_REPLACE);
 	
 	clock_traditional(t);
-	clock_hexadecimal(ms);
+	clock_hexadecimal(t);
 //	clock_dozenal(ms);
 //	clock_decimal(ms);
 }
