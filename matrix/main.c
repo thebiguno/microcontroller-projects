@@ -71,7 +71,7 @@ static void load_shift_data(){
 	if (row > 7){
 		row = 0;
 		dc++;
-		if (dc > dc_max) dc = 0;
+		if (dc >= dc_max) dc = 0;
 	}
 	
 	wdt_reset();
