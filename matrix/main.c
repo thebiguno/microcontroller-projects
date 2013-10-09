@@ -81,12 +81,12 @@ static void load_shift_data(){
 
 //This is called for each byte that is received.  'data' is the byte read from TWI; 'i' is the index of the data in the transmission
 void slave_rx_reader(uint8_t data, uint16_t i){
-	static uint8_t mode = 0x00;
+	static uint8_t mode = MATRIX_MODE_4BIT;
 	static uint16_t max_length = 0x00;
 	//The first byte is mode; we copy the remaining bytes as follows:
-	// 0x00: 8 bit mode GGGGRRRR (gives you 15 shades of red, 15 shades of green, plus black for 226 colors total, dc_max = 15)
-	// 0x01: 4 bit mode GGRR (gives you 3 shades of red, 3 shades of green, plus black for 10 colors total, dc_max = 3)
-	// 0x02: 2 bit mode GR (gives you red, green, yellow, and black pixels, dc_max = 1)
+	// MATRIX_MODE_4BIT: 4 bit / channel mode GGGGRRRR (gives you 15 shades of red, 15 shades of green, plus black for 226 colors total, dc_max = 15)
+	// MATRIX_MODE_2BIT: 2 bit / channel mode GGRR (gives you 3 shades of red, 3 shades of green, plus black for 10 colors total, dc_max = 3)
+	// MATRIX_MODE_1BIT: 1 bit / channel mode GR (gives you red, green, yellow, and black pixels, dc_max = 1)
 	
 	if (i == 0){
 		//Set the mode for this write operation
@@ -94,10 +94,10 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 
 		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master 
 		// sends too much / wrong mode / etc) and dc_max
-		if (mode == 0x00) {
+		if (mode == MATRIX_MODE_4BIT) {
 			max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
 			dc_max = 15;
-		} else if (mode == 0x01) {
+		} else if (mode == MATRIX_MODE_2BIT) {
 			max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
 			dc_max = 3;
 		} else {
@@ -106,11 +106,11 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 		}
 	} else if (i <= max_length){	//Verify that the incoming byte will fit in the buffer, as determined by mode
 		i--;
-		if (mode == 0x00) {
+		if (mode == MATRIX_MODE_4BIT) {
 			//8 bit mode; raw copy of all values
 			// ggggrrrr -> ggggrrrr
 			buffer[i] = data;
-		} else if (mode == 0x01) {
+		} else if (mode == MATRIX_MODE_2BIT) {
 			//4 bit (10 color) mode
 			// ggrrggrr -> xxggxxrr xxggxxrr
 			uint16_t idx = i * 2;
