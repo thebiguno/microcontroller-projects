@@ -52,8 +52,8 @@ optparse = OptionParser.new do |opts|
       seconds = a[0] + a[1] / 1000.0
       t = Time.at(seconds - n.gmt_offset)
       drift = ((t.to_f - n.to_f) * 1000).to_i
-      puts "Computer #{t}"
-      puts "AVR      #{n}"
+      puts "Computer #{n}"
+      puts "AVR      #{t}"
       puts "Drift    #{drift} ms"
       if drift > 0 then puts "Running fast: increase tuning value"
       else puts "Running slow: decrease tuning value"
