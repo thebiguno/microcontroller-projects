@@ -62,11 +62,15 @@ int main() {
 				}
 				timer_set(conv32.i, conv16.i);
 			} else if (action == 'T') { // tune
-				int8_t t = 0;
-				serial_read_c((char*) &t);
-				timer_set_tune(t);
+				union u16 conv16;
+				serial_read_c((char*) conv16.a + 0);
+				serial_read_c((char*) conv16.a + 1);
+				timer_set_tune(conv16.i);
 			} else if (action == 'C') {
-				serial_write_c((char) timer_get_tune());
+				union u16 conv16;
+				conv16.i = timer_get_tune();
+				serial_write_c(conv16.a[0]);
+				serial_write_c(conv16.a[1]);
 			}
 		}
 	}
