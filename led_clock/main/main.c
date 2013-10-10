@@ -45,21 +45,25 @@ int main() {
 				union u16 conv16;
 				conv32.i = seconds;
 				conv16.i = time.millis;
-				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
-					serial_write_c(conv32.a[i]);
-			    }
-				for (uint8_t i = 0; i < sizeof(uint16_t); i++) {
-					serial_write_c(conv16.a[i]);
-			    }
+
+				serial_write_c(conv32.a[0]);
+				serial_write_c(conv32.a[1]);
+				serial_write_c(conv32.a[2]);
+				serial_write_c(conv32.a[3]);
+
+				serial_write_c(conv16.a[0]);
+				serial_write_c(conv16.a[1]);
 			} else if (action == 'S') { // set
 				union u32 conv32;
 				union u16 conv16;
-				for (uint8_t i = 0; i < sizeof(uint32_t); i++) {
-					serial_read_c(conv32.a + i);
-				}
-				for (uint8_t i = 0; i < sizeof(uint16_t); i++) {
-					serial_read_c(conv16.a + i);
-				}
+				serial_read_c(conv32.a + 0);
+				serial_read_c(conv32.a + 1);
+				serial_read_c(conv32.a + 2);
+				serial_read_c(conv32.a + 3);
+
+				serial_read_c(conv16.a + 0);
+				serial_read_c(conv16.a + 1);
+				
 				timer_set(conv32.i, conv16.i);
 			} else if (action == 'T') { // tune
 				union u16 conv16;
