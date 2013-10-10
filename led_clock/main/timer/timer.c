@@ -39,12 +39,12 @@ uint16_t timer_get_millis() {
 }
 
 void timer_set(uint32_t seconds, uint16_t millis) {
-	cli();
+	TIMSK1 &= ~_BV(OCIE1A);
 	_timer_seconds = seconds;
 	_timer_millis = 0;
 	_timer_millis = millis;
 	TCNT1 = 0;
-	sei();
+	TIMSK1 = _BV(OCIE1A);
 }
 
 ISR(TIMER1_COMPA_vect) {
