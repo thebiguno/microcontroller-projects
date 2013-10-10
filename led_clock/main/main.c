@@ -21,8 +21,8 @@ int main() {
 	matrix_init();
 	matrix_set_mode(0x01);
 	timer_init();
-	serial_init(9600, 8, 0, 1);
- 	sei();
+	serial_init_b(9600);
+	sei();
 		
 	time_t time;
 	
