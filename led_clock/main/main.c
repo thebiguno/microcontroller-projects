@@ -10,7 +10,7 @@
 
 union u32 {
 	uint32_t i;
-    char a[sizeof(uint32_t)];
+	char a[sizeof(uint32_t)];
 };
 union u16 {
 	uint16_t i;
