@@ -67,10 +67,10 @@ optparse = OptionParser.new do |opts|
       puts sec
     elsif options[:action] == :set_tune
       sp.write 'T'
-      sp.write [options[:adjustment]].pack('c')
+      sp.write [options[:adjustment]].pack('s')
     elsif options[:action] == :get_tune
       sp.write 'C'
-      comp = sp.read(1).unpack('c')
+      comp = sp.read(2).unpack('s')
       puts comp
     end
   end
