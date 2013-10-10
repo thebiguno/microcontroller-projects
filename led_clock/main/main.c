@@ -38,6 +38,7 @@ int main() {
 		matrix_write_buffer();
 		
 		if (serial_available()) {
+			cli();
 			char action;
 			serial_read_c(&action);
 			if (action == 'G') { // get
@@ -76,6 +77,7 @@ int main() {
 				serial_write_c(conv16.a[0]);
 				serial_write_c(conv16.a[1]);
 			}
+			sei();
 		}
 	}
 }
