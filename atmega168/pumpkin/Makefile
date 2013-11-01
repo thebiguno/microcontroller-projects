@@ -3,7 +3,7 @@ include ../../build/variables.mk
 PROJECT=pumpkin
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c bitmaps.c lib/draw/fonts/large.c
+SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c bitmaps.c
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
