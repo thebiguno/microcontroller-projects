@@ -3,10 +3,11 @@
 
 static volatile uint8_t load_zone;
 static volatile uint8_t rpm_zone;
-static volatile uint8_t tooth;		// a value between 0 and 35
+static volatile uint8_t tooth = 0;		// a value between 0 and 35
 static volatile uint16_t last_t = 0;	// the time of the last tooth signal
-static uint8_t cam;			// a value between 0 and 3
+static volatile uint8_t cam = 0;		// a value between 0 and 3
 static volatile uint16_t cam_teeth = 0;	// how many teeth between cam signals
+static volatile uint8_t cal = 11; 		// calibration has been performed (worst case is 10 rotations)
 static volatile uint8_t pl;	// the current spark plug
 static volatile uint8_t in; // the current injector
 static volatile uint8_t dc; // the injector duty cycle
@@ -55,11 +56,13 @@ static uint8_t injector[8][8] = {
 // http://www.vems.hu/wiki/index.php?page=InputTrigger%2FSubaruThirtySixMinusTwoMinusTwoMinusTwo
 
 // teeth
-// C                 C                                   C                 C
-//    4                 1                 3                 2                 4
-// |__|||||||||||||__||||||||||||||||__|__|||||||||||||__||||||||||||||||__|__|||
-//                      0        1         2          3 
-//                      012345678901234567890123456789012345
+//                SSSSSSS           SSSSSSS           SSSSSSS           SSSSSSS         spark zones (max advance 60 deg)
+//    4                 1                 3                 2                 4			TDC
+// |                 |                                   |                 |			cam teeth
+// |__|||||||||||||__||||||||||||||||__|__|||||||||||||__||||||||||||||||__|__|||		crank teeth
+//      2         3     0         1         2         3 	0		  1					
+// 56789012345678901234501234567890123456789012345678901234501234567890123456789        crank tooth number
+//                1                 3                 2                 4               60 deg before TDC
 
 // hardware map
 // C6	/rst								c5	nc
@@ -168,61 +171,28 @@ ISR(INT0_vect) {
 		cam_teeth++;
 	}
 	
-	// TODO change this to a running average instead a point calculation
-	last_t = t;
 	TCNT0 = 0; // reset timer0 to zero
 	
-	if (tooth > 35) {
-//		PORTB = 0xFF;
-		tooth = 0;
-		
-		// determine rpm zone once per revolution
-		// TODO tune these rpm zone values
-		if (t > 128) { // ~500 rpm and slower
-			rpm_zone = 0;
-		} else if (t > 64) {
-			rpm_zone = 1;
-		} else if (t > 32) {
-			rpm_zone = 2;
-		} else if (t > 16) {
-			rpm_zone = 3;
-		} else if (t > 8) {
-			rpm_zone = 4;
-		} else if (t > 4) {
-			rpm_zone = 5;
-		} else if (t > 2) {
-			rpm_zone = 6;
-		} else {
-			rpm_zone = 7;
-		}
-		
-		// start ADC again -- read throttle position once per revolution
-		//ADCSRA |= _BV(ADSC);
-	} else if (tooth == 13 || tooth == 14 || tooth == 16 || tooth == 17 || tooth == 31 || tooth == 32) {
+	if (tooth == 13 || tooth == 16 || tooth == 31) {
 		// tooth count is wrong, this is normal so just try adjusting
-		tooth++;
-		if (tooth == 13 || tooth == 16 || tooth == 31) {
-			tooth++;
-		}
-		
-	} else if (tooth == 30 || tooth == 12) {
+		tooth = tooth + 2;
+	} else if (tooth == 12 || tooth == 30) {
 		// now 60 degrees before 0/180 degrees, set the timer for the spark advance
 		uint8_t adv = advance[rpm_zone][load_zone]; // in degrees
-		//adv = 10;
+		adv = 10;
 		// 60 degrees - advance degrees (1024 prescale -> 8 prescale)
 		// t is a /1024 prescaled value and maxes out at about 66 @ 500 rpm
 		// OCR1A is a /8 prescaled value
 		// multiply by 128 to convert form /1024 to /8
 		uint16_t deg = 60 - adv;
 		
+		uint16_t comp = deg * t / 10 * 128; // this isn't terribly accurate due to rounding
+		OCR1A = comp; // set up timer1 compA for on time
+		OCR2A = comp + 2048;
 		TCNT1 = 0;	// reset timer1 to zero
-		// TODO this isn't terribly accurate due to rounding
-		uint16_t comp = deg * t / 10 * 128;
-		OCR1A = comp; // set up compare value for timer1
-		OCR1B = comp + 2048; // TODO  a guess
-	}
-
-	if (tooth == 1 && cam == 2) {
+		
+//		PORTB=0xFF;
+	} else if (tooth == 1 && cam == 2) {
 		// #1BDTC; #4 just finished burning, #1 ignition just happened, #3 ignites next, #2 injects next
 		pl = plug[0];
 	} else if (tooth == 1 && cam == 0) {
@@ -242,7 +212,11 @@ ISR(INT0_vect) {
 		in = inj[2];
 	} else if (tooth == 33 && cam == 1) {
 		in = inj[3];
+	} else if (tooth >= 35) {
+		tooth = 0;
 	}
+	
+	last_t = t;	
 }
 
 // cam sync ISR
@@ -257,18 +231,47 @@ ISR(INT1_vect) {
 		cam = 0;
 		//tooth = 33;
 	}
-	
 	cam_teeth = 0;
+	
+	if (cam == 0) {
+		// determine rpm zone once per revolution
+		// TODO tune these rpm zone values
+		if (last_t > 128) { // ~500 rpm and slower
+			rpm_zone = 0;
+		} else if (last_t > 64) {
+			rpm_zone = 1;
+		} else if (last_t > 32) {
+			rpm_zone = 2;
+		} else if (last_t > 16) {
+			rpm_zone = 3;
+		} else if (last_t > 8) {
+			rpm_zone = 4;
+		} else if (last_t > 4) {
+			rpm_zone = 5;
+		} else if (last_t > 2) {
+			rpm_zone = 6;
+		} else {
+			rpm_zone = 7;
+		}
+		// start ADC again -- read throttle position once per revolution
+		//ADCSRA |= _BV(ADSC);
+	}
 }
 
-// ignition spark event
+// ignition spark on
 ISR(TIMER1_COMPA_vect) {
 	if ((tooth > 12 && tooth < 19) || tooth >= 30 || tooth < 1) {
+//		if ((tooth > 11 && tooth < 19) || (tooth > 29 && tooth < 26) || (tooth == 0)) {
 		PORTB = pl;
 	}
 }
+
+// ignition spark off
 ISR(TIMER1_COMPB_vect) {
-	PORTB = 0x00;
+	PORTB = 0x0;
+	
+	OCR1A = 0xFFFF;
+	TCNT1 = 0;
 }
 
 // injector pwm frequency

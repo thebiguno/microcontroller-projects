@@ -22,7 +22,7 @@
   		
   	if tooth > 35 then tooth = 0 end
   	if actual > 35 then actual = 0 end
-		if [13,14,16,17,31,32].include? tooth then
+		if [13,16,31].include? tooth then
 		  puts "adjusting at #{tooth}"
 			tooth = tooth + 1
 		end
