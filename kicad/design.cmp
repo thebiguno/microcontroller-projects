@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Friday, January 31, 2014 'pmt' 06:19:23 pm
+Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Monday, February 03, 2014 'pmt' 09:40:42 pm
 
 BeginCmp
 TimeStamp = /52E8552C;
@@ -176,45 +176,17 @@ IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
-TimeStamp = /52EC4CC5;
-Reference = D26;
-ValeurCmp = DIODE;
-IdModule  = SM1206POL;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CD9;
-Reference = D27;
-ValeurCmp = DIODE;
-IdModule  = SM1206POL;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CE6;
-Reference = D28;
-ValeurCmp = DIODE;
-IdModule  = SM1206POL;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CEC;
-Reference = D29;
-ValeurCmp = DIODE;
-IdModule  = SM1206POL;
-EndCmp
-
-BeginCmp
-TimeStamp = /52E8908B;
+TimeStamp = /52F07127;
 Reference = P1;
-ValeurCmp = CONN_10;
-IdModule  = SIL-10;
+ValeurCmp = CONN_12;
+IdModule  = SIL-12;
 EndCmp
 
 BeginCmp
-TimeStamp = /52E9D9DF;
+TimeStamp = /52F07118;
 Reference = P2;
-ValeurCmp = CONN_10;
-IdModule  = SIL-10;
+ValeurCmp = CONN_12;
+IdModule  = SIL-12;
 EndCmp
 
 BeginCmp
@@ -389,34 +361,6 @@ BeginCmp
 TimeStamp = /52E9C8ED;
 Reference = SW25;
 ValeurCmp = SW_44;
-IdModule  = SW_PCB_2PIN;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CCB;
-Reference = SW26;
-ValeurCmp = SW_00;
-IdModule  = SW_PCB_2PIN;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CD3;
-Reference = SW27;
-ValeurCmp = SW_10;
-IdModule  = SW_PCB_2PIN;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CF8;
-Reference = SW28;
-ValeurCmp = SW_30;
-IdModule  = SW_PCB_2PIN;
-EndCmp
-
-BeginCmp
-TimeStamp = /52EC4CFE;
-Reference = SW29;
-ValeurCmp = SW_40;
 IdModule  = SW_PCB_2PIN;
 EndCmp
 
