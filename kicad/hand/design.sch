@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "4 feb 2014"
+Date "6 feb 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -718,8 +718,6 @@ Wire Wire Line
 	2000 6650 5950 6650
 Wire Wire Line
 	4750 2300 4900 2300
-Connection ~ 5400 2300
-Connection ~ 4750 2300
 Connection ~ 4100 2300
 Wire Wire Line
 	4100 2300 4250 2300
@@ -856,70 +854,59 @@ Wire Wire Line
 	1600 4950 1600 6850
 Wire Wire Line
 	1300 4950 1600 4950
-Connection ~ 1500 4950
-Connection ~ 1500 5050
 Connection ~ 1500 4850
-Connection ~ 6450 4950
-Text GLabel 2750 2100 1    60   Input ~ 0
+Text GLabel 2900 2300 1    60   Input ~ 0
 C0
-Text GLabel 3450 2100 1    60   Input ~ 0
+Text GLabel 3600 2300 1    60   Input ~ 0
 C1
-Text GLabel 4750 2100 1    60   Input ~ 0
+Text GLabel 4900 2300 1    60   Input ~ 0
 C3
-Text GLabel 5400 2100 1    60   Input ~ 0
+Text GLabel 5550 2300 1    60   Input ~ 0
 C4
-Wire Wire Line
-	2900 2100 2750 2100
-Wire Wire Line
-	4750 2100 4900 2100
-Connection ~ 5400 2100
-Connection ~ 4750 2100
-Wire Wire Line
-	5400 2100 5550 2100
-Connection ~ 2900 2300
-Connection ~ 3600 2300
-Connection ~ 4900 2300
-Connection ~ 5550 2300
 Wire Wire Line
 	6050 3050 6050 4550
 Wire Wire Line
-	3600 2100 3450 2100
+	4900 2300 4900 6850
 Wire Wire Line
-	4900 2100 4900 6850
+	5550 2300 5550 6750
 Wire Wire Line
-	5550 2100 5550 6750
-Wire Wire Line
-	3600 2100 3600 7050
-Wire Wire Line
-	2900 2100 2900 7150
+	3600 2300 3600 7050
 Wire Wire Line
 	1500 5050 1300 5050
 Wire Wire Line
 	6450 5050 6650 5050
-Text GLabel 1300 5150 3    60   Input ~ 0
+Text GLabel 1300 5250 3    60   Input ~ 0
 GND
-Text GLabel 6650 5150 3    60   Input ~ 0
+Text GLabel 6650 5250 3    60   Input ~ 0
 GND
 $Comp
-L CONN_11 P2
-U 1 1 52F07F77
-P 7000 4650
-F 0 "P2" V 6950 4650 60  0000 C CNN
-F 1 "CONN_11" V 7050 4650 60  0000 C CNN
-F 2 "" H 7000 4650 60  0000 C CNN
-F 3 "" H 7000 4650 60  0000 C CNN
-	1    7000 4650
-	1    0    0    1   
-$EndComp
-$Comp
-L CONN_11 P1
-U 1 1 52F07F9F
-P 950 4650
-F 0 "P1" V 900 4650 60  0000 C CNN
-F 1 "CONN_11" V 1000 4650 60  0000 C CNN
-F 2 "" H 950 4650 60  0000 C CNN
-F 3 "" H 950 4650 60  0000 C CNN
-	1    950  4650
+L CONN_12 P1
+U 1 1 52F07127
+P 950 4700
+F 0 "P1" V 900 4700 60  0000 C CNN
+F 1 "CONN_12" V 1000 4700 60  0000 C CNN
+F 2 "" H 950 4700 60  0000 C CNN
+F 3 "" H 950 4700 60  0000 C CNN
+	1    950  4700
 	-1   0    0    1   
 $EndComp
+$Comp
+L CONN_12 P2
+U 1 1 52F07118
+P 7000 4700
+F 0 "P2" V 6950 4700 60  0000 C CNN
+F 1 "CONN_12" V 7050 4700 60  0000 C CNN
+F 2 "" H 7000 4700 60  0000 C CNN
+F 3 "" H 7000 4700 60  0000 C CNN
+	1    7000 4700
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	1300 5250 1300 5150
+Wire Wire Line
+	6650 5250 6650 5150
+Text GLabel 4250 2300 1    60   Input ~ 0
+C2
+Wire Wire Line
+	2900 2300 2900 7150
 $EndSCHEMATC
