@@ -1,6 +1,6 @@
-update=Wednesday, February 05, 2014 'pmt' 06:45:57 pm
+update=Thursday, February 06, 2014 'amt' 09:56:04 am
 version=1
-last_client=kicad
+last_client=eeschema
 [cvpcb]
 version=1
 NetIExt=net
@@ -43,9 +43,11 @@ LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
 LibName17=cherry
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=../kicad
+LibDir=../lib
 NetFmtName=
 RptD_X=0
 RptD_Y=100
@@ -83,5 +85,3 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=cherry
-[general]
-version=1

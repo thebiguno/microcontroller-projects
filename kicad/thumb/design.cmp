@@ -1,7 +1,7 @@
-Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Wednesday, February 05, 2014 'pmt' 06:59:55 pm
+Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Thursday, February 06, 2014 'pmt' 12:26:17 pm
 
 BeginCmp
-TimeStamp = /52E8552C;
+TimeStamp = /52F3A129;
 Reference = D1;
 ValeurCmp = DIODE;
 IdModule  = SM1206POL;
@@ -15,8 +15,36 @@ IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
+TimeStamp = /52F3A13B;
+Reference = D3;
+ValeurCmp = DIODE;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A147;
+Reference = D4;
+ValeurCmp = DIODE;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A123;
+Reference = D5;
+ValeurCmp = DIODE;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
 TimeStamp = /52E85693;
 Reference = D6;
+ValeurCmp = DIODE;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A153;
+Reference = D7;
 ValeurCmp = DIODE;
 IdModule  = SM1206POL;
 EndCmp
@@ -43,10 +71,10 @@ IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
-TimeStamp = /52F2F00F;
+TimeStamp = /52F3E197;
 Reference = P1;
-ValeurCmp = CONN_6;
-IdModule  = SIL-6;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
 EndCmp
 
 BeginCmp
@@ -57,9 +85,23 @@ IdModule  = SIL-6;
 EndCmp
 
 BeginCmp
-TimeStamp = /52E8554A;
+TimeStamp = /52F3E1A4;
+Reference = P3;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3E1AA;
+Reference = P4;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A12F;
 Reference = SW1;
-ValeurCmp = SW_00;
+ValeurCmp = SW_20;
 IdModule  = SW_PCB_2PIN;
 EndCmp
 
@@ -71,9 +113,37 @@ IdModule  = SW_PCB_2PIN;
 EndCmp
 
 BeginCmp
+TimeStamp = /52F3A135;
+Reference = SW3;
+ValeurCmp = SW_21;
+IdModule  = SW_PCB_2PIN;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A141;
+Reference = SW4;
+ValeurCmp = SW_11;
+IdModule  = SW_PCB_2PIN;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A11D;
+Reference = SW5;
+ValeurCmp = SW_10;
+IdModule  = SW_PCB_2PIN;
+EndCmp
+
+BeginCmp
 TimeStamp = /52E8568D;
 Reference = SW6;
 ValeurCmp = SW_11;
+IdModule  = SW_PCB_2PIN;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F3A14D;
+Reference = SW7;
+ValeurCmp = SW_01;
 IdModule  = SW_PCB_2PIN;
 EndCmp
 

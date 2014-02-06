@@ -163,9 +163,7 @@ Text GLabel 3000 2800 1    60   Input ~ 0
 C0
 Text GLabel 3700 2800 1    60   Input ~ 0
 C1
-Text GLabel 1350 3950 3    60   Input ~ 0
-GND
-Text GLabel 5100 3950 3    60   Input ~ 0
+Text GLabel 5100 4000 3    60   Input ~ 0
 GND
 Text GLabel 4350 2800 1    60   Input ~ 0
 C2
@@ -179,17 +177,6 @@ F 2 "" H 5450 3700 60  0000 C CNN
 F 3 "" H 5450 3700 60  0000 C CNN
 	1    5450 3700
 	1    0    0    1   
-$EndComp
-$Comp
-L CONN_6 P1
-U 1 1 52F2F00F
-P 1000 3700
-F 0 "P1" V 950 3700 60  0000 C CNN
-F 1 "CONN_6" V 1050 3700 60  0000 C CNN
-F 2 "" H 1000 3700 60  0000 C CNN
-F 3 "" H 1000 3700 60  0000 C CNN
-	1    1000 3700
-	-1   0    0    1   
 $EndComp
 Wire Wire Line
 	2450 3550 2450 3400
@@ -214,67 +201,30 @@ Wire Wire Line
 	3750 4450 3750 4300
 Connection ~ 3100 4450
 Connection ~ 3750 4450
-Connection ~ 4200 2800
 Wire Wire Line
 	4200 2800 4350 2800
-Connection ~ 4350 3700
 Connection ~ 3700 3700
-Connection ~ 3000 3700
-Connection ~ 2450 4450
-Connection ~ 2450 3550
 Wire Wire Line
-	3000 2800 3000 4550
+	3000 2800 3000 4750
 Wire Wire Line
 	3700 2800 3700 4650
 Wire Wire Line
-	4350 2800 4350 4750
+	4350 2800 4350 4550
 Wire Wire Line
-	1350 3550 5100 3550
+	2450 3550 5100 3550
 Wire Wire Line
-	2000 4450 4450 4450
+	2450 4450 4450 4450
 Wire Wire Line
-	2000 3450 1350 3450
-Connection ~ 2000 4450
-Wire Wire Line
-	2000 3450 2000 4450
-Wire Wire Line
-	1900 4550 4550 4550
-Wire Wire Line
-	1900 4550 1900 3650
-Wire Wire Line
-	1900 3650 1350 3650
-Wire Wire Line
-	1800 4650 4650 4650
-Wire Wire Line
-	1800 4650 1800 3750
-Wire Wire Line
-	1800 3750 1350 3750
-Wire Wire Line
-	1700 4750 4750 4750
-Wire Wire Line
-	1700 4750 1700 3850
-Wire Wire Line
-	1700 3850 1350 3850
+	3700 4650 4650 4650
 Connection ~ 3800 3550
 Wire Wire Line
 	4450 4450 4450 3450
 Wire Wire Line
 	4450 3450 5100 3450
 Wire Wire Line
-	4550 4550 4550 3650
-Wire Wire Line
-	4550 3650 5100 3650
-Connection ~ 3000 4550
-Wire Wire Line
 	4650 4650 4650 3750
 Wire Wire Line
 	4650 3750 5100 3750
-Connection ~ 3700 4650
-Wire Wire Line
-	4750 4750 4750 3850
-Wire Wire Line
-	4750 3850 5100 3850
-Connection ~ 4350 4750
 Text GLabel 2450 1150 0    60   Input ~ 0
 R0
 $Comp
@@ -326,7 +276,7 @@ L SW_PUSH SW3
 U 1 1 52F3A135
 P 2850 1750
 F 0 "SW3" H 3000 1860 50  0000 C CNN
-F 1 "SW_01" H 2850 1670 50  0000 C CNN
+F 1 "SW_21" H 2850 1670 50  0000 C CNN
 F 2 "~" H 2850 1750 60  0000 C CNN
 F 3 "~" H 2850 1750 60  0000 C CNN
 	1    2850 1750
@@ -370,7 +320,7 @@ L SW_PUSH SW7
 U 1 1 52F3A14D
 P 4150 1750
 F 0 "SW7" H 4300 1860 50  0000 C CNN
-F 1 "SW_21" H 4150 1670 50  0000 C CNN
+F 1 "SW_01" H 4150 1670 50  0000 C CNN
 F 2 "~" H 4150 1750 60  0000 C CNN
 F 3 "~" H 4150 1750 60  0000 C CNN
 	1    4150 1750
@@ -394,7 +344,7 @@ C2
 Text GLabel 3700 550  1    60   Input ~ 0
 C1
 Text GLabel 4350 550  1    60   Input ~ 0
-C1
+C0
 Wire Wire Line
 	2450 1300 2450 1150
 Wire Wire Line
@@ -427,4 +377,59 @@ Wire Wire Line
 Wire Wire Line
 	2850 600  3000 600 
 Connection ~ 3000 600 
+Wire Wire Line
+	5100 3650 4550 3650
+Wire Wire Line
+	4550 3650 4550 4550
+Wire Wire Line
+	4550 4550 4350 4550
+Connection ~ 4350 3700
+Wire Wire Line
+	5100 3850 4750 3850
+Wire Wire Line
+	4750 3850 4750 4750
+Wire Wire Line
+	4750 4750 3000 4750
+Connection ~ 3000 3700
+Wire Wire Line
+	5100 4000 5100 3950
+$Comp
+L CONN_1 P1
+U 1 1 52F3E197
+P 5400 2700
+F 0 "P1" H 5480 2700 40  0000 L CNN
+F 1 "CONN_1" H 5400 2755 30  0001 C CNN
+F 2 "" H 5400 2700 60  0000 C CNN
+F 3 "" H 5400 2700 60  0000 C CNN
+	1    5400 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P3
+U 1 1 52F3E1A4
+P 5400 2800
+F 0 "P3" H 5480 2800 40  0000 L CNN
+F 1 "CONN_1" H 5400 2855 30  0001 C CNN
+F 2 "" H 5400 2800 60  0000 C CNN
+F 3 "" H 5400 2800 60  0000 C CNN
+	1    5400 2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_1 P4
+U 1 1 52F3E1AA
+P 5400 2900
+F 0 "P4" H 5480 2900 40  0000 L CNN
+F 1 "CONN_1" H 5400 2955 30  0001 C CNN
+F 2 "" H 5400 2900 60  0000 C CNN
+F 3 "" H 5400 2900 60  0000 C CNN
+	1    5400 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5250 2700 5250 3000
+Connection ~ 5250 2800
+Connection ~ 5250 2900
+Text GLabel 5250 3000 2    60   Input ~ 0
+GND
 $EndSCHEMATC
