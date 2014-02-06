@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Monday, February 03, 2014 'pmt' 09:40:42 pm
+Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Thursday, February 06, 2014 'pmt' 02:27:31 pm
 
 BeginCmp
 TimeStamp = /52E8552C;
@@ -187,6 +187,27 @@ TimeStamp = /52F07118;
 Reference = P2;
 ValeurCmp = CONN_12;
 IdModule  = SIL-12;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F400BD;
+Reference = P3;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F400CA;
+Reference = P4;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F400D0;
+Reference = P5;
+ValeurCmp = CONN_1;
+IdModule  = 1pin;
 EndCmp
 
 BeginCmp
