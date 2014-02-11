@@ -1,0 +1,129 @@
+Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Monday, February 10, 2014 'pmt' 09:39:54 pm
+
+BeginCmp
+TimeStamp = /52F8093D;
+Reference = C1;
+ValeurCmp = 100nF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F80A7C;
+Reference = C2;
+ValeurCmp = 4u7;
+IdModule  = C1V5H;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F80762;
+Reference = C3;
+ValeurCmp = 20p;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F8076F;
+Reference = C4;
+ValeurCmp = 20p;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F7EE72;
+Reference = CON1;
+ValeurCmp = USB-MINI-B;
+IdModule  = USB_MINI_B;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F806D5;
+Reference = D1;
+ValeurCmp = DIODE;
+IdModule  = D3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F806C6;
+Reference = D2;
+ValeurCmp = DIODE;
+IdModule  = D3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F59683;
+Reference = IC1;
+ValeurCmp = ATMEGA1284P-P;
+IdModule  = DIP-40__600_ELL;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F98080;
+Reference = P1;
+ValeurCmp = CONN_LH;
+IdModule  = SIL-12;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F9808D;
+Reference = P2;
+ValeurCmp = CONN_RH;
+IdModule  = SIL-12;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F9806B;
+Reference = P3;
+ValeurCmp = CONN_LT;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F98078;
+Reference = P4;
+ValeurCmp = CONN_RT;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F80F1F;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F8087C;
+Reference = R2;
+ValeurCmp = 68;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F8062D;
+Reference = R3;
+ValeurCmp = 68;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F809CA;
+Reference = R4;
+ValeurCmp = 1k5;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F80FA9;
+Reference = SW1;
+ValeurCmp = RESET;
+IdModule  = SW_PUSH_SMALL;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F8070D;
+Reference = X1;
+ValeurCmp = 12 MHz;
+IdModule  = HC-18UV;
+EndCmp
+
+EndListe
