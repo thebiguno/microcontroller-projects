@@ -17,41 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <avr/io.h>
-#include "print.h"
-#include "debug.h"
 #include "led.h"
-#include "ergo60.h"
 
 
 void led_set(uint8_t usb_led)
 {
-    // topmost - NumLock
-#ifndef INVERT_NUMLOCK
-    if (usb_led & (1<<USB_LED_NUM_LOCK)) {
-        ergo60_led_1_on();
-    } else {
-        ergo60_led_1_off();
-    }
-#else
-    if (usb_led & (1<<USB_LED_NUM_LOCK)) {
-        ergo60_led_1_off();
-    } else {
-        ergo60_led_1_on();
-    }
-#endif
-
-    // middle - CapsLock
-    if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
-        ergo60_led_2_on();
-    } else {
-        ergo60_led_2_off();
-    }
-
-    // bottommost - ScrollLock
-    if (usb_led & (1<<USB_LED_SCROLL_LOCK)) {
-        ergo60_led_3_on();
-    } else {
-        ergo60_led_3_off();
-    }
+	// TODO
 }
 

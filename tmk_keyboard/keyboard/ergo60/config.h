@@ -13,12 +13,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-This work is heavily based on initial firmware for Ergodox keyboard.
-Copyright (c) 2012, 2013 Ben Blazak <benblazak.dev@gmail.com>
-Released under The MIT License (see "doc/licenses/MIT.md")
-Project located at <https://github.com/benblazak/ergodox-firmware>
 */
 
 #ifndef CONFIG_H
@@ -29,7 +23,7 @@ Project located at <https://github.com/benblazak/ergodox-firmware>
 #define VENDOR_ID       0xFEED
 #define PRODUCT_ID      0x1111
 #define DEVICE_VER      0x0001
-#define MANUFACTURER    TMK/WJ
+#define MANUFACTURER    t.m.k.
 #define PRODUCT         Ergo60
 #define DESCRIPTION     t.m.k. keyboard firmware for Ergo60
 

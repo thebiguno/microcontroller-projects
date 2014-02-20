@@ -27,10 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "util.h"
 #include "matrix.h"
-#include "ergo60.h"
-#ifdef DEBUG_MATRIX_FREQ
-#include  "timer.h"
-#endif
 
 #ifndef DEBOUNCE
 #   define DEBOUNCE	5
