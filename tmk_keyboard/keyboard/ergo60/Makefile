@@ -1,7 +1,42 @@
+#----------------------------------------------------------------------------
+# On command line:
 #
-# Makefile for V-USB
+# make all = Make software.
 #
-
+# make clean = Clean out built project files.
+#
+# make coff = Convert ELF to AVR COFF.
+#
+# make extcoff = Convert ELF to AVR Extended COFF.
+#
+# make program = Download the hex file to the device.
+#                Please customize your programmer settings(PROGRAM_CMD)
+#
+# make teensy = Download the hex file to the device, using teensy_loader_cli.
+#               (must have teensy_loader_cli installed).
+#
+# make dfu = Download the hex file to the device, using dfu-programmer (must
+#            have dfu-programmer installed).
+#
+# make flip = Download the hex file to the device, using Atmel FLIP (must
+#             have Atmel FLIP installed).
+#
+# make dfu-ee = Download the eeprom file to the device, using dfu-programmer
+#               (must have dfu-programmer installed).
+#
+# make flip-ee = Download the eeprom file to the device, using Atmel FLIP
+#                (must have Atmel FLIP installed).
+#
+# make debug = Start either simulavr or avarice as specified for debugging, 
+#              with avr-gdb or avr-insight as the front end for debugging.
+#
+# make filename.s = Just compile filename.c into the assembler code only.
+#
+# make filename.i = Create a preprocessed source file for use in submitting
+#                   bug reports to the GCC project.
+#
+# To rebuild project do "make clean" then "make all".
+#----------------------------------------------------------------------------
 
 # Target file name (without extension).
 TARGET = ergo60_vusb
@@ -18,7 +53,7 @@ SRC =	\
 	matrix.c \
 	led.c
 
-CONFIG_H = config_vusb.h
+CONFIG_H = config.h
 
 
 # V-USB debug level: To use ps2_usart.c level must be 0
@@ -28,7 +63,7 @@ OPT_DEFS = -DDEBUG_LEVEL=0
 
 # MCU name, you MUST set this to match the board you are using
 # type "make clean" after changing this, so all files will be rebuilt
-MCU = atmega328p
+MCU = atmega1284p
 # avrdude doesn't know atmega168p
 AVRDUDE_MCU = $(MCU)
 
