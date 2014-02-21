@@ -47,77 +47,77 @@ TOP_DIR = ../..
 # Directory keyboard dependent files exist
 TARGET_DIR = .
 
-# keyboard dependent files
-SRC =	\
-	keymap.c \
+
+# List C source files here. (C dependencies are automatically generated.)
+SRC +=	keymap.c \
 	matrix.c \
 	led.c
 
 CONFIG_H = config.h
 
 
-# V-USB debug level: To use ps2_usart.c level must be 0
-# ps2_usart.c requires USART to receive PS/2 signal.
-OPT_DEFS = -DDEBUG_LEVEL=0
-
-
-# MCU name, you MUST set this to match the board you are using
-# type "make clean" after changing this, so all files will be rebuilt
+# MCU name
+# PJRC Teensy++ 2.0
+#MCU = at90usb1286
+# TMK Alt Controller or PJRC Teensy 2.0
 MCU = atmega1284p
-# avrdude doesn't know atmega168p
-AVRDUDE_MCU = $(MCU)
-
 
 # Processor frequency.
-#   Normally the first thing your program should do is set the clock prescaler,
-#   so your program will run at the correct speed.  You should also set this
-#   variable to same clock speed.  The _delay_ms() macro uses this, and many
-#   examples use this variable to calculate timings.  Do not add a "UL" here.
+#     This will define a symbol, F_CPU, in all source code files equal to the
+#     processor frequency in Hz. You can then use this symbol in your source code to
+#     calculate timings. Do NOT tack on a 'UL' at the end, this will be done
+#     automatically to create a 32-bit value in your source code.
+#
+#     This will be an integer division of F_USB below, as it is sourced by
+#     F_USB after it has run through any CPU prescalers. Note that this value
+#     does not *change* the processor frequency - it should merely be updated to
+#     reflect the processor speed set externally so that the code can use accurate
+#     software delays.
 F_CPU = 12000000
+
+
+#
+# LUFA specific
+#
+# Target architecture (see library "Board Types" documentation).
+ARCH = AVR8
+
+# Input clock frequency.
+#     This will define a symbol, F_USB, in all source code files equal to the
+#     input clock frequency (before any prescaling is performed) in Hz. This value may
+#     differ from F_CPU if prescaling is used on the latter, and is required as the
+#     raw input clock is fed directly to the PLL sections of the AVR for high speed
+#     clock generation for the USB and other AVR subsections. Do NOT tack on a 'UL'
+#     at the end, this will be done automatically to create a 32-bit value in your
+#     source code.
+#
+#     If no clock division is performed on the input clock inside the AVR (via the
+#     CPU clock adjust registers or the clock division fuses), this will be equal to F_CPU.
+F_USB = $(F_CPU)
+
+# Interrupt driven control endpoint task
+OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
+
+
+# Boot Section Size in *bytes*
+#   Teensy halfKay   512
+#   Teensy++ halfKay 1024
+#   Atmel DFU loader 4096	(TMK Alt Controller)
+#   LUFA bootloader  4096
+#   USBaspLoader     2048
+OPT_DEFS += -DBOOTLOADER_SIZE=4096
 
 
 # Build Options
 #   comment out to disable the options.
 #
-BOOTMAGIC_ENABLE = yes	# Virtual DIP switch configuration
-MOUSEKEY_ENABLE = yes	# Mouse keys
-EXTRAKEY_ENABLE = yes	# Audio control and System control
-CONSOLE_ENABLE = yes	# Console for debug
-COMMAND_ENABLE = yes    # Commands for debug and configuration
-#NKRO_ENABLE = yes	# USB Nkey Rollover
-
-
-
-#---------------- Programming Options --------------------------
-AVRDUDE = avrdude
-# Type: avrdude -c ? to get a full listing.
-AVRDUDE_PROGRAMMER = usbasp
-AVRDUDE_PORT =
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
-
-# Uncomment the following if you want avrdude's erase cycle counter.
-# Note that this counter needs to be initialized first using -Yn,
-# see avrdude manual.
-#AVRDUDE_ERASE_COUNTER = -y
-
-# Uncomment the following if you do /not/ wish a verification to be
-# performed after programming the device.
-#AVRDUDE_NO_VERIFY = -V
-
-# Increase verbosity level.  Please use this when submitting bug
-# reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
-# to submit bug reports.
-#AVRDUDE_VERBOSE = -v -v
-
-#AVRDUDE_FLAGS = -p $(AVRDUDE_MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_FLAGS = -p $(AVRDUDE_MCU) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
-AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
-AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
-
-PROGRAM_CMD = $(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-
+BOOTMAGIC_ENABLE = yes		# Virtual DIP switch configuration
+MOUSEKEY_ENABLE = yes		# Mouse keys
+EXTRAKEY_ENABLE = yes		# Audio control and System control
+CONSOLE_ENABLE = yes		# Console for debug
+COMMAND_ENABLE = yes    	# Commands for debug and configuration
+#NKRO_ENABLE = yes			# USB Nkey Rollover
+KEYMAP_SECTION_ENABLE = yes	# fixed address keymap for keymap editor
 
 
 # Search Path
@@ -128,5 +128,8 @@ include $(TOP_DIR)/protocol/vusb.mk
 include $(TOP_DIR)/common.mk
 include $(TOP_DIR)/rules.mk
 
-debug-on: EXTRAFLAGS += -DDEBUG
+debug-on: EXTRAFLAGS += -DDEBUG -DDEBUG_ACTION
 debug-on: all
+
+debug-off: EXTRAFLAGS += -DNO_DEBUG -DNO_PRINT
+debug-off: all

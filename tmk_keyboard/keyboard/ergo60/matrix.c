@@ -61,9 +61,14 @@ uint8_t matrix_cols(void)
 
 void matrix_init(void)
 {
+	DDRA = 0x00; // right hand column driver output (0-4 used, 5-7 unused)
+	DDRB = 0x00; // left hand column driver output (0-4 used, 5-7 unused)
+	DDRC = 0x7F; // row input (0-6 used, 7 unused)
+	
+    DDRB  &= ~(1<<4);  // set B(4) as input
+    PORTB &= ~(1<<4);  // set B(4) internal pull-up disabled
+	
     // initialize row and col
-    init_ergo60();
-    ergo60_blink_all_leds();
     unselect_rows();
     init_cols();
 
