@@ -1,22 +1,22 @@
-# 16k bootloader addr = 0x3800
-# 8k bootloader addr = 0x1800
-# 32k bootloader addr for 4k bootloader = 0x7000
-# 32k bootloader addr for 2k bootloader = 0x7800
-
 F_CPU = 12000000
-DEVICE = atmega328p
-BOOTLOADER_ADDRESS = 0x7000
+DEVICE = atmega1284
+PROGRAMMER = usbtiny
 
-#Fuses
-#atmega8: -U lfuse:w:0x7F:m -U hfuse:w:0xD8:m -U lock:w:0xCF:m
-#atmega88: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
-#atmega88p: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
-#atmega168: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
-#atmega168p: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
-#atmega328p (4k bootloader): -U lfuse:w:0xFF:m -U hfuse:w:0xD8:m -U efuse:w:0xFF:m -U lock:w:0xCF:m
-#atmega328p (2k bootloader): -U lfuse:w:0xFF:m -U hfuse:w:0xDA:m -U efuse:w:0xFF:m -U lock:w:0xCF:m
+#atmega 328p 4kB (2048 words)
+#BOOTLOADER_ADDRESS = 0x3800
+#LFUSE = 0xFF
+#HFUSE = 0xD8
+#EFUSE = 0xFF
 
-#atmega1284p (4k bootloader): -U lfuse:w:0xFF:m -U hfuse:w:0xDA:m -U efuse:w:0xFF:m -U lock:w:0xFF:m
+#atmega 644 / 644p / 1284 / 1284p 4kB (2048 words)
+BOOTLOADER_ADDRESS = 0xFC00
+LFUSE = 0xFF
+HFUSE = 0xDA
+EFUSE = 0xFF
+
+
+# 0xFF for no restrictions
+LOCK = 0xFF
 
 CC = avr-gcc
 
@@ -51,6 +51,15 @@ main.hex:	main.bin
 
 disasm:	main.bin
 	avr-objdump -d main.bin
+
+writefuse:
+	avrdude -c $(PROGRAMMER) -p $(DEVICE) -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
+
+readfuse:
+	avrdude -c $(PROGRAMMER) -p $(DEVICE) -U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h
+
+program:	all
+	avrdude -V -c $(PROGRAMMER) -p $(DEVICE) -U flash:w:$main.hex
 
 cpp:
 	$(CC) $(CFLAGS) -E main.c
