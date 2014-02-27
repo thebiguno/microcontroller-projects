@@ -1,4 +1,4 @@
-update=Thursday, February 06, 2014 'pmt' 02:28:00 pm
+update=Wednesday, February 26, 2014 'pmt' 09:54:56 pm
 version=1
 last_client=pcbnew
 [cvpcb]
@@ -68,7 +68,7 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.150000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=../lib
+LibDir=../lib;../hand
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -86,3 +86,5 @@ LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
 LibName17=cherry
+LibName18=plesiosaurus_front
+LibName19=plesiosaurus_back
