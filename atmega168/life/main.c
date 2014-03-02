@@ -21,8 +21,8 @@
 #define RED_2	0x02
 #define RED_1	0x01
 
-#define RECENT_HASH_COUNT			5
-#define RECENT_HASH_MATCH_COUNT			10
+#define RECENT_HASH_COUNT			20
+#define RECENT_HASH_MATCH_COUNT			20
 
 //We write to the scratch buffer, and then flush to the matrix buffer.  We have to
 // do this so that we can check for the current neighborhood, even as we are scanning
