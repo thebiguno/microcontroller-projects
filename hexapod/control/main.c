@@ -40,29 +40,23 @@ uint8_t stick_message;
 
 int main (void){
 	//Do setup here
-	
-	//Set up the timer to run at F_CPU / 256, in normal mode (we reset TCNT0 in the ISR)
-	TCCR0A = 0x0;
-	TCCR0B |= _BV(CS02);
-	
-	//Set compare value to be maximum
-	OCR0A = 0xFF;
-
 	serial_init_b(38400);
 
 	psx_init(&PORTC, PORTC0, //Data (Brown)
 		&PORTC, PORTC1, //Clock (Blue)
 		&PORTC, PORTC2, //Command (Orange)
 		&PORTC, PORTC3); //Attention (Yellow)
-
+		
 	uint16_t last_buttons = 0x00;
 
 	//Main program loop
 	while (1){
+		_delay_ms(25);
+		
 		psx_read_gamepad();
 		uint16_t buttons = psx_buttons();
-		
-		if (buttons != last_buttons){ // || <enough time has passed>){
+
+//		if (buttons != last_buttons){ // || <enough time has passed>){
 			last_buttons = buttons;
 			
 			if (buttons == 0x00){
@@ -85,7 +79,7 @@ int main (void){
 					}
 				}
 			}
-		}
+//		}
 /*
 		if (psx_stick(PSS_LX) != last_LX){
 			last_LX = psx_stick(PSS_LX);
