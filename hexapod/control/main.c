@@ -26,20 +26,29 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "lib/psx/psx.h"
 #include "lib/serial/serial.h"
 
-char temp[32];
-uint8_t last_LX = 0;
-uint8_t last_LY = 0;
-uint8_t last_RX = 0;
-uint8_t last_RY = 0;
+/*
+static uint8_t last_LX = 0;
+static uint8_t last_LY = 0;
+static uint8_t last_RX = 0;
+static uint8_t last_RY = 0;
+*/
 
-uint8_t stick_message;
+static volatile uint16_t last_buttons = 0x00;
 
 int main (void){
 	//Do setup here
+	
+	//We use timer 0 to send a status byte at least every 
+	TCCR1A = 0x0; //Normal mode (we reset TCNT1 when sending data)
+	TCCR1B |= _BV(CS12) | _BV(CS10);	//F_CPU / 1024 prescaler
+	OCR1A = 0x0F00;  //Set compare value; this will result in firing every ~500ms
+	TIMSK1 = _BV(OCIE1A);  //Enable compare interrupt
+	
 	serial_init_b(38400);
 
 	psx_init(&PORTC, PORTC0, //Data (Brown)
@@ -47,17 +56,16 @@ int main (void){
 		&PORTC, PORTC2, //Command (Orange)
 		&PORTC, PORTC3); //Attention (Yellow)
 		
-	uint16_t last_buttons = 0x00;
-
+	sei();
+		
 	//Main program loop
 	while (1){
-		_delay_ms(25);
-		
 		psx_read_gamepad();
 		uint16_t buttons = psx_buttons();
 
-//		if (buttons != last_buttons){ // || <enough time has passed>){
+		if (buttons != last_buttons){
 			last_buttons = buttons;
+			TCNT1 = 0x00;	//Reset idle timer
 			
 			if (buttons == 0x00){
 				serial_write_c(0x00);
@@ -79,7 +87,7 @@ int main (void){
 					}
 				}
 			}
-//		}
+		}
 /*
 		if (psx_stick(PSS_LX) != last_LX){
 			last_LX = psx_stick(PSS_LX);
@@ -108,3 +116,10 @@ int main (void){
 */
 	}
 }
+
+EMPTY_INTERRUPT(TIMER1_COMPB_vect)
+EMPTY_INTERRUPT(TIMER1_OVF_vect)
+ISR(TIMER1_COMPA_vect){
+	last_buttons = 0xFF;	//Force a re-send of state
+}
+
