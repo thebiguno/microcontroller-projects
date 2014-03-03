@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../build/variables.mk
 
 PROJECT=PSXController
 MMCU=atmega48
@@ -12,5 +12,5 @@ LFUSE=0xE2
 # You can also define anything here and it will override
 # the definitions in variables.mk
 
-include ../../../build/targets.mk
+include ../../build/targets.mk
 
