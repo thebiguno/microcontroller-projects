@@ -12,9 +12,15 @@
  * Stick: [0000YYCC][XXXXXXXX] 
  *   (four low bits, two address bits, eight data bits)
  *   address bits are as follows:
- *     bit 0 = Right / Left (R = 0, L = 1)
+ *     bit 0 = Left / Right (L = 0, R = 1)
  *     bit 1 = X / Y (X = 0, Y = 1)
  *   data bits are raw value of stick
+ *
+ * By default the controller does not send analog (stick) data; to turn on
+ * analog controllers, send a non-zero byte.  To disable analog controllers, send
+ * byte 0x00.  
+ * TODO Do we want a checksummed protocol for receiving data?  Perhaps if there is more
+ * than just this...
  *
  * All checksums are 2 bit checksum on the rest of the packet, calculated using the 
  *  2 bit parity word algorithm.  Each 2-bit chunk of the packet is XOR'd together. 
@@ -31,12 +37,12 @@
 #include "lib/psx/psx.h"
 #include "lib/serial/serial.h"
 
-/*
-static uint8_t last_LX = 0;
-static uint8_t last_LY = 0;
-static uint8_t last_RX = 0;
-static uint8_t last_RY = 0;
-*/
+static uint8_t analog_enabled = 0;
+
+static uint8_t last_lx = 0;
+static uint8_t last_ly = 0;
+static uint8_t last_rx = 0;
+static uint8_t last_ry = 0;
 
 static volatile uint16_t last_buttons = 0x00;
 
@@ -60,11 +66,20 @@ int main (void){
 		
 	//Main program loop
 	while (1){
+		if (serial_available()){
+			serial_read_c((char*) &analog_enabled);
+		}
+	
 		psx_read_gamepad();
 		uint16_t buttons = psx_buttons();
+		uint8_t lx = psx_stick(PSS_LX);
+		uint8_t ly = psx_stick(PSS_LY);
+		uint8_t rx = psx_stick(PSS_RX);
+		uint8_t ry = psx_stick(PSS_RY);
 
-		if (buttons != last_buttons){
+		if (buttons != last_buttons || (analog_enabled && (lx != last_lx || ly != last_ly || rx != last_rx || ry != last_ry))){
 			last_buttons = buttons;
+			
 			TCNT1 = 0x00;	//Reset idle timer
 			
 			if (buttons == 0x00){
@@ -81,39 +96,76 @@ int main (void){
 						checksum ^= (x >> 0x02) & 0x03;			//Add 2 MSB of button to checksum
 						checksum ^= x & 0x03;					//Add 2 LSB of button to checksum
 					
-						button_message |= (checksum << 0x04);	//Clear last checksum
+						button_message |= (checksum << 0x04);	//Set current checksum
 					
 						serial_write_c(button_message);			//Send message
 					}
 				}
 			}
 		}
-/*
-		if (psx_stick(PSS_LX) != last_LX){
-			last_LX = psx_stick(PSS_LX);
-			serial_write_s("LX: ");
-			serial_write_s(itoa(last_LX, temp, 16));
-			serial_write_s("\n\r");
+
+		if (analog_enabled){
+			if (lx != last_lx){
+				last_lx = lx;
+				uint8_t stick_message = 0x00;		//LX
+				uint8_t checksum = 0x00;			//0x00 is the checksum of the start bits
+			
+				checksum ^= (lx >> 0x06) & 0x03;	//Add 2 MSB of stick value to checksum
+				checksum ^= (lx >> 0x04) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= (lx >> 0x02) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= lx & 0x03;				//Add 2 LSB of stick value to checksum
+
+				stick_message |= checksum;			//Set current checksum
+			
+				serial_write_c(stick_message);		//Send message (two bytes);
+				serial_write_c(lx);
+			}
+			if (ly != last_ly){
+				last_ly = ly;
+				uint8_t stick_message = 0x01;		//LY
+				uint8_t checksum = 0x01;			//0x01 is the checksum of the start bits
+			
+				checksum ^= (ly >> 0x06) & 0x03;	//Add 2 MSB of stick value to checksum
+				checksum ^= (ly >> 0x04) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= (ly >> 0x02) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= ly & 0x03;				//Add 2 LSB of stick value to checksum
+
+				stick_message |= checksum;			//Set current checksum
+			
+				serial_write_c(stick_message);		//Send message (two bytes);
+				serial_write_c(ly);
+			}
+			if (rx != last_rx){
+				last_rx = rx;
+				uint8_t stick_message = 0x02;		//RX
+				uint8_t checksum = 0x02;			//0x02 is the checksum of the start bits
+			
+				checksum ^= (rx >> 0x06) & 0x03;	//Add 2 MSB of stick value to checksum
+				checksum ^= (rx >> 0x04) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= (rx >> 0x02) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= rx & 0x03;				//Add 2 LSB of stick value to checksum
+
+				stick_message |= checksum;			//Set current checksum
+			
+				serial_write_c(stick_message);		//Send message (two bytes);
+				serial_write_c(rx);
+			}
+			if (ry != last_ry){
+				last_ry = ry;
+				uint8_t stick_message = 0x03;		//RY
+				uint8_t checksum = 0x03;			//0x03 is the checksum of the start bits
+			
+				checksum ^= (ry >> 0x06) & 0x03;	//Add 2 MSB of stick value to checksum
+				checksum ^= (ry >> 0x04) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= (ry >> 0x02) & 0x03;	//Add next 2 bits of stick value to checksum
+				checksum ^= ry & 0x03;				//Add 2 LSB of stick value to checksum
+
+				stick_message |= checksum;			//Set current checksum
+			
+				serial_write_c(stick_message);		//Send message (two bytes);
+				serial_write_c(ry);
+			}
 		}
-		if (psx_stick(PSS_LY) != last_LY){
-			last_LY = psx_stick(PSS_LY);
-			serial_write_s("LY: ");
-			serial_write_s(itoa(last_LY, temp, 16));
-			serial_write_s("\n\r");
-		}
-		if (psx_stick(PSS_RX) != last_RX){
-			last_RX = psx_stick(PSS_RX);
-			serial_write_s("RX: ");
-			serial_write_s(itoa(last_RX, temp, 16));
-			serial_write_s("\n\r");
-		}
-		if (psx_stick(PSS_RY) != last_RY){
-			last_RY = psx_stick(PSS_RY);
-			serial_write_s("RY: ");
-			serial_write_s(itoa(last_RY, temp, 16));
-			serial_write_s("\n\r");
-		}
-*/
 	}
 }
 
@@ -121,5 +173,9 @@ EMPTY_INTERRUPT(TIMER1_COMPB_vect)
 EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 	last_buttons = 0xFF;	//Force a re-send of state
+	last_lx = 0xFF;
+//	last_ly = 0xFF;
+//	last_rx = 0xFF;
+//	last_ry = 0xFF;
 }
 
