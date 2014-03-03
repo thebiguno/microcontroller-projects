@@ -173,6 +173,10 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 	_data_pin = data_pin;
 	
 	
+	//Initialize game pad
+	*_clock_port |= _BV(_clock_pin);
+	*_command_port |= _BV(_command_pin);
+	
 	//Set clock, attention, and command pins to output mode
 	*_clock_ddr |= _BV(_clock_pin);
 	*_attention_ddr |= _BV(_attention_pin);
@@ -181,11 +185,6 @@ void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
 	//Set data pin to input mode, and set pullup resistor
 	*_data_ddr &= ~(_BV(_data_pin));
 	*_data_port |= _BV(_data_pin);
-
-	//Initialize game pad
-	*_clock_port |= _BV(_clock_pin);
-	*_command_port |= _BV(_command_pin);
-	
 	
 	//Init by polling once
 	psx_read_gamepad();
