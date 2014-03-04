@@ -52,6 +52,8 @@
  *         For instance, to set OCR1A = 0x0F00 (the default value), you would send the
  *         value 001111 (0x0F) as shifting this 8 bits gives 0x0F00.
  *         0x0F (expanded to 0x0F00) results in an idle poll time of about 500ms.
+ *         0x3F (expanded to 0x3F00) results in an idle poll time of about 2s.
+ *         0x01 (expanded to 0x0100) results in an idle poll time of about 10ms.
  *         Disable idle polling completely (only send change events) by 
  *         sending value 0x00.
  *    11: Reserved
@@ -124,13 +126,12 @@ int main (void){
 					}
 					else {
 						OCR1A = ((message & 0x3F) << 8);
-						TIMSK1 |= _BV(OCIE1A);  //Enable compare interrupt					
+						TIMSK1 |= _BV(OCIE1A);  //Enable compare interrupt
 					}
 					break;
 			}
 		}
-	
-		//Poll the gamepad
+			//Poll the gamepad
 		psx_read_gamepad();
 		
 		//Check digital (button) state
