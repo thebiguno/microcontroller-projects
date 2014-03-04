@@ -1,13 +1,9 @@
 /*
- * A manchester signal generator.
+ * A manchester signal receiver.
  */
 
 #include "manchester.h"
 #include <avr/interrupt.h>
-
-static volatile uint8_t *port;
-static volatile uint8_t *ddr;
-static uint8_t pin;
 
 static uint8_t lower;	// 1/4
 static uint8_t mid;   	// 3/4
@@ -21,18 +17,6 @@ static volatile uint8_t bit_count;
 static volatile uint8_t signal_state; // signal position in the bit (1 = T, 0 = 2T)
 static volatile uint8_t packet_state; // byte position in the packet (1 = data, 0 = preamble)
 
-/*
- * Using timer 0 the baud rate can range from 300 to 62500 at 16 MHz
- */
-void manchester_init_tx(volatile uint8_t *port, uint8_t pin, uint16_t baud){
-	TCCR0A = 0x0; 				// normal mode
-	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
-	OCR0A = F_CPU / 256 / baud; // compare value
-	TIMSK0 = _BV(OCIE0A);		// enable compare interrupt
-	
-	sei();
-}
-
 void manchester_init_rx(uint16_t baud){
 	TCCR0A = 0x0; 				// normal mode
 	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
@@ -44,6 +28,7 @@ void manchester_init_rx(uint16_t baud){
 
 	EICRA |= _BV(ISC00);		// any logical change on int0
 	EIMSK |= _BV(INT0);			// enable external interrupts on int0
+	TIMSK0 = _BV(OCIE0A);		// enable timer
 	
 	sei();
 }
@@ -99,8 +84,7 @@ static inline void readBit() {
 	}
 }
 
-ISR(PCINT0_vect)
-{
+ISR(INT0_vect) {
 	uint8_t ck = TCNT0;
 	if (ck < lower) {
 		// error
