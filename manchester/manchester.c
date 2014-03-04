@@ -4,7 +4,6 @@
 
 #include "manchester.h"
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
 static volatile uint8_t *port;
 static volatile uint8_t *ddr;
@@ -14,25 +13,18 @@ static uint8_t lower;	// 1/4
 static uint8_t mid;   	// 3/4
 static uint8_t upper;	// 5/4
 
-static uint8_t l; 		// the message length as indicated by byte 1 of the packet 
-static uint8_t dLength;			// the maximum number of bytes the caller can receive
-static volatile uint8_t buf;	// one byte buffer
-static volatile uint8_t dPos;	// the position in the data buffer
-static volatile uint8_t *d;		// reference to the buffer passed in by the caller
-static volatile uint8_t chk;	// running checksum
+static volatile uint8_t mbox;
+static volatile uint8_t buf;
+static volatile uint8_t data;
 
-// 0: msg ready
-// 1: signal state (where in the bit)
-// 2-4: bit position in current byte (where in the byte)
-// 5-6: byte position in packet (where in the packet)
-// 7: unused
-static volatile uint8_t status;
-
+static volatile uint8_t bit_count;
+static volatile uint8_t signal_state; // signal position in the bit (1 = T, 0 = 2T)
+static volatile uint8_t packet_state; // byte position in the packet (1 = data, 0 = preamble)
 
 /*
  * Using timer 0 the baud rate can range from 300 to 62500 at 16 MHz
  */
-void manchester_tx_init(volatile uint8_t *port, uint8_t pin, uint16_t baud){
+void manchester_init_tx(volatile uint8_t *port, uint8_t pin, uint16_t baud){
 	TCCR0A = 0x0; 				// normal mode
 	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
 	OCR0A = F_CPU / 256 / baud; // compare value
@@ -41,7 +33,7 @@ void manchester_tx_init(volatile uint8_t *port, uint8_t pin, uint16_t baud){
 	sei();
 }
 
-void manchester_rx_init(){
+void manchester_init_rx(uint16_t baud){
 	TCCR0A = 0x0; 				// normal mode
 	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
 	
@@ -62,75 +54,48 @@ void manchester_write_c(char data){
 	UDR0 = data;
 }
 
-/*
- * buf is up to 255 bytes to receive data into
- * length is maximum number of bytes that can be written to buf
- * status is a bit mask where:
- *   bit 0 is the last 
- *   0x00 to 0
 
- *   bit 0 set indicates that a message has been received and can be read; the receiver clears this bit to indicate receipt
- *   bit 1 set indicates that the receiver is in an error state
- */
-void manchester_read(uint8_t *data, uint8_t length, char *mbox) {
-	dLength = length;
-	d = data;
-	m = mbox;
+uint8_t manchester_available() {
+	return mbox > 0;
 }
 
-inline void readBit() {
-	uint8_t b = ((status >> 2) & 0x07);
-	if (PORTD & _BV(PIND6)) {
-		// transition from low to high = 1
-		buf |= _BV(b);
-	} else {
-		// transition from high to low = 0
-		buf &= ~_BV(b);
-	}
+uint8_t manchester_read(uint8_t *b) {
+	while (!manchester_available());
+	*b = data;
+	mbox = 0;
+	return 1;
+}
+
+static inline void readBit() {
+	uint8_t input = PORTD & _BV(PIND6);
 	
-	status &= 0xE3;
-	if (b == 7) {
-		uint8_t pos = (status >> 5) & 0x03;
-		if (pos == 0) {
-			// preamble
-			if (buf == 0xFE) {
-				// valid
-				status |= _BV(5); // set position to 1
-			} else {
-				// invalid
-				status = 0;
-			}
-		} else if (pos == 1) {
-			if (dLength < buf) {
-				// message is too long
-				status = 0;
-			} else {
-				l = buf;
-				chk ^= buf;
-				status ^= _BV(5) | _BV(6); // set position to 2
-			}
-		} else if (pos == 2) {
-			// somewhere in the data
-			d[dPos] = buf;
-			chk ^= buf;
-			dPos++;
-			
-			if (dPos >= l) {
-				status |= _BV(5); // set position to 3
-			}
+	if (packet_state == 0) {
+		// preamble
+		if (input) {
+			bit_count++;
+			if (bit_count > 7) bit_count = 7;
 		} else {
-			// checksum
-			if ((chk ^ buf) == 0) {
-				// valid
-				status = 1;
-			} else {
-				// invalid
-				status = 0;
+			if (bit_count == 7) {
+				// first zero after 7 or more ones; sync
+				packet_state = 1;
 			}
+			bit_count = 0;
+			buf = 0x00;
 		}
 	} else {
-		// increment the bit counter
-		status |= (b++ << 2);
+		// data
+		if (input) {
+			buf |= _BV(bit_count);
+		}
+		bit_count++;
+		
+		if (bit_count >= 8) {
+			data = buf;
+			mbox = 1;
+			packet_state = 0;
+			bit_count = 0;
+			// TODO fire an interrupt
+		}
 	}
 }
 
@@ -138,31 +103,25 @@ ISR(PCINT0_vect)
 {
 	uint8_t ck = TCNT0;
 	if (ck < lower) {
-		// error, there should never be a transition this soon
-		//status |= _BV(7);
-		status &= ~_BV(1); // clear signal state bit
+		// error
+		signal_state = 0; // clear signal state
 	} else if (ck < mid) {
-		// one clock pulse between transitions
-
-		if (status & _BV(1)) {
+		// T
+		if (signal_state) {
 			readBit();
 		}
-		status ^= _BV(1); // toggle signal state bit
+		signal_state ^= _BV(1); // toggle signal state
 	} else if (ck < upper) {
-		if ((status & _BV(1)) == 0) {
+		// 2T
+		if (signal_state == 0) {
 			readBit();
 		} else {
 			// error
-			status &= ~_BV(1); // clear signal state bit
+			signal_state = 0; // clear signal state
 		}
 	} else {
 		// error
-	}
-
-	if (PORTD & _BV(PIND6)) {
-		// high
-	} else {
-		// low
+		signal_state = 0;
 	}
 	
 	TCNT0 = 0x00;
