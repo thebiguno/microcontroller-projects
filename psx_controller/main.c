@@ -41,7 +41,7 @@
  *  Commands:
  *    00: Enable / Disable Buttons
  *      [000AAAAX]
- *      A: Button address.  Specify a button to modify (0x00 - 0x0F).  Ignored if B = 0
+ *      A: Button address.  Specify a button to modify (0x00 - 0x0F).
  *      X: New value.  1 = enabled, 0 = disabled
  *    01: Enable / Disable Analog Sticks
  *      [0100000X]
@@ -49,9 +49,9 @@
  *    10: Set poll frequency
  *      [10XXXXXX]
  *      X: New poll value, to be shifted 8 bits left and set in OCR1A.
- *         For instance, to set OCR1A = 0x0F00 (the default value), you would send the 
+ *         For instance, to set OCR1A = 0x0F00 (the default value), you would send the
  *         value 001111 (0x0F) as shifting this 8 bits gives 0x0F00.
- *         0x0F (expanded to 0x0F00) results in an idle poll time of about 500ms.  
+ *         0x0F (expanded to 0x0F00) results in an idle poll time of about 500ms.
  *         Disable idle polling completely (only send change events) by 
  *         sending value 0x00.
  *    11: Reserved
@@ -106,10 +106,12 @@ int main (void){
 			switch (message >> 6){
 				case 0x00:
 					if (message & 0x01){
-						button_mask |= _BV((message >> 1));
+						message = message >> 1;
+						button_mask |= _BV(message);
 					}
 					else {
-						button_mask &= ~_BV((message >> 1));
+						message = message >> 1;
+						button_mask &= ~_BV(message);
 					}
 					break;
 				case 0x01:
