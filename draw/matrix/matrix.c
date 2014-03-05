@@ -7,8 +7,6 @@
 #include "matrix.h"
 #include <util/delay.h>
 
-//Data is copies to the working buffer first, and then flushed to _buffer for display by the user.  This
-// prevents flickering when doing animations (and in fact any live drawing).
 static uint8_t buffer[MATRIX_WIDTH][MATRIX_HEIGHT >> MATRIX_HEIGHT_SHIFT];
 static uint8_t mode = 0x00;
 
