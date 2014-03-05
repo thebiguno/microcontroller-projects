@@ -6,7 +6,10 @@ ifeq 'avr-gcc' '$(COMPILER)'
 endif
 
 ifeq 'stk500v1' '$(AVRDUDE_PROGRAMMER)'
-	AVRDUDE_ARGS += -P /dev/tty.usbserial* -b 19200
+	ifeq ($(OS),Linux)
+		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
+	endif
+	AVRDUDE_ARGS += -P /dev/ttyUSB0 -b 19200
 endif
 
 # Default target.
@@ -26,6 +29,7 @@ $(PROJECT).out: $(SOURCES)
 
 
 program: all
+	$(AVRDUDE_PREP_COMMANDS)
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U flash:w:$(PROJECT).hex 

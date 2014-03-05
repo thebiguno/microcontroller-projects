@@ -8,11 +8,17 @@
 #  SOURCES=<Sources> (All .c sources to compile and link together)
 #  include <Path_To_Makefile_common>
 ######################
+OS=$(shell uname -s)
 
 #AVRDude options
-AVRDUDE=avrdude
+ifeq ($(OS),Linux)
+	AVRDUDE=/usr/share/arduino/hardware/tools/avrdude
+	AVRDUDE_PORT=/dev/ttyUSB0
+else
+	AVRDUDE=avrdude
+	AVRDUDE_PORT=/dev/tty.usbserial*
+endif
 AVRDUDE_PROGRAMMER=stk500v1
-#AVRDUDE_ARGS=-P /dev/tty.usbserial* -b 19200
 
 OBJCOPY=avr-objcopy
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall
