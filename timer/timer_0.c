@@ -62,8 +62,6 @@ void timer_init(){
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif
-	
-	DDRB = 0xFF;
 }
 
 /*
