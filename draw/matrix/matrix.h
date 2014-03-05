@@ -7,15 +7,17 @@
 #ifndef MATRIX_HEIGHT
 #define MATRIX_HEIGHT 16
 #endif
-#ifndef MATRIX_HEIGHT_SHIFT
-#define MATRIX_HEIGHT_SHIFT 0
-#endif
 
 #ifndef MATRIX_DRIVER_SLAVE_ADDRESS
 #define MATRIX_DRIVER_SLAVE_ADDRESS 42
 #endif
 
-#define MATRIX_LENGTH MATRIX_WIDTH * (MATRIX_HEIGHT >> MATRIX_HEIGHT_SHIFT)
+#define MATRIX_LENGTH MATRIX_WIDTH * MATRIX_HEIGHT
+
+//Bit depths per channel
+#define MATRIX_MODE_4BIT	0x00
+#define MATRIX_MODE_2BIT	0x01
+#define MATRIX_MODE_1BIT	0x02	//TODO Implement
 
 #include "../draw.h"
 #include "../../twi/twi.h"

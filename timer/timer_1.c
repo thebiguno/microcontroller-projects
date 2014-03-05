@@ -6,7 +6,11 @@
  */
 #include "timer.h"
 
+#if TIMER_BITS == 64
 static volatile uint64_t _timer_millis;
+#elif TIMER_BITS == 32
+static volatile uint32_t _timer_millis;
+#endif
 static uint32_t _timer_micro_divisor;
 
 /*
@@ -40,7 +44,11 @@ void timer_init(){
  * Returns the number of milliseconds which have elapsed since the 
  * last time timer_init() was called.  Overflows after about 49 days.
  */
+#if TIMER_BITS == 64
 uint64_t timer_millis(){
+#elif TIMER_BITS == 32
+uint32_t timer_millis(){
+#endif
 	return _timer_millis;
 }
 
@@ -48,7 +56,11 @@ uint64_t timer_millis(){
  * Returns the number of microseconds which have elapsed since the 
  * last time timer_init() was called.  Overflows after about 71 minutes.
  */
+#if TIMER_BITS == 64
 uint64_t timer_micros(){
+#elif TIMER_BITS == 32
+uint32_t timer_micros(){
+#endif
 	return (_timer_millis * 1000) + (TCNT1 / _timer_micro_divisor);
 }
 

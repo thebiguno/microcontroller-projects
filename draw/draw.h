@@ -1,10 +1,14 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#define __PROG_TYPES_COMPAT__
-
 #include <stdlib.h>
 #include <avr/pgmspace.h> 
+
+// Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
+#ifdef PROGMEM
+#undef PROGMEM
+#define PROGMEM __attribute__((section(".progmem.data")))
+#endif
 
 //Orientation modes.
 #define ORIENTATION_NORMAL	0		//Normal, left to right
@@ -24,19 +28,19 @@
 /*
  * The core of all draw implementations; this must be implemented by the driver.
  */
-void set_pixel(uint8_t x, uint8_t y, uint8_t value, uint8_t overlay);
+void set_pixel(int16_t x, int16_t y, uint8_t value, uint8_t overlay);
 
 /* 
  * This must be implemented by the driver.
  */
-uint8_t get_pixel(uint8_t x, uint8_t y);
+uint8_t get_pixel(int16_t x, int16_t y);
 
 /*
  * Get a a pixel at the given X, Y co-ordinates.  This must also be implemented by the driver.  The meaning of the return value
  * depends on the driver implementation, although in general it SHOULD be zero for off and non zero for on (in various 
  * colors, etc)
  */
-uint8_t matrix_get_pixel(uint8_t x, uint8_t y);
+uint8_t matrix_get_pixel(int16_t x, int16_t y);
 
 
 
@@ -45,19 +49,19 @@ uint8_t matrix_get_pixel(uint8_t x, uint8_t y);
  * the given overlay mode.
  * The Width / Height are for the glyphs in the given font.
  */
-void draw_text(uint8_t x, uint8_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* font, prog_uchar* codepage, uint8_t value, uint8_t overlay);
+void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, uint8_t value, uint8_t overlay);
 
 /*
  * Draws a bitmap on the screen at the specified position, of specified width / height,
  * in the specified overlay mode.
  */
-void draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint8_t orientation, prog_uchar* bitmap,  uint8_t value,uint8_t overlay);
+void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap,  uint8_t value,uint8_t overlay);
 
 /*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the
  * overlay mode to use.
  */
-void draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t value, uint8_t overlay);
+void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t value, uint8_t overlay);
 
 /*
  * Draws a box with one corner at x0, y0 and the opposite corner at x1, y1.
@@ -65,19 +69,19 @@ void draw_line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t value, ui
  * Value determines the color (driver-specific meaning).
  * Overlay determines the overlay method to use.
  */
-void draw_rectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t fill, uint8_t value, uint8_t overlay);
+void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t fill, uint8_t value, uint8_t overlay);
 
 /*
  * Draws a circle of radius r centered at point x, y.  If f (fill) is 0, it is just
  * the outline; if f is non-zero, then the circle is filled.  Overlay (o) determines
  * the overlay method to use.
  */
- void draw_circle(uint8_t x, uint8_t y, uint8_t r, uint8_t fill, uint8_t value, uint8_t overlay);
+ void draw_circle(int16_t x, int16_t y, uint8_t r, uint8_t fill, uint8_t value, uint8_t overlay);
  
 
 /********** Helper defines *************/
 
-#define swap(a, b) { uint8_t t = a; a = b; b = t; }
+#define swap(a, b) { int16_t t = a; a = b; b = t; }
 #define max(a, b) (a > b ? a : b)
 
 #endif
