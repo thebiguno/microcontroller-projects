@@ -13,17 +13,15 @@ static volatile uint8_t signal_state; // signal position in the bit (1 = T, 0 = 
  * Using timer 0 the baud rate can range from 300 to 62500 at 16 MHz
  */
 void manchester_init_tx(volatile uint8_t *port, uint8_t pin, uint16_t baud){
+	ddr = port - 0x1;
+	*ddr |= _BV(pin);
+	
 	TCCR0A = 0x0; 				// normal mode
 	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
 	OCR0A = F_CPU / 256 / baud; // compare value
 	TIMSK0 = _BV(OCIE0A);		// enable compare interrupt
 	
 	sei();
-}
-
-void manchester_write(uint8_t data) {
-	write(0x7E);
-	write(data);
 }
 
 void write(uint8_t data) {
@@ -33,6 +31,11 @@ void write(uint8_t data) {
 	signal_state = 0;
 	TCNT0 = 0;					// reset timer
 	TIMSK0 |= _BV(OCIE0A);		// enable timer
+}
+
+void manchester_write(uint8_t data) {
+	write(0x7E);
+	write(data);
 }
 
 ISR(TIMER0_COMPA_vect) {
