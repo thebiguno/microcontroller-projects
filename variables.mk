@@ -12,7 +12,7 @@ OS=$(shell uname -s)
 
 #AVRDude options
 ifeq ($(OS),Linux)
-	AVRDUDE=/usr/share/arduino/hardware/tools/avrdude
+	AVRDUDE=avrdude
 	AVRDUDE_PORT=/dev/ttyUSB0
 else
 	AVRDUDE=avrdude

@@ -9,7 +9,7 @@ ifeq 'stk500v1' '$(AVRDUDE_PROGRAMMER)'
 	ifeq ($(OS),Linux)
 		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
 	endif
-	AVRDUDE_ARGS += -P /dev/ttyUSB0 -b 19200
+	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 19200
 endif
 
 # Default target.
