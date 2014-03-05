@@ -1,18 +1,27 @@
 #include <util/delay.h>
+#include <avr/wdt.h>
 #include "../../lib/manchester/manchester.h"
+#include "../../lib/serial/serial.h"
 
 int main (){
+	DDRC = 0xFF;
+	PORTC = _BV(PINC0);
+	_delay_ms(10);
+	PORTC = 0x00;
+	
+	wdt_disable();
+
+
+	serial_init_b(38400);
 	manchester_init_rx(300);
 		
 	//char s;
 	
 	uint8_t data;
 	
-	manchester_write(0x00);
-	
 	while (1){
+		serial_write_c('W');
 		manchester_read(&data);
-		
-		_delay_ms(1000);
+		serial_write_c(data);
 	}   
 }
