@@ -47,6 +47,8 @@ uint32_t matrix_timer;
 uint32_t matrix_scan_count;
 #endif
 
+uint8_t test;
+
 inline
 uint8_t matrix_rows(void)
 {
@@ -61,12 +63,9 @@ uint8_t matrix_cols(void)
 
 void matrix_init(void)
 {
-	DDRA = 0x00; // right hand column driver output (0-4 used, 5-7 unused)
-	DDRB = 0x00; // left hand column driver output (0-4 used, 5-7 unused)
-	DDRC = 0x7F; // row input (0-6 used, 7 unused)
-	
-    DDRB  &= ~(1<<4);  // set B(4) as input
-    PORTB &= ~(1<<4);  // set B(4) internal pull-up disabled
+//	DDRA = 0x00; // right hand column driver output (0-4 used, 5-7 unused)
+//	DDRB = 0x00; // left hand column driver output (0-4 used, 5-7 unused)
+//	DDRC = 0x7F; // row input (0-6 used, 7 unused)
 	
     // initialize row and col
     unselect_rows();
@@ -179,6 +178,7 @@ static void  init_cols(void)
 static matrix_row_t read_cols(uint8_t row)
 {
     _delay_us(30);  // without this wait read unstable value.
+/*
     return
         (PINC&(1<<0) ? 0 : (1<<0)) |
         (PINC&(1<<1) ? 0 : (1<<1)) |
@@ -187,6 +187,14 @@ static matrix_row_t read_cols(uint8_t row)
         (PINC&(1<<4) ? 0 : (1<<4)) |
         (PINC&(1<<5) ? 0 : (1<<5)) |
         (PINC&(1<<6) ? 0 : (1<<6)) ;
+*/
+
+	// if (row == 0) {
+		test ^= 0x01;
+		return test;
+	// } else {
+	// 	return 0;
+	// }
 }
 
 /* Row pin configuration
@@ -197,15 +205,16 @@ static matrix_row_t read_cols(uint8_t row)
 static void unselect_rows(void)
 {
     // Hi-Z(DDR:0, PORT:0) to unselect
-    DDRB  &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
-    PORTB &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
-    DDRA  &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
-    PORTA &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
+    //DDRB  &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
+    //PORTB &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
+    //DDRA  &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
+    //PORTA &= ~(1<<0 | 1<<1 | 1<<2 | 1<<3 | 1<<4);
 }
 
 static void select_row(uint8_t row)
 {
     // Output low(DDR:1, PORT:0) to select
+/*
     switch (row) {
         case 0:
             DDRB  |= (1<<0);
@@ -248,5 +257,6 @@ static void select_row(uint8_t row)
             PORTA &= ~(1<<0);
             break;
 	    }
+	*/
 }
 

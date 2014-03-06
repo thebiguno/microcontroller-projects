@@ -12,13 +12,12 @@
 * |  ;:  |   Q  |   J  |   K  |   X  |                                   |   B  |   M  |   W  |   V  |   Z  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
 * |  =+  |  -_  | Left | Right|      |                                   |      | Up   | Down |  [{  |  ]}  |
-* | Ctrl | Alt  | Cmd  | Shift|      |                                   |      | Shift| Cmd  | Alt  | Ctrl |
+* | Ctrl | Alt  | Cmd  | Shift|  Fn  |                                   |  Fn  | Shift| Cmd  | Alt  | Ctrl |
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    |  \|  | /?   |       | '~   | §±   |
+*                                    |      | \|   |       | `~   | §±   |
 *                             ,------|------|------|       |------+------+------.
-*                             | Bspc | Del  | Esc  |       | Tab  | Ent  | Space|
-*                             | Shift| Fn   | Cmd  |       | Cmd  | Fn   | Shift|
+*                             | Bspc | Esc  | /?   |       | Tab  | Ent  | Space|
 *                             `--------------------'       `--------------------'
 *
 * Keymap: Fn Layer
@@ -26,18 +25,18 @@
 * ,----------------------------------.                                   ,----------------------------------.
 * |  F1  |  F2  |  F3  |  F4  |  F5  |                                   |  F6  |  F7  |  F8  |  F9  |  F10 |
 * |------+------+------+------+------|                                   |------+------+------+------+------
-* |  F11 |  F12 |  F13 |  F14 | Vol+ |                                   |  >>  |      |      |      |      |
+* |  F11 |  F12 |  F13 |  F14 | Vol+ |                                   |  >>  |   7  |   8  |   9  |   =  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* | Caps |      |      |      | Mute |                                   |  >|| |      |      |      |      |
+* | Caps |      |      |      | Mute |                                   |  >|| |   4  |   5  |   6  |   +  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |      |      | Home | End  | Vol- |                                   |  <<  | PgUp | PgDn |      |      |
+* |      |      |      |      | Vol- |                                   |  <<  |   1  |   2  |   3  |   -  |
 * |------+------+------+------+------'                                   |------+------+------+------+------|
-* | TRNS | TRNS | TRNS | TRNS |      |                                   |      | TRNS | TRNS | TRNS | TRNS |
+* | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn | TRNS | TRNS |
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    |      |      |       |      |      |
+*                                    |      |      |       |   *  |   /  |
 *                             ,------|------|------|       |------+------+------.
-*                             | TRNS | TRNS | TRNS |       | TRNS | TRNS | TRNS |
+*                             | Del  | TRNS | TRNS |       | TRNS | KEnt |   0  |
 *                             `--------------------'       `--------------------'
 *
 */
@@ -47,9 +46,9 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KEYMAP(
            1   ,2   ,3   ,4   ,5   ,
            QUOT,COMM,DOT ,P   ,Y   ,
-           A   ,O   ,E   ,U   ,I   ,     
+           A   ,O   ,E   ,U   ,I   ,
            SCLN,Q   ,J   ,K   ,X   ,
-           FN4 ,FN5 ,FN6 ,FN7 ,NO  ,          
+           FN4 ,FN5 ,FN6 ,FN7 ,NO  ,
                      NO  ,NO ,
                      FN1 ,FN2 ,FN3 ,
            6   ,7   ,8   ,9   ,0   ,
@@ -64,14 +63,14 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KEYMAP(
            F1  ,F2  ,F3  ,F4  ,F5  ,
            F11 ,F12 ,F13 ,F14 ,VOLU,
-           NO  ,NO  ,NO  ,NO  ,MUTE,     
+           NO  ,NO  ,NO  ,NO  ,MUTE,
            NO  ,NO  ,HOME,END ,VOLD,
-           TRNS,TRNS,TRNS,TRNS,TRNS,         
+           TRNS,TRNS,TRNS,TRNS,TRNS,
                           TRNS,TRNS,
                      TRNS,TRNS,TRNS,
            F6  ,F7  ,F8  ,F9  ,F10 ,
            MNXT,FN15,FN16,FN17,FN18,
-	       MPLY,BSLS,EQL ,MINS,NUBS,
+           MPLY,BSLS,EQL ,MINS,NUBS,
            MPRV,PGUP,PGDN,NO  ,NO  ,
            TRNS,TRNS,TRNS,TRNS,TRNS,
            TRNS,TRNS,
