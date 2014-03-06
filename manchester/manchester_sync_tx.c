@@ -6,7 +6,7 @@ static volatile uint8_t *_port;
 static volatile uint8_t *_ddr;
 static uint8_t _pin;
 
-static uint8_t half_clock;
+static uint16_t half_clock;
 
 void manchester_init_tx(volatile uint8_t *port, uint8_t pin, uint16_t baud){
 	_port = port;
@@ -14,19 +14,19 @@ void manchester_init_tx(volatile uint8_t *port, uint8_t pin, uint16_t baud){
 	_ddr = port - 0x1;
 	*_ddr |= _BV(pin);	//Enable output on selected pin
 	
-	half_clock = 1000 / baud;
+	half_clock = 1000000 / baud;
 }
 
 void write_bit(uint8_t bit){
 	if (bit) *_port &= ~_BV(_pin);
 	else *_port |= _BV(_pin);
 	
-	_delay_ms(half_clock);
+	_delay_us(half_clock);
 	
 	if (bit) *_port |= _BV(_pin);
 	else *_port &= ~_BV(_pin);
 
-	_delay_ms(half_clock);
+	_delay_us(half_clock);
 }
 
 void write_byte(uint8_t data) {
