@@ -5,8 +5,6 @@
 
 int main (){
 	DDRC = 0xFF;
-	PORTC = _BV(PINC0);
-	_delay_ms(10);
 	PORTC = 0x00;
 	
 	wdt_disable();
