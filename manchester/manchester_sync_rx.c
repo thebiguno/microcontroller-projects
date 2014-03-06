@@ -19,15 +19,15 @@ static volatile uint8_t packet_state; // byte position in the packet (1 = data, 
 
 void manchester_init_rx(uint16_t baud){
 	TCCR0A = 0x0; 				// normal mode
-	TCCR0B |= _BV(CS02);        // F_CPU / 256 prescaler
+	TCCR0B |= _BV(CS02) | _BV(CS00);        // F_CPU / 256 prescaler
 	
-	uint8_t half = F_CPU / 256 / baud;		//208 at 16MHz and 300 baud
-	lower = half / 2;						//104 at "
-	mid = lower + half;						//312 at "
-	upper = mid + half;						//520 at "
+	uint8_t half = F_CPU / 1024 / baud;	//52 at 16MHz and 300 baud
+	lower = half / 2;			//26 at "
+	mid = lower + half;			//78 at "
+	upper = mid + half;			//130 at "
 
-	EICRA |= _BV(ISC10);		// any logical change on int0
-	EIMSK |= _BV(INT1);			// enable external interrupts on int0
+	EICRA |= _BV(ISC00);		// any logical change on int0
+	EIMSK |= _BV(INT0);			// enable external interrupts on int0
 	
 	sei();
 }
@@ -44,24 +44,27 @@ uint8_t manchester_read(uint8_t *b) {
 }
 
 static inline void readBit() {
-	uint8_t input = PORTD & _BV(PIND2);
+	uint8_t input = PIND & _BV(PIND2);
+	
+	//TODO
+	if (input) PORTC |= _BV(PORTC2);	//TODO
+	else PORTC &= ~_BV(PORTC2);	//TODO
 	
 	if (packet_state == 0) {
-		PORTC ^= _BV(PINC2);
 		// preamble
 		if (input) {
 			bit_count++;
-			if (bit_count > 7) bit_count = 7;
+			if (bit_count > 5) bit_count = 5;
 		} else {
-			if (bit_count == 7) {
-				// first zero after 7 or more ones; sync
+			if (bit_count >= 5) {
+				// first zero after 5 or more ones; sync
 				packet_state = 1;
+				PORTC |= _BV(PORTC5);	//TODO
 			}
 			bit_count = 0;
 			buf = 0x00;
 		}
 	} else {
-		PORTC ^= _BV(PINC3);
 		// data
 		if (input) {
 			buf |= _BV(bit_count);
@@ -73,25 +76,26 @@ static inline void readBit() {
 			mbox = 1;
 			packet_state = 0;
 			bit_count = 0;
-			TIMSK0 &= ~_BV(OCIE0A);		// disable timer
+			TIMSK0 &= ~_BV(OCIE0A);			// disable timer
 			TCNT0 = 0x00;				//reset timer counter
+			PORTC &= ~_BV(PORTC5);	//TODO
 			// TODO fire an interrupt
 		}
 	}
 }
 
-ISR(INT1_vect) {
-	PORTC ^= _BV(PINC1);
+ISR(INT0_vect) {
+	PORTC ^= _BV(PORTC0);	//TODO
 	TIMSK0 |= _BV(OCIE0A);		// enable timer
 	
 	uint8_t ck = TCNT0;
 	if (ck < lower) {
 		// error
-		PORTC ^= _BV(PINC0);
 		signal_state = 0; // clear signal state
 	} else if (ck < mid) {
 		// T
 		if (signal_state) {
+			PORTC ^= _BV(PORTC1);	//TODO
 			readBit();
 		}
 		signal_state ^= _BV(1); // toggle signal state
@@ -99,11 +103,13 @@ ISR(INT1_vect) {
 		// 2T
 		if (signal_state == 0) {
 			readBit();
+			PORTC ^= _BV(PORTC1);	//TODO
 		}
-		signal_state ^= _BV(1); // toggle signal state
+		else {
+			signal_state ^= _BV(1); // toggle signal state
+		}
 	} else {
-		// error
-		PORTC ^= _BV(PINC0);
+		// error / start of message; reset state
 		signal_state = 0;
 	}
 	
