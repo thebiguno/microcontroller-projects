@@ -8,9 +8,12 @@ int main (){
 	
 	char data = 0x00;
 	
-	manchester_init_tx(&PORTB, PORTB0, 1200);
+	manchester_init_tx(&PORTB, PORTB0, 300);
 	
 	while (1){
-		manchester_write(data++);
+		for (uint8_t i = 0; i < 0x10; i++){
+			manchester_write(data++);
+		}
+		_delay_ms(1000);
 	}   
 }

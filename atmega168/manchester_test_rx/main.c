@@ -11,7 +11,7 @@ int main (){
 
 
 	serial_init_b(38400);
-	manchester_init_rx(1200);
+	manchester_init_rx(300);
 		
 	//char s;
 	
