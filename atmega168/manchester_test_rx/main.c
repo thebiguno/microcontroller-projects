@@ -11,14 +11,13 @@ int main (){
 
 
 	serial_init_b(38400);
-	manchester_init_rx(300);
+	manchester_init_rx(1200);
 		
 	//char s;
 	
 	uint8_t data;
 	
 	while (1){
-		serial_write_c('W');
 		manchester_read(&data);
 		serial_write_c(data);
 	}   

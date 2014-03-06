@@ -6,11 +6,11 @@ int main (){
 	PORTD = 0x00;	//TODO
 	_delay_ms(1000);
 	
-	manchester_init_tx(&PORTB, PORTB0, 300);
+	char data = 0x00;
+	
+	manchester_init_tx(&PORTB, PORTB0, 1200);
 	
 	while (1){
-		manchester_write(0xA5);
-		
-		_delay_ms(1000);
+		manchester_write(data++);
 	}   
 }
