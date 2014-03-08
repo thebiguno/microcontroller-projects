@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "6 feb 2014"
+Date "8 mar 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -67,7 +67,7 @@ F 1 "DIODE" H 3350 3300 40  0000 C CNN
 F 2 "~" H 3350 3400 60  0000 C CNN
 F 3 "~" H 3350 3400 60  0000 C CNN
 	1    3350 3400
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L DIODE D15
@@ -78,7 +78,7 @@ F 1 "DIODE" H 4000 3300 40  0000 C CNN
 F 2 "~" H 4000 3400 60  0000 C CNN
 F 3 "~" H 4000 3400 60  0000 C CNN
 	1    4000 3400
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW15
@@ -111,7 +111,7 @@ F 1 "DIODE" H 2650 4200 40  0000 C CNN
 F 2 "~" H 2650 4300 60  0000 C CNN
 F 3 "~" H 2650 4300 60  0000 C CNN
 	1    2650 4300
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW6
@@ -133,7 +133,7 @@ F 1 "DIODE" H 3300 4200 40  0000 C CNN
 F 2 "~" H 3300 4300 60  0000 C CNN
 F 3 "~" H 3300 4300 60  0000 C CNN
 	1    3300 4300
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW11
@@ -155,7 +155,7 @@ F 1 "DIODE" H 3950 4200 40  0000 C CNN
 F 2 "~" H 3950 4300 60  0000 C CNN
 F 3 "~" H 3950 4300 60  0000 C CNN
 	1    3950 4300
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2450 4300 0    60   Input ~ 0
 R1
@@ -247,7 +247,7 @@ F 1 "DIODE" H 3350 1050 40  0000 C CNN
 F 2 "~" H 3350 1150 60  0000 C CNN
 F 3 "~" H 3350 1150 60  0000 C CNN
 	1    3350 1150
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L DIODE D1
@@ -258,7 +258,7 @@ F 1 "DIODE" H 2650 1100 40  0000 C CNN
 F 2 "~" H 2650 1200 60  0000 C CNN
 F 3 "~" H 2650 1200 60  0000 C CNN
 	1    2650 1200
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW1
@@ -291,7 +291,7 @@ F 1 "DIODE" H 2650 1950 40  0000 C CNN
 F 2 "~" H 2650 2050 60  0000 C CNN
 F 3 "~" H 2650 2050 60  0000 C CNN
 	1    2650 2050
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW4
@@ -313,7 +313,7 @@ F 1 "DIODE" H 3300 1950 40  0000 C CNN
 F 2 "~" H 3300 2050 60  0000 C CNN
 F 3 "~" H 3300 2050 60  0000 C CNN
 	1    3300 2050
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW7
@@ -335,7 +335,7 @@ F 1 "DIODE" H 3950 1950 40  0000 C CNN
 F 2 "~" H 3950 2050 60  0000 C CNN
 F 3 "~" H 3950 2050 60  0000 C CNN
 	1    3950 2050
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2450 2050 0    60   Input ~ 0
 R1
