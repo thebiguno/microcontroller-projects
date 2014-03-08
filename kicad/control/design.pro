@@ -1,23 +1,7 @@
-update=Monday, February 10, 2014 'pmt' 08:54:36 pm
-last_client=pcbnew
+update=Saturday, March 08, 2014 'pmt' 01:11:27 pm
+last_client=cvpcb
 [general]
 version=1
-[eeschema]
-version=1
-LibDir=
-NetFmtName=
-RptD_X=0
-RptD_Y=100
-RptLab=1
-LabSize=60
-[eeschema/libraries]
-LibName1=power
-LibName2=atmel
-LibName3=conn
-LibName4=device
-[cvpcb]
-version=1
-NetIExt=net
 [pcbnew]
 version=1
 LastNetListRead=design.net
@@ -38,7 +22,6 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.150000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=/Users/warren/Library/Application Support/kicad/modules
 LibName1=pin_array
 LibName2=powerint
 LibName3=sockets
@@ -49,3 +32,21 @@ LibName7=led
 LibName8=dip_sockets
 LibName9=divers
 LibName10=muonde
+LibDir=/Users/warren/Documents/Projects/ergo60/kicad/lib;../lib/pjrc.pretty
+[eeschema]
+version=1
+LibDir=../lib
+NetFmtName=
+RptD_X=0
+RptD_Y=100
+RptLab=1
+LabSize=60
+[eeschema/libraries]
+LibName1=power
+LibName2=atmel
+LibName3=conn
+LibName4=device
+LibName5=pjrc
+[cvpcb]
+version=1
+NetIExt=net

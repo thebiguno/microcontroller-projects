@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name pjrc)(type KiCad)(uri ${KIPRJMOD}/../lib/pjrc.pretty)(options "")(descr ""))
+)
