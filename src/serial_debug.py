@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.6
+#!/usr/bin/python
 #
 # Reads from a serial port sending ascii data.
 #
@@ -7,10 +7,10 @@
 import serial
 import sys
 
-ser = serial.Serial("/dev/tty.usbserial-A200294u", 9600)
+ser = serial.Serial(sys.argv[1], 76800)
 
 while True:
 	b = ser.read()
 	
-	sys.stdout.write(b);
+	sys.stdout.write(str(hex(ord(b))) + "\n")
 
