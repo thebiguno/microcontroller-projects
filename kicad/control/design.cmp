@@ -1,4 +1,32 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Saturday, March 08, 2014 'pmt' 04:07:39 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Saturday, March 08, 2014 'pmt' 05:27:28 pm
+
+BeginCmp
+TimeStamp = /531BA9B2;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9CE;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9D9;
+Reference = D3;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9E4;
+Reference = D4;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
 
 BeginCmp
 TimeStamp = /52F98080;
@@ -47,6 +75,34 @@ TimeStamp = /531BA2F7;
 Reference = P7;
 ValeurCmp = CONN_1;
 IdModule  = conn:1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4DC;
+Reference = R1;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4EE;
+Reference = R2;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4F9;
+Reference = R3;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB504;
+Reference = R4;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
 EndCmp
 
 BeginCmp

@@ -31,7 +31,7 @@ LIBS:contrib
 LIBS:valves
 LIBS:cherry
 LIBS:design-cache
-EELAYER 27 0
+EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -903,8 +903,6 @@ F 3 "" H 7000 4700 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	1300 5250 1300 5150
-Wire Wire Line
-	6650 5250 6650 5150
 Text GLabel 4250 2300 1    60   Input ~ 0
 C2
 Wire Wire Line
@@ -948,4 +946,6 @@ Wire Wire Line
 	7700 4650 7700 5000
 Connection ~ 7700 4850
 Connection ~ 7700 4750
+Wire Wire Line
+	6650 5250 6650 5150
 $EndSCHEMATC

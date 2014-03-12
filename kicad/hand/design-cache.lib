@@ -1,4 +1,4 @@
-EESchema-LIBRARY Version 2.3  Date: Friday, March 07, 2014 'pmt' 11:59:14 pm
+EESchema-LIBRARY Version 2.3
 #encoding utf-8
 #
 # CONN_1
@@ -6,8 +6,8 @@ EESchema-LIBRARY Version 2.3  Date: Friday, March 07, 2014 'pmt' 11:59:14 pm
 DEF ~CONN_1 P 0 30 N N 1 F N
 F0 "P" 80 0 40 H V L CNN
 F1 "CONN_1" 0 55 30 H I C CNN
-F2 "~" 0 0 60 H V C CNN
-F3 "~" 0 0 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 DRAW
 C 0 0 31 0 1 0 N
 P 2 0 1 0  -30 0  -50 0 N
@@ -20,8 +20,8 @@ ENDDEF
 DEF CONN_12 P 0 40 Y N 1 F N
 F0 "P" -50 0 60 V V C CNN
 F1 "CONN_12" 50 0 60 V V C CNN
-F2 "~" 0 0 60 H V C CNN
-F3 "~" 0 0 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 DRAW
 S -100 600 100 -600 0 1 0 N
 X P1 1 -350 550 250 R 50 50 1 1 P I
@@ -44,8 +44,8 @@ ENDDEF
 DEF DIODE D 0 40 N N 1 F N
 F0 "D" 0 100 40 H V C CNN
 F1 "DIODE" 0 -100 40 H V C CNN
-F2 "~" 0 0 60 H V C CNN
-F3 "~" 0 0 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 $FPLIST
  D?
  S*
@@ -63,8 +63,8 @@ ENDDEF
 DEF SW_PUSH SW 0 40 N N 1 F N
 F0 "SW" 150 110 50 H V C CNN
 F1 "SW_PUSH" 0 -80 50 H V C CNN
-F2 "~" 0 0 60 H V C CNN
-F3 "~" 0 0 60 H V C CNN
+F2 "" 0 0 60 H V C CNN
+F3 "" 0 0 60 H V C CNN
 DRAW
 S -170 50 170 60 0 1 0 N
 P 4 0 1 0  -40 60  -30 90  30 90  40 60 N

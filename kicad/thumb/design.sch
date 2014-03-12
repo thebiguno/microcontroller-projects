@@ -31,7 +31,7 @@ LIBS:contrib
 LIBS:valves
 LIBS:cherry
 LIBS:design-cache
-EELAYER 27 0
+EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -225,7 +225,7 @@ Wire Wire Line
 	4650 4650 4650 3750
 Wire Wire Line
 	4650 3750 5100 3750
-Text GLabel 2450 1150 0    60   Input ~ 0
+Text GLabel 2450 1200 0    60   Input ~ 0
 R0
 $Comp
 L SW_PUSH SW5
@@ -346,8 +346,6 @@ C1
 Text GLabel 4350 550  1    60   Input ~ 0
 C0
 Wire Wire Line
-	2450 1300 2450 1150
-Wire Wire Line
 	3150 1300 3150 1150
 Wire Wire Line
 	3000 1450 2850 1450
@@ -432,4 +430,6 @@ Connection ~ 5250 2800
 Connection ~ 5250 2900
 Text GLabel 5250 3000 2    60   Input ~ 0
 GND
+Wire Wire Line
+	2450 1300 2450 1200
 $EndSCHEMATC
