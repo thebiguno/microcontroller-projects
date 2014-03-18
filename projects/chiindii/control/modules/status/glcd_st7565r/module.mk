@@ -1,0 +1,1 @@
+SOURCES += modules/status/glcd_st7565r/status_glcd_st7565r.c lib/draw/draw.c lib/draw/glcd/glcd_st7565r.c lib/draw/fonts/xsmall.c lib/draw/fonts/small.c lib/draw/fonts/medium.c lib/draw/fonts/large.c lib/draw/fonts/xlarge.c lib/draw/fonts/ascii.c

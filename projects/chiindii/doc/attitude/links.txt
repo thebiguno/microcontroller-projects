@@ -1,0 +1,7 @@
+
+DCM
+http://diydrones.com/profiles/blogs/dcm-imu-theory-first-draft
+
+Complementary
+http://www.rcgroups.com/forums/showthread.php?t=885325&page=86&highlight=complementary#post12082524
+

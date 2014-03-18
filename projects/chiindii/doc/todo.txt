@@ -1,0 +1,41 @@
+Have the GUI show the right tuning screen based on the results of the initial RTS filter
+More configurable flight modes:
+- have one set of pid params for each flight mode
+- add pitch, yaw, roll, throttle scaling params for ea
+- add a mode change message that changes the mode, pid params, and scaling params on the pilot
+- add scaling params to GUI
+
+sticks
+LY		pitch -90 deg to +90 deg (limited by mode)
+LX		roll -90 deg to +90 deg (limited by mode)
+RY		throttle 0 to 100%
+RX		
+L3		reset attitude (only when disarmed)
+R3		calibrate gyros and accels (only when disarmed)
+
+mode buttons
+start		arm / disarm (safety limits applied to arming, disarm is a kill switch)
+select		
+analog		n/a
+
+top buttons
+L1		-7.5 deg / sec
+L2		-22.5 deg / sec
+L1+L2		-45 deg / sec
+R1		+7.5 deg / sec
+R2		+22.5 deg / sec
+R1+R2		+45 deg / sec
+
+right buttons
+square		aerobatic / 3d mode (no limits on pitch and roll)
+triangle	sport mode (roll limited to 30 deg, pitch forward limited to 45 deg, no pitch backwards)
+circle		hover mode (roll, pitch, yaw = 0)
+cross		stable mode (pitch and roll limited to 5 deg)
+
+left buttons
+left		
+right		
+up		
+down		
+
+	
