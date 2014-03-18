@@ -1,9 +1,9 @@
-include ../build/variables.mk
+include ../../../build/variables.mk
 
 PROJECT=control
 MMCU=atmega644p
 F_CPU=8000000
-SOURCES=main.c ../lib/timer/timer_0.c ../lib/Ring/Ring.cpp
+SOURCES=main.c ../../../lib/timer/timer_0.c ../../../lib/Ring/Ring.cpp
 AVRDUDE_PROGRAMMER=usbtiny
 COMPILER=avr-g++
 
@@ -31,7 +31,7 @@ filterversion:
 	@mv main.h main.h.orig
 	@sed -e s/--GIT_VERSION--/$(GIT_VERSION)/g main.h.orig > main.h
 
-include ../build/targets.mk
+include ../../../build/targets.mk
 
 all: cleanupfilterversion
 
