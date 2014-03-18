@@ -1,0 +1,3 @@
+-Alarms on certain weekdays (for this we will also need to support setting the day / month / year / weekday; not sure how we can do that, given how few alarm clock buttons we have to work with...)
+-Radio clock setting via 60kHz NIST signal
+-MP3 or WAV playback for white noise / nature sounds (will likely need another co-processor for this; probably best to implement via a fully self-contained daughterboard communicating via i2c bus)

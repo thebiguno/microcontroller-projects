@@ -1,0 +1,192 @@
+EESchema Schematic File Version 2  date Mon 03 Jan 2011 08:22:23 AM PST
+LIBS:power,device,transistors,conn,linear,regul,74xx,cmos4000,adc-dac,memory,xilinx,special,microcontrollers,dsp,microchip,analog_switches,motorola,texas,intel,audio,interface,digital-audio,philips,display,cypress,siliconi,opto,atmel,contrib,valves
+EELAYER 43  0
+EELAYER END
+$Descr User 8000 6000
+Sheet 1 1
+Title "Slave Flash"
+Date "18 dec 2010"
+Rev ""
+Comp "Wyatt Olson"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Connection ~ 5850 2300
+Wire Wire Line
+	5850 2500 5850 2050
+Wire Wire Line
+	5350 2300 5250 2300
+Wire Wire Line
+	5250 2050 5350 2050
+Wire Wire Line
+	5400 1200 5200 1200
+Wire Wire Line
+	5700 3550 5700 3100
+Wire Wire Line
+	5700 3100 4450 3100
+Wire Wire Line
+	5800 4200 6000 4200
+Wire Wire Line
+	6000 4200 6000 3850
+Wire Wire Line
+	6000 3850 5900 3850
+Connection ~ 1650 1500
+Wire Wire Line
+	1650 1650 1650 1400
+Wire Wire Line
+	3450 700  3450 900 
+Wire Wire Line
+	2550 1500 2200 1500
+Wire Wire Line
+	1650 1400 2550 1400
+Wire Wire Line
+	1650 1500 1800 1500
+Wire Wire Line
+	2550 1600 2350 1600
+Wire Wire Line
+	3450 4000 3450 3800
+Wire Wire Line
+	5600 4200 5400 4200
+Wire Wire Line
+	5400 4200 5400 3850
+Wire Wire Line
+	5400 3850 5500 3850
+Wire Wire Line
+	4800 1200 4450 1200
+Wire Wire Line
+	5850 2050 5750 2050
+Wire Wire Line
+	5850 2300 5750 2300
+Wire Wire Line
+	5250 2300 5250 1800
+Connection ~ 5250 2050
+$Comp
+L +5V #PWR?
+U 1 1 4D0C51B5
+P 5250 1800
+F 0 "#PWR?" H 5250 1890 20  0001 C CNN
+F 1 "+5V" H 5250 1890 30  0000 C CNN
+	1    5250 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4D0C51AD
+P 5850 2500
+F 0 "#PWR?" H 5850 2500 30  0001 C CNN
+F 1 "GND" H 5850 2430 30  0001 C CNN
+	1    5850 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4D0C5173
+P 5400 1200
+F 0 "#PWR?" H 5400 1200 30  0001 C CNN
+F 1 "GND" H 5400 1130 30  0001 C CNN
+	1    5400 1200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CONN_2 P?
+U 1 1 4D0C5120
+P 5700 4550
+F 0 "P?" V 5650 4550 40  0000 C CNN
+F 1 "Flash" V 5750 4550 40  0000 C CNN
+	1    5700 4550
+	0    1    1    0   
+$EndComp
+$Comp
+L PNP Q?
+U 1 1 4D0C50E6
+P 5700 3750
+F 0 "Q?" H 5850 3750 60  0000 C CNN
+F 1 "Triac" H 5604 3900 60  0000 C CNN
+	1    5700 3750
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4D0C50BA
+P 3450 4000
+F 0 "#PWR?" H 3450 4000 30  0001 C CNN
+F 1 "GND" H 3450 3930 30  0001 C CNN
+	1    3450 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 4D0C50AA
+P 1650 1650
+F 0 "#PWR?" H 1650 1650 30  0001 C CNN
+F 1 "GND" H 1650 1580 30  0001 C CNN
+	1    1650 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 4D0C5087
+P 3450 700
+F 0 "#PWR?" H 3450 790 20  0001 C CNN
+F 1 "+5V" H 3450 790 30  0000 C CNN
+	1    3450 700 
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 4D0C507B
+P 2350 1600
+F 0 "#PWR?" H 2350 1690 20  0001 C CNN
+F 1 "+5V" H 2350 1690 30  0000 C CNN
+	1    2350 1600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L DIODE D?
+U 1 1 4D0C501F
+P 5000 1200
+F 0 "D?" H 5000 1300 40  0000 C CNN
+F 1 "Photo Diode" H 5000 1100 40  0000 C CNN
+	1    5000 1200
+	-1   0    0    1   
+$EndComp
+$Comp
+L C C?
+U 1 1 4D0C4F1B
+P 5550 2050
+F 0 "C?" H 5600 2150 50  0000 L CNN
+F 1 "10uF" H 5600 1950 50  0000 L CNN
+	1    5550 2050
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4D0C4F10
+P 5550 2300
+F 0 "C?" H 5600 2400 50  0000 L CNN
+F 1 "0.1uF" H 5600 2200 50  0000 L CNN
+	1    5550 2300
+	0    1    1    0   
+$EndComp
+$Comp
+L C C?
+U 1 1 4D0C4EFF
+P 2000 1500
+F 0 "C?" H 2050 1600 50  0000 L CNN
+F 1 "C" H 2050 1400 50  0000 L CNN
+	1    2000 1500
+	0    1    1    0   
+$EndComp
+$Comp
+L ATMEGA8-P IC?
+U 1 1 4D0C4E61
+P 3450 2300
+F 0 "IC?" H 2750 3550 50  0000 L BNN
+F 1 "ATMEGA 168" H 3700 900 50  0000 L BNN
+F 2 "DIL28" H 3950 825 50  0001 C CNN
+	1    3450 2300
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
