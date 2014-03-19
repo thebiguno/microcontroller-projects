@@ -1,3 +1,4 @@
 $*
 *.bak
 *-cache.lib
+.DS_Store
