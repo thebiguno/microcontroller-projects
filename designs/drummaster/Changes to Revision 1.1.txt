@@ -1,0 +1,4 @@
+Things to change in Drum Master:
+
+1) RJ45 breakout - change from 4x6 to 1x24, and space the two headers out a bit
+2) Use spaces under the Arduino connector pins to raise the Arduino up a little bit.

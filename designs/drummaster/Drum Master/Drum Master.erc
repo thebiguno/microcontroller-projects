@@ -1,0 +1,189 @@
+ERC control (5/5/2008-04:01:52)
+
+***** Sheet 1 (Root)
+ERC: Warning Pin passive Unconnected (X= 20.350 inches, Y= 4.250 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 2.500 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 3.800 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 3.500 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 4.800 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 5.900 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 7.200 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 6.900 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 8.200 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 9.550 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 10.850 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 10.550 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 11.850 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 12.950 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 14.250 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 13.950 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 15.250 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 17.000 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 18.300 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 18.000 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 19.300 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 20.400 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 21.700 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 21.400 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 22.700 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 24.050 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 25.350 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 25.050 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 26.350 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 27.450 inches
+ERC: Warning Pin passive Unconnected (X= 9.000 inches, Y= 28.750 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 28.450 inches
+ERC: Warning Pin passive Unconnected (X= 7.350 inches, Y= 29.750 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 250) (X= 16.150 inches, Y= 13.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 249) (X= 16.150 inches, Y= 12.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 248) (X= 16.150 inches, Y= 12.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 247) (X= 16.150 inches, Y= 12.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 246) (X= 16.150 inches, Y= 12.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 245) (X= 16.150 inches, Y= 12.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 244) (X= 16.150 inches, Y= 11.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 243) (X= 16.150 inches, Y= 11.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 242) (X= 16.150 inches, Y= 11.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 241) (X= 16.150 inches, Y= 11.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 240) (X= 16.150 inches, Y= 11.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 239) (X= 16.150 inches, Y= 10.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 212) (X= 16.150 inches, Y= 11.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 211) (X= 16.150 inches, Y= 11.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 210) (X= 16.150 inches, Y= 11.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 209) (X= 16.150 inches, Y= 11.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 208) (X= 16.150 inches, Y= 11.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 207) (X= 16.150 inches, Y= 12.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 206) (X= 16.150 inches, Y= 12.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 205) (X= 16.150 inches, Y= 12.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 204) (X= 16.150 inches, Y= 12.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 203) (X= 16.150 inches, Y= 12.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 202) (X= 16.150 inches, Y= 13.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 201) (X= 16.150 inches, Y= 13.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 200) (X= 16.150 inches, Y= 16.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 199) (X= 16.150 inches, Y= 15.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 198) (X= 16.150 inches, Y= 15.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 197) (X= 16.150 inches, Y= 15.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 196) (X= 16.150 inches, Y= 15.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 195) (X= 16.150 inches, Y= 15.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 194) (X= 16.150 inches, Y= 14.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 193) (X= 16.150 inches, Y= 14.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 192) (X= 16.150 inches, Y= 14.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 191) (X= 16.150 inches, Y= 14.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 190) (X= 16.150 inches, Y= 14.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 189) (X= 16.150 inches, Y= 13.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 188) (X= 16.150 inches, Y= 13.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 187) (X= 16.150 inches, Y= 14.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 186) (X= 16.150 inches, Y= 14.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 185) (X= 16.150 inches, Y= 14.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 184) (X= 16.150 inches, Y= 14.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 183) (X= 16.150 inches, Y= 14.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 182) (X= 16.150 inches, Y= 15.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 181) (X= 16.150 inches, Y= 15.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 180) (X= 16.150 inches, Y= 15.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 179) (X= 16.150 inches, Y= 15.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 178) (X= 16.150 inches, Y= 15.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 177) (X= 16.150 inches, Y= 16.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 176) (X= 16.150 inches, Y= 19.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 175) (X= 16.150 inches, Y= 18.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 174) (X= 16.150 inches, Y= 18.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 173) (X= 16.150 inches, Y= 18.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 172) (X= 16.150 inches, Y= 18.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 171) (X= 16.150 inches, Y= 18.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 170) (X= 16.150 inches, Y= 17.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 169) (X= 16.150 inches, Y= 17.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 168) (X= 16.150 inches, Y= 17.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 167) (X= 16.150 inches, Y= 17.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 166) (X= 16.150 inches, Y= 17.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 165) (X= 16.150 inches, Y= 16.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 164) (X= 16.150 inches, Y= 16.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 163) (X= 16.150 inches, Y= 17.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 162) (X= 16.150 inches, Y= 17.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 161) (X= 16.150 inches, Y= 17.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 160) (X= 16.150 inches, Y= 17.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 159) (X= 16.150 inches, Y= 17.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 158) (X= 16.150 inches, Y= 18.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 157) (X= 16.150 inches, Y= 18.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 156) (X= 16.150 inches, Y= 18.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 155) (X= 16.150 inches, Y= 18.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 154) (X= 16.150 inches, Y= 18.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 153) (X= 16.150 inches, Y= 19.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 152) (X= 16.150 inches, Y= 21.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 151) (X= 16.150 inches, Y= 21.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 150) (X= 16.150 inches, Y= 21.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 149) (X= 16.150 inches, Y= 21.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 148) (X= 16.150 inches, Y= 21.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 147) (X= 16.150 inches, Y= 20.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 146) (X= 16.150 inches, Y= 20.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 145) (X= 16.150 inches, Y= 20.500 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 144) (X= 16.150 inches, Y= 20.300 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 143) (X= 16.150 inches, Y= 20.100 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 142) (X= 16.150 inches, Y= 19.900 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 141) (X= 16.150 inches, Y= 19.700 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 140) (X= 16.150 inches, Y= 19.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 139) (X= 16.150 inches, Y= 20.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 138) (X= 16.150 inches, Y= 20.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 137) (X= 16.150 inches, Y= 20.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 136) (X= 16.150 inches, Y= 20.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 135) (X= 16.150 inches, Y= 20.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 134) (X= 16.150 inches, Y= 21.000 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 133) (X= 16.150 inches, Y= 21.200 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 132) (X= 16.150 inches, Y= 21.400 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 131) (X= 16.150 inches, Y= 21.600 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 130) (X= 16.150 inches, Y= 21.800 inches
+ERC: Warning: Pin passive connected to Pin unspc (net 129) (X= 16.150 inches, Y= 22.000 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 0.800 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 4.200 inches
+ERC: Error: Pin power_out connected to Pin power_out (net 109) (X= 5.400 inches, Y= 31.900 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 109) (X= 15.150 inches, Y= 11.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 11.700 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 12.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 12.700 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 109) (X= 15.250 inches, Y= 13.350 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 109) (X= 15.150 inches, Y= 14.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 14.600 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 15.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 15.600 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 109) (X= 15.250 inches, Y= 16.250 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 109) (X= 15.150 inches, Y= 17.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 17.600 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 18.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 18.600 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 109) (X= 15.250 inches, Y= 19.250 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 109) (X= 15.150 inches, Y= 20.000 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 20.500 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 21.000 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 109) (X= 15.150 inches, Y= 21.500 inches
+ERC: Warning: Pin power_out connected to Pin BiDi (net 109) (X= 11.300 inches, Y= 10.150 inches
+ERC: Warning: Pin BiDi connected to Pin power_out (net 109) (X= 3.650 inches, Y= 12.050 inches
+ERC: Warning: Pin power_out connected to Pin BiDi (net 109) (X= 11.300 inches, Y= 17.600 inches
+ERC: Warning: Pin BiDi connected to Pin power_out (net 109) (X= 3.650 inches, Y= 19.500 inches
+ERC: Warning: Pin power_out connected to Pin BiDi (net 109) (X= 11.300 inches, Y= 24.650 inches
+ERC: Warning: Pin BiDi connected to Pin power_out (net 109) (X= 3.650 inches, Y= 26.550 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 109) (X= 1.550 inches, Y= 4.200 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 7.850 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 11.250 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 18.700 inches
+ERC: Warning: Pin power_out connected to Pin BiDi (net 26) (X= 16.650 inches, Y= 8.950 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 26) (X= 15.150 inches, Y= 11.300 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 11.800 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 12.300 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 12.800 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 26) (X= 15.300 inches, Y= 10.750 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 26) (X= 15.150 inches, Y= 14.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 14.700 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 15.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 15.700 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 26) (X= 15.300 inches, Y= 13.650 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 26) (X= 15.150 inches, Y= 17.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 17.700 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 18.200 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 18.700 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 26) (X= 15.300 inches, Y= 16.650 inches
+ERC: Warning: Pin unspc connected to Pin power_in (net 26) (X= 15.150 inches, Y= 20.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 20.600 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 21.100 inches
+ERC: Warning: Pin unspc connected to Pin unspc (net 26) (X= 15.150 inches, Y= 21.600 inches
+ERC: Warning: Pin power_in connected to Pin unspc (net 26) (X= 11.400 inches, Y= 24.850 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 22.350 inches
+ERC: Warning Pin passive Unconnected (X= 1.850 inches, Y= 25.750 inches
+
+ >> Errors ERC: 184
