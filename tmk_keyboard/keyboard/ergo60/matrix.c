@@ -164,14 +164,7 @@ uint8_t matrix_key_count(void)
 static uint8_t read(uint8_t row)
 {
 	_delay_us(30);  // without this wait read unstable value.
-    return
-        (PINB&(1<<0) ? 0 : (1<<0)) |
-        (PINB&(1<<1) ? 0 : (1<<1)) |
-        (PINB&(1<<2) ? 0 : (1<<2)) |
-        (PINB&(1<<3) ? 0 : (1<<3)) |
-        (PINB&(1<<4) ? 0 : (1<<4)) |
-        (PINB&(1<<5) ? 0 : (1<<5)) |
-        (PINB&(1<<6) ? 0 : (1<<6)) ;
+	return ~PINB;
 }
 
 /* Row pin configuration
