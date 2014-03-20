@@ -113,3 +113,12 @@ debug-on: all
 
 debug-off: EXTRAFLAGS += -DNO_DEBUG -DNO_PRINT
 debug-off: all
+
+dvorak: OPT_DEFS += -DKEYMAP_DVORAK
+dvorak: all
+
+workman: OPT_DEFS += -DKEYMAP_WORKMAN
+workman: all
+
+colemak: OPT_DEFS += -DKEYMAP_COLEMAK
+colemak: all
