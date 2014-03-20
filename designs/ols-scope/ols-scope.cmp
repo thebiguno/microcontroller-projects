@@ -1,4 +1,18 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Wed 19 Mar 2014 10:18:43 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, March 20, 2014 'pmt' 01:39:16 pm
+
+BeginCmp
+TimeStamp = /532B4435;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /532B4428;
+Reference = C2;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
 
 BeginCmp
 TimeStamp = /5329FFBB;
@@ -29,17 +43,24 @@ IdModule  = D3;
 EndCmp
 
 BeginCmp
-TimeStamp = /532A48D6;
+TimeStamp = /532B1C0C;
 Reference = IC1;
-ValeurCmp = ATTINY85-P;
-IdModule  = DIP-8__300;
+ValeurCmp = ATMEGA48A-P;
+IdModule  = DIP-28__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /532A613C;
+TimeStamp = /5329C67C;
 Reference = P1;
-ValeurCmp = CONN_4X2;
-IdModule  = SWDIP4;
+ValeurCmp = CONN_2X2;
+IdModule  = PIN_ARRAY_2X2;
+EndCmp
+
+BeginCmp
+TimeStamp = /532A02EB;
+Reference = P2;
+ValeurCmp = CONN_2X2;
+IdModule  = PIN_ARRAY_2X2;
 EndCmp
 
 BeginCmp
@@ -127,31 +148,31 @@ IdModule  = R1;
 EndCmp
 
 BeginCmp
-TimeStamp = /5329C237;
+TimeStamp = /532B32D5;
 Reference = U1;
-ValeurCmp = ADC0820;
-IdModule  = DIP-20__300;
-EndCmp
-
-BeginCmp
-TimeStamp = /532A0379;
-Reference = U2;
-ValeurCmp = ADC0820;
-IdModule  = DIP-20__300;
+ValeurCmp = LM324;
+IdModule  = DIP-14__300;
 EndCmp
 
 BeginCmp
 TimeStamp = /5329AFC1;
-Reference = U3;
+Reference = U2;
 ValeurCmp = 74LVC573;
 IdModule  = DIP-20__300;
 EndCmp
 
 BeginCmp
 TimeStamp = /532A033A;
-Reference = U4;
+Reference = U3;
 ValeurCmp = 74LVC573;
 IdModule  = DIP-20__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /532B4315;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = C2;
 EndCmp
 
 EndListe
