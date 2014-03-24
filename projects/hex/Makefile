@@ -1,9 +1,9 @@
 include ../../build/variables.mk
 
-PROJECT=slave_flash
+PROJECT=hex
 MMCU=atmega1284p
 F_CPU=10000000
-SOURCES=main.c lib/pwm/pwm.c 
+SOURCES=hex.c lib/pwm/pwm.c 
 AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 
