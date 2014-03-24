@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <math.h>
+#include <stdlib.h>
 
 //The absolute maximum number of pins defined.  The actual 'used' count is passed
 // into pwm_init, and there is no problem with having a larger number here than is

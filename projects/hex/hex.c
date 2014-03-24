@@ -29,33 +29,33 @@
 #define RR_TIBIA	17
 
 #define MIN_PHASE	800
-#define MID_PHASE	1500
+#define NEUTRAL	1500
 #define MAX_PHASE	2200
 
 int16_t leg_neutral_offset[18] = {
 	//Front:
-	-150,	//L_COXA
+	0,	//L_COXA
 	0,		//L_FEMUR
-	-180,		//L_TIBIA
-	-120,	//R_COXA
+	0,		//L_TIBIA
+	0,	//R_COXA
 	0,		//R_FEMUR
-	-30,		//R_TIBIA
+	0,		//R_TIBIA
 	
 	//Middle:
-	-120,	//L_COXA
+	0,	//L_COXA
 	0,		//L_FEMUR
-	-130,		//L_TIBIA
-	-150,		//R_COXA
+	0,		//L_TIBIA
+	0,		//R_COXA
 	0,		//R_FEMUR
-	-120,		//R_TIBIA
+	0,		//R_TIBIA
 	
 	//Rear
-	-50,	//L_COXA
+	0,	//L_COXA
 	0,		//L_FEMUR
-	-150,	//L_TIBIA
-	-100,	//R_COXA
+	0,	//L_TIBIA
+	0,	//R_COXA
 	0,		//R_FEMUR
-	-50		//R_TIBIA
+	0		//R_TIBIA
 };
 
 int main (void){
@@ -106,23 +106,13 @@ int main (void){
 	pwm_init(ports, pins, 18, 20000);
 	
 	for (uint8_t i = 0; i < 18; i++){
-		pwm_set_phase(i, 1500 + leg_neutral_offset[i]);	//Set to neutral position
+		pwm_set_phase(i, NEUTRAL + leg_neutral_offset[i]);	//Set to neutral position
 	}
 	
+	int offset = 0;
 	while(1){
-		/*
-		for (uint8_t i = 0; i < 18; i++){		
-			pwm_set_phase(i, MAX_PHASE);
-		}
-		_delay_ms(2000);
-		for (uint8_t i = 0; i < 18; i++){		
-			pwm_set_phase(i, MIN_PHASE);
-		}
-		_delay_ms(2000);
-		for (uint8_t i = 0; i < 18; i++){		
-			pwm_set_phase(i, MID_PHASE);
-		}
-		_delay_ms(4000);
-		*/
+//		offset += 16;
+//		pwm_set_phase(FR_COXA, NEUTRAL + offset);	//Set to neutral position
+//		_delay_ms(1000);
 	}
 }

@@ -23,6 +23,7 @@ static uint32_t _new_period = 0; //New period defined, changed in COMPA interrup
 //Variables used to store config data
 static struct pwm_pin_t _pins[PWM_MAX_PINS];		//Array of pins
 static uint8_t _count;								//How many pins should be used
+static volatile uint8_t _next_pin;					//Index of the next pin to fire
 
 static uint16_t _prescaler = 0x0;
 static uint8_t _prescaler_mask = 0x0;
@@ -160,7 +161,7 @@ void pwm_stop(){
 	//Set pins low
 	for (uint8_t i = 0; i < _count; i++){
 		*(_pins[i].port) &= ~_BV(_pins[i].pin);
-	}	
+	}
 }
 
 void pwm_set_phase(uint8_t index, uint16_t phase){
@@ -172,6 +173,14 @@ void pwm_set_phase(uint8_t index, uint16_t phase){
 
 void pwm_set_period(uint32_t period){
 	_new_period = period;
+}
+
+
+//The comparison method used in qsort (in the COMPA vector)
+static int16_t _compare_values(const void *pin1, const void *pin2){
+	 const struct pwm_pin_t *pwm1 = pin1;
+	 const struct pwm_pin_t *pwm2 = pin2;
+	 return pwm1->value - pwm2->value;
 }
 
 /* 
@@ -191,7 +200,10 @@ ISR(TIMER1_COMPA_vect){
 		for (uint8_t i = 0; i < _count; i++){
 			_pins[i].value = _pins[i].next_value;
 		}
-		//TODO Sort
+		
+		//Sort the _pins array by value.  This speeds up each successive compare operation in COMPB.
+		qsort(_pins, _count, sizeof _pins[0], _compare_values);
+		
 		_new_value_set = 0;
 	}
 	if (_new_period){
@@ -200,17 +212,18 @@ ISR(TIMER1_COMPA_vect){
 	}
 	
 	//Set pins high, if the PWM value is > 0.
-	//NOTE: If you need high speed for many pins, copy this library and change this loop to hardcoded PORT assignments.
+	//NOTE: If you need high speed for many pins, change this loop to hardcoded PORTX assignments.
 	for (uint8_t i = 0; i < _count; i++){
 		if (_pins[i].value > 0){
 			*(_pins[i].port) |= _BV(_pins[i].pin);
 		}
 	}
+	
+	//Reset next pin pointer to first index in the sorted array
+	_next_pin = 0;
 
-	//Trigger OCRB to interrupt 'Real Soon Now'.  Set this as low as possible while still
-	// retailing stability.  5 seems to be about the lowest number, we leave it at 10
-	// to be sure.
-	OCRB = 0xA;		//TODO Set to first value
+	//Set to the first compare value
+	OCRB = _pins[0].next_value;
 	
 	//Reset counter
 	TCNT = 0;
@@ -232,22 +245,19 @@ ISR(TIMER1_COMPB_vect){
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
 	
-	//Find the next value to trigger overflow
-	uint16_t value = 0xFFFF;
-	for (uint8_t i = 0; i < _count; i++){
-		//Have we already passed the end of this phase?
-		if (_pins[i].value <= TCNT){
-			*(_pins[i].port) &= ~_BV(_pins[i].pin); //Turn off matching pins
-		}
-		//If not, is it the next lowest available value?
-		else if (_pins[i].value < value){
-			value = _pins[i].value; //Find next match
-		}
+	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
+	while (_pins[_next_pin].value <= TCNT){
+		*(_pins[_next_pin].port) &= ~_BV(_pins[_next_pin].pin); //Turn off pin
+		_next_pin++;
 	}
 	
-	//Set the timer for the next lowest value
-	OCRB = value;
-	if (OCRB <= TCNT + 1) OCRB = TCNT;
+	//Set the timer for the next lowest value if available; 0xFFFF otherwise
+	if (_next_pin < _count){
+		OCRB = _pins[_next_pin].value;
+	}
+	else {
+		OCRB = 0xFFFF;
+	}
 
 	//Re-enable clock
 	TCCRB |= _prescaler_mask;
