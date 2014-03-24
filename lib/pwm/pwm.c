@@ -5,21 +5,23 @@
 
 #include "pwm.h"
 
+struct pwm_pin_t {
+	volatile uint8_t *port;
+	uint8_t pin;
+	
+	uint16_t value;
+	uint16_t next_value;
+};
+
 //Macro to convert VALUE (in µs) to a clock tick count with a specified prescaler.
 #define PWM_US_TO_CLICKS(value, prescaler) (F_CPU / 1000000) * (value / prescaler)
 
-//Current values are here
-static uint16_t _values[PWM_MAX_PINS];
-
-//New values are here, they are copied over at the start of a new waveform
-static uint16_t _new_values[PWM_MAX_PINS];
+//New value flags; they are checked at the start of a new waveform
 static uint8_t _new_value_set = 0; //Set to true when updated values
 static uint32_t _new_period = 0; //New period defined, changed in COMPA interrupt
 
 //Variables used to store config data
-static volatile uint8_t *_ports[PWM_MAX_PINS];		//Array of ports used
-static volatile uint8_t *_ddrs[PWM_MAX_PINS];		//Array of DDRs used
-static uint8_t _pins[PWM_MAX_PINS];				//Array of pins used
+static struct pwm_pin_t _pins[PWM_MAX_PINS];		//Array of pins
 static uint8_t _count;								//How many pins should be used
 
 static uint16_t _prescaler = 0x0;
@@ -83,9 +85,9 @@ void pwm_init(volatile uint8_t *ports[],
 	
 	//Store values
 	for (uint8_t i = 0; i < _count; i++){
-		_ports[i] = ports[i];
-		_ddrs[i] = ports[i] - 0x1;
-		_pins[i] = pins[i];
+		_pins[i].port = ports[i];
+		_pins[i].pin = pins[i];
+		*(_pins[i].port - 0x1) |= _BV(_pins[i].pin);
 	}
 	
 	//This is calculated by the focumula:
@@ -125,13 +127,6 @@ void pwm_init(volatile uint8_t *ports[],
 		_prescaler = 1024;
 		_prescaler_mask = _BV(CS12) | _BV(CS10);
 	}
-	
-	//Initialize _values and _new_values to 0, and enable all pins for output
-	for (uint8_t i = 0; i < _count; i++){
-		*_ddrs[i] |= _BV(_pins[i]);
-		_values[i] = 0;
-		_new_values[i] = 0;
-	}
 				
 	TCCRA = 0x00;
 	TCCRB |= _prescaler_mask;
@@ -164,13 +159,13 @@ void pwm_stop(){
 
 	//Set pins low
 	for (uint8_t i = 0; i < _count; i++){
-		*_ports[i] &= ~_BV(_pins[i]);
+		*(_pins[i].port) &= ~_BV(_pins[i].pin);
 	}	
 }
 
 void pwm_set_phase(uint8_t index, uint16_t phase){
 	if (index < _count){
-		_new_values[index] = PWM_US_TO_CLICKS(phase, _prescaler);
+		_pins[index].next_value = PWM_US_TO_CLICKS(phase, _prescaler);
 		_new_value_set = 1;
 	}
 }
@@ -194,8 +189,9 @@ ISR(TIMER1_COMPA_vect){
 	//Update values if needed
 	if (_new_value_set){
 		for (uint8_t i = 0; i < _count; i++){
-			_values[i] = _new_values[i];
+			_pins[i].value = _pins[i].next_value;
 		}
+		//TODO Sort
 		_new_value_set = 0;
 	}
 	if (_new_period){
@@ -204,16 +200,17 @@ ISR(TIMER1_COMPA_vect){
 	}
 	
 	//Set pins high, if the PWM value is > 0.
+	//NOTE: If you need high speed for many pins, copy this library and change this loop to hardcoded PORT assignments.
 	for (uint8_t i = 0; i < _count; i++){
-		if (_values[i] > 0){
-			*_ports[i] |= _BV(_pins[i]);
+		if (_pins[i].value > 0){
+			*(_pins[i].port) |= _BV(_pins[i].pin);
 		}
 	}
 
 	//Trigger OCRB to interrupt 'Real Soon Now'.  Set this as low as possible while still
 	// retailing stability.  5 seems to be about the lowest number, we leave it at 10
 	// to be sure.
-	OCRB = 0xA;
+	OCRB = 0xA;		//TODO Set to first value
 	
 	//Reset counter
 	TCNT = 0;
@@ -239,12 +236,12 @@ ISR(TIMER1_COMPB_vect){
 	uint16_t value = 0xFFFF;
 	for (uint8_t i = 0; i < _count; i++){
 		//Have we already passed the end of this phase?
-		if (_values[i] <= TCNT){
-			*_ports[i] &= ~_BV(_pins[i]); //Turn off matching pins
+		if (_pins[i].value <= TCNT){
+			*(_pins[i].port) &= ~_BV(_pins[i].pin); //Turn off matching pins
 		}
 		//If not, is it the next lowest available value?
-		else if (_values[i] < value){
-			value = _values[i]; //Find next match
+		else if (_pins[i].value < value){
+			value = _pins[i].value; //Find next match
 		}
 	}
 	
