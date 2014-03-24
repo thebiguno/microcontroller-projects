@@ -1,0 +1,94 @@
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Sun 23 Mar 2014 09:02:27 PM MDT
+
+BeginCmp
+TimeStamp = /532EDCAD;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /532C95F4;
+Reference = IC1;
+ValeurCmp = ATMEGA1284P-P;
+IdModule  = DIP-40__600;
+EndCmp
+
+BeginCmp
+TimeStamp = /532EDC04;
+Reference = K1;
+ValeurCmp = RESONATOR;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /532FA3B6;
+Reference = K2;
+ValeurCmp = REGUL;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /532FA2B1;
+Reference = P1;
+ValeurCmp = PROG;
+IdModule  = pin_array_3x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /532C96F2;
+Reference = P2;
+ValeurCmp = PWM;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532C9705;
+Reference = P3;
+ValeurCmp = PWM;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532F9D59;
+Reference = P4;
+ValeurCmp = VCC;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532F9D5F;
+Reference = P5;
+ValeurCmp = VCC;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532FA2F2;
+Reference = P6;
+ValeurCmp = JUMPER;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /532F9D65;
+Reference = P7;
+ValeurCmp = GND;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532F9D6B;
+Reference = P8;
+ValeurCmp = GND;
+IdModule  = SIL-9;
+EndCmp
+
+BeginCmp
+TimeStamp = /532C9BB8;
+Reference = R1;
+ValeurCmp = 1k;
+IdModule  = R1;
+EndCmp
+
+EndListe
