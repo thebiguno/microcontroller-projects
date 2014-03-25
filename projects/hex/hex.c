@@ -34,12 +34,12 @@
 
 int16_t leg_neutral_offset[18] = {
 	//Front:
-	10,	//L_COXA
-	15,		//L_FEMUR
-	20,		//L_TIBIA
-	0,	//R_COXA
-	0,		//R_FEMUR
-	0,		//R_TIBIA
+	0,	//L_COXA
+	0,		//L_FEMUR
+	5,		//L_TIBIA
+	15,	//R_COXA
+	20,		//R_FEMUR
+	100,		//R_TIBIA
 	
 	//Middle:
 	0,	//L_COXA

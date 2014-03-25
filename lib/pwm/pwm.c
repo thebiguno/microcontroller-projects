@@ -83,13 +83,10 @@ static uint8_t _prescaler_mask = 0x0;							//Prescaler mask corresponding to _p
 #endif
 
 static uint16_t _pwm_micros_to_clicks(uint32_t micros){
-//Define PWM_DISABLE_DOUBLE_INTERNAL to use integer math in the micros to clicks calculation.  This will 
-// result in smaller code, at the expense of accuracy.
-#ifndef PWM_DISABLE_DOUBLE_INTERNAL
-	return (((double) F_CPU / 1000000) * micros) / _prescaler;
-#else
+	//There is a potential for an overflow here if micros * (F_CPU in MHz) does not fit into
+	// a 32 bit variable.  If this happens, we can divide micros by prescaler before multiplying
+	// with F_CPU, although this will give a loss of precision.  Leave as-is for now.
 	return ((F_CPU / 1000000) * micros) / _prescaler;
-#endif
 }
 
 /*
@@ -283,7 +280,6 @@ void pwm_set_period(uint32_t period){
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #else
-EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 #endif
 	//Reset counter
@@ -340,4 +336,6 @@ ISR(TIMER1_COMPB_vect){
 
 	//Re-enable clock
 	TCCRB |= _prescaler_mask;
+	
+	sei();
 }
