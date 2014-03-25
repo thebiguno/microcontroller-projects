@@ -21,7 +21,7 @@ static uint8_t _new_value_set = 0; //Set to true when updated values
 static uint32_t _new_period = 0; //New period defined, changed in COMPA interrupt
 
 //Variables used to store config data
-static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];		//Array of pins
+static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];	//Array of pins
 static uint8_t _count;								//How many pins should be used
 static volatile uint8_t _next_pin;					//Index of the next pin to fire
 
@@ -215,11 +215,12 @@ ISR(TIMER1_COMPA_vect){
 	}
 	
 	//Set pins high, if the PWM value is > 0.
-	//IMPORTANT TIMING NOTE: If you need high speed for many pins, declare the PWM_ALL_HIGH define to be statements
+	//NOTE: If you need high speed for many pins, declare the PWM_ALL_HIGH define in the makefile CDEFS to be statements
 	// to set all pins high.  For instance, if you use all of PORTA and the bottom half of PORTB, the define should
 	// be:
-	//#define PWM_ALL_HIGH PORTA = 0xFF; PORTB |= 0x0F;
-	//Note the semi colons; this value is injected directly here, so must be valid C code.
+	//-DPWM_ALL_HIGH='PORTA = 0xFF; PORTB |= 0x0F;'
+	//Note the single quotes and semi colons; this value is injected directly here, so must be valid C code.  The quotes
+	// ensure that the Makefile doesn't try to parse it directly.
 #ifndef PWM_ALL_HIGH
 	for (uint8_t i = 0; i < _count; i++){
 		if (_pwm_pins[i].value > 0){
@@ -254,9 +255,6 @@ ISR(TIM0_COMPB_vect){
 #else
 ISR(TIMER1_COMPB_vect){
 #endif
-	//Turn off clock to avoid timing issues
-	TCCRB = 0x00;
-	
 	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
 	// We extract the pin struct from the array once, to avoid repeated array indexing operations.  This seems to 
 	// save about 2us (the loop takes 6us vs. 8us if we index in all three places).
@@ -275,7 +273,4 @@ ISR(TIMER1_COMPB_vect){
 	else {
 		OCRB = 0xFFFF;
 	}
-
-	//Re-enable clock
-	TCCRB |= _prescaler_mask;
 }
