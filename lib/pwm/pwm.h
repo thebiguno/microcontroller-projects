@@ -54,7 +54,7 @@ void pwm_init(volatile uint8_t *ports[],
  * Sets the phase of the pin at the given index to the specified value.  The index
  * matches the index used for the arrays in pwm_init().
  */
-void pwm_set_phase(uint8_t index, uint16_t phase);
+void pwm_set_phase(uint8_t index, uint32_t phase);
 
 /*
  * Sets the period of the PWM generator, changing the period specified in init().  
