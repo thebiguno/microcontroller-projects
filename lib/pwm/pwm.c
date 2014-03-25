@@ -86,7 +86,14 @@ static uint16_t _pwm_micros_to_clicks(uint32_t micros){
 	//There is a potential for an overflow here if micros * (F_CPU in MHz) does not fit into
 	// a 32 bit variable.  If this happens, we can divide micros by prescaler before multiplying
 	// with F_CPU, although this will give a loss of precision.  Leave as-is for now.
-	return ((F_CPU / 1000000) * micros) / _prescaler;
+	return (((F_CPU / 1000000) * micros) / _prescaler) & 0xFFF0;
+	
+	//TODO Rounding, based on 10MHz clock and various prescalers:
+	//Prescaler: 1, AND with 0xFF80
+	//Prescaler: 8, AND with 0xFFF0
+	//Prescaler: 64, AND with 0xFFFE
+	//Other prescalers should be fine as-is...
+	//More testing at different F_CPU values and prescalers are still required.
 }
 
 /*
@@ -213,7 +220,6 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	_pwm_event_high_new.portb_mask = 0x00;
 	_pwm_event_high_new.portc_mask = 0x00;
 	_pwm_event_high_new.portd_mask = 0x00;
-	
 	for (uint8_t i = 0; i < _count + 1; i++){
 		_pwm_events_low_new[i].compare_value = 0xFFFF;
 		_pwm_events_low_new[i].porta_mask = 0xFF;
@@ -320,9 +326,6 @@ ISR(TIM0_COMPB_vect){
 #else
 ISR(TIMER1_COMPB_vect){
 #endif
-	//Turn off clock to avoid timing issues
-	TCCRB = 0x00;
-
 	struct pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
 	_pwm_events_low_index++;
 	
@@ -333,9 +336,4 @@ ISR(TIMER1_COMPB_vect){
 	
 	//Set the timer for the next lowest value.
 	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
-
-	//Re-enable clock
-	TCCRB |= _prescaler_mask;
-	
-	sei();
 }
