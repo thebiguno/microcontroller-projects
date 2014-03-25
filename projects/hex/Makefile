@@ -9,8 +9,7 @@ AVRDUDE_PROGRAMMER=usbtiny
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS+=-DPWM_MAX_PINS=18 -DPWM_ALL_HIGH='PORTA|=0x7F;PORTB|=0x1F;PORTC|=0xFC;'
-		
+CDEFS+=-DPWM_MAX_PINS=18
 
 HFUSE=0xD9
 LFUSE=0xFF

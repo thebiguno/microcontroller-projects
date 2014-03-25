@@ -8,25 +8,41 @@
 struct pwm_pin_t {
 	volatile uint8_t *port;
 	uint8_t pin;
-	
-	uint16_t value;
-	uint16_t next_value;
+	uint16_t compare_value;
+};
+
+struct pwm_event_t {
+	//Port masks
+	uint8_t porta_mask;
+	uint8_t portb_mask;
+	uint8_t portc_mask;
+	uint8_t portd_mask;
+
+	//Only used in OCRB; ignored for high event in OCRA.
+	uint16_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
+	uint16_t next_compare_value;	//The next value of COMPB (what we set OCRB to for next time).
 };
 
 //Macro to convert VALUE (in µs) to a clock tick count with a specified prescaler.
 #define PWM_US_TO_CLICKS(value, prescaler) (F_CPU / 1000000) * (value / prescaler)
 
-//New value flags; they are checked at the start of a new waveform
-static uint8_t _new_value_set = 0; //Set to true when updated values
-static uint32_t _new_period = 0; //New period defined, changed in COMPA interrupt
+static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is updated
+static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCRA from copying the double buffered pwm_events when this is 0.
+
+static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCRA in changed in COMPA interrupt
 
 //Variables used to store config data
-static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];	//Array of pins
-static uint8_t _count;								//How many pins should be used
-static volatile uint8_t _next_pin;					//Index of the next pin to fire
+static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];				//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
+static uint8_t _count;											//How many pins should be used
 
-static uint16_t _prescaler = 0x0;
-static uint8_t _prescaler_mask = 0x0;
+static struct pwm_event_t _pwm_event_high;						//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
+
+static struct pwm_event_t _pwm_events_low[PWM_MAX_PINS];		//Array of pwm events.  Each event will set one or more pins low.
+static struct pwm_event_t _pwm_events_low_new[PWM_MAX_PINS];	//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
+static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
+
+static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for PWM_US_TO_CLICKS macro calls.
+static uint8_t _prescaler_mask = 0x0;							//Prescaler mask corresponding to _prescaler
 
 //Figure out which registers to use, depending on the chip in use
 #if defined(__AVR_ATtiny25__)   || \
@@ -166,24 +182,112 @@ void pwm_stop(){
 	}
 }
 
+static void _pulse_value(uint16_t value){
+	PORTA |= _BV(PORTA1) | _BV(PORTA0);
+	for (uint8_t i = 0; i < 16; i++){
+		if (value & _BV(i)) PORTA |= _BV(PORTA0);
+		else PORTA &= ~_BV(PORTA0);
+	}
+	PORTA &= ~(_BV(PORTA1) | _BV(PORTA0));
+}
+
+
+//The comparison method used to sort pwm_pin variables
+static int16_t _compare_values(const void *pin1, const void *pin2){
+	 const struct pwm_pin_t *pwm1 = pin1;
+	 const struct pwm_pin_t *pwm2 = pin2;
+	 return pwm1->compare_value - pwm2->compare_value;
+}
+
 void pwm_set_phase(uint8_t index, uint16_t phase){
+	_set_phase_lock = 1;
+	PORTA ^= _BV(PORTA6);
 	if (index < _count){
-		_pwm_pins[index].next_value = PWM_US_TO_CLICKS(phase, _prescaler);
-		_new_value_set = 1;
+		struct pwm_pin_t p = _pwm_pins[index];
+		p.compare_value = PWM_US_TO_CLICKS(phase, _prescaler);
+		_pulse_value(~p.compare_value);		
+		
+		//Populate the _pwm_event_high variable, used in OCRA to turn pins high.
+		if (phase > 0){
+			if (p.port == &PORTA) _pwm_event_high.porta_mask |= _BV(p.pin);
+			else if (p.port == &PORTB) _pwm_event_high.portb_mask |= _BV(p.pin);
+			else if (p.port == &PORTC) _pwm_event_high.portc_mask |= _BV(p.pin);
+			else if (p.port == &PORTD) _pwm_event_high.portd_mask |= _BV(p.pin);
+		}
+		else {
+			if (p.port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p.pin);
+			else if (p.port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p.pin);
+			else if (p.port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p.pin);
+			else if (p.port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p.pin);
+		}
+		
+		//Copy _pwm_pins to _pwm_pins_sorted, and then sort it by value
+		struct pwm_pin_t _pwm_pins_sorted[PWM_MAX_PINS];
+		for (uint8_t i = 0; i < _count; i++){
+			_pwm_pins_sorted[i] = _pwm_pins[i];
+		}
+		qsort(_pwm_pins_sorted, _count, sizeof _pwm_pins_sorted[0], _compare_values);
+
+		//Populate the _pwm_events_low_new array, used in OCRB to turn pins low.
+		//First we reset everything in this array...
+		for (uint8_t i = 0; i < _count; i++){
+			_pwm_events_low_new[i].compare_value = 0xFFFF;
+			_pwm_events_low_new[i].porta_mask = 0x00;
+			_pwm_events_low_new[i].portb_mask = 0x00;
+			_pwm_events_low_new[i].portc_mask = 0x00;
+			_pwm_events_low_new[i].portd_mask = 0x00;
+		}
+		//... then we look through the sorted _pwm_pins list, and collect all of the ports / pins which are
+		// set at the same compare values into a single event.
+		uint16_t last_compare_value = _pwm_pins_sorted[0].compare_value;
+		uint8_t last_index = 0;
+		for (uint8_t i = 0; i < _count; i++){
+			struct pwm_pin_t p = _pwm_pins_sorted[i];
+			if (p.compare_value > last_compare_value){
+				//We don't want an empty pwm_event at the beginning of the array, so verify whether last_compare_value was zero before incrementing
+				if (last_compare_value > 0) {
+					last_index++;
+				}
+				last_compare_value = p.compare_value;
+			}
+			_pulse_value(~p.compare_value);
+			if (p.compare_value > 0){
+
+				struct pwm_event_t e = _pwm_events_low_new[last_index];
+				e.compare_value = last_compare_value;
+				if (p.port == &PORTA) e.porta_mask |= _BV(p.pin);
+				else if (p.port == &PORTB) e.portb_mask |= _BV(p.pin);
+				else if (p.port == &PORTC) e.portc_mask |= _BV(p.pin);
+				else if (p.port == &PORTD) e.portd_mask |= _BV(p.pin);
+			}
+		}
+
+		//... then we loop backwards and propagate the values into the previous array entry's next_value field.  At the same time we
+		// invert the port masks (since we will be using &= to bring the pins low; better to do the inversion math once here rather 
+		// than once every phase).
+		last_compare_value = 0xFFFF;
+		for (uint8_t i = _count - 1; i != 0xFF; i--){
+			struct pwm_event_t e = _pwm_events_low_new[i];
+			e.next_compare_value = last_compare_value;
+			last_compare_value = e.compare_value;
+			
+			e.porta_mask = ~e.porta_mask;
+			e.portb_mask = ~e.portb_mask;
+			e.portc_mask = ~e.portc_mask;
+			e.portd_mask = ~e.portd_mask;
+		}
+
+		//Signal OCRA that we are ready to load new values
+		_set_phase = 1;
+		_set_phase_lock = 0;
 	}
 }
 
 void pwm_set_period(uint32_t period){
-	_new_period = period;
+	_set_period = PWM_US_TO_CLICKS(period, _prescaler);
 }
 
 
-//The comparison method used in qsort (in the COMPA vector)
-static int16_t _compare_values(const void *pin1, const void *pin2){
-	 const struct pwm_pin_t *pwm1 = pin1;
-	 const struct pwm_pin_t *pwm2 = pin2;
-	 return pwm1->value - pwm2->value;
-}
 
 /* 
  * The frequency comparison.  When it overflows, we reset the timer to 0.
@@ -197,47 +301,28 @@ ISR(TIMER1_COMPA_vect){
 #endif
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
-	
+	PORTA ^= _BV(PORTA7);
 	//Update values if needed
-	if (_new_value_set){
+	if (_set_phase && !_set_phase_lock){
 		for (uint8_t i = 0; i < _count; i++){
-			_pwm_pins[i].value = _pwm_pins[i].next_value;
+			_pwm_events_low[i] = _pwm_events_low_new[i];
 		}
-		
-		//Sort the _pwm_pins array by value.  This speeds up each successive compare operation in COMPB.
-		qsort(_pwm_pins, _count, sizeof _pwm_pins[0], _compare_values);
-		
-		_new_value_set = 0;
+		_set_phase = 0;
 	}
-	if (_new_period){
-		OCRA = PWM_US_TO_CLICKS(_new_period, _prescaler);
-		_new_period = 0;
+	if (_set_period){
+		OCRA = _set_period;
+		_set_period = 0;
 	}
 	
-	//Set pins high, if the PWM value is > 0.
-	//NOTE: If you need high speed for many pins, declare the PWM_ALL_HIGH define in the makefile CDEFS to be statements
-	// to set all pins high.  For instance, if you use all of PORTA and the bottom half of PORTB, the define should
-	// be:
-	//-DPWM_ALL_HIGH='PORTA = 0xFF; PORTB |= 0x0F;'
-	//Note the single quotes and semi colons; this value is injected directly here, so must be valid C code.  The quotes
-	// ensure that the Makefile doesn't try to parse it directly.
-#ifndef PWM_ALL_HIGH
-	for (uint8_t i = 0; i < _count; i++){
-		if (_pwm_pins[i].value > 0){
-			*(_pwm_pins[i].port) |= _BV(_pwm_pins[i].pin);
-		}
-	}
-#else
-	PWM_ALL_HIGH
-#endif
+	//Set pins high.
+	PORTA |= _pwm_event_high.porta_mask;
+	PORTB |= _pwm_event_high.portb_mask;
+	PORTC |= _pwm_event_high.portc_mask;
+	PORTD |= _pwm_event_high.portd_mask;
 	
-	//Reset next pin pointer to first index in the sorted array
-	_next_pin = 0;
-
-	//Set to the first (sorted) compare value (or a very small value if the requested value is zero).  If the 
-	// value is zero, the compare will never trigger.
-	OCRB = _pwm_pins[_next_pin].next_value;
-	if (OCRB < 0x0A) OCRB = 0x0A;
+	//Set to the first (sorted) compare value in the pwm_events_low array.  This is populated in set_phase.
+	_pwm_events_low_index = 0;
+	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
 	
 	//Reset counter
 	TCNT = 0;
@@ -255,22 +340,20 @@ ISR(TIM0_COMPB_vect){
 #else
 ISR(TIMER1_COMPB_vect){
 #endif
-	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
-	// We extract the pin struct from the array once, to avoid repeated array indexing operations.  This seems to 
-	// save about 2us (the loop takes 6us vs. 8us if we index in all three places).
-	struct pwm_pin_t pin = _pwm_pins[_next_pin];
-	while (_next_pin < _count && pin.value <= TCNT){
-		PORTA ^= _BV(PORTA7);
-		*(pin.port) &= ~_BV(pin.pin); //Turn off pin
-		_next_pin++;
-		pin = _pwm_pins[_next_pin];
-	}
+	//Turn off clock to avoid timing issues
+	TCCRB = 0x00;
+	PORTA ^= _BV(PORTA6);
+	struct pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
+	_pwm_events_low_index++;
 	
-	//Set the timer for the next lowest value if available; 0xFFFF otherwise
-	if (_next_pin < _count){
-		OCRB = _pwm_pins[_next_pin].value;
-	}
-	else {
-		OCRB = 0xFFFF;
-	}
+	PORTA &= e.porta_mask;
+	PORTB &= e.portb_mask;
+	PORTC &= e.portc_mask;
+	PORTD &= e.portd_mask;
+	
+	//Set the timer for the next lowest value.
+	OCRB = e.next_compare_value;
+
+	//Re-enable clock
+	TCCRB |= _prescaler_mask;
 }

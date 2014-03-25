@@ -35,8 +35,8 @@
 int16_t leg_neutral_offset[18] = {
 	//Front:
 	10,	//L_COXA
-	0,		//L_FEMUR
-	0,		//L_TIBIA
+	15,		//L_FEMUR
+	20,		//L_TIBIA
 	0,	//R_COXA
 	0,		//R_FEMUR
 	0,		//R_TIBIA
@@ -105,11 +105,12 @@ int main (void){
 	
 	pwm_init(ports, pins, 18, 20000);
 	
+	//pwm_set_phase(ML_FEMUR, 1000);
 	for (uint8_t i = 0; i < 18; i++){
 		pwm_set_phase(i, NEUTRAL + leg_neutral_offset[i]);	//Set to neutral position
 	}
 	
-	int offset = 0;
+	//int offset = 0;
 	while(1){
 //		offset += 16;
 //		pwm_set_phase(FR_COXA, NEUTRAL + offset);	//Set to neutral position
