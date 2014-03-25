@@ -139,8 +139,6 @@ void pwm_init(volatile uint8_t *ports[],
 	//Enable compare interrupt on both channels
 	TIMSKR = _BV(OCIEA) | _BV(OCIEB);
 	
-	DDRA |= _BV(PORTA7);
-	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -198,8 +196,6 @@ ISR(TIMER1_COMPA_vect){
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
 	
-	PORTA ^= _BV(PORTA7);
-	
 	//Update values if needed
 	if (_new_value_set){
 		for (uint8_t i = 0; i < _count; i++){
@@ -217,12 +213,20 @@ ISR(TIMER1_COMPA_vect){
 	}
 	
 	//Set pins high, if the PWM value is > 0.
-	//NOTE: If you need high speed for many pins, change this loop to hardcoded PORTX assignments.
+	//IMPORTANT TIMING NOTE: If you need high speed for many pins, declare the PWM_ALL_HIGH define to be statements
+	// to set all pins high.  For instance, if you use all of PORTA and the bottom half of PORTB, the define should
+	// be:
+	//#define PWM_ALL_HIGH PORTA = 0xFF; PORTB |= 0x0F;
+	//Note the semi colons; this value is injected directly here, so must be valid C code.
+#ifndef PWM_ALL_HIGH
 	for (uint8_t i = 0; i < _count; i++){
 		if (_pins[i].value > 0){
 			*(_pins[i].port) |= _BV(_pins[i].pin);
 		}
 	}
+#else
+	PWM_ALL_HIGH
+#endif
 	
 	//Reset next pin pointer to first index in the sorted array
 	_next_pin = 0;
@@ -248,31 +252,23 @@ ISR(TIM0_COMPB_vect){
 #else
 ISR(TIMER1_COMPB_vect){
 #endif
-
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
 	
-	PORTA ^= _BV(PORTA7);
-	
 	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
-	while (_pins[_next_pin].value <= TCNT){
+	while (_next_pin < _count && _pins[_next_pin].value <= TCNT){
 		*(_pins[_next_pin].port) &= ~_BV(_pins[_next_pin].pin); //Turn off pin
 		_next_pin++;
 	}
 	
 	//Set the timer for the next lowest value if available; 0xFFFF otherwise
-	/*
 	if (_next_pin < _count){
 		OCRB = _pins[_next_pin].value;
+		if (OCRB < TCNT + 0x05) OCRB = TCNT + 0x05;
 	}
 	else {
 		OCRB = 0xFFFF;
 	}
-	
-	if (OCRB <= TCNT + 1) OCRB = TCNT + 1;
-	*/
-	
-	OCRB = TCNT + 100;
 
 	//Re-enable clock
 	TCCRB |= _prescaler_mask;
