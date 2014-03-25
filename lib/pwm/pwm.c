@@ -139,6 +139,8 @@ void pwm_init(volatile uint8_t *ports[],
 	//Enable compare interrupt on both channels
 	TIMSKR = _BV(OCIEA) | _BV(OCIEB);
 	
+	DDRA |= _BV(PORTA7);
+	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -190,10 +192,13 @@ static int16_t _compare_values(const void *pin1, const void *pin2){
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #else
+EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 #endif
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
+	
+	PORTA ^= _BV(PORTA7);
 	
 	//Update values if needed
 	if (_new_value_set){
@@ -222,8 +227,10 @@ ISR(TIMER1_COMPA_vect){
 	//Reset next pin pointer to first index in the sorted array
 	_next_pin = 0;
 
-	//Set to the first compare value
-	OCRB = _pins[0].next_value;
+	//Set to the first (sorted) compare value (or a very small value if the requested value is zero).  If the 
+	// value is zero, the compare will never trigger.
+	OCRB = _pins[_next_pin].next_value;
+	if (OCRB < 0x0A) OCRB = 0x0A;
 	
 	//Reset counter
 	TCNT = 0;
@@ -245,6 +252,8 @@ ISR(TIMER1_COMPB_vect){
 	//Turn off clock to avoid timing issues
 	TCCRB = 0x00;
 	
+	PORTA ^= _BV(PORTA7);
+	
 	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
 	while (_pins[_next_pin].value <= TCNT){
 		*(_pins[_next_pin].port) &= ~_BV(_pins[_next_pin].pin); //Turn off pin
@@ -252,12 +261,18 @@ ISR(TIMER1_COMPB_vect){
 	}
 	
 	//Set the timer for the next lowest value if available; 0xFFFF otherwise
+	/*
 	if (_next_pin < _count){
 		OCRB = _pins[_next_pin].value;
 	}
 	else {
 		OCRB = 0xFFFF;
 	}
+	
+	if (OCRB <= TCNT + 1) OCRB = TCNT + 1;
+	*/
+	
+	OCRB = TCNT + 100;
 
 	//Re-enable clock
 	TCCRB |= _prescaler_mask;
