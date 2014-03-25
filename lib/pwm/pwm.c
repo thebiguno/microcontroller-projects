@@ -286,6 +286,7 @@ void pwm_set_period(uint32_t period){
 EMPTY_INTERRUPT(TIM0_OVF_vect)
 ISR(TIM0_COMPA_vect){
 #else
+EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 #endif
 	//Reset counter
@@ -311,10 +312,18 @@ ISR(TIMER1_COMPA_vect){
 	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase 
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
 	// so that the delta of any delay between PORTA and PORTD should be reduced or eliminated.
+#ifndef PWM_PORTA_UNUSED
 	PORTA |= _pwm_event_high.porta_mask;
+#endif
+#ifndef PWM_PORTB_UNUSED
 	PORTB |= _pwm_event_high.portb_mask;
+#endif
+#ifndef PWM_PORTC_UNUSED
 	PORTC |= _pwm_event_high.portc_mask;
+#endif
+#ifndef PWM_PORTD_UNUSED
 	PORTD |= _pwm_event_high.portd_mask;
+#endif
 }
 
 
@@ -329,10 +338,18 @@ ISR(TIMER1_COMPB_vect){
 	struct pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
 	_pwm_events_low_index++;
 	
+#ifndef PWM_PORTA_UNUSED
 	PORTA &= e.porta_mask;
+#endif
+#ifndef PWM_PORTB_UNUSED
 	PORTB &= e.portb_mask;
+#endif
+#ifndef PWM_PORTC_UNUSED
 	PORTC &= e.portc_mask;
+#endif
+#ifndef PWM_PORTD_UNUSED
 	PORTD &= e.portd_mask;
+#endif
 	
 	//Set the timer for the next lowest value.
 	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
