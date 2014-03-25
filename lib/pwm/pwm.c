@@ -21,7 +21,7 @@ static uint8_t _new_value_set = 0; //Set to true when updated values
 static uint32_t _new_period = 0; //New period defined, changed in COMPA interrupt
 
 //Variables used to store config data
-static struct pwm_pin_t _pins[PWM_MAX_PINS];		//Array of pins
+static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];		//Array of pins
 static uint8_t _count;								//How many pins should be used
 static volatile uint8_t _next_pin;					//Index of the next pin to fire
 
@@ -86,9 +86,9 @@ void pwm_init(volatile uint8_t *ports[],
 	
 	//Store values
 	for (uint8_t i = 0; i < _count; i++){
-		_pins[i].port = ports[i];
-		_pins[i].pin = pins[i];
-		*(_pins[i].port - 0x1) |= _BV(_pins[i].pin);
+		_pwm_pins[i].port = ports[i];
+		_pwm_pins[i].pin = pins[i];
+		*(_pwm_pins[i].port - 0x1) |= _BV(_pwm_pins[i].pin);
 	}
 	
 	//This is calculated by the focumula:
@@ -143,6 +143,8 @@ void pwm_init(volatile uint8_t *ports[],
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif
+	
+	DDRA |= _BV(PORTA7);
 
 	//Force interrupt on compare A initially
 	FIR |= _BV(FOCA);
@@ -160,13 +162,13 @@ void pwm_stop(){
 
 	//Set pins low
 	for (uint8_t i = 0; i < _count; i++){
-		*(_pins[i].port) &= ~_BV(_pins[i].pin);
+		*(_pwm_pins[i].port) &= ~_BV(_pwm_pins[i].pin);
 	}
 }
 
 void pwm_set_phase(uint8_t index, uint16_t phase){
 	if (index < _count){
-		_pins[index].next_value = PWM_US_TO_CLICKS(phase, _prescaler);
+		_pwm_pins[index].next_value = PWM_US_TO_CLICKS(phase, _prescaler);
 		_new_value_set = 1;
 	}
 }
@@ -199,11 +201,11 @@ ISR(TIMER1_COMPA_vect){
 	//Update values if needed
 	if (_new_value_set){
 		for (uint8_t i = 0; i < _count; i++){
-			_pins[i].value = _pins[i].next_value;
+			_pwm_pins[i].value = _pwm_pins[i].next_value;
 		}
 		
-		//Sort the _pins array by value.  This speeds up each successive compare operation in COMPB.
-		qsort(_pins, _count, sizeof _pins[0], _compare_values);
+		//Sort the _pwm_pins array by value.  This speeds up each successive compare operation in COMPB.
+		qsort(_pwm_pins, _count, sizeof _pwm_pins[0], _compare_values);
 		
 		_new_value_set = 0;
 	}
@@ -220,8 +222,8 @@ ISR(TIMER1_COMPA_vect){
 	//Note the semi colons; this value is injected directly here, so must be valid C code.
 #ifndef PWM_ALL_HIGH
 	for (uint8_t i = 0; i < _count; i++){
-		if (_pins[i].value > 0){
-			*(_pins[i].port) |= _BV(_pins[i].pin);
+		if (_pwm_pins[i].value > 0){
+			*(_pwm_pins[i].port) |= _BV(_pwm_pins[i].pin);
 		}
 	}
 #else
@@ -233,7 +235,7 @@ ISR(TIMER1_COMPA_vect){
 
 	//Set to the first (sorted) compare value (or a very small value if the requested value is zero).  If the 
 	// value is zero, the compare will never trigger.
-	OCRB = _pins[_next_pin].next_value;
+	OCRB = _pwm_pins[_next_pin].next_value;
 	if (OCRB < 0x0A) OCRB = 0x0A;
 	
 	//Reset counter
@@ -256,15 +258,19 @@ ISR(TIMER1_COMPB_vect){
 	TCCRB = 0x00;
 	
 	//Turn off each pin starting at _next_pin and ending at the pin whose value is greater than _pin[_next_pin].value
-	while (_next_pin < _count && _pins[_next_pin].value <= TCNT){
-		*(_pins[_next_pin].port) &= ~_BV(_pins[_next_pin].pin); //Turn off pin
+	// We extract the pin struct from the array once, to avoid repeated array indexing operations.  This seems to 
+	// save about 2us (the loop takes 6us vs. 8us if we index in all three places).
+	struct pwm_pin_t pin = _pwm_pins[_next_pin];
+	while (_next_pin < _count && pin.value <= TCNT){
+		PORTA ^= _BV(PORTA7);
+		*(pin.port) &= ~_BV(pin.pin); //Turn off pin
 		_next_pin++;
+		pin = _pwm_pins[_next_pin];
 	}
 	
 	//Set the timer for the next lowest value if available; 0xFFFF otherwise
 	if (_next_pin < _count){
-		OCRB = _pins[_next_pin].value;
-		if (OCRB < TCNT + 0x05) OCRB = TCNT + 0x05;
+		OCRB = _pwm_pins[_next_pin].value;
 	}
 	else {
 		OCRB = 0xFFFF;
