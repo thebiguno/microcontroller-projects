@@ -1,8 +1,3 @@
-//TODO We should probably time how long it takes to run the timer interrupts, and compensate
-// for the lag.  This will mostly affect high frequency PWM, and will manifest itself 
-// in the form of slightly lower frequencies than you would expect.  (From experiments,
-// a 2ms period (which should be 500Hz) registers as 485Hz).
-
 #include "pwm.h"
 
 struct pwm_pin_t {
@@ -34,8 +29,8 @@ static uint8_t _count;											//How many pins should be used
 static struct pwm_event_t _pwm_event_high;						//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
 static struct pwm_event_t _pwm_event_high_new;					//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
 
-static struct pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];		//Array of pwm events.  Each event will set one or more pins low.
-static struct pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];	//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
+static struct pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];	//Array of pwm events.  Each event will set one or more pins low.
+static struct pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
 static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
 
 static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for _pwm_micros_to_clicks calls.
@@ -231,10 +226,6 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	// set at the same compare values into a single event.
 	uint16_t last_compare_value = _pwm_pins_sorted[0].compare_value;
 	uint8_t last_index = 0;
-	uint8_t porta_mask_accumulated = 0xFF;
-	uint8_t portb_mask_accumulated = 0xFF;
-	uint8_t portc_mask_accumulated = 0xFF;
-	uint8_t portd_mask_accumulated = 0xFF;
 	
 	for (uint8_t i = 0; i < _count; i++){
 		struct pwm_pin_t *p = &(_pwm_pins_sorted[i]);
@@ -256,15 +247,10 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 			//Set pins to low
 			struct pwm_event_t *e = &(_pwm_events_low_new[last_index]);
 			e->compare_value = last_compare_value;
-			if (p->port == &PORTA) e->porta_mask &= (porta_mask_accumulated & ~_BV(p->pin));
-			else if (p->port == &PORTB) e->portb_mask &= (portb_mask_accumulated & ~_BV(p->pin));
-			else if (p->port == &PORTC) e->portc_mask &= (portc_mask_accumulated & ~_BV(p->pin));
-			else if (p->port == &PORTD) e->portd_mask &= (portd_mask_accumulated & ~_BV(p->pin));
-			
-			porta_mask_accumulated = e->porta_mask;
-			portb_mask_accumulated = e->portb_mask;
-			portc_mask_accumulated = e->portc_mask;
-			portd_mask_accumulated = e->portd_mask;
+			if (p->port == &PORTA) e->porta_mask &= ~_BV(p->pin);
+			else if (p->port == &PORTB) e->portb_mask &= ~_BV(p->pin);
+			else if (p->port == &PORTC) e->portc_mask &= ~_BV(p->pin);
+			else if (p->port == &PORTD) e->portd_mask &= ~_BV(p->pin);
 		}
 	}
 
