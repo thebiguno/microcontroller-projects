@@ -1,3 +1,5 @@
+#define __DELAY_BACKWARD_COMPATIBLE__ 
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -5,49 +7,159 @@
 #include "lib/pwm/pwm.h"
 
 //Front legs
-#define FL_COXA		0
-#define FL_TIBIA	1
-#define FR_COXA		2
-#define FR_TIBIA	3
+#define FRONT_LEFT		0
+#define FL_COXA			0
+#define FL_TIBIA		1
+#define FRONT_RIGHT		2
+#define FR_COXA			2
+#define FR_TIBIA		3
 
 //Middle legs
-#define ML_COXA		4
-#define ML_TIBIA	5
-#define MR_COXA		6
-#define MR_TIBIA	7
+#define MIDDLE_LEFT		4
+#define ML_COXA			4
+#define ML_TIBIA		5
+#define MIDDLE_RIGHT	6
+#define MR_COXA			6
+#define MR_TIBIA		7
 
 //Rear legs
-#define RL_COXA		8
-#define RL_TIBIA	9
-#define RR_COXA		10
-#define RR_TIBIA	11
+#define REAR_LEFT		8
+#define RL_COXA			8
+#define RL_TIBIA		9
+#define REAR_RIGHT		10
+#define RR_COXA			10
+#define RR_TIBIA		11
 
 #define MIN_PHASE	800
 #define NEUTRAL	1500
 #define MAX_PHASE	2200
 
-#define TIBIA_RAISE	400
-#define COXA_FORWARD	300
+#define WAVE_TIBIA_RAISE	400
+#define WAVE_COXA_STEP		100
+
+#define DELAY_SHORT			60
+#define DELAY_MEDIUM		100
+#define DELAY_LONG			200
+#define DELAY_XLONG			250
 
 int16_t leg_neutral_offset[12] = {
 	//Front:
-	0,	//L_COXA
+	-10,	//L_COXA
 	0,		//L_TIBIA
-	0,	//R_COXA
+	30,		//R_COXA
 	0,		//R_TIBIA
 	
 	//Middle:
-	0,	//L_COXA
-	0,		//L_TIBIA
-	0,		//R_COXA
-	0,		//R_TIBIA
+	50,		//L_COXA
+	10,		//L_TIBIA
+	10,		//R_COXA
+	-10,	//R_TIBIA
 	
 	//Rear
-	0,	//L_COXA
-	0,	//L_TIBIA
-	0,	//R_COXA
+	0,		//L_COXA
+	0,		//L_TIBIA
+	50,		//R_COXA
 	0		//R_TIBIA
 };
+
+int8_t leg_rotation_direction[12] = {
+	//Front:
+	1,	//L_COXA
+	1,	//L_TIBIA
+	-1,	//R_COXA
+	-1,	//R_TIBIA
+	
+	//Middle:
+	1,	//L_COXA
+	1,	//L_TIBIA
+	-1,	//R_COXA
+	-1,	//R_TIBIA
+	
+	//Rear
+	1,	//L_COXA
+	-1,	//L_TIBIA
+	-1,	//R_COXA
+	1	//R_TIBIA
+};
+
+uint16_t leg_position[12];
+
+void update_leg_position(uint16_t delay){
+	for (uint8_t i = 0; i < 12; i++){
+		pwm_set_phase(i, leg_position[i]);
+	}
+	_delay_ms(delay);
+}
+
+/**
+ * Take a wave gait step with the specified leg.  All other legs will move backwards a small amount.  The specified leg should 
+ * be the index to the coxa PWM array; the associated femur is implied as coxa + 1.
+ */
+void wave_gait(uint8_t leg){
+	//Lift tibia to absolute position
+	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (WAVE_TIBIA_RAISE * leg_rotation_direction[leg + 1]);
+	update_leg_position(DELAY_SHORT);
+	
+	//Move the coxa forward to neutral + 3x STEP...
+	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg] + (WAVE_COXA_STEP * leg_rotation_direction[leg]);
+	//... while moving the other coxas back by STEP.
+	for (uint8_t i = 0; i < 12; i+=2){
+		if (i != leg){
+			leg_position[i] += WAVE_COXA_STEP * leg_rotation_direction[i] * -1;
+		}
+	}
+	update_leg_position(DELAY_MEDIUM);
+
+	//Drop tibia to neutral position
+	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
+	update_leg_position(DELAY_SHORT);
+}
+
+//Position the legs in a correct starting position for wave gait.
+void wave_gait_init(){
+	leg_position[RL_TIBIA] = NEUTRAL + leg_neutral_offset[RL_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[RL_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[RL_COXA] = NEUTRAL + leg_neutral_offset[RL_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[RL_COXA] * -2);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[RL_TIBIA] = NEUTRAL + leg_neutral_offset[RL_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+	leg_position[ML_TIBIA] = NEUTRAL + leg_neutral_offset[ML_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[ML_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[ML_COXA] = NEUTRAL + leg_neutral_offset[ML_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[ML_COXA] * -1);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[ML_TIBIA] = NEUTRAL + leg_neutral_offset[ML_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+	leg_position[FL_TIBIA] = NEUTRAL + leg_neutral_offset[FL_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[FL_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[FL_COXA] = NEUTRAL + leg_neutral_offset[FL_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[FL_COXA] * 0);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[FL_TIBIA] = NEUTRAL + leg_neutral_offset[FL_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+	leg_position[RR_TIBIA] = NEUTRAL + leg_neutral_offset[RR_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[RR_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[RR_COXA] = NEUTRAL + leg_neutral_offset[RR_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[RR_COXA] * 1);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[RR_TIBIA] = NEUTRAL + leg_neutral_offset[RR_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+	leg_position[MR_TIBIA] = NEUTRAL + leg_neutral_offset[MR_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[MR_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[MR_COXA] = NEUTRAL + leg_neutral_offset[MR_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[MR_COXA] * 2);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[MR_TIBIA] = NEUTRAL + leg_neutral_offset[MR_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+	leg_position[FR_TIBIA] = NEUTRAL + leg_neutral_offset[FR_TIBIA] + (WAVE_TIBIA_RAISE * leg_rotation_direction[FR_TIBIA]);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[FR_COXA] = NEUTRAL + leg_neutral_offset[FR_COXA] + (WAVE_COXA_STEP * leg_rotation_direction[FR_COXA] * 3);
+	update_leg_position(DELAY_MEDIUM);
+	leg_position[FR_TIBIA] = NEUTRAL + leg_neutral_offset[FR_TIBIA];
+	update_leg_position(DELAY_MEDIUM);
+
+}
 
 int main (void){
 	volatile uint8_t *ports[12];
@@ -85,49 +197,21 @@ int main (void){
 	pwm_init(ports, pins, 12, 20000);
 	
 	for (uint8_t i = 0; i < 12; i++){
-		pwm_set_phase(i, NEUTRAL + leg_neutral_offset[i]);	//Set to neutral position
+		leg_position[i] = NEUTRAL + leg_neutral_offset[i];
 	}
 	
-	_delay_ms(2000);
+	update_leg_position(2000);
+	
+	wave_gait_init();
 	
 	//int offset = 0;
 	while(1){
-		pwm_set_phase(RL_TIBIA, NEUTRAL + leg_neutral_offset[RL_TIBIA] - TIBIA_RAISE);
-		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA] - TIBIA_RAISE);
-		pwm_set_phase(FL_TIBIA, NEUTRAL + leg_neutral_offset[FL_TIBIA] + TIBIA_RAISE);
-		_delay_ms(300);
+		wave_gait(REAR_LEFT);
+		wave_gait(MIDDLE_LEFT);
+		wave_gait(FRONT_LEFT);
 		
-		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA]);
-		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA]);
-		pwm_set_phase(FR_COXA, NEUTRAL + leg_neutral_offset[FR_COXA]);
-		_delay_ms(300);
-		
-		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA] + COXA_FORWARD);
-		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA] - COXA_FORWARD);
-		pwm_set_phase(FL_COXA, NEUTRAL + leg_neutral_offset[FL_COXA] + COXA_FORWARD);
-		_delay_ms(300);
-		pwm_set_phase(RL_TIBIA, NEUTRAL + leg_neutral_offset[RL_TIBIA]);
-		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA]);
-		pwm_set_phase(FL_TIBIA, NEUTRAL + leg_neutral_offset[FL_TIBIA]);
-		_delay_ms(300);
-
-		pwm_set_phase(RR_TIBIA, NEUTRAL + leg_neutral_offset[RR_TIBIA] + TIBIA_RAISE);
-		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA] + TIBIA_RAISE);
-		pwm_set_phase(FR_TIBIA, NEUTRAL + leg_neutral_offset[FR_TIBIA] - TIBIA_RAISE);
-		_delay_ms(300);
-
-		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA]);
-		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA]);
-		pwm_set_phase(FL_COXA, NEUTRAL + leg_neutral_offset[FL_COXA]);
-		_delay_ms(300);
-
-		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA] - COXA_FORWARD);
-		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA] + COXA_FORWARD);
-		pwm_set_phase(FR_COXA, NEUTRAL + leg_neutral_offset[FR_COXA] - COXA_FORWARD);
-		_delay_ms(300);
-		pwm_set_phase(RR_TIBIA, NEUTRAL + leg_neutral_offset[RR_TIBIA]);
-		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA]);
-		pwm_set_phase(FR_TIBIA, NEUTRAL + leg_neutral_offset[FR_TIBIA]);
-		_delay_ms(300);
+		wave_gait(REAR_RIGHT);
+		wave_gait(MIDDLE_RIGHT);
+		wave_gait(FRONT_RIGHT);
 	}
 }
