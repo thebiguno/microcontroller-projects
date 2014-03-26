@@ -33,7 +33,7 @@
 #define MAX_PHASE	2200
 
 #define TIBIA_RAISE	400
-#define COXA_FORWARD	400
+#define COXA_FORWARD	300
 
 int16_t leg_neutral_offset[18] = {
 	//Front:
@@ -113,61 +113,46 @@ int main (void){
 		pwm_set_phase(i, NEUTRAL + leg_neutral_offset[i]);	//Set to neutral position
 	}
 	
+	_delay_ms(2000);
+	
 	//int offset = 0;
 	while(1){
 		pwm_set_phase(RL_TIBIA, NEUTRAL + leg_neutral_offset[RL_TIBIA] - TIBIA_RAISE);
-		_delay_ms(500);
-		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA] + COXA_FORWARD);
-		_delay_ms(500);
-		pwm_set_phase(RL_TIBIA, NEUTRAL + leg_neutral_offset[RL_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA]);
-		_delay_ms(500);
-
-		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA] + TIBIA_RAISE);
-		_delay_ms(500);
-		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA] + COXA_FORWARD);
-		_delay_ms(500);
-		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA]);
-		_delay_ms(500);
-
+		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA] - TIBIA_RAISE);
 		pwm_set_phase(FL_TIBIA, NEUTRAL + leg_neutral_offset[FL_TIBIA] + TIBIA_RAISE);
-		_delay_ms(500);
+		_delay_ms(300);
+		
+		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA]);
+		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA]);
+		pwm_set_phase(FR_COXA, NEUTRAL + leg_neutral_offset[FR_COXA]);
+		_delay_ms(300);
+		
+		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA] + COXA_FORWARD);
+		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA] - COXA_FORWARD);
 		pwm_set_phase(FL_COXA, NEUTRAL + leg_neutral_offset[FL_COXA] + COXA_FORWARD);
-		_delay_ms(500);
+		_delay_ms(300);
+		pwm_set_phase(RL_TIBIA, NEUTRAL + leg_neutral_offset[RL_TIBIA]);
+		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA]);
 		pwm_set_phase(FL_TIBIA, NEUTRAL + leg_neutral_offset[FL_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(FL_COXA, NEUTRAL + leg_neutral_offset[FL_COXA]);
-		_delay_ms(500);
+		_delay_ms(300);
 
 		pwm_set_phase(RR_TIBIA, NEUTRAL + leg_neutral_offset[RR_TIBIA] + TIBIA_RAISE);
-		_delay_ms(500);
-		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA] - COXA_FORWARD);
-		_delay_ms(500);
-		pwm_set_phase(RR_TIBIA, NEUTRAL + leg_neutral_offset[RR_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA]);
-		_delay_ms(500);
-
-		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA] - TIBIA_RAISE);
-		_delay_ms(500);
-		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA] - COXA_FORWARD);
-		_delay_ms(500);
-		pwm_set_phase(MR_TIBIA, NEUTRAL + leg_neutral_offset[MR_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA]);
-		_delay_ms(500);
-
+		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA] + TIBIA_RAISE);
 		pwm_set_phase(FR_TIBIA, NEUTRAL + leg_neutral_offset[FR_TIBIA] - TIBIA_RAISE);
-		_delay_ms(500);
+		_delay_ms(300);
+
+		pwm_set_phase(RL_COXA, NEUTRAL + leg_neutral_offset[RL_COXA]);
+		pwm_set_phase(MR_COXA, NEUTRAL + leg_neutral_offset[MR_COXA]);
+		pwm_set_phase(FL_COXA, NEUTRAL + leg_neutral_offset[FL_COXA]);
+		_delay_ms(300);
+
+		pwm_set_phase(RR_COXA, NEUTRAL + leg_neutral_offset[RR_COXA] - COXA_FORWARD);
+		pwm_set_phase(ML_COXA, NEUTRAL + leg_neutral_offset[ML_COXA] + COXA_FORWARD);
 		pwm_set_phase(FR_COXA, NEUTRAL + leg_neutral_offset[FR_COXA] - COXA_FORWARD);
-		_delay_ms(500);
+		_delay_ms(300);
+		pwm_set_phase(RR_TIBIA, NEUTRAL + leg_neutral_offset[RR_TIBIA]);
+		pwm_set_phase(ML_TIBIA, NEUTRAL + leg_neutral_offset[ML_TIBIA]);
 		pwm_set_phase(FR_TIBIA, NEUTRAL + leg_neutral_offset[FR_TIBIA]);
-		_delay_ms(500);
-		pwm_set_phase(FR_COXA, NEUTRAL + leg_neutral_offset[FR_COXA]);
-		_delay_ms(500);
-		
+		_delay_ms(300);
 	}
 }
