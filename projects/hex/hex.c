@@ -34,33 +34,32 @@
 #define NEUTRAL	1500
 #define MAX_PHASE	2200
 
-#define LEG_OFFSET_TIBIA_RAISED	400
+#define LEG_OFFSET_TIBIA_RAISED	600
 
 #define WAVE_COXA_STEP		100
+#define WAVE_TIBIA_STEP		100
 
-#define DELAY_SHORT			40
-#define DELAY_MEDIUM		60
-#define DELAY_LONG			100
-#define DELAY_XLONG			150
+#define DELAY_SHORT			60
+#define DELAY_MEDIUM		100
 
 int16_t leg_neutral_offset[12] = {
 	//Front:
-	-10,	//L_COXA
+	100,	//L_COXA
 	0,		//L_TIBIA
 	30,		//R_COXA
-	0,		//R_TIBIA
+	-40,	//R_TIBIA
 	
 	//Middle:
-	50,		//L_COXA
-	10,		//L_TIBIA
-	10,		//R_COXA
-	-10,	//R_TIBIA
-	
-	//Rear
 	0,		//L_COXA
 	0,		//L_TIBIA
-	50,		//R_COXA
-	0		//R_TIBIA
+	30,		//R_COXA
+	5,		//R_TIBIA
+	
+	//Rear
+	100,	//L_COXA
+	20,		//L_TIBIA
+	-70,	//R_COXA
+	10		//R_TIBIA
 };
 
 int8_t leg_rotation_direction[12] = {
@@ -78,9 +77,9 @@ int8_t leg_rotation_direction[12] = {
 	
 	//Rear
 	1,	//L_COXA
-	-1,	//L_TIBIA
+	1,	//L_TIBIA
 	-1,	//R_COXA
-	1	//R_TIBIA
+	-1	//R_TIBIA
 };
 
 uint16_t leg_position[12];
@@ -101,17 +100,18 @@ void wave_gait(uint8_t leg){
 	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (LEG_OFFSET_TIBIA_RAISED * leg_rotation_direction[leg + 1]);
 	update_leg_position(DELAY_SHORT);
 	
-	//Move the coxa forward to neutral + 3x STEP...
+	//Move the coxa forward to neutral plus one step...
 	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg] + (WAVE_COXA_STEP * leg_rotation_direction[leg]);
-	//... while moving the other coxas back by STEP.
+	//... while moving the other coxas and tibias back by STEP.
 	for (uint8_t i = 0; i < 12; i+=2){
 		if (i != leg){
 			leg_position[i] -= WAVE_COXA_STEP * leg_rotation_direction[i];
+			leg_position[i + 1] += WAVE_TIBIA_STEP * leg_rotation_direction[i + 1];
 		}
 	}
 	update_leg_position(DELAY_MEDIUM);
 
-	//Drop tibia to neutral position
+	//Drop tibia to neutral position - 2 steps
 	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
 	update_leg_position(DELAY_SHORT);
 }
@@ -120,23 +120,23 @@ void wave_gait(uint8_t leg){
  * Lifts and positions the leg without moving the robot.  Used to initialize legs for a given gait.  Offset is negative for 
  * positions facing forward, and negative for positioned towards the back of the robot.
  */
-void lift_and_position_leg(uint8_t leg, int16_t offset){
+void lift_and_position_leg(uint8_t leg, int16_t coxa_offset, int16_t tibia_offset){
 	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (LEG_OFFSET_TIBIA_RAISED * leg_rotation_direction[leg + 1]);
 	update_leg_position(DELAY_SHORT);
-	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg] + (offset * leg_rotation_direction[leg]);
+	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg] + (coxa_offset * leg_rotation_direction[leg]);
 	update_leg_position(DELAY_SHORT);
-	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
+	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (tibia_offset * leg_rotation_direction[leg + 1]);
 	update_leg_position(DELAY_SHORT);	
 }
 
 //Position the legs in a correct starting position for wave gait.
 void wave_gait_init(){
-	lift_and_position_leg(REAR_LEFT, WAVE_COXA_STEP * -2);
-	lift_and_position_leg(MIDDLE_LEFT, WAVE_COXA_STEP * -1);
-	lift_and_position_leg(FRONT_LEFT, WAVE_COXA_STEP * 0);
-	lift_and_position_leg(REAR_RIGHT, WAVE_COXA_STEP * 1);
-	lift_and_position_leg(MIDDLE_RIGHT, WAVE_COXA_STEP * 2);
-	lift_and_position_leg(FRONT_RIGHT, WAVE_COXA_STEP * 3);
+	lift_and_position_leg(REAR_LEFT, WAVE_COXA_STEP * -4, WAVE_TIBIA_STEP * 4);
+	lift_and_position_leg(MIDDLE_LEFT, WAVE_COXA_STEP * -3, WAVE_TIBIA_STEP * 3);
+	lift_and_position_leg(FRONT_LEFT, WAVE_COXA_STEP * -2, WAVE_TIBIA_STEP * 2);
+	lift_and_position_leg(REAR_RIGHT, WAVE_COXA_STEP * -1, WAVE_TIBIA_STEP * 1);
+	lift_and_position_leg(MIDDLE_RIGHT, WAVE_COXA_STEP * 0, WAVE_TIBIA_STEP * 0);
+	lift_and_position_leg(FRONT_RIGHT, WAVE_COXA_STEP * 1, WAVE_TIBIA_STEP * -1);
 }
 
 void servo_init(){
