@@ -18,11 +18,14 @@ all: clean build
 
 build: $(PROJECT).hex
 
+assembly: $(PROJECT).asm
+
 $(PROJECT).hex: $(PROJECT).out
 	$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).out $(PROJECT).hex
-	avr-size -d -C --mcu=$(MMCU) $(PROJECT).out
-	@rm -f $(PROJECT).out
+	$(AVRSIZE) -d -C --mcu=$(MMCU) $(PROJECT).out 
 
+$(PROJECT).asm: all
+	$(OBJDUMP) -C -d $(PROJECT).out
 
 $(PROJECT).out: $(SOURCES) 
 	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).out $(SOURCES) $(CLIBS)
