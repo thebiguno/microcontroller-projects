@@ -35,29 +35,28 @@ void write_byte(uint8_t data) {
 		write_bit(bit);
 	}
 }
+void write_escaped(uint8_t b) {
+	if (b == 0xfe || b == 0xff) {
+		write_byte(0x7d);
+		write_byte(b ^ 0x20);
+	} else {
+		write_byte(b);
+	}
+}
 
-/**
- * Sends length bytes where 0 < length < 254.
- * The default length of the receiving buffer is 40 so when length > 40 the receiver needs to be adjusted
- */
 void manchester_write(uint8_t *data, uint8_t length) {
 	*_port |= _BV(_pin);
 	// two byte preamble
 	write_byte(0xff);
 	write_byte(0xfe);
-	write_byte(length);
+	write_escaped(length);
 	
 	uint8_t checksum = 0x00;
 	for (uint8_t i = 0; i < length; i++) {
 		uint8_t b = data[i];
-		if (b == 0xfe || b == 0xff) {
-			write_byte(0x7d);
-			write_byte(b ^ 0x20);
-		} else {
-			write_byte(b);
-		}
+		write_escaped(b);
 		checksum += b;
 	}
-	write_byte(0xFF - checksum);
+	write_escaped(0xFF - checksum);
 	*_port &= ~_BV(_pin);
 }
