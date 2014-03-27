@@ -1,9 +1,23 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Sun 23 Mar 2014 09:02:27 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, March 27, 2014 'amt' 10:17:12 am
 
 BeginCmp
 TimeStamp = /532EDCAD;
 Reference = C1;
-ValeurCmp = C;
+ValeurCmp = 1uF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /53335945;
+Reference = C2;
+ValeurCmp = 1uF;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /53335959;
+Reference = C3;
+ValeurCmp = 1uF;
 IdModule  = C1;
 EndCmp
 
@@ -25,7 +39,7 @@ BeginCmp
 TimeStamp = /532FA3B6;
 Reference = K2;
 ValeurCmp = REGUL;
-IdModule  = PIN_ARRAY_3X1;
+IdModule  = TO92;
 EndCmp
 
 BeginCmp
@@ -36,52 +50,24 @@ IdModule  = pin_array_3x2;
 EndCmp
 
 BeginCmp
-TimeStamp = /532C96F2;
+TimeStamp = /533348CC;
 Reference = P2;
-ValeurCmp = PWM;
-IdModule  = SIL-9;
+ValeurCmp = XBEE;
+IdModule  = XBEE;
 EndCmp
 
 BeginCmp
-TimeStamp = /532C9705;
+TimeStamp = /53337638;
 Reference = P3;
-ValeurCmp = PWM;
-IdModule  = SIL-9;
+ValeurCmp = CONN_2;
+IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /532F9D59;
+TimeStamp = /53334A36;
 Reference = P4;
-ValeurCmp = VCC;
-IdModule  = SIL-9;
-EndCmp
-
-BeginCmp
-TimeStamp = /532F9D5F;
-Reference = P5;
-ValeurCmp = VCC;
-IdModule  = SIL-9;
-EndCmp
-
-BeginCmp
-TimeStamp = /532FA2F2;
-Reference = P6;
-ValeurCmp = JUMPER;
-IdModule  = SIL-2;
-EndCmp
-
-BeginCmp
-TimeStamp = /532F9D65;
-Reference = P7;
-ValeurCmp = GND;
-IdModule  = SIL-9;
-EndCmp
-
-BeginCmp
-TimeStamp = /532F9D6B;
-Reference = P8;
-ValeurCmp = GND;
-IdModule  = SIL-9;
+ValeurCmp = DPDT;
+IdModule  = DPDT;
 EndCmp
 
 BeginCmp
@@ -89,6 +75,48 @@ TimeStamp = /532C9BB8;
 Reference = R1;
 ValeurCmp = 1k;
 IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5333430A;
+Reference = S1;
+ValeurCmp = FRONT_LEFT;
+IdModule  = HEX_LEG;
+EndCmp
+
+BeginCmp
+TimeStamp = /53334670;
+Reference = S2;
+ValeurCmp = FRONT_RIGHT;
+IdModule  = HEX_LEG;
+EndCmp
+
+BeginCmp
+TimeStamp = /5333467E;
+Reference = S3;
+ValeurCmp = MIDDLE_LEFT;
+IdModule  = HEX_LEG;
+EndCmp
+
+BeginCmp
+TimeStamp = /5333468C;
+Reference = S4;
+ValeurCmp = MIDDLE_RIGHT;
+IdModule  = HEX_LEG;
+EndCmp
+
+BeginCmp
+TimeStamp = /5333469A;
+Reference = S5;
+ValeurCmp = REAR_LEFT;
+IdModule  = HEX_LEG;
+EndCmp
+
+BeginCmp
+TimeStamp = /533346A8;
+Reference = S6;
+ValeurCmp = REAR_RIGHT;
+IdModule  = HEX_LEG;
 EndCmp
 
 EndListe
