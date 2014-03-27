@@ -36,7 +36,7 @@ void write_byte(uint8_t data) {
 	}
 }
 void write_escaped(uint8_t b) {
-	if (b == 0xfe || b == 0xff) {
+	if (b == 0xfe || b == 0x7d) {
 		write_byte(0x7d);
 		write_byte(b ^ 0x20);
 	} else {

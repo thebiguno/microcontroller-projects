@@ -15,10 +15,10 @@ int main (){
 		
 	//char s;
 	
-	uint8_t data;
+	uint8_t data[32];
 	
 	while (1){
-		manchester_read(&data);
-		serial_write_c(data);
+		manchester_read(data, 32);
+		serial_write_s(data);
 	}   
 }

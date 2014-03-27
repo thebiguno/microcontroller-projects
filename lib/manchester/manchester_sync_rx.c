@@ -31,8 +31,8 @@ void manchester_init_rx(uint16_t baud) {
 	
 	uint8_t half = F_CPU / 1024 / baud;	//52 at 16MHz and 300 baud
 	_lower = half / 2;			//26 at "
-	_mid = lower + half;			//78 at "
-	_upper = mid + half;			//130 at "
+	_mid = _lower + half;			//78 at "
+	_upper = _mid + half;			//130 at "
 
 	EICRA |= _BV(ISC00);		// any logical change on int0
 	EIMSK |= _BV(INT0);			// enable external interrupts on int0
@@ -44,15 +44,11 @@ uint8_t manchester_available() {
 	return _rdy;
 }
 
-/*
- * Copies data from the buffer to the destination, dst should be at least MANCHESTER_BUFFER_SIZE long.
- * Returns the number of bytes copied
- */ 
-uint8_t manchester_read(uint8_t dst[]) {
+uint8_t manchester_read(uint8_t *dst, uint8_t max) {
 	while (!manchester_available());  // block until a frame has been read
 	uint8_t result = _rdy;
 	_rdy = 0;
-	for (uint8_t i = 0; i < result; i++) {
+	for (uint8_t i = 0; i < result && i < max; i++) {
 		dst[i] = _buf[i];
 	}
 	return result;
@@ -86,10 +82,8 @@ static inline void readBit() {
 		_bit++;
 		
 		if (_bit >= 8) {
-			b = _b;
+			uint8_t b = _b;
 			_bit = 0;
-			//TIMSK0 &= ~_BV(OCIE0A);			// disable timer
-			//TCNT0 = 0x00;					// reset timer counter
 			PORTC &= ~_BV(PORTC5);			// TODO remove
 			
 			if (b == ESCAPE) {
@@ -105,16 +99,14 @@ static inline void readBit() {
 				// length byte
 				_len = b;
 				_pos++;
-				return;
 			} else {
 				// data byte
 				_chk += b;
 				if (_pos == (_len + 1)) {
 					if (_chk == 0xff) {
 						_rdy = _len;
-					} else {
-						_st = 0;
 					}
+					_st = 0;
 					_pos = 0;
 					_chk = 0;
 				} else {

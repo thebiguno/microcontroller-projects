@@ -12,7 +12,8 @@ int main (){
 	
 	while (1){
 		for (uint8_t i = 0; i < 0x10; i++){
-			manchester_write(data++);
+			manchester_write(&data, 1);
+			data++;
 		}
 		_delay_ms(1000);
 	}   
