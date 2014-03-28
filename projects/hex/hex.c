@@ -46,22 +46,22 @@
 
 int16_t leg_neutral_offset[12] = {
 	//Front:
-	100,	//L_COXA
+	0,	//L_COXA
 	0,		//L_TIBIA
-	30,		//R_COXA
-	-40,	//R_TIBIA
+	0,		//R_COXA
+	0,	//R_TIBIA
 	
 	//Middle:
 	0,		//L_COXA
 	0,		//L_TIBIA
-	30,		//R_COXA
-	5,		//R_TIBIA
+	0,		//R_COXA
+	0,		//R_TIBIA
 	
 	//Rear
-	100,	//L_COXA
-	20,		//L_TIBIA
-	-70,	//R_COXA
-	10		//R_TIBIA
+	0,	//L_COXA
+	0,		//L_TIBIA
+	0,	//R_COXA
+	0		//R_TIBIA
 };
 
 int8_t leg_rotation_direction[12] = {
@@ -102,18 +102,17 @@ void wave_gait(uint8_t leg){
 	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (WAVE_TIBIA_RAISED * leg_rotation_direction[leg + 1]);
 	update_leg_position(DELAY_SHORT);
 	
-	//Move the coxa forward to neutral plus one step...
+	//Move the coxa forward to neutral + 3x STEP...
 	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg] + (WAVE_COXA_STEP * leg_rotation_direction[leg]);
-	//... while moving the other coxas and tibias back by STEP.
+	//... while moving the other coxas back by STEP.
 	for (uint8_t i = 0; i < 12; i+=2){
 		if (i != leg){
 			leg_position[i] -= WAVE_COXA_STEP * leg_rotation_direction[i];
-			leg_position[i + 1] += WAVE_TIBIA_STEP * leg_rotation_direction[i + 1];
 		}
 	}
 	update_leg_position(DELAY_MEDIUM);
 
-	//Drop tibia to neutral position - 2 steps
+	//Drop tibia to neutral position
 	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
 	update_leg_position(DELAY_SHORT);
 }
@@ -159,12 +158,12 @@ void lift_and_position_leg(uint8_t leg, int16_t coxa_offset, int16_t tibia_offse
 
 //Position the legs in a correct starting position for wave gait.
 void wave_gait_init(){
-	lift_and_position_leg(REAR_LEFT, WAVE_COXA_STEP * -4, WAVE_TIBIA_STEP * 4);
-	lift_and_position_leg(MIDDLE_LEFT, WAVE_COXA_STEP * -3, WAVE_TIBIA_STEP * 3);
-	lift_and_position_leg(FRONT_LEFT, WAVE_COXA_STEP * -2, WAVE_TIBIA_STEP * 2);
-	lift_and_position_leg(REAR_RIGHT, WAVE_COXA_STEP * -1, WAVE_TIBIA_STEP * 1);
-	lift_and_position_leg(MIDDLE_RIGHT, WAVE_COXA_STEP * 0, WAVE_TIBIA_STEP * 0);
-	lift_and_position_leg(FRONT_RIGHT, WAVE_COXA_STEP * 1, WAVE_TIBIA_STEP * -1);
+	lift_and_position_leg(REAR_LEFT, WAVE_COXA_STEP * -2, 0);
+	lift_and_position_leg(MIDDLE_LEFT, WAVE_COXA_STEP * -1, 0);
+	lift_and_position_leg(FRONT_LEFT, WAVE_COXA_STEP * 0, 0);
+	lift_and_position_leg(REAR_RIGHT, WAVE_COXA_STEP * 1, 0);
+	lift_and_position_leg(MIDDLE_RIGHT, WAVE_COXA_STEP * 2, 0);
+	lift_and_position_leg(FRONT_RIGHT, WAVE_COXA_STEP * 3, 0);
 }
 
 //Position the legs in a correct starting position for tripod gait
@@ -217,11 +216,20 @@ void servo_init(){
 int main (void){
 	servo_init();
 
-	tripod_gait_init();
+	//tripod_gait_init();
+	wave_gait_init();
 	
 	//int offset = 0;
 	while(1){
-		tripod_gait(FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT, FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT);
-		tripod_gait(FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT, FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT);
+//		tripod_gait(FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT, FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT);
+//		tripod_gait(FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT, FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT);
+		
+		wave_gait(REAR_LEFT);
+		wave_gait(MIDDLE_LEFT);
+		wave_gait(FRONT_LEFT);
+		
+		wave_gait(REAR_RIGHT);
+		wave_gait(MIDDLE_RIGHT);
+		wave_gait(FRONT_RIGHT);
 	}
 }
