@@ -36,7 +36,9 @@
 
 #define WAVE_TIBIA_RAISED	600
 #define WAVE_COXA_STEP		100
-#define WAVE_TIBIA_STEP		100
+
+#define RIPPLE_TIBIA_RAISED	600
+#define RIPPLE_COXA_STEP	100
 
 #define TRIPOD_TIBIA_RAISED	800
 #define TRIPOD_COXA_STEP	400
@@ -46,22 +48,22 @@
 
 int16_t leg_neutral_offset[12] = {
 	//Front:
-	0,	//L_COXA
-	0,		//L_TIBIA
+	80,	//L_COXA
+	-30,		//L_TIBIA
 	0,		//R_COXA
-	0,	//R_TIBIA
+	60,	//R_TIBIA
 	
 	//Middle:
 	0,		//L_COXA
-	0,		//L_TIBIA
+	-50,		//L_TIBIA
 	0,		//R_COXA
-	0,		//R_TIBIA
+	80,		//R_TIBIA
 	
 	//Rear
 	0,	//L_COXA
-	0,		//L_TIBIA
+	-50,		//L_TIBIA
 	0,	//R_COXA
-	0		//R_TIBIA
+	100		//R_TIBIA
 };
 
 int8_t leg_rotation_direction[12] = {
@@ -117,6 +119,30 @@ void wave_gait(uint8_t leg){
 	update_leg_position(DELAY_SHORT);
 }
 
+/**
+ * Take a ripple gait step with the specified leg.  This is the same as wave gait, but it only affects one side at a time, and 
+ * each side is interleaved together.
+ */
+void ripple_gait(uint8_t leg){
+	//Lift tibia to absolute position
+	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (RIPPLE_TIBIA_RAISED * leg_rotation_direction[leg + 1]);
+	update_leg_position(DELAY_SHORT);
+	
+	//Move the coxa forward to neutral
+	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg];
+	//... while moving the other coxas back by STEP.
+	for (uint8_t i = 0; i < 12; i+=2){
+		if (i != leg){
+			leg_position[i] -= RIPPLE_COXA_STEP * leg_rotation_direction[i];
+		}
+	}
+	update_leg_position(DELAY_SHORT);
+
+	//Drop tibia to neutral position
+	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
+	update_leg_position(DELAY_SHORT);
+}
+
 void tripod_gait(uint8_t forward1, uint8_t forward2, uint8_t forward3, uint8_t backward1, uint8_t backward2, uint8_t backward3){
 	//Move three legs forward (lifting tibias), while moving the others backward
 	//Lift three tibias
@@ -156,7 +182,6 @@ void lift_and_position_leg(uint8_t leg, int16_t coxa_offset, int16_t tibia_offse
 	update_leg_position(DELAY_SHORT);	
 }
 
-//Position the legs in a correct starting position for wave gait.
 void wave_gait_init(){
 	lift_and_position_leg(REAR_LEFT, WAVE_COXA_STEP * -2, 0);
 	lift_and_position_leg(MIDDLE_LEFT, WAVE_COXA_STEP * -1, 0);
@@ -164,6 +189,16 @@ void wave_gait_init(){
 	lift_and_position_leg(REAR_RIGHT, WAVE_COXA_STEP * 1, 0);
 	lift_and_position_leg(MIDDLE_RIGHT, WAVE_COXA_STEP * 2, 0);
 	lift_and_position_leg(FRONT_RIGHT, WAVE_COXA_STEP * 3, 0);
+}
+
+void ripple_gait_init(){
+	lift_and_position_leg(REAR_LEFT, RIPPLE_COXA_STEP * -5, 0);
+	lift_and_position_leg(MIDDLE_LEFT, RIPPLE_COXA_STEP * -3, 0);
+	lift_and_position_leg(FRONT_LEFT, RIPPLE_COXA_STEP * -1, 0);
+	
+	lift_and_position_leg(REAR_RIGHT, RIPPLE_COXA_STEP * -2, 0);
+	lift_and_position_leg(MIDDLE_RIGHT, RIPPLE_COXA_STEP * 0, 0);
+	lift_and_position_leg(FRONT_RIGHT, RIPPLE_COXA_STEP * -4, 0);
 }
 
 //Position the legs in a correct starting position for tripod gait
@@ -213,23 +248,39 @@ void servo_init(){
 	update_leg_position(2000);	
 }
 
+void wave_step(){
+	wave_gait(REAR_LEFT);
+	wave_gait(MIDDLE_LEFT);
+	wave_gait(FRONT_LEFT);
+	
+	wave_gait(REAR_RIGHT);
+	wave_gait(MIDDLE_RIGHT);
+	wave_gait(FRONT_RIGHT);
+}
+
+void ripple_step(){
+	ripple_gait(REAR_LEFT);
+	ripple_gait(FRONT_RIGHT);
+	ripple_gait(MIDDLE_LEFT);
+	ripple_gait(REAR_RIGHT);
+	ripple_gait(FRONT_LEFT);
+	ripple_gait(MIDDLE_RIGHT);
+}
+
+void tripod_step(){
+	tripod_gait(FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT, FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT);
+	tripod_gait(FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT, FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT);	
+}
+
 int main (void){
 	servo_init();
 
 	//tripod_gait_init();
-	wave_gait_init();
+	//wave_gait_init();
+	ripple_gait_init();
 	
 	//int offset = 0;
 	while(1){
-//		tripod_gait(FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT, FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT);
-//		tripod_gait(FRONT_RIGHT, MIDDLE_LEFT, REAR_RIGHT, FRONT_LEFT, MIDDLE_RIGHT, REAR_LEFT);
-		
-		wave_gait(REAR_LEFT);
-		wave_gait(MIDDLE_LEFT);
-		wave_gait(FRONT_LEFT);
-		
-		wave_gait(REAR_RIGHT);
-		wave_gait(MIDDLE_RIGHT);
-		wave_gait(FRONT_RIGHT);
+		ripple_step();
 	}
 }
