@@ -1,4 +1,4 @@
-(kicad_pcb (version 3) (host pcbnew "(2013-dec-23)-stable")
+(kicad_pcb (version 3) (host pcbnew "(2014-01-10 BZR 4027)-stable")
 
   (general
     (links 94)
@@ -6,7 +6,7 @@
     (area 124.353145 43.6372 188 102.7)
     (thickness 1.6)
     (drawings 12)
-    (tracks 323)
+    (tracks 337)
     (zones 0)
     (modules 26)
     (nets 38)
@@ -1172,7 +1172,7 @@
   )
 
   (module digitalcave_logo_wide_small (layer F.Cu) (tedit 532B4A32) (tstamp 53355ADA)
-    (at 161.671 83.693 45)
+    (at 162.052 83.566 45)
     (fp_text reference "" (at 0 0 45) (layer F.SilkS) hide
       (effects (font (size 1.143 1.143) (thickness 0.1778)))
     )
@@ -2014,7 +2014,7 @@
       (xy -3.4417 -1.86182)) (layer F.SilkS) (width 0.00254))
   )
 
-  (module R1 (layer F.Cu) (tedit 533786CC) (tstamp 53378617)
+  (module R1 (layer F.Cu) (tedit 5338A263) (tstamp 53378617)
     (at 155.067 82.55 45)
     (descr "Resistance verticale")
     (tags R)
@@ -2024,7 +2024,7 @@
     (fp_text reference R2 (at -1.016 2.54 45) (layer F.SilkS) hide
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
-    (fp_text value 1k (at -1.143 2.54 45) (layer F.SilkS)
+    (fp_text value 1k (at 1.077631 1.616446 45) (layer F.SilkS)
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
     (fp_line (start -1.27 0) (end 1.27 0) (layer F.SilkS) (width 0.381))
@@ -2044,7 +2044,7 @@
     )
   )
 
-  (module R1 (layer F.Cu) (tedit 533786C5) (tstamp 5337861F)
+  (module R1 (layer F.Cu) (tedit 5338A25D) (tstamp 5337861F)
     (at 158.496 78.867 225)
     (descr "Resistance verticale")
     (tags R)
@@ -2054,7 +2054,7 @@
     (fp_text reference R3 (at -1.016 2.54 225) (layer F.SilkS) hide
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
-    (fp_text value 1k (at -1.143 2.54 225) (layer F.SilkS)
+    (fp_text value 1k (at 1.616446 -1.796051 225) (layer F.SilkS)
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
     (fp_line (start -1.27 0) (end 1.27 0) (layer F.SilkS) (width 0.381))
@@ -2134,7 +2134,7 @@
     )
   )
 
-  (module R1 (layer F.Cu) (tedit 533786AA) (tstamp 53378637)
+  (module R1 (layer F.Cu) (tedit 5338A394) (tstamp 53378637)
     (at 147.447 58.293 225)
     (descr "Resistance verticale")
     (tags R)
@@ -2144,7 +2144,7 @@
     (fp_text reference R6 (at -1.016 2.54 225) (layer F.SilkS) hide
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
-    (fp_text value 1k (at -1.143 2.54 225) (layer F.SilkS)
+    (fp_text value 1k (at 3.232892 -0.35921 225) (layer F.SilkS)
       (effects (font (size 1.397 1.27) (thickness 0.2032)))
     )
     (fp_line (start -1.27 0) (end 1.27 0) (layer F.SilkS) (width 0.381))
@@ -2269,6 +2269,11 @@
   (segment (start 138.811 75.057) (end 136.389616 72.635616) (width 0.254) (layer F.Cu) (net 3) (tstamp 53336128) (status 20))
   (via (at 138.811 75.057) (size 0.762) (layers F.Cu B.Cu) (net 3))
   (segment (start 156.21 57.658) (end 138.811 75.057) (width 0.254) (layer B.Cu) (net 3) (tstamp 53336336))
+  (segment (start 174.498 47.879) (end 172.847 46.228) (width 0.254) (layer F.Cu) (net 4))
+  (segment (start 166.878 58.166) (end 167.005 58.166) (width 0.254) (layer F.Cu) (net 4))
+  (segment (start 174.498 50.673) (end 174.498 47.879) (width 0.254) (layer F.Cu) (net 4) (tstamp 5338A2A1))
+  (segment (start 174.498 47.879) (end 174.498 47.625) (width 0.254) (layer F.Cu) (net 4) (tstamp 5338A30B))
+  (segment (start 167.005 58.166) (end 174.498 50.673) (width 0.254) (layer F.Cu) (net 4) (tstamp 5338A29D))
   (segment (start 154.168974 83.448026) (end 154.168974 88.110923) (width 0.254) (layer F.Cu) (net 4))
   (segment (start 131.445 70.221974) (end 129.784974 70.221974) (width 0.254) (layer F.Cu) (net 4))
   (segment (start 128.143 63.627) (end 128.143 60.833) (width 0.254) (layer F.Cu) (net 4) (tstamp 53378AF6))
@@ -2308,7 +2313,8 @@
   (segment (start 157.343974 48.631974) (end 153.162 48.631974) (width 0.254) (layer B.Cu) (net 4) (tstamp 5333619F) (status 20))
   (segment (start 157.353 48.641) (end 157.343974 48.631974) (width 0.254) (layer B.Cu) (net 4) (tstamp 5333619E))
   (via (at 157.353 48.641) (size 0.762) (layers F.Cu B.Cu) (net 4))
-  (segment (start 171.831 63.119) (end 157.353 48.641) (width 0.254) (layer F.Cu) (net 4) (tstamp 5333618A))
+  (segment (start 171.831 63.119) (end 166.878 58.166) (width 0.254) (layer F.Cu) (net 4) (tstamp 5333618A))
+  (segment (start 166.878 58.166) (end 157.353 48.641) (width 0.254) (layer F.Cu) (net 4) (tstamp 5338A29B))
   (segment (start 171.831 65.205796) (end 171.831 63.119) (width 0.254) (layer F.Cu) (net 4) (tstamp 53336185) (status 10))
   (segment (start 171.867102 65.241898) (end 171.831 65.205796) (width 0.254) (layer F.Cu) (net 4) (tstamp 53336180) (status 30))
   (segment (start 168.275 68.843026) (end 168.275 68.843025) (width 0.254) (layer B.Cu) (net 4) (status 30))
@@ -2319,6 +2325,14 @@
   (segment (start 129.648949 72.018025) (end 131.445 70.221974) (width 0.254) (layer B.Cu) (net 4) (tstamp 53335F1E) (status 30))
   (segment (start 145.415 91.703026) (end 145.415 91.703025) (width 0.254) (layer B.Cu) (net 4) (status 30))
   (segment (start 145.415 91.703025) (end 149.007102 88.110923) (width 0.254) (layer B.Cu) (net 4) (tstamp 53335ECC) (status 30))
+  (segment (start 174.371 47.498) (end 173.609 47.498) (width 0.254) (layer B.Cu) (net 5))
+  (segment (start 174.625 54.737) (end 174.625 47.752) (width 0.254) (layer B.Cu) (net 5) (tstamp 5338A2CD))
+  (segment (start 174.625 47.752) (end 174.371 47.498) (width 0.254) (layer B.Cu) (net 5) (tstamp 5338A2D3))
+  (segment (start 173.9265 55.4355) (end 174.625 54.737) (width 0.254) (layer B.Cu) (net 5))
+  (segment (start 173.609 47.498) (end 172.085 45.974) (width 0.254) (layer B.Cu) (net 5) (tstamp 5338A2EC))
+  (segment (start 173.663154 67.046974) (end 173.663154 55.698846) (width 0.254) (layer B.Cu) (net 5))
+  (segment (start 173.663154 55.698846) (end 173.9265 55.4355) (width 0.254) (layer B.Cu) (net 5) (tstamp 5338A2B1))
+  (segment (start 173.9265 55.4355) (end 173.99 55.372) (width 0.254) (layer B.Cu) (net 5) (tstamp 5338A2CB))
   (segment (start 147.773846 50.428026) (end 147.183974 50.428026) (width 0.254) (layer B.Cu) (net 5))
   (segment (start 142.367 55.245) (end 142.367 56.007) (width 0.254) (layer B.Cu) (net 5) (tstamp 53378F17))
   (segment (start 147.183974 50.428026) (end 142.367 55.245) (width 0.254) (layer B.Cu) (net 5) (tstamp 53378F12))
@@ -2582,6 +2596,14 @@
         (xy 144.302815 48.864185) (xy 144.055605 48.699004) (xy 143.764 48.641) (xy 143.635589 48.641) (xy 143.268404 48.273174)
         (xy 142.778464 48.069733) (xy 142.255958 48.069276) (xy 141.526866 47.340185) (xy 141.428346 47.274356) (xy 141.541267 47.002413)
         (xy 141.54173 46.471914) (xy 141.339145 45.98162) (xy 141.043041 45.685) (xy 150.558486 45.685)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 174.315 48.750196) (xy 174.174447 48.609398) (xy 173.661176 48.39627) (xy 173.105416 48.395785) (xy 172.89738 48.481743)
+        (xy 172.982782 48.276073) (xy 172.983267 47.720313) (xy 172.771035 47.206671) (xy 172.378396 46.813346) (xy 171.865125 46.600218)
+        (xy 171.309365 46.599733) (xy 171.101328 46.685691) (xy 171.18673 46.480022) (xy 171.187215 45.924262) (xy 171.088354 45.685)
+        (xy 174.315 45.685) (xy 174.315 48.750196)
       )
     )
     (filled_polygon
@@ -3052,6 +3074,14 @@
         (xy 143.643196 48.64862) (xy 143.268404 48.273174) (xy 142.778464 48.069733) (xy 142.492147 48.069483) (xy 142.492354 48.069276)
         (xy 143.012086 48.06973) (xy 143.50238 47.867145) (xy 143.877826 47.492353) (xy 144.081267 47.002413) (xy 144.08173 46.471914)
         (xy 143.879145 45.98162) (xy 143.583041 45.685) (xy 168.491555 45.685)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 174.315 48.750196) (xy 174.174447 48.609398) (xy 173.661176 48.39627) (xy 173.105416 48.395785) (xy 172.89738 48.481743)
+        (xy 172.982782 48.276073) (xy 172.983267 47.720313) (xy 172.771035 47.206671) (xy 172.378396 46.813346) (xy 171.865125 46.600218)
+        (xy 171.309365 46.599733) (xy 171.101328 46.685691) (xy 171.18673 46.480022) (xy 171.187215 45.924262) (xy 171.088354 45.685)
+        (xy 174.315 45.685) (xy 174.315 48.750196)
       )
     )
     (filled_polygon
