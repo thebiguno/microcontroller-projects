@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "30 mar 2014"
+Date "31 mar 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -457,17 +457,6 @@ F 3 "" H 4250 6950 60  0000 C CNN
 	1    4250 6950
 	-1   0    0    -1  
 $EndComp
-$Comp
-L DPDT P4
-U 1 1 53334A36
-P 8400 5500
-F 0 "P4" H 8400 5750 50  0000 C CNN
-F 1 "DPDT" V 8400 5550 40  0000 C CNN
-F 2 "" H 8400 5500 60  0000 C CNN
-F 3 "" H 8400 5500 60  0000 C CNN
-	1    8400 5500
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	4600 6150 4600 6500
 Text GLabel 6750 6050 2    60   Input ~ 0
@@ -716,11 +705,11 @@ Text GLabel 3450 6500 1    60   Input ~ 0
 LED_BLUE
 Text GLabel 3350 6500 1    60   Input ~ 0
 LED_GREEN
-Text GLabel 4250 2950 2    60   Input ~ 0
-LED_RED
 Text GLabel 4250 5150 2    60   Input ~ 0
-LED_GREEN
+LED_RED
 Text GLabel 4250 2850 2    60   Input ~ 0
+LED_GREEN
+Text GLabel 4250 2950 2    60   Input ~ 0
 LED_BLUE
 $Comp
 L CONN_3X2 P4
@@ -746,4 +735,10 @@ Wire Wire Line
 Wire Wire Line
 	6900 6150 6750 6150
 Connection ~ 4600 6300
+Text GLabel 3650 7000 2    60   Input ~ 0
+LED_RED_R
+Text GLabel 3350 7000 0    60   Input ~ 0
+LED_GREEN_R
+Text GLabel 3450 7000 3    60   Input ~ 0
+LED_BLUE_R
 $EndSCHEMATC
