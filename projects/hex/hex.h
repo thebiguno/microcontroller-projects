@@ -2,15 +2,11 @@
 #define HEX_MAIN
 
 #include <avr/io.h>
-#include <stdio.h>
+
+#define LEG_COUNT	6
+#define JOINT_COUNT	2
 
 #include "servo.h"
 #include "leg.h"
-#include "ripple.h"
-#include "tripod.h"
-#include "wave.h"
-
-#include "lib/pwm/pwm.h"
-
 
 #endif

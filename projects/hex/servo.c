@@ -1,37 +1,50 @@
 #include "servo.h"
 
+extern leg_t *legs;
+
 void servo_init(){
 	volatile uint8_t *ports[12];
-	ports[FL_COXA] = &PORTA;
-	ports[FL_TIBIA] = &PORTA;
-	ports[FR_COXA] = &PORTA;
-	ports[FR_TIBIA] = &PORTA;
+	uint8_t pins[12];
+
+	for (uint8_t l = 0; l < 6; l++){
+		ports[l * 3] = legs[l].port[COXA];
+		pins[l * 3] = legs[l].pin[COXA];
+		ports[(l * 3) + 1] = legs[l].port[TIBIA];
+		pins[(l * 3) + 1] = legs[l].pin[TIBIA];
+		
+		legs[l].direction[COXA] = (l & 0x01) ? -1 : 1;
+		legs[l].direction[TIBIA] = (l & 0x01) ? -1 : 1;
+	}
 	
-	ports[ML_COXA] = &PORTA;
-	ports[ML_TIBIA] = &PORTB;
-	ports[MR_COXA] = &PORTB;
-	ports[MR_TIBIA] = &PORTC;
+	//TODO Allow for calibration via controller, plus store to EEPROM
+	legs[FRONT_LEFT].offset[COXA] = 80;
+	legs[FRONT_LEFT].offset[TIBIA] = -30;
+	legs[FRONT_RIGHT].offset[COXA] = 0;
+	legs[FRONT_LEFT].offset[TIBIA] = 60;
 	
-	ports[RL_COXA] = &PORTC;
-	ports[RL_TIBIA] = &PORTC;
-	ports[RR_COXA] = &PORTC;
-	ports[RR_TIBIA] = &PORTB;
+	legs[MIDDLE_LEFT].offset[COXA] = 0;
+	legs[MIDDLE_LEFT].offset[TIBIA] = -50;
+	legs[MIDDLE_RIGHT].offset[COXA] = 0;
+	legs[MIDDLE_RIGHT].offset[TIBIA] = 80;
 	
-	uint8_t pins[18];
-	pins[FL_COXA] = PORTA0;
-	pins[FL_TIBIA] = PORTA2;
-	pins[FR_COXA] = PORTA3;
-	pins[FR_TIBIA] = PORTA5;
-	
-	pins[ML_COXA] = PORTA6;
-	pins[ML_TIBIA] = PORTB1;
-	pins[MR_COXA] = PORTB2;
-	pins[MR_TIBIA] = PORTC7;
-	
-	pins[RL_COXA] = PORTC6;
-	pins[RL_TIBIA] = PORTC4;
-	pins[RR_COXA] = PORTC3;
-	pins[RR_TIBIA] = PORTB4;
+	legs[REAR_LEFT].offset[COXA] = 0;
+	legs[REAR_LEFT].offset[TIBIA] = -50;
+	legs[REAR_RIGHT].offset[COXA] = 0;
+	legs[REAR_RIGHT].offset[TIBIA] = 100;
 	
 	pwm_init(ports, pins, 12, 20000);
+}
+
+void servo_set_angle(uint8_t leg, uint8_t joint, double angle, uint16_t time){
+	if (time == 0) time = 1;
+	
+	legs[leg].desired[joint] = NEUTRAL + (legs[leg].offset[joint] * legs[leg].direction[joint]) + (angle * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL) * legs[leg].direction[joint]);
+	legs[leg].step[joint] = (legs[leg].current[joint] - legs[leg].desired[joint]) / time;
+}
+
+void servo_update_pwm(){
+	for (uint8_t l = 0; l < 6; l++){
+		pwm_set_phase(l * 2, legs[l].current[COXA]);
+		pwm_set_phase((l * 2) + 1, legs[l].current[TIBIA]);
+	}
 }

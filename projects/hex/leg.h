@@ -4,47 +4,59 @@
 #define __DELAY_BACKWARD_COMPATIBLE__ 
 
 #include <avr/io.h>
-#include <avr/io.h>
 #include <util/delay.h>
+#include <math.h>
 
-#include "hex.h"
+typedef struct leg_t {
+	volatile uint8_t *port[3];
+	uint8_t pin[3];
 
-//Front legs
+	int16_t offset[3];
+	int8_t direction[3];
+	
+	//The current angle in radians
+	double current[3];
+	
+	//The desired angle in radians
+	double desired[3];
+	
+	//The step in radians to be moved each iteration through the busy/wait loop.
+	double step[3];
+} leg_t;
+
+#include "servo.h"
+
 #define FRONT_LEFT		0
-#define FL_COXA			0
-#define FL_TIBIA		1
-#define FRONT_RIGHT		2
-#define FR_COXA			2
-#define FR_TIBIA		3
+#define FRONT_RIGHT		1
+#define MIDDLE_LEFT		2
+#define MIDDLE_RIGHT	3
+#define REAR_LEFT		4
+#define REAR_RIGHT		5
 
-//Middle legs
-#define MIDDLE_LEFT		4
-#define ML_COXA			4
-#define ML_TIBIA		5
-#define MIDDLE_RIGHT	6
-#define MR_COXA			6
-#define MR_TIBIA		7
+#define COXA			0
+#define FEMUR			1
+#define TIBIA			2
 
-//Rear legs
-#define REAR_LEFT		8
-#define RL_COXA			8
-#define RL_TIBIA		9
-#define REAR_RIGHT		10
-#define RR_COXA			10
-#define RR_TIBIA		11
+#define DELAY_STEP		16
 
-#define TIBIA_RAISED	600
+//Initialize memory for an array of legs.  By convention, the resulting array is ordered
+// from left to right, front to back.  I.e. Left Front, Right Front, Left Middle, Right Middle, etc. 
+//The implementation of leg_init MUST be hardware-specific, as part of the init is port / pin 
+// combinations for the servo drivers.
+void leg_init(uint8_t count);
 
-#define DELAY_SHORT			60
-#define DELAY_MEDIUM		100
+//Set the leg position in X,Y,Z co-ordinate space, and specify how long (millis) it should 
+// take to move it to that position.
+//TODO For a 2 DOF leg, having an X,Y,Z co-ordinate space doesn't really make sense, as there
+// is only the partial shell of a sphere that the foot can travel.  For now, we only specify
+// Y and Z, and these are radian values which are passed through as-is to the servos.
+void leg_set_position(uint8_t leg, double x, double y, double z, uint16_t time);
 
-extern uint16_t leg_position[12];
-extern int16_t leg_neutral_offset[12];
-extern int8_t leg_rotation_direction[12];
+//Busy/wait loop which moves each legs step as needed, and waits one millisecond for each.
+void leg_delay(uint16_t delay);
 
-void lift_and_position_leg(uint8_t leg, int16_t coxa_offset, int16_t tibia_offset);
-void update_leg_position(uint16_t delay);
-void leg_init();
-
+//Set the function pointer of a callback to be executed after every millisecond of the busy/wait 
+// loop.  This function should be where the user interface is polled (serial port, whatever).
+void leg_set_polling_callback();
 
 #endif

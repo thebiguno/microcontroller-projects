@@ -3,7 +3,7 @@ include ../../build/variables.mk
 PROJECT=hex
 MMCU=atmega1284p
 F_CPU=10000000
-SOURCES=hex.c servo.c leg.c ripple.c lib/pwm/pwm.c 
+SOURCES=hex.c leg.c servo.c lib/pwm/pwm.c 
 AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 
