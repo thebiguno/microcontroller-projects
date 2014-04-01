@@ -5,23 +5,25 @@
  * each side is interleaved together.
  */
 static void ripple_gait(uint8_t leg){
-	//Lift tibia to absolute position
-	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1] + (RIPPLE_TIBIA_RAISED * leg_rotation_direction[leg + 1]);
-	update_leg_position(DELAY_SHORT);
+	//Lift tibia (z)
+	leg_set_position_relative(leg, 0, 0, TIBIA_STEP);
+	_delay_ms(DELAY);
 	
 	//Move the coxa forward to neutral
-	leg_position[leg] = NEUTRAL + leg_neutral_offset[leg];
+	leg_set_position_absolute(leg, 0, 0, TIBIA_STEP);
+	_delay_ms(DELAY);
+	
 	//... while moving the other coxas back by STEP.
-	for (uint8_t i = 0; i < 12; i+=2){
+	for (uint8_t i = 0; i < LEG_COUNT; i++){
 		if (i != leg){
-			leg_position[i] -= RIPPLE_COXA_STEP * leg_rotation_direction[i];
+			leg_set_position_relative(i, 0, COXA_STEP * -1, 0);
 		}
 	}
-	update_leg_position(DELAY_SHORT);
+	_delay_ms(DELAY);
 
 	//Drop tibia to neutral position
-	leg_position[leg + 1] = NEUTRAL + leg_neutral_offset[leg + 1];
-	update_leg_position(DELAY_SHORT);
+	leg_set_position_absolute(leg, 0, 0, 0);
+	_delay_ms(DELAY);
 }
 
 void ripple_step(){
@@ -34,11 +36,29 @@ void ripple_step(){
 }
 
 void ripple_gait_init(){
-	lift_and_position_leg(REAR_LEFT, RIPPLE_COXA_STEP * -5, 0);
-	lift_and_position_leg(MIDDLE_LEFT, RIPPLE_COXA_STEP * -3, 0);
-	lift_and_position_leg(FRONT_LEFT, RIPPLE_COXA_STEP * -1, 0);
-	
-	lift_and_position_leg(REAR_RIGHT, RIPPLE_COXA_STEP * -2, 0);
-	lift_and_position_leg(MIDDLE_RIGHT, RIPPLE_COXA_STEP * 0, 0);
-	lift_and_position_leg(FRONT_RIGHT, RIPPLE_COXA_STEP * -4, 0);
+	leg_set_position_absolute(REAR_LEFT,	0, 0, TIBIA_STEP);
+	leg_set_position_absolute(MIDDLE_RIGHT,	0, 0, TIBIA_STEP);
+	leg_set_position_absolute(FRONT_LEFT,	0, 0, TIBIA_STEP);
+	_delay_ms(DELAY);
+	leg_set_position_absolute(REAR_LEFT,	0, COXA_STEP * -5,	TIBIA_STEP);
+	leg_set_position_absolute(MIDDLE_RIGHT,	0, COXA_STEP *  0,	TIBIA_STEP);
+	leg_set_position_absolute(FRONT_LEFT,	0, COXA_STEP * -1,	TIBIA_STEP);
+	_delay_ms(DELAY);
+	leg_set_position_absolute(REAR_LEFT,	0, COXA_STEP * -5, 0);
+	leg_set_position_absolute(MIDDLE_RIGHT,	0, COXA_STEP *  0, 0);
+	leg_set_position_absolute(FRONT_LEFT,	0, COXA_STEP * -1, 0);
+	_delay_ms(DELAY);
+
+	leg_set_position_absolute(REAR_RIGHT,	0, 0, TIBIA_STEP);
+	leg_set_position_absolute(MIDDLE_LEFT,	0, 0, TIBIA_STEP);
+	leg_set_position_absolute(FRONT_RIGHT,	0, 0, TIBIA_STEP);
+	_delay_ms(DELAY);
+	leg_set_position_absolute(REAR_RIGHT,	0, COXA_STEP * -2,	TIBIA_STEP);
+	leg_set_position_absolute(MIDDLE_LEFT,	0, COXA_STEP * -3,	TIBIA_STEP);
+	leg_set_position_absolute(FRONT_RIGHT,	0, COXA_STEP * -4,	TIBIA_STEP);
+	_delay_ms(DELAY);
+	leg_set_position_absolute(REAR_RIGHT,	0, COXA_STEP * -2,	0);
+	leg_set_position_absolute(MIDDLE_LEFT,	0, COXA_STEP * -3,	0);
+	leg_set_position_absolute(FRONT_RIGHT,	0, COXA_STEP * -4,	0);
+	_delay_ms(DELAY);
 }

@@ -1,16 +1,13 @@
 #include "hex.h"
 
-leg_t* legs[6];
+leg_t legs[LEG_COUNT];
 
 int main (void){
-	leg_init(6);
-
+	leg_init();
+	
+	ripple_gait_init();
+	
 	while(1){
-		for (uint8_t i = 0; i < LEG_COUNT; i++){
-			leg_set_position(i, 0, -1, -1, 500);
-			leg_delay(1000);
-			leg_set_position(i, 0, 0, 0, 500);
-			leg_delay(1000);
-		}
+		ripple_step();
 	}
 }

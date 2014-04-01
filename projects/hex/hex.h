@@ -6,6 +6,7 @@
 #define LEG_COUNT	6
 #define JOINT_COUNT	2
 
+#include "ripple.h"
 #include "servo.h"
 #include "leg.h"
 

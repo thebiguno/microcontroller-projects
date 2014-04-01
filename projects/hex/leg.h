@@ -7,21 +7,23 @@
 #include <util/delay.h>
 #include <math.h>
 
-typedef struct leg_t {
-	volatile uint8_t *port[3];
-	uint8_t pin[3];
+#include "hex.h"
 
-	int16_t offset[3];
-	int8_t direction[3];
+typedef struct leg_t {
+	volatile uint8_t *port[JOINT_COUNT];
+	uint8_t pin[JOINT_COUNT];
+
+	int16_t offset[JOINT_COUNT];
+	int8_t direction[JOINT_COUNT];
 	
 	//The current angle in radians
-	double current[3];
+	double current[JOINT_COUNT];
 	
 	//The desired angle in radians
-	double desired[3];
+	double desired[JOINT_COUNT];
 	
 	//The step in radians to be moved each iteration through the busy/wait loop.
-	double step[3];
+	double step[JOINT_COUNT];
 } leg_t;
 
 #include "servo.h"
@@ -34,8 +36,8 @@ typedef struct leg_t {
 #define REAR_RIGHT		5
 
 #define COXA			0
-#define FEMUR			1
-#define TIBIA			2
+//#define FEMUR			1
+#define TIBIA			1
 
 #define DELAY_STEP		16
 
@@ -43,20 +45,21 @@ typedef struct leg_t {
 // from left to right, front to back.  I.e. Left Front, Right Front, Left Middle, Right Middle, etc. 
 //The implementation of leg_init MUST be hardware-specific, as part of the init is port / pin 
 // combinations for the servo drivers.
-void leg_init(uint8_t count);
+void leg_init();
 
-//Set the leg position in X,Y,Z co-ordinate space, and specify how long (millis) it should 
-// take to move it to that position.
+//Set the leg position in X,Y,Z co-ordinate space.
 //TODO For a 2 DOF leg, having an X,Y,Z co-ordinate space doesn't really make sense, as there
 // is only the partial shell of a sphere that the foot can travel.  For now, we only specify
 // Y and Z, and these are radian values which are passed through as-is to the servos.
-void leg_set_position(uint8_t leg, double x, double y, double z, uint16_t time);
+void leg_set_position_absolute(uint8_t leg, double x, double y, double z);
+
+//Set the leg position in X,Y,Z co-ordinate space, relative to current position.
+//TODO For a 2 DOF leg, having an X,Y,Z co-ordinate space doesn't really make sense, as there
+// is only the partial shell of a sphere that the foot can travel.  For now, we only specify
+// Y and Z, and these are radian values which are passed through as-is to the servos.
+void leg_set_position_relative(uint8_t leg, double x, double y, double z);
 
 //Busy/wait loop which moves each legs step as needed, and waits one millisecond for each.
 void leg_delay(uint16_t delay);
-
-//Set the function pointer of a callback to be executed after every millisecond of the busy/wait 
-// loop.  This function should be where the user interface is polled (serial port, whatever).
-void leg_set_polling_callback();
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 
+#include "hex.h"
 #include "leg.h"
 #include "lib/pwm/pwm.h"
 
@@ -21,9 +22,7 @@
 
 void servo_init();
 
-void servo_set_angle(uint8_t leg, uint8_t joint, double angle, uint16_t time);
-
-void servo_update_pwm();
+void servo_set_angle(uint8_t leg, uint8_t joint, double angle);
 
 #endif
 
