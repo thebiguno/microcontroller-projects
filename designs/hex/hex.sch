@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "31 mar 2014"
+Date "1 apr 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -68,9 +68,9 @@ Text GLabel 4250 2350 2    60   Input ~ 0
 PWM04
 Text GLabel 4250 2450 2    60   Input ~ 0
 PWM05
-Text GLabel 4750 3900 2    60   Input ~ 0
+Text GLabel 4250 5250 2    60   Input ~ 0
 PWM06
-Text GLabel 4750 3650 2    60   Input ~ 0
+Text GLabel 4250 4150 2    60   Input ~ 0
 PWM07
 Text GLabel 4250 4050 2    60   Input ~ 0
 PWM15
@@ -86,7 +86,7 @@ Text GLabel 4250 4350 2    60   Input ~ 0
 PWM10
 Text GLabel 4250 4450 2    60   Input ~ 0
 PWM09
-Text GLabel 4750 3450 2    60   Input ~ 0
+Text GLabel 4250 2150 2    60   Input ~ 0
 PWM08
 Text GLabel 4250 5350 2    60   Input ~ 0
 PWM17
@@ -146,11 +146,11 @@ F 3 "~" H 2000 1950 30  0000 C CNN
 	1    2000 1950
 	0    1    1    0   
 $EndComp
-Text GLabel 4750 3350 2    60   Input ~ 0
+Text GLabel 4250 3350 2    60   Input ~ 0
 MOSI
-Text GLabel 4750 3550 2    60   Input ~ 0
+Text GLabel 4250 3450 2    60   Input ~ 0
 MISO
-Text GLabel 4750 3800 2    60   Input ~ 0
+Text GLabel 4250 3550 2    60   Input ~ 0
 SCK
 Text GLabel 2250 1950 1    60   Input ~ 0
 RESET
@@ -531,26 +531,6 @@ Wire Wire Line
 Wire Wire Line
 	6500 7500 6500 6800
 Connection ~ 5400 6900
-Wire Wire Line
-	4250 3350 4750 3350
-Wire Wire Line
-	4750 3350 4750 3450
-Wire Wire Line
-	4750 3550 4750 3650
-Wire Wire Line
-	4750 3800 4750 3900
-Wire Wire Line
-	4550 3800 4750 3800
-Wire Wire Line
-	4750 3550 4650 3550
-Wire Wire Line
-	4650 3550 4650 3450
-Wire Wire Line
-	4650 3450 4250 3450
-Wire Wire Line
-	4550 3800 4550 3550
-Wire Wire Line
-	4550 3550 4250 3550
 Wire Wire Line
 	1750 1950 1750 1550
 Wire Wire Line
