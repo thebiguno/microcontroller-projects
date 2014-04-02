@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, April 02, 2014 'pmt' 12:36:24 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, April 02, 2014 'pmt' 03:45:43 pm
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -50,13 +50,6 @@ IdModule  = TO92;
 EndCmp
 
 BeginCmp
-TimeStamp = /533AF1A8;
-Reference = K3;
-ValeurCmp = ANALOG;
-IdModule  = PIN_ARRAY_3X1;
-EndCmp
-
-BeginCmp
 TimeStamp = /533781B7;
 Reference = L1;
 ValeurCmp = LED_RGB;
@@ -92,17 +85,10 @@ IdModule  = DPDT;
 EndCmp
 
 BeginCmp
-TimeStamp = /533AEE45;
+TimeStamp = /533C8452;
 Reference = P5;
-ValeurCmp = I2C;
-IdModule  = PIN_ARRAY_4x1;
-EndCmp
-
-BeginCmp
-TimeStamp = /533C508E;
-Reference = P6;
-ValeurCmp = BATT (4.8V-6V);
-IdModule  = PIN_ARRAY_2X1;
+ValeurCmp = CONN_6;
+IdModule  = PIN_ARRAY-6X1;
 EndCmp
 
 BeginCmp
