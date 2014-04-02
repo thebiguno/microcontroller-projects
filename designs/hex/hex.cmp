@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, April 01, 2014 'amt' 11:06:21 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, April 02, 2014 'pmt' 12:36:24 pm
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -19,6 +19,13 @@ TimeStamp = /53335959;
 Reference = C3;
 ValeurCmp = 1uF;
 IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /533C55FC;
+Reference = D1;
+ValeurCmp = 3.3v ZENER;
+IdModule  = D2;
 EndCmp
 
 BeginCmp
@@ -78,9 +85,9 @@ IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /5337851F;
+TimeStamp = /533C3A10;
 Reference = P4;
-ValeurCmp = PROG;
+ValeurCmp = DPDT;
 IdModule  = DPDT;
 EndCmp
 
@@ -89,6 +96,13 @@ TimeStamp = /533AEE45;
 Reference = P5;
 ValeurCmp = I2C;
 IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /533C508E;
+Reference = P6;
+ValeurCmp = BATT (4.8V-6V);
+IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
@@ -143,6 +157,13 @@ EndCmp
 BeginCmp
 TimeStamp = /533AEE68;
 Reference = R8;
+ValeurCmp = 1k;
+IdModule  = R2;
+EndCmp
+
+BeginCmp
+TimeStamp = /533C55EC;
+Reference = R9;
 ValeurCmp = 1k;
 IdModule  = R2;
 EndCmp

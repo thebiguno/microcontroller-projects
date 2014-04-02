@@ -246,27 +246,27 @@ BATTERY
 $Comp
 L CONN_3X2 P1
 U 1 1 532FA2B1
-P 8400 6000
-F 0 "P1" H 8400 6250 50  0000 C CNN
-F 1 "PROG" V 8400 6050 40  0000 C CNN
-F 2 "" H 8400 6000 60  0000 C CNN
-F 3 "" H 8400 6000 60  0000 C CNN
-	1    8400 6000
+P 9100 5850
+F 0 "P1" H 9100 6100 50  0000 C CNN
+F 1 "PROG" V 9100 5900 40  0000 C CNN
+F 2 "" H 9100 5850 60  0000 C CNN
+F 3 "" H 9100 5850 60  0000 C CNN
+	1    9100 5850
 	1    0    0    -1  
 $EndComp
-Text GLabel 8000 5850 0    60   Input ~ 0
+Text GLabel 8700 5700 0    60   Input ~ 0
 MISO
-Text GLabel 8000 5950 0    60   Input ~ 0
+Text GLabel 8700 5800 0    60   Input ~ 0
 SCK
-Text GLabel 8000 6050 0    60   Input ~ 0
+Text GLabel 8700 5900 0    60   Input ~ 0
 RESET
-Text GLabel 8800 5950 2    60   Input ~ 0
+Text GLabel 9500 5800 2    60   Input ~ 0
 MOSI
 Text GLabel 2250 5200 2    60   Input ~ 0
 GND
 Text GLabel 2050 1000 1    60   Input ~ 0
 VCC_AVR
-Text GLabel 8800 5850 2    60   Input ~ 0
+Text GLabel 9500 5700 2    60   Input ~ 0
 VCC_PROG
 Wire Wire Line
 	9200 1200 9300 1200
@@ -300,7 +300,7 @@ L LEG S1
 U 1 1 5333430A
 P 5650 1550
 F 0 "S1" H 6050 1500 60  0000 C CNN
-F 1 "FRONT_LEFT" H 6050 1650 60  0000 C CNN
+F 1 "FRONT_LEFT" H 6500 1550 60  0000 C CNN
 F 2 "" H 5650 1550 60  0000 C CNN
 F 3 "" H 5650 1550 60  0000 C CNN
 	1    5650 1550
@@ -315,13 +315,13 @@ Wire Wire Line
 Connection ~ 5850 1800
 Connection ~ 5750 1800
 Text GLabel 6000 1300 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 $Comp
-L LEG S2
+L LEG_REVERSE S2
 U 1 1 53334670
 P 5650 2150
 F 0 "S2" H 6050 2100 60  0000 C CNN
-F 1 "FRONT_RIGHT" H 6050 2250 60  0000 C CNN
+F 1 "FRONT_RIGHT" H 6500 2150 60  0000 C CNN
 F 2 "" H 5650 2150 60  0000 C CNN
 F 3 "" H 5650 2150 60  0000 C CNN
 	1    5650 2150
@@ -336,13 +336,13 @@ Wire Wire Line
 Connection ~ 5850 2400
 Connection ~ 5750 2400
 Text GLabel 6000 1900 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 $Comp
 L LEG S3
 U 1 1 5333467E
 P 5650 2750
 F 0 "S3" H 6050 2700 60  0000 C CNN
-F 1 "MIDDLE_LEFT" H 6050 2850 60  0000 C CNN
+F 1 "MIDDLE_LEFT" H 6500 2750 60  0000 C CNN
 F 2 "" H 5650 2750 60  0000 C CNN
 F 3 "" H 5650 2750 60  0000 C CNN
 	1    5650 2750
@@ -357,13 +357,13 @@ Wire Wire Line
 Connection ~ 5850 3000
 Connection ~ 5750 3000
 Text GLabel 6000 2500 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 $Comp
-L LEG S4
+L LEG_REVERSE S4
 U 1 1 5333468C
 P 5650 3350
 F 0 "S4" H 6050 3300 60  0000 C CNN
-F 1 "MIDDLE_RIGHT" H 6050 3450 60  0000 C CNN
+F 1 "MIDDLE_RIGHT" H 6550 3350 60  0000 C CNN
 F 2 "" H 5650 3350 60  0000 C CNN
 F 3 "" H 5650 3350 60  0000 C CNN
 	1    5650 3350
@@ -378,7 +378,7 @@ Wire Wire Line
 Connection ~ 5850 3600
 Connection ~ 5750 3600
 Text GLabel 6000 3100 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 Wire Wire Line
 	5650 3700 6000 3700
 Connection ~ 5750 3700
@@ -388,13 +388,13 @@ Wire Wire Line
 Connection ~ 5850 4200
 Connection ~ 5750 4200
 Text GLabel 6000 3700 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 $Comp
-L LEG S6
+L LEG_REVERSE S6
 U 1 1 533346A8
 P 5650 4550
 F 0 "S6" H 6050 4500 60  0000 C CNN
-F 1 "REAR_RIGHT" H 6050 4650 60  0000 C CNN
+F 1 "REAR_RIGHT" H 6500 4550 60  0000 C CNN
 F 2 "" H 5650 4550 60  0000 C CNN
 F 3 "" H 5650 4550 60  0000 C CNN
 	1    5650 4550
@@ -409,7 +409,7 @@ Wire Wire Line
 Connection ~ 5850 4800
 Connection ~ 5750 4800
 Text GLabel 6000 4300 2    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 $Comp
 L CONN_10 P2
 U 1 1 533348CC
@@ -421,11 +421,11 @@ F 3 "" H 1150 6550 60  0000 C CNN
 	1    1150 6550
 	-1   0    0    -1  
 $EndComp
-Text GLabel 6000 5900 2    60   Input ~ 0
+Text GLabel 9550 4500 2    60   Input ~ 0
 VCC_PROG
 Text GLabel 9300 2600 2    60   Input ~ 0
-BATTERY
-Text GLabel 5200 6000 0    60   Input ~ 0
+SWITCHED_BATTERY
+Text GLabel 9550 4700 2    60   Input ~ 0
 VCC_AVR
 $Comp
 L GND #PWR06
@@ -517,14 +517,12 @@ F 3 "" H 9050 1400 60  0000 C CNN
 	1    9050 1400
 	-1   0    0    1   
 $EndComp
-Text GLabel 6100 6000 2    60   Input ~ 0
+Text GLabel 9550 4900 2    60   Input ~ 0
 VCC_XBEE
 Text GLabel 3250 4150 2    60   Input ~ 0
 AVR_RX
-Text GLabel 3250 4250 2    60   Input ~ 0
+Text GLabel 3950 4250 2    60   Input ~ 0
 AVR_TX
-Text GLabel 1500 6300 2    60   Input ~ 0
-XBEE_RX
 $Comp
 L R R2
 U 1 1 533780B6
@@ -561,7 +559,7 @@ F 3 "" H 8000 1350 60  0000 C CNN
 	-1   0    0    1   
 $EndComp
 Text GLabel 7850 1350 0    60   Input ~ 0
-BATTERY
+SWITCHED_BATTERY
 Text GLabel 7850 1850 0    60   Input ~ 0
 ADC_BATTERY_METER
 Text GLabel 3250 2150 2    60   Input ~ 0
@@ -627,23 +625,12 @@ Text GLabel 7350 3300 1    60   Input ~ 0
 LED_BLUE
 Text GLabel 7250 3300 1    60   Input ~ 0
 LED_GREEN
-Text GLabel 3250 4650 2    60   Input ~ 0
+Text GLabel 3250 3650 2    60   Input ~ 0
 LED_RED
-Text GLabel 3250 2350 2    60   Input ~ 0
+Text GLabel 3250 4650 2    60   Input ~ 0
 LED_GREEN
-Text GLabel 3250 2450 2    60   Input ~ 0
+Text GLabel 3250 4750 2    60   Input ~ 0
 LED_BLUE
-$Comp
-L CONN_3X2 P4
-U 1 1 5337851F
-P 5600 5950
-F 0 "P4" H 5600 6200 50  0000 C CNN
-F 1 "PROG" V 5600 6000 40  0000 C CNN
-F 2 "" H 5600 5950 60  0000 C CNN
-F 3 "" H 5600 5950 60  0000 C CNN
-	1    5600 5950
-	1    0    0    -1  
-$EndComp
 Text GLabel 7650 4150 2    60   Input ~ 0
 LED_RED_R
 Text GLabel 7650 3850 2    60   Input ~ 0
@@ -683,8 +670,6 @@ F 3 "~" H 3500 6350 30  0000 C CNN
 	1    3500 6350
 	1    0    0    -1  
 $EndComp
-Text GLabel 3200 6700 0    60   Input ~ 0
-VCC_AVR
 Wire Wire Line
 	3200 6000 3200 6850
 Wire Wire Line
@@ -709,19 +694,19 @@ I2C_SDA
 $Comp
 L CONN_3 K3
 U 1 1 533AF1A8
-P 9300 5000
-F 0 "K3" V 9250 5000 50  0000 C CNN
-F 1 "ANALOG" V 9350 5000 40  0000 C CNN
-F 2 "" H 9300 5000 60  0000 C CNN
-F 3 "" H 9300 5000 60  0000 C CNN
-	1    9300 5000
+P 5300 7100
+F 0 "K3" V 5250 7100 50  0000 C CNN
+F 1 "ANALOG" V 5350 7100 40  0000 C CNN
+F 2 "" H 5300 7100 60  0000 C CNN
+F 3 "" H 5300 7100 60  0000 C CNN
+	1    5300 7100
 	0    1    1    0   
 $EndComp
-Text GLabel 9400 4650 2    60   Input ~ 0
+Text GLabel 5400 6750 2    60   Input ~ 0
 ADC6
 Text GLabel 3250 2050 2    60   Input ~ 0
 ADC6
-Text Notes 8900 5250 0    60   ~ 0
+Text Notes 4900 7350 0    60   ~ 0
 ADC Expansion Port
 Text Notes 3000 7450 0    60   ~ 0
 I2C Expansion Port
@@ -746,64 +731,53 @@ Wire Wire Line
 Connection ~ 7550 4150
 Text Notes 7250 4900 0    60   ~ 0
 RGB LED
-Text Notes 8000 6250 0    60   ~ 0
+Text Notes 8700 6100 0    60   ~ 0
 Programming Header
 Text Notes 9000 2050 0    60   ~ 0
-Battery
+Battery Input
 Text GLabel 1500 6200 2    60   Input ~ 0
 AVR_RX
-Text GLabel 6000 5800 2    60   Input ~ 0
-AVR_TX
-Text GLabel 5200 5900 0    60   Input ~ 0
-XBEE_RX
 Text GLabel 1500 6100 2    60   Input ~ 0
 VCC_XBEE
 Text Notes 5400 5050 0    60   ~ 0
 Servo Headers
-Text Notes 4700 6250 0    60   ~ 0
-On / Off / Program Switch\n(Switch pinout differs - look at footprint for details)
+Text Notes 8500 5200 0    60   ~ 0
+On / Off / Program Switch
 Text Notes 1050 7250 0    60   ~ 0
 XBee Header
 Text Notes 2550 5400 0    60   ~ 0
 AVR
-Wire Wire Line
-	6000 6000 6100 6000
-Wire Wire Line
-	6050 6000 6050 6100
-Connection ~ 6050 6000
 $Comp
 L +3.3V #PWR011
 U 1 1 533AFBB5
-P 6050 6100
-F 0 "#PWR011" H 6050 6060 30  0001 C CNN
-F 1 "+3.3V" H 6050 6210 30  0000 C CNN
-F 2 "" H 6050 6100 60  0000 C CNN
-F 3 "" H 6050 6100 60  0000 C CNN
-	1    6050 6100
-	0    1    1    0   
+P 9550 4900
+F 0 "#PWR011" H 9550 4860 30  0001 C CNN
+F 1 "+3.3V" H 9550 5010 30  0000 C CNN
+F 2 "" H 9550 4900 60  0000 C CNN
+F 3 "" H 9550 4900 60  0000 C CNN
+	1    9550 4900
+	-1   0    0    1   
 $EndComp
-Text GLabel 9200 4650 0    60   Input ~ 0
-BATTERY
 $Comp
 L GND #PWR012
 U 1 1 533B657E
-P 8800 6050
-F 0 "#PWR012" H 8800 6050 30  0001 C CNN
-F 1 "GND" H 8800 5980 30  0001 C CNN
-F 2 "" H 8800 6050 60  0000 C CNN
-F 3 "" H 8800 6050 60  0000 C CNN
-	1    8800 6050
+P 9500 5900
+F 0 "#PWR012" H 9500 5900 30  0001 C CNN
+F 1 "GND" H 9500 5830 30  0001 C CNN
+F 2 "" H 9500 5900 60  0000 C CNN
+F 3 "" H 9500 5900 60  0000 C CNN
+	1    9500 5900
 	0    -1   -1   0   
 $EndComp
 $Comp
 L GND #PWR013
 U 1 1 533B658D
-P 9300 4650
-F 0 "#PWR013" H 9300 4650 30  0001 C CNN
-F 1 "GND" H 9300 4580 30  0001 C CNN
-F 2 "" H 9300 4650 60  0000 C CNN
-F 3 "" H 9300 4650 60  0000 C CNN
-	1    9300 4650
+P 5300 6750
+F 0 "#PWR013" H 5300 6750 30  0001 C CNN
+F 1 "GND" H 5300 6680 30  0001 C CNN
+F 2 "" H 5300 6750 60  0000 C CNN
+F 3 "" H 5300 6750 60  0000 C CNN
+	1    5300 6750
 	-1   0    0    1   
 $EndComp
 $Comp
@@ -822,7 +796,7 @@ L LEG S5
 U 1 1 5333469A
 P 5650 3950
 F 0 "S5" H 6050 3900 60  0000 C CNN
-F 1 "REAR_LEFT" H 6050 4050 60  0000 C CNN
+F 1 "REAR_LEFT" H 6450 3950 60  0000 C CNN
 F 2 "" H 5650 3950 60  0000 C CNN
 F 3 "" H 5650 3950 60  0000 C CNN
 	1    5650 3950
@@ -894,4 +868,89 @@ F 3 "" H 6000 4800 60  0000 C CNN
 	1    6000 4800
 	0    -1   -1   0   
 $EndComp
+$Comp
+L DPDT P4
+U 1 1 533C3A10
+P 9100 4700
+F 0 "P4" H 9100 4800 60  0000 C CNN
+F 1 "DPDT" H 9100 4600 60  0000 C CNN
+F 2 "" H 9100 4700 60  0000 C CNN
+F 3 "" H 9100 4700 60  0000 C CNN
+	1    9100 4700
+	1    0    0    -1  
+$EndComp
+Text GLabel 9400 3050 2    60   Input ~ 0
+VCC_XBEE
+Text GLabel 6900 6100 1    60   Input ~ 0
+SWITCHED_BATTERY
+$Comp
+L CONN_2 P6
+U 1 1 533C508E
+P 6800 6450
+F 0 "P6" V 6750 6450 40  0000 C CNN
+F 1 "BATT (4.8V-6V)" V 6850 6450 40  0000 C CNN
+F 2 "" H 6800 6450 60  0000 C CNN
+F 3 "" H 6800 6450 60  0000 C CNN
+	1    6800 6450
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR021
+U 1 1 533C5096
+P 6700 6100
+F 0 "#PWR021" H 6700 6100 30  0001 C CNN
+F 1 "GND" H 6700 6030 30  0001 C CNN
+F 2 "" H 6700 6100 60  0000 C CNN
+F 3 "" H 6700 6100 60  0000 C CNN
+	1    6700 6100
+	-1   0    0    1   
+$EndComp
+Text Notes 6650 6750 0    60   ~ 0
+Battery Expansion Port
+Text GLabel 3200 6650 0    60   Input ~ 0
+VCC_XBEE
+Text GLabel 5200 6750 0    60   Input ~ 0
+VCC_XBEE
+$Comp
+L R R9
+U 1 1 533C55EC
+P 3500 4250
+F 0 "R9" V 3580 4250 40  0000 C CNN
+F 1 "1k" V 3507 4251 40  0000 C CNN
+F 2 "~" V 3430 4250 30  0000 C CNN
+F 3 "~" H 3500 4250 30  0000 C CNN
+	1    3500 4250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L ZENER D1
+U 1 1 533C55FC
+P 3850 4450
+F 0 "D1" H 3850 4550 50  0000 C CNN
+F 1 "3.3v ZENER" H 3850 4350 40  0000 C CNN
+F 2 "~" H 3850 4450 60  0000 C CNN
+F 3 "~" H 3850 4450 60  0000 C CNN
+	1    3850 4450
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3750 4250 3950 4250
+Connection ~ 3850 4250
+$Comp
+L GND #PWR022
+U 1 1 533C56C0
+P 3850 4650
+F 0 "#PWR022" H 3850 4650 30  0001 C CNN
+F 1 "GND" H 3850 4580 30  0001 C CNN
+F 2 "" H 3850 4650 60  0000 C CNN
+F 3 "" H 3850 4650 60  0000 C CNN
+	1    3850 4650
+	1    0    0    -1  
+$EndComp
+Text GLabel 1500 6300 2    60   Input ~ 0
+AVR_TX
+Text GLabel 8650 4900 0    60   Input ~ 0
+SWITCHED_BATTERY
+Text GLabel 8650 4700 0    60   Input ~ 0
+BATTERY
 $EndSCHEMATC
