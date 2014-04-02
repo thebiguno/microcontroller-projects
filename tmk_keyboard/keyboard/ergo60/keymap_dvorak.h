@@ -15,7 +15,7 @@
 * | Ctrl | Alt  | Cmd  | Shift|  Fn  |                                   |  Fn  | Shift| Cmd  | Alt  | Ctrl |
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    |      | \|   |       | `~   | §±   |
+*                                    | Caps | \|   |       | `~   | §±   |
 *                             ,------|------|------|       |------+------+------.
 *                             | Bspc | Esc  | /?   |       | Tab  | Ent  | Space|
 *                             `--------------------'       `--------------------'
@@ -25,16 +25,16 @@
 * ,----------------------------------.                                   ,----------------------------------.
 * |  F1  |  F2  |  F3  |  F4  |  F5  |                                   |  F6  |  F7  |  F8  |  F9  |  F10 |
 * |------+------+------+------+------|                                   |------+------+------+------+------
-* |  F11 |  F12 |  F13 |  F14 | Vol+ |                                   |  >>  |   7  |   8  |   9  |   =  |
+* |  F11 |  F12 |  F13 |  F14 | Vol+ |                                   |  >>  |   7  |   8  |   9  |   -  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* | Caps |      |      |      | Mute |                                   |  >|| |   4  |   5  |   6  |   +  |
+* |      |      |      |      | Mute |                                   |  >|| |   4  |   5  |   6  |   +  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |      |      |      |      | Vol- |                                   |  <<  |   1  |   2  |   3  |   -  |
+* |      |      |      |      | Vol- |                                   |  <<  |   1  |   2  |   3  |   *  |
 * |------+------+------+------+------'                                   |------+------+------+------+------|
-* | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn | TRNS | TRNS |
+* | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn |   .  |   /  |
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    |      |      |       |   *  |   /  |
+*                                    |      |      |       |  NL  |   =  |
 *                             ,------|------|------|       |------+------+------.
 *                             | Del  | TRNS | TRNS |       | TRNS | KEnt |   0  |
 *                             `--------------------'       `--------------------'
@@ -49,14 +49,14 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            A   ,O   ,E   ,U   ,I   ,
            SCLN,Q   ,J   ,K   ,X   ,
            FN4 ,FN5 ,FN6 ,FN7 ,NO  ,
-                     NO  ,NO ,
+                     CAPS,BSLS,
                      FN1 ,FN2 ,FN3 ,
            6   ,7   ,8   ,9   ,0   ,
            F   ,G   ,C   ,R   ,L   ,
            D   ,H   ,T   ,N   ,S   ,
            B   ,M   ,W   ,V   ,Z   ,
            NO  ,FN8 ,FN9 ,FN10,FN11,
-           NO  ,NO ,
+           GRV ,NUBS,
            FN12,FN13,FN14 
     ),
     /* Layer 1: Symbols */
@@ -64,17 +64,17 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            F1  ,F2  ,F3  ,F4  ,F5  ,
            F11 ,F12 ,F13 ,F14 ,VOLU,
            NO  ,NO  ,NO  ,NO  ,MUTE,
-           NO  ,NO  ,HOME,END ,VOLD,
-           TRNS,TRNS,TRNS,TRNS,TRNS,
+           NO  ,NO  ,NO  ,NO  ,VOLD,
+           TRNS,TRNS,HOME,END,TRNS,
                           TRNS,TRNS,
                      TRNS,TRNS,TRNS,
            F6  ,F7  ,F8  ,F9  ,F10 ,
-           MNXT,FN15,FN16,FN17,FN18,
-           MPLY,BSLS,EQL ,MINS,NUBS,
-           MPRV,PGUP,PGDN,NO  ,NO  ,
-           TRNS,TRNS,TRNS,TRNS,TRNS,
-           TRNS,TRNS,
-           TRNS,TRNS,TRNS
+           MNXT,P7  ,P8  ,P9  ,KEQL,
+           MPLY,P4  ,P5  ,P6  ,KPLS,
+           MPRV,P1  ,P2  ,P3  ,KMIN,
+           TRNS,PGUP,PGDN,PDOT,TRNS,
+           PAST,PSLS,
+           TRNS,PENT,P0
     ),};
 enum function_id {
     TEENSY_KEY,
