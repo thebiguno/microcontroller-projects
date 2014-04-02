@@ -37,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "1 apr 2014"
+Date "2 apr 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -268,8 +268,6 @@ Text GLabel 2050 1000 1    60   Input ~ 0
 VCC_AVR
 Text GLabel 8800 5850 2    60   Input ~ 0
 VCC_PROG
-Text GLabel 8800 6050 2    60   Input ~ 0
-GND
 Wire Wire Line
 	9200 1200 9300 1200
 Connection ~ 9300 1200
@@ -318,8 +316,6 @@ Connection ~ 5850 1800
 Connection ~ 5750 1800
 Text GLabel 6000 1300 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 1800 2    60   Input ~ 0
-GND
 $Comp
 L LEG S2
 U 1 1 53334670
@@ -341,8 +337,6 @@ Connection ~ 5850 2400
 Connection ~ 5750 2400
 Text GLabel 6000 1900 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 2400 2    60   Input ~ 0
-GND
 $Comp
 L LEG S3
 U 1 1 5333467E
@@ -364,8 +358,6 @@ Connection ~ 5850 3000
 Connection ~ 5750 3000
 Text GLabel 6000 2500 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 3000 2    60   Input ~ 0
-GND
 $Comp
 L LEG S4
 U 1 1 5333468C
@@ -387,19 +379,6 @@ Connection ~ 5850 3600
 Connection ~ 5750 3600
 Text GLabel 6000 3100 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 3600 2    60   Input ~ 0
-GND
-$Comp
-L LEG S5
-U 1 1 5333469A
-P 5650 3950
-F 0 "S5" H 6050 3900 60  0000 C CNN
-F 1 "REAR_LEFT" H 6050 4050 60  0000 C CNN
-F 2 "" H 5650 3950 60  0000 C CNN
-F 3 "" H 5650 3950 60  0000 C CNN
-	1    5650 3950
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5650 3700 6000 3700
 Connection ~ 5750 3700
@@ -410,8 +389,6 @@ Connection ~ 5850 4200
 Connection ~ 5750 4200
 Text GLabel 6000 3700 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 4200 2    60   Input ~ 0
-GND
 $Comp
 L LEG S6
 U 1 1 533346A8
@@ -433,8 +410,6 @@ Connection ~ 5850 4800
 Connection ~ 5750 4800
 Text GLabel 6000 4300 2    60   Input ~ 0
 BATTERY
-Text GLabel 6000 4800 2    60   Input ~ 0
-GND
 $Comp
 L CONN_10 P2
 U 1 1 533348CC
@@ -455,18 +430,14 @@ VCC_AVR
 $Comp
 L GND #PWR06
 U 1 1 533351C5
-P 1550 7100
-F 0 "#PWR06" H 1550 7100 30  0001 C CNN
-F 1 "GND" H 1550 7030 30  0001 C CNN
-F 2 "" H 1550 7100 60  0000 C CNN
-F 3 "" H 1550 7100 60  0000 C CNN
-	1    1550 7100
-	1    0    0    -1  
+P 1500 7000
+F 0 "#PWR06" H 1500 7000 30  0001 C CNN
+F 1 "GND" H 1500 6930 30  0001 C CNN
+F 2 "" H 1500 7000 60  0000 C CNN
+F 3 "" H 1500 7000 60  0000 C CNN
+	1    1500 7000
+	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	1500 7000 1550 7000
-Wire Wire Line
-	1550 7000 1550 7100
 $Comp
 L C C2
 U 1 1 53335945
@@ -727,8 +698,6 @@ Wire Wire Line
 	3400 6600 3400 6850
 Wire Wire Line
 	3500 6600 3500 6850
-Text GLabel 3300 6850 1    60   Input ~ 0
-GND
 Text GLabel 3400 6650 2    60   Input ~ 0
 I2C_SDA
 Text GLabel 3500 6800 2    60   Input ~ 0
@@ -748,10 +717,6 @@ F 3 "" H 9300 5000 60  0000 C CNN
 	1    9300 5000
 	0    1    1    0   
 $EndComp
-Text GLabel 9200 4650 0    60   Input ~ 0
-VCC_AVR
-Text GLabel 9300 4650 1    60   Input ~ 0
-GND
 Text GLabel 9400 4650 2    60   Input ~ 0
 ADC6
 Text GLabel 3250 2050 2    60   Input ~ 0
@@ -816,5 +781,117 @@ F 2 "" H 6050 6100 60  0000 C CNN
 F 3 "" H 6050 6100 60  0000 C CNN
 	1    6050 6100
 	0    1    1    0   
+$EndComp
+Text GLabel 9200 4650 0    60   Input ~ 0
+BATTERY
+$Comp
+L GND #PWR012
+U 1 1 533B657E
+P 8800 6050
+F 0 "#PWR012" H 8800 6050 30  0001 C CNN
+F 1 "GND" H 8800 5980 30  0001 C CNN
+F 2 "" H 8800 6050 60  0000 C CNN
+F 3 "" H 8800 6050 60  0000 C CNN
+	1    8800 6050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR013
+U 1 1 533B658D
+P 9300 4650
+F 0 "#PWR013" H 9300 4650 30  0001 C CNN
+F 1 "GND" H 9300 4580 30  0001 C CNN
+F 2 "" H 9300 4650 60  0000 C CNN
+F 3 "" H 9300 4650 60  0000 C CNN
+	1    9300 4650
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR014
+U 1 1 533B6593
+P 3300 6850
+F 0 "#PWR014" H 3300 6850 30  0001 C CNN
+F 1 "GND" H 3300 6780 30  0001 C CNN
+F 2 "" H 3300 6850 60  0000 C CNN
+F 3 "" H 3300 6850 60  0000 C CNN
+	1    3300 6850
+	-1   0    0    1   
+$EndComp
+$Comp
+L LEG S5
+U 1 1 5333469A
+P 5650 3950
+F 0 "S5" H 6050 3900 60  0000 C CNN
+F 1 "REAR_LEFT" H 6050 4050 60  0000 C CNN
+F 2 "" H 5650 3950 60  0000 C CNN
+F 3 "" H 5650 3950 60  0000 C CNN
+	1    5650 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR015
+U 1 1 533B65B1
+P 6000 1800
+F 0 "#PWR015" H 6000 1800 30  0001 C CNN
+F 1 "GND" H 6000 1730 30  0001 C CNN
+F 2 "" H 6000 1800 60  0000 C CNN
+F 3 "" H 6000 1800 60  0000 C CNN
+	1    6000 1800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR016
+U 1 1 533B65B7
+P 6000 2400
+F 0 "#PWR016" H 6000 2400 30  0001 C CNN
+F 1 "GND" H 6000 2330 30  0001 C CNN
+F 2 "" H 6000 2400 60  0000 C CNN
+F 3 "" H 6000 2400 60  0000 C CNN
+	1    6000 2400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR017
+U 1 1 533B65BD
+P 6000 3000
+F 0 "#PWR017" H 6000 3000 30  0001 C CNN
+F 1 "GND" H 6000 2930 30  0001 C CNN
+F 2 "" H 6000 3000 60  0000 C CNN
+F 3 "" H 6000 3000 60  0000 C CNN
+	1    6000 3000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR018
+U 1 1 533B65C3
+P 6000 3600
+F 0 "#PWR018" H 6000 3600 30  0001 C CNN
+F 1 "GND" H 6000 3530 30  0001 C CNN
+F 2 "" H 6000 3600 60  0000 C CNN
+F 3 "" H 6000 3600 60  0000 C CNN
+	1    6000 3600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR019
+U 1 1 533B65C9
+P 6000 4200
+F 0 "#PWR019" H 6000 4200 30  0001 C CNN
+F 1 "GND" H 6000 4130 30  0001 C CNN
+F 2 "" H 6000 4200 60  0000 C CNN
+F 3 "" H 6000 4200 60  0000 C CNN
+	1    6000 4200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR020
+U 1 1 533B65CF
+P 6000 4800
+F 0 "#PWR020" H 6000 4800 30  0001 C CNN
+F 1 "GND" H 6000 4730 30  0001 C CNN
+F 2 "" H 6000 4800 60  0000 C CNN
+F 3 "" H 6000 4800 60  0000 C CNN
+	1    6000 4800
+	0    -1   -1   0   
 $EndComp
 $EndSCHEMATC
