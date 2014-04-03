@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "6 feb 2014"
+Date "8 mar 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -54,7 +54,7 @@ F 1 "DIODE" H 2550 2800 40  0000 C CNN
 F 2 "~" H 2550 2900 60  0000 C CNN
 F 3 "~" H 2550 2900 60  0000 C CNN
 	1    2550 2900
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW1
@@ -89,7 +89,7 @@ F 1 "DIODE" H 3250 2800 40  0000 C CNN
 F 2 "~" H 3250 2900 60  0000 C CNN
 F 3 "~" H 3250 2900 60  0000 C CNN
 	1    3250 2900
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L DIODE D15
@@ -100,7 +100,7 @@ F 1 "DIODE" H 3900 2800 40  0000 C CNN
 F 2 "~" H 3900 2900 60  0000 C CNN
 F 3 "~" H 3900 2900 60  0000 C CNN
 	1    3900 2900
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L DIODE D20
@@ -111,7 +111,7 @@ F 1 "DIODE" H 4550 2800 40  0000 C CNN
 F 2 "~" H 4550 2900 60  0000 C CNN
 F 3 "~" H 4550 2900 60  0000 C CNN
 	1    4550 2900
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L DIODE D24
@@ -122,7 +122,7 @@ F 1 "DIODE" H 5200 2800 40  0000 C CNN
 F 2 "~" H 5200 2900 60  0000 C CNN
 F 3 "~" H 5200 2900 60  0000 C CNN
 	1    5200 2900
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW15
@@ -177,7 +177,7 @@ F 1 "DIODE" H 2550 3700 40  0000 C CNN
 F 2 "~" H 2550 3800 60  0000 C CNN
 F 3 "~" H 2550 3800 60  0000 C CNN
 	1    2550 3800
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW6
@@ -199,7 +199,7 @@ F 1 "DIODE" H 3200 3700 40  0000 C CNN
 F 2 "~" H 3200 3800 60  0000 C CNN
 F 3 "~" H 3200 3800 60  0000 C CNN
 	1    3200 3800
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW11
@@ -221,7 +221,7 @@ F 1 "DIODE" H 3850 3700 40  0000 C CNN
 F 2 "~" H 3850 3800 60  0000 C CNN
 F 3 "~" H 3850 3800 60  0000 C CNN
 	1    3850 3800
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW16
@@ -243,7 +243,7 @@ F 1 "DIODE" H 4500 3700 40  0000 C CNN
 F 2 "~" H 4500 3800 60  0000 C CNN
 F 3 "~" H 4500 3800 60  0000 C CNN
 	1    4500 3800
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW21
@@ -265,7 +265,7 @@ F 1 "DIODE" H 5150 3700 40  0000 C CNN
 F 2 "~" H 5150 3800 60  0000 C CNN
 F 3 "~" H 5150 3800 60  0000 C CNN
 	1    5150 3800
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2350 3800 0    60   Input ~ 0
 R1
@@ -289,7 +289,7 @@ F 1 "DIODE" H 2550 4600 40  0000 C CNN
 F 2 "~" H 2550 4700 60  0000 C CNN
 F 3 "~" H 2550 4700 60  0000 C CNN
 	1    2550 4700
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW7
@@ -311,7 +311,7 @@ F 1 "DIODE" H 3200 4600 40  0000 C CNN
 F 2 "~" H 3200 4700 60  0000 C CNN
 F 3 "~" H 3200 4700 60  0000 C CNN
 	1    3200 4700
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW12
@@ -333,7 +333,7 @@ F 1 "DIODE" H 3850 4600 40  0000 C CNN
 F 2 "~" H 3850 4700 60  0000 C CNN
 F 3 "~" H 3850 4700 60  0000 C CNN
 	1    3850 4700
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW17
@@ -355,7 +355,7 @@ F 1 "DIODE" H 4500 4600 40  0000 C CNN
 F 2 "~" H 4500 4700 60  0000 C CNN
 F 3 "~" H 4500 4700 60  0000 C CNN
 	1    4500 4700
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW22
@@ -377,7 +377,7 @@ F 1 "DIODE" H 5150 4600 40  0000 C CNN
 F 2 "~" H 5150 4700 60  0000 C CNN
 F 3 "~" H 5150 4700 60  0000 C CNN
 	1    5150 4700
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2350 4700 0    60   Input ~ 0
 R2
@@ -401,7 +401,7 @@ F 1 "DIODE" H 2550 5500 40  0000 C CNN
 F 2 "~" H 2550 5600 60  0000 C CNN
 F 3 "~" H 2550 5600 60  0000 C CNN
 	1    2550 5600
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW8
@@ -423,7 +423,7 @@ F 1 "DIODE" H 3200 5500 40  0000 C CNN
 F 2 "~" H 3200 5600 60  0000 C CNN
 F 3 "~" H 3200 5600 60  0000 C CNN
 	1    3200 5600
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW13
@@ -445,7 +445,7 @@ F 1 "DIODE" H 3850 5500 40  0000 C CNN
 F 2 "~" H 3850 5600 60  0000 C CNN
 F 3 "~" H 3850 5600 60  0000 C CNN
 	1    3850 5600
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW18
@@ -467,7 +467,7 @@ F 1 "DIODE" H 4500 5500 40  0000 C CNN
 F 2 "~" H 4500 5600 60  0000 C CNN
 F 3 "~" H 4500 5600 60  0000 C CNN
 	1    4500 5600
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW23
@@ -489,7 +489,7 @@ F 1 "DIODE" H 5150 5500 40  0000 C CNN
 F 2 "~" H 5150 5600 60  0000 C CNN
 F 3 "~" H 5150 5600 60  0000 C CNN
 	1    5150 5600
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2350 5600 0    60   Input ~ 0
 R3
@@ -513,7 +513,7 @@ F 1 "DIODE" H 2550 6400 40  0000 C CNN
 F 2 "~" H 2550 6500 60  0000 C CNN
 F 3 "~" H 2550 6500 60  0000 C CNN
 	1    2550 6500
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW9
@@ -535,7 +535,7 @@ F 1 "DIODE" H 3200 6400 40  0000 C CNN
 F 2 "~" H 3200 6500 60  0000 C CNN
 F 3 "~" H 3200 6500 60  0000 C CNN
 	1    3200 6500
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW14
@@ -557,7 +557,7 @@ F 1 "DIODE" H 3850 6400 40  0000 C CNN
 F 2 "~" H 3850 6500 60  0000 C CNN
 F 3 "~" H 3850 6500 60  0000 C CNN
 	1    3850 6500
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L SW_PUSH SW19
@@ -579,7 +579,7 @@ F 1 "DIODE" H 4500 6400 40  0000 C CNN
 F 2 "~" H 4500 6500 60  0000 C CNN
 F 3 "~" H 4500 6500 60  0000 C CNN
 	1    4500 6500
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Text GLabel 2350 6500 0    60   Input ~ 0
 R4
@@ -603,7 +603,7 @@ F 1 "DIODE" H 5150 6400 40  0000 C CNN
 F 2 "~" H 5150 6500 60  0000 C CNN
 F 3 "~" H 5150 6500 60  0000 C CNN
 	1    5150 6500
-	-1   0    0    1   
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	2350 2900 2350 3050
