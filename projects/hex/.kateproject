@@ -1,0 +1,7 @@
+{
+	"name": "Hex",
+	"files": [
+		{ "directory": ".", "filters": ["*.c", "*.h", "Makefile"], "recursive": 1 },
+		{ "directory": "lib/pwm", "filters": ["*.c", "*.h"], "recursive": 1}
+	]
+}
