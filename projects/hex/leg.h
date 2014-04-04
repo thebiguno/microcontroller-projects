@@ -39,10 +39,8 @@ typedef struct leg_t {
 //#define FEMUR			1
 #define TIBIA			1
 
-//The time (millis) during which we pause in leg_delay_ms.  Increasing this will make the servo
-// motions jerkier (when using the 'set desired' functions); decreasing this will make the servos 
-// move smoother.  Setting this much than 20ms (period of servo PWM) probably won't do much.
-#define DELAY_STEP		16
+//The time (millis) during which we pause in leg_delay_ms.
+#define DELAY_STEP		5
 
 //The minimum allowable step (in radians).  Also the bottom edge of angular resolution available when 
 // setting desired position (once the error falls below this, we consider it 'good enough').

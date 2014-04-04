@@ -7,11 +7,11 @@
 static void ripple_gait(uint8_t leg){
 	//Lift tibia (z)
 	leg_set_current_position_relative(leg, 0, 0, TIBIA_STEP);
-	leg_delay_ms(DELAY);
+	leg_delay_ms(DELAY / 4);
 	
 	//Move the coxa forward to neutral
 	leg_set_current_position_absolute(leg, 0, 0, TIBIA_STEP);
-	leg_delay_ms(DELAY);
+	leg_delay_ms(DELAY * 2);
 	
 	//... while moving the other coxas back by STEP.
 	for (uint8_t i = 0; i < LEG_COUNT; i++){
@@ -19,7 +19,7 @@ static void ripple_gait(uint8_t leg){
 			leg_set_current_position_relative(i, 0, COXA_STEP * -1, 0);
 		}
 	}
-	leg_delay_ms(DELAY);
+	leg_delay_ms(DELAY / 4);
 
 	//Drop tibia to neutral position
 	leg_set_current_position_absolute(leg, 0, 0, 0);
