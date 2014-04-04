@@ -36,23 +36,34 @@ void leg_init(){
 	servo_init();
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		for (uint8_t j = 0; j < JOINT_COUNT; j++){
+			legs[l].step[j] = MIN_STEP;
+		}
 		leg_set_current_position_absolute(l, 0, 0, 0);
 	}
 	
-	leg_delay(2000);
+	leg_delay_ms(2000);
 }
 
-void leg_delay(uint16_t millis){
+void leg_delay_ms(uint16_t millis){
 	for (uint16_t d = 0; d < millis; d += DELAY_STEP){
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
 			for (uint8_t j = 0; j < JOINT_COUNT; j++){
 				double error = legs[l].current[j] - legs[l].desired[j];
-				if (error > legs[l].step) {
-					legs[l].current[j] = legs[l].current[j] - legs[l].step;
+				if (error > legs[l].step[j]) {
+					legs[l].current[j] = legs[l].current[j] - legs[l].step[j];
 					servo_set_angle(l, j, legs[l].current[j]);
 				}
-				else if (error < legs[l].step * -1){
-					legs[l].current[j] = legs[l].current[j] + legs[l].step;
+				else if (error < (legs[l].step[j] * -1)){
+					legs[l].current[j] = legs[l].current[j] + legs[l].step[j];
+					servo_set_angle(l, j, legs[l].current[j]);
+				}
+				else if (error > MIN_STEP) {
+					legs[l].current[j] = legs[l].current[j] - MIN_STEP;
+					servo_set_angle(l, j, legs[l].current[j]);
+				}
+				else if (error < (MIN_STEP * -1)){
+					legs[l].current[j] = legs[l].current[j] + MIN_STEP;
 					servo_set_angle(l, j, legs[l].current[j]);
 				}
 				else {
@@ -65,36 +76,46 @@ void leg_delay(uint16_t millis){
 	}
 }
 
+inline void _update_current_position(uint8_t leg){
+	//By setting current directly, we implicitly also set desired.
+	for (uint8_t j = 0; j < JOINT_COUNT; j++){
+		legs[leg].desired[j] = legs[leg].current[j];
+		servo_set_angle(leg, j, legs[leg].current[j]);
+	}	
+}
+
 void leg_set_current_position_absolute(uint8_t leg, double x, double y, double z){
 	legs[leg].current[COXA] = y;
 	legs[leg].current[TIBIA] = z;
 	
-	for (uint8_t j = 0; j < JOINT_COUNT; j++){
-		legs[leg].desired[j] = legs[leg].current[j];
-		servo_set_angle(leg, j, legs[leg].current[j]);
-	}
+	_update_current_position(leg);
 }
 
 void leg_set_current_position_relative(uint8_t leg, double x, double y, double z){
 	legs[leg].current[COXA] = legs[leg].current[COXA] + y;
 	legs[leg].current[TIBIA] = legs[leg].current[TIBIA] + z;
 
+	_update_current_position(leg);
+}
+
+inline void _update_desired_position(uint8_t leg, uint16_t millis){
+	if (millis == 0) millis = 1;
 	for (uint8_t j = 0; j < JOINT_COUNT; j++){
-		legs[leg].desired[j] = legs[leg].current[j];
-		servo_set_angle(leg, j, legs[leg].current[j]);
+		legs[leg].step[j] = fabs(legs[leg].current[j] - legs[leg].desired[j]) / millis * DELAY_STEP;
+		if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
 	}
 }
 
-void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, double step){
+void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = y;
 	legs[leg].desired[TIBIA] = z;
 	
-	legs[leg].step = fabs(step);
+	_update_desired_position(leg, millis);
 }
 
-void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, double step){
+void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = legs[leg].desired[COXA] + y;
 	legs[leg].desired[TIBIA] = legs[leg].desired[TIBIA] + z;
 	
-	legs[leg].step = fabs(step);
+	_update_desired_position(leg, millis);
 }

@@ -1,7 +1,7 @@
 #ifndef HEX_RIPPLE
 #define HEX_RIPPLE
 
-#define DELAY 	50
+#define DELAY 	32
 #define COXA_STEP	0.3
 #define TIBIA_STEP	1
 

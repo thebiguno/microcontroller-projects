@@ -22,8 +22,8 @@ typedef struct leg_t {
 	//The desired angle in radians
 	double desired[JOINT_COUNT];
 	
-	//The step in radians to be moved each iteration through the busy/wait loop.  The larger this is, the faster the leg will move.
-	double step;
+	//The step in radians to be moved each iteration through the busy/wait loop
+	double step[JOINT_COUNT];
 } leg_t;
 
 #include "servo.h"
@@ -39,7 +39,14 @@ typedef struct leg_t {
 //#define FEMUR			1
 #define TIBIA			1
 
+//The time (millis) during which we pause in leg_delay_ms.  Increasing this will make the servo
+// motions jerkier (when using the 'set desired' functions); decreasing this will make the servos 
+// move smoother.  Setting this much than 20ms (period of servo PWM) probably won't do much.
 #define DELAY_STEP		16
+
+//The minimum allowable step (in radians).  Also the bottom edge of angular resolution available when 
+// setting desired position (once the error falls below this, we consider it 'good enough').
+#define MIN_STEP		0.001
 
 //Initialize memory for an array of legs.  By convention, the resulting array is ordered
 // from left to right, front to back.  I.e. Left Front, Right Front, Left Middle, Right Middle, etc. 
@@ -66,7 +73,7 @@ void leg_set_current_position_relative(uint8_t leg, double x, double y, double z
 //TODO For a 2 DOF leg, having an X,Y,Z co-ordinate space doesn't really make sense, as there
 // is only the partial shell of a sphere that the foot can travel.  For now, we only specify
 // Y and Z, and these are radian values which are passed through as-is to the servos.
-void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, double step);
+void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, uint16_t millis);
 
 //Set the leg position in X,Y,Z co-ordinate space, relative to current position, with a 
 // step (in radians).  The current state is incremented by the step amount repeatedly when 
@@ -75,10 +82,10 @@ void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z
 //TODO For a 2 DOF leg, having an X,Y,Z co-ordinate space doesn't really make sense, as there
 // is only the partial shell of a sphere that the foot can travel.  For now, we only specify
 // Y and Z, and these are radian values which are passed through as-is to the servos.
-void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, double step);
+void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, uint16_t millis);
 
 //Busy / wait loop which moves each legs step as needed and injects delays.
 // TODO poll serial port here as well?
-void leg_delay(uint16_t millis);
+void leg_delay_ms(uint16_t millis);
 
 #endif
