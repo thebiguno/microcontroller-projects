@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Wednesday, April 02, 2014 'pmt' 12:35:47 pm
+PCBNEW-LibModule-V1  Saturday, April 05, 2014 'amt' 08:25:58 am
 # encoding utf-8
 Units mm
 $INDEX
@@ -18,6 +18,8 @@ TB_3
 V5229X
 V8813x
 VSK-S25
+XBEE
+XBEE_SPARKFUN_BREAKOUT
 digitalcave_logo
 digitalcave_logo_wide
 digitalcave_logo_wide_small
@@ -1334,6 +1336,316 @@ Ne 0 ""
 Po -31.0007 0
 $EndPAD
 $EndMODULE VSK-S25
+$MODULE XBEE
+Po 0 0 0 15 534011DE 00000000 ~~
+Li XBEE
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -4 1 1 0 0.15 N V 21 N "XBEE"
+T1 0 3 1 1 0 0.15 N V 21 N "VAL**"
+DS -4 -17 4 -17 0.15 21
+DS 4 -17 13 -11 0.15 21
+DS -13 -11 -13 11 0.15 21
+DS -13 11 13 11 0.15 21
+DS 13 11 13 -11 0.15 21
+DS -4 -17 -13 -11 0.15 21
+$PAD
+Sh "1" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -10
+$EndPAD
+$PAD
+Sh "2" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -8
+$EndPAD
+$PAD
+Sh "3" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -6
+$EndPAD
+$PAD
+Sh "4" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -4
+$EndPAD
+$PAD
+Sh "5" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 -2
+$EndPAD
+$PAD
+Sh "6" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 0
+$EndPAD
+$PAD
+Sh "7" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 2
+$EndPAD
+$PAD
+Sh "8" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 4
+$EndPAD
+$PAD
+Sh "9" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 6
+$EndPAD
+$PAD
+Sh "10" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -11 8
+$EndPAD
+$PAD
+Sh "11" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 8
+$EndPAD
+$PAD
+Sh "12" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 6
+$EndPAD
+$PAD
+Sh "13" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 4
+$EndPAD
+$PAD
+Sh "14" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 2
+$EndPAD
+$PAD
+Sh "15" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 0
+$EndPAD
+$PAD
+Sh "16" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -2
+$EndPAD
+$PAD
+Sh "17" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -4
+$EndPAD
+$PAD
+Sh "18" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -6
+$EndPAD
+$PAD
+Sh "19" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -8
+$EndPAD
+$PAD
+Sh "20" C 1.143 1.143 0 0 0
+Dr 0.762 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 11 -10
+$EndPAD
+$EndMODULE XBEE
+$MODULE XBEE_SPARKFUN_BREAKOUT
+Po 0 0 0 15 53400DB7 00000000 ~~
+Li XBEE_SPARKFUN_BREAKOUT
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -5.08 1 1 0 0.15 N V 21 N "XBEE"
+T1 0 0 1 1 0 0.15 N V 21 N "VAL**"
+DS -6.35 -13.97 -11.43 -10.16 0.15 21
+DS -11.43 -10.16 -11.43 15.24 0.15 21
+DS -11.43 15.24 10.16 15.24 0.15 21
+DS 10.16 15.24 10.16 -10.16 0.15 21
+DS 10.16 -10.16 5.08 -13.97 0.15 21
+DS 5.08 -13.97 -6.35 -13.97 0.15 21
+$PAD
+Sh "1" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 -11.43
+$EndPAD
+$PAD
+Sh "2" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 -8.89
+$EndPAD
+$PAD
+Sh "3" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 -6.35
+$EndPAD
+$PAD
+Sh "4" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 -3.81
+$EndPAD
+$PAD
+Sh "5" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 -1.27
+$EndPAD
+$PAD
+Sh "6" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 1.27
+$EndPAD
+$PAD
+Sh "7" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 3.81
+$EndPAD
+$PAD
+Sh "8" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 6.35
+$EndPAD
+$PAD
+Sh "9" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 8.89
+$EndPAD
+$PAD
+Sh "10" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -6.35 11.43
+$EndPAD
+$PAD
+Sh "11" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 11.43
+$EndPAD
+$PAD
+Sh "12" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 8.89
+$EndPAD
+$PAD
+Sh "13" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 6.35
+$EndPAD
+$PAD
+Sh "14" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 3.81
+$EndPAD
+$PAD
+Sh "15" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 1.27
+$EndPAD
+$PAD
+Sh "16" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 -1.27
+$EndPAD
+$PAD
+Sh "17" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 -3.81
+$EndPAD
+$PAD
+Sh "18" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 -6.35
+$EndPAD
+$PAD
+Sh "19" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 -8.89
+$EndPAD
+$PAD
+Sh "20" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 6.35 -11.43
+$EndPAD
+$EndMODULE XBEE_SPARKFUN_BREAKOUT
 $MODULE digitalcave_logo
 Po 0 0 0 15 00000000 00000000 ~~
 Li digitalcave_logo

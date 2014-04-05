@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Friday, April 04, 2014 'pmt' 04:12:19 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Saturday, April 05, 2014 'amt' 08:26:21 am
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -164,42 +164,42 @@ EndCmp
 BeginCmp
 TimeStamp = /5333430A;
 Reference = S1;
-ValeurCmp = FRONT_LEFT;
+ValeurCmp = FRONT LEFT;
 IdModule  = HEX_LEG;
 EndCmp
 
 BeginCmp
 TimeStamp = /53334670;
 Reference = S2;
-ValeurCmp = FRONT_RIGHT;
+ValeurCmp = FRONT RIGHT;
 IdModule  = HEX_LEG_REVERSE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5333467E;
 Reference = S3;
-ValeurCmp = MIDDLE_LEFT;
+ValeurCmp = MIDDLE LEFT;
 IdModule  = HEX_LEG;
 EndCmp
 
 BeginCmp
 TimeStamp = /5333468C;
 Reference = S4;
-ValeurCmp = MIDDLE_RIGHT;
+ValeurCmp = MIDDLE RIGHT;
 IdModule  = HEX_LEG_REVERSE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5333469A;
 Reference = S5;
-ValeurCmp = REAR_LEFT;
+ValeurCmp = REAR LEFT;
 IdModule  = HEX_LEG;
 EndCmp
 
 BeginCmp
 TimeStamp = /533346A8;
 Reference = S6;
-ValeurCmp = REAR_RIGHT;
+ValeurCmp = REAR RIGHT;
 IdModule  = HEX_LEG_REVERSE;
 EndCmp
 
