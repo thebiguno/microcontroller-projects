@@ -37,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "4 apr 2014"
+Date "5 apr 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -914,16 +914,16 @@ Wire Wire Line
 Wire Wire Line
 	3600 6450 3600 6650
 Wire Wire Line
-	3250 2350 3800 2350
+	3250 2450 3800 2450
 $Comp
 L CONN_1 P6
 U 1 1 533E093D
-P 3950 2350
-F 0 "P6" H 4030 2350 40  0000 L CNN
-F 1 "CONN_1" H 3950 2405 30  0001 C CNN
-F 2 "" H 3950 2350 60  0000 C CNN
-F 3 "" H 3950 2350 60  0000 C CNN
-	1    3950 2350
+P 3950 2450
+F 0 "P6" H 4030 2450 40  0000 L CNN
+F 1 "CONN_1" H 3950 2505 30  0001 C CNN
+F 2 "" H 3950 2450 60  0000 C CNN
+F 3 "" H 3950 2450 60  0000 C CNN
+	1    3950 2450
 	1    0    0    -1  
 $EndComp
 Text GLabel 8800 4500 0    60   Input ~ 0
