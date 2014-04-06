@@ -22,9 +22,10 @@ assembly: $(PROJECT).asm
 
 $(PROJECT).hex: $(PROJECT).out
 	$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).out $(PROJECT).hex
-	$(AVRSIZE) -d -C --mcu=$(MMCU) $(PROJECT).out 
+	$(AVRSIZE) -d -C --mcu=$(MMCU) $(PROJECT).out
+	@rm -f $(PROJECT).out
 
-$(PROJECT).asm: all
+$(PROJECT).asm: $(PROJECT).out
 	$(OBJDUMP) -C -d $(PROJECT).out
 
 $(PROJECT).out: $(SOURCES) 
