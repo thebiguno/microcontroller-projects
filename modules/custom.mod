@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Sunday, April 06, 2014 'amt' 01:10:50 am
+PCBNEW-LibModule-V1  Sunday, April 06, 2014 'pmt' 02:09:19 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -10838,7 +10838,7 @@ Po 11 -10
 $EndPAD
 $EndMODULE XBEE
 $MODULE XBEE_SPARKFUN_BREAKOUT
-Po 0 0 0 15 53400DB7 00000000 ~~
+Po 0 0 0 15 5341B42C 00000000 ~~
 Li XBEE_SPARKFUN_BREAKOUT
 Sc 0
 AR 
@@ -10852,141 +10852,141 @@ DS 10.16 15.24 10.16 -10.16 0.15 21
 DS 10.16 -10.16 5.08 -13.97 0.15 21
 DS 5.08 -13.97 -6.35 -13.97 0.15 21
 $PAD
-Sh "1" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "1" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 -11.43
 $EndPAD
 $PAD
-Sh "2" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "2" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 -8.89
 $EndPAD
 $PAD
-Sh "3" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "3" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 -6.35
 $EndPAD
 $PAD
-Sh "4" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "4" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 -3.81
 $EndPAD
 $PAD
-Sh "5" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "5" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 -1.27
 $EndPAD
 $PAD
-Sh "6" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "6" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 1.27
 $EndPAD
 $PAD
-Sh "7" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "7" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 3.81
 $EndPAD
 $PAD
-Sh "8" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "8" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 6.35
 $EndPAD
 $PAD
-Sh "9" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "9" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 8.89
 $EndPAD
 $PAD
-Sh "10" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "10" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -6.35 11.43
 $EndPAD
 $PAD
-Sh "11" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "11" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 11.43
 $EndPAD
 $PAD
-Sh "12" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "12" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 8.89
 $EndPAD
 $PAD
-Sh "13" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "13" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 6.35
 $EndPAD
 $PAD
-Sh "14" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "14" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 3.81
 $EndPAD
 $PAD
-Sh "15" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "15" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 1.27
 $EndPAD
 $PAD
-Sh "16" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "16" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 -1.27
 $EndPAD
 $PAD
-Sh "17" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "17" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 -3.81
 $EndPAD
 $PAD
-Sh "18" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "18" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 -6.35
 $EndPAD
 $PAD
-Sh "19" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "19" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 -8.89
 $EndPAD
 $PAD
-Sh "20" C 1.5 1.5 0 0 0
-Dr 0.6 0 0
+Sh "20" C 1.524 1.524 0 0 0
+Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 6.35 -11.43
