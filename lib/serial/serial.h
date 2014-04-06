@@ -42,6 +42,13 @@ void serial_init_b(uint32_t baud);
 uint8_t serial_read_c(char *c);
 
 /*
+ * Reads a single character from the serial port.  Pass in a pointer to a byte, and
+ * the function will write a single byte to that pointer.  If the read was successful,
+ * return 1; otherwise return 0.  Implementations MAY block until a byte is received.
+ */
+uint8_t serial_read_b(uint8_t *b);
+
+/*
  * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
  * which were read.  Implementations MAY block until the entire buffer is filled.
  * The character after the last read character will be null terminated (which is why
@@ -50,16 +57,34 @@ uint8_t serial_read_c(char *c);
 uint8_t serial_read_s(char *s, uint8_t len);
 
 /*
+ * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
+ * which were read.  Implementations MAY block until the entire buffer is filled.
+ */
+uint8_t serial_read_a(uint8_t *a, uint8_t len);
+
+/*
  * Writes a string to the serial port.  Implementations MAY block until
  * all bytes are written.
  */
 void serial_write_s(char *data);
 
 /*
- * Writes a single byte to the serial port.  Implementations MAY block until the 
+ * Writes a byte array to the serial port.  Implementations MAY block until
+ * all bytes are written.
+ */
+void serial_write_a(uint8_t *data, uint8_t len);
+
+/*
+ * Writes a single character to the serial port.  Implementations MAY block until the 
  * write is completed.
  */
 void serial_write_c(char data);
+
+/*
+ * Writes a single byte to the serial port.  Implementations MAY block until the 
+ * write is completed.
+ */
+void serial_write_b(uint8_t data);
 
 /*
  * Checks if any bytes are available for read.  Returns 0 when no bytes are available; 

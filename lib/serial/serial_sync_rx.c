@@ -22,3 +22,11 @@ uint8_t serial_read_s(char *s, uint8_t len){
 	
 	return count;
 }
+
+uint8_t serial_read_b(uint8_t *b){
+	return serial_read_c((char*) b);
+}
+
+uint8_t serial_read_a(uint8_t *a, uint8_t len){
+	return serial_read_s((char*) a, len);
+}

@@ -48,6 +48,17 @@ void serial_write_s(char *data){
 	}
 }
 
+void serial_write_a(uint8_t *data, uint8_t len){
+	for (uint8_t i = 0; i < len; i++){
+		serial_write_b(data[i]);
+	}
+}
+
+void serial_write_b(uint8_t data){
+	serial_write_c((char) data)
+}
+
+
 #if defined(__AVR_ATtiny2313__)    || \
 	defined(__AVR_ATmega48P__)     || \
 	defined(__AVR_ATmega88P__)     || \

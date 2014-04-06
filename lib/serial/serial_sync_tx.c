@@ -13,3 +13,13 @@ void serial_write_c(char data){
 	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = data;
 }
+
+void serial_write_b(uint8_t data){
+	serial_write_c((char) data);
+}
+
+void serial_write_a(uint8_t *data, uint8_t len){
+	for (uint8_t i = 0; i < len; i++){
+		serial_write_b(data[i]);
+	}
+}
