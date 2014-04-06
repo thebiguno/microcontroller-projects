@@ -1,12 +1,12 @@
 #include "pwm.h"
 
-struct pwm_pin_t {
+typedef struct pwm_pin_t {
 	volatile uint8_t *port;
 	uint8_t pin;
 	uint16_t compare_value;
-};
+} pwm_pin_t;
 
-struct pwm_event_t {
+typedef struct pwm_event_t {
 	//Port masks
 	uint8_t porta_mask;
 	uint8_t portb_mask;
@@ -15,7 +15,7 @@ struct pwm_event_t {
 
 	//Only used in OCRB; ignored for high event in OCRA.
 	uint16_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
-};
+} pwm_event_t;
 
 static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is updated
 static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCRA from copying the double buffered pwm_events when this is 0.
@@ -23,14 +23,14 @@ static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_
 static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCRA in changed in COMPA interrupt
 
 //Variables used to store config data
-static struct pwm_pin_t _pwm_pins[PWM_MAX_PINS];				//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
+static pwm_pin_t _pwm_pins[PWM_MAX_PINS];				//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
 static uint8_t _count;											//How many pins should be used
 
-static struct pwm_event_t _pwm_event_high;						//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
-static struct pwm_event_t _pwm_event_high_new;					//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
+static pwm_event_t _pwm_event_high;						//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
+static pwm_event_t _pwm_event_high_new;					//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
 
-static struct pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];	//Array of pwm events.  Each event will set one or more pins low.
-static struct pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
+static pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];	//Array of pwm events.  Each event will set one or more pins low.
+static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
 static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
 
 static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for _pwm_micros_to_clicks calls.
@@ -187,8 +187,8 @@ void pwm_stop(){
 
 //The comparison method used to sort pwm_pin variables
 static int16_t _compare_values(const void *pin1, const void *pin2){
-	 const struct pwm_pin_t *pwm1 = pin1;
-	 const struct pwm_pin_t *pwm2 = pin2;
+	 const pwm_pin_t *pwm1 = (const pwm_pin_t*) pin1;
+	 const pwm_pin_t *pwm2 = (const pwm_pin_t*) pin2;
 	 return pwm1->compare_value - pwm2->compare_value;
 }
 
@@ -203,7 +203,7 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	
 	//The new compare value, in clock ticks
 	uint16_t new_clicks = _pwm_micros_to_clicks(phase);
-	struct pwm_pin_t *p = &(_pwm_pins[index]);
+	pwm_pin_t *p = &(_pwm_pins[index]);
 	
 	//If there is no change from the old compare value to the new value, just exit and return, unlocking the mutex first
 	if (p->compare_value == new_clicks){
@@ -215,7 +215,7 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	p->compare_value = new_clicks;
 	
 	//Copy _pwm_pins to _pwm_pins_sorted, and then sort it by value
-	struct pwm_pin_t _pwm_pins_sorted[PWM_MAX_PINS];
+	pwm_pin_t _pwm_pins_sorted[PWM_MAX_PINS];
 	for (uint8_t i = 0; i < _count; i++){
 		_pwm_pins_sorted[i] = _pwm_pins[i];
 	}
@@ -241,7 +241,7 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	uint8_t last_index = 0;
 	
 	for (uint8_t i = 0; i < _count; i++){
-		struct pwm_pin_t *p = &(_pwm_pins_sorted[i]);
+		pwm_pin_t *p = &(_pwm_pins_sorted[i]);
 		if (p->compare_value > last_compare_value){
 			//We don't want an empty pwm_event at the beginning of the array, so verify whether last_compare_value was zero before incrementing
 			if (last_compare_value > 0) {
@@ -258,7 +258,7 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 			else if (p->port == &PORTD) _pwm_event_high_new.portd_mask |= _BV(p->pin);
 
 			//Set pins to low
-			struct pwm_event_t *e = &(_pwm_events_low_new[last_index]);
+			pwm_event_t *e = &(_pwm_events_low_new[last_index]);
 			e->compare_value = last_compare_value;
 			if (p->port == &PORTA) e->porta_mask &= ~_BV(p->pin);
 			else if (p->port == &PORTB) e->portb_mask &= ~_BV(p->pin);
@@ -334,7 +334,7 @@ ISR(TIM0_COMPB_vect){
 #else
 ISR(TIMER1_COMPB_vect){
 #endif
-	struct pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
+	pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
 	_pwm_events_low_index++;
 	
 #ifndef PWM_PORTA_UNUSED
