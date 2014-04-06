@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Sunday, April 06, 2014 'amt' 01:11:58 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Sunday, April 06, 2014 'pmt' 05:21:55 pm
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -24,7 +24,7 @@ EndCmp
 BeginCmp
 TimeStamp = /533C55FC;
 Reference = D1;
-ValeurCmp = 3.3v ZENER;
+ValeurCmp = 3.3v ZEN;
 IdModule  = D2;
 EndCmp
 
@@ -52,7 +52,7 @@ EndCmp
 BeginCmp
 TimeStamp = /533781B7;
 Reference = L1;
-ValeurCmp = LED_RGB;
+ValeurCmp = RGB LED;
 IdModule  = LED_RGB;
 EndCmp
 
@@ -81,21 +81,21 @@ BeginCmp
 TimeStamp = /532C9BB8;
 Reference = R1;
 ValeurCmp = 1k;
-IdModule  = R2;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
 TimeStamp = /533780B6;
 Reference = R2;
 ValeurCmp = 1k;
-IdModule  = R2;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
 TimeStamp = /533780C5;
 Reference = R3;
 ValeurCmp = 1k;
-IdModule  = R2;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -137,7 +137,7 @@ BeginCmp
 TimeStamp = /533C55EC;
 Reference = R9;
 ValeurCmp = 1k;
-IdModule  = R2;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -192,8 +192,8 @@ EndCmp
 BeginCmp
 TimeStamp = /5340FC50;
 Reference = X1;
-ValeurCmp = XBEE;
-IdModule  = XBEE;
+ValeurCmp = XBee (Sparkfun Breakout);
+IdModule  = XBEE_SPARKFUN_BREAKOUT;
 EndCmp
 
 EndListe

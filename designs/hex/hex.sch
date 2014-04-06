@@ -57,21 +57,21 @@ F 3 "" H 2350 3150 60  0000 C CNN
 	1    2350 3150
 	1    0    0    -1  
 $EndComp
-Text GLabel 3350 2750 2    60   Input ~ 0
-PWM00
-Text GLabel 3350 2650 2    60   Input ~ 0
-PWM01
 Text GLabel 3350 2550 2    60   Input ~ 0
+PWM00
+Text GLabel 3350 2450 2    60   Input ~ 0
+PWM01
+Text GLabel 3350 2350 2    60   Input ~ 0
 PWM02
-Text GLabel 3350 1750 2    60   Input ~ 0
-PWM03
 Text GLabel 3350 1850 2    60   Input ~ 0
-PWM04
+PWM03
 Text GLabel 3350 1950 2    60   Input ~ 0
+PWM04
+Text GLabel 3350 2050 2    60   Input ~ 0
 PWM05
-Text GLabel 3350 1450 2    60   Input ~ 0
+Text GLabel 3350 2750 2    60   Input ~ 0
 PWM06
-Text GLabel 3350 1550 2    60   Input ~ 0
+Text GLabel 3350 1750 2    60   Input ~ 0
 PWM07
 Text GLabel 3350 3550 2    60   Input ~ 0
 PWM15
@@ -79,7 +79,7 @@ Text GLabel 3350 4350 2    60   Input ~ 0
 PWM14
 Text GLabel 3350 4450 2    60   Input ~ 0
 PWM13
-Text GLabel 3350 4550 2    60   Input ~ 0
+Text GLabel 3350 3650 2    60   Input ~ 0
 PWM12
 Text GLabel 3350 3750 2    60   Input ~ 0
 PWM11
@@ -87,7 +87,7 @@ Text GLabel 3350 3850 2    60   Input ~ 0
 PWM10
 Text GLabel 3350 3950 2    60   Input ~ 0
 PWM09
-Text GLabel 3350 1650 2    60   Input ~ 0
+Text GLabel 3350 2650 2    60   Input ~ 0
 PWM08
 Text GLabel 3350 4850 2    60   Input ~ 0
 PWM17
@@ -615,7 +615,7 @@ Text GLabel 7350 3300 1    60   Input ~ 0
 LED_BLUE
 Text GLabel 7250 3300 1    60   Input ~ 0
 LED_GREEN
-Text GLabel 3350 3650 2    60   Input ~ 0
+Text GLabel 3350 4550 2    60   Input ~ 0
 LED_RED
 Text GLabel 3350 4750 2    60   Input ~ 0
 LED_GREEN
@@ -650,10 +650,6 @@ F 3 "~" H 4000 5950 30  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3700 5600 3700 6650
-Wire Wire Line
-	3700 5600 4000 5600
-Wire Wire Line
 	3900 5600 3900 5700
 Wire Wire Line
 	4000 5600 4000 5700
@@ -671,9 +667,9 @@ I2C_SCL
 Text GLabel 3350 3350 2    60   Input ~ 0
 I2C_SDA
 Text GLabel 4100 6550 2    60   Input ~ 0
-ADC6
-Text GLabel 3350 2050 2    60   Input ~ 0
-ADC6
+ADC1
+Text GLabel 3350 1550 2    60   Input ~ 0
+ADC1
 Text Notes 3500 7250 0    60   ~ 0
 Expansion Port
 Text Notes 9000 3750 0    60   ~ 0
@@ -738,12 +734,12 @@ $EndComp
 $Comp
 L GND #PWR013
 U 1 1 533B6593
-P 3800 6650
-F 0 "#PWR013" H 3800 6650 30  0001 C CNN
-F 1 "GND" H 3800 6580 30  0001 C CNN
-F 2 "" H 3800 6650 60  0000 C CNN
-F 3 "" H 3800 6650 60  0000 C CNN
-	1    3800 6650
+P 3600 6650
+F 0 "#PWR013" H 3600 6650 30  0001 C CNN
+F 1 "GND" H 3600 6580 30  0001 C CNN
+F 2 "" H 3600 6650 60  0000 C CNN
+F 3 "" H 3600 6650 60  0000 C CNN
+	1    3600 6650
 	-1   0    0    1   
 $EndComp
 $Comp
@@ -836,9 +832,9 @@ F 3 "" H 9250 4700 60  0000 C CNN
 $EndComp
 Text GLabel 9400 3050 2    60   Input ~ 0
 VCC_3v3
-Text GLabel 3600 6450 0    60   Input ~ 0
+Text GLabel 3700 6450 0    60   Input ~ 0
 SWITCHED_BATTERY
-Text GLabel 3700 6250 0    60   Input ~ 0
+Text GLabel 3800 5600 0    60   Input ~ 0
 VCC_3v3
 $Comp
 L R R9
@@ -856,7 +852,7 @@ L ZENER D1
 U 1 1 533C55FC
 P 3950 4450
 F 0 "D1" H 3950 4550 50  0000 C CNN
-F 1 "3.3v ZENER" H 3950 4350 40  0000 C CNN
+F 1 "3.3v ZEN" H 3950 4350 40  0000 C CNN
 F 2 "~" H 3950 4450 60  0000 C CNN
 F 3 "~" H 3950 4450 60  0000 C CNN
 	1    3950 4450
@@ -891,7 +887,7 @@ RESONATOR_1
 Wire Wire Line
 	4100 6550 4100 6650
 Wire Wire Line
-	3600 6450 3600 6650
+	3700 6450 3700 6650
 Text GLabel 8800 4500 0    60   Input ~ 0
 BATTERY
 $Comp
@@ -899,16 +895,16 @@ L XBEE X1
 U 1 1 5340FC50
 P 6350 6150
 F 0 "X1" H 6350 6550 60  0000 C CNN
-F 1 "XBEE" H 6350 6050 60  0000 C CNN
+F 1 "XBee (Sparkfun Breakout)" H 6350 5700 60  0000 C CNN
 F 2 "" H 6400 6050 60  0000 C CNN
 F 3 "" H 6400 6050 60  0000 C CNN
 	1    6350 6150
 	1    0    0    -1  
 $EndComp
 Text GLabel 4200 6650 2    60   Input ~ 0
-B1
-Text GLabel 3350 2450 2    60   Input ~ 0
-B1
+ADC0
+Text GLabel 3350 1450 2    60   Input ~ 0
+ADC0
 $Comp
 L CONN_7 P3
 U 1 1 5340FE10
@@ -920,4 +916,8 @@ F 3 "" H 3900 7000 60  0000 C CNN
 	1    3900 7000
 	0    1    1    0   
 $EndComp
+Wire Wire Line
+	3800 5600 4000 5600
+Wire Wire Line
+	3800 5600 3800 6650
 $EndSCHEMATC
