@@ -72,6 +72,8 @@ void leg_delay_ms(uint16_t millis){
 			}
 		}
 		
+		hex_read_serial_command();
+		
 		_delay_ms(DELAY_STEP);
 	}
 }
