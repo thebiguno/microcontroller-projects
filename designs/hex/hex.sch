@@ -30,6 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:hex
+LIBS:custom
 LIBS:hex-cache
 EELAYER 27 0
 EELAYER END
@@ -37,7 +38,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "5 apr 2014"
+Date "6 apr 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -48,49 +49,49 @@ $EndDescr
 $Comp
 L ATMEGA1284P-P IC1
 U 1 1 532C95F4
-P 2250 3150
-F 0 "IC1" H 1400 5030 40  0000 L BNN
-F 1 "ATMEGA1284P-P" H 2650 1200 40  0000 L BNN
-F 2 "DIL40" H 2250 3150 30  0000 C CIN
-F 3 "" H 2250 3150 60  0000 C CNN
-	1    2250 3150
+P 2350 3150
+F 0 "IC1" H 1500 5030 40  0000 L BNN
+F 1 "ATMEGA1284P-P" H 2750 1200 40  0000 L BNN
+F 2 "DIL40" H 2350 3150 30  0000 C CIN
+F 3 "" H 2350 3150 60  0000 C CNN
+	1    2350 3150
 	1    0    0    -1  
 $EndComp
-Text GLabel 3250 2750 2    60   Input ~ 0
+Text GLabel 3350 2750 2    60   Input ~ 0
 PWM00
-Text GLabel 3250 2650 2    60   Input ~ 0
+Text GLabel 3350 2650 2    60   Input ~ 0
 PWM01
-Text GLabel 3250 2550 2    60   Input ~ 0
+Text GLabel 3350 2550 2    60   Input ~ 0
 PWM02
-Text GLabel 3250 1750 2    60   Input ~ 0
+Text GLabel 3350 1750 2    60   Input ~ 0
 PWM03
-Text GLabel 3250 1850 2    60   Input ~ 0
+Text GLabel 3350 1850 2    60   Input ~ 0
 PWM04
-Text GLabel 3250 1950 2    60   Input ~ 0
+Text GLabel 3350 1950 2    60   Input ~ 0
 PWM05
-Text GLabel 3250 1450 2    60   Input ~ 0
+Text GLabel 3350 1450 2    60   Input ~ 0
 PWM06
-Text GLabel 3250 1550 2    60   Input ~ 0
+Text GLabel 3350 1550 2    60   Input ~ 0
 PWM07
-Text GLabel 3250 3550 2    60   Input ~ 0
+Text GLabel 3350 3550 2    60   Input ~ 0
 PWM15
-Text GLabel 3250 4350 2    60   Input ~ 0
+Text GLabel 3350 4350 2    60   Input ~ 0
 PWM14
-Text GLabel 3250 4450 2    60   Input ~ 0
+Text GLabel 3350 4450 2    60   Input ~ 0
 PWM13
-Text GLabel 3250 4550 2    60   Input ~ 0
+Text GLabel 3350 4550 2    60   Input ~ 0
 PWM12
-Text GLabel 3250 3750 2    60   Input ~ 0
+Text GLabel 3350 3750 2    60   Input ~ 0
 PWM11
-Text GLabel 3250 3850 2    60   Input ~ 0
+Text GLabel 3350 3850 2    60   Input ~ 0
 PWM10
-Text GLabel 3250 3950 2    60   Input ~ 0
+Text GLabel 3350 3950 2    60   Input ~ 0
 PWM09
-Text GLabel 3250 1650 2    60   Input ~ 0
+Text GLabel 3350 1650 2    60   Input ~ 0
 PWM08
-Text GLabel 3250 4850 2    60   Input ~ 0
+Text GLabel 3350 4850 2    60   Input ~ 0
 PWM17
-Text GLabel 3250 3450 2    60   Input ~ 0
+Text GLabel 3350 3450 2    60   Input ~ 0
 PWM16
 Text GLabel 5000 1450 0    60   Input ~ 0
 PWM00
@@ -129,107 +130,107 @@ PWM17
 Text GLabel 5000 4550 0    60   Input ~ 0
 PWM16
 Wire Wire Line
-	2050 1000 2050 1150
+	2150 1000 2150 1150
 Wire Wire Line
-	2250 1050 2250 1150
+	2350 1050 2350 1150
 Wire Wire Line
-	750  1050 2250 1050
-Connection ~ 2050 1050
+	850  1050 2350 1050
+Connection ~ 2150 1050
 $Comp
 L R R1
 U 1 1 532C9BB8
-P 1000 1450
-F 0 "R1" V 1080 1450 40  0000 C CNN
-F 1 "1k" V 1007 1451 40  0000 C CNN
-F 2 "~" V 930 1450 30  0000 C CNN
-F 3 "~" H 1000 1450 30  0000 C CNN
-	1    1000 1450
+P 1100 1450
+F 0 "R1" V 1180 1450 40  0000 C CNN
+F 1 "1k" V 1107 1451 40  0000 C CNN
+F 2 "~" V 1030 1450 30  0000 C CNN
+F 3 "~" H 1100 1450 30  0000 C CNN
+	1    1100 1450
 	0    1    1    0   
 $EndComp
-Text GLabel 3250 2850 2    60   Input ~ 0
+Text GLabel 3350 2850 2    60   Input ~ 0
 MOSI
-Text GLabel 3250 2950 2    60   Input ~ 0
+Text GLabel 3350 2950 2    60   Input ~ 0
 MISO
-Text GLabel 3250 3050 2    60   Input ~ 0
+Text GLabel 3350 3050 2    60   Input ~ 0
 SCK
-Text GLabel 1250 1450 1    60   Input ~ 0
+Text GLabel 1350 1450 1    60   Input ~ 0
 RESET
 $Comp
 L CONN_3 K1
 U 1 1 532EDC04
-P 650 2050
-F 0 "K1" V 600 2050 50  0000 C CNN
-F 1 "RESONATOR" V 700 2050 40  0000 C CNN
-F 2 "" H 650 2050 60  0000 C CNN
-F 3 "" H 650 2050 60  0000 C CNN
-	1    650  2050
+P 750 2050
+F 0 "K1" V 700 2050 50  0000 C CNN
+F 1 "RESONATOR" V 800 2050 40  0000 C CNN
+F 2 "" H 750 2050 60  0000 C CNN
+F 3 "" H 750 2050 60  0000 C CNN
+	1    750  2050
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	1250 1850 1100 1850
+	1350 1850 1200 1850
 Wire Wire Line
-	1100 1850 1100 1950
+	1200 1850 1200 1950
 Wire Wire Line
-	1100 1950 1000 1950
+	1200 1950 1100 1950
 Wire Wire Line
-	1250 2250 1100 2250
+	1350 2250 1200 2250
 Wire Wire Line
-	1100 2250 1100 2150
+	1200 2250 1200 2150
 Wire Wire Line
-	1100 2150 1000 2150
+	1200 2150 1100 2150
 $Comp
 L GND #PWR01
 U 1 1 532EDC69
-P 1200 2050
-F 0 "#PWR01" H 1200 2050 30  0001 C CNN
-F 1 "GND" H 1200 1980 30  0001 C CNN
-F 2 "" H 1200 2050 60  0000 C CNN
-F 3 "" H 1200 2050 60  0000 C CNN
-	1    1200 2050
+P 1300 2050
+F 0 "#PWR01" H 1300 2050 30  0001 C CNN
+F 1 "GND" H 1300 1980 30  0001 C CNN
+F 2 "" H 1300 2050 60  0000 C CNN
+F 3 "" H 1300 2050 60  0000 C CNN
+	1    1300 2050
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	1000 2050 1200 2050
+	1100 2050 1300 2050
 $Comp
 L C C1
 U 1 1 532EDCAD
-P 1050 2650
-F 0 "C1" H 1050 2750 40  0000 L CNN
-F 1 "1uF" H 1056 2565 40  0000 L CNN
-F 2 "~" H 1088 2500 30  0000 C CNN
-F 3 "~" H 1050 2650 60  0000 C CNN
-	1    1050 2650
+P 1150 2650
+F 0 "C1" H 1150 2750 40  0000 L CNN
+F 1 "1uF" H 1156 2565 40  0000 L CNN
+F 2 "~" H 1188 2500 30  0000 C CNN
+F 3 "~" H 1150 2650 60  0000 C CNN
+	1    1150 2650
 	0    -1   -1   0   
 $EndComp
 $Comp
 L GND #PWR02
 U 1 1 532EDCBC
-P 850 2650
-F 0 "#PWR02" H 850 2650 30  0001 C CNN
-F 1 "GND" H 850 2580 30  0001 C CNN
-F 2 "" H 850 2650 60  0000 C CNN
-F 3 "" H 850 2650 60  0000 C CNN
-	1    850  2650
+P 950 2650
+F 0 "#PWR02" H 950 2650 30  0001 C CNN
+F 1 "GND" H 950 2580 30  0001 C CNN
+F 2 "" H 950 2650 60  0000 C CNN
+F 3 "" H 950 2650 60  0000 C CNN
+	1    950  2650
 	0    1    1    0   
 $EndComp
 $Comp
 L GND #PWR03
 U 1 1 532EDCD5
-P 2250 5300
-F 0 "#PWR03" H 2250 5300 30  0001 C CNN
-F 1 "GND" H 2250 5230 30  0001 C CNN
-F 2 "" H 2250 5300 60  0000 C CNN
-F 3 "" H 2250 5300 60  0000 C CNN
-	1    2250 5300
+P 2350 5300
+F 0 "#PWR03" H 2350 5300 30  0001 C CNN
+F 1 "GND" H 2350 5230 30  0001 C CNN
+F 2 "" H 2350 5300 60  0000 C CNN
+F 3 "" H 2350 5300 60  0000 C CNN
+	1    2350 5300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2250 5150 2250 5300
+	2350 5150 2350 5300
 Wire Wire Line
-	2050 5150 2050 5200
+	2150 5150 2150 5200
 Wire Wire Line
-	2050 5200 2250 5200
-Connection ~ 2250 5200
+	2150 5200 2350 5200
+Connection ~ 2350 5200
 $Comp
 L +6V #PWR04
 U 1 1 532FA2A2
@@ -262,9 +263,9 @@ Text GLabel 8750 6350 0    60   Input ~ 0
 RESET
 Text GLabel 9550 6250 2    60   Input ~ 0
 MOSI
-Text GLabel 2250 5200 2    60   Input ~ 0
+Text GLabel 2350 5200 2    60   Input ~ 0
 GND
-Text GLabel 2050 1000 1    60   Input ~ 0
+Text GLabel 2150 1000 1    60   Input ~ 0
 VCC_AVR
 Text GLabel 9550 6150 2    60   Input ~ 0
 VCC_PROG
@@ -410,17 +411,6 @@ Connection ~ 5850 4800
 Connection ~ 5750 4800
 Text GLabel 6000 4300 2    60   Input ~ 0
 SWITCHED_BATTERY
-$Comp
-L CONN_10 P2
-U 1 1 533348CC
-P 6400 6450
-F 0 "P2" V 6350 6450 60  0000 C CNN
-F 1 "XBEE" V 6450 6450 60  0000 C CNN
-F 2 "" H 6400 6450 60  0000 C CNN
-F 3 "" H 6400 6450 60  0000 C CNN
-	1    6400 6450
-	0    -1   1    0   
-$EndComp
 Text GLabel 9700 4500 2    60   Input ~ 0
 VCC_PROG
 Text GLabel 9300 2600 2    60   Input ~ 0
@@ -430,13 +420,13 @@ VCC_AVR
 $Comp
 L GND #PWR06
 U 1 1 533351C5
-P 6850 6100
-F 0 "#PWR06" H 6850 6100 30  0001 C CNN
-F 1 "GND" H 6850 6030 30  0001 C CNN
-F 2 "" H 6850 6100 60  0000 C CNN
-F 3 "" H 6850 6100 60  0000 C CNN
-	1    6850 6100
-	-1   0    0    1   
+P 5600 6450
+F 0 "#PWR06" H 5600 6450 30  0001 C CNN
+F 1 "GND" H 5600 6380 30  0001 C CNN
+F 2 "" H 5600 6450 60  0000 C CNN
+F 3 "" H 5600 6450 60  0000 C CNN
+	1    5600 6450
+	0    1    1    0   
 $EndComp
 $Comp
 L C C2
@@ -474,7 +464,7 @@ Wire Wire Line
 	9900 3600 9900 2900
 Connection ~ 8800 3000
 Wire Wire Line
-	750  1450 750  1050
+	850  1450 850  1050
 Wire Wire Line
 	9300 2600 9300 3050
 Wire Wire Line
@@ -493,10 +483,10 @@ F 3 "" H 9400 2900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_2 P3
+L CONN_2 P2
 U 1 1 53337638
 P 9150 1750
-F 0 "P3" V 9100 1750 40  0000 C CNN
+F 0 "P2" V 9100 1750 40  0000 C CNN
 F 1 "BATT (4.8V-6V)" V 9200 1750 40  0000 C CNN
 F 2 "" H 9150 1750 60  0000 C CNN
 F 3 "" H 9150 1750 60  0000 C CNN
@@ -519,9 +509,9 @@ F 3 "" H 9050 1400 60  0000 C CNN
 $EndComp
 Text GLabel 9700 4900 2    60   Input ~ 0
 VCC_3v3
-Text GLabel 3250 4150 2    60   Input ~ 0
+Text GLabel 3350 4150 2    60   Input ~ 0
 AVR_RX
-Text GLabel 3950 4250 2    60   Input ~ 0
+Text GLabel 4050 4250 2    60   Input ~ 0
 AVR_TX
 $Comp
 L R R2
@@ -562,14 +552,14 @@ Text GLabel 8300 1350 0    60   Input ~ 0
 SWITCHED_BATTERY
 Text GLabel 8300 1850 0    60   Input ~ 0
 ADC_BATTERY_METER
-Text GLabel 3250 2150 2    60   Input ~ 0
+Text GLabel 3350 2150 2    60   Input ~ 0
 ADC_BATTERY_METER
 $Comp
 L CONN_4 L1
 U 1 1 533781B7
 P 7400 4600
 F 0 "L1" V 7350 4600 50  0000 C CNN
-F 1 "LED_RGB" V 7450 4600 50  0000 C CNN
+F 1 "RGB LED" V 7450 4600 50  0000 C CNN
 F 2 "" H 7400 4600 60  0000 C CNN
 F 3 "" H 7400 4600 60  0000 C CNN
 	1    7400 4600
@@ -625,11 +615,11 @@ Text GLabel 7350 3300 1    60   Input ~ 0
 LED_BLUE
 Text GLabel 7250 3300 1    60   Input ~ 0
 LED_GREEN
-Text GLabel 3250 3650 2    60   Input ~ 0
+Text GLabel 3350 3650 2    60   Input ~ 0
 LED_RED
-Text GLabel 3250 4750 2    60   Input ~ 0
+Text GLabel 3350 4750 2    60   Input ~ 0
 LED_GREEN
-Text GLabel 3250 4650 2    60   Input ~ 0
+Text GLabel 3350 4650 2    60   Input ~ 0
 LED_BLUE
 Text GLabel 7650 4150 2    60   Input ~ 0
 LED_RED_R
@@ -676,13 +666,13 @@ Text GLabel 3900 6250 2    60   Input ~ 0
 I2C_SDA
 Text GLabel 4000 6400 2    60   Input ~ 0
 I2C_SCL
-Text GLabel 3250 3250 2    60   Input ~ 0
+Text GLabel 3350 3250 2    60   Input ~ 0
 I2C_SCL
-Text GLabel 3250 3350 2    60   Input ~ 0
+Text GLabel 3350 3350 2    60   Input ~ 0
 I2C_SDA
 Text GLabel 4100 6550 2    60   Input ~ 0
 ADC6
-Text GLabel 3250 2050 2    60   Input ~ 0
+Text GLabel 3350 2050 2    60   Input ~ 0
 ADC6
 Text Notes 3500 7250 0    60   ~ 0
 Expansion Port
@@ -711,9 +701,9 @@ Text Notes 8750 6550 0    60   ~ 0
 Programming Header
 Text Notes 9000 2050 0    60   ~ 0
 Battery Input
-Text GLabel 6050 6100 1    60   Input ~ 0
+Text GLabel 5600 5650 0    60   Input ~ 0
 AVR_RX
-Text GLabel 5950 6100 1    60   Input ~ 0
+Text GLabel 5600 5550 0    60   Input ~ 0
 VCC_3v3
 Text Notes 5400 5050 0    60   ~ 0
 Servo Headers
@@ -721,7 +711,7 @@ Text Notes 8650 5200 0    60   ~ 0
 On / Off / Program Switch
 Text Notes 6650 6750 2    60   ~ 0
 XBee Header
-Text Notes 2550 5400 0    60   ~ 0
+Text Notes 2650 5400 0    60   ~ 0
 AVR
 $Comp
 L +3.3V #PWR011
@@ -834,10 +824,10 @@ F 3 "" H 6000 4800 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L DPDT P4
+L DPDT SW1
 U 1 1 533C3A10
 P 9250 4700
-F 0 "P4" H 9250 4800 60  0000 C CNN
+F 0 "SW1" H 9250 4800 60  0000 C CNN
 F 1 "DPDT" H 9250 4600 60  0000 C CNN
 F 2 "" H 9250 4700 60  0000 C CNN
 F 3 "" H 9250 4700 60  0000 C CNN
@@ -853,79 +843,81 @@ VCC_3v3
 $Comp
 L R R9
 U 1 1 533C55EC
-P 3500 4250
-F 0 "R9" V 3580 4250 40  0000 C CNN
-F 1 "1k" V 3507 4251 40  0000 C CNN
-F 2 "~" V 3430 4250 30  0000 C CNN
-F 3 "~" H 3500 4250 30  0000 C CNN
-	1    3500 4250
+P 3600 4250
+F 0 "R9" V 3680 4250 40  0000 C CNN
+F 1 "1k" V 3607 4251 40  0000 C CNN
+F 2 "~" V 3530 4250 30  0000 C CNN
+F 3 "~" H 3600 4250 30  0000 C CNN
+	1    3600 4250
 	0    -1   -1   0   
 $EndComp
 $Comp
 L ZENER D1
 U 1 1 533C55FC
-P 3850 4450
-F 0 "D1" H 3850 4550 50  0000 C CNN
-F 1 "3.3v ZENER" H 3850 4350 40  0000 C CNN
-F 2 "~" H 3850 4450 60  0000 C CNN
-F 3 "~" H 3850 4450 60  0000 C CNN
-	1    3850 4450
+P 3950 4450
+F 0 "D1" H 3950 4550 50  0000 C CNN
+F 1 "3.3v ZENER" H 3950 4350 40  0000 C CNN
+F 2 "~" H 3950 4450 60  0000 C CNN
+F 3 "~" H 3950 4450 60  0000 C CNN
+	1    3950 4450
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	3750 4250 3950 4250
-Connection ~ 3850 4250
+	3850 4250 4050 4250
+Connection ~ 3950 4250
 $Comp
 L GND #PWR020
 U 1 1 533C56C0
-P 3850 4650
-F 0 "#PWR020" H 3850 4650 30  0001 C CNN
-F 1 "GND" H 3850 4580 30  0001 C CNN
-F 2 "" H 3850 4650 60  0000 C CNN
-F 3 "" H 3850 4650 60  0000 C CNN
-	1    3850 4650
+P 3950 4650
+F 0 "#PWR020" H 3950 4650 30  0001 C CNN
+F 1 "GND" H 3950 4580 30  0001 C CNN
+F 2 "" H 3950 4650 60  0000 C CNN
+F 3 "" H 3950 4650 60  0000 C CNN
+	1    3950 4650
 	1    0    0    -1  
 $EndComp
-Text GLabel 6150 6100 1    60   Input ~ 0
+Text GLabel 5600 5750 0    60   Input ~ 0
 AVR_TX
 Text GLabel 8800 4900 0    60   Input ~ 0
 SWITCHED_BATTERY
 Text GLabel 8800 4700 0    60   Input ~ 0
 BATTERY
-Text GLabel 1250 2650 3    60   Input ~ 0
+Text GLabel 1350 2650 3    60   Input ~ 0
 AREF
-Text GLabel 1100 2250 0    60   Input ~ 0
+Text GLabel 1200 2250 0    60   Input ~ 0
 RESONATOR_2
-Text GLabel 1100 1850 0    60   Input ~ 0
+Text GLabel 1200 1850 0    60   Input ~ 0
 RESONATOR_1
-$Comp
-L CONN_6 P5
-U 1 1 533C8452
-P 3850 7000
-F 0 "P5" V 3800 7000 60  0000 C CNN
-F 1 "CONN_6" V 3900 7000 60  0000 C CNN
-F 2 "" H 3850 7000 60  0000 C CNN
-F 3 "" H 3850 7000 60  0000 C CNN
-	1    3850 7000
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	4100 6550 4100 6650
 Wire Wire Line
 	3600 6450 3600 6650
-Wire Wire Line
-	3250 2450 3800 2450
-$Comp
-L CONN_1 P6
-U 1 1 533E093D
-P 3950 2450
-F 0 "P6" H 4030 2450 40  0000 L CNN
-F 1 "CONN_1" H 3950 2505 30  0001 C CNN
-F 2 "" H 3950 2450 60  0000 C CNN
-F 3 "" H 3950 2450 60  0000 C CNN
-	1    3950 2450
-	1    0    0    -1  
-$EndComp
 Text GLabel 8800 4500 0    60   Input ~ 0
 BATTERY
+$Comp
+L XBEE X1
+U 1 1 5340FC50
+P 6350 6150
+F 0 "X1" H 6350 6550 60  0000 C CNN
+F 1 "XBEE" H 6350 6050 60  0000 C CNN
+F 2 "" H 6400 6050 60  0000 C CNN
+F 3 "" H 6400 6050 60  0000 C CNN
+	1    6350 6150
+	1    0    0    -1  
+$EndComp
+Text GLabel 4200 6650 2    60   Input ~ 0
+B1
+Text GLabel 3350 2450 2    60   Input ~ 0
+B1
+$Comp
+L CONN_7 P3
+U 1 1 5340FE10
+P 3900 7000
+F 0 "P3" V 3870 7000 60  0000 C CNN
+F 1 "CONN_7" V 3970 7000 60  0000 C CNN
+F 2 "" H 3900 7000 60  0000 C CNN
+F 3 "" H 3900 7000 60  0000 C CNN
+	1    3900 7000
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC
