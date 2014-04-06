@@ -1,13 +1,13 @@
 #ifndef HEX_RIPPLE
 #define HEX_RIPPLE
 
-#define MIN_DELAY 	40
-#define MAX_DELAY	100
+#define DELAY 		40
 #define COXA_STEP	0.3
 #define TIBIA_STEP	1
 
 #include <avr/io.h>
 
+#include "comm.h"
 #include "leg.h"
 
 void ripple_step();
