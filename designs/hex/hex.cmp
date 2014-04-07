@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Sunday, April 06, 2014 'pmt' 08:51:05 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, April 07, 2014 'pmt' 01:13:35 pm
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -22,10 +22,17 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /533C55FC;
-Reference = D1;
-ValeurCmp = 3.3v ZEN;
-IdModule  = sot23;
+TimeStamp = /5342F877;
+Reference = C4;
+ValeurCmp = 20pF;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /5342F86B;
+Reference = C5;
+ValeurCmp = 20pF;
+IdModule  = SM0603_Capa;
 EndCmp
 
 BeginCmp
@@ -194,6 +201,13 @@ TimeStamp = /5340FC50;
 Reference = X1;
 ValeurCmp = XBee (Sparkfun Breakout);
 IdModule  = XBEE_SPARKFUN_BREAKOUT;
+EndCmp
+
+BeginCmp
+TimeStamp = /533C55FC;
+Reference = ZD1;
+ValeurCmp = ZD 3v3;
+IdModule  = SOT23;
 EndCmp
 
 EndListe
