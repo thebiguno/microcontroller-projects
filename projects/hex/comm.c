@@ -12,6 +12,7 @@ void comm_read(double *velocity, double *direction){
 		uint8_t c;
 		serial_read_c((char*) &c);
 
+/*
 		//Button pressed
 		if ((c & 0xF0) == 0xF0){
 			if ((c & 0x0F) == 0x04){
@@ -28,20 +29,19 @@ void comm_read(double *velocity, double *direction){
 			_velocity = 0;
 			_direction = 0;
 		}
-/*		
+*/		
 		if ((c & 0xE0) == 0x00){		//Left stick X
 //			uint8_t value = c & 0x1F;
 		}
 		else if ((c & 0xE0) == 0x20){	//Left stick Y
 			uint8_t value = c & 0x1F;
-			if (value > 0x0D) {
-				*velocity = 0x00;
+			if (value > 0x0A) {
+				_velocity = 0x00;
 			}
 			else {
-				*velocity = -1.0/15 * value + 1;
+				_velocity = -1.0/15 * value + 1;
 			}
 		}
-*/
 	}
 	
 	*velocity = _velocity;
