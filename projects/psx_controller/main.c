@@ -25,12 +25,17 @@
  *  Button Press: [1111XXXX]
  *    1: Four high bits
  *    X: Four data bits, indicating button number 0 - 15
+ *  Button Release: [1110XXXX]
+ *    1: Three high bits, one low bit
+ *    X: Four data bits, indicating button number 0 - 15
  *  Stick: [0AAXXXXX]
  *    0: One low bit
  *    A: Two address bits
  *      bit 0 = Left / Right (L = 0, R = 1)
  *      bit 1 = X / Y (X = 0, Y = 1)
  *    X: Five value bits
+ *		For the Y axis, 0x00 is all the way forward and 0x1F is all the way back; for 
+ * 		the X axis, 0x00 is all the way left and 0x1F is all the way right.
  *
  *
  *
@@ -131,26 +136,34 @@ int main (void){
 					break;
 			}
 		}
-			//Poll the gamepad
+		
+		//Poll the gamepad
 		psx_read_gamepad();
 		
 		//Check digital (button) state
 		uint16_t buttons = psx_buttons() & button_mask;
 		if (buttons != last_buttons){
-			last_buttons = buttons;
+			
+			uint16_t button_changes = buttons ^ last_buttons;
 			
 			TCNT1 = 0x00;	//Reset idle timer
 			
 			if (buttons == 0x00){
 				serial_write_c((char) 0x80);		//Static message meaning 'no buttons pressed'
 			}
-			else {
-				for (uint8_t x = 0; x < 16; x++){
+			
+			for (uint8_t x = 0; x < 16; x++){
+				if (button_changes & _BV(x)){
 					if (buttons & _BV(x)){
 						serial_write_c(x | 0xF0);	//Four high bits, then 4 bit button address
 					}
+					else {
+						serial_write_c(x | 0xE0);	//Three high bits, one low bit, then 4 bit button address
+					}
 				}
 			}
+			
+			last_buttons = buttons;
 		}
 
 		//Check analog (stick) state
