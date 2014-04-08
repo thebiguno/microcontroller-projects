@@ -2,7 +2,7 @@
 #define HEX_RIPPLE
 
 #define DELAY 		40
-#define COXA_STEP	0.3
+#define MAX_COXA_STEP	0.3
 #define TIBIA_STEP	1
 
 #include <avr/io.h>
