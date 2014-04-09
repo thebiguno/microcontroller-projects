@@ -69,7 +69,6 @@
  *         Setting this to 0x00 (the minimum) completely disables the timer and sends all analog events, no matter how fast they come.
  *         Setting this to 0x10 (the default; expanded to 0x40) results in an analog repeat time of about 8ms.
  *         Setting this to 0x3F (the maximum; expanded to 0xFC) result in an analog repeat time of about 32ms.
- *         For instance, 0xFF results in a poll time of about 
  */
 
 

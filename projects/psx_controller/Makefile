@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include build/variables.mk
 
 PROJECT=PSXController
 MMCU=atmega48
@@ -12,5 +12,7 @@ LFUSE=0xE2
 # You can also define anything here and it will override
 # the definitions in variables.mk
 
-include ../../build/targets.mk
+include build/targets.mk
 
+dist:
+	tar -czvf psx_controller_source.tgz Makefile build/* main.c psx_controller_client.py lib/serial/serial.h lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c lib/psx/psx.h lib/psx/psx.c
