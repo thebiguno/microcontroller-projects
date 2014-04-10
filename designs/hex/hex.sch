@@ -38,7 +38,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "8 apr 2014"
+Date "10 apr 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -639,9 +639,9 @@ Wire Wire Line
 	1800 5200 1800 5300
 Connection ~ 1700 5200
 Wire Wire Line
-	1700 5800 1700 6250
+	1700 5800 1700 6500
 Wire Wire Line
-	1800 5800 1800 6250
+	1800 5800 1800 6500
 Text GLabel 1700 5850 2    60   Input ~ 0
 I2C_SDA
 Text GLabel 1800 6000 2    60   Input ~ 0
@@ -650,11 +650,11 @@ Text GLabel 4900 5250 2    60   Input ~ 0
 I2C_SCL
 Text GLabel 4900 5350 2    60   Input ~ 0
 I2C_SDA
-Text GLabel 1900 6150 2    60   Input ~ 0
+Text GLabel 2000 6250 2    60   Input ~ 0
 ADC1
 Text GLabel 4900 3550 2    60   Input ~ 0
 ADC1
-Text Notes 1300 6850 0    60   ~ 0
+Text Notes 1400 7150 0    60   ~ 0
 Expansion Port
 Text Notes 800  4000 0    60   ~ 0
 3.3v Regulator
@@ -852,9 +852,9 @@ XTAL1
 Text GLabel 2750 3850 0    60   Input ~ 0
 XTAL2
 Wire Wire Line
-	1900 6150 1900 6250
+	1900 6150 1900 6500
 Wire Wire Line
-	1500 6050 1500 6250
+	1500 6050 1500 6500
 $Comp
 L XBEE X1
 U 1 1 5340FC50
@@ -866,25 +866,14 @@ F 3 "" H 9400 6300 60  0000 C CNN
 	1    9350 6400
 	1    0    0    -1  
 $EndComp
-Text GLabel 2000 6250 2    60   Input ~ 0
+Text GLabel 2100 6350 2    60   Input ~ 0
 ADC0
 Text GLabel 4900 3450 2    60   Input ~ 0
 ADC0
-$Comp
-L CONN_7 P3
-U 1 1 5340FE10
-P 1700 6600
-F 0 "P3" V 1670 6600 60  0000 C CNN
-F 1 "CONN_7" V 1770 6600 60  0000 C CNN
-F 2 "" H 1700 6600 60  0000 C CNN
-F 3 "" H 1700 6600 60  0000 C CNN
-	1    1700 6600
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	1600 5200 1800 5200
 Wire Wire Line
-	1600 5200 1600 6250
+	1600 5200 1600 6500
 $Comp
 L C C5
 U 1 1 5342F86B
@@ -989,5 +978,25 @@ NoConn ~ 10150 6100
 NoConn ~ 10150 6000
 NoConn ~ 10150 5900
 NoConn ~ 10150 5800
-NoConn ~ 4900 3650
+Text GLabel 4900 3650 2    60   Input ~ 0
+ADC2
+$Comp
+L CONN_8 P3
+U 1 1 5346FA4A
+P 1750 6850
+F 0 "P3" V 1700 6850 60  0000 C CNN
+F 1 "CONN_8" V 1800 6850 60  0000 C CNN
+F 2 "" H 1750 6850 60  0000 C CNN
+F 3 "" H 1750 6850 60  0000 C CNN
+	1    1750 6850
+	0    1    1    0   
+$EndComp
+Text GLabel 1900 6150 2    60   Input ~ 0
+ADC2
+Wire Wire Line
+	2100 6350 2100 6500
+Wire Wire Line
+	2000 6500 2000 6250
+Wire Wire Line
+	1400 6500 1400 6250
 $EndSCHEMATC

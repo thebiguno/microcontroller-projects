@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, April 07, 2014 'pmt' 01:13:35 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, April 10, 2014 'pmt' 02:00:01 pm
 
 BeginCmp
 TimeStamp = /532EDCAD;
@@ -45,7 +45,7 @@ EndCmp
 BeginCmp
 TimeStamp = /532EDC04;
 Reference = K1;
-ValeurCmp = RESONATOR;
+ValeurCmp = XTAL;
 IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
@@ -78,10 +78,10 @@ IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /5340FE10;
+TimeStamp = /5346FA4A;
 Reference = P3;
-ValeurCmp = CONN_7;
-IdModule  = PIN_ARRAY_7x1;
+ValeurCmp = CONN_8;
+IdModule  = PIN_ARRAY_8x1;
 EndCmp
 
 BeginCmp
