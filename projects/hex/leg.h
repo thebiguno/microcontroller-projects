@@ -39,6 +39,10 @@ typedef struct leg_t {
 //#define FEMUR			1
 #define TIBIA			1
 
+//The maximum angle which we can move away from zero.  If you try to set a value higher (lower 
+// for negatives) than this, we cap it at this value.
+#define MAX_ANGLE		1.5
+
 //The time (millis) during which we pause in leg_delay_ms.
 #define DELAY_STEP		5
 

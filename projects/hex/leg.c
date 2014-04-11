@@ -2,6 +2,19 @@
 
 extern leg_t legs[LEG_COUNT];
 
+#define bounds_check_current() \
+	if (legs[leg].current[COXA] < -MAX_ANGLE) legs[leg].current[COXA] = -MAX_ANGLE; \
+	else if (legs[leg].current[COXA] > MAX_ANGLE) legs[leg].current[COXA] = MAX_ANGLE; \
+	if (legs[leg].current[TIBIA] < -MAX_ANGLE) legs[leg].current[TIBIA] = -MAX_ANGLE; \
+	else if (legs[leg].current[TIBIA] > MAX_ANGLE) legs[leg].current[TIBIA] = MAX_ANGLE
+
+#define bounds_check_desired() \
+	if (legs[leg].desired[COXA] < -MAX_ANGLE) legs[leg].desired[COXA] = -MAX_ANGLE; \
+	else if (legs[leg].desired[COXA] > MAX_ANGLE) legs[leg].desired[COXA] = MAX_ANGLE; \
+	if (legs[leg].desired[TIBIA] < -MAX_ANGLE) legs[leg].desired[TIBIA] = -MAX_ANGLE; \
+	else if (legs[leg].desired[TIBIA] > MAX_ANGLE) legs[leg].desired[TIBIA] = MAX_ANGLE
+
+
 void leg_init(){
 	legs[FRONT_LEFT].port[COXA] = &PORTA;
 	legs[FRONT_LEFT].pin[COXA] = PORTA0;
@@ -88,12 +101,16 @@ void leg_set_current_position_absolute(uint8_t leg, double x, double y, double z
 	legs[leg].current[COXA] = y;
 	legs[leg].current[TIBIA] = z;
 	
+	bounds_check_current();
+	
 	_update_current_position(leg);
 }
 
 void leg_set_current_position_relative(uint8_t leg, double x, double y, double z){
 	legs[leg].current[COXA] = legs[leg].current[COXA] + y;
 	legs[leg].current[TIBIA] = legs[leg].current[TIBIA] + z;
+
+	bounds_check_current();
 
 	_update_current_position(leg);
 }
@@ -109,6 +126,8 @@ inline void _update_desired_position(uint8_t leg, uint16_t millis){
 void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = y;
 	legs[leg].desired[TIBIA] = z;
+
+	bounds_check_desired();
 	
 	_update_desired_position(leg, millis);
 }
@@ -116,6 +135,8 @@ void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z
 void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = legs[leg].desired[COXA] + y;
 	legs[leg].desired[TIBIA] = legs[leg].desired[TIBIA] + z;
+	
+	bounds_check_desired();
 	
 	_update_desired_position(leg, millis);
 }

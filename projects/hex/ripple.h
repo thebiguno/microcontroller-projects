@@ -3,7 +3,7 @@
 
 #define DELAY 		40
 #define MAX_COXA_STEP	0.3
-#define TIBIA_STEP	1
+#define TIBIA_STEP	1.5
 
 #include <avr/io.h>
 
