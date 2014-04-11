@@ -11,10 +11,8 @@ void comm_init(){
 void comm_read(double *velocity, double *direction, uint8_t *special){
 	static uint16_t button_press_mask = 0x00;
 	
-	while (serial_available()){
-		uint8_t b;
-		serial_read_b(&b);
-
+	uint8_t b;
+	while (serial_read_b(&b)){
 		//Button pressed
 		if ((b & 0xF0) == 0xF0){
 			button_press_mask |= _BV(b & 0x0F);
