@@ -38,7 +38,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "10 apr 2014"
+Date "11 apr 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -999,4 +999,49 @@ Wire Wire Line
 	2000 6500 2000 6250
 Wire Wire Line
 	1400 6500 1400 6250
+$Comp
+L LED D1
+U 1 1 53483946
+P 5200 7600
+F 0 "D1" H 5200 7700 50  0000 C CNN
+F 1 "LED" H 5200 7500 50  0000 C CNN
+F 2 "~" H 5200 7600 60  0000 C CNN
+F 3 "~" H 5200 7600 60  0000 C CNN
+	1    5200 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R10
+U 1 1 53483955
+P 5700 7600
+F 0 "R10" V 5780 7600 40  0000 C CNN
+F 1 "1k" V 5707 7601 40  0000 C CNN
+F 2 "~" V 5630 7600 30  0000 C CNN
+F 3 "~" H 5700 7600 30  0000 C CNN
+	1    5700 7600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR022
+U 1 1 53483962
+P 6000 7700
+F 0 "#PWR022" H 6000 7700 30  0001 C CNN
+F 1 "GND" H 6000 7630 30  0001 C CNN
+F 2 "" H 6000 7700 60  0000 C CNN
+F 3 "" H 6000 7700 60  0000 C CNN
+	1    6000 7700
+	1    0    0    -1  
+$EndComp
+Text GLabel 4900 7600 0    60   Input ~ 0
+SWITCHED_BATTERY
+Wire Wire Line
+	4900 7600 5000 7600
+Wire Wire Line
+	5400 7600 5450 7600
+Wire Wire Line
+	5950 7600 6000 7600
+Wire Wire Line
+	6000 7600 6000 7700
+Text Notes 5250 7850 0    60   ~ 0
+Power LED
 $EndSCHEMATC
