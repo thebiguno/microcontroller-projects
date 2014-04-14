@@ -9,7 +9,7 @@
 * |------+------+------+------+------|                                   |------+------+------+------+------+
 * |   A  |   O  |   E  |   U  |   I  |                                   |   D  |   H  |   T  |   N  |   S  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |  ;:  |   Q  |   J  |   K  |   X  |                                   |   B  |   M  |   W  |   V  |   Z  |
+* |  ;: *|   Q  |   J  |   K  |   X  |                                   |   B  |   M  |   W  |   V  |   Z *|
 * |------+------+------+------+------|                                   |------+------+------+------+------|
 * |  =+  |  -_  | Left | Right|      |                                   |      | Up   | Down |  [{  |  ]}  |
 * | Shift| Ctrl | Alt  | Gui  |  Fn  |                                   |  Fn  | Gui  | Alt  | Ctrl | Shift|
@@ -27,20 +27,16 @@
 * |------+------+------+------+------|                                   |------+------+------+------+------
 * |  F11 |  F12 |  F13 |  F14 | Vol+ |                                   |  >>  |   7  |   8  |   9  |   -  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |      |      |      |      | Mute |                                   |  >|| |   4  |   5  |   6  |   +  |
+* | PgUp | Home |  Up  | End  | Mute |                                   |  >|| |   4  |   5  |   6  |   +  |
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |      |      |      |      | Vol- |                                   |  <<  |   1  |   2  |   3  |   *  |
+* | PgDn | Left | Down | Right| Vol- |                                   |  <<  |   1  |   2  |   3  |   *  |
 * |------+------+------+------+------'                                   |------+------+------+------+------|
-<<<<<<< HEAD
-* | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn |   .  | Clr  |
-=======
 * | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn |   .  |   /  |
->>>>>>> c15d186c0216b9ceb896ae8838e542cdaca5648d
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    |      |      |       |  NL  |   =  |
+*                                    |      |Teensy|       |      |   =  |
 *                             ,------|------|------|       |------+------+------.
-*                             | Del  | Caps |      |       |      | KEnt |   0  |
+*                             | Del  |      |      |       |NL/Clr| KEnt |   0  |
 *                             `--------------------'       `--------------------'
 *
 */
@@ -51,15 +47,15 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            1   ,2   ,3   ,4   ,5   ,
            QUOT,COMM,DOT ,P   ,Y   ,
            A   ,O   ,E   ,U   ,I   ,
-           SCLN,Q   ,J   ,K   ,X   ,
+           FN11,Q   ,J   ,K   ,X   ,
            FN1 ,FN2 ,FN3 ,FN4 ,FN5  ,
                           CAPS,BSLS,
-                     BSPC,ESC ,QUOT ,
+                     BSPC,ESC ,SLSH,
            6   ,7   ,8   ,9   ,0   ,
            F   ,G   ,C   ,R   ,L   ,
            D   ,H   ,T   ,N   ,S   ,
-           B   ,M   ,W   ,V   ,Z   ,
-           FN6 ,FN7 ,FN8 ,FN9,FN10,
+           B   ,M   ,W   ,V   ,FN12,
+           FN6 ,FN7 ,FN8 ,FN9 ,FN10,
            GRV ,NUBS,
            TAB ,ENT ,SPC
     ),
@@ -67,18 +63,18 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KEYMAP(
            F1  ,F2  ,F3  ,F4  ,F5  ,
            F11 ,F12 ,F13 ,F14 ,VOLU,
-           NO  ,NO  ,NO  ,NO  ,MUTE,
-           NO  ,NO  ,NO  ,NO  ,VOLD,
+           PGUP,HOME,UP  ,END ,MUTE,
+           PGDN,LEFT,DOWN,RGHT,VOLD,
            TRNS,TRNS,HOME,END ,TRNS,
-                          NO  ,NO  ,
-                     DEL ,CAPS,NO  ,
+                          NO  ,FN0 ,
+                     DEL ,NO  ,NO  ,
            F6  ,F7  ,F8  ,F9  ,F10 ,
-           MNXT,P7  ,P8  ,P9  ,PEQL,
+           MNXT,P7  ,P8  ,P9  ,PMNS,
            MPLY,P4  ,P5  ,P6  ,PPLS,
-           MPRV,P1  ,P2  ,P3  ,PMNS,
-           TRNS,PGUP,PGDN,PDOT,NLCK,
-           PAST,PSLS,
-           NO  ,PENT,P0  
+           MPRV,P1  ,P2  ,P3  ,PAST,
+           TRNS,PGUP,PGDN,PDOT,PSLS,
+           NO  ,PEQL,
+           NLCK,PENT,P0  
     ),};
 enum function_id {
     TEENSY_KEY,
@@ -94,7 +90,9 @@ static const uint16_t PROGMEM fn_actions[] = {
 		[7] = ACTION_MODS_TAP_KEY(MOD_RGUI, KC_UP),
 		[8] = ACTION_MODS_TAP_KEY(MOD_RALT, KC_DOWN),
 		[9] = ACTION_MODS_TAP_KEY(MOD_RCTL, KC_LBRC),
-		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC)
+		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC),
+		[11] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_SCLN),
+		[12] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_Z)
 
 };
 void action_function(keyrecord_t *event, uint8_t id, uint8_t opt) {
