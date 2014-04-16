@@ -1,0 +1,72 @@
+eeschema (2014-01-10 BZR 4027)-stable  >> Creation date: Wednesday, April 16, 2014 'amt' 10:40:17 am
+#Cmp ( order = Reference )
+| C1         1uF         
+| C2         1uF         
+| C3         1uF         
+| C4         20pF        
+| C5         20pF        
+| D1         LED         
+| IC1        ATMEGA1284P-P
+| K1         XTAL        
+| K2         REGUL       
+| L1         RGB LED     
+| P1         PROG        
+| P2         BATT (4.8V-6V)
+| P3         CONN_8      
+| R1         1k          
+| R2         1k          
+| R3         1k          
+| R4         1k          
+| R5         1k          
+| R6         1k          
+| R7         1k          
+| R8         1k          
+| R9         1k          
+| R10        1k          
+| S1         FRNT LFT    
+| S2         FRNT RGT    
+| S3         MID LFT     
+| S4         MID RGT     
+| S5         REAR LFT    
+| S6         REAR RGT    
+| SW1        DPDT        
+| X1         XBee (Sparkfun Breakout)
+| ZD1        ZD 3v3      
+#End Cmp
+
+#Cmp ( order = Value )
+| 20pF         C4        
+| 20pF         C5        
+| 1uF          C1        
+| 1uF          C2        
+| 1uF          C3        
+| LED          D1        
+| ATMEGA1284P-P IC1       
+| XTAL         K1        
+| REGUL        K2        
+| RGB LED      L1        
+| PROG         P1        
+| BATT (4.8V-6V) P2        
+| CONN_8       P3        
+| 1k           R1        
+| 1k           R2        
+| 1k           R3        
+| 1k           R4        
+| 1k           R5        
+| 1k           R6        
+| 1k           R7        
+| 1k           R8        
+| 1k           R9        
+| 1k           R10       
+| FRNT LFT     S1        
+| FRNT RGT     S2        
+| MID LFT      S3        
+| MID RGT      S4        
+| REAR LFT     S5        
+| REAR RGT     S6        
+| DPDT         SW1       
+| XBee (Sparkfun Breakout) X1        
+| ZD 3v3       ZD1       
+#End Cmp
+
+#End List
