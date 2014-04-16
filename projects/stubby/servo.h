@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-#include "hex.h"
+#include "stubby.h"
 #include "leg.h"
 #include "lib/pwm/pwm.h"
 

@@ -1,4 +1,4 @@
-#include "hex.h"
+#include "stubby.h"
 
 leg_t legs[LEG_COUNT];
 

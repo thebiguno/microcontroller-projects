@@ -7,7 +7,7 @@
 #include <util/delay.h>
 #include <math.h>
 
-#include "hex.h"
+#include "stubby.h"
 
 typedef struct leg_t {
 	volatile uint8_t *port[JOINT_COUNT];
