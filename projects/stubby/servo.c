@@ -16,7 +16,7 @@ void servo_init(){
 	}
 	
 	//TODO Allow for calibration via controller, plus store to EEPROM
-	legs[FRONT_LEFT].offset[COXA] = 80;
+/*	legs[FRONT_LEFT].offset[COXA] = 80;
 	legs[FRONT_LEFT].offset[TIBIA] = -130;
 	legs[FRONT_RIGHT].offset[COXA] = 0;
 	legs[FRONT_RIGHT].offset[TIBIA] = -210;
@@ -30,7 +30,7 @@ void servo_init(){
 	legs[REAR_LEFT].offset[TIBIA] = -200;
 	legs[REAR_RIGHT].offset[COXA] = 0;
 	legs[REAR_RIGHT].offset[TIBIA] = -300;
-	
+*/	
 	pwm_init(ports, pins, LEG_COUNT * JOINT_COUNT, 20000);
 }
 

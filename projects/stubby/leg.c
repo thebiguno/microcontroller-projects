@@ -52,7 +52,7 @@ void leg_init(){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
 			legs[l].step[j] = MIN_STEP;
 		}
-		leg_set_current_position_absolute(l, 0, 0, 0);
+		leg_set_current_position_absolute(l, 0, 0, TIBIA_LOWERED);
 	}
 	
 	leg_delay_ms(2000);

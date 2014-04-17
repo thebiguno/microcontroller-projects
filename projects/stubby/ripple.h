@@ -1,9 +1,9 @@
 #ifndef HEX_RIPPLE
 #define HEX_RIPPLE
 
-#define DELAY 		40
-#define MAX_COXA_STEP	0.3
-#define TIBIA_STEP	1.5
+#define DELAY 		100
+#define COXA_STEP (COXA_FORWARD - COXA_REVERSE) / 5
+#define TIBIA_STEP	(TIBIA_RAISED - TIBIA_LOWERED)
 
 #include <avr/io.h>
 

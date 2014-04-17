@@ -50,6 +50,15 @@ typedef struct leg_t {
 // setting desired position (once the error falls below this, we consider it 'good enough').
 #define MIN_STEP		0.001
 
+//Position of raised / lowered tibia
+#define TIBIA_LOWERED -1.55
+#define TIBIA_RAISED 1.55
+//Position of nautral / forward / reverse coxa
+#define COXA_NEUTRAL 0
+#define COXA_FORWARD -1.55
+#define COXA_REVERSE 1.55
+
+
 //Initialize memory for an array of legs.  By convention, the resulting array is ordered
 // from left to right, front to back.  I.e. Left Front, Right Front, Left Middle, Right Middle, etc. 
 //The implementation of leg_init MUST be hardware-specific, as part of the init is port / pin 
