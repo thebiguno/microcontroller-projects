@@ -51,8 +51,8 @@ typedef struct leg_t {
 #define MIN_STEP		0.001
 
 //Position of raised / lowered tibia
-#define TIBIA_LOWERED -1.55
-#define TIBIA_RAISED 1.55
+#define TIBIA_LOWERED -1.8
+#define TIBIA_RAISED 1.8
 //Position of nautral / forward / reverse coxa
 #define COXA_NEUTRAL 0
 #define COXA_FORWARD -1.55
