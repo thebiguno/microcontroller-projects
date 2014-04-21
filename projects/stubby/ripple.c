@@ -48,7 +48,7 @@ static void ripple_gait(uint8_t leg){
 	
 	//Lift tibia (z)
 	leg_set_current_position_relative(leg, 0, 0, TIBIA_STEP);
-	leg_delay_ms(DELAY);
+	leg_delay_ms(DELAY * 2);
 	
 	//Which leg are we controlling: right or left?
 	double relevant_direction = ((leg & 0x01) == 0x00) ? left_direction : right_direction;
@@ -71,11 +71,11 @@ static void ripple_gait(uint8_t leg){
 			leg_set_current_position_relative(i, 0, coxa_step, 0);
 		}
 	}
-	leg_delay_ms(DELAY * 2);
+	leg_delay_ms(DELAY * 1);
 
 	//Drop tibia to neutral position
 	leg_set_current_position_absolute(leg, 0, starting_position, TIBIA_LOWERED);
-	leg_delay_ms(DELAY / 4);
+	leg_delay_ms(DELAY * 1);
 }
 
 void ripple_reset(){

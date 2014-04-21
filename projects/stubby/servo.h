@@ -11,9 +11,9 @@
 // amounts on either side.  We then assume that
 // the servo has a linear travel between one end 
 // and the other.
-#define MIN_PHASE	800
+#define MIN_PHASE	700
 #define NEUTRAL	1500
-#define MAX_PHASE	2200
+#define MAX_PHASE	2300
 
 //Maximum angle of travel for the servo, in radians.
 // Therefore, the maximum travel in each direction
