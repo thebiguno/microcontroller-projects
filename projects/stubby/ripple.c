@@ -1,9 +1,5 @@
-#include "ripple.h"
-
-static double velocity;
-static double direction;
-static uint8_t special;
-static uint8_t last_special;
+#include "gait.h"
+#define DELAY 		80
 
 //The order in which we lift legs
 static uint8_t gait_leg_order[6] = {
@@ -19,7 +15,20 @@ static uint8_t gait_leg_order[6] = {
  * Take a ripple gait step with the specified leg.  This is the same as wave gait, but it only affects one side at a time, and 
  * each side is interleaved together.
  */
-static void ripple_gait(uint8_t leg){
+void gait_step(double velocity, double direction){
+	static uint8_t i = 0x00;
+
+	uint8_t leg = gait_leg_order[i];
+	if (direction > 0){
+		i++;
+		if (i >= LEG_COUNT) i = 0;
+	}
+	else {
+		i--;
+		if (i >= LEG_COUNT) i = LEG_COUNT - 1;	//i is unsigned, so will loop to 255.
+	}
+
+	
 	//We control the direction of legs on each side based on the combination of velocity and direction values.
 	double left_direction;
 	double right_direction;
@@ -78,7 +87,7 @@ static void ripple_gait(uint8_t leg){
 	leg_delay_ms(DELAY * 1);
 }
 
-void ripple_reset(){
+void gait_init(){
 	leg_set_current_position_relative(REAR_LEFT, 0, 0, TIBIA_STEP);
 	leg_set_current_position_relative(FRONT_RIGHT, 0, 0, TIBIA_STEP);
 	leg_delay_ms(DELAY / 2);
@@ -108,22 +117,4 @@ void ripple_reset(){
 	leg_set_current_position_absolute(FRONT_LEFT, 0, COXA_NEUTRAL, TIBIA_LOWERED);
 	leg_set_current_position_absolute(REAR_RIGHT, 0, COXA_NEUTRAL, TIBIA_LOWERED);
 	leg_delay_ms(DELAY / 4);
-}
-
-void ripple_step(){
-	comm_read(&velocity, &direction, &special);
-	
-	if ((special & SPECIAL_RESET) && !(last_special & SPECIAL_RESET)){
-		ripple_reset();
-		last_special |= SPECIAL_RESET;
-	}
-	else if (velocity < -0.1 || velocity > 0.1 || direction < -0.1 || direction > 0.1) {
-		static uint8_t i = 0x00;
-		ripple_gait(gait_leg_order[i++]);
-		if (i >= LEG_COUNT) i = 0;
-		last_special &= ~SPECIAL_RESET;
-	}
-	else {
-		leg_delay_ms(DELAY);
-	}
 }

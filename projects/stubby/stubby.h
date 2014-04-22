@@ -7,7 +7,7 @@
 #define JOINT_COUNT	2
 
 #include "comm.h"
-#include "ripple.h"
+#include "gait.h"
 #include "servo.h"
 #include "leg.h"
 

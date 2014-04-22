@@ -1,7 +1,6 @@
-#ifndef HEX_RIPPLE
-#define HEX_RIPPLE
+#ifndef GAIT
+#define GAIT
 
-#define DELAY 		80
 #define COXA_STEP (COXA_FORWARD - COXA_REVERSE) / 5
 #define TIBIA_STEP	(TIBIA_RAISED - TIBIA_LOWERED)
 
@@ -10,8 +9,8 @@
 #include "comm.h"
 #include "leg.h"
 
-void ripple_step();
+void gait_step(double velocity, double direction);
 
-void ripple_gait_init();
+void gait_init();
 
 #endif
