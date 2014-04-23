@@ -29,7 +29,7 @@ while True:
 		else:
 			sys.stdout.write("Y = ")
 		sys.stdout.write(format(b & 0x1F, '#04x') + "\n")
-	elif (b & 0xF0) == 0xF0 or (b & 0xF0) == 0xE0:
+	elif (b & 0x40) == 0x00:	#Normal button press (i.e. not 'No buttons pressed' event)
 		sys.stdout.write("Button ")
 		button = b & 0x0F
 		if button == 0x00:
@@ -67,11 +67,11 @@ while True:
 
 		sys.stdout.write("(" + hex(button) + ") ")
 
-		if (b & 0xF0) == 0xF0:
+		if (b & 0x10) == 0x10:
 			sys.stdout.write("Pressed\n")
 		else:
 			sys.stdout.write("Released\n")
-	elif b == 0x80:
+	elif b == 0xC0: #No buttons pressed
 		sys.stdout.write("No buttons pressed\n")
 	else:
 		sys.stdout.write("Unknown command" + hex(b) + "\n")
