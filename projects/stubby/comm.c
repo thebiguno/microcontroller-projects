@@ -31,26 +31,28 @@ ISR(USART0_RX_vect){
 	uint8_t b = UDR0;
 	
 	//Button pressed - see what it is, and set the button press mask
-	if ((b & CONTROLLER_EVENT_MASK) == CONTROLLER_BUTTON_EVENT_PRESS){
-		if ((b & 0x0F)
-	}
-	else if ((b & CONTROLLER_EVENT_MASK) == CONTROLLER_BUTTON_EVENT_RELEASE){
-		button_press_mask &= ~_BV(b & 0x0F);
-	}
-	else if (b == 0x80){
-		button_press_mask = 0x00;
+	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_BUTTON){
+		if (b == CONTROLLER_BUTTON_NONE){
+			button_press_mask = 0x00;
+		}
+		else if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){
+			button_press_mask |= _BV(b & CONTROLLER_BUTTON_PRESS_MASK);
+		}
+		else if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_RELEASE){
+			button_press_mask &= ~_BV(b & CONTROLLER_BUTTON_PRESS_MASK);
+		}
 	}
 	
 	//Check for special buttons
-	if (button_press_mask & PSB_CROSS){
+	if (button_press_mask & _BV(CONTROLLER_BUTTON_CROSS)){
 		_special |= SPECIAL_RESET;
 	}
 
 	//Check for velocity buttons
-	if (button_press_mask & PSB_PAD_UP){
+	if (button_press_mask & _BV(CONTROLLER_BUTTON_PADUP)){
 		_velocity = 1;
 	}
-	else if (button_press_mask & PSB_PAD_DOWN){
+	else if (button_press_mask & _BV(CONTROLLER_BUTTON_PADDOWN)){
 		_velocity = -1;
 	}
 	else {
@@ -58,10 +60,10 @@ ISR(USART0_RX_vect){
 	}
 	
 	//Check for directional buttons
-	if (button_press_mask & PSB_R2){
+	if (button_press_mask & _BV(CONTROLLER_BUTTON_RIGHT2)){
 		_direction = 1;
 	}
-	else if (button_press_mask & PSB_L2){
+	else if (button_press_mask & _BV(CONTROLLER_BUTTON_LEFT2)){
 		_direction = -1;
 	}
 	else {
@@ -76,26 +78,30 @@ ISR(USART0_RX_vect){
 	}
 	
 /*
-	if ((b & 0xE0) == 0x00){		//Left stick X
-		uint8_t value = b & 0x1F;
-		if (value > 0x08 && value < 0x17) {
-			//Dead zone from 8 to 23 (i.e. 8 on either side of center).  This may be excessive; adjust as needed.
-			_direction = 0x00;
-		}
-		else {
-			//The PSX controller sends X=0 for all the way left; we want to translate this to -1 for left.
-			_direction = 1.0/15 * value - 1;
-		}
-	}
-	else if ((b & 0xE0) == 0x20){	//Left stick Y
-		uint8_t value = b & 0x1F;
-		if (value > 0x0A && value < 0x15) {
-			//Dead zone from 10 to 21 (i.e. 6 on either side of center).  This may be excessive; adjust as needed.
-			_velocity = 0x00;
-		}
-		else {
-			//The PSX controller sends X=0 for all the way forward; we want to translate this to 1 for forward.
-			_velocity = -1.0/15 * value + 1;
+	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_ANALOG){
+		if ((b & CONTROLLER_ANALOG_STICK) == CONTROLLER_ANALOG_STICK_LEFT){	//Left stick
+			if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_X){	//X Axis
+				uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
+				if (value > 0x08 && value < 0x17) {
+					//Dead zone from 8 to 23 (i.e. 8 on either side of center).  This may be excessive; adjust as needed.
+					_direction = 0x00;
+				}
+				else {
+					//The PSX controller sends X=0 for all the way left; we want to translate this to -1 for left.
+					_direction = 1.0/15 * value - 1;
+				}
+			}
+			else if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_Y){	//Y Axis
+				uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
+				if (value > 0x0A && value < 0x15) {
+					//Dead zone from 10 to 21 (i.e. 6 on either side of center).  This may be excessive; adjust as needed.
+					_velocity = 0x00;
+				}
+				else {
+					//The PSX controller sends X=0 for all the way forward; we want to translate this to 1 for forward.
+					_velocity = -1.0/15 * value + 1;
+				}
+			}
 		}
 	}
 */
