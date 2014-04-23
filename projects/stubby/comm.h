@@ -2,8 +2,9 @@
 #define HEX_COMM
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
-#include "lib/psx/psx.h"
+#include "lib/universal_controller/client.h"
 
 #define LEG_COUNT	6
 #define JOINT_COUNT	2
