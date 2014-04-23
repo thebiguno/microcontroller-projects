@@ -41,7 +41,7 @@ typedef struct leg_t {
 
 //The maximum angle which we can move away from zero.  If you try to set a value higher (lower 
 // for negatives) than this, we cap it at this value.
-#define MAX_ANGLE		1.6
+#define MAX_ANGLE		1.7
 
 //The time (millis) during which we pause in leg_delay_ms.
 #define DELAY_STEP		5
@@ -55,8 +55,8 @@ typedef struct leg_t {
 #define TIBIA_RAISED MAX_ANGLE
 //Position of nautral / forward / reverse coxa
 #define COXA_NEUTRAL 0
-#define COXA_FORWARD -1.2
-#define COXA_REVERSE 1.2
+#define COXA_FORWARD -MAX_ANGLE
+#define COXA_REVERSE MAX_ANGLE
 
 
 //Initialize memory for an array of legs.  By convention, the resulting array is ordered

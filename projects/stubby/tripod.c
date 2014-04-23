@@ -1,5 +1,5 @@
 #include "gait.h"
-#define DELAY 		60
+#define DELAY 		80
 
 /**
  * Take a tripod gait step with the specified index.
@@ -59,9 +59,9 @@ void gait_step(double velocity, double direction){
 	}
 	
 	//Lift tibia (z)
-	leg_set_current_position_relative(leg_a_0, 0, 0, TIBIA_RAISED);
-	leg_set_current_position_relative(leg_a_1, 0, 0, TIBIA_RAISED);
-	leg_set_current_position_relative(leg_a_2, 0, 0, TIBIA_RAISED);
+	leg_set_current_position_relative(leg_a_0, 0, 0, TIBIA_STEP);
+	leg_set_current_position_relative(leg_a_1, 0, 0, TIBIA_STEP);
+	leg_set_current_position_relative(leg_a_2, 0, 0, TIBIA_STEP);
 	leg_delay_ms(DELAY * 2);
 	
 	//Which leg are we controlling: right or left?
