@@ -40,24 +40,12 @@ ISR(USART0_RX_vect){
 		if ((b & CONTROLLER_ANALOG_STICK) == CONTROLLER_ANALOG_STICK_LEFT){	//Left stick
 			uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
 			if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_X){	//X Axis
-				if (value > 0x0C && value < 0x13) {
-					//Dead zone from 12 to 19 (i.e. 4 on either side of center).  This may be excessive; adjust as needed.
-					_direction = 0x00;
-				}
-				else {
-					//The PSX controller sends X=0 for all the way left; we want to translate this to -1 for left.
-					_direction = 1.0/15 * value - 1;
-				}
+				//The PSX controller sends X=0 for all the way left; we want to translate this to -1 for left.
+				_direction = 1.0/15 * value - 1;
 			}
 			else if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_Y){	//Y Axis
-				if (value > 0x0C && value < 0x13) {
-					//Dead zone from 12 to 19 (i.e. 4 on either side of center).  This may be excessive; adjust as needed.
-					_velocity = 0x00;
-				}
-				else {
-					//The PSX controller sends X=0 for all the way forward; we want to translate this to 1 for forward.
-					_velocity = -1.0/15 * value + 1;
-				}
+				//The PSX controller sends X=0 for all the way forward; we want to translate this to 1 for forward.
+				_velocity = -1.0/15 * value + 1;
 			}
 		}
 	}

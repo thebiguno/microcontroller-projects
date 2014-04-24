@@ -1,10 +1,13 @@
 #include "gait.h"
 #define DELAY 		80
 
+#define PRIMARY_CUTOFF 0.2
+#define SECONDARY_CUTOFF 0.2
+
 static inline double get_delay_multiplier(double measurement){
-	if (measurement >= 0.8) return 1;
-	else if (measurement >= 0.5) return 1.3;
-	else if (measurement >= 0.3) return 1.5;
+	if (fabs(measurement) >= 0.8) return 1;
+	else if (fabs(measurement) >= 0.5) return 1.3;
+	else if (fabs(measurement) >= 0.3) return 1.5;
 	else return 1.8;
 	
 }
@@ -25,29 +28,38 @@ void gait_step(double velocity, double direction){
 	double delay_multiplier;	//The larger the multiplier, the slower it goes
 	
 	//Base case - no direction component, velocity only.  Set each side to forward / backward motion
-	if (fabs(velocity) >= 0.1 && fabs(direction) < 0.1){
+	if (fabs(velocity) >= PRIMARY_CUTOFF && fabs(direction) < SECONDARY_CUTOFF){
 		left_direction = velocity;
 		right_direction = velocity;
 		
 		delay_multiplier = get_delay_multiplier(velocity);
 	}
-	//If there are both direction and velocity components, then still move forward / backward but veer.
-	else if (fabs(direction) >= 0.1 && fabs(velocity) >= 0.1){
+	//Velocity is greater than direction, but both are present
+	else if (fabs(velocity) >= PRIMARY_CUTOFF && fabs(direction) >= SECONDARY_CUTOFF && fabs(velocity) > fabs(direction)){
 		if (direction < 0) {	//Veer left
 			right_direction = velocity;
-			left_direction = velocity + direction;
-			
-			delay_multiplier = get_delay_multiplier(velocity);
+			left_direction = velocity + fmin(1, (direction * 2));
 		}
 		else {	//Veer right
-			right_direction = velocity - direction;
+			right_direction = velocity - fmin(1, (direction * 2));
 			left_direction = velocity;
-			
-			delay_multiplier = get_delay_multiplier(velocity);
 		}
+		delay_multiplier = get_delay_multiplier(velocity);
+	}
+	//Direction is greater than velocity, but both are present
+	else if (fabs(direction) >= PRIMARY_CUTOFF && fabs(velocity) >= SECONDARY_CUTOFF && fabs(direction) > fabs(velocity)){
+		if (velocity < 0) {	//Veer left
+			right_direction = direction * -1 + velocity;
+			left_direction = direction;
+		}
+		else {	//Veer right
+			right_direction = direction * -1 - velocity;
+			left_direction = direction;
+		}
+		delay_multiplier = get_delay_multiplier(direction);
 	}
 	//If there is only a direction component, then just turn in place.
-	else if (fabs(velocity) < 0.1 && fabs(direction) >= 0.1){
+	else if (fabs(direction) >= PRIMARY_CUTOFF && fabs(velocity) < SECONDARY_CUTOFF){
 		right_direction = direction * -1;
 		left_direction = direction;
 		
