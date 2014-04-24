@@ -75,6 +75,8 @@ void leg_init(){
 		leg_set_current_position_absolute(l, 0, 0, TIBIA_LOWERED);
 	}
 	
+	servo_apply_batch();
+	
 	leg_delay_ms(2000);
 }
 

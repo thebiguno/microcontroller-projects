@@ -37,5 +37,5 @@ void servo_init(){
 void servo_set_angle(uint8_t leg, uint8_t joint, double angle){
 	//Convert from angle to microseconds
 	//pwm_set_phase((leg * JOINT_COUNT) + joint, NEUTRAL + (legs[leg].offset[joint] * legs[leg].direction[joint]) + (angle * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL) * legs[leg].direction[joint]));
-	pwm_set_phase((leg * JOINT_COUNT) + joint, NEUTRAL + (angle * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL) * legs[leg].direction[joint]));
+	pwm_set_phase_batch((leg * JOINT_COUNT) + joint, NEUTRAL + (angle * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL) * legs[leg].direction[joint]));
 }

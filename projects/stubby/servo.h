@@ -24,5 +24,8 @@ void servo_init();
 
 void servo_set_angle(uint8_t leg, uint8_t joint, double angle);
 
-#endif
+inline void servo_apply_batch(){
+	pwm_apply_batch();
+}
 
+#endif
