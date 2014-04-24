@@ -193,11 +193,13 @@ static int16_t _compare_values(const void *pin1, const void *pin2){
 }
 
 void pwm_set_phase(uint8_t index, uint32_t phase){
-	_set_phase_lock = 1;
+	pwm_set_phase_batch(index, phase);
+	pwm_apply_batch();
+}
 
+void pwm_set_phase_batch(uint8_t index, uint32_t phase){
 	//Bounds checking
 	if (index >= _count) {
-		_set_phase_lock = 0;
 		return;
 	}
 	
@@ -205,15 +207,13 @@ void pwm_set_phase(uint8_t index, uint32_t phase){
 	uint16_t new_clicks = _pwm_micros_to_clicks(phase);
 	pwm_pin_t *p = &(_pwm_pins[index]);
 	
-	//If there is no change from the old compare value to the new value, just exit and return, unlocking the mutex first
-	if (p->compare_value == new_clicks){
-		_set_phase_lock = 0;
-		return;
-	}
-	
 	//Set the new compare value
 	p->compare_value = new_clicks;
-	
+}
+
+void pwm_apply_batch(){
+	_set_phase_lock = 1;
+
 	//Copy _pwm_pins to _pwm_pins_sorted, and then sort it by value
 	pwm_pin_t _pwm_pins_sorted[PWM_MAX_PINS];
 	for (uint8_t i = 0; i < _count; i++){
