@@ -1,6 +1,14 @@
 #include "gait.h"
 #define DELAY 		80
 
+static inline double get_delay_multiplier(double measurement){
+	if (measurement >= 0.8) return 1;
+	else if (measurement >= 0.5) return 1.3;
+	else if (measurement >= 0.3) return 1.5;
+	else return 1.8;
+	
+}
+
 /**
  * Take a tripod gait step with the specified index.
  */
@@ -14,27 +22,40 @@ void gait_step(double velocity, double direction){
 	//We control the direction of legs on each side based on the combination of velocity and direction values.
 	double left_direction;
 	double right_direction;
+	double delay_multiplier;	//The larger the multiplier, the slower it goes
 	
 	//Base case - no direction component, velocity only.  Set each side to forward / backward motion
-	if (fabs(direction) < 0.1){
+	if (fabs(velocity) >= 0.1 && fabs(direction) < 0.1){
 		left_direction = velocity;
 		right_direction = velocity;
+		
+		delay_multiplier = get_delay_multiplier(velocity);
 	}
 	//If there are both direction and velocity components, then still move forward / backward but veer.
 	else if (fabs(direction) >= 0.1 && fabs(velocity) >= 0.1){
 		if (direction < 0) {	//Veer left
 			right_direction = velocity;
 			left_direction = velocity + direction;
+			
+			delay_multiplier = get_delay_multiplier(velocity);
 		}
 		else {	//Veer right
 			right_direction = velocity - direction;
 			left_direction = velocity;
+			
+			delay_multiplier = get_delay_multiplier(velocity);
 		}
 	}
 	//If there is only a direction component, then just turn in place.
-	else {
+	else if (fabs(velocity) < 0.1 && fabs(direction) >= 0.1){
 		right_direction = direction * -1;
 		left_direction = direction;
+		
+		delay_multiplier = get_delay_multiplier(direction);
+	}
+	else {
+		//Everything is 0
+		return;
 	}
 	
 	//leg_a_X are the legs which are being lifted and moved; leg_b_X are the legs which move without lifting, thus propelling the robot.
@@ -62,7 +83,7 @@ void gait_step(double velocity, double direction){
 	leg_set_current_position_relative(leg_a_0, 0, 0, TIBIA_STEP);
 	leg_set_current_position_relative(leg_a_1, 0, 0, TIBIA_STEP);
 	leg_set_current_position_relative(leg_a_2, 0, 0, TIBIA_STEP);
-	leg_delay_ms(DELAY * 2);
+	leg_delay_ms(DELAY * 2 * delay_multiplier);
 	
 	//Which leg are we controlling: right or left?
 	double relevant_direction_a_0 = ((leg_a_0 & 0x01) == 0x00) ? left_direction : right_direction;
@@ -78,17 +99,19 @@ void gait_step(double velocity, double direction){
 	leg_set_current_position_absolute(leg_a_1, 0, relevant_direction_a_1 > 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_RAISED);
 	leg_set_current_position_absolute(leg_a_2, 0, relevant_direction_a_2 > 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_RAISED);
 	
-	//... while moving the other coxas back or forward by STEP.
-	leg_set_current_position_absolute(leg_b_0, 0, relevant_direction_b_0 < 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
-	leg_set_current_position_absolute(leg_b_1, 0, relevant_direction_b_1 < 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
-	leg_set_current_position_absolute(leg_b_2, 0, relevant_direction_b_2 < 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
-	leg_delay_ms(DELAY * 2);
+	//... while moving the other coxas back or forward; how much depends on velocity and direction.
+	// Here we assume that COXA_REVERSE == COXA_FORWARD * -1; in the event that this is not the case, you will
+	// have to handle each case separately.
+	leg_set_current_position_absolute(leg_b_0, 0, COXA_FORWARD * relevant_direction_b_0, TIBIA_LOWERED);
+	leg_set_current_position_absolute(leg_b_1, 0, COXA_FORWARD * relevant_direction_b_1, TIBIA_LOWERED);
+	leg_set_current_position_absolute(leg_b_2, 0, COXA_FORWARD * relevant_direction_b_2, TIBIA_LOWERED);
+	leg_delay_ms(DELAY * 2 * delay_multiplier);
 
 	//Drop tibia to neutral position
 	leg_set_current_position_absolute(leg_a_0, 0, relevant_direction_a_0 > 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
 	leg_set_current_position_absolute(leg_a_1, 0, relevant_direction_a_1 > 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
 	leg_set_current_position_absolute(leg_a_2, 0, relevant_direction_a_2 > 0 ? COXA_REVERSE : COXA_FORWARD, TIBIA_LOWERED);
-	leg_delay_ms(DELAY * 1);
+	leg_delay_ms(DELAY * 1 * delay_multiplier);
 }
 
 void gait_init(){

@@ -10,5 +10,6 @@
 #include "gait.h"
 #include "servo.h"
 #include "leg.h"
+#include "lib/serial/serial.h"
 
 #endif

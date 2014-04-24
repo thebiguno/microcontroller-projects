@@ -2,88 +2,46 @@
 
 static volatile double _velocity; 	//0 is stopped, 1 is full speed ahead
 static volatile double _direction;	//0 is straight ahead, -1 is full left, 1 is full right
-static volatile uint8_t _special;	//Special behaviours; set bits for each
+static volatile uint8_t _special;	//Special behaviours; set bits for each.  This message is only read once, then discarded.
+static volatile uint8_t _new_message;	//0 is normal, non-zero is message waiting
 
 void comm_init(){
 	serial_init_b(38400);
+}
+
+uint8_t comm_available(){
+	return _new_message;
 }
 
 void comm_read(double *velocity, double *direction, uint8_t *special){
 	*velocity = _velocity;
 	*direction = _direction;
 	*special = _special;
+	
+	_special = 0x00;	//Once we read this once, we discard it.
+	
+	_new_message = 0x00;	//We have read this message
 }
 
 void _serial_init_rx(){
 	//Enable RX interrupts
 	UCSR0B |= _BV(RXCIE0);
 	
-	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
-#ifndef NO_INTERRUPT_ENABLE
+	//Enable interrupts
 	sei();
-#endif	
 }
 
 ISR(USART0_RX_vect){
 	sei();	//We want PWM to continue uninterrupted while processing serial data
-	static uint8_t button_press_mask = 0x00;
 	
 	uint8_t b = UDR0;
-	
-	//Button pressed - see what it is, and set the button press mask
-	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_BUTTON){
-		if (b == CONTROLLER_BUTTON_NONE){
-			button_press_mask = 0x00;
-		}
-		else if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){
-			button_press_mask |= _BV(b & CONTROLLER_BUTTON_PRESS_MASK);
-		}
-		else if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_RELEASE){
-			button_press_mask &= ~_BV(b & CONTROLLER_BUTTON_PRESS_MASK);
-		}
-	}
-	
-	//Check for special buttons
-	if (button_press_mask & _BV(CONTROLLER_BUTTON_CROSS)){
-		_special |= SPECIAL_RESET;
-	}
 
-	//Check for velocity buttons
-	if (button_press_mask & _BV(CONTROLLER_BUTTON_PADUP)){
-		_velocity = 1;
-	}
-	else if (button_press_mask & _BV(CONTROLLER_BUTTON_PADDOWN)){
-		_velocity = -1;
-	}
-	else {
-		//_velocity = 0;
-	}
-	
-	//Check for directional buttons
-	if (button_press_mask & _BV(CONTROLLER_BUTTON_RIGHT2)){
-		_direction = 1;
-	}
-	else if (button_press_mask & _BV(CONTROLLER_BUTTON_LEFT2)){
-		_direction = -1;
-	}
-	else {
-		//_direction = 0;
-	}
-	
-	//Reset everything if applicable
-	if (button_press_mask == 0x00){
-		_velocity = 0;
-		_direction = 0;
-		_special = 0;
-	}
-	
-/*
-	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_ANALOG){
+	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_ANALOG){	//Analog stick event
 		if ((b & CONTROLLER_ANALOG_STICK) == CONTROLLER_ANALOG_STICK_LEFT){	//Left stick
+			uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
 			if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_X){	//X Axis
-				uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
-				if (value > 0x08 && value < 0x17) {
-					//Dead zone from 8 to 23 (i.e. 8 on either side of center).  This may be excessive; adjust as needed.
+				if (value > 0x0C && value < 0x13) {
+					//Dead zone from 12 to 19 (i.e. 4 on either side of center).  This may be excessive; adjust as needed.
 					_direction = 0x00;
 				}
 				else {
@@ -92,9 +50,8 @@ ISR(USART0_RX_vect){
 				}
 			}
 			else if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_Y){	//Y Axis
-				uint8_t value = b & CONTROLLER_ANALOG_VALUE_MASK;
-				if (value > 0x0A && value < 0x15) {
-					//Dead zone from 10 to 21 (i.e. 6 on either side of center).  This may be excessive; adjust as needed.
+				if (value > 0x0C && value < 0x13) {
+					//Dead zone from 12 to 19 (i.e. 4 on either side of center).  This may be excessive; adjust as needed.
 					_velocity = 0x00;
 				}
 				else {
@@ -104,5 +61,11 @@ ISR(USART0_RX_vect){
 			}
 		}
 	}
-*/
+	else if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_BUTTON){	//Digital button event
+		if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){
+			if ((b & CONTROLLER_BUTTON_VALUE_MASK) == CONTROLLER_BUTTON_VALUE_CROSS) _special |= SPECIAL_RESET;
+		}
+	}
+
+	_new_message = 0x01;
 }

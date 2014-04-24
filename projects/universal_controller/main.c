@@ -34,7 +34,7 @@
  *  Digital button message:
  *  Bit 7      : 0 == Normal button press / release event, 1 == No Buttons Pressed event.
  *               When bit 7 is 1, the remainder of the message is ignored.  By convention
- *               we fill buts 6::1 with zeros in this state, meaning that the 'Not button
+ *               we fill buts 6::1 with zeros in this state, meaning that the 'No button
  *               pressed' message will always be 0xC0.
  *  Bit 6      : Unused, set to 0
  *  Bit 5      : 0 = Released, 1 = Pressed

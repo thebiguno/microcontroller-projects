@@ -13,7 +13,7 @@ ser = serial.Serial(sys.argv[1], sys.argv[2])
 sleep(1);
 
 #ser.write(chr(0x41))	#Enable analog sticks
-ser.write(chr(0x80))	#Disable button polling
+#ser.write(chr(0x80))	#Disable button polling
 
 while True:
 	b = ord(ser.read())

@@ -15,6 +15,14 @@
 
 void comm_init();
 
+/**
+ * If the result is non-zero, there is a message waiting.  Do not call comm_read() unless this is non-zero.
+ */
+uint8_t comm_available();
+
+/**
+ * Set the velocity, direction, and special values into the provided variables.
+ */
 void comm_read(double *velocity, double *direction, uint8_t *special);
 
 #endif
