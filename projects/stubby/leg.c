@@ -2,17 +2,37 @@
 
 extern leg_t legs[LEG_COUNT];
 
-#define bounds_check_current() \
-	if (legs[leg].current[COXA] < -MAX_ANGLE) legs[leg].current[COXA] = -MAX_ANGLE; \
-	else if (legs[leg].current[COXA] > MAX_ANGLE) legs[leg].current[COXA] = MAX_ANGLE; \
-	if (legs[leg].current[TIBIA] < -MAX_ANGLE) legs[leg].current[TIBIA] = -MAX_ANGLE; \
-	else if (legs[leg].current[TIBIA] > MAX_ANGLE) legs[leg].current[TIBIA] = MAX_ANGLE
+static inline void bounds_check_current(uint8_t leg){
+	if (legs[leg].current[COXA] < -MAX_ANGLE) legs[leg].current[COXA] = -MAX_ANGLE; 
+	else if (legs[leg].current[COXA] > MAX_ANGLE) legs[leg].current[COXA] = MAX_ANGLE;
+	if (legs[leg].current[TIBIA] < -MAX_ANGLE) legs[leg].current[TIBIA] = -MAX_ANGLE;
+	else if (legs[leg].current[TIBIA] > MAX_ANGLE) legs[leg].current[TIBIA] = MAX_ANGLE;
+}
 
-#define bounds_check_desired() \
-	if (legs[leg].desired[COXA] < -MAX_ANGLE) legs[leg].desired[COXA] = -MAX_ANGLE; \
-	else if (legs[leg].desired[COXA] > MAX_ANGLE) legs[leg].desired[COXA] = MAX_ANGLE; \
-	if (legs[leg].desired[TIBIA] < -MAX_ANGLE) legs[leg].desired[TIBIA] = -MAX_ANGLE; \
-	else if (legs[leg].desired[TIBIA] > MAX_ANGLE) legs[leg].desired[TIBIA] = MAX_ANGLE
+static inline void bounds_check_desired(uint8_t leg){
+	if (legs[leg].desired[COXA] < -MAX_ANGLE) legs[leg].desired[COXA] = -MAX_ANGLE;
+	else if (legs[leg].desired[COXA] > MAX_ANGLE) legs[leg].desired[COXA] = MAX_ANGLE;
+	if (legs[leg].desired[TIBIA] < -MAX_ANGLE) legs[leg].desired[TIBIA] = -MAX_ANGLE;
+	else if (legs[leg].desired[TIBIA] > MAX_ANGLE) legs[leg].desired[TIBIA] = MAX_ANGLE;
+}
+
+static inline void update_current_position(uint8_t leg){
+	//By setting current directly, we implicitly also set desired.
+	for (uint8_t j = 0; j < JOINT_COUNT; j++){
+		legs[leg].desired[j] = legs[leg].current[j];
+		servo_set_angle(leg, j, legs[leg].current[j]);
+	}
+}
+
+static inline void update_desired_position(uint8_t leg, uint16_t millis){
+	if (millis == 0) millis = 1;
+	for (uint8_t j = 0; j < JOINT_COUNT; j++){
+		legs[leg].step[j] = fabs(legs[leg].current[j] - legs[leg].desired[j]) / millis * DELAY_STEP;
+		if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
+	}
+}
+
+
 
 
 void leg_init(){
@@ -89,54 +109,38 @@ void leg_delay_ms(uint16_t millis){
 	}
 }
 
-inline void _update_current_position(uint8_t leg){
-	//By setting current directly, we implicitly also set desired.
-	for (uint8_t j = 0; j < JOINT_COUNT; j++){
-		legs[leg].desired[j] = legs[leg].current[j];
-		servo_set_angle(leg, j, legs[leg].current[j]);
-	}	
-}
-
 void leg_set_current_position_absolute(uint8_t leg, double x, double y, double z){
 	legs[leg].current[COXA] = y;
 	legs[leg].current[TIBIA] = z;
 	
-	bounds_check_current();
+	bounds_check_current(leg);
 	
-	_update_current_position(leg);
+	update_current_position(leg);
 }
 
 void leg_set_current_position_relative(uint8_t leg, double x, double y, double z){
 	legs[leg].current[COXA] = legs[leg].current[COXA] + y;
 	legs[leg].current[TIBIA] = legs[leg].current[TIBIA] + z;
 
-	bounds_check_current();
+	bounds_check_current(leg);
 
-	_update_current_position(leg);
-}
-
-inline void _update_desired_position(uint8_t leg, uint16_t millis){
-	if (millis == 0) millis = 1;
-	for (uint8_t j = 0; j < JOINT_COUNT; j++){
-		legs[leg].step[j] = fabs(legs[leg].current[j] - legs[leg].desired[j]) / millis * DELAY_STEP;
-		if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
-	}
+	update_current_position(leg);
 }
 
 void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = y;
 	legs[leg].desired[TIBIA] = z;
 
-	bounds_check_desired();
+	bounds_check_desired(leg);
 	
-	_update_desired_position(leg, millis);
+	update_desired_position(leg, millis);
 }
 
 void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, uint16_t millis){
 	legs[leg].desired[COXA] = legs[leg].desired[COXA] + y;
 	legs[leg].desired[TIBIA] = legs[leg].desired[TIBIA] + z;
 	
-	bounds_check_desired();
+	bounds_check_desired(leg);
 	
-	_update_desired_position(leg, millis);
+	update_desired_position(leg, millis);
 }
