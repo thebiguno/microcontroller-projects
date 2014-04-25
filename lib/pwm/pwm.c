@@ -17,20 +17,21 @@ typedef struct pwm_event_t {
 	uint16_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
 } pwm_event_t;
 
-static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is updated
+static uint8_t _set_phase_batch = 0;							//Set to 1 when set_phase_batch is called with a changed value.
+static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is re-calculated; signals that the ISR COMPA needs to re-load phase values.
 static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCRA from copying the double buffered pwm_events when this is 0.
 
 static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCRA in changed in COMPA interrupt
 
 //Variables used to store config data
-static pwm_pin_t _pwm_pins[PWM_MAX_PINS];				//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
+static pwm_pin_t _pwm_pins[PWM_MAX_PINS];						//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
 static uint8_t _count;											//How many pins should be used
 
-static pwm_event_t _pwm_event_high;						//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
-static pwm_event_t _pwm_event_high_new;					//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
+static pwm_event_t _pwm_event_high;								//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
+static pwm_event_t _pwm_event_high_new;							//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
 
-static pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];	//Array of pwm events.  Each event will set one or more pins low.
-static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
+static pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];			//Array of pwm events.  Each event will set one or more pins low.
+static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];		//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
 static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
 
 static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for _pwm_micros_to_clicks calls.
@@ -206,12 +207,19 @@ void pwm_set_phase_batch(uint8_t index, uint32_t phase){
 	//The new compare value, in clock ticks
 	uint16_t new_clicks = _pwm_micros_to_clicks(phase);
 	pwm_pin_t *p = &(_pwm_pins[index]);
-	
+
+	if (p->compare_value != new_clicks){
+		_set_phase_batch = 1;
+	}
 	//Set the new compare value
 	p->compare_value = new_clicks;
 }
 
 void pwm_apply_batch(){
+	if (_set_phase_batch == 0){
+		return;	//No need to re-calculate if there was no changed phases.
+	}
+	
 	_set_phase_lock = 1;
 
 	//Copy _pwm_pins to _pwm_pins_sorted, and then sort it by value
@@ -267,6 +275,8 @@ void pwm_apply_batch(){
 		}
 	}
 
+	_set_phase_batch = 0;
+
 	//Signal OCRA that we are ready to load new values
 	_set_phase = 1;
 	_set_phase_lock = 0;
@@ -288,9 +298,6 @@ ISR(TIM0_COMPA_vect){
 EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 #endif
-	//Reset counter
-	TCNT = 0;	
-
 	//Update values if needed
 	if (_set_phase && !_set_phase_lock){
 		for (uint8_t i = 0; i < _count; i++){
@@ -303,8 +310,12 @@ ISR(TIMER1_COMPA_vect){
 		OCRA = _set_period;
 		_set_period = 0;
 	}
+	//Reset counter after the new compare values are updated (otherwise it affects the phase 
+	// of the next execution, causing jitter).
+	TCNT = 0;	
 	
-	//Set to the first (sorted) compare value in the pwm_events_low array.  This is populated in set_phase.
+	//Set to the first (sorted) compare value in the pwm_events_low array.  This is calculated 
+	// in pwm_apply_batch(), and updated above in this ISR.
 	_pwm_events_low_index = 0;
 	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
 	
