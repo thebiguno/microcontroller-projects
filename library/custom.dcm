@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sunday, April 06, 2014 'amt' 12:58:51 am
+EESchema-DOCLIB  Version 2.0  Date: Friday, April 25, 2014 'pmt' 02:47:12 pm
 #
 $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
@@ -7,6 +7,11 @@ $ENDCMP
 $CMP MC34063A
 D Peak Boost Buck Inverting Switching Regulator
 K Buck, Power
+$ENDCMP
+#
+$CMP RGB_LED
+D RGB LED (Common Cathode)
+K RGB_LED
 $ENDCMP
 #
 $CMP STPIC6D595
