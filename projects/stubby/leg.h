@@ -45,8 +45,9 @@ typedef struct leg_t {
 // for negatives) than this, we cap it at this value.
 #define MAX_ANGLE		1.7
 
-//The time (millis) during which we pause in leg_delay_ms.
-#define DELAY_STEP		5
+//The time (millis) during which we pause in leg_delay_ms.  It really doesn't make sense to set
+// this any lower than the PWM period of 20ms.
+#define DELAY_STEP		20
 
 //The minimum allowable step (in radians).  Also the bottom edge of angular resolution available when 
 // setting desired position (once the error falls below this, we consider it 'good enough').
