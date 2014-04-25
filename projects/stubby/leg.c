@@ -77,7 +77,7 @@ void leg_init(){
 	
 	servo_apply_batch();
 	
-	leg_delay_ms(2000);
+	leg_delay_ms(100);
 }
 
 void leg_delay_ms(uint16_t millis){
