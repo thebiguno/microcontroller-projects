@@ -13,7 +13,9 @@ typedef struct leg_t {
 	volatile uint8_t *port[JOINT_COUNT];
 	uint8_t pin[JOINT_COUNT];
 
-	int16_t offset[JOINT_COUNT];
+	//int16_t offset[JOINT_COUNT];
+	//Either 1 or -1; this depends on which side of the robot the leg is on, 
+	// and how the servo is mounted.  Set in servo_init().
 	int8_t direction[JOINT_COUNT];
 	
 	//The current angle in radians
