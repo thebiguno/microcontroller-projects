@@ -27,8 +27,10 @@ static inline void update_current_position(uint8_t leg){
 static inline void update_desired_position(uint8_t leg, uint16_t millis){
 	if (millis == 0) millis = 1;
 	for (uint8_t j = 0; j < JOINT_COUNT; j++){
-		legs[leg].step[j] = fabs(legs[leg].current[j] - legs[leg].desired[j]) / millis * DELAY_STEP;
-		if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
+		double difference = fabs(legs[leg].current[j] - legs[leg].desired[j]);
+		legs[leg].step[j] = difference / millis * DELAY_STEP;
+		if (legs[leg].step[j] > difference) legs[leg].step[j] = difference;
+		else if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
 	}
 }
 
@@ -107,6 +109,7 @@ void leg_delay_ms(uint16_t millis){
 			}
 		}
 		
+		servo_apply_batch();
 		_delay_ms(DELAY_STEP);
 	}
 }
