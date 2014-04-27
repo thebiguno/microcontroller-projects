@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sunday, April 06, 2014 'amt' 12:58:51 am
+EESchema-DOCLIB  Version 2.0  Date: Sun 27 Apr 2014 03:52:59 PM MDT
 #
 $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
@@ -12,6 +12,11 @@ $ENDCMP
 $CMP STPIC6D595
 D Shift Register / Open Drain
 K shift
+$ENDCMP
+#
+$CMP TB6552FNG
+D Motor Controller, Full H-Bridge x2
+K Motor, Bridge, H-Bridge
 $ENDCMP
 #
 #End Doc Library
