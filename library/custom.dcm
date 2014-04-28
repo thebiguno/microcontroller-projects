@@ -1,4 +1,19 @@
-EESchema-DOCLIB  Version 2.0  Date: Friday, April 25, 2014 'pmt' 02:47:12 pm
+EESchema-DOCLIB  Version 2.0  Date: Sun 27 Apr 2014 08:12:55 PM MDT
+#
+$CMP CRYSTAL_RESONATOR
+D Either a Crystal with external caps, or a resonator with built in caps
+K CRYSTAL RESONATOR
+$ENDCMP
+#
+$CMP DPDT
+D DPDT Switch (e.g. GW22LCP)
+K GW22LCP, DPDT
+$ENDCMP
+#
+$CMP ISP
+D ISP Header
+K ISP HEADER
+$ENDCMP
 #
 $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
