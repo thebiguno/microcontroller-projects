@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Sun 27 Apr 2014 08:14:51 PM MDT
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Mon 28 Apr 2014 07:59:17 PM MDT
 
 BeginCmp
 TimeStamp = /535D906F;
@@ -29,6 +29,90 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
+TimeStamp = /535F0C66;
+Reference = C5;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F0E90;
+Reference = C6;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F1179;
+Reference = C7;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F119C;
+Reference = C8;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11BF;
+Reference = C9;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11E2;
+Reference = C10;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F0C7D;
+Reference = C11;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F0E96;
+Reference = C12;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F117F;
+Reference = C13;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11A2;
+Reference = C14;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11C5;
+Reference = C15;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11E8;
+Reference = C16;
+ValeurCmp = 0.1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
 TimeStamp = /535D7D65;
 Reference = IC1;
 ValeurCmp = ATMEGA168-P;
@@ -50,29 +134,43 @@ IdModule  = ISP;
 EndCmp
 
 BeginCmp
-TimeStamp = /535DA6FC;
+TimeStamp = /535F0C4D;
 Reference = P3;
 ValeurCmp = CONN_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /535DA709;
+TimeStamp = /535F0E8A;
 Reference = P4;
 ValeurCmp = CONN_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /535DA70F;
+TimeStamp = /535F1173;
 Reference = P5;
 ValeurCmp = CONN_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /535DA715;
+TimeStamp = /535F1196;
 Reference = P6;
+ValeurCmp = CONN_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11B9;
+Reference = P7;
+ValeurCmp = CONN_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F11DC;
+Reference = P8;
 ValeurCmp = CONN_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
@@ -85,17 +183,24 @@ IdModule  = DPDT;
 EndCmp
 
 BeginCmp
-TimeStamp = /535D7D50;
+TimeStamp = /535F06B3;
 Reference = U1;
-ValeurCmp = TB6552FNG;
-IdModule  = ssop-16;
+ValeurCmp = L293D;
+IdModule  = DIP-16__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /535D7D5D;
+TimeStamp = /535F06D0;
 Reference = U2;
-ValeurCmp = TB6552FNG;
-IdModule  = ssop-16;
+ValeurCmp = L293D;
+IdModule  = DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /535F06DB;
+Reference = U3;
+ValeurCmp = L293D;
+IdModule  = DIP-16__300;
 EndCmp
 
 BeginCmp

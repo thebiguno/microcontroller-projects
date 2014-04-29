@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 27 Apr 2014 08:02:40 PM MDT
+EESchema-DOCLIB  Version 2.0  Date: Mon 28 Apr 2014 07:37:11 PM MDT
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -13,6 +13,11 @@ $ENDCMP
 $CMP ISP
 D ISP Header
 K ISP HEADER
+$ENDCMP
+#
+$CMP L293D
+D L293D Quad Half Bridge
+K MOTOR DRIVER HALF BRIDGE
 $ENDCMP
 #
 $CMP LE-MM103
