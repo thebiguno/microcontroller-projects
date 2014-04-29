@@ -30,7 +30,6 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:motor-driver-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
@@ -104,26 +103,18 @@ Wire Wire Line
 	5700 4300 6550 4300
 Wire Wire Line
 	6550 4400 5700 4400
-Text Label 5800 2100 0    60   ~ 0
+Text Label 5800 3450 0    60   ~ 0
 MOTOR1_1A
-Text Label 5800 2300 0    60   ~ 0
+Text Label 5800 3150 0    60   ~ 0
 MOTOR2_3A
-Text Label 5800 2950 0    60   ~ 0
+Text Label 5800 3350 0    60   ~ 0
 MOTOR1_2A
-Text Label 5800 2200 0    60   ~ 0
+Text Label 5800 3250 0    60   ~ 0
 MOTOR2_4A
 Text Label 5800 3050 0    60   ~ 0
 MOTOR3_1A
-Text Label 5800 3150 0    60   ~ 0
+Text Label 5800 2100 0    60   ~ 0
 MOTOR3_2A
-Text Label 5800 4100 0    60   ~ 0
-MOTOR5_1A
-Text Label 5800 4200 0    60   ~ 0
-MOTOR5_2A
-Text Label 5800 4300 0    60   ~ 0
-MOTOR6_3A
-Text Label 5800 4400 0    60   ~ 0
-MOTOR6_4A
 Entry Wire Line
 	6650 1650 6750 1750
 Entry Wire Line
@@ -477,9 +468,9 @@ Wire Wire Line
 	5700 3250 6550 3250
 Wire Wire Line
 	6550 3350 5700 3350
-Text Label 5800 3250 0    60   ~ 0
+Text Label 5800 2200 0    60   ~ 0
 MOTOR4_3A
-Text Label 5800 4000 0    60   ~ 0
+Text Label 5800 2300 0    60   ~ 0
 MOTOR4_4A
 Wire Wire Line
 	7550 1650 6750 1650
@@ -974,4 +965,21 @@ Text Label 1350 2700 0    60   ~ 0
 VREG_OUT
 Text Label 1300 2600 0    60   ~ 0
 VREG_IN
+Entry Wire Line
+	6550 3450 6650 3550
+Wire Wire Line
+	6550 3450 5700 3450
+$Comp
+L +5V #PWR031
+U 1 1 535FCD50
+P 1800 2700
+F 0 "#PWR031" H 1800 2790 20  0001 C CNN
+F 1 "+5V" H 1800 2790 30  0000 C CNN
+F 2 "" H 1800 2700 60  0000 C CNN
+F 3 "" H 1800 2700 60  0000 C CNN
+	1    1800 2700
+	0    1    1    0   
+$EndComp
+Text Label 3000 5000 0    60   ~ 0
+PROG_VCC
 $EndSCHEMATC
