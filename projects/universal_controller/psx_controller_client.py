@@ -12,9 +12,6 @@ ser = serial.Serial(sys.argv[1], sys.argv[2])
 
 sleep(1);
 
-#ser.write(chr(0x41))	#Enable analog sticks
-#ser.write(chr(0x80))	#Disable button polling
-
 while True:
 	b = ord(ser.read())
 
@@ -28,7 +25,7 @@ while True:
 			sys.stdout.write("X = ")
 		else:
 			sys.stdout.write("Y = ")
-		sys.stdout.write(format(b & 0x1F, '#04x') + "\n")
+		sys.stdout.write(format(b & 0x1F, '#04x'))
 	elif (b & 0x40) == 0x00:	#Normal button press (i.e. not 'No buttons pressed' event)
 		sys.stdout.write("Button ")
 		button = b & 0x0F
@@ -68,11 +65,16 @@ while True:
 		sys.stdout.write("(" + hex(button) + ") ")
 
 		if (b & 0x10) == 0x10:
-			sys.stdout.write("Pressed\n")
+			sys.stdout.write("Pressed")
 		else:
-			sys.stdout.write("Released\n")
+			sys.stdout.write("Released")
 	elif b == 0xC0: #No buttons pressed
-		sys.stdout.write("No buttons pressed\n")
+		sys.stdout.write("No buttons pressed")
 	else:
-		sys.stdout.write("Unknown command" + hex(b) + "\n")
+		sys.stdout.write("Unknown command")
+	sys.stdout.write(" (" + hex(b) + ")\n");
+
+	ser.write(chr(0x41))	#Enable analog sticks
+	ser.write(chr(0xFF))	#Analog repeat of about 32ms
+
 
