@@ -18,7 +18,7 @@ int main (void){
 			special_allowed = 0x00;
 		}
 		else if (velocity < -0.5 || velocity > 0.5 || direction < -0.5 || direction > 0.5) {
-			gait_step();
+			tripod_gait_step();
 			special_allowed = 0x01;
 			comm_reset_special();
 		}
