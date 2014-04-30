@@ -1,70 +1,70 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Mon 28 Apr 2014 07:59:17 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, April 30, 2014 'pmt' 04:52:58 pm
 
 BeginCmp
-TimeStamp = /535D906F;
+TimeStamp = /53617B21;
 Reference = C1;
-ValeurCmp = C;
+ValeurCmp = 1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /53617B1B;
+Reference = C2;
+ValeurCmp = 1uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /535D907C;
-Reference = C2;
-ValeurCmp = C;
+Reference = C3;
+ValeurCmp = 1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /535D906F;
+Reference = C4;
+ValeurCmp = 1uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /535DA64B;
-Reference = C3;
-ValeurCmp = C;
+Reference = C5;
+ValeurCmp = 20pF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /535DA63E;
-Reference = C4;
-ValeurCmp = C;
+Reference = C6;
+ValeurCmp = 20pF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F0C66;
-Reference = C5;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /535F0E90;
-Reference = C6;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /535F1179;
 Reference = C7;
 ValeurCmp = 0.1uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F119C;
+TimeStamp = /535F0E90;
 Reference = C8;
 ValeurCmp = 0.1uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F11BF;
+TimeStamp = /535F1179;
 Reference = C9;
 ValeurCmp = 0.1uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F11E2;
+TimeStamp = /535F119C;
 Reference = C10;
 ValeurCmp = 0.1uF;
 IdModule  = SM0805;
@@ -99,17 +99,10 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F11C5;
-Reference = C15;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /535F11E8;
-Reference = C16;
-ValeurCmp = 0.1uF;
-IdModule  = SM0805;
+TimeStamp = /53618883;
+Reference = D1;
+ValeurCmp = ZENER;
+IdModule  = sot23;
 EndCmp
 
 BeginCmp
@@ -162,17 +155,10 @@ IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F11B9;
-Reference = P7;
-ValeurCmp = CONN_2;
-IdModule  = SCREW_TERMINAL_2;
-EndCmp
-
-BeginCmp
-TimeStamp = /535F11DC;
-Reference = P8;
-ValeurCmp = CONN_2;
-IdModule  = SCREW_TERMINAL_2;
+TimeStamp = /536187EA;
+Reference = R1;
+ValeurCmp = R;
+IdModule  = SM0805;
 EndCmp
 
 BeginCmp
@@ -197,15 +183,15 @@ IdModule  = DIP-16__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /535F06DB;
-Reference = U3;
-ValeurCmp = L293D;
-IdModule  = DIP-16__300;
+TimeStamp = /53617AFD;
+Reference = VR1;
+ValeurCmp = MCP1702;
+IdModule  = TO92;
 EndCmp
 
 BeginCmp
 TimeStamp = /535D9051;
-Reference = VR1;
+Reference = VR2;
 ValeurCmp = MCP1702;
 IdModule  = TO92;
 EndCmp
@@ -215,6 +201,13 @@ TimeStamp = /535DB83E;
 Reference = X1;
 ValeurCmp = CRYSTAL_RESONATOR;
 IdModule  = CRYSTAL_RESONATOR;
+EndCmp
+
+BeginCmp
+TimeStamp = /53618198;
+Reference = X2;
+ValeurCmp = XBEE;
+IdModule  = XBEE_SPARKFUN_BREAKOUT;
 EndCmp
 
 EndListe
