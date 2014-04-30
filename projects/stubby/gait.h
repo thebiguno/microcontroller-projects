@@ -9,7 +9,7 @@
 #include "comm.h"
 #include "leg.h"
 
-void gait_step(double velocity, double direction);
+void gait_step();
 
 void gait_init();
 

@@ -1,26 +1,48 @@
 #include "comm.h"
 
-static volatile double _velocity; 	//0 is stopped, 1 is full speed ahead
-static volatile double _direction;	//0 is straight ahead, -1 is full left, 1 is full right
-static volatile uint8_t _special;	//Special behaviours; set bits for each.  This message is only read once, then discarded.
-static volatile uint8_t _new_message;	//0 is normal, non-zero is message waiting
+static volatile double _velocity = 0; 	//0 is stopped, 1 is full speed ahead
+static volatile double _direction = 0;	//0 is straight ahead, -1 is full left, 1 is full right
+static volatile uint8_t _special = 0x00;	//Bit mask of any special buttons pressed.  Bits are cleared when read.
 
 void comm_init(){
 	serial_init_b(38400);
 }
 
-uint8_t comm_available(){
-	return _new_message;
+void comm_reset_special(){
+		_special = 0x00;
 }
 
-void comm_read(double *velocity, double *direction, uint8_t *special){
+uint8_t comm_read_reset(){
+	if (_special & SPECIAL_RESET){
+		_special &= ~0x01;
+		return 0x01;
+	}
+	return 0x00;
+}
+
+void comm_read(double *velocity, double *direction){
+	//Whenever this gets to a certain value, we invalidate all current messages.  On receipt of new message, we reset to 0.
+	static uint8_t repeat_counter = 0x00;
+	repeat_counter++;
+	if (repeat_counter >= 0xFF){
+		_velocity = 0;
+		_direction = 0;
+		repeat_counter = 0x00;
+	}
+	
+	//Every few seconds we will send these controller init messages.
+	static uint8_t controller_init = 0x00;		//Whenever this resets to 0, we re-send controler init messages
+	controller_init++;
+	if (controller_init >= 0xFF){
+		serial_write_b(0x41);	//Enable analog sticks
+		serial_write_b(0xFF);	//Set an analog repeat time of about 32ms.
+		controller_init = 0x00;
+	}
+	
+
+	
 	*velocity = _velocity;
 	*direction = _direction;
-	*special = _special;
-	
-	_special = 0x00;	//Once we read this once, we discard it.
-	
-	_new_message = 0x00;	//We have read this message
 }
 
 void _serial_init_rx(){
@@ -54,6 +76,4 @@ ISR(USART0_RX_vect){
 			if ((b & CONTROLLER_BUTTON_VALUE_MASK) == CONTROLLER_BUTTON_VALUE_CROSS) _special |= SPECIAL_RESET;
 		}
 	}
-
-	_new_message = 0x01;
 }
