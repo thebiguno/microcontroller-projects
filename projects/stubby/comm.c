@@ -14,7 +14,7 @@ void comm_reset_special(){
 
 uint8_t comm_read_reset(){
 	if (_special & SPECIAL_RESET){
-		_special &= ~0x01;
+		_special &= ~SPECIAL_RESET;
 		return 0x01;
 	}
 	return 0x00;
