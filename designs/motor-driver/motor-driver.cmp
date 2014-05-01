@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, April 30, 2014 'pmt' 04:52:58 pm
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Wed 30 Apr 2014 08:49:18 PM MDT
 
 BeginCmp
 TimeStamp = /53617B21;
@@ -101,8 +101,15 @@ EndCmp
 BeginCmp
 TimeStamp = /53618883;
 Reference = D1;
-ValeurCmp = ZENER;
+ValeurCmp = ZD 3v3;
 IdModule  = sot23;
+EndCmp
+
+BeginCmp
+TimeStamp = /5361B952;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = LED-5MM;
 EndCmp
 
 BeginCmp
@@ -155,9 +162,23 @@ IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
+TimeStamp = /5361AF2D;
+Reference = P7;
+ValeurCmp = CONN_7;
+IdModule  = PIN_ARRAY_7x1;
+EndCmp
+
+BeginCmp
 TimeStamp = /536187EA;
 Reference = R1;
-ValeurCmp = R;
+ValeurCmp = 1k;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5361B961;
+Reference = R2;
+ValeurCmp = 1k;
 IdModule  = SM0805;
 EndCmp
 
@@ -186,14 +207,14 @@ BeginCmp
 TimeStamp = /53617AFD;
 Reference = VR1;
 ValeurCmp = MCP1702;
-IdModule  = TO92;
+IdModule  = TO92_SMALL;
 EndCmp
 
 BeginCmp
 TimeStamp = /535D9051;
 Reference = VR2;
 ValeurCmp = MCP1702;
-IdModule  = TO92;
+IdModule  = TO92_SMALL;
 EndCmp
 
 BeginCmp
