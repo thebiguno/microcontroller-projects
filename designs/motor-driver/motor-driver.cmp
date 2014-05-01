@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Wed 30 Apr 2014 08:49:18 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, May 01, 2014 'amt' 11:14:38 am
 
 BeginCmp
 TimeStamp = /53617B21;
@@ -99,6 +99,27 @@ IdModule  = SM0805;
 EndCmp
 
 BeginCmp
+TimeStamp = /53627F70;
+Reference = C15;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /53627FAE;
+Reference = C16;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /53627F16;
+Reference = C17;
+ValeurCmp = 1uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
 TimeStamp = /53618883;
 Reference = D1;
 ValeurCmp = ZD 3v3;
@@ -122,7 +143,7 @@ EndCmp
 BeginCmp
 TimeStamp = /535D9DD4;
 Reference = P1;
-ValeurCmp = CONN_2;
+ValeurCmp = BATT;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
@@ -136,28 +157,28 @@ EndCmp
 BeginCmp
 TimeStamp = /535F0C4D;
 Reference = P3;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_1;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F0E8A;
 Reference = P4;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F1173;
 Reference = P5;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_3;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F1196;
 Reference = P6;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_4;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
