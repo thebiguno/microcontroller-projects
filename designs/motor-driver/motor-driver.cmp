@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Wed 30 Apr 2014 08:49:18 PM MDT
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Thu 01 May 2014 09:01:58 PM MDT
 
 BeginCmp
 TimeStamp = /53617B21;
@@ -122,7 +122,7 @@ EndCmp
 BeginCmp
 TimeStamp = /535D9DD4;
 Reference = P1;
-ValeurCmp = CONN_2;
+ValeurCmp = BATT;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
@@ -136,36 +136,36 @@ EndCmp
 BeginCmp
 TimeStamp = /535F0C4D;
 Reference = P3;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_1;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F0E8A;
 Reference = P4;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_2;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F1173;
 Reference = P5;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_3;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
 TimeStamp = /535F1196;
 Reference = P6;
-ValeurCmp = CONN_2;
+ValeurCmp = MOTOR_4;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
-TimeStamp = /5361AF2D;
+TimeStamp = /53630C92;
 Reference = P7;
-ValeurCmp = CONN_7;
-IdModule  = PIN_ARRAY_7x1;
+ValeurCmp = CONN_6;
+IdModule  = PIN_ARRAY-6X1;
 EndCmp
 
 BeginCmp
