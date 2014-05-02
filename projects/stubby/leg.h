@@ -51,7 +51,7 @@ typedef struct leg_t {
 
 //The minimum allowable step (in radians).  Also the bottom edge of angular resolution available when 
 // setting desired position (once the error falls below this, we consider it 'good enough').
-#define MIN_STEP		0.001
+#define MIN_STEP		0.01
 
 //Position of raised / lowered tibia
 #define TIBIA_LOWERED -MAX_ANGLE

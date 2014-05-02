@@ -13,9 +13,9 @@ static inline double get_delay_multiplier(double *velocity, double *direction, u
 	else if (measurement == 1) value = fabs(*direction);
 	
 	if (value >= 0.8) return 1;
-	else if (value >= 0.7) return 1.2;
-	else if (value >= 0.6) return 1.4;
-	else return 1.8;
+	else if (value >= 0.7) return 1.4;
+	else if (value >= 0.6) return 2;
+	else return 2.8;
 }
 
 void tripod_gait_step(){
