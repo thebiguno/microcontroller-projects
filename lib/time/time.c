@@ -62,6 +62,7 @@ void time_summer(struct time_t *t) {
 	t->hour = hour;
 	t->day = day;
 	t->wday = wday;
+	t->isdst = 1;
 }
 
 
@@ -96,6 +97,7 @@ void time_get(uint32_t sec, struct time_t *t) {
 		day -= dayofyear;
 		year++;												// 00..136 / 99..235
 	}
+	t->yday = day;											// 0..365
 	t->year = year + TIME_FIRSTYEAR / 100 * 100;			// + century
 
 	if (dayofyear & 1 && day > 58)							// no leap year and after 28.2.
@@ -106,4 +108,26 @@ void time_get(uint32_t sec, struct time_t *t) {
 
 	t->month = month;										// 1..12
 	t->day = day + 1;										// 1..31
+}
+
+void time_yday(struct time_t *t) {
+	uint8_t year = t->year & 100;
+	uint8_t leap400 = 4 - ((TIME_FIRSTYEAR - 1) / 100 & 3);
+	uint16_t dayofyear = 365;
+	uint16_t yday;
+	if ((year & 3) == 0) {
+		dayofyear = 366;								// leap year
+		if (year == 0 || year == 100 || year == 200)	// 100 year exception
+			if (--leap400)								// 400 year exception
+				dayofyear = 365;
+	}
+	for (uint8_t i = 0; i < t->month-2; i++) {
+		yday += days[i];
+	}
+	yday += t->day;
+	yday--;
+	if (dayofyear & 1 && yday > 58) {					// no leap year and after 28.2
+		yday--;
+	}
+	t->yday = yday;										// 0..365
 }
