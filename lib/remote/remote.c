@@ -1,3 +1,7 @@
+#include "remote.h"
+#include <avr/interrupt.h>
+#include "../serial/serial.h"
+
 /*
 NEC IR transmission protocol:
 http://techdocs.altium.com/display/ADRR/NEC+Infrared+Transmission+Protocol
@@ -28,11 +32,11 @@ https://en.wikipedia.org/wiki/Apple_Remote
 */
 
 // leading pulse must be at least 4.5 ms
-#define LEADING_PULSE = F_CPU / 1024 / 222
+#define LEADING_PULSE F_CPU / 1024 / 222
 // leading space must be at least 3.4 ms for a new command, otherwise it's a repeat command
-#define LEADING_SPACE = F_CPU / 1024 / 296
+#define LEADING_SPACE F_CPU / 1024 / 296
 // bit space must be at least 1126 us for logical 1, otherwise it's logical 0
-#define BIT_SPACE = F_CPU / 1024 / 888
+#define BIT_SPACE F_CPU / 1024 / 888
 
 volatile uint8_t _state;	// 0 = idle; 1 = leading pulse; 2 = message;
 volatile uint8_t _byte;
@@ -41,6 +45,12 @@ volatile uint8_t _packet[4];
 volatile uint8_t _command;
 
 void remote_init() {
+	DDRB |= _BV(PB0);
+	PORTB |= _BV(PB0);
+	
+	DDRD &= ~_BV(PD2);
+//	PORTD |= ~_BV(PD2);
+	
 	TCCR0A = 0x0; 						// normal mode
 	TCCR0B |= _BV(CS02) | _BV(CS00);	// F_CPU / 1024 prescaler
 
@@ -48,7 +58,8 @@ void remote_init() {
 		defined(__AVR_ATtiny85__)
 	MCUCR |= _BV(ISC00);				// logical change generates interrupt
 	GIMSK |= _BV(INT0);					// enable external interrupts on int0
-	#elif defined(__AVR_ATmega168__)   || \
+	#elif defined(__AVR_ATmega48__)   || \
+		defined(__AVR_ATmega168__)   || \
 		defined(__AVR_ATmega328__)     || \
 		defined(__AVR_ATmega328P__)    || \
 		defined(__AVR_ATmega324P__)    || \
@@ -56,7 +67,7 @@ void remote_init() {
 		defined(__AVR_ATmega644P__)    || \
 		defined(__AVR_ATmega644PA__)   || \
 		defined(__AVR_ATmega1284P__)
-	EICRA |= _BV(ISC00);				// logical change generates interrupt
+	EICRA = _BV(ISC00);					// logical change generates interrupt
 	EIMSK |= _BV(INT0);					// enable external interrupts on int0
 	#endif
 	
@@ -67,22 +78,25 @@ uint8_t remote_state() {
 	return _state;
 }
 
-uint8_t remote_command() {
+uint8_t remote_get() {
 	uint8_t result = _command;
 	_command = 0;
 	return result;
 }
 
-ISR(TIM0_OVF_vect) {
+ISR(TIMER0_OVF_vect) {
 	_state = 0;
 }
-EMPTY_INTERRUPT(TIM0_COMPA_vect)
-EMPTY_INTERRUPT(TIM0_COMPB_vect)
+EMPTY_INTERRUPT(TIMER0_COMPA_vect)
+EMPTY_INTERRUPT(TIMER0_COMPB_vect)
 
 ISR(INT0_vect) {
-	if (PORTB & _BV(PB1)) {
+	PORTB ^= _BV(PB0);
+	if (PIND & _BV(PD2)) {
+		UDR0 = 'H';
 		if (_state == 1) {
-			if (TCNT > LEADING_SPACE) {
+			if (TCNT0 > LEADING_SPACE) {
+				UDR0 = 'C';
 				_state = 2;
 				_byte = 0;
 				_bit = 0;
@@ -91,28 +105,30 @@ ISR(INT0_vect) {
 				_packet[2] = 0;
 				_packet[3] = 0;
 			} else {
+				UDR0 = 'R';
 				_state = 0;
 				_command = _packet[2];
 			}
 		} else if (_state == 2) {
-			if (TCNT > BIT_SPACE) {
+			if (TCNT0 > BIT_SPACE) {
 				_packet[_byte] &= _BV(_bit++);
 			}
-			if (bit == 8) {
-				bit = 0;
-				byte++;
+			if (_bit == 8) {
+				_bit = 0;
+				_byte++;
 				
-				if (byte == 5) {
-					if (_packet[0] == 0xEE && _packet[1] == 0x87) { // TODO, check _packet[3] for pairing
+				if (_byte == 5) {
+//					if (_packet[0] == 0xEE && _packet[1] == 0x87) { // TODO, check _packet[3] for pairing
 						_command = _packet[2];
-					}
+//					}
 					_state = 0;
 				}
 			}
 		}
 	} else {
+		UDR0 = 'L';
 		if (_state == 0) {
-			if (TCNT > LEADING_PULSE) {
+			if (TCNT0 > LEADING_PULSE) {
 				_state = 1;
 			}
 		}

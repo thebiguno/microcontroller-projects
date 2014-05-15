@@ -1,6 +1,8 @@
 #ifndef REMOTE_H
 #define REMOTE_H
 
+#include <avr/io.h>
+
 #define REMOTE_MENU = 0x03;
 #define REMOTE_RIGHT = 0x07;
 #define REMOTE_LEFT = 0x08;
@@ -20,6 +22,6 @@ uint8_t remote_state();
  * Returns the last command that has been received; or 0 if there is no new command available.
  * The command is reset when read.
  */
-uint8_t remote_command();
+uint8_t remote_get();
 
 #endif
