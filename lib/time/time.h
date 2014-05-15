@@ -12,6 +12,8 @@ struct time_t {
 	uint8_t  month;
 	uint16_t year;
 	uint8_t  wday;
+	uint16_t yday;
+	uint8_t  isdst;
 };
 
 /*
@@ -29,6 +31,11 @@ void time_summer(struct time_t *t);
  * define TIME_FIRSTDAY with the offset of days from January 1 of your epoch to the first day of the week (default = 6)
  */
 void time_get(uint32_t sec, struct time_t *t);
+
+/*
+ * Computes the yday field.
+ */
+void time_yday(struct time_t *t) {
 
 #endif
 
