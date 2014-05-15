@@ -42,6 +42,7 @@ void timer_init(){
 	TIMSK = _BV(OCIE0A);
 	
 #elif defined(__AVR_ATmega48__)   || \
+    defined(__AVR_ATmega48P__)    || \
 	defined(__AVR_ATmega168__)   || \
 	defined(__AVR_ATmega328__)     || \
 	defined(__AVR_ATmega328P__)    || \

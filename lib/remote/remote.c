@@ -59,6 +59,7 @@ void remote_init() {
 	MCUCR |= _BV(ISC00);				// logical change generates interrupt
 	GIMSK |= _BV(INT0);					// enable external interrupts on int0
 	#elif defined(__AVR_ATmega48__)   || \
+		defined(__AVR_ATmega48P__)   || \
 		defined(__AVR_ATmega168__)   || \
 		defined(__AVR_ATmega328__)     || \
 		defined(__AVR_ATmega328P__)    || \
