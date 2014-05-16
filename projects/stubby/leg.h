@@ -54,12 +54,12 @@ typedef struct leg_t {
 #define MIN_STEP		0.01
 
 //Position of raised / lowered tibia
-#define TIBIA_LOWERED -MAX_ANGLE
-#define TIBIA_RAISED MAX_ANGLE
+#define TIBIA_LOWERED MAX_ANGLE
+#define TIBIA_RAISED -MAX_ANGLE
 //Position of nautral / forward / reverse coxa
 #define COXA_NEUTRAL 0
-#define COXA_FORWARD -MAX_ANGLE
-#define COXA_REVERSE MAX_ANGLE
+#define COXA_FORWARD -MAX_ANGLE/3
+#define COXA_REVERSE MAX_ANGLE/3
 
 
 //Initialize memory for an array of legs.  By convention, the resulting array is ordered
