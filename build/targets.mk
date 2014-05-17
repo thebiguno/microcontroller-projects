@@ -11,6 +11,13 @@ ifeq 'stk500v1' '$(AVRDUDE_PROGRAMMER)'
 	endif
 	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 19200
 endif
+#We use the arduino programmer to mean 'Arduino Uno with Optiboot'; this is stk500v1 compatible at 115200 baud.
+ifeq 'arduino' '$(AVRDUDE_PROGRAMMER)'
+	ifeq ($(OS),Linux)
+		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
+	endif
+	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
+endif
 
 # Default target.
 

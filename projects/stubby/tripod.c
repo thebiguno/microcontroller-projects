@@ -1,5 +1,5 @@
 #include "gait.h"
-#define DELAY 		60
+#define DELAY 		120
 
 #define PRIMARY_CUTOFF 0.3
 #define SECONDARY_CUTOFF 0.2
@@ -105,7 +105,7 @@ void tripod_gait_step(){
 	
 	//Lift tibia (z)
 	delay_multiplier = get_delay_multiplier(&velocity, &direction, measurement);
-	delay = DELAY * 2 * delay_multiplier;
+	delay = DELAY * 1 * delay_multiplier;
 	leg_set_desired_position_relative(leg_a_0, 0, 0, TIBIA_STEP, delay * 1.5);
 	leg_set_desired_position_relative(leg_a_1, 0, 0, TIBIA_STEP, delay * 1.5);
 	leg_set_desired_position_relative(leg_a_2, 0, 0, TIBIA_STEP, delay * 1.5);
