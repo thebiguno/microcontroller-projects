@@ -11,7 +11,7 @@
 * |------+------+------+------+------|                                   |------+------+------+------+------|
 * |   Z *|   X  |   M  |   C  |   V  |                                   |   K  |   L  |  ,<  |  .>  |  /? *|
 * |------+------+------+------+------|                                   |------+------+------+------+------|
-* |  =+  |  -_  | Left | Right|      |                                   |      | Up   | Down |  [{  |  ]}  |
+* |  -_  |  =+  | Left | Right|      |                                   |      | Up   | Down |  [{  |  ]}  |
 * | Shift| Ctrl | Alt  | Gui  |  Fn  |                                   |  Fn  | Gui  | Alt  | Ctrl | Shift|
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
@@ -81,8 +81,8 @@ enum function_id {
 };
 static const uint16_t PROGMEM fn_actions[] = {
 		[0] = ACTION_FUNCTION(TEENSY_KEY),
-		[1] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_EQL),
-		[2] = ACTION_MODS_TAP_KEY(MOD_LCTL, KC_MINS),
+		[1] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_MINS),
+		[2] = ACTION_MODS_TAP_KEY(MOD_LCTL, KC_EQL),
 		[3] = ACTION_MODS_TAP_KEY(MOD_LALT, KC_LEFT),
 		[4] = ACTION_MODS_TAP_KEY(MOD_LGUI, KC_RGHT),
 		[5] = ACTION_LAYER_TAP_TOGGLE(1),
