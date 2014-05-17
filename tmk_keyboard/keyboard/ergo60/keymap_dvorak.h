@@ -15,9 +15,9 @@
 * | Shift| Ctrl | Alt  | Gui  |  Fn  |                                   |  Fn  | Gui  | Alt  | Ctrl | Shift|
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
-*                                    | Caps | \|   |       | `~   | §±   |
+*                                    |  /?  |  \|  |       |  `~  |  §±  |
 *                             ,------|------|------|       |------+------+------.
-*                             | Bspc | Esc  | /?   |       | Tab  | Ent  | Space|
+*                             | Bspc | Del  | Esc  |       | Tab  | Ent  | Space|
 *                             `--------------------'       `--------------------'
 *
 * Keymap: Fn Layer
@@ -36,7 +36,7 @@
 *                                    ,-------------.       ,-------------.
 *                                    |      |Teensy|       |      |   =  |
 *                             ,------|------|------|       |------+------+------.
-*                             | Del  |      |      |       |NL/Clr| KEnt |   0  |
+*                             | Caps |      |      |       |NL/Clr| KEnt |   0  |
 *                             `--------------------'       `--------------------'
 *
 */
@@ -49,8 +49,8 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            A   ,O   ,E   ,U   ,I   ,
            FN11,Q   ,J   ,K   ,X   ,
            FN1 ,FN2 ,FN3 ,FN4 ,FN5  ,
-                          CAPS,BSLS,
-                     BSPC,ESC ,SLSH,
+                          SLSH,BSLS,
+                     BSPC,DEL ,ESC ,
            6   ,7   ,8   ,9   ,0   ,
            F   ,G   ,C   ,R   ,L   ,
            D   ,H   ,T   ,N   ,S   ,
@@ -67,7 +67,7 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            PGDN,LEFT,DOWN,RGHT,VOLD,
            TRNS,TRNS,HOME,END ,TRNS,
                           NO  ,FN0 ,
-                     DEL ,NO  ,NO  ,
+                     CAPS,NO  ,NO  ,
            F6  ,F7  ,F8  ,F9  ,F10 ,
            MNXT,P7  ,P8  ,P9  ,PMNS,
            MPLY,P4  ,P5  ,P6  ,PPLS,
@@ -93,7 +93,6 @@ static const uint16_t PROGMEM fn_actions[] = {
 		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC),
 		[11] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_SCLN),
 		[12] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_Z)
-
 };
 void action_function(keyrecord_t *event, uint8_t id, uint8_t opt) {
     if (id == TEENSY_KEY) {
