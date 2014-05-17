@@ -1,6 +1,5 @@
 #include "remote.h"
 #include <avr/interrupt.h>
-#include "../serial/serial.h"
 
 /*
 NEC IR transmission protocol:
@@ -45,14 +44,10 @@ volatile uint8_t _packet[4];
 volatile uint8_t _command;
 
 void remote_init() {
-	DDRB |= _BV(PB0);
-	PORTB |= _BV(PB0);
-	
-	DDRD &= ~_BV(PD2);
-//	PORTD |= ~_BV(PD2);
+	DDRD &= ~_BV(PD2);  // set int0 as input
 	
 	TCCR0A = 0x0; 						// normal mode
-	TCCR0B |= _BV(CS02) | _BV(CS00);	// F_CPU / 1024 prescaler
+	TCCR0B = _BV(CS02) | _BV(CS00);	// F_CPU / 1024 prescaler
 
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)
@@ -85,19 +80,18 @@ uint8_t remote_get() {
 	return result;
 }
 
-ISR(TIMER0_OVF_vect) {
-	_state = 0;
-}
-EMPTY_INTERRUPT(TIMER0_COMPA_vect)
-EMPTY_INTERRUPT(TIMER0_COMPB_vect)
-
 ISR(INT0_vect) {
-	PORTB ^= _BV(PB0);
 	if (PIND & _BV(PD2)) {
-		UDR0 = 'H';
+		// receiver high; protocol low
+		if (_state == 0) {
+			if (TCNT0 > LEADING_PULSE) {
+				_state = 1;
+			}
+		}
+	} else {
+		// receiver low; protocol high
 		if (_state == 1) {
 			if (TCNT0 > LEADING_SPACE) {
-				UDR0 = 'C';
 				_state = 2;
 				_byte = 0;
 				_bit = 0;
@@ -106,33 +100,24 @@ ISR(INT0_vect) {
 				_packet[2] = 0;
 				_packet[3] = 0;
 			} else {
-				UDR0 = 'R';
 				_state = 0;
 				_command = _packet[2];
 			}
 		} else if (_state == 2) {
 			if (TCNT0 > BIT_SPACE) {
-				_packet[_byte] &= _BV(_bit++);
+				_packet[_byte] |= _BV(_bit);
 			}
-			if (_bit == 8) {
-				_bit = 0;
-				_byte++;
-				
-				if (_byte == 5) {
-//					if (_packet[0] == 0xEE && _packet[1] == 0x87) { // TODO, check _packet[3] for pairing
+			if (_bit++ == 7) {
+				if (_byte++ < 3) {
+					_bit = 0;
+				} else {
+					if (_packet[0] == 0xEE && _packet[1] == 0x87) { // TODO, check _packet[3] for pairing
 						_command = _packet[2];
-//					}
+					}
 					_state = 0;
 				}
 			}
 		}
-	} else {
-		UDR0 = 'L';
-		if (_state == 0) {
-			if (TCNT0 > LEADING_PULSE) {
-				_state = 1;
-			}
-		}
 	}
-	TCNT0 = 0;
+	TCNT0 = 1;
 }
