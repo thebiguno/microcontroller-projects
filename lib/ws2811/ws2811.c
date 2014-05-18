@@ -1,20 +1,28 @@
 #include "ws2811.h"
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+
 #ifndef WS2811_PORT
 #define WS2811_PORT PORTB
+#endif
+
+#ifndef WS2811_DDR
+#define WS2811_DDR DDRB
 #endif
 
 #ifndef WS2811_PIN
 #define WS2811_PIN PINB1
 #endif
 
-void __attribute__((noinline)) ws2811_set(ws2811_t *colors, uint8_t count) {
+void __attribute__((noinline)) ws2811_set(struct ws2811_t *colors, uint8_t count) {
 	// Set the pin to be an output driving low.
-	WS2811_PORT &= ~(1<<WS2811_PIN);
-	(WS2811_PORT - 0x1) |= (1<<WS2811_PIN);
+	WS2811_PORT &= ~_BV(WS2811_PIN);
+	WS2811_DDR |= _BV(WS2811_PIN);
 
 	cli();   // Disable interrupts temporarily because we don't want our pulse timing to be messed up.
-	while(count--) {
+	while (count--) {
 		// Send a color to the LED strip.
 		// The assembly below also increments the 'colors' pointer,
 		// it will be pointing to the next color at the end of this loop.
@@ -71,9 +79,9 @@ void __attribute__((noinline)) ws2811_set(ws2811_t *colors, uint8_t count) {
 			: "0" (colors),		 			// %a0 points to the next color to display
 			  "I" (_SFR_IO_ADDR(WS2811_PORT)),	// %2 is the port register (e.g. PORTC)
 			  "I" (WS2811_PIN)     			// %3 is the pin number (0-8)
-	    );
-	  }
-	  sei();		  // re-enable interrupts now that we are done.
-	  _delay_us(50);  // hold the line low for 50 microseconds to send the reset signal.
-	}
+	    ); // volatile
+	} // while
+	
+	sei();		  // re-enable interrupts now that we are done.
+	_delay_us(50);  // hold the line low for 50 microseconds to send the reset signal.
 }
