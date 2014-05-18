@@ -10,6 +10,8 @@
 #define REMOTE_LEFT 0x09
 #define REMOTE_UP 0x0a
 #define REMOTE_DOWN 0x0c
+#define REMOTE_VIDEO_MODE 0x17
+#define REMOTE_RESET 0x18
 #define REMOTE_A_CENTER 0x5c
 #define REMOTE_A_PLAY 0x5e
 
