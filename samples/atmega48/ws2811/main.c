@@ -2,7 +2,7 @@
 #include "lib/ws2811/ws2811.h"
 
 int main (void) {
-	
+
 	//Do setup here
 	struct ws2811_t colors[60];
 	for (uint8_t i = 0; i < 60; i++) {

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct ws2811_t {
+typedef struct ws2811_t {
 	// the order of the struct members must by g, r, b
 	uint8_t green;
 	uint8_t red;
