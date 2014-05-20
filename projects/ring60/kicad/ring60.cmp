@@ -1,0 +1,87 @@
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Monday, May 19, 2014 'pmt' 10:54:02 pm
+
+BeginCmp
+TimeStamp = /537ACF90;
+Reference = BT1;
+ValeurCmp = BATTERY;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACFF9;
+Reference = C1;
+ValeurCmp = 0.1uF;
+IdModule  = discrete:C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ADF9A;
+Reference = C2;
+ValeurCmp = 20 pF;
+IdModule  = discrete:C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ADF88;
+Reference = C3;
+ValeurCmp = 20 pF;
+IdModule  = discrete:C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACEE5;
+Reference = IC1;
+ValeurCmp = ATMEGA328-P;
+IdModule  = dip:DIP-28__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD616;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = conn:SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD150;
+Reference = R1;
+ValeurCmp = 4.7k;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD162;
+Reference = R2;
+ValeurCmp = 4.7k;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACEC6;
+Reference = U1;
+ValeurCmp = DS1307;
+IdModule  = dip:DIP-8__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD35C;
+Reference = U2;
+ValeurCmp = TSOP39338;
+IdModule  = conn:SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACF20;
+Reference = X1;
+ValeurCmp = 20 MHz;
+IdModule  = discrete:HC-18UV;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACF32;
+Reference = X2;
+ValeurCmp = 32,768 kHz;
+IdModule  = discrete:QMONTRE;
+EndCmp
+
+EndListe
