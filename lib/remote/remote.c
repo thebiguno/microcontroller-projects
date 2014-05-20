@@ -29,6 +29,9 @@ https://en.wikipedia.org/wiki/Apple_Remote
 	Center key: EE 87 5D/5C 59
 	Menu key:   EE 87 02/03 59
 	Play key:   EE 87 5E/5F 59
+	
+TODO implement additional remote protocols all with the same interface (i.e. remote_sony.c, remote_rca.c, etc...)
+http://www.sbprojects.com/knowledge/ir/nec.php
 */
 
 // leading pulse must be at least 4.5 ms
