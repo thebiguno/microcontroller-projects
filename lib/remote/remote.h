@@ -3,13 +3,17 @@
 
 #include <avr/io.h>
 
-#define REMOTE_MENU = 0x03;
-#define REMOTE_RIGHT = 0x07;
-#define REMOTE_LEFT = 0x08;
-#define REMOTE_UP = 0x0B;
-#define REMOTE_DOWN = 0x0C;
-#define REMOTE_CENTER = 0x5D;
-#define REMOTE_PLAY = 0x5E;
+// TODO these values are only correct depending on the device id as the LSB is a parity bit
+#define REMOTE_MENU 0x03
+#define REMOTE_CENTER 0x05
+#define REMOTE_RIGHT 0x06
+#define REMOTE_LEFT 0x09
+#define REMOTE_UP 0x0a
+#define REMOTE_DOWN 0x0c
+#define REMOTE_VIDEO_MODE 0x17
+#define REMOTE_RESET 0x18
+#define REMOTE_A_CENTER 0x5c
+#define REMOTE_A_PLAY 0x5e
 
 void remote_init();
 
