@@ -1,10 +1,10 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Monday, May 19, 2014 'pmt' 10:54:02 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Tuesday, May 20, 2014 'pmt' 03:14:05 pm
 
 BeginCmp
 TimeStamp = /537ACF90;
 Reference = BT1;
 ValeurCmp = BATTERY;
-IdModule  = ;
+IdModule  = ring60:BAT-HLD-012-THM;
 EndCmp
 
 BeginCmp
@@ -36,6 +36,13 @@ IdModule  = dip:DIP-28__300;
 EndCmp
 
 BeginCmp
+TimeStamp = /537B5881;
+Reference = J1;
+ValeurCmp = USB;
+IdModule  = ring60:USB-MINIB;
+EndCmp
+
+BeginCmp
 TimeStamp = /537AD616;
 Reference = K1;
 ValeurCmp = CONN_3;
@@ -57,6 +64,27 @@ IdModule  = discrete:R3;
 EndCmp
 
 BeginCmp
+TimeStamp = /537B76C3;
+Reference = R3;
+ValeurCmp = 68;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537B76D5;
+Reference = R4;
+ValeurCmp = 68;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /537B7813;
+Reference = R5;
+ValeurCmp = 1k5;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
 TimeStamp = /537ACEC6;
 Reference = U1;
 ValeurCmp = DS1307;
@@ -71,10 +99,10 @@ IdModule  = conn:SIL-3;
 EndCmp
 
 BeginCmp
-TimeStamp = /537ACF20;
+TimeStamp = /537BC555;
 Reference = X1;
-ValeurCmp = 20 MHz;
-IdModule  = discrete:HC-18UV;
+ValeurCmp = CRYSTAL_RESONATOR;
+IdModule  = custom:CRYSTAL_RESONATOR;
 EndCmp
 
 BeginCmp

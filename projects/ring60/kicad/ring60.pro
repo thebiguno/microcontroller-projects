@@ -1,6 +1,6 @@
-update=Monday, May 19, 2014 'pmt' 10:32:25 pm
+update=Tuesday, May 20, 2014 'pmt' 03:12:37 pm
 version=1
-last_client=cvpcb
+last_client=eeschema
 [pcbnew]
 version=1
 LastNetListRead=
@@ -40,13 +40,18 @@ LibName16=valves
 LibDir=
 [general]
 version=1
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
 [eeschema]
 version=1
 PageLayoutDescrFile=
 SubpartIdSeparator=0
 SubpartFirstId=65
-LibDir=
-NetFmtName=
+LibDir=../../../../kicad/library
+NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100
 RptLab=1
@@ -83,8 +88,4 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=ring60
-[cvpcb]
-version=1
-NetIExt=net
-[cvpcb/libraries]
-EquName1=devcms
+LibName32=custom
