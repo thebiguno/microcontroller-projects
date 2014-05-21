@@ -1,0 +1,33 @@
+F ?   A &   R *   W :   P ;
+↹     ' +   B =   M $   J #
+⎋ -   ↖︎7   ↘︎8   ⎊ 9   ⇞ *
+
+O /   E !   H -   T @   D _
+Q \   Z %   L |   C ~   V ^
+⌄     ⌃ 4   ⌥ 5   ⇡ 6   ⇟ /
+
+U "   I <   N (   S [   Y {
+  `   X >   K )   G ]   X }
+⌦ 0   ⌫ 1   ⇠ 2   ⇣ 3   ⇢ .
+
+Space Number Symbol Enter Shift
+
+
+
+lower case          symbols
+pwraf     jmb,↹     ;:*&?    #$=+  
+dtheo     vclzq     _@-!/    ^~|%\
+ysniu     xgk⌆⌘     {[(<=    }])>-
+⇧↩  ␣     ⇧↩  H     ⇧↩T ␣    ⇧↩TH␣
+         
+upper case          numbers  f-keys
+PWRAP     JMB,↹     -789*     789
+DTHEO     VCLZQ     +456/    14562
+YSNIU     XGK⌆⌘     0123-    0123$
+T↩  ␣     T↩  H      ↩ T␣     ↩ TH
+
+function  special
+⇞ ↘↖⎋     ⌧ ⎙⤓  
+⇟⇡⌥⌃⎀       ⌥⌃
+⇠⇣⇢⌫⌦        ⌆⌘
+⇧↩ H␣      ↩TH␣

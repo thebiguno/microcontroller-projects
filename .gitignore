@@ -3,3 +3,4 @@ $*
 *.kicad_pcb-bak
 *-cache.lib
 .DS_Store
+*~.skp

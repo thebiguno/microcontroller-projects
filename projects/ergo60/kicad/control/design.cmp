@@ -1,0 +1,115 @@
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Saturday, March 08, 2014 'pmt' 05:27:28 pm
+
+BeginCmp
+TimeStamp = /531BA9B2;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9CE;
+Reference = D2;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9D9;
+Reference = D3;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA9E4;
+Reference = D4;
+ValeurCmp = LED;
+IdModule  = led:LED-5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F98080;
+Reference = P1;
+ValeurCmp = CONN_LH;
+IdModule  = conn:SIL-12;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F9808D;
+Reference = P2;
+ValeurCmp = CONN_RH;
+IdModule  = conn:SIL-12;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F9806B;
+Reference = P3;
+ValeurCmp = CONN_LT;
+IdModule  = conn:SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /52F98078;
+Reference = P4;
+ValeurCmp = CONN_RT;
+IdModule  = conn:SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA243;
+Reference = P5;
+ValeurCmp = CONN_1;
+IdModule  = conn:1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA255;
+Reference = P6;
+ValeurCmp = CONN_1;
+IdModule  = conn:1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BA2F7;
+Reference = P7;
+ValeurCmp = CONN_1;
+IdModule  = conn:1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4DC;
+Reference = R1;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4EE;
+Reference = R2;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB4F9;
+Reference = R3;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531BB504;
+Reference = R4;
+ValeurCmp = 500;
+IdModule  = discrete:R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /531B6BD8;
+Reference = U1;
+ValeurCmp = TEENSY2;
+IdModule  = pjrc:Teensy2;
+EndCmp
+
+EndListe
