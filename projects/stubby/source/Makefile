@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include build/variables.mk
 
 PROJECT=stubby
 MMCU=atmega1284p
@@ -15,4 +15,4 @@ CDEFS+=-DPWM_MAX_PINS=18 -DPWM_PORTD_UNUSED
 HFUSE=0xD9
 LFUSE=0xFF
 
-include ../../build/targets.mk
+include build/targets.mk
