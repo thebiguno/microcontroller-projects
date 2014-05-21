@@ -1,19 +1,21 @@
-update=Friday, April 25, 2014 'pmt' 03:17:23 pm
+update=Wednesday, May 21, 2014 'amt' 10:48:47 am
 version=1
-last_client=kicad
+last_client=eeschema
 [cvpcb]
 version=1
 NetIExt=net
 [cvpcb/libraries]
 EquName1=devcms
+[general]
+version=1
 [pcbnew]
 version=1
 LastNetListRead=
 UseCmpFile=1
-PadDrill=1.016000000000
-PadDrillOvalY=1.016000000000
-PadSizeH=1.524000000000
-PadSizeV=1.524000000000
+PadDrill=0.000000000000
+PadDrillOvalY=0.000000000000
+PadSizeH=0.889000000000
+PadSizeV=1.200000000000
 PcbTextSizeV=1.500000000000
 PcbTextSizeH=1.500000000000
 PcbTextThickness=0.300000000000
@@ -26,7 +28,7 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=../hex;../../modules
+LibDir=../../../lib/kicad/modules
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -47,7 +49,7 @@ LibName17=hex
 LibName18=custom
 [eeschema]
 version=1
-LibDir=../hex;../../library
+LibDir=../../../lib/kicad/library
 NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100
@@ -86,5 +88,3 @@ LibName29=contrib
 LibName30=valves
 LibName31=hex
 LibName32=custom
-[general]
-version=1
