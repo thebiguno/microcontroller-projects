@@ -1,0 +1,47 @@
+EESchema-DOCLIB  Version 2.0  Date: Mon 28 Apr 2014 07:38:04 PM MDT
+#
+$CMP CRYSTAL_RESONATOR
+D Either a Crystal with external caps, or a resonator with built in caps
+K CRYSTAL RESONATOR
+$ENDCMP
+#
+$CMP DPDT
+D DPDT Switch (e.g. GW22LCP)
+K GW22LCP, DPDT
+$ENDCMP
+#
+$CMP ISP
+D ISP Header
+K ISP HEADER
+$ENDCMP
+#
+$CMP L293D
+D L293D Quad Half Bridge
+K MOTOR DRIVER HALF BRIDGE
+$ENDCMP
+#
+$CMP LE-MM103
+D 8x8 LED Matrix Bi-Color Red Green
+$ENDCMP
+#
+$CMP MC34063A
+D Peak Boost Buck Inverting Switching Regulator
+K Buck, Power
+$ENDCMP
+#
+$CMP RGB_LED
+D RGB LED (Common Cathode)
+K RGB_LED
+$ENDCMP
+#
+$CMP STPIC6D595
+D Shift Register / Open Drain
+K shift
+$ENDCMP
+#
+$CMP TB6552FNG
+D Motor Controller, Full H-Bridge x2
+K Motor, Bridge, H-Bridge
+$ENDCMP
+#
+#End Doc Library

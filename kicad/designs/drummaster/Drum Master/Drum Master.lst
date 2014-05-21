@@ -1,0 +1,20 @@
+Bill of Materials			Quantity		Digikey Part #
+1uF Ceramic Capacitor			32			BC1151CT-ND
+4 port RJ45 Jacks			4			380-1034-ND
+Schottky Diode BAT85			36			568-1617-1-ND
+DG408 Multiplexer			5  			DG408DJZ-ND
+LM324 OpAmp				9			296-1391-5-ND
+4x2 Pin Array				8			70280-0448 (One should be enough for all - break off what you need)
+2 Connector Female Header		1			(Any cheap female headers.  You can buy a larger one, and break / sand off as needed.  Allow one pin wasted / break)
+3 Connector Female Header		2
+4 Connector Female Header		9?
+5 Connector Female Header		2
+24 Connector Female Header		4
+8 Connector Female Header		1
+10 pin Resistor Network (Bussed) 1k	1			4610X-101-102LF			
+6 pin Resistor Network (Bussed) 1k	1			4606X-1-102LF-ND
+6 pin Resistor Network (Bussed) 5k	8			770-61-R5.1KP-ND
+6 pin Resistor Network (Bussed) 20k	8			4606X-1-203-ND
+6 pin Resistor Network (Bussed) 1M	8			4606X-101-105LF
+Potentiometer 200k			32			D4AA25-ND
+

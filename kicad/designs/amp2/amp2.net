@@ -1,0 +1,455 @@
+# EESchema Netlist Version 1.1 created  Thu 31 Jan 2013 09:50:49 AM MST
+(
+ ( /51082742 $noname  R12 R {Lib=R}
+  (    1 /RGNDL )
+  (    2 GND )
+ )
+ ( /5108273B $noname  R11 R {Lib=R}
+  (    1 /PGNDR )
+  (    2 GND )
+ )
+ ( /51082738 $noname  R8 R {Lib=R}
+  (    1 GND )
+  (    2 /AGND1 )
+ )
+ ( /5108272D $noname  R5 R {Lib=R}
+  (    1 GND )
+  (    2 /AGND2 )
+ )
+ ( /5106D28A $noname  R10 0 {Lib=R}
+  (    1 GND )
+  (    2 N-000002 )
+ )
+ ( /5106D275 $noname  R9 0 {Lib=R}
+  (    1 N-000003 )
+  (    2 GND )
+ )
+ ( /5106D233 $noname  K2 CONN_3 {Lib=CONN_3}
+  (    1 GND )
+  (    2 /RIGHT_IN )
+  (    3 N-000002 )
+ )
+ ( /5106D22F $noname  K1 CONN_3 {Lib=CONN_3}
+  (    1 GND )
+  (    2 /LEFT_IN )
+  (    3 N-000003 )
+ )
+ ( /51041F80 $noname  P4 CONN_4 {Lib=CONN_4}
+  (    1 /SHUTDOWN )
+  (    2 GND )
+  (    3 VCC )
+  (    4 /MUTE )
+ )
+ ( /50EBD2D5 $noname  P3 CONN_2 {Lib=CONN_2}
+  (    1 /PGNDR )
+  (    2 /+ROUT )
+ )
+ ( /50EBD2D0 $noname  P2 CONN_2 {Lib=CONN_2}
+  (    1 /RGNDL )
+  (    2 /+LOUT )
+ )
+ ( /50EBD112 $noname  R2 10_k {Lib=R}
+  (    1 /MUTE )
+  (    2 GND )
+ )
+ ( /50EBD0DC $noname  R1 10_k {Lib=R}
+  (    1 VCC )
+  (    2 /SHUTDOWN )
+ )
+ ( /50EBD0BC $noname  C4 0.22_uF {Lib=C}
+  (    1 /RIN )
+  (    2 /RIGHT_IN )
+ )
+ ( /50EBD0B6 $noname  C3 0.22_uF {Lib=C}
+  (    1 /LIN )
+  (    2 /LEFT_IN )
+ )
+ ( /50EBD092 $noname  C10 470_uF {Lib=CP1}
+  (    1 N-000015 )
+  (    2 /+ROUT )
+ )
+ ( /50EBD08A $noname  C17 470_uF {Lib=CP1}
+  (    1 N-000012 )
+  (    2 /+LOUT )
+ )
+ ( /50EBD043 $noname  C9 0.68_uF {Lib=C}
+  (    1 N-000015 )
+  (    2 /PGNDR )
+ )
+ ( /50EBD03E $noname  C16 0.68_uF {Lib=C}
+  (    1 /RGNDL )
+  (    2 N-000012 )
+ )
+ ( /50EBD022 $noname  R6 4.7_k {Lib=R}
+  (    1 /PGNDR )
+  (    2 N-000015 )
+ )
+ ( /50EBD019 $noname  R7 4.7_k {Lib=R}
+  (    1 N-000012 )
+  (    2 /RGNDL )
+ )
+ ( /50EBCFF5 $noname  L1 22_uH {Lib=INDUCTOR}
+  (    1 /ROUT )
+  (    2 N-000015 )
+ )
+ ( /50EBCFE7 $noname  L2 22_uH {Lib=INDUCTOR}
+  (    1 /LOUT )
+  (    2 N-000012 )
+ )
+ ( /50EBCFBE $noname  C12 0.22_uF {Lib=C}
+  (    1 /ROUT )
+  (    2 N-000022 )
+ )
+ ( /50EBCFA0 $noname  C15 0.22_uF {Lib=C}
+  (    1 /LOUT )
+  (    2 N-000020 )
+ )
+ ( /50EBCF7B $noname  R4 10_k {Lib=R}
+  (    1 VCC )
+  (    2 /GAIN0 )
+ )
+ ( /50EBCF63 $noname  R3 10_k {Lib=R}
+  (    1 VCC )
+  (    2 /GAIN1 )
+ )
+ ( /50EBCF50 $noname  JP2 JUMPER {Lib=JUMPER}
+  (    1 /GAIN0 )
+  (    2 GND )
+ )
+ ( /50EBCF49 $noname  JP1 JUMPER {Lib=JUMPER}
+  (    1 /GAIN1 )
+  (    2 GND )
+ )
+ ( /50EBCEDF $noname  C13 0.1_uF {Lib=C}
+  (    1 /AGND1 )
+  (    2 VCC )
+ )
+ ( /50EBCED6 $noname  C14 0.1_uF {Lib=C}
+  (    1 /AGND2 )
+  (    2 VCC )
+ )
+ ( /50EBCEB6 $noname  C5 1_uF {Lib=C}
+  (    1 /BYPASS )
+  (    2 ? )
+ )
+ ( /50EBCE98 $noname  C6 1_uF {Lib=C}
+  (    1 /VCLAMP )
+  (    2 /PGNDR )
+ )
+ ( /50EBCE7B $noname  C8 470_uF {Lib=CP1}
+  (    1 VCC )
+  (    2 /RGNDL )
+ )
+ ( /50EBCE59 $noname  C2 470_uF {Lib=CP1}
+  (    1 VCC )
+  (    2 /PGNDR )
+ )
+ ( /50EBCE27 $noname  C1 0.1_uF {Lib=C}
+  (    1 /PGNDR )
+  (    2 VCC )
+ )
+ ( /50EBCDA7 $noname  C7 0.1_uF {Lib=C}
+  (    1 /RGNDL )
+  (    2 VCC )
+ )
+ ( /50EBCD5B $noname  U1 TPA3122D2 {Lib=TPA3122D2}
+  (    1 VCC )
+  (    2 /SHUTDOWN )
+  (    3 /MUTE )
+  (    4 /LIN )
+  (    5 /RIN )
+  (    6 /BYPASS )
+  (    7 /AGND1 )
+  (    8 /AGND2 )
+  (    9 /VCLAMP )
+  (   10 VCC )
+  (   11 /PGNDR )
+  (   12 /ROUT )
+  (   13 N-000022 )
+  (   14 /GAIN1 )
+  (   15 /GAIN0 )
+  (   16 VCC )
+  (   17 VCC )
+  (   18 N-000020 )
+  (   19 /LOUT )
+  (   20 /RGNDL )
+ )
+)
+*
+{ Allowed footprints by component:
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C10
+ CP*
+ SM*
+$endlist
+$component C17
+ CP*
+ SM*
+$endlist
+$component C9
+ SM*
+ C?
+ C1-1
+$endlist
+$component C16
+ SM*
+ C?
+ C1-1
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component C12
+ SM*
+ C?
+ C1-1
+$endlist
+$component C15
+ SM*
+ C?
+ C1-1
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+$endlist
+$component C13
+ SM*
+ C?
+ C1-1
+$endlist
+$component C14
+ SM*
+ C?
+ C1-1
+$endlist
+$component C5
+ SM*
+ C?
+ C1-1
+$endlist
+$component C6
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ CP*
+ SM*
+$endlist
+$component C2
+ CP*
+ SM*
+$endlist
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "/SHUTDOWN" "SHUTDOWN"
+ U1 2
+ R1 2
+ P4 1
+Net 2 "" ""
+ R10 2
+ K2 3
+Net 3 "" ""
+ K1 3
+ R9 1
+Net 4 "/LEFT_IN" "LEFT_IN"
+ K1 2
+ C3 2
+Net 5 "/MUTE" "MUTE"
+ R2 1
+ P4 4
+ U1 3
+Net 6 "VCC" "VCC"
+ U1 1
+ C13 2
+ R3 1
+ U1 10
+ C14 2
+ U1 16
+ U1 17
+ C8 1
+ C2 1
+ C1 2
+ C7 2
+ P4 3
+ R1 1
+ R4 1
+Net 7 "/LIN" "LIN"
+ C3 1
+ U1 4
+Net 8 "/VCLAMP" "VCLAMP"
+ U1 9
+ C6 1
+Net 10 "/BYPASS" "BYPASS"
+ C5 1
+ U1 6
+Net 11 "/RIN" "RIN"
+ U1 5
+ C4 1
+Net 12 "" ""
+ R7 1
+ C17 1
+ L2 2
+ C16 2
+Net 13 "/RGNDL" "RGNDL"
+ C16 1
+ P2 1
+ C8 2
+ R7 2
+ C7 1
+ R12 1
+ U1 20
+Net 14 "/PGNDR" "PGNDR"
+ U1 11
+ C6 2
+ C2 2
+ C1 1
+ R11 1
+ P3 1
+ C9 2
+ R6 1
+Net 15 "" ""
+ C9 1
+ C10 1
+ R6 2
+ L1 2
+Net 16 "/+LOUT" "+LOUT"
+ C17 2
+ P2 2
+Net 17 "/+ROUT" "+ROUT"
+ C10 2
+ P3 2
+Net 18 "/AGND1" "AGND1"
+ C13 1
+ U1 7
+ R8 2
+Net 19 "/GAIN1" "GAIN1"
+ R3 2
+ JP1 1
+ U1 14
+Net 20 "" ""
+ C15 2
+ U1 18
+Net 21 "/LOUT" "LOUT"
+ L2 1
+ C15 1
+ U1 19
+Net 22 "" ""
+ U1 13
+ C12 2
+Net 23 "/RIGHT_IN" "RIGHT_IN"
+ K2 2
+ C4 2
+Net 24 "/ROUT" "ROUT"
+ U1 12
+ C12 1
+ L1 1
+Net 25 "GND" "GND"
+ R10 1
+ R9 2
+ K2 1
+ K1 1
+ R12 2
+ R11 2
+ JP2 2
+ P4 2
+ JP1 2
+ R8 1
+ R5 1
+ R2 2
+Net 26 "/AGND2" "AGND2"
+ C14 1
+ U1 8
+ R5 2
+Net 27 "/GAIN0" "GAIN0"
+ U1 15
+ JP2 1
+ R4 2
+}
+#End

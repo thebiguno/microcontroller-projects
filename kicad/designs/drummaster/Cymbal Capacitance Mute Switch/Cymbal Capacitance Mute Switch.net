@@ -1,0 +1,120 @@
+# EESchema Netlist Version 1.1 created  27/6/2008-16:38:06
+(
+ ( 486510A2 C2 C1 0.1uF
+  ( 1 GND )
+  ( 2 N-000009 )
+ )
+ ( 4865135F C2 C2 1uF
+  ( 1 N-000013 )
+  ( 2 GND )
+ )
+ ( 4865134A D3 D1 DIODESCH
+  ( 1 N-000011 )
+  ( 2 N-000004 )
+ )
+ ( 4865125A 1pin P1 CONN_1
+  ( 1 N-000006 )
+ )
+ ( 48651457 1pin P2 CONN_1
+  ( 1 N-000001 )
+ )
+ ( 4865117F TO92-INVERT Q1 NPN
+  ( 1 N-000007 )
+  ( 2 N-000010 )
+  ( 3 N-000011 )
+ )
+ ( 48651435 TO92-INVERT Q2 NPN
+  ( 1 GND )
+  ( 2 N-000002 )
+  ( 3 N-000001 )
+ )
+ ( 48651285 R3 R1 100k
+  ( 1 N-000005 )
+  ( 2 GND )
+ )
+ ( 48651293 R3 R2 100k
+  ( 1 N-000005 )
+  ( 2 +5V )
+ )
+ ( 486510B3 R3 R3 1k
+  ( 1 N-000008 )
+  ( 2 N-000009 )
+ )
+ ( 486510BF R3 R4 1k
+  ( 1 +5V )
+  ( 2 N-000008 )
+ )
+ ( 4865142C R3 R5 1k
+  ( 1 N-000002 )
+  ( 2 N-000013 )
+ )
+ ( 486511A9 R3 R6 2M
+  ( 1 N-000006 )
+  ( 2 N-000010 )
+ )
+ ( 48651274 14DIP-ELL300 U1 LM324N
+  ( 1 N-000013 )
+  ( 2 N-000004 )
+  ( 3 N-000005 )
+  ( 4 +5V )
+  ( 11 GND )
+ )
+ ( 48651081 8DIP-ELL300 U2 LM555N
+  ( 1 GND )
+  ( 2 N-000009 )
+  ( 3 N-000007 )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 N-000009 )
+  ( 7 N-000008 )
+  ( 8 ? )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component D1
+ D?
+ S*
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+$endlist
+$endfootprintlist
+}
