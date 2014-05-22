@@ -281,7 +281,7 @@ uchar   i;
 
 static void initForUsbConnectivity(void)
 {	
-	uchar   i = 0;
+	//uchar   i = 0;
 
     usbInit();
     while (bootLoaderCondition());
@@ -299,8 +299,8 @@ int main(void)
     GICR = (1 << IVSEL); /* move interrupts to boot flash section */
 #endif
     if (bootLoaderCondition()) {
-	    DDRB |= _BV(PB0);
-		PORTB |= _BV(PB0);
+//	    DDRB |= _BV(PB0);
+//		PORTB |= _BV(PB0);
         //uchar i = 0, j = 0;
         initForUsbConnectivity();
         for (;;) { // main loop

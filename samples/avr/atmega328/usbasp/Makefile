@@ -4,8 +4,8 @@
 # 32k bootloader addr for 2k bootloader = 0x7800
 
 F_CPU = 20000000
-MMCU = atmega328p
-BOOTLOADER_ADDRESS = 0x7000
+MMCU = atmega168p
+BOOTLOADER_ADDRESS = 0x3C00
 
 HFUSE=0xDA
 LFUSE=0xFF
