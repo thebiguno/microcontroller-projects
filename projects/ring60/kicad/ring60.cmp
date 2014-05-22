@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Tuesday, May 20, 2014 'pmt' 03:14:05 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, May 22, 2014 'pmt' 02:08:57 pm
 
 BeginCmp
 TimeStamp = /537ACF90;
@@ -11,21 +11,28 @@ BeginCmp
 TimeStamp = /537ACFF9;
 Reference = C1;
 ValeurCmp = 0.1uF;
-IdModule  = discrete:C1;
+IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /537ADF9A;
 Reference = C2;
 ValeurCmp = 20 pF;
-IdModule  = discrete:C1;
+IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /537ADF88;
 Reference = C3;
 ValeurCmp = 20 pF;
-IdModule  = discrete:C1;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537E3718;
+Reference = CON1;
+ValeurCmp = BARREL_JACK;
+IdModule  = conn:BARREL_JACK;
 EndCmp
 
 BeginCmp
@@ -36,13 +43,6 @@ IdModule  = dip:DIP-28__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /537B5881;
-Reference = J1;
-ValeurCmp = USB;
-IdModule  = ring60:USB-MINIB;
-EndCmp
-
-BeginCmp
 TimeStamp = /537AD616;
 Reference = K1;
 ValeurCmp = CONN_3;
@@ -50,38 +50,31 @@ IdModule  = conn:SIL-3;
 EndCmp
 
 BeginCmp
+TimeStamp = /537E38AA;
+Reference = P1;
+ValeurCmp = CONN_3X2;
+IdModule  = pin:pin_array_3x2;
+EndCmp
+
+BeginCmp
 TimeStamp = /537AD150;
 Reference = R1;
-ValeurCmp = 4.7k;
-IdModule  = discrete:R3;
+ValeurCmp = 4k7;
+IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /537AD162;
 Reference = R2;
-ValeurCmp = 4.7k;
-IdModule  = discrete:R3;
+ValeurCmp = 4k7;
+IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /537B76C3;
+TimeStamp = /537E508D;
 Reference = R3;
-ValeurCmp = 68;
-IdModule  = discrete:R3;
-EndCmp
-
-BeginCmp
-TimeStamp = /537B76D5;
-Reference = R4;
-ValeurCmp = 68;
-IdModule  = discrete:R3;
-EndCmp
-
-BeginCmp
-TimeStamp = /537B7813;
-Reference = R5;
-ValeurCmp = 1k5;
-IdModule  = discrete:R3;
+ValeurCmp = 1k;
+IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
