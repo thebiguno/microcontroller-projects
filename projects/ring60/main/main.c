@@ -1,30 +1,31 @@
 #include <avr/interrupt.h>
 #include "lib/ws2811/ws2811.h"
 //#include "lib/ds1307/ds1307.h"
+#include "lib/remote/remote.h"
 #include "time32/time.h"
 #include "time32/usa_dst.h"
 //#include "lib/serial/serial.h"
 
 int main() {
 	
-//	ws2811_t base03 = {.red = 2, .green = 43, .blue = 54 };				// background
+//	ws2811_t base03 = {.red = 2, .green = 43, .blue = 54 };			// background
 	ws2811_t base02 = {.red = 6, .green = 54, .blue = 66 };
 //	ws2811_t base01 = {.red = 88, .green = 110, .blue = 117 };
 //	ws2811_t base00 = {.red = 101, .green = 123, .blue = 131 };
 //	ws2811_t base0 = {.red = 131, .green = 148, .blue = 150 };
 	ws2811_t base1 = {.red = 147, .green = 161, .blue = 161 };
-	ws2811_t base2 = {.red = 238, .green = 232, .blue = 213 };			// foreground
+	ws2811_t base2 = {.red = 238, .green = 232, .blue = 213 };		// foreground
 //	ws2811_t base3 = {.red = 253, .green = 246, .blue = 227 };
 	ws2811_t yellow = {.red = 181, .green = 137, .blue = 24 };		// month summer
-	ws2811_t orange = {.red = 203, .green = 75, .blue = 22 };
-//	ws2811_t red = {.red = 220, .green = 49, .blue = 47 };				// month autumn
+	ws2811_t orange = {.red = 203, .green = 75, .blue = 22 };		// month autumn
+//	ws2811_t red = {.red = 220, .green = 49, .blue = 47 };
 	ws2811_t magenta = {.red = 211, .green = 54, .blue = 130 };
 	ws2811_t violet = {.red = 108, .green = 113, .blue = 196 };
-	ws2811_t blue = {.red = 38, .green = 139, .blue = 210 };			// month winter
+	ws2811_t blue = {.red = 38, .green = 139, .blue = 210 };		// month winter
 //	ws2811_t cyan = {.red = 42, .green = 161, .blue = 152 };
 	ws2811_t green = {.red = 133, .green = 153, .blue = 29 };		// month spring
 //	ws2811_t white = {.red = 255, .green = 255, .blue = 255 };
-	ws2811_t black = {.red = 0, .green = 0, .blue = 0 };
+//	ws2811_t black = {.red = 0, .green = 0, .blue = 0 };
 
 	int8_t mday = -1;					// used to avoid computing sunrise, sunset, and moon phase more than once per day;
 	time_t prev_systime = 0;
@@ -34,20 +35,22 @@ int main() {
 	struct tm sys;
 	struct tm rise;
 	struct tm set;
-	uint8_t phase;
-	uint8_t week;
+	int8_t phase = 0;	// the number of segments to light / 2
+	uint8_t week = 0;
 	struct ws2811_t colors[60];
 	uint8_t mode = 0;
 
+	// TODO these values to come from RTC core registers
 	sys.tm_year = 2014;
 	sys.tm_mon = 4;
 	sys.tm_mday = 18;
 	sys.tm_hour = 8;
 	sys.tm_min = 17;
 
+	// TODO these values to come from RTC gp registers
 	set_zone(-7 * ONE_HOUR);
 	set_dst(usa_dst); // mountain
-	set_position(183762, -410605.99919999996); // calgary
+	set_position(183762, -410606); // calgary
 
 
 	// read rtc (&sys);
@@ -68,7 +71,8 @@ int main() {
 				localtime_r(&risetime, &rise);
 				localtime_r(&settime, &set);
 				week = week_of_year(&sys, 0);
-				phase = moon_phase(&systime);
+				int8_t mp = moon_phase(&systime);
+				phase = 0.3 * mp;
 			}
 
 			// update display
@@ -132,14 +136,52 @@ int main() {
 				}
 				colors[week] = violet;
 			} else if (mode == 3) {
+				// persoixante of day
+				uint8_t ps = ((sys.tm_hour * 60) + sys.tm_min) / 24;
+				uint8_t sr = ((rise.tm_hour * 60) + rise.tm_min) / 24;
+				uint8_t ss = ((set.tm_hour * 60) + set.tm_min) / 24;
+				for (uint8_t i = 0; i < ps; i ++) {
+					colors[i] = fg;
+				}
+				colors[sr] = magenta;
+				colors[ss] = violet;
+			} else if (mode == 4) {
 				// moon phase
 				for (uint8_t i = 0; i < 60; i = i + 15) {
 					colors[i] = base02;
 				}
+				if (phase > 0) {
+					// waxing
+					for (int8_t i = 15; i < 15 + phase; i++) {
+						colors[i] = fg;
+					}
+					for (int8_t i = 15; i > 15 - phase; i--) {
+						if (i < 0) i = 60 - i;
+						colors[i] = fg;
+					}
+				} else {
+					// waning
+					for (int8_t i = 45; i < 45 + phase; i++) {
+						colors[i] = fg;
+					}
+					for (int8_t i = 45; i > 45 - phase; i--) {
+						if (i > 60) i = i - 60;
+						colors[i] = fg;
+					}
+				}
 			}
-
+			
+			ws2811_set(colors, 60);
 
 			// read ir
+			uint8_t command = remote_get();
+			if (command == REMOTE_LEFT) {
+				mode--;
+				if (mode < 0) mode = 4;
+			} else if (command == REMOTE_RIGHT) {
+				mode++;
+				if (mode > 4) mode = 0;
+			}
 		}
 	}
 }
