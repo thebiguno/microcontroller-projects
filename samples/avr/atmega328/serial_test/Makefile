@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../build/variables.mk
 
 PROJECT=serial_test
 MMCU=atmega328p
@@ -8,6 +8,6 @@ SOURCES=main.c lib/serial/serial.c lib/serial/serial_sync_tx.c lib/serial/serial
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-AVRDUDE_PROGRAMMER=arduino
+AVRDUDE_PROGRAMMER=usbasp
 
-include ../../../build/targets.mk
+include ../../build/targets.mk
