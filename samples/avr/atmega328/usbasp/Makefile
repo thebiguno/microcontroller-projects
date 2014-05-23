@@ -4,10 +4,10 @@
 # 32k bootloader addr for 2k bootloader = 0x7800
 
 F_CPU = 20000000
-MMCU = atmega168p
-BOOTLOADER_ADDRESS = 0x3C00
+MMCU = atmega328
+BOOTLOADER_ADDRESS = 0x3800
 
-HFUSE=0xDA
+HFUSE=0xD8
 LFUSE=0xFF
 
 ifeq ($(OS),Linux)
@@ -32,7 +32,7 @@ AVRDUDE_PROGRAMMER=usbtiny
 CC = avr-gcc
 
 # Options:
-DEFINES = #-DDEBUG_LEVEL=2
+DEFINES = -DUSE_AUTOCONFIG=1 #-DDEBUG_LEVEL=2
 CFLAGS = -Wall -Os -I. -mmcu=$(MMCU) -DF_CPU=$(F_CPU) $(DEFINES)
 LDFLAGS = -Wl,--section-start=.text=$(BOOTLOADER_ADDRESS)
 
