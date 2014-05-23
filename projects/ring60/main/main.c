@@ -107,13 +107,12 @@ int main() {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = base1;
 				}
-				struct ws2811_t season = blue;
-				if (sys.tm_mon < 11) season = orange;
-				if (sys.tm_mon < 8) season = yellow;
-				if (sys.tm_mon < 5) season = green;
-				if (sys.tm_mon < 2) season = blue;
+				//if (sys.tm_mon < 11) fg = orange;
+				//if (sys.tm_mon < 8) fg = yellow;
+				//if (sys.tm_mon < 5) fg = green;
+				//if (sys.tm_mon < 2) fg = blue;
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = season;
+					colors[i] = fg;
 				}
 				if (sys.tm_mday < 31) {
 					// the 31st is not shown
@@ -147,8 +146,8 @@ int main() {
 				colors[ss] = violet;
 			} else if (mode == 4) {
 				// moon phase
-				for (uint8_t i = 0; i < 60; i = i + 15) {
-					colors[i] = base02;
+				for (uint8_t i = 0; i < 60; i++) {
+					colors[i] = bg;
 				}
 				if (phase > 0) {
 					// waxing
