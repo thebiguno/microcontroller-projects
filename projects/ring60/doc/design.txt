@@ -69,6 +69,13 @@ project goals
 - knock/clap sensor for mode selection
 - surface mount design
 
-	
-	
+
+programming by remote control
+	year -> month -> day -> hour -> minute -> second -> timezone -> dst -> latitude -> longitude
+	year: 2000 to 2060
+	day: from 1 to 31; 31 = blank or red?
+	timezone -12 > -11 > -10 > -9 >
+	dst: off -> na -> eu
+	latitude: -90 to +90 in 6 degree increments; 90S = bottom, 0 = middle, 90N = top
+	longitude: -180 to +180 in 6 degree increments; 0 = bottom, 90W = left, 180 = top, 90E = right
 
