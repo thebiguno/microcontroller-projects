@@ -1,0 +1,101 @@
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Thu 22 May 2014 08:14:13 PM MDT
+
+BeginCmp
+TimeStamp = /537EB8B0;
+Reference = C1;
+ValeurCmp = 20pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EB8D0;
+Reference = C2;
+ValeurCmp = 20pF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA35B;
+Reference = CON1;
+ValeurCmp = USB-MINI-B;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA391;
+Reference = D1;
+ValeurCmp = DIODE;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA3B6;
+Reference = D2;
+ValeurCmp = 3v6;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA3C3;
+Reference = D3;
+ValeurCmp = 3v6;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA326;
+Reference = IC1;
+ValeurCmp = ATMEGA328-P;
+IdModule  = DIP-28__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EBAE1;
+Reference = P1;
+ValeurCmp = CONN_7;
+IdModule  = SIL-7;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EBAF0;
+Reference = P2;
+ValeurCmp = CONN_4;
+IdModule  = SIL-4;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EAB79;
+Reference = P3;
+ValeurCmp = CONN_14;
+IdModule  = SIL-14;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA3F3;
+Reference = R1;
+ValeurCmp = 68;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA40F;
+Reference = R2;
+ValeurCmp = 68;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EA428;
+Reference = R3;
+ValeurCmp = R;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537EB54A;
+Reference = X1;
+ValeurCmp = CRYSTAL_RESONATOR;
+IdModule  = CRYSTAL_RESONATOR;
+EndCmp
+
+EndListe
