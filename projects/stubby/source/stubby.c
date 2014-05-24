@@ -9,6 +9,8 @@ int main (void){
 
 	comm_init();
 	leg_init();
+	
+	status_set_color(255, 0, 0);
 
 	while(1){
 		comm_read(&velocity, &direction);

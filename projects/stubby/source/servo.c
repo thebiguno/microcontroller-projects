@@ -3,8 +3,8 @@
 extern leg_t legs[LEG_COUNT];
 
 void servo_init(){
-	volatile uint8_t *ports[LEG_COUNT * JOINT_COUNT];
-	uint8_t pins[LEG_COUNT * JOINT_COUNT];
+	volatile uint8_t *ports[LEG_COUNT * JOINT_COUNT + 3];
+	uint8_t pins[LEG_COUNT * JOINT_COUNT + 3];
 
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
@@ -14,6 +14,13 @@ void servo_init(){
 			legs[l].direction[j] = (l & 0x01) ? -1 : 1;
 		}
 	}
+	
+	ports[LED_RED] = &PORTD;		//Red LED
+	pins[LED_RED] = PORTD4;
+	ports[LED_GREEN] = &PORTD;		//Green LED
+	pins[LED_GREEN] = PORTD6;
+	ports[LED_BLUE] = &PORTD;		//Blue LED
+	pins[LED_BLUE] = PORTD5;
 	
 	//TODO Allow for calibration via controller, plus store to EEPROM
 /*	legs[FRONT_LEFT].offset[COXA] = 80;
