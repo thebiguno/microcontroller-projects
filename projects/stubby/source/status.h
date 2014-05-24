@@ -10,6 +10,7 @@
 #define LED_GREEN (LEG_COUNT * JOINT_COUNT) + 1
 #define LED_BLUE (LEG_COUNT * JOINT_COUNT) + 2
 
+void status_init();
 void status_set_color(uint8_t red, uint8_t green, uint8_t blue);
 
 #endif

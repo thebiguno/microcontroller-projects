@@ -3,8 +3,8 @@
 extern leg_t legs[LEG_COUNT];
 
 void servo_init(){
-	volatile uint8_t *ports[LEG_COUNT * JOINT_COUNT + 3];
-	uint8_t pins[LEG_COUNT * JOINT_COUNT + 3];
+	volatile uint8_t *ports[(LEG_COUNT * JOINT_COUNT) + 3];
+	uint8_t pins[(LEG_COUNT * JOINT_COUNT) + 3];
 
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
@@ -38,7 +38,7 @@ void servo_init(){
 	legs[REAR_RIGHT].offset[COXA] = 0;
 	legs[REAR_RIGHT].offset[TIBIA] = -300;
 */	
-	pwm_init(ports, pins, LEG_COUNT * JOINT_COUNT, 20000);
+	pwm_init(ports, pins, LEG_COUNT * JOINT_COUNT + 3, 20000);
 }
 
 void servo_set_angle(uint8_t leg, uint8_t joint, double angle){
