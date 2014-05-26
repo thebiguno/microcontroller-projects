@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Thu 22 May 2014 08:14:13 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, May 23, 2014 'pmt' 03:10:08 pm
 
 BeginCmp
 TimeStamp = /537EB8B0;
@@ -18,7 +18,7 @@ BeginCmp
 TimeStamp = /537EA35B;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
-IdModule  = SIL-5;
+IdModule  = USB_MINI_B;
 EndCmp
 
 BeginCmp

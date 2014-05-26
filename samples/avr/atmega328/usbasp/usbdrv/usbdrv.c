@@ -5,8 +5,10 @@
  * Tabsize: 4
  * Copyright: (c) 2005 by OBJECTIVE DEVELOPMENT Software GmbH
  * License: GNU GPL v2 (see License.txt), GNU GPL v3 or proprietary (CommercialLicense.txt)
+ * This Revision: $Id: usbdrv.c 791 2010-07-15 15:56:13Z cs $
  */
 
+#include "usbportability.h"
 #include "usbdrv.h"
 #include "oddebug.h"
 
@@ -43,7 +45,7 @@ uchar       usbCurrentDataToken;/* when we check data toggling to ignore duplica
 #endif
 
 /* USB status registers / not shared with asm code */
-usbMsgPtr_t         usbMsgPtr;      /* data to transmit next -- ROM or RAM address */
+uchar               *usbMsgPtr;     /* data to transmit next -- ROM or RAM address */
 static usbMsgLen_t  usbMsgLen = USB_NO_MSG; /* remaining number of bytes */
 static uchar        usbMsgFlags;    /* flag values see below */
 
@@ -299,7 +301,7 @@ USB_PUBLIC void usbSetInterrupt3(uchar *data, uchar len)
             len = usbFunctionDescriptor(rq);        \
         }else{                                      \
             len = USB_PROP_LENGTH(cfgProp);         \
-            usbMsgPtr = (usbMsgPtr_t)(staticName);  \
+            usbMsgPtr = (uchar *)(staticName);      \
         }                                           \
     }
 
@@ -359,8 +361,7 @@ uchar       flags = USB_FLG_MSGPTR_IS_ROM;
  */
 static inline usbMsgLen_t usbDriverSetup(usbRequest_t *rq)
 {
-usbMsgLen_t len = 0;
-uchar   *dataPtr = usbTxBuf + 9;    /* there are 2 bytes free space at the end of the buffer */
+uchar   len  = 0, *dataPtr = usbTxBuf + 9;  /* there are 2 bytes free space at the end of the buffer */
 uchar   value = rq->wValue.bytes[0];
 #if USB_CFG_IMPLEMENT_HALT
 uchar   index = rq->wIndex.bytes[0];
@@ -407,7 +408,7 @@ uchar   index = rq->wIndex.bytes[0];
     SWITCH_DEFAULT                          /* 7=SET_DESCRIPTOR, 12=SYNC_FRAME */
         /* Should we add an optional hook here? */
     SWITCH_END
-    usbMsgPtr = (usbMsgPtr_t)dataPtr;
+    usbMsgPtr = dataPtr;
 skipMsgPtrAssignment:
     return len;
 }
@@ -497,8 +498,7 @@ static uchar usbDeviceRead(uchar *data, uchar len)
         }else
 #endif
         {
-            uchar i = len;
-            usbMsgPtr_t r = usbMsgPtr;
+            uchar i = len, *r = usbMsgPtr;
             if(usbMsgFlags & USB_FLG_MSGPTR_IS_ROM){    /* ROM data */
                 do{
                     uchar c = USB_READ_FLASH(r);    /* assign to char size variable to enforce byte ops */
@@ -507,8 +507,7 @@ static uchar usbDeviceRead(uchar *data, uchar len)
                 }while(--i);
             }else{  /* RAM data */
                 do{
-                    *data++ = *((uchar *)r);
-                    r++;
+                    *data++ = *r++;
                 }while(--i);
             }
             usbMsgPtr = r;
@@ -558,8 +557,6 @@ uchar           isReset = !notResetState;
         USB_RESET_HOOK(isReset);
         wasReset = isReset;
     }
-#else
-    notResetState = notResetState;  // avoid compiler warning
 #endif
 }
 

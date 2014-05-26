@@ -9,7 +9,8 @@ int main (void){
 
 	comm_init();
 	leg_init();
-
+	status_init();
+	
 	while(1){
 		comm_read(&velocity, &direction);
 		

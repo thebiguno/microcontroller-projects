@@ -38,35 +38,47 @@ static inline void update_desired_position(uint8_t leg, uint16_t millis){
 
 
 void leg_init(){
-	legs[FRONT_LEFT].port[COXA] = &PORTA;
-	legs[FRONT_LEFT].pin[COXA] = PORTA0;
-	legs[FRONT_LEFT].port[TIBIA] = &PORTA;
-	legs[FRONT_LEFT].pin[TIBIA] = PORTA2;
+	legs[FRONT_LEFT].port[COXA] = &PORTB;		//PWM00
+	legs[FRONT_LEFT].pin[COXA] = PORTB2;
+	legs[FRONT_LEFT].port[FEMUR] = &PORTB;		//PWM01
+	legs[FRONT_LEFT].pin[FEMUR] = PORTB1;
+	legs[FRONT_LEFT].port[TIBIA] = &PORTB;		//PWM02
+	legs[FRONT_LEFT].pin[TIBIA] = PORTB0;
 	
-	legs[FRONT_RIGHT].port[COXA] = &PORTA;
-	legs[FRONT_RIGHT].pin[COXA] = PORTA3;
-	legs[FRONT_RIGHT].port[TIBIA] = &PORTA;
-	legs[FRONT_RIGHT].pin[TIBIA] = PORTA5;
+	legs[FRONT_RIGHT].port[TIBIA] = &PORTA;		//PWM03
+	legs[FRONT_RIGHT].pin[TIBIA] = PORTA4;
+	legs[FRONT_RIGHT].port[FEMUR] = &PORTA;		//PWM04
+	legs[FRONT_RIGHT].pin[FEMUR] = PORTA5;
+	legs[FRONT_RIGHT].port[COXA] = &PORTA;		//PWM05
+	legs[FRONT_RIGHT].pin[COXA] = PORTA6;
 
-	legs[MIDDLE_LEFT].port[COXA] = &PORTA;
-	legs[MIDDLE_LEFT].pin[COXA] = PORTA6;
-	legs[MIDDLE_LEFT].port[TIBIA] = &PORTB;
-	legs[MIDDLE_LEFT].pin[TIBIA] = PORTB1;
+	legs[MIDDLE_LEFT].port[COXA] = &PORTB;		//PWM06
+	legs[MIDDLE_LEFT].pin[COXA] = PORTB4;
+	legs[MIDDLE_LEFT].port[FEMUR] = &PORTA;		//PWM07
+	legs[MIDDLE_LEFT].pin[FEMUR] = PORTA3;
+	legs[MIDDLE_LEFT].port[TIBIA] = &PORTB;		//PWM08
+	legs[MIDDLE_LEFT].pin[TIBIA] = PORTB3;
 
-	legs[MIDDLE_RIGHT].port[COXA] = &PORTB;
-	legs[MIDDLE_RIGHT].pin[COXA] = PORTB2;
-	legs[MIDDLE_RIGHT].port[TIBIA] = &PORTC;
+	legs[MIDDLE_RIGHT].port[TIBIA] = &PORTC;	//PWM09
 	legs[MIDDLE_RIGHT].pin[TIBIA] = PORTC7;
+	legs[MIDDLE_RIGHT].port[FEMUR] = &PORTC;	//PWM10
+	legs[MIDDLE_RIGHT].pin[FEMUR] = PORTC6;
+	legs[MIDDLE_RIGHT].port[COXA] = &PORTC;		//PWM11
+	legs[MIDDLE_RIGHT].pin[COXA] = PORTC5;
 
-	legs[REAR_LEFT].port[COXA] = &PORTC;
-	legs[REAR_LEFT].pin[COXA] = PORTC6;
-	legs[REAR_LEFT].port[TIBIA] = &PORTC;
-	legs[REAR_LEFT].pin[TIBIA] = PORTC4;
+	legs[REAR_LEFT].port[COXA] = &PORTC;		//PWM12
+	legs[REAR_LEFT].pin[COXA] = PORTC4;
+	legs[REAR_LEFT].port[FEMUR] = &PORTD;		//PWM13
+	legs[REAR_LEFT].pin[FEMUR] = PORTD3;
+	legs[REAR_LEFT].port[TIBIA] = &PORTD;		//PWM14
+	legs[REAR_LEFT].pin[TIBIA] = PORTD2;
 
-	legs[REAR_RIGHT].port[COXA] = &PORTC;
-	legs[REAR_RIGHT].pin[COXA] = PORTC3;
-	legs[REAR_RIGHT].port[TIBIA] = &PORTB;
-	legs[REAR_RIGHT].pin[TIBIA] = PORTB4;
+	legs[REAR_RIGHT].port[TIBIA] = &PORTC;		//PWM15
+	legs[REAR_RIGHT].pin[TIBIA] = PORTC3;
+	legs[REAR_RIGHT].port[FEMUR] = &PORTC;		//PWM16
+	legs[REAR_RIGHT].pin[FEMUR] = PORTC2;
+	legs[REAR_RIGHT].port[COXA] = &PORTD;		//PWM17
+	legs[REAR_RIGHT].pin[COXA] = PORTD7;
 	
 	servo_init();
 	

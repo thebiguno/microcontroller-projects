@@ -10,8 +10,8 @@
 #include "stubby.h"
 
 typedef struct leg_t {
-	volatile uint8_t *port[JOINT_COUNT];
-	uint8_t pin[JOINT_COUNT];
+	volatile uint8_t *port[JOINT_COUNT + 1];		//TODO Remove + 1 when adding femur
+	uint8_t pin[JOINT_COUNT + 1];
 
 	//int16_t offset[JOINT_COUNT];
 	//Either 1 or -1; this depends on which side of the robot the leg is on, 
@@ -37,9 +37,9 @@ typedef struct leg_t {
 #define REAR_LEFT		4
 #define REAR_RIGHT		5
 
-#define COXA			0
-//#define FEMUR			1
-#define TIBIA			1
+#define TIBIA			0
+#define FEMUR			2	//TODO change the order here
+#define COXA			1
 
 //The maximum angle which we can move away from zero.  If you try to set a value higher (lower 
 // for negatives) than this, we cap it at this value.

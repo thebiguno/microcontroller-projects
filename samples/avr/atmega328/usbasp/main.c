@@ -106,6 +106,8 @@ static const uchar  signatureBytes[4] = {
     0x1e, 0x93, 0x0a, 0
 #elif defined (__AVR_ATmega168__) || defined (__AVR_ATmega168P__)
     0x1e, 0x94, 0x06, 0
+#elif defined (__AVR_ATmega328__)
+    0x1e, 0x95, 0x14, 0
 #elif defined (__AVR_ATmega328P__)
     0x1e, 0x95, 0x0f, 0
 #else
