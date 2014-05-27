@@ -6,26 +6,40 @@
 #include "time32/usa_dst.h"
 //#include "lib/serial/serial.h"
 
+#define MODE_MIN 0
+#define MODE_HMS 0
+#define MODE_MD 1
+#define MODE_WD 2
+#define MODE_PCT 3
+#define MODE_MOON 4
+#define MODE_MAX 4
+
+#define MODE_YEAR 127
+#define MODE_MONTH 128
+#define MODE_DAY 129
+#define MODE_HOUR 130
+#define MODE_MIN 131
+#define MODE_SEC 132
+
+
 int main() {
 	
-//	ws2811_t base03 = {.red = 2, .green = 43, .blue = 54 };			// background
-	ws2811_t base02 = {.red = 6, .green = 54, .blue = 66 };
-//	ws2811_t base01 = {.red = 88, .green = 110, .blue = 117 };
-//	ws2811_t base00 = {.red = 101, .green = 123, .blue = 131 };
-//	ws2811_t base0 = {.red = 131, .green = 148, .blue = 150 };
-	ws2811_t base1 = {.red = 147, .green = 161, .blue = 161 };
-	ws2811_t base2 = {.red = 238, .green = 232, .blue = 213 };		// foreground
-//	ws2811_t base3 = {.red = 253, .green = 246, .blue = 227 };
-	ws2811_t yellow = {.red = 181, .green = 137, .blue = 24 };		// month summer
-	ws2811_t orange = {.red = 203, .green = 75, .blue = 22 };		// month autumn
-//	ws2811_t red = {.red = 220, .green = 49, .blue = 47 };
-	ws2811_t magenta = {.red = 211, .green = 54, .blue = 130 };
-	ws2811_t violet = {.red = 108, .green = 113, .blue = 196 };
-	ws2811_t blue = {.red = 38, .green = 139, .blue = 210 };		// month winter
-//	ws2811_t cyan = {.red = 42, .green = 161, .blue = 152 };
-	ws2811_t green = {.red = 133, .green = 153, .blue = 29 };		// month spring
-//	ws2811_t white = {.red = 255, .green = 255, .blue = 255 };
-//	ws2811_t black = {.red = 0, .green = 0, .blue = 0 };
+//	ws2811_t base03 = {.red = 0x00, .green = 0x1b, .blue = 0x26 };			// background
+	ws2811_t base02 = {.red = 0x07, .green = 0x26, .blue = 0x32 };
+//	ws2811_t base01 = {.red = 0x48, .green = 0x5e, .blue = 0x65 };
+//	ws2811_t base00 = {.red = 0x55, .green = 0x6b, .blue = 0x73 };
+//	ws2811_t base0 = {.red = 0x73, .green = 0x84, .blue = 0x86 };
+	ws2811_t base1 = {.red = 0x83, .green = 0x91, .blue = 0x91 };
+	ws2811_t base2 = {.red = 0xde, .green = 0xd8, .blue = 0xc5 };		// foreground
+//	ws2811_t base3 = {.red = 0xed, .green = 0xe6, .blue = 0xd3 };
+	ws2811_t yellow = {.red = 0xa5, .green = 0x79, .blue = 0x00 };		// month summer
+	ws2811_t orange = {.red = 0xa5, .green = 0x3b, .blue = 0x06 };		// month autumn
+//	ws2811_t red = {.red = 0xcc, .green = 0x22, .blue = 0x1f };
+	ws2811_t magenta = {.red = 0xc3, .green = 0x26, .blue = 0x72 };
+	ws2811_t violet = {.red = 0x5c, .green = 0x61, .blue = 0xb4 };
+	ws2811_t blue = {.red = 0x16, .green = 0x7b, .blue = 0xc2 };		// month winter
+//	ws2811_t cyan = {.red = 0x1a, .green = 0x91, .blue = 0x88 };
+	ws2811_t green = {.red = 0x75, .green = 0x89, .blue = 0x00 };		// month spring
 
 	int8_t mday = -1;					// used to avoid computing sunrise, sunset, and moon phase more than once per day;
 	time_t prev_systime = 0;
@@ -40,18 +54,17 @@ int main() {
 	struct ws2811_t colors[60];
 	uint8_t mode = 0;
 
+	// hard coded location and time zone for now
+	set_zone(-7 * ONE_HOUR);
+	set_dst(usa_dst); // mountain
+	set_position(183762, -410606); // calgary
+
 	// TODO these values to come from RTC core registers
 	sys.tm_year = 2014;
 	sys.tm_mon = 4;
 	sys.tm_mday = 18;
 	sys.tm_hour = 8;
 	sys.tm_min = 17;
-
-	// TODO these values to come from RTC gp registers
-	set_zone(-7 * ONE_HOUR);
-	set_dst(usa_dst); // mountain
-	set_position(183762, -410606); // calgary
-
 
 	// read rtc (&sys);
 	systime = mktime(&sys);
@@ -175,11 +188,14 @@ int main() {
 			// read ir
 			uint8_t command = remote_get();
 			if (command == REMOTE_LEFT) {
+				if (mode == MODE_DST) break;
 				mode--;
-				if (mode < 0) mode = 4;
+				if (mode < MODE_MIN) mode = MODE_MAX;
 			} else if (command == REMOTE_RIGHT) {
 				mode++;
-				if (mode > 4) mode = 0;
+				if (mode > MODE_MAX) mode = MODE_MIN;
+			} else if (command == REMOTE_MENU) {
+				mode = MODE_DST;
 			}
 		}
 	}
