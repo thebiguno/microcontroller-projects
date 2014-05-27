@@ -69,13 +69,27 @@ project goals
 - knock/clap sensor for mode selection
 - surface mount design
 
+a usb or bluetooth connected design would add the following features:
+- current, high, low temperature: -45 to +45
+- current weather condition icon:
+	clear: solid yellow or violet
+	few clouds: solid yellow or violet
+	scattered clouds: dotted white
+	overcast: solid grey
+	showers: solid grey top; dotted blue bottom
+	rain: solid yellow or violet top; dotted blue bottom
+	thunderstorm: solid grey top; dotted red bottom
+	snow: solid grey top; dotted white bottom
+	mist: dotted grey
+	
+- wind direction and magnitude
+- humidity
+- atmospheric pressure
+- raw mode
+
 
 programming by remote control
-	year -> month -> day -> hour -> minute -> second -> timezone -> dst -> latitude -> longitude
-	year: 2000 to 2060
+	year -> month -> day -> hour -> minute -> second
+	year: 2000 to 2059
 	day: from 1 to 31; 31 = blank or red?
-	timezone -12 > -11 > -10 > -9 >
-	dst: off -> na -> eu
-	latitude: -90 to +90 in 6 degree increments; 90S = bottom, 0 = middle, 90N = top
-	longitude: -180 to +180 in 6 degree increments; 0 = bottom, 90W = left, 180 = top, 90E = right
 
