@@ -1,7 +1,7 @@
 include ../../build/variables.mk
 
 PROJECT=ws2811
-MMCU=atmega48
+MMCU=atmega328
 F_CPU=20000000
 SOURCES=main.c lib/ws2811/ws2811.c
 

@@ -5,8 +5,8 @@
 
 typedef struct ws2811_t {
 	// the order of the struct members must by g, r, b
-	uint8_t green;
 	uint8_t red;
+	uint8_t green;
 	uint8_t blue;
 } ws2811_t;
 
