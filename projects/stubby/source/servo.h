@@ -2,6 +2,7 @@
 #define HEX_SERVO
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #include "stubby.h"
 #include "leg.h"
@@ -12,17 +13,21 @@
 // the servo has a linear travel between one end 
 // and the other.
 #define MIN_PHASE	700
-#define NEUTRAL	1500
+#define NEUTRAL		1500
 #define MAX_PHASE	2300
 
-//Maximum angle of travel for the servo, in radians.
+//Maximum angle of travel for the servo, in degrees.
 // Therefore, the maximum travel in each direction
 // from neutral is half of this number.
-#define SERVO_TRAVEL  170
+#define SERVO_TRAVEL  180.0
 
 void servo_init();
 
 void servo_set_angle(uint8_t leg, uint8_t joint, int8_t angle);
+
+void servo_load_calibration();
+
+void servo_save_calibration();
 
 inline void servo_apply_batch(){
 	pwm_apply_batch();

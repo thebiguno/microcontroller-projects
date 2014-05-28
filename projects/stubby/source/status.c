@@ -13,6 +13,14 @@ void status_init(){
 #endif
 }
 
+void status_enable_timer(){
+	TIMSK0 = _BV(TOIE0);
+}
+
+void status_disable_timer(){
+	TIMSK0 = _BV(TOIE0);
+}
+
 void status_set_color(uint8_t red, uint8_t green, uint8_t blue){
 	//The magic number 79 comes from X/20000 = color/255; X = color * 20000 / 255; X = color * 79.
 	pwm_set_phase_batch(LED_RED, ((uint16_t) red) * 79);

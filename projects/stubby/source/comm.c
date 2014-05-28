@@ -2,26 +2,21 @@
 
 static volatile double _velocity = 0; 	//0 is stopped, 1 is full speed ahead
 static volatile double _direction = 0;	//0 is straight ahead, -1 is full left, 1 is full right
-static volatile uint8_t _special = 0x00;	//Bit mask of any special buttons pressed.  Bits are cleared when read.
+static volatile uint16_t _buttons = 0x00;	//Bit mask of any buttons pressed.  Bits are cleared when read.
+
 static volatile uint8_t repeat_counter = 0x00;
 
 void comm_init(){
 	serial_init_b(38400);
 }
 
-void comm_reset_special(){
-		_special = 0x00;
+uint16_t comm_read_buttons(){
+	uint16_t buttons = _buttons;
+	_buttons = 0x00;
+	return buttons;
 }
 
-uint8_t comm_read_reset(){
-	if (_special & SPECIAL_RESET){
-		_special &= ~SPECIAL_RESET;
-		return 0x01;
-	}
-	return 0x00;
-}
-
-void comm_read(double *velocity, double *direction){
+void comm_read_vector(double *velocity, double *direction){
 	//Whenever this gets to a certain value, we invalidate all current messages.  On receipt of new message, we reset to 0.
 	repeat_counter++;
 	if (repeat_counter >= 0x0F){
@@ -73,7 +68,7 @@ ISR(USART0_RX_vect){
 	}
 	else if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_BUTTON){	//Digital button event
 		if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){
-			if ((b & CONTROLLER_BUTTON_VALUE_MASK) == CONTROLLER_BUTTON_VALUE_CROSS) _special |= SPECIAL_RESET;
+			_buttons |= _BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Set the button; this is cleared when they are read.
 		}
 	}
 	

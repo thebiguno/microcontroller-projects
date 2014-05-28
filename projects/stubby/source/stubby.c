@@ -9,6 +9,8 @@ int main (void){
 	
 	_delay_ms(1000);
 	
+	calibration_main();
+	
 	while(1){
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
 			servo_set_angle(l, TIBIA, 30);

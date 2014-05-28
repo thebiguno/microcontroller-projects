@@ -6,6 +6,7 @@
 #define LEG_COUNT	6
 #define JOINT_COUNT	3
 
+#include "calibration.h"
 #include "comm.h"
 #include "gait.h"
 #include "servo.h"

@@ -11,19 +11,15 @@
 
 void comm_init();
 
-/**
- * Set the velocity, direction, and special values into the provided variables.
+/*
+ * Read all buttons which have been pressed since the last
+ * call to comm_read_buttons().
  */
-void comm_read(double *velocity, double *direction);
+uint16_t comm_read_buttons();
 
 /**
- * Return non-zero if reset has been pushed.
+ * Read the velocity + direction of desired travel
  */
-uint8_t comm_read_reset();
-
-/**
- * Resets special variable
- */
-void comm_reset_special();
+void comm_read_vector(double *velocity, double *direction);
 
 #endif
