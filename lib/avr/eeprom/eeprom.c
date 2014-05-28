@@ -1,4 +1,5 @@
 #include "eeprom.h"
+#error "The DigitalCave EEPROM library is deprecated.  Use <avr/eeprom.h> instead of this library.  This library will be deleted in the future; please update your source code to reference the built-in EEPROM functions."
 
 void eeprom_write_c(uint16_t address, uint8_t data){
 	//Wait for previous write to complete
