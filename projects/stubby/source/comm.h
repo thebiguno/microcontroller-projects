@@ -5,10 +5,6 @@
 #include <avr/interrupt.h>
 
 #include "lib/universal_controller/client.h"
-
-#define LEG_COUNT	6
-#define JOINT_COUNT	2
-
 #include "lib/serial/serial.h"
 
 #define SPECIAL_RESET		0x01

@@ -4,7 +4,7 @@
 #include <avr/io.h>
 
 #define LEG_COUNT	6
-#define JOINT_COUNT	2
+#define JOINT_COUNT	3
 
 #include "comm.h"
 #include "gait.h"
