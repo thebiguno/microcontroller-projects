@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, May 22, 2014 'pmt' 02:08:57 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Wednesday, May 28, 2014 'amt' 11:49:18 am
 
 BeginCmp
 TimeStamp = /537ACF90;
@@ -29,17 +29,17 @@ IdModule  = cms:SM0805;
 EndCmp
 
 BeginCmp
-TimeStamp = /537E3718;
-Reference = CON1;
-ValeurCmp = BARREL_JACK;
-IdModule  = conn:BARREL_JACK;
+TimeStamp = /53861FB5;
+Reference = GND1;
+ValeurCmp = CONN_1;
+IdModule  = conn:SIL-1;
 EndCmp
 
 BeginCmp
-TimeStamp = /537ACEE5;
+TimeStamp = /53861E58;
 Reference = IC1;
-ValeurCmp = ATMEGA328-P;
-IdModule  = dip:DIP-28__300;
+ValeurCmp = ATMEGA328-A;
+IdModule  = cms:TQFP32;
 EndCmp
 
 BeginCmp
@@ -50,10 +50,10 @@ IdModule  = conn:SIL-3;
 EndCmp
 
 BeginCmp
-TimeStamp = /537E38AA;
+TimeStamp = /538620D1;
 Reference = P1;
-ValeurCmp = CONN_3X2;
-IdModule  = pin:pin_array_3x2;
+ValeurCmp = ISP;
+IdModule  = custom:ISP;
 EndCmp
 
 BeginCmp
@@ -81,7 +81,7 @@ BeginCmp
 TimeStamp = /537ACEC6;
 Reference = U1;
 ValeurCmp = DS1307;
-IdModule  = dip:DIP-8__300;
+IdModule  = cms:SO8E;
 EndCmp
 
 BeginCmp
@@ -89,6 +89,13 @@ TimeStamp = /537AD35C;
 Reference = U2;
 ValeurCmp = TSOP39338;
 IdModule  = conn:SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /53861FA3;
+Reference = VCC1;
+ValeurCmp = CONN_1;
+IdModule  = conn:SIL-1;
 EndCmp
 
 BeginCmp
