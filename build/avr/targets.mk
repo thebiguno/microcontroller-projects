@@ -18,6 +18,12 @@ ifeq 'arduino' '$(AVRDUDE_PROGRAMMER)'
 	endif
 	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
 endif
+#If an EFUSE variable has been set, we program the extended fuses too
+ifeq '' '$(EFUSE)'
+	EXTENDED_FUSE_WRITE=
+else
+	EXTENDED_FUSE_WRITE=-U efuse:w:$(EFUSE):m
+endif
 
 # Default target.
 
@@ -48,12 +54,12 @@ program: all
 fuse:
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
-		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
+		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m $(EXTENDED_FUSE_WRITE)
 
 readfuse: 
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
-		-U lfuse:r:-:h -U hfuse:r:-:h
+		-U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h
 
 clean:
 	rm -f *.o
