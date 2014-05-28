@@ -18,11 +18,11 @@
 //Maximum angle of travel for the servo, in radians.
 // Therefore, the maximum travel in each direction
 // from neutral is half of this number.
-#define SERVO_TRAVEL  3.1415926
+#define SERVO_TRAVEL  170
 
 void servo_init();
 
-void servo_set_angle(uint8_t leg, uint8_t joint, double angle);
+void servo_set_angle(uint8_t leg, uint8_t joint, int8_t angle);
 
 inline void servo_apply_batch(){
 	pwm_apply_batch();

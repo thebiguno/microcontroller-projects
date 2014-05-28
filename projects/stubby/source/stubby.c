@@ -3,28 +3,75 @@
 leg_t legs[LEG_COUNT];
 
 int main (void){
-	double velocity = 0;
-	double direction = 0;
-	uint8_t special_allowed = 0x00;		//This sets to 0 every time a special is performed, and 1 every time a step is taken.  We can only do a special action when this is 1,
-
 	comm_init();
 	leg_init();
 	status_init();
 	
+	_delay_ms(1000);
+	
 	while(1){
-		comm_read(&velocity, &direction);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, 30);
+			servo_set_angle(l, FEMUR, -50);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, -30);
+		}
+		_delay_ms(10);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, -50);
+			servo_set_angle(l, FEMUR, 50);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, 0);
+			servo_set_angle(l, FEMUR, 0);
+		}
+		_delay_ms(1000);
+
 		
-		if (special_allowed && comm_read_reset()){
-			gait_init();
-			special_allowed = 0x00;
+		
+		/*
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, 60);
 		}
-		else if (velocity < -0.5 || velocity > 0.5 || direction < -0.5 || direction > 0.5) {
-			tripod_gait_step();
-			special_allowed = 0x01;
-			comm_reset_special();
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, -60);
 		}
-		else {
-			leg_delay_ms(20);
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, TIBIA, 0);
 		}
+		_delay_ms(1000);
+		
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, FEMUR, 60);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, FEMUR, -60);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, FEMUR, 0);
+		}
+		_delay_ms(1000);
+
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, COXA, 60);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, COXA, -60);
+		}
+		_delay_ms(1000);
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			servo_set_angle(l, COXA, 0);
+		}
+		_delay_ms(1000);
+		*/
+
 	}
 }

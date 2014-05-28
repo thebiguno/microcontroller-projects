@@ -10,22 +10,20 @@
 #include "stubby.h"
 
 typedef struct leg_t {
-	volatile uint8_t *port[JOINT_COUNT + 1];		//TODO Remove + 1 when adding femur
-	uint8_t pin[JOINT_COUNT + 1];
+	volatile uint8_t *port[JOINT_COUNT];
+	uint8_t pin[JOINT_COUNT];
 
-	//int16_t offset[JOINT_COUNT];
-	//Either 1 or -1; this depends on which side of the robot the leg is on, 
-	// and how the servo is mounted.  Set in servo_init().
-	int8_t direction[JOINT_COUNT];
+	//Calibration offset in degrees
+	int8_t offset[JOINT_COUNT];
 	
-	//The current angle in radians
-	double current[JOINT_COUNT];
+	//The current servo angle in degrees
+	int8_t current[JOINT_COUNT];
 	
-	//The desired angle in radians
-	double desired[JOINT_COUNT];
+	//The desired servo angle in degrees
+	int8_t desired[JOINT_COUNT];
 	
-	//The step in radians to be moved each iteration through the busy/wait loop
-	double step[JOINT_COUNT];
+	//The step in degrees to be moved each iteration through the busy/wait loop.  Minimum of 1.
+	uint8_t step[JOINT_COUNT];
 } leg_t;
 
 #include "servo.h"
@@ -38,29 +36,12 @@ typedef struct leg_t {
 #define REAR_RIGHT		5
 
 #define TIBIA			0
-#define FEMUR			2	//TODO change the order here
-#define COXA			1
-
-//The maximum angle which we can move away from zero.  If you try to set a value higher (lower 
-// for negatives) than this, we cap it at this value.
-#define MAX_ANGLE		1.7
+#define FEMUR			1
+#define COXA			2
 
 //The time (millis) during which we pause in leg_delay_ms.  It really doesn't make sense to set
 // this any lower than the PWM period of 20ms.
 #define DELAY_STEP		20
-
-//The minimum allowable step (in radians).  Also the bottom edge of angular resolution available when 
-// setting desired position (once the error falls below this, we consider it 'good enough').
-#define MIN_STEP		0.01
-
-//Position of raised / lowered tibia
-#define TIBIA_LOWERED MAX_ANGLE
-#define TIBIA_RAISED -MAX_ANGLE
-//Position of nautral / forward / reverse coxa
-#define COXA_NEUTRAL 0
-#define COXA_FORWARD -MAX_ANGLE/2.5
-#define COXA_REVERSE MAX_ANGLE/2.5
-
 
 //Initialize memory for an array of legs.  By convention, the resulting array is ordered
 // from left to right, front to back.  I.e. Left Front, Right Front, Left Middle, Right Middle, etc. 

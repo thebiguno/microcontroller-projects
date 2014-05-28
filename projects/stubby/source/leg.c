@@ -1,7 +1,11 @@
 #include "leg.h"
 
-extern leg_t legs[LEG_COUNT];
+/*
+ * The leg module keeps track of the current leg position
+ */
 
+extern leg_t legs[LEG_COUNT];
+/*
 static inline void bounds_check_current(uint8_t leg){
 	if (legs[leg].current[COXA] < -MAX_ANGLE) legs[leg].current[COXA] = -MAX_ANGLE; 
 	else if (legs[leg].current[COXA] > MAX_ANGLE) legs[leg].current[COXA] = MAX_ANGLE;
@@ -30,10 +34,10 @@ static inline void update_desired_position(uint8_t leg, uint16_t millis){
 		double difference = fabs(legs[leg].current[j] - legs[leg].desired[j]);
 		legs[leg].step[j] = difference / millis * DELAY_STEP;
 		if (legs[leg].step[j] > difference) legs[leg].step[j] = difference;
-		else if (legs[leg].step[j] < MIN_STEP) legs[leg].step[j] = MIN_STEP;
+		else if (legs[leg].step[j] < 1) legs[leg].step[j] = 1;
 	}
 }
-
+*/
 
 
 
@@ -84,9 +88,12 @@ void leg_init(){
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			legs[l].step[j] = MIN_STEP;
+			//Reset to neutral position at startup
+			legs[l].current[j] = 0;
+			legs[l].desired[j] = 0;
+			servo_set_angle(l, j, legs[l].current[j]);
 		}
-		leg_set_current_position_absolute(l, 0, 0, TIBIA_LOWERED);
+		//leg_set_current_position_absolute(l, 0, 0, TIBIA_LOWERED);
 	}
 	
 	servo_apply_batch();
@@ -95,6 +102,7 @@ void leg_init(){
 }
 
 void leg_delay_ms(uint16_t millis){
+	/*
 	for (uint16_t d = 0; d < millis; d += DELAY_STEP){
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
 			for (uint8_t j = 0; j < JOINT_COUNT; j++){
@@ -124,40 +132,49 @@ void leg_delay_ms(uint16_t millis){
 		servo_apply_batch();
 		_delay_ms(DELAY_STEP);
 	}
+	*/
 }
 
 void leg_set_current_position_absolute(uint8_t leg, double x, double y, double z){
+	/*
 	legs[leg].current[COXA] = y;
 	legs[leg].current[TIBIA] = z;
 	
 	bounds_check_current(leg);
 	
 	update_current_position(leg);
+	*/
 }
 
 void leg_set_current_position_relative(uint8_t leg, double x, double y, double z){
+	/*
 	legs[leg].current[COXA] = legs[leg].current[COXA] + y;
 	legs[leg].current[TIBIA] = legs[leg].current[TIBIA] + z;
 
 	bounds_check_current(leg);
 
 	update_current_position(leg);
+	*/
 }
 
 void leg_set_desired_position_absolute(uint8_t leg, double x, double y, double z, uint16_t millis){
+	/*
 	legs[leg].desired[COXA] = y;
 	legs[leg].desired[TIBIA] = z;
 
 	bounds_check_desired(leg);
 	
 	update_desired_position(leg, millis);
+	*/
 }
 
 void leg_set_desired_position_relative(uint8_t leg, double x, double y, double z, uint16_t millis){
+	/*
 	legs[leg].desired[COXA] = legs[leg].desired[COXA] + y;
 	legs[leg].desired[TIBIA] = legs[leg].desired[TIBIA] + z;
 	
 	bounds_check_desired(leg);
 	
 	update_desired_position(leg, millis);
+	*/
 }
