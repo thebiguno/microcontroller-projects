@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Wednesday, May 28, 2014 'amt' 11:49:18 am
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, May 29, 2014 'amt' 09:26:43 am
 
 BeginCmp
 TimeStamp = /537ACF90;
@@ -11,20 +11,6 @@ BeginCmp
 TimeStamp = /537ACFF9;
 Reference = C1;
 ValeurCmp = 0.1uF;
-IdModule  = cms:SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /537ADF9A;
-Reference = C2;
-ValeurCmp = 20 pF;
-IdModule  = cms:SM0805;
-EndCmp
-
-BeginCmp
-TimeStamp = /537ADF88;
-Reference = C3;
-ValeurCmp = 20 pF;
 IdModule  = cms:SM0805;
 EndCmp
 
@@ -53,7 +39,7 @@ BeginCmp
 TimeStamp = /538620D1;
 Reference = P1;
 ValeurCmp = ISP;
-IdModule  = custom:ISP;
+IdModule  = custom:ISP_EDGE;
 EndCmp
 
 BeginCmp
@@ -96,13 +82,6 @@ TimeStamp = /53861FA3;
 Reference = VCC1;
 ValeurCmp = CONN_1;
 IdModule  = conn:SIL-1;
-EndCmp
-
-BeginCmp
-TimeStamp = /537BC555;
-Reference = X1;
-ValeurCmp = CRYSTAL_RESONATOR;
-IdModule  = custom:CRYSTAL_RESONATOR;
 EndCmp
 
 BeginCmp

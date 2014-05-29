@@ -31,6 +31,7 @@ LIBS:contrib
 LIBS:valves
 LIBS:ring60
 LIBS:custom
+LIBS:ring60-cache
 EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
@@ -278,7 +279,7 @@ Wire Wire Line
 	4300 2400 4600 2400
 Connection ~ 4300 2100
 NoConn ~ 6500 2750
-NoConn ~ 6500 2850
+NoConn ~ 6500 2950
 NoConn ~ 6500 3800
 NoConn ~ 6500 3900
 NoConn ~ 6500 4000
@@ -402,9 +403,7 @@ $EndComp
 Wire Wire Line
 	6750 4450 7400 4450
 Wire Wire Line
-	6750 4450 6750 2950
-Wire Wire Line
-	6750 2950 6500 2950
+	6750 2850 6750 4450
 NoConn ~ 6500 1800
 NoConn ~ 6500 1900
 $Comp
@@ -493,4 +492,6 @@ NoConn ~ 6500 2500
 Wire Wire Line
 	4600 1900 4300 1900
 Connection ~ 4300 1900
+Wire Wire Line
+	6750 2850 6500 2850
 $EndSCHEMATC
