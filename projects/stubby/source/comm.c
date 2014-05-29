@@ -11,6 +11,8 @@ void comm_init(){
 }
 
 uint16_t comm_read_buttons(){
+	if (_buttons == 0x00) return 0x00;
+	
 	uint16_t buttons = _buttons;
 	_buttons = 0x00;
 	return buttons;
@@ -49,9 +51,10 @@ void _serial_init_rx(){
 }
 
 ISR(USART0_RX_vect){
-	sei();	//We want PWM to continue uninterrupted while processing serial data
-	
 	uint8_t b = UDR0;
+
+	UCSR0B &= ~_BV(RXCIE0);	//Disable RX interrupts; we want PWM interrupts, but not RX interrupts.
+	sei();	//We want PWM to continue uninterrupted while processing serial data
 
 	if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_ANALOG){	//Analog stick event
 		if ((b & CONTROLLER_ANALOG_STICK) == CONTROLLER_ANALOG_STICK_LEFT){	//Left stick
@@ -66,11 +69,13 @@ ISR(USART0_RX_vect){
 			}
 		}
 	}
-	else if ((b & CONTROLLER_MESSAGE_TYPE_MASK) == CONTROLLER_MESSAGE_TYPE_BUTTON){	//Digital button event
+	else {	//Digital button event
 		if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){
 			_buttons |= _BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Set the button; this is cleared when they are read.
 		}
 	}
 	
 	repeat_counter = 0x00;
+	//Re-enable RX interrupts
+	UCSR0B |= _BV(RXCIE0);
 }
