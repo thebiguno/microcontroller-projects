@@ -35,7 +35,7 @@ void __attribute__((noinline)) ws2811_set(struct ws2811_t *colors, uint8_t count
 			"ld __tmp_reg__, %a0+\n"
 			"ld __tmp_reg__, %a0+\n"
 			"ld __tmp_reg__, %a0+\n"
-			"rcall send_led_strip_byte%=\n"  // Send blue component.
+			"rcall	a send_led_strip_byte%=\n"  // Send blue component.
 			"rjmp led_strip_asm_end%=\n"     // Jump past the assembly subroutines.
 
 			// send_led_strip_byte subroutine:  Sends a byte to the LED strip.
