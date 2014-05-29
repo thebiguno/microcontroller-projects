@@ -7,8 +7,6 @@ int main (void){
 	leg_init();
 	status_init();
 	
-	_delay_ms(1000);
-	
 	calibration_main();
 	
 	while(1){
