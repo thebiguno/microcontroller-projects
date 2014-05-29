@@ -16,6 +16,9 @@ typedef struct ws2811_t {
  * s the number of GRB tuples
  */
 void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
+	uint8_t sreg = SREG;
+	cli();
+	
 	const uint8_t mask =_BV(pin);
 	uint8_t low_val = WS2811_PORT & (~mask);
 	uint8_t high_val = WS2811_PORT | mask;
@@ -69,6 +72,8 @@ void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
 	[bits]    "d" (bitcount),       // number of bits/2
 	[portout] "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
+		
+	if (sreg & _BV(7)) sei();
 }
 
 #endif
