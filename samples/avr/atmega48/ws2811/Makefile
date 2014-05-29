@@ -3,10 +3,10 @@ include ../../build/variables.mk
 PROJECT=ws2811
 MMCU=atmega328
 F_CPU=20000000
-SOURCES=main.c lib/ws2811/ws2811.c
+SOURCES=main.c
 
-HFUSE = 0xDF
-LFUSE = 0xFF
+HFUSE = 0xD9
+LFUSE = 0xE2
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
