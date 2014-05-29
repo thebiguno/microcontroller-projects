@@ -14,13 +14,13 @@ int main (void) {
 	while (1) {
 		for (uint8_t i = 0; i < 60; i++) {
 			for (uint8_t j = 0; j < 60; j++) {
-				colors[j].red = 0x5;
-				colors[j].green = 0x6;
-				colors[j].blue = 0xb;
+				colors[j].red = 0x3;
+				colors[j].green = 0x0;
+				colors[j].blue = 0x2;
 			}
-			colors[i].red = 0xff;
-			colors[i].green = 0x00;
-			colors[i].blue = 0x00;
+			colors[i].red = 0x3c;
+			colors[i].green = 0x06;
+			colors[i].blue = 0x22;
 
 			ws2811_set(colors, 60, 1);
 		}

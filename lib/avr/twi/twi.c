@@ -23,6 +23,7 @@
 
 #include <avr/interrupt.h>
 #include <compat/twi.h>
+#include <stdbool.h>
 
 #include "twi.h"
 

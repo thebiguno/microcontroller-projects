@@ -50,7 +50,7 @@ void remote_init() {
 	DDRD &= ~_BV(PD2);  // set int0 as input
 	
 	TCCR0A = 0x0; 						// normal mode
-	TCCR0B = _BV(CS02) | _BV(CS00);	// F_CPU / 1024 prescaler
+	TCCR0B = _BV(CS02) | _BV(CS00);		// F_CPU / 1024 prescaler
 
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)

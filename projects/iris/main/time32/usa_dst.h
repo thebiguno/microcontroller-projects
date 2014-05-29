@@ -79,8 +79,7 @@ extern          "C" {
     int             usa_dst(const time_t * timer, int32_t * z) {
         time_t          t;
         struct tm       tmptr;
-        uint8_t         month, week, hour, day_of_week, d;
-        int             n;
+		uint8_t         month, week, hour, day_of_week;
 
         /* obtain the variables */
                         t = *timer + *z;

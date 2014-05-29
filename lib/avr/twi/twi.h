@@ -46,10 +46,10 @@
 	
 	//Constants used for read / write methods: send / no send stop bit,
 	// block on function / no block on function
-	#define TWI_STOP			1
+	#define TWI_STOP		1
 	#define TWI_NO_STOP		0
-	#define TWI_BLOCK			1
-	#define TWO_NO_BLOCK		0
+	#define TWI_BLOCK		1
+	#define TWO_NO_BLOCK	0
 	
 	#define TWI_READY 0
 	#define TWI_MRX	 1

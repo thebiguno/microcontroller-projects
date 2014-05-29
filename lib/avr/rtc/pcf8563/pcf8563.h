@@ -1,7 +1,9 @@
 #ifndef pcf8563_h
 #define pcf8563_h
 
-struct pcf8563_time_t {
+#include <stdint.h>
+
+typedef struct pcf8563_time_t {
 	uint8_t  second;
 	uint8_t  minute;
 	uint8_t  hour;
@@ -9,7 +11,7 @@ struct pcf8563_time_t {
 	uint8_t  month;
 	uint8_t  wday;
 	uint16_t year;
-};
+} pcf8563_time_t;
 
 void pcf8563_init();
 void pcf8563_get(struct pcf8563_time_t *time);
