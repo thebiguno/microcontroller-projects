@@ -49,12 +49,6 @@ MoY, DoM at January 15
 	normal: xBBBBx____x___Wx____x____x____x____x____x____x____x____x____
 	normal: _BBBB_bbbb_gggW_gggg_gggg_yyyy_yyyy_yyyy_oooo_oooo_oooo_bbbb
 
-disco ball / vu meter:
-
-color palette:
-base02, base1, base2, magenta violet
-
-
 similar projects:
 http://www.bramknaapen.com/?p=549
 http://www.instructables.com/id/Bamboo-digital-clock/
@@ -63,30 +57,8 @@ project goals
 - real time clock 
 	- DS1307
 	- battery backup
-- single usb connection for programming, set up, and power
-	- usb bootloader
-	- usb serial
-- knock/clap sensor for mode selection
+- remote control
 - surface mount design
-
-a usb or bluetooth connected design would add the following features:
-- current, high, low temperature: -45 to +45
-- current weather condition icon:
-	clear: solid yellow or violet
-	few clouds: solid yellow or violet
-	scattered clouds: dotted white
-	overcast: solid grey
-	showers: solid grey top; dotted blue bottom
-	rain: solid yellow or violet top; dotted blue bottom
-	thunderstorm: solid grey top; dotted red bottom
-	snow: solid grey top; dotted white bottom
-	mist: dotted grey
-	
-- wind direction and magnitude
-- humidity
-- atmospheric pressure
-- raw mode
-
 
 programming by remote control
 	year -> month -> day -> hour -> minute -> second
