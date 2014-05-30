@@ -170,11 +170,11 @@ int main() {
 			} else if (mode == 2) {
 				// week, day of week
 				for (uint8_t i = 0; i < 60; i++) {
-					colors[i] = black;
+					colors[i] = base02;
 				}
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 8) {
-					colors[i] = magenta_low;
+					colors[i] = base2;
 				}
 				// week fill
 				uint8_t wday = sys.tm_wday * 8;

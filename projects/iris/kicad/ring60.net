@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/warren/Documents/Projects/dcprojects/projects/iris/kicad/ring60.sch)
-    (date "Thursday, May 29, 2014 'amt' 09:39:18 am")
+    (date "Friday, May 30, 2014 'pmt' 12:11:43 pm")
     (tool "eeschema (2014-02-26 BZR 4721)-product"))
   (components
     (comp (ref U1)
@@ -71,6 +71,20 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 538620D1)))
   (libparts
+    (libpart (lib device) (part R)
+      (description Resistance)
+      (footprints
+        (fp R?)
+        (fp SM0603)
+        (fp SM0805)
+        (fp R?-*)
+        (fp SM1206))
+      (fields
+        (field (name Reference) R)
+        (field (name Value) R))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
     (libpart (lib device) (part CRYSTAL)
       (fields
         (field (name Reference) X)
@@ -78,13 +92,6 @@
       (pins
         (pin (num 1) (name 1) (type passive))
         (pin (num 2) (name 2) (type passive))))
-    (libpart (lib device) (part BATTERY)
-      (fields
-        (field (name Reference) BT)
-        (field (name Value) BATTERY))
-      (pins
-        (pin (num 1) (name +) (type passive))
-        (pin (num 2) (name -) (type passive))))
     (libpart (lib device) (part C)
       (description "Condensateur non polarise")
       (footprints
@@ -97,6 +104,13 @@
       (pins
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type passive))))
+    (libpart (lib device) (part BATTERY)
+      (fields
+        (field (name Reference) BT)
+        (field (name Value) BATTERY))
+      (pins
+        (pin (num 1) (name +) (type passive))
+        (pin (num 2) (name -) (type passive))))
     (libpart (lib conn) (part CONN_1)
       (description "1 pin")
       (fields
@@ -113,20 +127,6 @@
         (pin (num 1) (name P1) (type passive))
         (pin (num 2) (name PM) (type passive))
         (pin (num 3) (name P3) (type passive))))
-    (libpart (lib device) (part R)
-      (description Resistance)
-      (footprints
-        (fp R?)
-        (fp SM0603)
-        (fp SM0805)
-        (fp R?-*)
-        (fp SM1206))
-      (fields
-        (field (name Reference) R)
-        (field (name Value) R))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive))))
     (libpart (lib ring60) (part DS1307)
       (fields
         (field (name Reference) U)
@@ -245,7 +245,7 @@
     (net (code 11) (name "Net-(IC1-Pad22)")
       (node (ref IC1) (pin 22)))
     (net (code 12) (name /LED_OUT)
-      (node (ref IC1) (pin 25))
+      (node (ref IC1) (pin 14))
       (node (ref K1) (pin 1)))
     (net (code 13) (name /MISO)
       (node (ref IC1) (pin 16))
@@ -276,10 +276,10 @@
     (net (code 18) (name /MOSI)
       (node (ref IC1) (pin 15))
       (node (ref P1) (pin 4)))
-    (net (code 19) (name "Net-(IC1-Pad14)")
-      (node (ref IC1) (pin 14)))
-    (net (code 20) (name "Net-(IC1-Pad24)")
+    (net (code 19) (name "Net-(IC1-Pad24)")
       (node (ref IC1) (pin 24)))
+    (net (code 20) (name "Net-(IC1-Pad25)")
+      (node (ref IC1) (pin 25)))
     (net (code 21) (name "Net-(IC1-Pad26)")
       (node (ref IC1) (pin 26)))
     (net (code 22) (name "Net-(IC1-Pad19)")
