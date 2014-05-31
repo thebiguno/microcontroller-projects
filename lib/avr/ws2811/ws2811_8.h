@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <util/delay_basic.h>
+#include <avr/interrupt.h>
 
 typedef struct ws2811_t {
     uint8_t green;
@@ -73,7 +74,7 @@ void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
 	[portout] "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
 		
-	if (sreg & _BV(7)) sei();
+	sei();
 }
 
 #endif
