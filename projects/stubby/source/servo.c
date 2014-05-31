@@ -1,6 +1,6 @@
 #include "servo.h"
 
-extern leg_t legs[LEG_COUNT];
+extern Leg legs[LEG_COUNT];
 
 void servo_init(){
 	volatile uint8_t *ports[(LEG_COUNT * JOINT_COUNT) + 3];
@@ -48,8 +48,7 @@ void servo_save_calibration(){
 	}
 }
 
-void servo_set_angle(uint8_t leg, uint8_t joint, int8_t angle){
+void servo_set_angle(Leg leg, int8_t angle){
 	//Convert from angle to microseconds
-	//pwm_set_phase((leg * JOINT_COUNT) + joint, NEUTRAL + (legs[leg].offset[joint] * legs[leg].direction[joint]) + (angle * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL) * legs[leg].direction[joint]));
-	pwm_set_phase_batch((leg * JOINT_COUNT) + joint, NEUTRAL + ((angle + legs[leg].offset[joint]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	pwm_set_phase_batch((leg * JOINT_COUNT) + , NEUTRAL + ((angle + offset) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }

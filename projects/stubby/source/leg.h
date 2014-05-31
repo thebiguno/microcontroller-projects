@@ -7,7 +7,7 @@
 #include <util/delay.h>
 #include <math.h>
 
-#include "stubby.h"
+#include "Stubby.h"
 
 typedef struct leg_t {
 	volatile uint8_t *port[JOINT_COUNT];
@@ -28,16 +28,7 @@ typedef struct leg_t {
 
 #include "servo.h"
 
-#define FRONT_LEFT		0
-#define FRONT_RIGHT		1
-#define MIDDLE_LEFT		2
-#define MIDDLE_RIGHT	3
-#define REAR_LEFT		4
-#define REAR_RIGHT		5
 
-#define TIBIA			0
-#define FEMUR			1
-#define COXA			2
 
 //The time (millis) during which we pause in leg_delay_ms.  It really doesn't make sense to set
 // this any lower than the PWM period of 20ms.

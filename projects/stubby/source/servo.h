@@ -4,8 +4,7 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
 
-#include "stubby.h"
-#include "leg.h"
+#include "Stubby.h"
 #include "lib/pwm/pwm.h"
 
 //We assume a neutral offset of 1500, with even 
@@ -23,7 +22,7 @@
 
 void servo_init();
 
-void servo_set_angle(uint8_t leg, uint8_t joint, int8_t angle);
+void servo_set_angle(uint8_t index, int8_t offset, int8_t angle);
 
 void servo_load_calibration();
 

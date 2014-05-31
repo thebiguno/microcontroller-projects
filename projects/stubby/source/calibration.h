@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "stubby.h"
+#include "Stubby.h"
 #include "servo.h"
 
 void calibration_main();
