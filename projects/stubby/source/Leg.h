@@ -20,6 +20,18 @@
 //The height from ground to the center of the coxa joint
 #define COXA_HEIGHT		68
 
+//The lengths of the four segments in the Tibia drive system
+#define TIBIA_JOINT_TO_SERVO		30
+#define TIBIA_SERVO_HORN			6
+#define TIBIA_CONTROL_ROD			38
+#define TIBIA_CONTROL_ROD_TO_JOINT	14
+
+//The lengths of the four segments in the Femur drive system
+#define FEMUR_JOINT_TO_SERVO		27
+#define FEMUR_SERVO_HORN			8
+#define FEMUR_CONTROL_ROD			28
+#define FEMUR_CONTROL_ROD_TO_JOINT	14
+
 //We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
 #define MIN_PHASE	700
@@ -49,6 +61,11 @@ namespace digitalcave {
 			 * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d degrees.
 			 */
 			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
+			
+			//Set the angle for each servo.  This includes the servo abstraction code.
+			void setTibiaAngle(double angle);
+			void setFemurAngle(double angle);
+			void setCoxaAngle(double angle);
 			
 		public:
 			/*
@@ -87,12 +104,6 @@ namespace digitalcave {
 			 * Gets the specified pin
 			 */
 			uint8_t getPin(uint8_t joint);
-
-			//Set the angle for each servo.  This includes the servo abstraction code.
-			//TODO Eventually this will be private.  For now, we need it public for testing.
-			void setTibiaAngle(double angle);
-			void setFemurAngle(double angle);
-			void setCoxaAngle(double angle);
 	} ;
 }
 #endif

@@ -11,6 +11,9 @@ Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatil
 	this->pin[TIBIA] = femur_pin;
 	this->pin[TIBIA] = coxa_pin;
 	this->mounting_angle = mounting_angle;
+	
+	//this->setTibiaAngle(1.9198);	//110 degrees
+	//this->setFemurAngle(1.4835);	//85 degrees
 }
 
 void Leg::rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle){
@@ -71,7 +74,16 @@ void Leg::setOffset(uint8_t joint, int8_t offset){
 }
 
 void Leg::setTibiaAngle(double tibia_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, NEUTRAL + ((tibia_angle + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
+	double servo_to_control_rod_length = sqrt(TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_CONTROL_ROD_TO_JOINT + TIBIA_JOINT_TO_SERVO * TIBIA_JOINT_TO_SERVO - 2 * TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_JOINT_TO_SERVO * cos(tibia_angle));
+	//Use law of cosines to find the angle between the line we just calculated and the line between the femur/tibia joint and the servo shaft
+	double servo_angle_partial_top = acos((servo_to_control_rod_length * servo_to_control_rod_length + TIBIA_JOINT_TO_SERVO * TIBIA_JOINT_TO_SERVO - TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_CONTROL_ROD_TO_JOINT) / 2 * servo_to_control_rod_length * TIBIA_JOINT_TO_SERVO);
+	//Use law of cosines to find the angle between servo_to_control_rod_length imaginary line and the servo horn
+	double servo_angle_partial_bottom = acos((servo_to_control_rod_length * servo_to_control_rod_length + TIBIA_SERVO_HORN * TIBIA_SERVO_HORN - TIBIA_CONTROL_ROD * TIBIA_CONTROL_ROD) / 2 * servo_to_control_rod_length * TIBIA_SERVO_HORN);
+	
+	//Set the servo angle to be the sum of the two partial servo angles
+	//100 degrees is neutral
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, NEUTRAL + ((servo_angle_partial_top + servo_angle_partial_bottom + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setFemurAngle(double femur_angle){

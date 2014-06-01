@@ -3,6 +3,7 @@
 using namespace digitalcave;
 
 //Set up the leg objects, including servo details and mounting angle
+
 Leg legs[LEG_COUNT] = {
 	Leg(FRONT_LEFT, &PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * M_PI / 3),
 	Leg(FRONT_RIGHT, &PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, M_PI / 3),
@@ -35,8 +36,26 @@ int main (void){
 	
 	pwm_init(ports, pins, PWM_COUNT, 20000);
 	
-	comm_init();
-	status_init();
+	status_set_color(0x00, 0x00, 0xFF);
+	
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		for (uint8_t j = 0; j < JOINT_COUNT; j++){
+			pwm_set_phase_batch(l * JOINT_COUNT + j, NEUTRAL);
+			pwm_apply_batch();
+			_delay_ms(500);
+			status_set_color(0xFF, 0x00, 0x00);
+			_delay_ms(500);
+			status_set_color(0x00, 0xFF, 0x00);
+		}
+	}
+	
+	status_set_color(0x77, 0x00, 0xFF);
+	
+	//comm_init();
+	//status_init();
+	
+	//pwm_set_phase_batch(0, NEUTRAL + ((servo_angle_partial_top + servo_angle_partial_bottom + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	
 	
 	//calibration();
 	
