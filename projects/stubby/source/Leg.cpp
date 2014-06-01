@@ -2,7 +2,8 @@
 
 using namespace digitalcave;
 
-Leg::Leg(volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
+Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
+	this->index = index;
 	this->port[TIBIA] = tibia_port;
 	this->port[FEMUR] = femur_port;
 	this->port[COXA] = coxa_port;
@@ -70,13 +71,13 @@ void Leg::setOffset(uint8_t joint, int8_t offset){
 }
 
 void Leg::setTibiaAngle(double tibia_angle){
-	
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, NEUTRAL + ((tibia_angle + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setFemurAngle(double femur_angle){
-	
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, NEUTRAL + ((femur_angle + this->offset[FEMUR]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setCoxaAngle(double coxa_angle){
-	
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, NEUTRAL + ((coxa_angle + this->offset[COXA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }

@@ -4,12 +4,12 @@ using namespace digitalcave;
 
 //Set up the leg objects, including servo details and mounting angle
 Leg legs[LEG_COUNT] = {
-	Leg(&PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * M_PI / 3),	//FRONT_LEFT
-	Leg(&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, M_PI / 3),		//FRONT_RIGHT
-	Leg(&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * M_PI / 3),	//MIDDLE_LEFT
-	Leg(&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0),				//MIDDLE_RIGHT
-	Leg(&PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * M_PI / 3),	//REAR_LEFT
-	Leg(&PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * M_PI / 3)	//REAR_RIGHT
+	Leg(FRONT_LEFT, &PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * M_PI / 3),
+	Leg(FRONT_RIGHT, &PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, M_PI / 3),
+	Leg(MIDDLE_LEFT, &PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * M_PI / 3),
+	Leg(MIDDLE_RIGHT, &PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0),
+	Leg(REAR_LEFT, &PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * M_PI / 3),
+	Leg(REAR_RIGHT, &PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * M_PI / 3)
 };
 
 int main (void){
@@ -41,7 +41,7 @@ int main (void){
 	//calibration();
 	
 	while(1){
-
+		
 	}
 }
 
@@ -54,6 +54,7 @@ int main (void){
  *  -X commits changes to EEPROM
  *  -Start exits calibration mode (regardless of whether or not it is committed)
  */
+/*
 void calibration(){
 	status_disable_timer();
 	
@@ -106,7 +107,6 @@ void calibration(){
 				//servo_set_angle(l, TIBIA, 0);
 			}
 			
-			/*
 			//Triangle button to revert all calibration to 0
 			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				for (uint8_t i = 0; i < LEG_COUNT; i++){
@@ -116,7 +116,6 @@ void calibration(){
 					}
 				}
 			}
-			*/
 
 			//servo_apply_batch();
 			
@@ -138,3 +137,4 @@ void calibration(){
 	
 	status_enable_timer();
 }
+*/

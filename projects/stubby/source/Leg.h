@@ -20,12 +20,24 @@
 //The height from ground to the center of the coxa joint
 #define COXA_HEIGHT		68
 
+//We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
+// a linear travel between one end and the other.
+#define MIN_PHASE	700
+#define NEUTRAL		1500
+#define MAX_PHASE	2300
+
+//Maximum angle of travel for the servo, in radians.  Therefore, the maximum travel in each direction from 
+// neutral is half of this number.
+#define SERVO_TRAVEL  M_PI
+
 namespace digitalcave {
 	/*
 	 * C++ implementation of Stubby the Hexapod leg.
 	 */
 	class Leg {
 		private:
+			uint8_t index;
+			
 			volatile uint8_t *port[JOINT_COUNT];
 			uint8_t pin[JOINT_COUNT];
 
@@ -38,16 +50,11 @@ namespace digitalcave {
 			 */
 			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
 			
-			//Set the angle for each servo.  This includes the servo abstraction code.
-			void setTibiaAngle(double angle);
-			void setFemurAngle(double angle);
-			void setCoxaAngle(double angle);
-	
 		public:
 			/*
 			 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
 			 */
-			Leg(volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle);
+			Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle);
 			
 			/*
 			 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
@@ -81,6 +88,11 @@ namespace digitalcave {
 			 */
 			uint8_t getPin(uint8_t joint);
 
+			//Set the angle for each servo.  This includes the servo abstraction code.
+			//TODO Eventually this will be private.  For now, we need it public for testing.
+			void setTibiaAngle(double angle);
+			void setFemurAngle(double angle);
+			void setCoxaAngle(double angle);
 	} ;
 }
 #endif
