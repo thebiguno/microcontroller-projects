@@ -1,0 +1,108 @@
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Sat 31 May 2014 09:24:43 PM MDT
+
+BeginCmp
+TimeStamp = /538A97AF;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A97A2;
+Reference = C2;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9D22;
+Reference = C3;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A999F;
+Reference = C4;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A998F;
+Reference = C5;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9416;
+Reference = IC1;
+ValeurCmp = ATMEGA328P-P;
+IdModule  = DIP-28__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9500;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A950F;
+Reference = P1;
+ValeurCmp = CONN_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A951E;
+Reference = P2;
+ValeurCmp = CONN_12;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9454;
+Reference = SW1;
+ValeurCmp = SW_PUSH;
+IdModule  = SW_PUSH_SMALL;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9461;
+Reference = SW2;
+ValeurCmp = SW_PUSH;
+IdModule  = SW_PUSH_SMALL;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A979A;
+Reference = SW3;
+ValeurCmp = SW_PUSH;
+IdModule  = SW_PUSH_SMALL;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9548;
+Reference = VR1;
+ValeurCmp = MCP1702;
+IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A9C68;
+Reference = VR2;
+ValeurCmp = MCP1702;
+IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /538A990C;
+Reference = X1;
+ValeurCmp = CRYSTAL_RESONATOR;
+IdModule  = CRYSTAL_RESONATOR;
+EndCmp
+
+EndListe

@@ -1,7 +1,8 @@
-PCBNEW-LibModule-V1  Thursday, May 29, 2014 'amt' 09:26:20 am
+PCBNEW-LibModule-V1  Sat 31 May 2014 08:57:08 PM MDT
 # encoding utf-8
 Units mm
 $INDEX
+4X_7_SEGMENT
 BB8
 CRYSTAL_RESONATOR
 D2
@@ -36,6 +37,99 @@ VSK-S25
 XBEE
 XBEE_SPARKFUN_BREAKOUT
 $EndINDEX
+$MODULE 4X_7_SEGMENT
+Po 0 0 0 15 538A967F 00000000 ~~
+Li 4X_7_SEGMENT
+Sc 0
+AR 
+Op 0 0 0
+T0 0 0 1 1 0 0.15 N V 21 N "4X_7_SEGMENT"
+T1 0 0 1 1 0 0.15 N V 21 N "VAL**"
+$PAD
+Sh "1" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -7.62 -7.62
+$EndPAD
+$PAD
+Sh "2" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -5.08 -7.62
+$EndPAD
+$PAD
+Sh "3" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -2.54 -7.62
+$EndPAD
+$PAD
+Sh "4" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 -7.62
+$EndPAD
+$PAD
+Sh "5" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 2.54 -7.62
+$EndPAD
+$PAD
+Sh "6" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 5.08 -7.62
+$EndPAD
+$PAD
+Sh "7" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -7.62 7.62
+$EndPAD
+$PAD
+Sh "8" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -5.08 7.62
+$EndPAD
+$PAD
+Sh "9" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -2.54 7.62
+$EndPAD
+$PAD
+Sh "10" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 7.62
+$EndPAD
+$PAD
+Sh "11" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 2.54 7.62
+$EndPAD
+$PAD
+Sh "12" C 1.5 1.5 0 0 0
+Dr 0.6 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 5.08 7.62
+$EndPAD
+$EndMODULE 4X_7_SEGMENT
 $MODULE BB8
 Po 0 0 0 15 4FB2140D 00000000 ~~
 Li BB8
