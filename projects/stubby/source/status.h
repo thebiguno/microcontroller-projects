@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-#include "stubby.h"
+#include "Stubby.h"
 #include "lib/pwm/pwm.h"
 
 void status_init();

@@ -2,6 +2,8 @@
 #define HEX_MAIN
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
+#include <util/delay.h>
 
 #define LEG_COUNT		6
 
@@ -24,7 +26,6 @@
 
 #define PWM_COUNT		(LEG_COUNT * JOINT_COUNT) + 3
 
-#include "calibration.h"
 #include "comm.h"
 #include "Leg.h"
 #include "status.h"

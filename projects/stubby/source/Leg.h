@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "Stubby.h"
+
 #define DEG2RAD 180.0 / M_PI
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs.
@@ -17,8 +19,6 @@
 #define TIBIA_LENGTH	57
 //The height from ground to the center of the coxa joint
 #define COXA_HEIGHT		68
-
-void leg_init();
 
 namespace digitalcave {
 	/*
@@ -36,7 +36,7 @@ namespace digitalcave {
 			/*
 			 * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d degrees.
 			 */
-			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, float d);
+			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
 			
 			//Set the angle for each servo.  This includes the servo abstraction code.
 			void setTibiaAngle(double angle);
@@ -47,7 +47,7 @@ namespace digitalcave {
 			/*
 			 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
 			 */
-			Leg(uint8_t *tibia_port, uint8_t tibia_pin, uint8_t *femur_port, uint8_t femur_pin, uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle);
+			Leg(volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle);
 			
 			/*
 			 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
@@ -64,7 +64,7 @@ namespace digitalcave {
 			/*
 			 * Gets the offset for the given joint
 			 */
-			void getOffset(uint8_t joint);
+			int8_t getOffset(uint8_t joint);
 			
 			/*
 			 * Sets the offset for the given joint
@@ -80,6 +80,7 @@ namespace digitalcave {
 			 * Gets the specified pin
 			 */
 			uint8_t getPin(uint8_t joint);
+
 	} ;
 }
 #endif

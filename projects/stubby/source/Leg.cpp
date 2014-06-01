@@ -2,26 +2,7 @@
 
 using namespace digitalcave;
 
-leg_init(){
-	
-	servo_init();
-	
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			//Reset to neutral position at startup
-			legs[l].current[j] = 0;
-			legs[l].desired[j] = 0;
-			servo_set_angle(l, j, legs[l].current[j]);
-		}
-		//leg_set_current_position_absolute(l, 0, 0, TIBIA_LOWERED);
-	}
-	
-	servo_apply_batch();
-	
-	leg_delay_ms(100);	
-}
-
-Leg::Leg(uint8_t *tibia_port, uint8_t tibia_pin, uint8_t *femur_port, uint8_t femur_pin, uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
+Leg::Leg(volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
 	this->port[TIBIA] = tibia_port;
 	this->port[FEMUR] = femur_port;
 	this->port[COXA] = coxa_port;
@@ -53,15 +34,15 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	this->rotate2d(&x1, &y1, 0, 0, this->mounting_angle);
 	x1 -= LEG_OFFSET;
 	
-	//Find the length of the leg, from coxa joint to end of tibia, on the x,y plane (to be used for X,Z IK)
+	//Find the length of the leg, from coxa joint to end of tibia, on the x,y plane (to be later used for X,Z IK)
 	double leg_length = sqrt(x1 * x1 + y1 * y1);
 
 	//Find the angle of the leg, used to set the coxa joint
 	double coxa_angle = atan2(y1, x1);
 	
 	//Find the distance between the femur joint and the end of the tibia.  Do this using the right triangle of
-	// (COXA_HEIGHT - z), x (where x is relative to the coxa joint, as it was translated earlier).
-	uint16_t leg_extension = sqrt((COXA_HEIGHT - z)*(COXA_HEIGHT - z) + x*x);
+	// (COXA_HEIGHT - z), x (where x is relative to the femur joint, as it was translated earlier).
+	uint16_t leg_extension = sqrt((COXA_HEIGHT - z) * (COXA_HEIGHT - z) + (x - leg_length) * (x - leg_length));
 	
 	//Now that we have all three sides of the triangle, we can use law of cosines to find angles.
 	double femur_angle = acos((FEMUR_LENGTH * FEMUR_LENGTH + leg_extension * leg_extension - TIBIA_LENGTH * TIBIA_LENGTH) / (2 * FEMUR_LENGTH * leg_extension));
@@ -72,18 +53,30 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	this->setCoxaAngle(coxa_angle);
 }
 
-volatile uint8_t* getPort(uint8_t joint){
+volatile uint8_t* Leg::getPort(uint8_t joint){
 	return this->port[joint];
 }
 
-uint8_t getPin(uint8_t joint){
+uint8_t Leg::getPin(uint8_t joint){
 	return this->pin[joint];
 }
 
-void Leg::getOffset(uint8_t joint){
-	return this->offset;
+int8_t Leg::getOffset(uint8_t joint){
+	return this->offset[joint];
 }
 			
 void Leg::setOffset(uint8_t joint, int8_t offset){
-	this->offset = offset;
+	this->offset[joint] = offset;
+}
+
+void Leg::setTibiaAngle(double tibia_angle){
+	
+}
+
+void Leg::setFemurAngle(double femur_angle){
+	
+}
+
+void Leg::setCoxaAngle(double coxa_angle){
+	
 }
