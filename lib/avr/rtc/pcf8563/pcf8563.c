@@ -10,7 +10,7 @@ void pcf8563_init() {
 	twi_write_to(0x51, data, 3, TWI_BLOCK, TWI_STOP);
 }
 
-void pcf8563_get(struct pcf8563_time_t *time) {
+void pcf8563_get(struct pcf8563_t *time) {
 	// register, unused...
 	// seconds, minutes, hours, days, weekdays, century_months, years
 	uint8_t data[7] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -27,7 +27,7 @@ void pcf8563_get(struct pcf8563_time_t *time) {
 	time->year = (((data[5] & 0x80) * 100) + 1900) + (((data[6] & 0xf0) >> 4) * 10) + (data[6] & 0x0f);
 }
 
-void pcf8563_set(struct pcf8563_time_t *t) {
+void pcf8563_set(struct pcf8563_t *t) {
 	uint8_t cy = t->year - 1900;
 	uint8_t c = cy / 100;
 	uint8_t y = cy - (c * 100);

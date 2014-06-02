@@ -104,7 +104,7 @@ ISR(INT0_vect) {
 				_packet[3] = 0;
 			} else {
 				_state = 0;
-				_command = _packet[2];
+				//_command = _packet[2]; // ignore repeats for now
 			}
 		} else if (_state == 2) {
 			if (TCNT0 > BIT_SPACE) {

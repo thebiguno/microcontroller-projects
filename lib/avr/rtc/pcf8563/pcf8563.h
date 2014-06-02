@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef struct pcf8563_time_t {
+typedef struct pcf8563_t {
 	uint8_t  second;
 	uint8_t  minute;
 	uint8_t  hour;
@@ -14,7 +14,7 @@ typedef struct pcf8563_time_t {
 } pcf8563_time_t;
 
 void pcf8563_init();
-void pcf8563_get(struct pcf8563_time_t *time);
-void pcf8563_set(struct pcf8563_time_t *time);
+void pcf8563_get(struct pcf8563_t *time);
+void pcf8563_set(struct pcf8563_t *time);
 
 #endif
