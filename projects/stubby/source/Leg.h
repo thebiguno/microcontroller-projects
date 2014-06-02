@@ -7,7 +7,7 @@
 
 #include "Stubby.h"
 
-#define DEG2RAD 180.0 / M_PI
+#define DEG2RAD (180.0 / M_PI)
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs.
 #define LEG_OFFSET		45

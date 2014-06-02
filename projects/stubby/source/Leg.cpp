@@ -80,7 +80,7 @@ void Leg::setTibiaAngle(double tibia_angle){
 	
 	//Set the servo angle to be the sum of the two partial servo angles
 	//100 degrees (1.7452 radians) is neutral
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, NEUTRAL + (1.7453 - (servo_angle_partial_top + servo_angle_partial_bottom + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) (NEUTRAL + (servo_angle_partial_top + servo_angle_partial_bottom - 1.7453 /*+ this->offset[TIBIA]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setFemurAngle(double femur_angle){

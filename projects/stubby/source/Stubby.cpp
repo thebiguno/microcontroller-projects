@@ -44,12 +44,13 @@ int main (void){
 		}
 	}
 	
-	legs[MIDDLE_RIGHT].setTibiaAngle(110);
+	legs[MIDDLE_RIGHT].setTibiaAngle(110 / DEG2RAD);
 	pwm_apply_batch();
 	
+	status_set_color(0x00, 0xFF, 0x00);
 	_delay_ms(500);
 
-	status_set_color(0x00, 0xFF, 0x00);
+	
 	
 	//comm_init();
 	//status_init();
@@ -57,14 +58,16 @@ int main (void){
 	//calibration();
 	
 	while(1){
-		legs[MIDDLE_RIGHT].setTibiaAngle(100);
+		legs[MIDDLE_RIGHT].setTibiaAngle(100.0 / DEG2RAD);
 		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MAX_PHASE);
 		pwm_apply_batch();
+		status_set_color(0x00, 0x00, 0xFF);
 		_delay_ms(5000);
 		
 		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MIN_PHASE);
-		legs[MIDDLE_RIGHT].setTibiaAngle(120);
+ 		legs[MIDDLE_RIGHT].setTibiaAngle(120.0 / DEG2RAD);
 		pwm_apply_batch();
+		status_set_color(0xFF, 0x00, 0x00);
 		_delay_ms(5000);
 
 	}
