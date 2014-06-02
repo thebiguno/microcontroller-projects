@@ -95,7 +95,10 @@ int main() {
 	
 	while (1) {
 		// update display
-		if (update == 1 || (mode <= MODE_MOON && __system_time > systime)) {
+		// * if the update flag is set
+		// * if the systime has changed and the mode is time based
+		// * the remote isn't in the middle of receiving a message
+		if (remote_state() == 0 && (update == 1 || (mode <= MODE_MOON && __system_time > systime))) {
 			update = 0;
 			systime = __system_time;
 			UDR0 = 'X';
