@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, May 29, 2014 'amt' 09:26:43 am
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Friday, May 30, 2014 'amt' 11:44:09 am
 
 BeginCmp
 TimeStamp = /537ACF90;
@@ -88,7 +88,7 @@ BeginCmp
 TimeStamp = /537ACF32;
 Reference = X2;
 ValeurCmp = 32,768 kHz;
-IdModule  = discrete:QMONTRE;
+IdModule  = cms:SM1812L;
 EndCmp
 
 EndListe

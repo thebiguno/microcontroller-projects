@@ -56,9 +56,9 @@ void remote_init() {
 		defined(__AVR_ATtiny85__)
 	MCUCR |= _BV(ISC00);				// logical change generates interrupt
 	GIMSK |= _BV(INT0);					// enable external interrupts on int0
-	#elif defined(__AVR_ATmega48__)   || \
-		defined(__AVR_ATmega48P__)   || \
-		defined(__AVR_ATmega168__)   || \
+	#elif defined(__AVR_ATmega48__)    || \
+		defined(__AVR_ATmega48P__)     || \
+		defined(__AVR_ATmega168__)     || \
 		defined(__AVR_ATmega328__)     || \
 		defined(__AVR_ATmega328P__)    || \
 		defined(__AVR_ATmega324P__)    || \
@@ -104,7 +104,7 @@ ISR(INT0_vect) {
 				_packet[3] = 0;
 			} else {
 				_state = 0;
-				_command = _packet[2];
+				//_command = _packet[2]; // ignore repeats for now
 			}
 		} else if (_state == 2) {
 			if (TCNT0 > BIT_SPACE) {

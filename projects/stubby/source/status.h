@@ -3,12 +3,8 @@
 
 #include <avr/io.h>
 
-#include "stubby.h"
+#include "Stubby.h"
 #include "lib/pwm/pwm.h"
-
-#define LED_RED (LEG_COUNT * JOINT_COUNT) + 0
-#define LED_GREEN (LEG_COUNT * JOINT_COUNT) + 1
-#define LED_BLUE (LEG_COUNT * JOINT_COUNT) + 2
 
 void status_init();
 void status_enable_timer();
