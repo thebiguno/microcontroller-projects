@@ -5,12 +5,12 @@ using namespace digitalcave;
 //Set up the leg objects, including servo details and mounting angle
 
 Leg legs[LEG_COUNT] = {
-	Leg(FRONT_LEFT, &PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * M_PI / 3),
-	Leg(FRONT_RIGHT, &PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, M_PI / 3),
-	Leg(MIDDLE_LEFT, &PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * M_PI / 3),
-	Leg(MIDDLE_RIGHT, &PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0),
-	Leg(REAR_LEFT, &PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * M_PI / 3),
-	Leg(REAR_RIGHT, &PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * M_PI / 3)
+	Leg(FRONT_LEFT,		&PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * M_PI / 3),
+	Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, M_PI / 3),
+	Leg(MIDDLE_LEFT,	&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * M_PI / 3),
+	Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0),
+	Leg(REAR_LEFT,		&PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * M_PI / 3),
+	Leg(REAR_RIGHT,		&PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * M_PI / 3)
 };
 
 int main (void){
@@ -36,31 +36,37 @@ int main (void){
 	
 	pwm_init(ports, pins, PWM_COUNT, 20000);
 	
-	status_set_color(0x00, 0x00, 0xFF);
+	status_set_color(0xFF, 0x00, 0x00);
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
 			pwm_set_phase_batch(l * JOINT_COUNT + j, NEUTRAL);
-			pwm_apply_batch();
-			_delay_ms(500);
-			status_set_color(0xFF, 0x00, 0x00);
-			_delay_ms(500);
-			status_set_color(0x00, 0xFF, 0x00);
 		}
 	}
 	
-	status_set_color(0x77, 0x00, 0xFF);
+	legs[MIDDLE_RIGHT].setTibiaAngle(110);
+	pwm_apply_batch();
+	
+	_delay_ms(500);
+
+	status_set_color(0x00, 0xFF, 0x00);
 	
 	//comm_init();
 	//status_init();
 	
-	//pwm_set_phase_batch(0, NEUTRAL + ((servo_angle_partial_top + servo_angle_partial_bottom + this->offset[TIBIA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
-	
-	
 	//calibration();
 	
 	while(1){
+		legs[MIDDLE_RIGHT].setTibiaAngle(100);
+		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MAX_PHASE);
+		pwm_apply_batch();
+		_delay_ms(5000);
 		
+		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MIN_PHASE);
+		legs[MIDDLE_RIGHT].setTibiaAngle(120);
+		pwm_apply_batch();
+		_delay_ms(5000);
+
 	}
 }
 

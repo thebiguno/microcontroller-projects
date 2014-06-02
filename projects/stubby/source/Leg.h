@@ -34,13 +34,13 @@
 
 //We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
-#define MIN_PHASE	700
+#define MIN_PHASE	700			//Clockwise from neutral
 #define NEUTRAL		1500
-#define MAX_PHASE	2300
+#define MAX_PHASE	2300		//Counter clockwise from neutral
 
-//Maximum angle of travel for the servo, in radians.  Therefore, the maximum travel in each direction from 
-// neutral is half of this number.
-#define SERVO_TRAVEL  M_PI
+//Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
+// travel in each direction from neutral is half of this number.
+#define SERVO_TRAVEL  2.61799
 
 namespace digitalcave {
 	/*
@@ -63,7 +63,7 @@ namespace digitalcave {
 			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
 			
 			//Set the angle for each servo.  This includes the servo abstraction code.
-			void setTibiaAngle(double angle);
+			
 			void setFemurAngle(double angle);
 			void setCoxaAngle(double angle);
 			
@@ -104,6 +104,8 @@ namespace digitalcave {
 			 * Gets the specified pin
 			 */
 			uint8_t getPin(uint8_t joint);
+			
+			void setTibiaAngle(double angle);
 	} ;
 }
 #endif
