@@ -41,9 +41,9 @@ http://www.sbprojects.com/knowledge/ir/nec.php
 #define BIT_SPACE F_CPU / 1024 / 888
 
 volatile uint8_t _state;	// 0 = idle; 1 = leading pulse; 2 = message;
+volatile uint8_t _byte_pos;
+volatile uint8_t _bit_pos;
 volatile uint8_t _byte;
-volatile uint8_t _bit;
-volatile uint8_t _packet[4];
 volatile uint8_t _command;
 
 void remote_init() {
@@ -96,28 +96,32 @@ ISR(INT0_vect) {
 		if (_state == 1) {
 			if (TCNT0 > LEADING_SPACE) {
 				_state = 2;
+				_byte_pos = 0;
+				_bit_pos = 0;
 				_byte = 0;
-				_bit = 0;
-				_packet[0] = 0;
-				_packet[1] = 0;
-				_packet[2] = 0;
-				_packet[3] = 0;
 			} else {
 				_state = 0;
-				//_command = _packet[2]; // ignore repeats for now
+				// TODO implement repeats
 			}
 		} else if (_state == 2) {
 			if (TCNT0 > BIT_SPACE) {
-				_packet[_byte] |= _BV(_bit);
+				_byte |= _BV(_bit_pos);
 			}
-			if (_bit++ == 7) {
-				if (_byte++ < 3) {
-					_bit = 0;
-				} else {
-					if (_packet[0] == 0xEE && _packet[1] == 0x87) { // TODO, check _packet[3] for pairing
-						_command = _packet[2];
-					}
+			if (_bit_pos++ == 7) {
+				switch (_byte_pos++) {
+					case 0:
+					if (_byte != 0xee) _state = 0;
+					break;
+					case 1:
+					if (_byte != 0x87) _state = 0;
+					break;
+					case 2:
+					_command = _byte & 0xfe;
+					break;
+					case 3:
+					// TODO check pairing
 					_state = 0;
+					break;
 				}
 			}
 		}
