@@ -12,8 +12,8 @@ AVRDUDE_PROGRAMMER=usbtiny
 
 CDEFS+=-DPWM_MAX_PINS=21
 
+LFUSE=0xDF
 HFUSE=0xD1
-LFUSE=0xFF
 EFUSE=0xFD
 
 include build/targets.mk
