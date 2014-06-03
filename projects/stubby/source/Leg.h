@@ -1,9 +1,14 @@
 #ifndef STUBBY_LEG_H
 #define STUBBY_LEG_H
 
+#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
+#else
+#include "../simulation/debug.h"
 #include <stdlib.h>
+#endif
 #include <math.h>
+
 
 #include "Stubby.h"
 

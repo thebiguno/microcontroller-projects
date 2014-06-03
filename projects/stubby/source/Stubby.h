@@ -1,9 +1,11 @@
-#ifndef HEX_MAIN
-#define HEX_MAIN
+#ifndef STUBBY_H
+#define STUBBY_H
 
+#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
+#endif
 
 #define LEG_COUNT		6
 
@@ -26,9 +28,12 @@
 
 #define PWM_COUNT		(LEG_COUNT * JOINT_COUNT) + 3
 
-#include "comm.h"
-#include "Leg.h"
+
+#ifndef DEBUG_SIMULATION
 #include "status.h"
 #include "lib/serial/serial.h"
+#include "comm.h"
+#endif
 
+#include "Leg.h"
 #endif
