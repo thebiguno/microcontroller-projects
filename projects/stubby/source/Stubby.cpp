@@ -44,8 +44,8 @@ int main (void){
 		}
 	}
 	
-	legs[MIDDLE_RIGHT].setTibiaAngle(110 / DEG2RAD);
-	pwm_apply_batch();
+	//legs[MIDDLE_RIGHT].setTibiaAngle(110 / DEG2RAD);
+	//pwm_apply_batch();
 	
 	status_set_color(0x00, 0xFF, 0x00);
 	_delay_ms(500);
@@ -58,18 +58,35 @@ int main (void){
 	//calibration();
 	
 	while(1){
+		for (int8_t y = 32; y > -32; y-=2){
+			legs[MIDDLE_RIGHT].setPosition(120, y, 0);
+			pwm_apply_batch();
+			_delay_ms(100);
+		}
+		_delay_ms(5000);
+
+
+		/*
 		legs[MIDDLE_RIGHT].setTibiaAngle(100.0 / DEG2RAD);
-		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MAX_PHASE);
 		pwm_apply_batch();
 		status_set_color(0x00, 0x00, 0xFF);
 		_delay_ms(5000);
 		
-		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MIN_PHASE);
  		legs[MIDDLE_RIGHT].setTibiaAngle(120.0 / DEG2RAD);
 		pwm_apply_batch();
 		status_set_color(0xFF, 0x00, 0x00);
 		_delay_ms(5000);
 
+		legs[MIDDLE_RIGHT].setFemurAngle(50.0 / DEG2RAD);
+		pwm_apply_batch();
+		status_set_color(0x00, 0x00, 0xFF);
+		_delay_ms(5000);
+		
+ 		legs[MIDDLE_RIGHT].setFemurAngle(80.0 / DEG2RAD);
+		pwm_apply_batch();
+		status_set_color(0xFF, 0x00, 0x00);
+		_delay_ms(5000);
+		*/
 	}
 }
 

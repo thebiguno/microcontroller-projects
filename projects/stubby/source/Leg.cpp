@@ -73,20 +73,29 @@ void Leg::setOffset(uint8_t joint, int8_t offset){
 void Leg::setTibiaAngle(double tibia_angle){
 	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
 	double servo_to_control_rod_length = sqrt(TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_CONTROL_ROD_TO_JOINT + TIBIA_JOINT_TO_SERVO * TIBIA_JOINT_TO_SERVO - 2 * TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_JOINT_TO_SERVO * cos(tibia_angle));
-	//Use law of cosines to find the angle between the line we just calculated and the line between the femur/tibia joint and the servo shaft
+	//Use law of cosines to find the angle between the line we just calculated and the line between the tibia joint and the servo shaft
 	double servo_angle_partial_top = acos((servo_to_control_rod_length * servo_to_control_rod_length + TIBIA_JOINT_TO_SERVO * TIBIA_JOINT_TO_SERVO - TIBIA_CONTROL_ROD_TO_JOINT * TIBIA_CONTROL_ROD_TO_JOINT) / (2 * servo_to_control_rod_length * TIBIA_JOINT_TO_SERVO));
 	//Use law of cosines to find the angle between servo_to_control_rod_length imaginary line and the servo horn
 	double servo_angle_partial_bottom = acos((servo_to_control_rod_length * servo_to_control_rod_length + TIBIA_SERVO_HORN * TIBIA_SERVO_HORN - TIBIA_CONTROL_ROD * TIBIA_CONTROL_ROD) / (2 * servo_to_control_rod_length * TIBIA_SERVO_HORN));
 	
 	//Set the servo angle to be the sum of the two partial servo angles
-	//100 degrees (1.7452 radians) is neutral
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) (NEUTRAL + (servo_angle_partial_top + servo_angle_partial_bottom - 1.7453 /*+ this->offset[TIBIA]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	//110 degrees (110pi/180 radians) is neutral
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) (NEUTRAL + (servo_angle_partial_top + servo_angle_partial_bottom - (110 * M_PI / 180) /*+ this->offset[TIBIA]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setFemurAngle(double femur_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, NEUTRAL + ((femur_angle + this->offset[FEMUR]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
+	double servo_to_control_rod_length = sqrt(FEMUR_CONTROL_ROD_TO_JOINT * FEMUR_CONTROL_ROD_TO_JOINT + FEMUR_JOINT_TO_SERVO * FEMUR_JOINT_TO_SERVO - 2 * FEMUR_CONTROL_ROD_TO_JOINT * FEMUR_JOINT_TO_SERVO * cos(femur_angle));
+	//Use law of cosines to find the angle between the line we just calculated and the line between the femur joint and the servo shaft
+	double servo_angle_partial_top = acos((servo_to_control_rod_length * servo_to_control_rod_length + FEMUR_JOINT_TO_SERVO * FEMUR_JOINT_TO_SERVO - FEMUR_CONTROL_ROD_TO_JOINT * FEMUR_CONTROL_ROD_TO_JOINT) / (2 * servo_to_control_rod_length * FEMUR_JOINT_TO_SERVO));
+	//Use law of cosines to find the angle between servo_to_control_rod_length imaginary line and the servo horn
+	double servo_angle_partial_bottom = acos((servo_to_control_rod_length * servo_to_control_rod_length + FEMUR_SERVO_HORN * FEMUR_SERVO_HORN - FEMUR_CONTROL_ROD * FEMUR_CONTROL_ROD) / (2 * servo_to_control_rod_length * FEMUR_SERVO_HORN));
+	
+	//Set the servo angle to be the sum of the two partial servo angles
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) (NEUTRAL + (servo_angle_partial_top + servo_angle_partial_bottom - (140 * M_PI / 180) /*+ this->offset[FEMUR]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }
 
 void Leg::setCoxaAngle(double coxa_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, NEUTRAL + ((coxa_angle + this->offset[COXA]) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	//This hopefully is close enough, so no need to bother with the trapezoid calculations...
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, NEUTRAL + (((coxa_angle + (5 * M_PI / 180)) * 1.75 /*+ this->offset[COXA]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
 }

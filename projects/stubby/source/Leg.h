@@ -21,16 +21,22 @@
 #define COXA_HEIGHT		68
 
 //The lengths of the four segments in the Tibia drive system
-#define TIBIA_JOINT_TO_SERVO		30
-#define TIBIA_SERVO_HORN			6
-#define TIBIA_CONTROL_ROD			38
-#define TIBIA_CONTROL_ROD_TO_JOINT	14
+#define TIBIA_JOINT_TO_SERVO		30.0
+#define TIBIA_SERVO_HORN			6.0
+#define TIBIA_CONTROL_ROD			38.0
+#define TIBIA_CONTROL_ROD_TO_JOINT	14.0
 
 //The lengths of the four segments in the Femur drive system
-#define FEMUR_JOINT_TO_SERVO		27
-#define FEMUR_SERVO_HORN			8
-#define FEMUR_CONTROL_ROD			28
-#define FEMUR_CONTROL_ROD_TO_JOINT	14
+#define FEMUR_JOINT_TO_SERVO		27.7
+#define FEMUR_SERVO_HORN			8.7
+#define FEMUR_CONTROL_ROD			26.9
+#define FEMUR_CONTROL_ROD_TO_JOINT	14.0
+
+//The lengths of the four segments in the Coxa drive system
+#define COXA_JOINT_TO_SERVO			23.9
+#define COXA_SERVO_HORN				8.0
+#define COXA_CONTROL_ROD			29.2
+#define COXA_CONTROL_ROD_TO_JOINT	13.1
 
 //We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
@@ -63,9 +69,10 @@ namespace digitalcave {
 			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
 			
 			//Set the angle for each servo.  This includes the servo abstraction code.
-			
+			void setTibiaAngle(double angle);
 			void setFemurAngle(double angle);
 			void setCoxaAngle(double angle);
+			
 			
 		public:
 			/*
@@ -104,8 +111,6 @@ namespace digitalcave {
 			 * Gets the specified pin
 			 */
 			uint8_t getPin(uint8_t joint);
-			
-			void setTibiaAngle(double angle);
 	} ;
 }
 #endif
