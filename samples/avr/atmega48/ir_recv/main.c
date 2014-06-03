@@ -11,7 +11,7 @@ int main (void){
 	
 	//Main program loop
 	while (1){
-		command = remote_get(); 
+		command = remote_get();
 		if (command == REMOTE_MENU) UDR0 = 'M';
 		else if (command == REMOTE_RIGHT) UDR0 = 'R';
 		else if (command == REMOTE_LEFT) UDR0 = 'L';

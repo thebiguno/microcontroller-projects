@@ -48,6 +48,7 @@ volatile uint8_t _command;
 
 void remote_init() {
 	DDRD &= ~_BV(PD2);  // set int0 as input
+	DDRB |= _BV(PB2);   // set pb2 as output
 	
 	TCCR0A = 0x0; 						// normal mode
 	TCCR0B = _BV(CS02) | _BV(CS00);		// F_CPU / 1024 prescaler
@@ -106,23 +107,25 @@ ISR(INT0_vect) {
 		} else if (_state == 2) {
 			if (TCNT0 > BIT_SPACE) {
 				_byte |= _BV(_bit_pos);
-			}
+			} 
 			if (_bit_pos++ == 7) {
-				switch (_byte_pos++) {
-					case 0:
+				if (_byte_pos == 0) {
 					if (_byte != 0xee) _state = 0;
-					break;
-					case 1:
+					_byte_pos++;
+				} else if (_byte_pos == 1) {
 					if (_byte != 0x87) _state = 0;
-					break;
-					case 2:
+					_byte_pos++;
+				} else if (_byte_pos == 2) {
 					_command = _byte & 0xfe;
-					break;
-					case 3:
+					_byte_pos++;
+				} else if (_byte_pos == 3) {
 					// TODO check pairing
 					_state = 0;
-					break;
+				} else {
+					_state = 0;
 				}
+				_bit_pos = 0;
+				_byte = 0;
 			}
 		}
 	}
