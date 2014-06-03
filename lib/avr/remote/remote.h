@@ -3,8 +3,8 @@
 
 #include <avr/io.h>
 
-#define REMOTE_MENU 0x03
-#define REMOTE_CENTER 0x05
+#define REMOTE_MENU 0x02
+#define REMOTE_CENTER 0x04
 #define REMOTE_RIGHT 0x06
 #define REMOTE_LEFT 0x08
 #define REMOTE_UP 0x0a
