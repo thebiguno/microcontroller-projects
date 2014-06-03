@@ -6,36 +6,45 @@
 #else
 #include "../simulation/debug.h"
 #include <stdlib.h>
+#include <stdio.h>
 #endif
 #include <math.h>
 
 
 #include "Stubby.h"
 
-#define DEG2RAD (180.0 / M_PI)
-
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs.
-#define LEG_OFFSET		45
+#define LEG_X_OFFSET	45
+#define LEG_Y_OFFSET	0
 //The length of the leg segment between coxa and femur joints (measured between center of each joint
-#define COXA_LENGTH		48
+#define COXA_LENGTH		49
 //The length of the leg segment between femur and tibia joints (measured between center of each joint)
 #define FEMUR_LENGTH	20
 //The length of the leg segment between tibia joint and end of the foot (measured from the center of the joint)
 #define TIBIA_LENGTH	57
 //The height from ground to the center of the coxa joint
 #define COXA_HEIGHT		68
+//The height from the center of the coxa joint to the center of the femur joint
+#define FEMUR_HEIGHT	17.825
 
+//See doc/drive_system.png for labels on Tibia, Femur, and Coxa drive systems
 //The lengths of the four segments in the Tibia drive system
-#define TIBIA_JOINT_TO_SERVO		30.0
-#define TIBIA_SERVO_HORN			6.0
-#define TIBIA_CONTROL_ROD			38.0
-#define TIBIA_CONTROL_ROD_TO_JOINT	14.0
+#define TIBIA_A							30.0
+#define TIBIA_B							6.0
+#define TIBIA_C							38.0
+#define TIBIA_D							14.0
+#define TIBIA_E_OFFSET_ANGLE			(10 * M_PI / 180)
+//TODO measure neutral servo angle
+#define TIBIA_NEUTRAL_SERVO_ANGLE		(90 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system
-#define FEMUR_JOINT_TO_SERVO		27.7
-#define FEMUR_SERVO_HORN			8.7
-#define FEMUR_CONTROL_ROD			26.9
-#define FEMUR_CONTROL_ROD_TO_JOINT	14.0
+#define FEMUR_A							27.7
+#define FEMUR_B							8.7
+#define FEMUR_C							26.9
+#define FEMUR_D							14.0
+#define FEMUR_E_OFFSET_ANGLE			(31 * M_PI / 180)
+//TODO measure neutral servo angle
+#define FEMUR_NEUTRAL_SERVO_ANGLE		(90 * M_PI / 180)
 
 //The lengths of the four segments in the Coxa drive system
 #define COXA_JOINT_TO_SERVO			23.9
@@ -67,11 +76,6 @@ namespace digitalcave {
 			int16_t x, y, z;								//Foot co-ordinates
 			double mounting_angle;							//The angle at which the leg is mounted, in degrees, relative to the X axis of a standard cartesian plane.
 			int8_t offset[JOINT_COUNT];						//Calibration offset in degrees
-			
-			/*
-			 * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d degrees.
-			 */
-			void rotate2d(int16_t *c1, int16_t *c2, int16_t o1, int16_t o2, double angle);
 			
 			//Set the angle for each servo.  This includes the servo abstraction code.
 			void setTibiaAngle(double angle);
