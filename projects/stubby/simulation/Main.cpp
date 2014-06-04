@@ -14,15 +14,12 @@ int main (void){
 		Leg(REAR_RIGHT,		&p, p, &p, p, &p, p, 5 * M_PI / 3)
 	};
 	
-	double x = -64;
-	double y = 114;
-	double z = 0;
-	for (uint8_t i = 0; i < 64; i++){
-		legs[FRONT_LEFT].setPosition(x, y, z);
-		//x = x-0.25;
-		y = y-0.8;
-		//z = z+;
-	}
+	legs[FRONT_LEFT].setPosition(-64, 112, 0);
+	legs[FRONT_RIGHT].setPosition(64, 112, 0);
+	legs[MIDDLE_LEFT].setPosition(-120, 0, 0);
+	legs[MIDDLE_RIGHT].setPosition(120, 0, 0);
+	legs[REAR_LEFT].setPosition(-64, -112, 0);
+	legs[REAR_RIGHT].setPosition(64, -112, 0);
 	
 	return 0;
 }
