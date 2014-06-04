@@ -2,6 +2,7 @@
 #define DEBUG_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void pwm_set_phase_batch(uint8_t index, uint16_t phase);
 #endif

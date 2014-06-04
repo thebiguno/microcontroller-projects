@@ -6,53 +6,66 @@
 #else
 #include "../simulation/debug.h"
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #endif
 #include <math.h>
 
-
 #include "Stubby.h"
 
-//The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs.
-#define LEG_X_OFFSET	45
-#define LEG_Y_OFFSET	0
-//The length of the leg segment between coxa and femur joints (measured between center of each joint
+//*** See doc/diagrams.png for figure X references ***//
+
+
+//The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
+// is the same for all the legs).  See figure 1.1, 'leg offset'
+#define LEG_OFFSET		45
+//The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
+#define COXA_HEIGHT		50
+//The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
+// figure 1.2, 'coxa length'
 #define COXA_LENGTH		49
-//The length of the leg segment between femur and tibia joints (measured between center of each joint)
+//The height from the center of the coxa joint to the center of the femur joint.  See figure 1.2, 'femur height'.
+#define FEMUR_HEIGHT	17.825
+//The length of the leg segment between femur and tibia joints (measured between center of each joint).  See
+// figure 1.2, 'femur length'
 #define FEMUR_LENGTH	20
 //The length of the leg segment between tibia joint and end of the foot (measured from the center of the joint)
+// See figure 1.2, 'tibia length'
 #define TIBIA_LENGTH	57
-//The height from ground to the center of the coxa joint
-#define COXA_HEIGHT		68
-//The height from the center of the coxa joint to the center of the femur joint
-#define FEMUR_HEIGHT	17.825
 
-//See doc/drive_system.png for labels on Tibia, Femur, and Coxa drive systems
-//The lengths of the four segments in the Tibia drive system
+
+//The lengths of the four segments in the Tibia drive system.  See figure 1.3, segments a, b, c and d.
 #define TIBIA_A							30.0
 #define TIBIA_B							6.0
 #define TIBIA_C							38.0
 #define TIBIA_D							14.0
+//The difference in angle between the desired angle and the angle between segments d and a.  See
+// figure 1.3, angle 'E'
 #define TIBIA_E_OFFSET_ANGLE			(10 * M_PI / 180)
-//TODO measure neutral servo angle
-#define TIBIA_NEUTRAL_SERVO_ANGLE		(90 * M_PI / 180)
+//The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
+// figure 1.3, angle 'N'
+#define TIBIA_NEUTRAL_SERVO_ANGLE		(97 * M_PI / 180)
 
-//The lengths of the four segments in the Femur drive system
+//The lengths of the four segments in the Femur drive system.  See figure 1.4, segments a, b, c and d.
 #define FEMUR_A							27.7
 #define FEMUR_B							8.7
 #define FEMUR_C							26.9
 #define FEMUR_D							14.0
+//The difference in angle between the desired angle and the angle between segments d and a.  See
+// figure 1.4, angle 'E'
 #define FEMUR_E_OFFSET_ANGLE			(31 * M_PI / 180)
-//TODO measure neutral servo angle
-#define FEMUR_NEUTRAL_SERVO_ANGLE		(90 * M_PI / 180)
+//The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
+// figure 1.4, angle 'N'
+#define FEMUR_NEUTRAL_SERVO_ANGLE		(115 * M_PI / 180)
 
-//The lengths of the four segments in the Coxa drive system
+//The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
 #define COXA_JOINT_TO_SERVO			23.9
 #define COXA_SERVO_HORN				8.0
 #define COXA_CONTROL_ROD			29.2
 #define COXA_CONTROL_ROD_TO_JOINT	13.1
 
-//We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
+
+//Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
 #define MIN_PHASE	700			//Clockwise from neutral
 #define NEUTRAL		1500

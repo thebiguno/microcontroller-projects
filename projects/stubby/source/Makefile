@@ -14,6 +14,6 @@ CDEFS+=-DPWM_MAX_PINS=21
 
 LFUSE=0xDF
 HFUSE=0xD1
-EFUSE=0xFD
+EFUSE=0xFE
 
 include build/targets.mk

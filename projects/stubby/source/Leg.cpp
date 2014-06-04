@@ -11,8 +11,8 @@ void rotate2d(double *c1, double *c2, double o1, double o2, double angle){
 	*c2 -= o2;
 	
 	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
-	int16_t n1 = *c1 * cos(angle) - *c2 * sin(angle);
-	int16_t n2 = *c1 * sin(angle) + *c2 * cos(angle);
+	int16_t n1 = *c1 * cos(angle * -1) - *c2 * sin(angle * -1);
+	int16_t n2 = *c1 * sin(angle * -1) + *c2 * cos(angle * -1);
 
 	//Translate back to o1, o2
 	*c1 = n1 + o1;
@@ -51,6 +51,9 @@ Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatil
 }
 
 void Leg::setPosition(int16_t x, int16_t y, int16_t z){
+	this->x = x;
+	this->y = y;
+	this->z = z;
 	#ifdef DEBUG_SIMULATION
 	printf("Desired position: %d, %d, %d\n", x, y, z);
 	#endif
@@ -58,34 +61,41 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	double x1 = x;
 	double y1 = y;
 	
-	//Rotate and translate leg to put 0,0 at coxa joint, pointing straight right.
+	//Rotate leg around 0, 0 such that the leg is pointing straight out at angle 0 (straight right).
 	rotate2d(&x1, &y1, 0, 0, this->mounting_angle);
-	x1 -= LEG_X_OFFSET;
-	y1 -= LEG_Y_OFFSET;
+	//Translate the leg according to the leg offset, to put the coxa joint at co-ordinates 0,0.
+	x1 -= LEG_OFFSET;
 	
-	//Find the angle of the leg, used to set the coxa joint
+	//Find the angle of the leg, used to set the coxa joint.  See figure 2.1, 'coxa angle'.
 	double coxa_angle = atan2(y1, x1);
 	
-	//Find the length of the leg, from coxa joint to end of tibia, on the x,y plane (to be later used for X,Z IK)
-	double leg_length = sqrt(x1 * x1 + y1 * y1);
+	//Find the length of the leg, from coxa joint to end of tibia, on the x,y plane (to be later 
+	// used for X,Z inverse kinematics).  See figure 2.1, 'leg length', 'x1', and 'y1'.
+	double leg_length = sqrt((x1 * x1) + (y1 * y1));
 
 	//Find the distance between the femur joint and the end of the tibia.  Do this using the
-	// right triangle of (FEMUR_HEIGHT + COXA_HEIGHT - z), (x1 - COXA_LENGTH).  See
-	// diagram doc/leg_math.png for details on what these measurements are.
-	double leg_extension = sqrt((FEMUR_HEIGHT + COXA_HEIGHT - z) * (FEMUR_HEIGHT + COXA_HEIGHT - z) + (x1 - COXA_LENGTH) * (x1 - COXA_LENGTH));
+	// right triangle of (FEMUR_HEIGHT + COXA_HEIGHT - z), (leg_length - COXA_LENGTH).  See figure 
+	// 2.2, 'leg extension'
+	double leg_extension = sqrt((FEMUR_HEIGHT + COXA_HEIGHT - z) * (FEMUR_HEIGHT + COXA_HEIGHT - z) + (leg_length - COXA_LENGTH) * (leg_length - COXA_LENGTH));
 	
-	//Now that we have all three sides of the triangle, we can use law of cosines to find angles.
+	//Now that we have all three sides of the triangle, we can use law of cosines to find angles 
+	// of the tibia.  See figure 2.3 for a diagram of this.
 	double tibia_angle = acos(((FEMUR_LENGTH * FEMUR_LENGTH) + (TIBIA_LENGTH * TIBIA_LENGTH) - (leg_extension * leg_extension)) / (2 * FEMUR_LENGTH * TIBIA_LENGTH));
 	double femur_angle = acos(((FEMUR_LENGTH * FEMUR_LENGTH) + (leg_extension * leg_extension) - (TIBIA_LENGTH * TIBIA_LENGTH)) / (2 * FEMUR_LENGTH * leg_extension));
 	
 	#ifdef DEBUG_SIMULATION
-	printf("Desired position: %d, %d, %d\n", x, y, z);
-	printf(" x1: %3.1f, y1: %3.1f, leg length: %3.1f; leg_extension: %3.1f\n", x1, y1, leg_length, leg_extension);
+	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f,%3.1f, leg_length: %3.1f; leg_extension: %3.1f\n", x,y,z, x1,y1, leg_length, leg_extension);
 	#endif
 	
 	this->setTibiaAngle(tibia_angle);
 	this->setFemurAngle(femur_angle);
 	this->setCoxaAngle(coxa_angle);
+}
+
+void Leg::getPosition(int16_t *x, int16_t *y, int16_t *z){
+	*x = this->x;
+	*y = this->y;
+	*z = this->z;
 }
 
 volatile uint8_t* Leg::getPort(uint8_t joint){
