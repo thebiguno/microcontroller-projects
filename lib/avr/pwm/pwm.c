@@ -260,18 +260,44 @@ void pwm_apply_batch(){
 
 		if (p->compare_value > 0){
 			//Set pins to high
+#ifndef PWM_PORTA_UNUSED
 			if (p->port == &PORTA) _pwm_event_high_new.porta_mask |= _BV(p->pin);
-			else if (p->port == &PORTB) _pwm_event_high_new.portb_mask |= _BV(p->pin);
-			else if (p->port == &PORTC) _pwm_event_high_new.portc_mask |= _BV(p->pin);
-			else if (p->port == &PORTD) _pwm_event_high_new.portd_mask |= _BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTB_UNUSED
+			if (p->port == &PORTB) _pwm_event_high_new.portb_mask |= _BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTC_UNUSED
+			if (p->port == &PORTC) _pwm_event_high_new.portc_mask |= _BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTD_UNUSED
+			if (p->port == &PORTD) _pwm_event_high_new.portd_mask |= _BV(p->pin);
+			else
+#endif
+			if (0);	//Nop so that ignored ports dont break things
 
 			//Set pins to low
 			pwm_event_t *e = &(_pwm_events_low_new[last_index]);
 			e->compare_value = last_compare_value;
+#ifndef PWM_PORTA_UNUSED
 			if (p->port == &PORTA) e->porta_mask &= ~_BV(p->pin);
-			else if (p->port == &PORTB) e->portb_mask &= ~_BV(p->pin);
-			else if (p->port == &PORTC) e->portc_mask &= ~_BV(p->pin);
-			else if (p->port == &PORTD) e->portd_mask &= ~_BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTB_UNUSED
+			if (p->port == &PORTB) e->portb_mask &= ~_BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTC_UNUSED
+			if (p->port == &PORTC) e->portc_mask &= ~_BV(p->pin);
+			else
+#endif
+#ifndef PWM_PORTD_UNUSED
+			if (p->port == &PORTD) e->portd_mask &= ~_BV(p->pin);
+			else
+#endif
+			if (0);	//Nop so that ignored ports dont break things
 		}
 	}
 

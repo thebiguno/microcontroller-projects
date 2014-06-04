@@ -36,6 +36,20 @@ int main (void){
 	
 	pwm_init(ports, pins, PWM_COUNT, 20000);
 	
+	/*
+	if (MCUSR & _BV(BORF)){
+		//If this reset was caused by a brown-out, flash red + blue to notify user.
+		for (uint8_t i = 0; i < 5; i++){
+			status_set_color(0x00, 0x00, 0xFF);
+			_delay_ms(500);
+			status_set_color(0xFF, 0x00, 0x00);
+			_delay_ms(500);
+		}
+		//Clear brown-out flag
+		MCUSR &= ~_BV(BORF);
+	}
+	*/
+	
 	status_set_color(0xFF, 0x00, 0x00);
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -43,33 +57,44 @@ int main (void){
 			pwm_set_phase_batch(l * JOINT_COUNT + j, NEUTRAL);
 		}
 	}
+	pwm_apply_batch();
+
+	_delay_ms(2000);
+
+	status_set_color(0xFF, 0xFF, 0x00);
 	
-	legs[MIDDLE_RIGHT].setTibiaAngle(110 / DEG2RAD);
+	legs[FRONT_LEFT].setPosition(-64, 114, 0);
+	legs[FRONT_RIGHT].setPosition(64, 114, 0);
+	legs[MIDDLE_LEFT].setPosition(-130, 30, 0);
+	legs[MIDDLE_RIGHT].setPosition(130, 30, 0);
+	legs[REAR_LEFT].setPosition(-64, -114, 0);
+	legs[REAR_RIGHT].setPosition(64, -114, 0);
 	pwm_apply_batch();
 	
-	status_set_color(0x00, 0xFF, 0x00);
-	_delay_ms(500);
-
+	_delay_ms(1000);
 	
+	status_set_color(0x00, 0xFF, 0x00);
 	
 	//comm_init();
 	//status_init();
 	
 	//calibration();
 	
+	int8_t direction = 1;
+	uint8_t c = 0;
 	while(1){
-		legs[MIDDLE_RIGHT].setTibiaAngle(100.0 / DEG2RAD);
-		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MAX_PHASE);
+		c++;
+		if (c > 50) {
+			direction = direction * -1;
+			c = 0;
+		}
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			int16_t x, y, z;
+			legs[l].getPosition(&x, &y, &z);
+			y += direction;
+			legs[l].setPosition(x, y, z);
+		}
 		pwm_apply_batch();
-		status_set_color(0x00, 0x00, 0xFF);
-		_delay_ms(5000);
-		
-		//pwm_set_phase_batch(MIDDLE_RIGHT * JOINT_COUNT + TIBIA, MIN_PHASE);
- 		legs[MIDDLE_RIGHT].setTibiaAngle(120.0 / DEG2RAD);
-		pwm_apply_batch();
-		status_set_color(0xFF, 0x00, 0x00);
-		_delay_ms(5000);
-
 	}
 }
 

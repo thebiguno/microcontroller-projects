@@ -3,9 +3,8 @@
 
 #include <avr/io.h>
 
-// TODO these values are only correct depending on the device id as the LSB is a parity bit
-#define REMOTE_MENU 0x03
-#define REMOTE_CENTER 0x05
+#define REMOTE_MENU 0x02
+#define REMOTE_CENTER 0x04
 #define REMOTE_RIGHT 0x06
 #define REMOTE_LEFT 0x08
 #define REMOTE_UP 0x0a
