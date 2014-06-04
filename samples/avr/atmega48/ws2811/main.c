@@ -5,10 +5,10 @@
 #include "lib/ws2811/ws2811_8.h"
 #include <util/delay_basic.h>
 
-uint8_t r(uint8_t max) {
-	return rand() / (RAND_MAX / max + 1);
+int r(int max) {
+	return rand() % max;
 }
-void a(uint8_t p1, uint8_t p2, uint8_t *x) {
+void a(int8_t p1, int8_t p2, int8_t *x) {
 	if (p1 == p2) return;
 	
 	uint8_t p = p1 + p2;
@@ -20,9 +20,10 @@ void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 	uint8_t v = x[p1] + x[p2];
 	if (x[p2] < x[p1]) v += 12;
 	v /= 2;
-	//v = 1;
-	//v += (r(2) - 1);
-	//v %= 60;
+	//v += r(3) - 1;
+	if (v < 0) v = 11;
+	if (v > 11) v = 0;
+	
 	x[p] = v;
 	
 	a(p1, p, x);
@@ -52,9 +53,9 @@ int main (void) {
 	uint8_t x[60];
 	
 	// start with random colors at random locations
-	uint8_t p1 = 2;
-	uint8_t p2 = 22;
-	uint8_t p3 = 42;
+	int8_t p1 = 0;
+	int8_t p2 = 20;
+	int8_t p3 = 40;
 	x[p1] = 0;
 	x[p2] = 4;
 	x[p3] = 8;
@@ -69,20 +70,29 @@ int main (void) {
 		a(p2, p3, x);
 		a(p3, p1, x);
 
-		for (uint8_t i = 0; i < 60; i++) {
+		for (int8_t i = 0; i < 60; i++) {
 			colors[i] = palette[x[i]];
 		}
 		ws2811_set(colors, 60, 1);
 		
-		p1 += 1;//(((int8_t) r(2)) - 1);
-		p2 += 1;//(((int8_t) r(2)) - 1);
-		//p3 += 1;//(((int8_t) r(2)) - 1);
-		if (p1 < 0) p1 = 59;
-		if (p2 < 0) p2 = 59;
-		if (p3 < 0) p3 = 59;
-		if (p1 > 59) p1 = 0;
-		if (p2 > 59) p2 = 0;
-		if (p3 > 59) p3 = 0;
+		p1 += r(3) - 1;
+		p2 += r(3) - 1;
+		p3 += r(3) - 1;
+		if (p1 < 0) p1 = 19;
+		if (p2 < 20) p2 = 39;
+		if (p3 < 40) p3 = 59;
+		if (p1 > 19) p1 = 0;
+		if (p2 > 39) p2 = 20;
+		if (p3 > 59) p3 = 40;
+		x[p1] += (r(3) - 1);
+		x[p2] += (r(3) - 1);
+		x[p3] += (r(3) - 1);
+		if (x[p1] < 0) x[p1] = 0;
+		if (p2 < 20) p2 = 20;
+		if (p3 < 40) p3 = 40;
+		if (p1 > 19) p1 = 19;
+		if (p2 > 39) p2 = 39;
+		if (p3 > 59) p3 = 59;
 		
 		while (TCNT0 < 0xff) {
 			;
