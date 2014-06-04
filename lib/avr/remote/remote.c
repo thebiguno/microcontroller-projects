@@ -1,6 +1,26 @@
 #include "remote.h"
 #include <avr/interrupt.h>
 
+#ifdef REMOTE_TIMER2
+#define TCCRxA TCCR2A
+#define TCCRxB TCCR2B
+#define PRESCALE _BV(CS22) | _BV(CS21) | _BV(CS20)
+#else
+#define TCCRxA TCCR0A
+#define TCCRxB TCCR0B
+#define PRESCALE _BV(CS02) | _BV(CS00)
+#endif
+
+#ifdef REMOTE_INT1
+#define ISCx0 ISC10
+#define INTx INT1
+#define PDx PD3
+#else
+#define ISCx0 ISC00
+#define INTx INT0
+#define PDx PD2
+#endif
+
 /*
 NEC IR transmission protocol:
 http://techdocs.altium.com/display/ADRR/NEC+Infrared+Transmission+Protocol
@@ -47,15 +67,18 @@ volatile uint8_t _byte;
 volatile uint8_t _command;
 
 void remote_init() {
-	DDRD &= ~_BV(PD2);  // set int0 as input
 	
-	TCCR0A = 0x0; 						// normal mode
-	TCCR0B = _BV(CS02) | _BV(CS00);		// F_CPU / 1024 prescaler
+	// timer
+	TCCRxA = 0x0; 						// normal mode
+	TCCRxA = PRESCALE;					// F_CPU / 1024 prescaler
 
+	// interrupts
+	DDRD &= ~_BV(PDx);  				// set pin as input
+	
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)
-	MCUCR |= _BV(ISC00);				// logical change generates interrupt
-	GIMSK |= _BV(INT0);					// enable external interrupts on int0
+	MCUCR |= _BV(ISCx0);				// logical change generates interrupt
+	GIMSK |= _BV(INTx);					// enable external interrupts on int0
 	#elif defined(__AVR_ATmega48__)    || \
 		defined(__AVR_ATmega48P__)     || \
 		defined(__AVR_ATmega168__)     || \
@@ -66,8 +89,8 @@ void remote_init() {
 		defined(__AVR_ATmega644P__)    || \
 		defined(__AVR_ATmega644PA__)   || \
 		defined(__AVR_ATmega1284P__)
-	EICRA = _BV(ISC00);					// logical change generates interrupt
-	EIMSK |= _BV(INT0);					// enable external interrupts on int0
+	EICRA = _BV(ISCx0);					// logical change generates interrupt
+	EIMSK |= _BV(INTx);					// enable external interrupts on int0
 	#endif
 	
 	sei();
