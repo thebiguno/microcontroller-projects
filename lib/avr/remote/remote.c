@@ -48,10 +48,10 @@ volatile uint8_t _command;
 
 void remote_init() {
 	DDRD &= ~_BV(PD2);  // set int0 as input
-	DDRB |= _BV(PB2);   // set pb2 as output
+	DDRB |= _BV(PB2);   // set pb2 as output (test)
 	
-	TCCR0A = 0x0; 						// normal mode
-	TCCR0B = _BV(CS02) | _BV(CS00);		// F_CPU / 1024 prescaler
+	TCCR2A = 0x0; 						// normal mode
+	TCCR2B = _BV(CS22) | _BV(CS21) | _BV(CS20);		// F_CPU / 1024 prescaler
 
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)
@@ -86,16 +86,18 @@ uint8_t remote_get() {
 
 ISR(INT0_vect) {
 	if (PIND & _BV(PD2)) {
+		PORTB |= _BV(PB2);
 		// receiver high; protocol low
 		if (_state == 0) {
-			if (TCNT0 > LEADING_PULSE) {
+			if (TCNT2 > LEADING_PULSE) {
 				_state = 1;
 			}
 		}
 	} else {
+		PORTB &= ~_BV(PB2);
 		// receiver low; protocol high
 		if (_state == 1) {
-			if (TCNT0 > LEADING_SPACE) {
+			if (TCNT2 > LEADING_SPACE) {
 				_state = 2;
 				_byte_pos = 0;
 				_bit_pos = 0;
@@ -105,7 +107,7 @@ ISR(INT0_vect) {
 				// TODO implement repeats
 			}
 		} else if (_state == 2) {
-			if (TCNT0 > BIT_SPACE) {
+			if (TCNT2 > BIT_SPACE) {
 				_byte |= _BV(_bit_pos);
 			} 
 			if (_bit_pos++ == 7) {
@@ -129,5 +131,5 @@ ISR(INT0_vect) {
 			}
 		}
 	}
-	TCNT0 = 1;
+	TCNT2 = 1;
 }
