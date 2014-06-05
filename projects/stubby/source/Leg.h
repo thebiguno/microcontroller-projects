@@ -59,10 +59,16 @@
 #define FEMUR_NEUTRAL_SERVO_ANGLE		(115 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
-#define COXA_JOINT_TO_SERVO			23.9
-#define COXA_SERVO_HORN				8.0
-#define COXA_CONTROL_ROD			29.2
-#define COXA_CONTROL_ROD_TO_JOINT	13.1
+#define COXA_A							23.9
+#define COXA_B							8.0
+#define COXA_C							28.8
+#define COXA_D							13.1
+//The difference in angle between the desired angle and the angle between segments d and a.  See
+// figure 1.4, angle 'E'
+#define COXA_E_OFFSET_ANGLE				(120 * M_PI / 180)
+//The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
+// figure 1.4, angle 'N'
+#define COXA_NEUTRAL_SERVO_ANGLE		(77 * M_PI / 180)
 
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
