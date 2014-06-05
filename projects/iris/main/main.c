@@ -418,3 +418,5 @@ int main() {
 		}
 	}
 }
+
+EMPTY_INTERRUPT(TIMER0_OVF_vect)
