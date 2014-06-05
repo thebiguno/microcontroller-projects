@@ -16,6 +16,7 @@
 #define MODE_PCT 3
 #define MODE_MOON 4
 #define MODE_SPECTRUM 5
+#define MODE_PLASMA 6
 
 #define MODE_YEAR 127
 #define MODE_MONTH 128
@@ -26,43 +27,73 @@
 
 extern time_t __system_time;
 
+int r(int max) {
+	return rand() % max;
+}
+void a(uint8_t p1, uint8_t p2, uint8_t *x) {
+	if (p1 == p2) return;
+	
+	uint8_t p = p1 + p2;
+	if (p2 < p1) p += 60;
+	p /= 2;
+	if (p == p1 || p == p2) return;
+	p %= 60;
+	
+	uint8_t v = x[p1] + x[p2];
+	if (x[p2] < x[p1]) v += 12;
+	v /= 2;
+	if (v < 0) v = 11;
+	if (v > 11) v = 0;
+	
+	x[p] = v;
+	
+	a(p1, p, x);
+	a(p, p2, x);
+}
+
 int main() {
 	
 	DDRB |= _BV(1); // led strip output
 	
 	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t red = {.red = 0xff, .green = 0x00, .blue = 0x00 };
-	ws2811_t orange = {.red = 0xdd, .green = 0x33, .blue = 0x00 };
-	ws2811_t yellow = {.red = 0xff, .green = 0xff, .blue = 0x00 };
-	ws2811_t chartreuse = {.red = 0x33, .green = 0xdd, .blue = 0x00 };
-	ws2811_t green = {.red = 0x00, .green = 0xff, .blue = 0x00 };
-	ws2811_t spring = {.red = 0x00, .green = 0xdd, .blue = 0x33 };
-	ws2811_t cyan = {.red = 0x00, .green = 0xff, .blue = 0xff };
-	ws2811_t azure = {.red = 0x00, .green = 0x33, .blue = 0xdd };
-	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xff };
-	ws2811_t violet = {.red = 0x33, .green = 0x00, .blue = 0xdd };
-	ws2811_t magenta = {.red = 0xff, .green = 0x00, .blue = 0xff };
-	ws2811_t rose = {.red = 0xdd, .green = 0x00, .blue = 0x33 };
-	ws2811_t grey = {.red = 0xdd, .green = 0xdd, .blue = 0xdd };
+	ws2811_t grey = {.red = 0xcc, .green = 0xcc, .blue = 0xcc };
 	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
 
+	ws2811_t red = {.red = 0xcc, .green = 0x00, .blue = 0x00 };			// 0
+	ws2811_t green = {.red = 0x00, .green = 0xcc, .blue = 0x00 };		// 120
+	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xcc };		// 240
+
+	ws2811_t yellow = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 60
+	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 180
+	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 300
+
+	ws2811_t orange = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 30
+	ws2811_t chartreuse = {.red = 0x66, .green = 0xcc, .blue = 0x00 };	// 90
+	ws2811_t spring = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 150
+	ws2811_t azure = {.red = 0x00, .green = 0x66, .blue = 0xcc };		// 210
+	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
+	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
+
+	ws2811_t palette[12] = { red, orange, yellow, chartreuse, green, spring, cyan, azure, blue, violet, magenta, rose };
+	
 	
 	struct ws2811_t colors[60];
 	remote_init();
 	
-	EICRA |= _BV(ISC11);	// trigger on falling edge of int1
-	EIMSK |= _BV(INT1);		// enable external interrupts on int1
+	//EICRA |= _BV(ISC11);	// trigger on falling edge of int1
+	//EIMSK |= _BV(INT1);		// enable external interrupts on int1
+	TCCR0B |= _BV(CS02) | _BV(CS01) | _BV(CS00);
 	
 	DDRD &= ~_BV(PD3);		// set 1 Hz int1 as input
 	PORTD |= _BV(PD3);		// set 1 Hz int1 as pull-up
 	
 	pcf8563_init();
-	serial_init_b(9600);
+	//serial_init_b(9600);
 	
 	sei();
 
 	int8_t mday = -1;		// used to avoid computing sunrise, sunset, and moon phase more than once per day;
-	volatile time_t systime;
+	time_t systime;
 	time_t risetime;
 	time_t settime;
 	struct tm sys;
@@ -74,6 +105,15 @@ int main() {
 	uint8_t mode = 0;
 	uint8_t update = 1;
 	struct pcf8563_t rtc;
+
+	// plasma variables
+	uint8_t x[60];
+	int8_t p1 = 0;
+	int8_t p2 = 20;
+	int8_t p3 = 40;
+	x[p1] = 0;
+	x[p2] = 4;
+	x[p3] = 8;
 
 	// hard coded location and time zone for now
 	set_zone(-7 * ONE_HOUR);
@@ -94,14 +134,16 @@ int main() {
 	struct ws2811_t pixel = blue;
 	
 	while (1) {
+		if (TCNT0 > 0) {
+			system_tick();
+			TCNT0 = 0;
+			update = 1;
+		}
+		
 		// update display
-		// * if the update flag is set
-		// * if the systime has changed and the mode is time based
-		// * the remote isn't in the middle of receiving a message
-		if (remote_state() == 0 && (update == 1 || (mode <= MODE_MOON && __system_time > systime))) {
+		// * if the update flag is set and the remote isn't in the middle of receiving a message
+		if (remote_state() == 0 && update == 1) {
 			update = 0;
-			systime = __system_time;
-			UDR0 = 'X';
 			if (mode <= MODE_MOON ) {
 				// recompute time structure
 				localtime_r(&__system_time, &sys);
@@ -115,21 +157,22 @@ int main() {
 					localtime_r(&settime, &set);
 					week = week_of_year(&sys, 0);
 					int8_t mp = moon_phase(&systime);
-					phase = 15; //0.3 * mp;
+					phase = 15;//0.3 * mp;
+				}
+
+				if (systime < risetime || systime > settime) {
+					// invert display after sunset
+					markers = violet;
+				} else {
+					markers = chartreuse;
 				}
 			}
 			
-			if (systime < risetime || systime > settime) {
-				// invert display after sunset
-				markers = magenta;
-			} else {
-				markers = grey;
-			}
-			
+			// almost all of the modes start with black
 			for (uint8_t i = 0; i < 60; i++) {
 				colors[i] = black;
 			}
-			
+
 			if (mode == MODE_HMS) {
 				// hours, minutes, seconds
 				// markers
@@ -145,11 +188,11 @@ int main() {
 				colors[sys.tm_sec] = red;
 			} else if (mode == MODE_MD) {
 				// month, day of month
-				if (sys.tm_mon < 2) fill = blue; // jan, feb
-				else if (sys.tm_mon < 5) fill = green; // mar, apr, may
-				else if (sys.tm_mon < 8) fill = yellow; // jun, jul, aug
+				if (sys.tm_mon < 2) fill = azure; // jan, feb
+				else if (sys.tm_mon < 5) fill = spring; // mar, apr, may
+				else if (sys.tm_mon < 8) fill = rose; // jun, jul, aug
 				else if (sys.tm_mon < 11) fill = orange; // sep, oct, nov
-				else fill = blue; // dec
+				else fill = azure; // dec
 				
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
@@ -198,20 +241,20 @@ int main() {
 				if (phase > 0) {
 					// waxing
 					for (int8_t i = 15; i < 15 + phase; i++) {
-						colors[i] = grey;
+						colors[i] = azure;
 					}
 					for (int8_t i = 15; i > 15 - phase; i--) {
 						if (i < 0) i = 60 - i;
-						colors[i] = grey;
+						colors[i] = azure;
 					}
 				} else {
 					// waning
 					for (int8_t i = 45; i < 45 + phase; i++) {
-						colors[i] = grey;
+						colors[i] = azure;
 					}
 					for (int8_t i = 45; i > 45 - phase; i--) {
 						if (i > 60) i = i - 60;
-						colors[i] = grey;
+						colors[i] = azure;
 					}
 				}
 			} else if (mode == MODE_SPECTRUM) {
@@ -229,6 +272,32 @@ int main() {
 					else if (i < 55) colors[i] = magenta;
 					else if (i < 60) colors[i] = rose;
 				}
+			} else if (mode == MODE_PLASMA) {
+				a(p1, p2, x);
+				a(p2, p3, x);
+				a(p3, p1, x);
+
+				for (int8_t i = 0; i < 60; i++) {
+					colors[i] = palette[x[i]];
+				}
+				p1 += r(3) - 1;
+				p2 += r(3) - 1;
+				p3 += r(3) - 1;
+				if (p1 < 0) p1 = 19;
+				if (p2 < 20) p2 = 39;
+				if (p3 < 40) p3 = 59;
+				if (p1 > 19) p1 = 0;
+				if (p2 > 39) p2 = 20;
+				if (p3 > 59) p3 = 40;
+				x[p1] += (r(3) - 1);
+				x[p2] += (r(3) - 1);
+				x[p3] += (r(3) - 1);
+				if (x[p1] < 0) x[p1] = 0;
+				if (p2 < 20) p2 = 20;
+				if (p3 < 40) p3 = 40;
+				if (p1 > 19) p1 = 19;
+				if (p2 > 39) p2 = 39;
+				if (p3 > 59) p3 = 59;
 			} else if (mode == MODE_YEAR) {
 				colors[year] = yellow;
 			} else if (mode == MODE_MONTH) {
@@ -251,9 +320,15 @@ int main() {
 					colors[1] = cyan;
 				}
 			} else if (mode == MODE_HOUR) {
+				if (sys.tm_hour > 11) {
+					markers = chartreuse;
+				} else {
+					markers = violet;
+				}
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = markers;
-				}uint8_t hour = (sys.tm_hour % 12) * 5;
+				}
+				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
 					colors[i] = blue;
 				}
@@ -267,18 +342,14 @@ int main() {
 			ws2811_set(colors, 60, 1);
 		}
 
-		// 	// read ir
+		// read ir
 		uint8_t command = remote_get();
-		if (command > 0) {
-			UDR0 = 'C';
-			update = 1;
-		}
-		
-		if (mode <= MODE_SPECTRUM) {
+		if (command >= REMOTE_MENU && command <= REMOTE_DOWN) update = 1;
+		if (mode <= MODE_PLASMA) {
 			if (command == REMOTE_LEFT) {
 				if (mode > MODE_HMS) mode--;
 			} else if (command == REMOTE_RIGHT) {
-				if (mode < MODE_SPECTRUM) mode++;
+				if (mode < MODE_PLASMA) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
 				year = 2000 - sys.tm_year;
@@ -286,7 +357,6 @@ int main() {
 			}
 		} else {
 			if (command == REMOTE_UP) {
-				UDR0 = 'U';
 				if (mode == MODE_YEAR && year < 59) year++;
 				else if (mode == MODE_YEAR) year = 0;
 				else if (mode == MODE_MONTH && sys.tm_mon < 11) sys.tm_mon++;
@@ -300,7 +370,6 @@ int main() {
 				else if (mode == MODE_SEC && sys.tm_sec < 59) sys.tm_sec++;
 				else if (mode == MODE_SEC) sys.tm_sec = 0;
 			} else if (command == REMOTE_DOWN) {
-				UDR0 = 'D';
 				if (mode == MODE_YEAR && year > 0) year--;
 				else if (mode == MODE_YEAR) year = 59;
 				else if (mode == MODE_MONTH && sys.tm_mon > 0) sys.tm_mon--;
@@ -314,10 +383,8 @@ int main() {
 				else if (mode == MODE_SEC && sys.tm_sec > 0) sys.tm_sec--;
 				else if (mode == MODE_SEC) sys.tm_sec = 59;
 			} else if (command == REMOTE_LEFT) {
-				UDR0 = 'L';
 				if (mode > MODE_YEAR) mode--;
 			} else if (command == REMOTE_RIGHT) {
-				UDR0 = 'R';
 				if (mode < MODE_SEC) mode++;
 				else {
 					systime = mktime(&sys);
@@ -330,16 +397,20 @@ int main() {
 					rtc.second = sys.tm_sec;
 					pcf8563_set(&rtc);
 					mode = MODE_HMS;
+					
+					// this just for testing
+					pcf8563_get(&rtc);
+					sys.tm_year = rtc.year;
+					sys.tm_mon = rtc.month;
+					sys.tm_mday = rtc.mday;
+					sys.tm_hour = rtc.hour;
+					sys.tm_min = rtc.minute;
+					systime = mktime(&sys);
+					set_system_time(systime);
 				}
 			} else if (command == REMOTE_MENU) {
-				UDR0 = 'M';
 				mode = MODE_HMS;
 			}
 		}
 	}
-}
-
-ISR(INT1_vect, ISR_NAKED) {
-	system_tick();
-	reti();
 }
