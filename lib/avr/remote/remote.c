@@ -113,7 +113,7 @@ ISR(INT0_vect) {
 		PORTB |= _BV(PB2);
 		// receiver high; protocol low
 		if (_state == 0) {
-			if (TCNT2 > LEADING_PULSE) {
+			if (TCNTx > LEADING_PULSE) {
 				_state = 1;
 			}
 		}
@@ -121,7 +121,7 @@ ISR(INT0_vect) {
 		PORTB &= ~_BV(PB2);
 		// receiver low; protocol high
 		if (_state == 1) {
-			if (TCNT2 > LEADING_SPACE) {
+			if (TCNTx > LEADING_SPACE) {
 				_state = 2;
 				_byte_pos = 0;
 				_bit_pos = 0;
@@ -131,7 +131,7 @@ ISR(INT0_vect) {
 				// TODO implement repeats
 			}
 		} else if (_state == 2) {
-			if (TCNT2 > BIT_SPACE) {
+			if (TCNTx > BIT_SPACE) {
 				_byte |= _BV(_bit_pos);
 			} 
 			if (_bit_pos++ == 7) {
@@ -156,7 +156,7 @@ ISR(INT0_vect) {
 			}
 		}
 	}
-	TCNT2 = 1;
+	TCNTx = 0;
 }
 
 #ifdef REMOTE_TIMER2
