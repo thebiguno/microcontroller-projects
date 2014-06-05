@@ -27,13 +27,13 @@ double solveServoTrapezoid(double length_a, double length_b, double length_c, do
 	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
 	double length_e = sqrt(length_d * length_d + length_a * length_a - 2 * length_d * length_a * cos(angle_E));
 	
-	//Use law of cosines to find the angle between the line we just calculated and the line between the tibia joint and the servo shaft (D)
-	double angle_D = acos((length_e * length_e + length_a * length_a - length_d * length_d) / (2 * length_e * length_a));
-	//Use law of cosines to find the angle between servo_to_control_rod_length imaginary line and the servo horn
+	//Use law of cosines to find the angle between the line we just calculated and the line between the servo shaft and servo horn / control rod connection (b)
 	double angle_C = acos((length_e * length_e + length_b * length_b - length_c * length_c) / (2 * length_e * length_b));
+	//Use law of cosines to find the angle between the line we just calculated and the line between the joint and the servo shaft (d)
+	double angle_D = acos((length_e * length_e + length_a * length_a - length_d * length_d) / (2 * length_e * length_a));
 
 	#ifdef DEBUG_SIMULATION
-	printf("length e: %3.1f; angle C + D: %2.3f; ", length_e, angle_D + angle_C);
+	printf("e: %3.1f; C: %2.3f; D: %2.3f", length_e, angle_C, angle_D);
 	#endif
 	
 	return angle_N - (angle_C + angle_D);
@@ -55,7 +55,7 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	this->y = y;
 	this->z = z;
 	#ifdef DEBUG_SIMULATION
-	printf("Desired position: %d, %d, %d\n", x, y, z);
+	printf("Desired: %d, %d, %d\n", x, y, z);
 	#endif
 
 	double x1 = x;
@@ -144,12 +144,18 @@ void Leg::setFemurAngle(double desired_angle){
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) NEUTRAL + angle_S * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL));
 }
 
-void Leg::setCoxaAngle(double coxa_angle){
+void Leg::setCoxaAngle(double desired_angle){
 	#ifdef DEBUG_SIMULATION
-	printf(" desired coxa angle: %2.3f\n", coxa_angle);
+	printf(" Coxa: desired angle: %2.3f; ", desired_angle);
 	#endif
+
+	//See diagrams in doc/drive_system.png for description of sides and angles
+	double angle_S = solveServoTrapezoid(COXA_A, COXA_B, COXA_C, COXA_D, desired_angle + COXA_E_OFFSET_ANGLE, COXA_NEUTRAL_SERVO_ANGLE);
 	
-	//This hopefully is close enough, so no need to bother with the trapezoid calculations...
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, NEUTRAL + (((coxa_angle + (5 * M_PI / 180)) * 1.75 /*+ this->offset[COXA]*/) * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL)));
+	#ifdef DEBUG_SIMULATION
+	printf(" servo angle: %2.3f; ", angle_S);
+	#endif
+
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) NEUTRAL + angle_S * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL));
 }
 

@@ -63,12 +63,17 @@ int main (void){
 
 	status_set_color(0xFF, 0xFF, 0x00);
 	
-	legs[FRONT_LEFT].setPosition(-64, 114, 0);
-	legs[FRONT_RIGHT].setPosition(64, 114, 0);
-	legs[MIDDLE_LEFT].setPosition(-130, 30, 0);
-	legs[MIDDLE_RIGHT].setPosition(130, 30, 0);
-	legs[REAR_LEFT].setPosition(-64, -114, 0);
-	legs[REAR_RIGHT].setPosition(64, -114, 0);
+	/*
+	legs[FRONT_LEFT].setPosition(-64, 122, 0);
+	legs[FRONT_RIGHT].setPosition(64, 122, 0);
+	legs[MIDDLE_LEFT].setPosition(-125, 0, 0);
+	legs[MIDDLE_RIGHT].setPosition(125, 0, 0);
+	legs[REAR_LEFT].setPosition(-64, -122, 0);
+	legs[REAR_RIGHT].setPosition(64, -122, 0);
+	pwm_apply_batch();
+	*/
+	
+	legs[MIDDLE_RIGHT].setPosition(140, -50, 0);
 	pwm_apply_batch();
 	
 	_delay_ms(1000);
@@ -80,7 +85,7 @@ int main (void){
 	
 	//calibration();
 	
-	int8_t direction = 1;
+	int8_t direction = 2;
 	uint8_t c = 0;
 	while(1){
 		c++;
@@ -88,12 +93,18 @@ int main (void){
 			direction = direction * -1;
 			c = 0;
 		}
-		for (uint8_t l = 0; l < LEG_COUNT; l++){
+		uint8_t l = MIDDLE_RIGHT;
+		//for (uint8_t l = 0; l < LEG_COUNT; l++){
 			int16_t x, y, z;
 			legs[l].getPosition(&x, &y, &z);
 			y += direction;
 			legs[l].setPosition(x, y, z);
-		}
+			legs[l].setPosition(x, y, z);
+			legs[l].setPosition(x, y, z);
+			legs[l].setPosition(x, y, z);
+			legs[l].setPosition(x, y, z);
+			legs[l].setPosition(x, y, z);
+		//}
 		pwm_apply_batch();
 	}
 }
