@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Tuesday, May 27, 2014 'pmt' 03:20:26 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, June 05, 2014 'amt' 11:53:09 am
 
 BeginCmp
 TimeStamp = /5384F1DD;
@@ -17,7 +17,14 @@ EndCmp
 BeginCmp
 TimeStamp = /53850024;
 Reference = C3;
-ValeurCmp = C;
+ValeurCmp = 0.1u;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390AF13;
+Reference = C4;
+ValeurCmp = 1u;
 IdModule  = cms:SM0805;
 EndCmp
 
@@ -33,13 +40,6 @@ TimeStamp = /5383A972;
 Reference = IC1;
 ValeurCmp = AT90USB162-A;
 IdModule  = cms:TQFP32;
-EndCmp
-
-BeginCmp
-TimeStamp = /53850976;
-Reference = P1;
-ValeurCmp = CONN_2;
-IdModule  = conn:SIL-2;
 EndCmp
 
 BeginCmp
@@ -74,13 +74,13 @@ BeginCmp
 TimeStamp = /5384F4AD;
 Reference = P7;
 ValeurCmp = ISP;
-IdModule  = custom:ISP;
+IdModule  = custom:ISP_EDGE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5384ED29;
 Reference = R1;
-ValeurCmp = 1k;
+ValeurCmp = 10k;
 IdModule  = cms:SM0805;
 EndCmp
 
@@ -103,6 +103,41 @@ TimeStamp = /5384FE1C;
 Reference = R4;
 ValeurCmp = 0;
 IdModule  = cms:SM0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /538CF296;
+Reference = R5;
+ValeurCmp = 22;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538CF2B4;
+Reference = R6;
+ValeurCmp = 22;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538CF673;
+Reference = R7;
+ValeurCmp = 10k;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /538CF536;
+Reference = SW1;
+ValeurCmp = SW_PUSH_SMALL;
+IdModule  = custom:sw_42_32;
+EndCmp
+
+BeginCmp
+TimeStamp = /538CF162;
+Reference = SW2;
+ValeurCmp = SW_PUSH_SMALL;
+IdModule  = custom:sw_42_32;
 EndCmp
 
 BeginCmp

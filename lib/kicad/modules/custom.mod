@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Sat 31 May 2014 08:57:08 PM MDT
+PCBNEW-LibModule-V1  Monday, June 02, 2014 'pmt' 04:19:08 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -36,6 +36,7 @@ V8813x
 VSK-S25
 XBEE
 XBEE_SPARKFUN_BREAKOUT
+sw_42_32
 $EndINDEX
 $MODULE 4X_7_SEGMENT
 Po 0 0 0 15 538A967F 00000000 ~~
@@ -13434,4 +13435,41 @@ Ne 0 ""
 Po 6.35 -11.43
 $EndPAD
 $EndMODULE XBEE_SPARKFUN_BREAKOUT
+$MODULE sw_42_32
+Po 0 0 0 15 538CF859 00000000 ~~
+Li sw_42_32
+Sc 0
+AR 
+Op 0 0 0
+T0 -0.25 -1.25 1 1 0 0.15 N V 21 N "sw_42_32"
+T1 0 0 1 1 0 0.15 N V 21 N "VAL**"
+$PAD
+Sh "1" R 1.05 0.85 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -2 -1
+$EndPAD
+$PAD
+Sh "1" R 1.05 0.85 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 2 -1
+$EndPAD
+$PAD
+Sh "2" R 1.05 0.85 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -2 1
+$EndPAD
+$PAD
+Sh "2" R 1.05 0.85 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 2 1
+$EndPAD
+$EndMODULE sw_42_32
 $EndLIBRARY
