@@ -45,6 +45,7 @@ volatile uint8_t _byte_pos;
 volatile uint8_t _bit_pos;
 volatile uint8_t _byte;
 volatile uint8_t _command;
+volatile uint8_t _temp;  // holds the command until the final byte is done
 
 void remote_init() {
 	DDRD &= ~_BV(PD2);  // set int0 as input
@@ -118,10 +119,11 @@ ISR(INT0_vect) {
 					if (_byte != 0x87) _state = 0;
 					_byte_pos++;
 				} else if (_byte_pos == 2) {
-					_command = _byte & 0xfe;
+					_temp = _byte & 0xfe;
 					_byte_pos++;
 				} else if (_byte_pos == 3) {
 					// TODO check pairing
+					_command = _temp;
 					_state = 0;
 				} else {
 					_state = 0;

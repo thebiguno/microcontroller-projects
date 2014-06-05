@@ -129,7 +129,7 @@ int main() {
 	systime = mktime(&sys);
 	set_system_time(systime);
 	
-	struct ws2811_t markers = grey;
+	struct ws2811_t markers = chartreuse;
 	struct ws2811_t fill = violet;
 	struct ws2811_t pixel = blue;
 	
@@ -163,8 +163,12 @@ int main() {
 				if (systime < risetime || systime > settime) {
 					// invert display after sunset
 					markers = violet;
+					fill = yellow;
+					pixel = green;
 				} else {
 					markers = chartreuse;
+					fill = blue;
+					pixel = magenta;
 				}
 			}
 			
