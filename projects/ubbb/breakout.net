@@ -1,8 +1,8 @@
 (export (version D)
   (design
-    (source /Users/warren/Documents/Projects/dcprojects/projects/breakout/breakout.sch)
-    (date "Thursday, June 05, 2014 'amt' 11:52:46 am")
-    (tool "eeschema (2014-02-26 BZR 4721)-product"))
+    (source /Users/wyatt/Documents/Electronics/projects/projects/ubbb/breakout.sch)
+    (date "Thursday, June 05, 2014 'pmt' 03:57:14 pm")
+    (tool "eeschema (2014-01-10 BZR 4027)-stable"))
   (components
     (comp (ref P2)
       (value CONN_8)
@@ -106,7 +106,7 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 538CF673))
     (comp (ref C4)
-      (value 1u)
+      (value 0.1u)
       (libsource (lib device) (part C))
       (sheetpath (names /) (tstamps /))
       (tstamp 5390AF13)))
@@ -133,7 +133,9 @@
         (fp C1-1))
       (fields
         (field (name Reference) C)
-        (field (name Value) C))
+        (field (name Value) C)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
       (pins
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type passive))))
@@ -147,18 +149,23 @@
         (fp SM1206))
       (fields
         (field (name Reference) R)
-        (field (name Value) R))
+        (field (name Value) R)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
       (pins
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type passive))))
     (libpart (lib device) (part SW_PUSH_SMALL)
       (fields
         (field (name Reference) SW)
-        (field (name Value) SW_PUSH_SMALL))
+        (field (name Value) SW_PUSH_SMALL)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
       (pins
         (pin (num 1) (name 1) (type passive))
         (pin (num 2) (name 2) (type passive))))
     (libpart (lib conn) (part USB-MINI-B)
+      (description "USB Mini B connector")
       (footprints
         (fp USB-Mini-B-Jack))
       (fields
@@ -174,6 +181,35 @@
         (pin (num 7) (name SHELL2) (type BiDi))
         (pin (num 8) (name SHELL3) (type BiDi))
         (pin (num 9) (name SHELL4) (type BiDi))))
+    (libpart (lib custom) (part CRYSTAL_RESONATOR)
+      (description "Either a Crystal with external caps, or a resonator with built in caps")
+      (footprints
+        (fp CRYSTAL_RESONATOR))
+      (fields
+        (field (name Reference) X)
+        (field (name Value) CRYSTAL_RESONATOR)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name XTAL1) (type input))
+        (pin (num 2) (name XTAL2) (type input))
+        (pin (num 3) (name GND) (type input))))
+    (libpart (lib custom) (part ISP)
+      (description "ISP Header")
+      (footprints
+        (fp ISP))
+      (fields
+        (field (name Reference) P)
+        (field (name Value) ISP)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name MISO) (type input))
+        (pin (num 2) (name VCC) (type power_in))
+        (pin (num 3) (name SCK) (type input))
+        (pin (num 4) (name MOSI) (type input))
+        (pin (num 5) (name RESET) (type input))
+        (pin (num 6) (name GND) (type power_in))))
     (libpart (lib atmel) (part AT90USB162-A)
       (description "AT90USB162, TQFP32, 16k Flash, 512B SRAM, 512B EEPROM, USB 2.0")
       (docs http://www.atmel.com/Images/doc7707.pdf)
@@ -213,39 +249,14 @@
         (pin (num 29) (name D+/SCK) (type BiDi))
         (pin (num 30) (name D-/SDATA) (type BiDi))
         (pin (num 31) (name UVCC) (type power_in))
-        (pin (num 32) (name AVCC) (type power_in))))
-    (libpart (lib custom) (part CRYSTAL_RESONATOR)
-      (description "Either a Crystal with external caps, or a resonator with built in caps")
-      (footprints
-        (fp CRYSTAL_RESONATOR))
-      (fields
-        (field (name Reference) X)
-        (field (name Value) CRYSTAL_RESONATOR))
-      (pins
-        (pin (num 1) (name XTAL1) (type input))
-        (pin (num 2) (name XTAL2) (type input))
-        (pin (num 3) (name GND) (type input))))
-    (libpart (lib custom) (part ISP)
-      (description "ISP Header")
-      (footprints
-        (fp ISP))
-      (fields
-        (field (name Reference) P)
-        (field (name Value) ISP))
-      (pins
-        (pin (num 1) (name MISO) (type input))
-        (pin (num 2) (name VCC) (type power_in))
-        (pin (num 3) (name SCK) (type input))
-        (pin (num 4) (name MOSI) (type input))
-        (pin (num 5) (name RESET) (type input))
-        (pin (num 6) (name GND) (type power_in)))))
+        (pin (num 32) (name AVCC) (type power_in)))))
   (libraries
     (library (logical conn)
-      (uri "/Library/Application Support/kicad/library/conn.lib"))
+      (uri /Applications/KiCad/eeschema.app/Contents/MacOS/../../../data/library/conn.lib))
     (library (logical device)
-      (uri "/Library/Application Support/kicad/library/device.lib"))
+      (uri /Applications/KiCad/eeschema.app/Contents/MacOS/../../../data/library/device.lib))
     (library (logical atmel)
-      (uri "/Library/Application Support/kicad/library/atmel.lib"))
+      (uri /Applications/KiCad/eeschema.app/Contents/MacOS/../../../data/library/atmel.lib))
     (library (logical custom)
       (uri ../../lib/kicad/library/custom.lib)))
   (nets
@@ -323,13 +334,13 @@
     (net (code 21) (name /a8)
       (node (ref IC1) (pin 8))
       (node (ref P2) (pin 8)))
-    (net (code 22) (name "Net-(CON1-Pad2)")
+    (net (code 22) (name "")
       (node (ref R6) (pin 1))
       (node (ref CON1) (pin 2)))
-    (net (code 23) (name "Net-(CON1-Pad3)")
+    (net (code 23) (name "")
       (node (ref CON1) (pin 3))
       (node (ref R5) (pin 2)))
-    (net (code 24) (name "Net-(CON1-Pad4)")
+    (net (code 24) (name "")
       (node (ref CON1) (pin 4)))
     (net (code 25) (name /a32)
       (node (ref R3) (pin 2))
