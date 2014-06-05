@@ -17,7 +17,6 @@ typedef struct ws2811_t {
  * s the number of GRB tuples
  */
 void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
-	uint8_t sreg = SREG;
 	cli();
 	
 	const uint8_t mask =_BV(pin);

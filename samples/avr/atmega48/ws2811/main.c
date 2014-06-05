@@ -35,68 +35,44 @@ int main (void) {
 	TCCR0A = 0x00;
 	TCCR0B = _BV(CS02) | _BV(CS00);
 
-	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t red = {.red = 0xff, .green = 0x00, .blue = 0x00 };
-	ws2811_t orange = {.red = 0xdd, .green = 0x33, .blue = 0x00 };
-	ws2811_t yellow = {.red = 0xff, .green = 0xff, .blue = 0x00 };
-	ws2811_t chartreuse = {.red = 0x33, .green = 0xdd, .blue = 0x00 };
-	ws2811_t green = {.red = 0x00, .green = 0xff, .blue = 0x00 };
-	ws2811_t spring = {.red = 0x00, .green = 0xdd, .blue = 0x33 };
-	ws2811_t cyan = {.red = 0x00, .green = 0xff, .blue = 0xff };
-	ws2811_t azure = {.red = 0x00, .green = 0x33, .blue = 0xdd };
-	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xff };
-	ws2811_t violet = {.red = 0x33, .green = 0x00, .blue = 0xdd };
-	ws2811_t magenta = {.red = 0xff, .green = 0x00, .blue = 0xff };
-	ws2811_t rose = {.red = 0xdd, .green = 0x00, .blue = 0x33 };
+	ws2811_t red = {.red = 0xcc, .green = 0x00, .blue = 0x00 };			// 0
+	ws2811_t green = {.red = 0x00, .green = 0xcc, .blue = 0x00 };		// 120
+	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xcc };		// 240
 
-	ws2811_t palette[12] = { red, orange, yellow, chartreuse, green, spring, cyan, azure, blue, violet, magenta, rose };
-	uint8_t x[60];
+	ws2811_t yellow = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 60
+	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 180
+	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 300
+
+	ws2811_t orange = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 30
+	ws2811_t chartreuse = {.red = 0x66, .green = 0xcc, .blue = 0x00 };	// 90
+	ws2811_t spring = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 150
+	ws2811_t azure = {.red = 0x00, .green = 0x66, .blue = 0xcc };		// 210
+	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
+	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
+
+	ws2811_t vermillion = {.red = 0xcc, .green = 0x33, .blue = 0x00 };	// 15
+	ws2811_t amber = {.red = 0xcc, .green = 0x99, .blue = 0x00 };		// 45
+	ws2811_t lime = {.red = 0x99, .green = 0xcc, .blue = 0x00 };		// 75
+	ws2811_t harlequin = {.red = 0x33, .green = 0xcc, .blue = 0x00 };	// 105
+	ws2811_t malachite = {.red = 0x00, .green = 0xcc, .blue = 0x33 };	// 135
+	ws2811_t turquoise = {.red = 0x00, .green = 0xcc, .blue = 0x99 };	// 165
+	ws2811_t cerulean = {.red = 0x00, .green = 0x99, .blue = 0xcc };	// 195
+	ws2811_t sapphire = {.red = 0x00, .green = 0x33, .blue = 0xcc };	// 225
+	ws2811_t indigo = {.red = 0x33, .green = 0x00, .blue = 0xcc };		// 255
+	ws2811_t mulberry = {.red = 0x99, .green = 0x00, .blue = 0xcc };	// 285
+	ws2811_t fuchsia = {.red = 0xcc, .green = 0x00, .blue = 0x99 };		// 315
+	ws2811_t crimson = {.red = 0xcc, .green = 0x00, .blue = 0x33 };		// 345
 	
-	// start with random colors at random locations
-	int8_t p1 = 0;
-	int8_t p2 = 20;
-	int8_t p3 = 40;
-	x[p1] = 0;
-	x[p2] = 4;
-	x[p3] = 8;
-	
+	ws2811_t palette[24] = { red, vermillion, orange, amber, yellow, lime, chartreuse, harlequin, green, malachite, spring, turquoise, cyan, cerulean, azure, sapphire, blue, indigo, violet, mulberry, magenta, fuchsia, rose, crimson };
+
 	struct ws2811_t colors[60];
 	DDRB = _BV(1);
-	
+		
+	for (uint8_t i = 0; i < 30; i++) {
+		colors[(i*2)] = palette[i%24];
+		colors[((i*2)+1)] = palette[i%24];
+	}
 	ws2811_set(colors, 60, 1);
-	
 	while (1) {
-		a(p1, p2, x);
-		a(p2, p3, x);
-		a(p3, p1, x);
-
-		for (int8_t i = 0; i < 60; i++) {
-			colors[i] = palette[x[i]];
-		}
-		ws2811_set(colors, 60, 1);
-		
-		p1 += r(3) - 1;
-		p2 += r(3) - 1;
-		p3 += r(3) - 1;
-		if (p1 < 0) p1 = 19;
-		if (p2 < 20) p2 = 39;
-		if (p3 < 40) p3 = 59;
-		if (p1 > 19) p1 = 0;
-		if (p2 > 39) p2 = 20;
-		if (p3 > 59) p3 = 40;
-		x[p1] += (r(3) - 1);
-		x[p2] += (r(3) - 1);
-		x[p3] += (r(3) - 1);
-		if (x[p1] < 0) x[p1] = 0;
-		if (p2 < 20) p2 = 20;
-		if (p3 < 40) p3 = 40;
-		if (p1 > 19) p1 = 19;
-		if (p2 > 39) p2 = 39;
-		if (p3 > 59) p3 = 59;
-		
-		while (TCNT0 < 0xff) {
-			;
-		}
-		TCNT0 = 0;
 	}
 }

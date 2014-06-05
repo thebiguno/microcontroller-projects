@@ -5,10 +5,12 @@
 #define TCCRxA TCCR2A
 #define TCCRxB TCCR2B
 #define PRESCALE _BV(CS22) | _BV(CS21) | _BV(CS20)
+#define TCNTx TCNT2
 #else
 #define TCCRxA TCCR0A
 #define TCCRxB TCCR0B
 #define PRESCALE _BV(CS02) | _BV(CS00)
+#define TCNTx TCNT0
 #endif
 
 #ifdef REMOTE_INT1
@@ -65,6 +67,7 @@ volatile uint8_t _byte_pos;
 volatile uint8_t _bit_pos;
 volatile uint8_t _byte;
 volatile uint8_t _command;
+volatile uint8_t _temp;  // holds the command until the final byte is done
 
 void remote_init() {
 	// timer
@@ -107,16 +110,18 @@ uint8_t remote_get() {
 
 ISR(INT0_vect) {
 	if (PIND & _BV(PD2)) {
+		PORTB |= _BV(PB2);
 		// receiver high; protocol low
 		if (_state == 0) {
-			if (TCNT0 > LEADING_PULSE) {
+			if (TCNT2 > LEADING_PULSE) {
 				_state = 1;
 			}
 		}
 	} else {
+		PORTB &= ~_BV(PB2);
 		// receiver low; protocol high
 		if (_state == 1) {
-			if (TCNT0 > LEADING_SPACE) {
+			if (TCNT2 > LEADING_SPACE) {
 				_state = 2;
 				_byte_pos = 0;
 				_bit_pos = 0;
@@ -126,7 +131,7 @@ ISR(INT0_vect) {
 				// TODO implement repeats
 			}
 		} else if (_state == 2) {
-			if (TCNT0 > BIT_SPACE) {
+			if (TCNT2 > BIT_SPACE) {
 				_byte |= _BV(_bit_pos);
 			} 
 			if (_bit_pos++ == 7) {
@@ -137,10 +142,11 @@ ISR(INT0_vect) {
 					if (_byte != 0x87) _state = 0;
 					_byte_pos++;
 				} else if (_byte_pos == 2) {
-					_command = _byte & 0xfe;
+					_temp = _byte & 0xfe;
 					_byte_pos++;
 				} else if (_byte_pos == 3) {
 					// TODO check pairing
+					_command = _temp;
 					_state = 0;
 				} else {
 					_state = 0;
@@ -150,5 +156,11 @@ ISR(INT0_vect) {
 			}
 		}
 	}
-	TCNT0 = 1;
+	TCNT2 = 1;
 }
+
+#ifdef REMOTE_TIMER2
+EMPTY_INTERRUPT(TIMER2_OVF_vect)
+#else
+EMPTY_INTERRUPT(TIMER0_OVF_vect)
+#endif
