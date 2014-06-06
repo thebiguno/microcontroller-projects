@@ -13,4 +13,6 @@ LFUSE = 0xE2
 
 AVRDUDE_PROGRAMMER=usbtiny
 
+CDEFS=-DF_CPU=$(F_CPU) -DREMOTE_TIMER2
+
 include ../../build/targets.mk

@@ -1,5 +1,6 @@
 #include "ds1307.h"
-#include "../../twi.h"
+#include "../../twi/twi.h"
+#include "../../bcd/bcd.h"
 
 void ds1307_init() {
 	uint8_t data[8] = { 0x07, 0x10 };  // clkout active at 1 Hz
@@ -14,28 +15,28 @@ void ds1307_get(struct ds1307_time_t *t) {
 	twi_write_to(0xd0, data, 1, TWI_BLOCK, TWI_NO_STOP);
 	twi_read_from(0xd0, data, 7, TWI_BLOCK, TWI_STOP);
 	
-	time->second = (((data[1] & 0x70) >> 4) * 10) + (data[1] & 0x0f); // bit 7 is the enabled flag
-	time->minute = ((data[2] >> 4) * 10) + (data[2] & 0x0f);
-	time->hour = ((data[3] >> 4) * 10) + (data[3] & 0x0f);
-	time->wday = data[5];
-	time->mday = ((data[4] >> 4) * 10) + (data[4] & 0x0f);
-	time->month = (((data[6] & 0x10) >> 4) * 10) + (data[6] & 0x0f); // bit 7 is century
-	time->year = 2000 + (((data[7] & 0xf0) >> 4) * 10) + (data[7] & 0x0f);
+	// it's not clear from the datasheet if the unused bits are 0 or undefined
+	time->second = bcd2hex(data[1] & 0x7f);   // bit 7 is the CH flag
+	time->minute = bcd2hex(data[2]);
+	time->hour = bcd2hex(data[3]);
+	time->wday = data[4];
+	time->mday = bcd2hex(data[5]);
+	time->month = bcd2hex(data[6]);
+	time->year = 2000 + bcd2hex(data[7]);
 	
 	return t;
 }
 
 void ds1307_set(struct ds1307_time_t *t) {
-	uint8_t y = year - 2000;
 	uint8_t data[8] = { 
 		0x00,
-		((t->second / 10) << 4) + (t->second & 0x0f),
-		((t->minute / 10) << 4) + (t->second & 0x0f),
-		((t->hour / 10) << 4) + (t->second & 0x0f),
-		((t->day / 10) << 4) + (t->day & 0x0f),
-		t->wday,
-		(c << 7) & ((t->month / 10) << 4) + (t->month & 0x0f),
-		((y / 10) << 4) + (y & 0x0f)
+		hex2bcd(t->second),
+		hex2bcd(t->minute),
+		hex2bcd(t->hour),
+		hex2bcd(t->wday),
+		hex2bcd(t->mday),
+		hex2bcd(t->month),
+		hex2bcd(t->year - 2000)
 	};
 	twi_write_to(0xd0, data, 8, TWI_BLOCK, TWI_STOP);
 }

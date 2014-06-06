@@ -84,11 +84,14 @@ int main() {
 	//EIMSK |= _BV(INT1);		// enable external interrupts on int1
 	TCCR0B |= _BV(CS02) | _BV(CS01) | _BV(CS00);
 	
-	DDRD &= ~_BV(PD3);		// set 1 Hz int1 as input
-	PORTD |= _BV(PD3);		// set 1 Hz int1 as pull-up
+	//DDRD &= ~_BV(PD3);		// set INT0 1 Hz int1 as input
+	//PORTD |= _BV(PD3);		// set INT0 1 Hz int1 as pull-up
+	DDRD &= ~_BV(PD4);			// set T0 1 Hz int1 as input
+	PORTD |= _BV(PD4);			// set T0 1 Hz int1 as pull-up
+	DDRB |= _BV(PB0);			// set B0 as input
 	
 	pcf8563_init();
-	//serial_init_b(9600);
+	serial_init_b(9600);
 	
 	sei();
 
@@ -142,9 +145,10 @@ int main() {
 		
 		// update display
 		// * if the update flag is set and the remote isn't in the middle of receiving a message
-		if (remote_state() == 0 && update == 1) {
+		if (update == 1 && remote_state() == 0) {
 			update = 0;
-			if (mode <= MODE_MOON ) {
+			PORTB |= _BV(PB0);
+			if (mode <= MODE_MOON) {
 				// recompute time structure
 				localtime_r(&__system_time, &sys);
 
@@ -344,6 +348,10 @@ int main() {
 
 			// TODO translate the array
 			ws2811_set(colors, 60, 1);
+			ws2811_set(colors, 60, 1);
+			remote_reset();
+
+			PORTB &= ~_BV(PB0);
 		}
 
 		// read ir

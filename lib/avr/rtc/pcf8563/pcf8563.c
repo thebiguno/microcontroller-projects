@@ -1,5 +1,6 @@
 #include "pcf8563.h"
 #include "../../twi/twi.h"
+#include "../../bcd/bcd.h"
 
 void pcf8563_init() {
 	// register, control 1, control 2
@@ -18,13 +19,13 @@ void pcf8563_get(struct pcf8563_t *time) {
 	twi_write_to(0x51, data, 1, TWI_BLOCK, TWI_NO_STOP);
 	twi_read_from(0x51, data, 7, TWI_STOP);
 	
-	time->second = (((data[0] & 0x70) >> 4) * 10) + (data[0] & 0x0f); // bit 7 is the VL flag
-	time->minute = ((data[1] >> 4) * 10) + (data[1] & 0x0f);
-	time->hour = ((data[2] >> 4) * 10) + (data[2] & 0x0f);
-	time->mday = ((data[3] >> 4) * 10) + (data[3] & 0x0f);
+	time->second = bcd2hex(data[0] & 0x7f);   // bit 7 is the VL flag
+	time->minute = bcd2hex(data[1]);
+	time->hour = bcd2hex(data[2]);
+	time->mday = bcd2hex(data[3]);
 	time->wday = data[4];
-	time->month = (((data[5] & 0x10) >> 4) * 10) + (data[5] & 0x0f); // bit 7 is century
-	time->year = (((data[5] & 0x80) * 100) + 1900) + (((data[6] & 0xf0) >> 4) * 10) + (data[6] & 0x0f);
+	time->month = bcd2hex(data[5] & 0x7f);    // bit 7 is century
+	time->year = (((data[5] & 0x80) * 100) + 1900) + bcd2hex(data[6]);
 }
 
 void pcf8563_set(struct pcf8563_t *t) {
@@ -33,13 +34,13 @@ void pcf8563_set(struct pcf8563_t *t) {
 	uint8_t y = cy - (c * 100);
 	uint8_t data[8] = { 
 		0x02, 
-		((t->second / 10) << 4) + (t->second & 0x0f),
-		((t->minute / 10) << 4) + (t->second & 0x0f),
-		((t->hour / 10) << 4) + (t->second & 0x0f),
-		((t->mday / 10) << 4) + (t->mday & 0x0f),
+		hex2bcd(t->second),
+		hex2bcd(t->minute),
+		hex2bcd(t->hour),
+		hex2bcd(t->mday),
 		t->wday,
-		(c << 7) & (((t->month / 10) << 4) + (t->month & 0x0f)),
-		((y / 10) << 4) + (y & 0x0f)
+		(c << 7) & hex2bcd(t->month),    // bit 7 is century
+		hex2bcd(y)
 	};
 	twi_write_to(0x51, data, 8, TWI_BLOCK, TWI_STOP);
 }
