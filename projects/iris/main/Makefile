@@ -9,6 +9,8 @@ SOURCES=main.c lib/remote/remote.c lib/rtc/pcf8563/pcf8563.c lib/twi/twi.c lib/s
 HFUSE=0xd9
 LFUSE=0xe2
 
+CDEFS += -DREMOTE_TIMER2
+
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 

@@ -21,6 +21,8 @@ void remote_init();
  */
 uint8_t remote_state();
 
+void remote_reset();
+
 /*
  * Returns the last command that has been received; or 0 if there is no new command available.
  * The command is reset when read.

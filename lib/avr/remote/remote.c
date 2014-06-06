@@ -6,11 +6,15 @@
 #define TCCRxB TCCR2B
 #define PRESCALE _BV(CS22) | _BV(CS21) | _BV(CS20)
 #define TCNTx TCNT2
+#define TIFRx TIFR2
+#define TOVx TOV2
 #else
 #define TCCRxA TCCR0A
 #define TCCRxB TCCR0B
 #define PRESCALE _BV(CS02) | _BV(CS00)
 #define TCNTx TCNT0
+#define TIFRx TIFR0
+#define TOVx TOV0
 #endif
 
 #ifdef REMOTE_INT1
@@ -62,7 +66,7 @@ http://www.sbprojects.com/knowledge/ir/nec.php
 // bit space must be at least 1126 us for logical 1, otherwise it's logical 0
 #define BIT_SPACE F_CPU / 1024 / 888
 
-volatile uint8_t _state;	// 0 = idle; 1 = leading pulse; 2 = message;
+volatile uint8_t _state;	// 0 = idle; 1 = leading pulse seen; 2 = leading space seen; reading message
 volatile uint8_t _byte_pos;
 volatile uint8_t _bit_pos;
 volatile uint8_t _byte;
@@ -71,11 +75,13 @@ volatile uint8_t _temp;  // holds the command until the final byte is done
 
 void remote_init() {
 	// timer
+	TIFRx |= _BV(TOVx);					// interrupt on overflow
 	TCCRxA = 0x0; 						// normal mode
-	TCCRxA = PRESCALE;					// F_CPU / 1024 prescaler
+	TCCRxB = PRESCALE;					// F_CPU / 1024 prescaler
 
 	// interrupts
 	DDRD &= ~_BV(PDx);  				// set pin as input
+	DDRB |= _BV(PB2) | _BV(PB6);  // test
 	
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)
@@ -92,7 +98,7 @@ void remote_init() {
 		defined(__AVR_ATmega644PA__)   || \
 		defined(__AVR_ATmega1284P__)
 	EICRA = _BV(ISCx0);					// logical change generates interrupt
-	EIMSK |= _BV(INTx);					// enable external interrupts on int0
+	EIMSK |= _BV(INTx);					// enable external interrupts on intx
 	#endif
 	
 	sei();
@@ -102,19 +108,27 @@ uint8_t remote_state() {
 	return _state;
 }
 
+void remote_reset() {
+	_state = 0;
+}
+
 uint8_t remote_get() {
 	uint8_t result = _command;
 	_command = 0;
 	return result;
 }
-
+#ifdef REMOTE_INT1
+ISR(INT1_vect) {
+#else
 ISR(INT0_vect) {
-	if (PIND & _BV(PD2)) {
+#endif
+	if (PIND & _BV(PDx)) {
 		PORTB |= _BV(PB2);
 		// receiver high; protocol low
 		if (_state == 0) {
 			if (TCNTx > LEADING_PULSE) {
 				_state = 1;
+				PORTB |= _BV(PB6);
 			}
 		}
 	} else {
@@ -128,6 +142,7 @@ ISR(INT0_vect) {
 				_byte = 0;
 			} else {
 				_state = 0;
+				PORTB &= ~_BV(PB6);
 				// TODO implement repeats
 			}
 		} else if (_state == 2) {
@@ -136,20 +151,29 @@ ISR(INT0_vect) {
 			} 
 			if (_bit_pos++ == 7) {
 				if (_byte_pos == 0) {
-					if (_byte != 0xee) _state = 0;
+					if (_byte != 0xee) {
+						_state = 0;
+						PORTB &= ~_BV(PB6);
+					}
 					_byte_pos++;
 				} else if (_byte_pos == 1) {
-					if (_byte != 0x87) _state = 0;
+					if (_byte != 0x87) {
+						_state = 0;
+						PORTB &= ~_BV(PB6);
+					}
 					_byte_pos++;
 				} else if (_byte_pos == 2) {
 					_temp = _byte & 0xfe;
+					_command = _byte & 0xfe;
 					_byte_pos++;
 				} else if (_byte_pos == 3) {
 					// TODO check pairing
-					_command = _temp;
+					//_command = _temp;
 					_state = 0;
+					PORTB &= ~_BV(PB6);
 				} else {
 					_state = 0;
+					PORTB &= ~_BV(PB6);
 				}
 				_bit_pos = 0;
 				_byte = 0;
@@ -160,7 +184,10 @@ ISR(INT0_vect) {
 }
 
 #ifdef REMOTE_TIMER2
-EMPTY_INTERRUPT(TIMER2_OVF_vect)
+ISR(TIMER2_OVF_vect){
 #else
-EMPTY_INTERRUPT(TIMER0_OVF_vect)
+ISR(TIMER0_OVF_vect){
 #endif
+	_state = 0;
+	PORTB &= ~_BV(PB6);
+}
