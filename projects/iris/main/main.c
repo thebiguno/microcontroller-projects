@@ -76,20 +76,22 @@ int main() {
 
 	ws2811_t palette[12] = { red, orange, yellow, chartreuse, green, spring, cyan, azure, blue, violet, magenta, rose };
 	
-	
 	struct ws2811_t colors[60];
+
+	// initialize hardware
+	DDRB |= _BV(PB0);			// test output
+
+	// INT1 / PD3 and Timer2 are used by the IR receiver
 	remote_init();
 	
-	//EICRA |= _BV(ISC11);	// trigger on falling edge of int1
-	//EIMSK |= _BV(INT1);		// enable external interrupts on int1
+	// Timer0 / T0 / PD4 is the 1 Hz square output of the RTC
 	TCCR0B |= _BV(CS02) | _BV(CS01) | _BV(CS00);
-	
-	//DDRD &= ~_BV(PD3);		// set INT0 1 Hz int1 as input
-	//PORTD |= _BV(PD3);		// set INT0 1 Hz int1 as pull-up
-	DDRD &= ~_BV(PD4);			// set T0 1 Hz int1 as input
-	PORTD |= _BV(PD4);			// set T0 1 Hz int1 as pull-up
-	DDRB |= _BV(PB0);			// set B0 as input
-	
+	DDRD &= ~_BV(PD4);			// input
+	PORTD |= _BV(PD4);			// RTC square wave is open drain and requires pull-up
+
+	// Timer1 is used for animation
+	TCCR1A = 0x00;
+	TCCR1B |= _BV(CS12) | _BV(CS10); // clk / 1024 (about 1/10 second resolution)
 	pcf8563_init();
 	serial_init_b(9600);
 	
@@ -140,6 +142,11 @@ int main() {
 		if (TCNT0 > 0) {
 			system_tick();
 			TCNT0 = 0;
+			update = 1;
+		}
+		
+		if (mode == MODE_PLASMA && TCNT1H > 3) {
+			TCNT1H = 0x00;
 			update = 1;
 		}
 		
