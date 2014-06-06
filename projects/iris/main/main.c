@@ -348,6 +348,7 @@ int main() {
 
 			// TODO translate the array
 			ws2811_set(colors, 60, 1);
+			ws2811_set(colors, 60, 1);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
