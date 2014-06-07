@@ -92,7 +92,11 @@ int main() {
 	// Timer1 is used for animation
 	TCCR1A = 0x00;
 	TCCR1B |= _BV(CS12) | _BV(CS10); // clk / 1024 (about 1/10 second resolution)
+	
+	// Initialize RTC chip
 	pcf8563_init();
+	
+	// Initialize serial
 	serial_init_b(9600);
 	
 	sei();
@@ -127,7 +131,7 @@ int main() {
 
 	pcf8563_get(&rtc);
 	sys.tm_year = rtc.year;
-	sys.tm_mon = rtc.month;
+	sys.tm_mon = rtc.month - 1;
 	sys.tm_mday = rtc.mday;
 	sys.tm_hour = rtc.hour;
 	sys.tm_min = rtc.minute;
@@ -145,8 +149,8 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode == MODE_PLASMA && TCNT1H > 3) {
-			TCNT1H = 0x00;
+		if (mode == MODE_PLASMA && TCNT1 > 0x400) {
+			TCNT1 = 0x00;
 			update = 1;
 		}
 		
@@ -168,7 +172,8 @@ int main() {
 					localtime_r(&settime, &set);
 					week = week_of_year(&sys, 0);
 					int8_t mp = moon_phase(&systime);
-					phase = 15;//0.3 * mp;
+					
+					phase = 0.3 * mp;
 				}
 
 				if (systime < risetime || systime > settime) {
@@ -255,19 +260,13 @@ int main() {
 				// moon phase
 				if (phase > 0) {
 					// waxing
-					for (int8_t i = 15; i < 15 + phase; i++) {
-						colors[i] = azure;
-					}
-					for (int8_t i = 15; i > 15 - phase; i--) {
-						if (i < 0) i = 60 - i;
+					for (int8_t i = 15 - phase; i < 15 + phase; i++) {
+						if (i < 0) i = 60 + i;
 						colors[i] = azure;
 					}
 				} else {
 					// waning
-					for (int8_t i = 45; i < 45 + phase; i++) {
-						colors[i] = azure;
-					}
-					for (int8_t i = 45; i > 45 - phase; i--) {
+					for (int8_t i = 45 - phase; i < 45 + phase; i++) {
 						if (i > 60) i = i - 60;
 						colors[i] = azure;
 					}
@@ -355,7 +354,7 @@ int main() {
 
 			// TODO translate the array
 			ws2811_set(colors, 60, 1);
-			ws2811_set(colors, 60, 1);
+			ws2811_set(colors, 1, 1);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
@@ -409,7 +408,7 @@ int main() {
 					systime = mktime(&sys);
 					set_system_time(systime);
 					rtc.year = 2000 + year;
-					rtc.month = sys.tm_mon;
+					rtc.month = sys.tm_mon + 1;		// rtc is 1 based; time lib is 0 based
 					rtc.mday = sys.tm_mday;
 					rtc.hour = sys.tm_hour;
 					rtc.minute = sys.tm_min;
@@ -420,10 +419,11 @@ int main() {
 					// this just for testing
 					pcf8563_get(&rtc);
 					sys.tm_year = rtc.year;
-					sys.tm_mon = rtc.month;
+					sys.tm_mon = rtc.month - 1;
 					sys.tm_mday = rtc.mday;
-					sys.tm_hour = rtc.hour;
-					sys.tm_min = rtc.minute;
+					sys.tm_hour = 0; //rtc.hour;
+					sys.tm_min = 0; //rtc.minute;
+					sys.tm_sec = rtc.second;
 					systime = mktime(&sys);
 					set_system_time(systime);
 				}

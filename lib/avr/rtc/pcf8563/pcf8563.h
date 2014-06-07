@@ -4,13 +4,13 @@
 #include <stdint.h>
 
 typedef struct pcf8563_t {
-	uint8_t  second;
-	uint8_t  minute;
-	uint8_t  hour;
-	uint8_t  mday;
-	uint8_t  month;
-	uint8_t  wday;
-	uint16_t year;
+	uint8_t  second;	// 0 - 59
+	uint8_t  minute;	// 0 - 59
+	uint8_t  hour;		// 0 - 23
+	uint8_t  mday;		// 1 - 31
+	uint8_t  month;		// 1 - 12
+	uint8_t  wday;		// 0 - 6; sunday = 0
+	uint16_t year;		// 1900 - 2199
 } pcf8563_time_t;
 
 void pcf8563_init();
