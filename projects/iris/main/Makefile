@@ -1,7 +1,7 @@
 include ../../../build/avr/variables.mk
 include time.mk
 
-PROJECT=ring60
+PROJECT=iris
 MMCU=atmega328
 F_CPU=8000000
 SOURCES=main.c lib/remote/remote.c lib/rtc/pcf8563/pcf8563.c lib/twi/twi.c lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c $(time_a_c_sources) $(time_a_asm_sources) 

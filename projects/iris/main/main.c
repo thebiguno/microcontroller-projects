@@ -25,8 +25,6 @@
 #define MODE_MIN 131
 #define MODE_SEC 132
 
-extern time_t __system_time;
-
 int r(int max) {
 	return rand() % max;
 }
@@ -130,11 +128,11 @@ int main() {
 	set_position(183762, -410606); // calgary
 
 	pcf8563_get(&rtc);
-	sys.tm_year = rtc.year;
-	sys.tm_mon = rtc.month - 1;
-	sys.tm_mday = rtc.mday;
-	sys.tm_hour = rtc.hour;
-	sys.tm_min = rtc.minute;
+	sys.tm_year = 114;//rtc.year - 1900;
+	sys.tm_mon = 5;//rtc.month - 1;				// rtc is 1 based; time lib is 0 based
+	sys.tm_mday = 7;//rtc.mday;
+	sys.tm_hour = 20;//rtc.hour;
+	sys.tm_min = 23;//rtc.minute;
 	systime = mktime(&sys);
 	set_system_time(systime);
 	
@@ -161,7 +159,8 @@ int main() {
 			PORTB |= _BV(PB0);
 			if (mode <= MODE_MOON) {
 				// recompute time structure
-				localtime_r(&__system_time, &sys);
+				time(&systime);
+				localtime_r(&systime, &sys);
 
 				if (sys.tm_mday != mday) {
 					// recompute sunrise, sunset, moon phase
@@ -225,7 +224,7 @@ int main() {
 				}
 				// day fill
 				if (sys.tm_mday < 31) {
-					uint8_t i = sys.tm_mday * 2;
+					uint8_t i = (sys.tm_mday - 1) * 2;
 					colors[i] = pixel;
 					colors[i+1] = pixel;
 				} else {
@@ -313,7 +312,7 @@ int main() {
 				if (p2 > 39) p2 = 39;
 				if (p3 > 59) p3 = 59;
 			} else if (mode == MODE_YEAR) {
-				colors[year] = yellow;
+				colors[sys.tm_year - 100] = yellow;
 			} else if (mode == MODE_MONTH) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = markers;
@@ -324,7 +323,7 @@ int main() {
 				}
 			} else if (mode == MODE_DAY) {
 				if (sys.tm_mday < 31) {
-					uint8_t i = sys.tm_mday * 2;
+					uint8_t i = (sys.tm_mday - 1) * 2;
 					colors[i] = cyan;
 					colors[i+1] = cyan;
 				} else {
@@ -370,7 +369,6 @@ int main() {
 				if (mode < MODE_PLASMA) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
-				year = 2000 - sys.tm_year;
 				if (year > 59) year = 0;
 			}
 		} else {
@@ -405,9 +403,12 @@ int main() {
 			} else if (command == REMOTE_RIGHT) {
 				if (mode < MODE_SEC) mode++;
 				else {
+					// set the new system time
 					systime = mktime(&sys);
 					set_system_time(systime);
-					rtc.year = 2000 + year;
+					
+					// store the new system time to the rtc
+					rtc.year = sys.tm_year + 1900;	// years since 0
 					rtc.month = sys.tm_mon + 1;		// rtc is 1 based; time lib is 0 based
 					rtc.mday = sys.tm_mday;
 					rtc.hour = sys.tm_hour;
@@ -416,16 +417,6 @@ int main() {
 					pcf8563_set(&rtc);
 					mode = MODE_HMS;
 					
-					// this just for testing
-					pcf8563_get(&rtc);
-					sys.tm_year = rtc.year;
-					sys.tm_mon = rtc.month - 1;
-					sys.tm_mday = rtc.mday;
-					sys.tm_hour = 0; //rtc.hour;
-					sys.tm_min = 0; //rtc.minute;
-					sys.tm_sec = rtc.second;
-					systime = mktime(&sys);
-					set_system_time(systime);
 				}
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_HMS;

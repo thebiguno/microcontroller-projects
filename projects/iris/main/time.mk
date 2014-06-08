@@ -14,7 +14,6 @@ time_a_c_sources = \
 	time32/mktime.c \
 	time32/month_length.c \
 	time32/moon_phase.c \
-	time32/print_lz.c \
 	time32/set_dst.c \
 	time32/set_position.c \
 	time32/set_system_time.c \
