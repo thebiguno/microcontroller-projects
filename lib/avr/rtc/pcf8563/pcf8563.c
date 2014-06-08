@@ -24,8 +24,8 @@ void pcf8563_get(struct pcf8563_t *time) {
 	time->hour = bcd2hex(data[2]);
 	time->mday = bcd2hex(data[3]);
 	time->wday = data[4];
-	time->month = bcd2hex(data[5] & 0x7f);    // bit 7 is century
-	time->year = (((data[5] & 0x80) * 100) + 1900) + bcd2hex(data[6]);
+	time->month = bcd2hex(data[5] & 0x1f);    // bit 7 is century
+	time->year = (((data[5] >> 7) * 100) + 1900) + bcd2hex(data[6]);
 }
 
 void pcf8563_set(struct pcf8563_t *t) {
@@ -39,7 +39,7 @@ void pcf8563_set(struct pcf8563_t *t) {
 		hex2bcd(t->hour),
 		hex2bcd(t->mday),
 		t->wday,
-		(c << 7) & hex2bcd(t->month),    // bit 7 is century
+		(c << 7) | hex2bcd(t->month),    // bit 7 is century
 		hex2bcd(y)
 	};
 	twi_write_to(0x51, data, 8, TWI_BLOCK, TWI_STOP);
