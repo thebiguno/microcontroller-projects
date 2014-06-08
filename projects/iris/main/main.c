@@ -90,14 +90,14 @@ int main() {
 	// Timer1 is used for animation
 	TCCR1A = 0x00;
 	TCCR1B |= _BV(CS12) | _BV(CS10); // clk / 1024 (about 1/10 second resolution)
+
+	sei();
 	
 	// Initialize RTC chip
 	pcf8563_init();
 	
 	// Initialize serial
 	serial_init_b(9600);
-	
-	sei();
 
 	int8_t mday = -1;		// used to avoid computing sunrise, sunset, and moon phase more than once per day;
 	time_t systime;
@@ -416,7 +416,6 @@ int main() {
 					rtc.second = sys.tm_sec;
 					pcf8563_set(&rtc);
 					mode = MODE_HMS;
-					
 				}
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_HMS;
