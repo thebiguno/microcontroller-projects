@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Thursday, June 05, 2014 'pmt' 01:50:51 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Monday, June 09, 2014 'pmt' 12:09:08 pm
 
 BeginCmp
 TimeStamp = /537ACF90;
@@ -61,6 +61,20 @@ TimeStamp = /538620D1;
 Reference = P1;
 ValeurCmp = ISP;
 IdModule  = custom:ISP_EDGE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5395F94D;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = conn:SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5395F95F;
+Reference = P3;
+ValeurCmp = CONN_2;
+IdModule  = conn:SIL-2;
 EndCmp
 
 BeginCmp

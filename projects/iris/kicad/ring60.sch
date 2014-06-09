@@ -364,8 +364,6 @@ MISO
 Text Label 6150 4750 0    60   ~ 0
 RESET
 NoConn ~ 6500 2650
-NoConn ~ 6500 3400
-NoConn ~ 6500 3500
 NoConn ~ 6500 4100
 $Comp
 L R R3
@@ -573,4 +571,33 @@ Wire Wire Line
 Wire Wire Line
 	6900 3800 6500 3800
 Connection ~ 6900 3600
+$Comp
+L CONN_2 P2
+U 1 1 5395F94D
+P 7000 1200
+F 0 "P2" V 6950 1200 40  0000 C CNN
+F 1 "CONN_2" V 7050 1200 40  0000 C CNN
+F 2 "" H 7000 1200 60  0000 C CNN
+F 3 "" H 7000 1200 60  0000 C CNN
+	1    7000 1200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6850 1550 6900 1550
+Wire Wire Line
+	6900 1650 7100 1650
+Wire Wire Line
+	7100 1650 7100 1550
+Wire Wire Line
+	6500 3500 6900 3500
+Wire Wire Line
+	6900 3500 6900 1650
+Wire Wire Line
+	6500 3400 6850 3400
+Wire Wire Line
+	6850 3400 6850 1550
+Text Label 6900 2300 0    60   ~ 0
+TX
+Text Label 6850 2100 0    60   ~ 0
+RX
 $EndSCHEMATC
