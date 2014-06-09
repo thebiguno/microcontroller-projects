@@ -17,6 +17,7 @@
 #define MODE_MOON 4
 #define MODE_SPECTRUM 5
 #define MODE_PLASMA 6
+#define MODE_SOLID 7
 
 #define MODE_YEAR 127
 #define MODE_MONTH 128
@@ -25,9 +26,11 @@
 #define MODE_MIN 131
 #define MODE_SEC 132
 
+// a very bad random value generator
 int r(int max) {
 	return rand() % max;
 }
+// recursive function to fill in the the spaces between two points in the plasma
 void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 	if (p1 == p2) return;
 	
@@ -38,10 +41,10 @@ void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 	p %= 60;
 	
 	uint8_t v = x[p1] + x[p2];
-	if (x[p2] < x[p1]) v += 12;
+	if (x[p2] < x[p1]) v += 24;
 	v /= 2;
-	if (v < 0) v = 11;
-	if (v > 11) v = 0;
+	if (v < 0) v = 23;
+	if (v > 23) v = 0;
 	
 	x[p] = v;
 	
@@ -49,7 +52,20 @@ void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 	a(p, p2, x);
 }
 
+// the complementary color index
+inline uint8_t comp(uint8_t c) {
+	return (c + 12) % 24;
+}
+
+// the next triadic color index (clockwise)
+inline uint8_t triad(uint8_t c) {
+	return (c + 8) % 24;
+}
+
 int main() {
+	
+	// the rtc has a slow start up time from power on, so just delay a bit here
+	_delay_ms(500);
 	
 	DDRB |= _BV(1); // led strip output
 	
@@ -61,9 +77,9 @@ int main() {
 	ws2811_t green = {.red = 0x00, .green = 0xcc, .blue = 0x00 };		// 120
 	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xcc };		// 240
 
-	ws2811_t yellow = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 60
-	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 180
-	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 300
+	ws2811_t yellow = {.red = 0xcc, .green = 0xcc, .blue = 0x00 };		// 60
+	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0xcc };		// 180
+	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0xcc };		// 300
 
 	ws2811_t orange = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 30
 	ws2811_t chartreuse = {.red = 0x66, .green = 0xcc, .blue = 0x00 };	// 90
@@ -72,7 +88,27 @@ int main() {
 	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
 	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
 
-	ws2811_t palette[12] = { red, orange, yellow, chartreuse, green, spring, cyan, azure, blue, violet, magenta, rose };
+	ws2811_t vermillion = {.red = 0xcc, .green = 0x33, .blue = 0x00 };	// 15
+	ws2811_t amber = {.red = 0xcc, .green = 0x99, .blue = 0x00 };		// 45
+	ws2811_t lime = {.red = 0x99, .green = 0xcc, .blue = 0x00 };		// 75
+	ws2811_t harlequin = {.red = 0x33, .green = 0xcc, .blue = 0x00 };	// 105
+	ws2811_t malachite = {.red = 0x00, .green = 0xcc, .blue = 0x33 };	// 135
+	ws2811_t turquoise = {.red = 0x00, .green = 0xcc, .blue = 0x99 };	// 165
+	ws2811_t cerulean = {.red = 0x00, .green = 0x99, .blue = 0xcc };	// 195
+	ws2811_t sapphire = {.red = 0x00, .green = 0x33, .blue = 0xcc };	// 225
+	ws2811_t indigo = {.red = 0x33, .green = 0x00, .blue = 0xcc };		// 255
+	ws2811_t mulberry = {.red = 0x99, .green = 0x00, .blue = 0xcc };	// 285
+	ws2811_t fuchsia = {.red = 0xcc, .green = 0x00, .blue = 0x99 };		// 315
+	ws2811_t crimson = {.red = 0xcc, .green = 0x00, .blue = 0x33 };		// 345
+	
+	ws2811_t palette[24] = { 
+		red, vermillion, orange, amber, 
+		yellow, lime, chartreuse, harlequin, 
+		green, malachite, spring, turquoise, 
+		cyan, cerulean, azure, sapphire, 
+		blue, indigo, violet, mulberry, 
+		magenta, fuchsia, rose, crimson
+	};
 	
 	struct ws2811_t colors[60];
 
@@ -114,13 +150,15 @@ int main() {
 	struct pcf8563_t rtc;
 
 	// plasma variables
-	uint8_t x[60];
-	int8_t p1 = 0;
+	uint8_t x[60];		// an array of palette indicies
+	int8_t p1 = 0;		// starting locations
 	int8_t p2 = 20;
 	int8_t p3 = 40;
-	x[p1] = 0;
-	x[p2] = 4;
-	x[p3] = 8;
+	x[p1] = 0;			// starting colors
+	x[p2] = 8;
+	x[p3] = 16;
+	
+	uint8_t c = 0;			// current color
 
 	// hard coded location and time zone for now
 	set_zone(-7 * ONE_HOUR);
@@ -136,9 +174,12 @@ int main() {
 	systime = mktime(&sys);
 	set_system_time(systime);
 	
-	struct ws2811_t markers = chartreuse;
-	struct ws2811_t fill = violet;
-	struct ws2811_t pixel = blue;
+	uint8_t base_index = 18;	// violet
+	uint8_t invert = 0;			// 0 = not inverted, 1 = inverted by user, 2 = inverted by sunset, 3 = inverted by both
+	
+	struct ws2811_t base = palette[base_index];
+	struct ws2811_t fill = palette[comp(base_index)];
+	struct ws2811_t other = palette[triad(base_index)];
 	
 	while (1) {
 		if (TCNT0 > 0) {
@@ -147,7 +188,7 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode == MODE_PLASMA && TCNT1 > 0x400) {
+		if (mode >= MODE_PLASMA && TCNT1 > 0x480) {
 			TCNT1 = 0x00;
 			update = 1;
 		}
@@ -177,45 +218,40 @@ int main() {
 
 				if (systime < risetime || systime > settime) {
 					// invert display after sunset
-					markers = violet;
-					fill = yellow;
-					pixel = green;
+					invert |= _BV(1);
 				} else {
-					markers = chartreuse;
-					fill = blue;
-					pixel = magenta;
+					invert &= ~_BV(1);
 				}
 			}
 			
-			// almost all of the modes start with black
 			for (uint8_t i = 0; i < 60; i++) {
-				colors[i] = black;
+				colors[i] = invert ? base : black;
 			}
 
 			if (mode == MODE_HMS) {
 				// hours, minutes, seconds
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = invert ? black : base;
 				}
 				// hour fill
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
 					colors[i] = fill;
 				}
-				colors[sys.tm_min] = pixel;
-				colors[sys.tm_sec] = red;
+				colors[sys.tm_min] = other;
+				colors[sys.tm_sec] = palette[comp(triad(base_index))];
 			} else if (mode == MODE_MD) {
 				// month, day of month
-				if (sys.tm_mon < 2) fill = azure; // jan, feb
-				else if (sys.tm_mon < 5) fill = spring; // mar, apr, may
-				else if (sys.tm_mon < 8) fill = rose; // jun, jul, aug
-				else if (sys.tm_mon < 11) fill = orange; // sep, oct, nov
-				else fill = azure; // dec
+				// if (sys.tm_mon < 2) fill = azure; // jan, feb
+				// else if (sys.tm_mon < 5) fill = spring; // mar, apr, may
+				// else if (sys.tm_mon < 8) fill = rose; // jun, jul, aug
+				// else if (sys.tm_mon < 11) fill = orange; // sep, oct, nov
+				// else fill = azure; // dec
 				
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = invert ? black : base;
 				}
 				// month fill
 				uint8_t mon = (sys.tm_mon % 12) * 5;
@@ -225,26 +261,34 @@ int main() {
 				// day fill
 				if (sys.tm_mday < 31) {
 					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = pixel;
-					colors[i+1] = pixel;
+					colors[i] = other;
+					colors[i+1] = other;
 				} else {
-					colors[58] = pixel;
-					colors[59] = pixel;
-					colors[0] = pixel;
-					colors[1] = pixel;
+					colors[58] = other;
+					colors[59] = other;
+					colors[0] = other;
+					colors[1] = other;
 				}
 			} else if (mode == MODE_WD) {
 				// week, day of week
 				// markers
-				for (uint8_t i = 0; i < 60; i = i + 8) {
-					colors[i] = markers;
+				colors[0] = invert ? black : base;
+				for (uint8_t i = 10; i < 60; i = i + 8) {
+					colors[i] = invert ? black : base;
 				}
 				// week fill
 				uint8_t wday = sys.tm_wday * 8;
-				for (uint8_t i = wday + 1; i < wday + 7; i++) {
+				for (uint8_t i = wday + 3; i < wday + 10; i++) {
 					colors[i] = fill;
 				}
-				colors[week] = pixel;
+				if (sys.tm_wday == 0) {
+					colors[0] = fill;
+					colors[1] = fill; 
+				} else if (sys.tm_wday == 6) {
+					colors[58] = fill;
+					colors[59] = fill;
+				}
+				colors[week] = other;
 			} else if (mode == MODE_PCT) {
 				// persoixante of day
 				uint8_t ps = ((sys.tm_hour * 60) + sys.tm_min) / 24;
@@ -253,37 +297,32 @@ int main() {
 				for (uint8_t i = 0; i < ps; i ++) {
 					colors[i] = fill;
 				}
-				colors[sr] = yellow;
-				colors[ss] = magenta;
+				colors[sr] = other;
+				colors[ss] = palette[comp(triad(base_index))];
 			} else if (mode == MODE_MOON) {
 				// moon phase
 				if (phase > 0) {
 					// waxing
 					for (int8_t i = 15 - phase; i < 15 + phase; i++) {
 						if (i < 0) i = 60 + i;
-						colors[i] = azure;
+						colors[i] = fill;
 					}
 				} else {
 					// waning
 					for (int8_t i = 45 - phase; i < 45 + phase; i++) {
 						if (i > 60) i = i - 60;
-						colors[i] = azure;
+						colors[i] = fill;
 					}
 				}
 			} else if (mode == MODE_SPECTRUM) {
-				for (uint8_t i = 0; i < 60; i++) {
-					if (i < 5) colors[i] = red;
-					else if (i < 10) colors[i] = orange;
-					else if (i < 15) colors[i] = yellow;
-					else if (i < 20) colors[i] = chartreuse;
-					else if (i < 25) colors[i] = green;
-					else if (i < 30) colors[i] = spring;
-					else if (i < 35) colors[i] = cyan;
-					else if (i < 40) colors[i] = azure;
-					else if (i < 45) colors[i] = blue;
-					else if (i < 50) colors[i] = violet;
-					else if (i < 55) colors[i] = magenta;
-					else if (i < 60) colors[i] = rose;
+				uint8_t i = 0;
+				uint8_t x = 0;
+				while (i < 60) {
+					colors[i++] = palette[x];
+					colors[i++] = palette[x];
+					colors[i++] = palette[x++];
+					colors[i++] = palette[x];
+					colors[i++] = palette[x++];
 				}
 			} else if (mode == MODE_PLASMA) {
 				a(p1, p2, x);
@@ -305,17 +344,24 @@ int main() {
 				x[p1] += (r(3) - 1);
 				x[p2] += (r(3) - 1);
 				x[p3] += (r(3) - 1);
-				if (x[p1] < 0) x[p1] = 0;
-				if (p2 < 20) p2 = 20;
-				if (p3 < 40) p3 = 40;
-				if (p1 > 19) p1 = 19;
-				if (p2 > 39) p2 = 39;
-				if (p3 > 59) p3 = 59;
+				if (x[p1] < 0) x[p1] = 23;
+				if (x[p2] < 0) x[p2] = 23;
+				if (x[p3] < 0) x[p3] = 23;
+				if (x[p1] > 23) p1 = 0;
+				if (x[p2] > 23) p2 = 0;
+				if (x[p3] > 23) p3 = 0;
+			} else if (mode == MODE_SOLID) {
+				c += (r(3) - 1);
+				if (c < 0) c = 23;
+				if (c > 23) c = 0;
+				for (uint8_t i = 0; i < 60; i++) {
+					colors[i] = palette[c];
+				}
 			} else if (mode == MODE_YEAR) {
 				colors[sys.tm_year - 100] = yellow;
 			} else if (mode == MODE_MONTH) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = invert ? black : base;
 				}
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
@@ -333,13 +379,8 @@ int main() {
 					colors[1] = cyan;
 				}
 			} else if (mode == MODE_HOUR) {
-				if (sys.tm_hour > 11) {
-					markers = chartreuse;
-				} else {
-					markers = violet;
-				}
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = (sys.tm_hour > 11) ? chartreuse : violet;
 				}
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
@@ -351,9 +392,11 @@ int main() {
 				colors[sys.tm_sec] = red;
 			}
 
+			struct ws2811_t tx[60];
+			for (int i = 0; i < 60; i++) tx[i] = colors[(i + 30) % 60];
 			// TODO translate the array
-			ws2811_set(colors, 60, 1);
-			ws2811_set(colors, 1, 1);
+			ws2811_set(tx, 60, 1);
+			ws2811_set(tx, 1, 1);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
@@ -362,14 +405,28 @@ int main() {
 		// read ir
 		uint8_t command = remote_get();
 		if (command >= REMOTE_MENU && command <= REMOTE_DOWN) update = 1;
-		if (mode <= MODE_PLASMA) {
+		if (mode < MODE_YEAR) {
 			if (command == REMOTE_LEFT) {
 				if (mode > MODE_HMS) mode--;
 			} else if (command == REMOTE_RIGHT) {
-				if (mode < MODE_PLASMA) mode++;
+				if (mode < MODE_SOLID) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
 				if (year > 59) year = 0;
+			} else if (command == REMOTE_UP) {
+				base_index = base_index + 2;
+				base_index %= 24;
+				base = palette[base_index];
+				fill = palette[comp(base_index)];
+				other = palette[triad(base_index)];
+			} else if (command == REMOTE_DOWN) {
+				base_index = base_index - 2;
+				if (base_index > 24) base_index = 23;
+				base = palette[base_index];
+				fill = palette[comp(base_index)];
+				other = palette[triad(base_index)];
+			} else if (command == REMOTE_CENTER) {
+				invert ^= _BV(0);
 			}
 		} else {
 			if (command == REMOTE_UP) {
