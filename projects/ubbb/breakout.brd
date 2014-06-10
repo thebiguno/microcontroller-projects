@@ -1,6 +1,6 @@
-PCBNEW-BOARD Version 2 date Friday, June 06, 2014 'pmt' 12:59:34 pm
+PCBNEW-BOARD Version 2 date Mon 09 Jun 2014 08:24:02 PM MDT
 
-# Created by Pcbnew(2014-01-10 BZR 4027)-stable
+# Created by Pcbnew(2013-dec-23)-stable
 
 $GENERAL
 encoding utf-8
@@ -11,7 +11,7 @@ Links 77
 NoConn 0
 Di 80.359956 92.72524 124.654 115.55476
 Ndraw 83
-Ntrack 342
+Ntrack 340
 Nzone 0
 BoardThickness 1.6
 Nmodule 23
@@ -21,7 +21,7 @@ $EndGENERAL
 $SHEETDESCR
 Sheet A4 11693 8268
 Title ""
-Date "6 jun 2014"
+Date "10 jun 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -34,7 +34,7 @@ $SETUP
 Layers 2
 Layer[0] B.Cu signal
 Layer[15] F.Cu signal
-TrackWidth 0.381
+TrackWidth 0.254
 TrackWidthList 0.381
 TrackWidthList 0.508
 TrackClearence 0.254
@@ -5172,10 +5172,6 @@ Po 0 106.045 104.013 106.045 100.79 0.381 -1
 De 15 0 5 0 0
 Po 0 106.045 100.79 105.95 100.695 0.381 -1
 De 15 0 5 53920CB3 0
-Po 0 109.95 100.695 109.95 102.648 0.381 -1
-De 15 0 5 0 0
-Po 0 109.95 102.648 108.585 104.013 0.381 -1
-De 15 0 5 5391FE33 0
 Po 0 111.633 99.187 111.252 99.568 0.381 -1
 De 0 0 5 0 0
 Po 0 111.252 99.568 110.125 100.695 0.381 -1
