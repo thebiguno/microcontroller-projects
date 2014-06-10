@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Friday, June 06, 2014 'pmt' 12:15:07 pm
+PCBNEW-LibModule-V1  Mon 09 Jun 2014 06:47:04 PM MDT
 # encoding utf-8
 Units mm
 $INDEX
@@ -40,6 +40,7 @@ V8813x
 VSK-S25
 XBEE
 XBEE_SPARKFUN_BREAKOUT
+mouse_bites
 sw_42_32
 $EndINDEX
 $MODULE 4X_7_SEGMENT
@@ -20025,6 +20026,36 @@ Ne 0 ""
 Po 6.35 -11.43
 $EndPAD
 $EndMODULE XBEE_SPARKFUN_BREAKOUT
+$MODULE mouse_bites
+Po 0 0 0 15 53965586 00000000 ~~
+Li mouse_bites
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -1.27 1 1 0 0.15 N I 21 N "mouse_bites"
+T1 0 1.27 1 1 0 0.15 N I 21 N "VAL**"
+$PAD
+Sh "" C 0.508 0.508 0 0 0
+Dr 0.508 0 0
+At HOLE N 00E0FFFF
+Ne 0 ""
+Po -1.27 0
+$EndPAD
+$PAD
+Sh "" C 0.508 0.508 0 0 0
+Dr 0.508 0 0
+At HOLE N 00E0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$PAD
+Sh "" C 0.508 0.508 0 0 0
+Dr 0.508 0 0
+At HOLE N 00E0FFFF
+Ne 0 ""
+Po 1.27 0
+$EndPAD
+$EndMODULE mouse_bites
 $MODULE sw_42_32
 Po 0 0 0 15 538CF859 00000000 ~~
 Li sw_42_32
