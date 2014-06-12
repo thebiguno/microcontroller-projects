@@ -1,5 +1,5 @@
 M48
-;DRILL file {Pcbnew (2014-02-26 BZR 4721)-product} date Wednesday, June 11, 2014 'pmt' 02:16:01 pm
+;DRILL file {Pcbnew (2014-02-26 BZR 4721)-product} date Thursday, June 12, 2014 'amt' 08:53:36 am
 ;FORMAT={-:-/ absolute / inch / decimal}
 FMAT,2
 INCH,TZ
