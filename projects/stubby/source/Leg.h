@@ -37,7 +37,7 @@
 //The lengths of the four segments in the Tibia drive system.  See figure 1.3, segments a, b, c and d.
 #define TIBIA_A							30.0
 #define TIBIA_B							16.3
-#define TIBIA_C							38.0
+#define TIBIA_C							54.0
 #define TIBIA_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.3, angle 'E'
@@ -49,7 +49,7 @@
 //The lengths of the four segments in the Femur drive system.  See figure 1.4, segments a, b, c and d.
 #define FEMUR_A							27.7
 #define FEMUR_B							16.5
-#define FEMUR_C							38.9
+#define FEMUR_C							38.5
 #define FEMUR_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.4, angle 'E'
