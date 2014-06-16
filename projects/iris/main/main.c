@@ -53,7 +53,7 @@ void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 }
 
 // the complementary color index
-inline uint8_t comp(uint8_t c) {
+inline uint8_t complementary(uint8_t c) {
 	return (c + 12) % 24;
 }
 
@@ -62,8 +62,11 @@ inline uint8_t triad(uint8_t c) {
 	return (c + 8) % 24;
 }
 
-inline uint8_t analagous(uint8_t c) {
+inline uint8_t analagous_a(uint8_t c) {
 	return (c + 2) % 24;
+}
+inline uint8_t analagous_b(uint8_t c) {
+	return (c + 22) % 24;
 }
 
 int main() {
@@ -151,6 +154,7 @@ int main() {
 	uint8_t mode = 0;
 	uint8_t update = 1;
 	struct pcf8563_t rtc;
+	uint8_t harmony = 0;
 
 	// plasma variables
 	uint8_t x[60];		// an array of palette indicies
@@ -177,11 +181,13 @@ int main() {
 	systime = mktime(&sys);
 	set_system_time(systime);
 	
-	uint8_t base_index = 18;	// violet
+	uint8_t base_index = 0;
 	
-	struct ws2811_t base = palette[base_index];
-	struct ws2811_t fill = palette[comp(base_index)];
-	struct ws2811_t other = palette[triad(base_index)];
+	struct ws2811_t base = black;
+	struct ws2811_t markers = black;
+	struct ws2811_t fill = black;
+	struct ws2811_t other1 = black;
+	struct ws2811_t other2 = black;
 	
 	while (1) {
 		if (TCNT0 > 0) {
@@ -199,7 +205,42 @@ int main() {
 		// * if the update flag is set and the remote isn't in the middle of receiving a message
 		if (update == 1 && remote_state() == 0) {
 			update = 0;
+			
 			PORTB |= _BV(PB0);
+			
+			base = palette[base_index];
+			if (harmony == 0) {
+				// complementary
+				markers = grey;
+				fill = base;
+				other1 = palette[complementary(base_index)];
+				other2 = base;
+			} else if (harmony == 1) {
+				// analogous
+				markers = grey;
+				fill = base;
+				other1 = palette[analagous_a(base_index)];
+				other2 = palette[analagous_b(base_index)];
+			} else if (harmony == 2) {
+				// split complementary
+				markers = grey;
+				fill = base;
+				other1 = palette[analagous_a(complementary(base_index))];
+				other2 = palette[analagous_b(complementary(base_index))];
+			} else if (harmony == 3) {
+				// triadic
+				markers = grey;
+				fill = base;
+				other1 = palette[triad(base_index)];
+				other2 = palette[triad(triad(base_index))];
+			} else if (harmony == 4) {
+				// tetradic
+				markers = base;
+				fill = palette[complementary(base_index)];
+				other1 = palette[triad(base_index)];
+				other2 = palette[complementary(triad(base_index))];
+			}
+			
 			if (mode <= MODE_MOON) {
 				// recompute time structure
 				time(&systime);
@@ -227,15 +268,15 @@ int main() {
 				// hours, minutes, seconds
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = grey;
+					colors[i] = markers;
 				}
 				// hour fill
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = base;
+					colors[i] = fill;
 				}
-				colors[sys.tm_min] = palette[analagous(base_index)];
-				colors[sys.tm_sec] = palette[analagous(analagous(base_index))];
+				colors[sys.tm_min] = other1;
+				colors[sys.tm_sec] = other2;
 			} else if (mode == MODE_MD) {
 				// month, day of month
 				// if (sys.tm_mon < 2) fill = azure; // jan, feb
@@ -246,7 +287,7 @@ int main() {
 				
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = base;
+					colors[i] = markers;
 				}
 				// month fill
 				uint8_t mon = (sys.tm_mon % 12) * 5;
@@ -256,20 +297,20 @@ int main() {
 				// day fill
 				if (sys.tm_mday < 31) {
 					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = other;
-					colors[i+1] = other;
+					colors[i] = other1;
+					colors[i+1] = other1;
 				} else {
-					colors[58] = other;
-					colors[59] = other;
-					colors[0] = other;
-					colors[1] = other;
+					colors[58] = other1;
+					colors[59] = other1;
+					colors[0] = other1;
+					colors[1] = other1;
 				}
 			} else if (mode == MODE_WD) {
 				// week, day of week
 				// markers
-				colors[0] = base;
+				colors[0] = markers;
 				for (uint8_t i = 10; i < 60; i = i + 8) {
-					colors[i] = base;
+					colors[i] = markers;
 				}
 				// week fill
 				uint8_t wday = sys.tm_wday * 8;
@@ -283,7 +324,7 @@ int main() {
 					colors[58] = fill;
 					colors[59] = fill;
 				}
-				colors[week] = other;
+				colors[week] = other1;
 			} else if (mode == MODE_PCT) {
 				// persoixante of day
 				uint8_t ps = ((sys.tm_hour * 60) + sys.tm_min) / 24;
@@ -292,8 +333,8 @@ int main() {
 				for (uint8_t i = 0; i < ps; i ++) {
 					colors[i] = fill;
 				}
-				colors[sr] = other;
-				colors[ss] = palette[comp(triad(base_index))];
+				colors[sr] = other1;
+				colors[ss] = other2;
 			} else if (mode == MODE_MOON) {
 				// moon phase
 				if (phase > 0) {
@@ -410,15 +451,12 @@ int main() {
 			} else if (command == REMOTE_UP) {
 				base_index = base_index + 2;
 				base_index %= 24;
-				base = palette[base_index];
-				fill = palette[comp(base_index)];
-				other = palette[triad(base_index)];
 			} else if (command == REMOTE_DOWN) {
 				base_index = base_index - 2;
-				if (base_index > 24) base_index = 23;
-				base = palette[base_index];
-				fill = palette[comp(base_index)];
-				other = palette[triad(base_index)];
+				if (base_index > 24) base_index = 22;
+			} else if (command == REMOTE_CENTER) {
+				harmony++;
+				harmony %= 5;
 			}
 		} else {
 			if (command == REMOTE_UP) {
