@@ -19,6 +19,11 @@
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
 // is the same for all the legs).  See figure 1.1, 'leg offset'
 #define LEG_OFFSET						45
+//The angle offset for a single leg.  All legs are defined as a multiple of this number.  For the current design
+// (radial symmetry, with the middle leg sticking straight out the side) this should be 60 degrees.  See
+// figure 1.1, 'mounting angle'.
+#define LEG_MOUNTING_ANGLE				(60 * M_PI / 180)
+
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
 #define COXA_HEIGHT						50
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
