@@ -18,20 +18,20 @@
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
 // is the same for all the legs).  See figure 1.1, 'leg offset'
-#define LEG_OFFSET		45
+#define LEG_OFFSET						45
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
-#define COXA_HEIGHT		50
+#define COXA_HEIGHT						50
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
 // figure 1.2, 'coxa length'
-#define COXA_LENGTH		49
+#define COXA_LENGTH						49
 //The height from the center of the coxa joint to the center of the femur joint.  See figure 1.2, 'femur height'.
-#define FEMUR_HEIGHT	17.825
+#define FEMUR_HEIGHT					17.825
 //The length of the leg segment between femur and tibia joints (measured between center of each joint).  See
 // figure 1.2, 'femur length'
-#define FEMUR_LENGTH	40
+#define FEMUR_LENGTH					40
 //The length of the leg segment between tibia joint and end of the foot (measured from the center of the joint)
 // See figure 1.2, 'tibia length'
-#define TIBIA_LENGTH	57
+#define TIBIA_LENGTH					57
 
 
 //The lengths of the four segments in the Tibia drive system.  See figure 1.3, segments a, b, c and d.
@@ -41,10 +41,10 @@
 #define TIBIA_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.3, angle 'E'
-#define TIBIA_E_OFFSET_ANGLE			(10 * M_PI / 180)
+#define TIBIA_E_OFFSET_ANGLE			(9.3 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.3, angle 'N'
-#define TIBIA_NEUTRAL_SERVO_ANGLE		(105 * M_PI / 180)
+#define TIBIA_NEUTRAL_SERVO_ANGLE		(99.7 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.4, segments a, b, c and d.
 #define FEMUR_A							27.7
@@ -53,10 +53,10 @@
 #define FEMUR_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.4, angle 'E'
-#define FEMUR_E_OFFSET_ANGLE			(31 * M_PI / 180)
+#define FEMUR_E_OFFSET_ANGLE			(31.5 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.4, angle 'N'
-#define FEMUR_NEUTRAL_SERVO_ANGLE		(150 * M_PI / 180)
+#define FEMUR_NEUTRAL_SERVO_ANGLE		(116.4 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
 #define COXA_A							23.9
@@ -73,13 +73,13 @@
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
-#define MIN_PHASE	700			//Clockwise from neutral
-#define NEUTRAL		1500
-#define MAX_PHASE	2300		//Counter clockwise from neutral
+#define MIN_PHASE						700			//Clockwise from neutral
+#define NEUTRAL							1500
+#define MAX_PHASE						2300		//Counter clockwise from neutral
 
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.
-#define SERVO_TRAVEL  2.61799
+#define SERVO_TRAVEL					(150 * M_PI / 180)
 
 namespace digitalcave {
 	/*
