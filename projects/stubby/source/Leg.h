@@ -13,7 +13,7 @@
 
 #include "Stubby.h"
 
-//*** See doc/diagrams.png for figure X references ***//
+//*** See doc/diagrams.pdf for figure x.y references ***//
 
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
