@@ -62,6 +62,10 @@ inline uint8_t triad(uint8_t c) {
 	return (c + 8) % 24;
 }
 
+inline uint8_t analagous(uint8_t c) {
+	return (c + 2) % 24;
+}
+
 int main() {
 	
 	// the rtc has a slow start up time from power on, so just delay a bit here
@@ -143,7 +147,6 @@ int main() {
 	struct tm rise;
 	struct tm set;
 	int8_t phase = 0;	// the number of segments to light / 2
-	uint8_t year = 0;
 	uint8_t week = 0;
 	uint8_t mode = 0;
 	uint8_t update = 1;
@@ -175,7 +178,6 @@ int main() {
 	set_system_time(systime);
 	
 	uint8_t base_index = 18;	// violet
-	uint8_t invert = 0;			// 0 = not inverted, 1 = inverted by user, 2 = inverted by sunset, 3 = inverted by both
 	
 	struct ws2811_t base = palette[base_index];
 	struct ws2811_t fill = palette[comp(base_index)];
@@ -188,7 +190,7 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && TCNT1 > 0x480) {
+		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x480) {
 			TCNT1 = 0x00;
 			update = 1;
 		}
@@ -215,32 +217,25 @@ int main() {
 					
 					phase = 0.3 * mp;
 				}
-
-				if (systime < risetime || systime > settime) {
-					// invert display after sunset
-					invert |= _BV(1);
-				} else {
-					invert &= ~_BV(1);
-				}
 			}
 			
 			for (uint8_t i = 0; i < 60; i++) {
-				colors[i] = invert ? base : black;
+				colors[i] = black;
 			}
 
 			if (mode == MODE_HMS) {
 				// hours, minutes, seconds
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = invert ? black : base;
+					colors[i] = grey;
 				}
 				// hour fill
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = fill;
+					colors[i] = base;
 				}
-				colors[sys.tm_min] = other;
-				colors[sys.tm_sec] = palette[comp(triad(base_index))];
+				colors[sys.tm_min] = palette[analagous(base_index)];
+				colors[sys.tm_sec] = palette[analagous(analagous(base_index))];
 			} else if (mode == MODE_MD) {
 				// month, day of month
 				// if (sys.tm_mon < 2) fill = azure; // jan, feb
@@ -251,7 +246,7 @@ int main() {
 				
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = invert ? black : base;
+					colors[i] = base;
 				}
 				// month fill
 				uint8_t mon = (sys.tm_mon % 12) * 5;
@@ -272,9 +267,9 @@ int main() {
 			} else if (mode == MODE_WD) {
 				// week, day of week
 				// markers
-				colors[0] = invert ? black : base;
+				colors[0] = base;
 				for (uint8_t i = 10; i < 60; i = i + 8) {
-					colors[i] = invert ? black : base;
+					colors[i] = base;
 				}
 				// week fill
 				uint8_t wday = sys.tm_wday * 8;
@@ -360,9 +355,6 @@ int main() {
 			} else if (mode == MODE_YEAR) {
 				colors[sys.tm_year - 100] = yellow;
 			} else if (mode == MODE_MONTH) {
-				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = invert ? black : base;
-				}
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
 					colors[i] = green;
@@ -393,8 +385,7 @@ int main() {
 			}
 
 			struct ws2811_t tx[60];
-			for (int i = 0; i < 60; i++) tx[i] = colors[(i + 30) % 60];
-			// TODO translate the array
+			for (int i = 0; i < 60; i++) tx[i] = colors[i]; //colors[(i + 30) % 60];
 			ws2811_set(tx, 60, 1);
 			ws2811_set(tx, 1, 1);
 			remote_reset();
@@ -412,7 +403,10 @@ int main() {
 				if (mode < MODE_SOLID) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
-				if (year > 59) year = 0;
+				time(&systime);
+				localtime_r(&systime, &sys);
+				sys.tm_year -= 100;
+				if (sys.tm_year < 0) sys.tm_year = 0;
 			} else if (command == REMOTE_UP) {
 				base_index = base_index + 2;
 				base_index %= 24;
@@ -425,13 +419,11 @@ int main() {
 				base = palette[base_index];
 				fill = palette[comp(base_index)];
 				other = palette[triad(base_index)];
-			} else if (command == REMOTE_CENTER) {
-				invert ^= _BV(0);
 			}
 		} else {
 			if (command == REMOTE_UP) {
-				if (mode == MODE_YEAR && year < 59) year++;
-				else if (mode == MODE_YEAR) year = 0;
+				if (mode == MODE_YEAR && sys.tm_year < 59) sys.tm_year++;
+				else if (mode == MODE_YEAR) sys.tm_year = 0;
 				else if (mode == MODE_MONTH && sys.tm_mon < 11) sys.tm_mon++;
 				else if (mode == MODE_MONTH) sys.tm_mon = 0;
 				else if (mode == MODE_DAY && sys.tm_mday < 31) sys.tm_mday++;
@@ -443,8 +435,8 @@ int main() {
 				else if (mode == MODE_SEC && sys.tm_sec < 59) sys.tm_sec++;
 				else if (mode == MODE_SEC) sys.tm_sec = 0;
 			} else if (command == REMOTE_DOWN) {
-				if (mode == MODE_YEAR && year > 0) year--;
-				else if (mode == MODE_YEAR) year = 59;
+				if (mode == MODE_YEAR && sys.tm_year > 0) sys.tm_year--;
+				else if (mode == MODE_YEAR) sys.tm_year = 59;
 				else if (mode == MODE_MONTH && sys.tm_mon > 0) sys.tm_mon--;
 				else if (mode == MODE_MONTH) sys.tm_mon = 11;
 				else if (mode == MODE_DAY && sys.tm_mday > 0) sys.tm_mday--;
@@ -461,6 +453,7 @@ int main() {
 				if (mode < MODE_SEC) mode++;
 				else {
 					// set the new system time
+					sys.tm_year += 100;
 					systime = mktime(&sys);
 					set_system_time(systime);
 					
