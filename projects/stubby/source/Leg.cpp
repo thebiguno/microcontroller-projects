@@ -3,7 +3,7 @@
 using namespace digitalcave;
 
 /*
- * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d degrees.
+ * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d°rees.
  */
 void rotate2d(double *c1, double *c2, double o1, double o2, double angle){
 	//Translate c1, c2 by o1, o2
@@ -33,7 +33,7 @@ double solveServoTrapezoid(double length_a, double length_b, double length_c, do
 	double angle_D = acos((length_e * length_e + length_a * length_a - length_d * length_d) / (2 * length_e * length_a));
 
 	#ifdef DEBUG_SIMULATION
-	printf("e: %3.1f; C: %2.3f; D: %2.3f", length_e, angle_C, angle_D);
+	printf("e: %3.1f mm; C: %2.0f°; D: %2.0f°", length_e, angle_C * 180 / M_PI, angle_D * 180 / M_PI);
 	#endif
 	
 	return angle_N - (angle_C + angle_D);
@@ -55,7 +55,7 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	this->y = y;
 	this->z = z;
 	#ifdef DEBUG_SIMULATION
-	printf("Desired: %d, %d, %d\n", x, y, z);
+	printf("Desired: %d mm, %d mm, %d mm\n", x, y, z);
 	#endif
 
 	double x1 = x;
@@ -84,7 +84,7 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	double femur_angle = acos(((FEMUR_LENGTH * FEMUR_LENGTH) + (leg_extension * leg_extension) - (TIBIA_LENGTH * TIBIA_LENGTH)) / (2 * FEMUR_LENGTH * leg_extension));
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f,%3.1f, leg_length: %3.1f; leg_extension: %3.1f\n", x,y,z, x1,y1, leg_length, leg_extension);
+	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f mm,%3.1f mm, leg_length: %3.1f mm; leg_extension: %3.1f mm\n", x,y,z, x1,y1, leg_length, leg_extension);
 	#endif
 	
 	this->setTibiaAngle(tibia_angle);
@@ -116,14 +116,14 @@ void Leg::setOffset(uint8_t joint, int8_t offset){
 
 void Leg::setTibiaAngle(double desired_angle){
 	#ifdef DEBUG_SIMULATION
-	printf(" Tibia: desired angle: %2.3f; ", desired_angle);
+	printf(" Tibia: desired angle: %3.0f°; ", desired_angle * 180 / M_PI);
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
 	double angle_S = solveServoTrapezoid(TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, desired_angle + TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" servo angle: %2.3f; ", angle_S);
+	printf(" servo angle: %3.0f°; ", angle_S * 180 / M_PI);
 	#endif
 
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) NEUTRAL + angle_S * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL));
@@ -131,14 +131,14 @@ void Leg::setTibiaAngle(double desired_angle){
 
 void Leg::setFemurAngle(double desired_angle){
 	#ifdef DEBUG_SIMULATION
-	printf(" Femur: desired angle: %2.3f; ", desired_angle);
+	printf(" Femur: desired angle: %3.0f°; ", desired_angle * 180 / M_PI);
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
 	double angle_S = solveServoTrapezoid(FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, desired_angle + FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" servo angle: %2.3f; ", angle_S);
+	printf(" servo angle: %3.0f°; ", angle_S * 180 / M_PI);
 	#endif
 
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) NEUTRAL + angle_S * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL));
@@ -146,14 +146,14 @@ void Leg::setFemurAngle(double desired_angle){
 
 void Leg::setCoxaAngle(double desired_angle){
 	#ifdef DEBUG_SIMULATION
-	printf(" Coxa: desired angle: %2.3f; ", desired_angle);
+	printf(" Coxa:  desired angle: %3.0f°; ", desired_angle * 180 / M_PI);
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
 	double angle_S = solveServoTrapezoid(COXA_A, COXA_B, COXA_C, COXA_D, desired_angle + COXA_E_OFFSET_ANGLE, COXA_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" servo angle: %2.3f; ", angle_S);
+	printf(" servo angle: %3.0f°; ", angle_S * 180 / M_PI);
 	#endif
 
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) NEUTRAL + angle_S * ((MAX_PHASE - MIN_PHASE) / SERVO_TRAVEL));
