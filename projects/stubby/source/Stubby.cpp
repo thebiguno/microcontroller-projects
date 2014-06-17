@@ -73,7 +73,7 @@ int main (void){
 	pwm_apply_batch();
 	*/
 	
-	legs[MIDDLE_RIGHT].setPosition(140, -50, 0);
+	legs[MIDDLE_RIGHT].setPosition(140, 0, 0);
 	pwm_apply_batch();
 	
 	_delay_ms(1000);
@@ -88,6 +88,17 @@ int main (void){
 	int8_t direction = 2;
 	uint8_t c = 0;
 	while(1){
+		legs[MIDDLE_RIGHT].setPosition(130, 0, 0);
+		pwm_apply_batch();
+		_delay_ms(1000);
+		legs[MIDDLE_RIGHT].setPosition(140, 0, 0);
+		pwm_apply_batch();
+		_delay_ms(1000);
+		legs[MIDDLE_RIGHT].setPosition(150, 0, 0);
+		pwm_apply_batch();
+		_delay_ms(2000);
+		
+		/*
 		c++;
 		if (c > 50) {
 			direction = direction * -1;
@@ -106,6 +117,7 @@ int main (void){
 			legs[l].setPosition(x, y, z);
 		//}
 		pwm_apply_batch();
+		*/
 	}
 }
 
