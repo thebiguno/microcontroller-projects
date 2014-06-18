@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "Stubby.h"
+#include "trig.h"
 
 //*** See doc/diagrams.pdf for figure x.y references ***//
 
