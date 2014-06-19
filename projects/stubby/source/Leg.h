@@ -79,13 +79,13 @@
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
-#define MIN_PHASE						700			//Clockwise from neutral
-#define NEUTRAL							1500
-#define MAX_PHASE						2300		//Counter clockwise from neutral
+#define PHASE_MIN						700			//Clockwise from neutral
+#define PHASE_NEUTRAL					1500
+#define PHASE_MAX						2300		//Counter clockwise from neutral
 
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.
-#define SERVO_TRAVEL					(93.5 * M_PI / 180)
+#define SERVO_TRAVEL					(150 * M_PI / 180)
 
 namespace digitalcave {
 	/*

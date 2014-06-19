@@ -54,9 +54,10 @@ int main (void){
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			pwm_set_phase_batch(l * JOINT_COUNT + j, NEUTRAL);
+			pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL);
 		}
 	}
+	
 	pwm_apply_batch();
 
 	_delay_ms(2000);
