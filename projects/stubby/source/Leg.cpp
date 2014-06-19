@@ -22,21 +22,21 @@ void rotate2d(double *c1, double *c2, double o1, double o2, double angle){
 /*
  * Returns the angle which the servo needs to move from neutral.
  */
-double solveServoTrapezoid(double length_a, double length_b, double length_c, double length_d, double angle_E, double angle_N){
+double solveServoTrapezoid(double desired_angle, double length_a, double length_b, double length_c, double length_d, double angle_E_offset, double angle_N){
 	//See diagrams in doc/drive_system.png for description of sides and angles
 	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
-	double length_e = sqrt(length_d * length_d + length_a * length_a - 2 * length_d * length_a * cos_f(angle_E));
+	double length_e = sqrt(length_d * length_d + length_a * length_a - 2 * length_d * length_a * cos_f(desired_angle + angle_E_offset));
 	
-	//Use law of cosines to find the angle between the line we just calculated and the line between the servo shaft and servo horn / control rod connection (b)
+	//Use law of cosines to find the angle between the line we just calculated (e) and the line between the servo shaft and servo horn / control rod connection (b)
 	double angle_C = acos_f((length_e * length_e + length_b * length_b - length_c * length_c) / (2 * length_e * length_b));
-	//Use law of cosines to find the angle between the line we just calculated and the line between the joint and the servo shaft (d)
+	//Use law of cosines to find the angle between the line we just calculated (e) and the line between the joint and the servo shaft (d)
 	double angle_D = acos_f((length_e * length_e + length_a * length_a - length_d * length_d) / (2 * length_e * length_a));
 
 	#ifdef DEBUG_SIMULATION
-	printf("e: %3.1f mm; C: %2.0f°; D: %2.0f°", length_e, angle_C * 180 / M_PI, angle_D * 180 / M_PI);
+	printf("e: %3.1f mm; C: %3.1f°; D: %3.1f°", length_e, angle_C * 180 / M_PI, angle_D * 180 / M_PI);
 	#endif
 	
-	return angle_N - (angle_C + angle_D);
+	return (angle_C + angle_D + angle_E_offset) - angle_N;
 }
 
 Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
@@ -127,7 +127,7 @@ void Leg::setTibiaAngle(double desired_angle){
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
-	double angle_S = solveServoTrapezoid(TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, desired_angle + TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
+	double angle_S = solveServoTrapezoid(desired_angle, TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
@@ -142,7 +142,7 @@ void Leg::setFemurAngle(double desired_angle){
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
-	double angle_S = solveServoTrapezoid(FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, desired_angle + FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
+	double angle_S = solveServoTrapezoid(desired_angle, FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
@@ -157,7 +157,7 @@ void Leg::setCoxaAngle(double desired_angle){
 	#endif
 
 	//See diagrams in doc/drive_system.png for description of sides and angles
-	double angle_S = solveServoTrapezoid(COXA_A, COXA_B, COXA_C, COXA_D, desired_angle + COXA_E_OFFSET_ANGLE, COXA_NEUTRAL_SERVO_ANGLE);
+	double angle_S = solveServoTrapezoid(desired_angle, COXA_A, COXA_B, COXA_C, COXA_D, COXA_E_OFFSET_ANGLE, COXA_NEUTRAL_SERVO_ANGLE);
 	
 	#ifdef DEBUG_SIMULATION
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);

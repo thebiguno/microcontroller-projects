@@ -18,7 +18,8 @@
 
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
-// is the same for all the legs).  See figure 1.1, 'leg offset'
+// is the same for all the legs); if this does not apply to your design, you will need to pass in an x,y offset for
+// each leg in its constructor, and modify the translation function to use it.  See figure 1.1, 'leg offset'
 #define LEG_OFFSET						45
 //The angle offset for a single leg.  All legs are defined as a multiple of this number.  For the current design
 // (radial symmetry, with the middle leg sticking straight out the side) this should be 60 degrees.  See
@@ -26,18 +27,18 @@
 #define LEG_MOUNTING_ANGLE				(60 * M_PI / 180)
 
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
-#define COXA_HEIGHT						50
+#define COXA_HEIGHT						50.0
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
 // figure 1.2, 'coxa length'
-#define COXA_LENGTH						49
+#define COXA_LENGTH						49.0
 //The height from the center of the coxa joint to the center of the femur joint.  See figure 1.2, 'femur height'.
 #define FEMUR_HEIGHT					17.825
 //The length of the leg segment between femur and tibia joints (measured between center of each joint).  See
 // figure 1.2, 'femur length'
-#define FEMUR_LENGTH					40
+#define FEMUR_LENGTH					40.0
 //The length of the leg segment between tibia joint and end of the foot (measured from the center of the joint)
 // See figure 1.2, 'tibia length'
-#define TIBIA_LENGTH					57
+#define TIBIA_LENGTH					57.0
 
 
 //The lengths of the four segments in the Tibia drive system.  See figure 1.3, segments a, b, c and d.
