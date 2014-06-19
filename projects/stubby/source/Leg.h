@@ -12,13 +12,19 @@
 #include <math.h>
 
 #include "Stubby.h"
+#include "trig.h"
 
-//*** See doc/diagrams.png for figure X references ***//
+//*** See doc/diagrams.pdf for figure x.y references ***//
 
 
 //The distance from 0,0 at which legs are mounted.  This assumes a radial symmetry of all legs (i.e. the distance
 // is the same for all the legs).  See figure 1.1, 'leg offset'
 #define LEG_OFFSET						45
+//The angle offset for a single leg.  All legs are defined as a multiple of this number.  For the current design
+// (radial symmetry, with the middle leg sticking straight out the side) this should be 60 degrees.  See
+// figure 1.1, 'mounting angle'.
+#define LEG_MOUNTING_ANGLE				(60 * M_PI / 180)
+
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
 #define COXA_HEIGHT						50
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
@@ -44,7 +50,7 @@
 #define TIBIA_E_OFFSET_ANGLE			(9.3 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.3, angle 'N'
-#define TIBIA_NEUTRAL_SERVO_ANGLE		(99.7 * M_PI / 180)
+#define TIBIA_NEUTRAL_SERVO_ANGLE		(135 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.4, segments a, b, c and d.
 #define FEMUR_A							27.7
@@ -56,7 +62,7 @@
 #define FEMUR_E_OFFSET_ANGLE			(31.5 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.4, angle 'N'
-#define FEMUR_NEUTRAL_SERVO_ANGLE		(116.4 * M_PI / 180)
+#define FEMUR_NEUTRAL_SERVO_ANGLE		(132 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
 #define COXA_A							23.9
@@ -73,9 +79,9 @@
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
-#define MIN_PHASE						700			//Clockwise from neutral
-#define NEUTRAL							1500
-#define MAX_PHASE						2300		//Counter clockwise from neutral
+#define PHASE_MIN						700			//Clockwise from neutral
+#define PHASE_NEUTRAL					1500
+#define PHASE_MAX						2300		//Counter clockwise from neutral
 
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.

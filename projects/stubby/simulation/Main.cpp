@@ -15,9 +15,9 @@ int main (void){
 	};
 	
 	//legs[FRONT_LEFT].setPosition(-64, 122, 0);
-	//legs[FRONT_RIGHT].setPosition(64, 122, 0);
+	legs[FRONT_RIGHT].setPosition(84, 122, 10);
 	//legs[MIDDLE_LEFT].setPosition(-130, 0, 0);
-	legs[MIDDLE_RIGHT].setPosition(140, 0, 0);
+	//legs[MIDDLE_RIGHT].setPosition(160, 0, 0);
 	//legs[REAR_LEFT].setPosition(-64, -122, 0);
 	//legs[REAR_RIGHT].setPosition(64, -122, 0);
 	
