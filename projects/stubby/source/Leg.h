@@ -50,7 +50,7 @@
 #define TIBIA_E_OFFSET_ANGLE			(9.3 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.3, angle 'N'
-#define TIBIA_NEUTRAL_SERVO_ANGLE		(99.7 * M_PI / 180)
+#define TIBIA_NEUTRAL_SERVO_ANGLE		(135 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.4, segments a, b, c and d.
 #define FEMUR_A							27.7
@@ -62,7 +62,7 @@
 #define FEMUR_E_OFFSET_ANGLE			(31.5 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.4, angle 'N'
-#define FEMUR_NEUTRAL_SERVO_ANGLE		(116.4 * M_PI / 180)
+#define FEMUR_NEUTRAL_SERVO_ANGLE		(132 * M_PI / 180)
 
 //The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
 #define COXA_A							23.9
@@ -85,7 +85,7 @@
 
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.
-#define SERVO_TRAVEL					(150 * M_PI / 180)
+#define SERVO_TRAVEL					(93.5 * M_PI / 180)
 
 namespace digitalcave {
 	/*
