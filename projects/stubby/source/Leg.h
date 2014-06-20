@@ -72,10 +72,10 @@
 #define COXA_D							13.1
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.4, angle 'E'
-#define COXA_E_OFFSET_ANGLE				(120 * M_PI / 180)
+#define COXA_E_OFFSET_ANGLE				(108 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.4, angle 'N'
-#define COXA_NEUTRAL_SERVO_ANGLE		(77 * M_PI / 180)
+#define COXA_NEUTRAL_SERVO_ANGLE		(220 * M_PI / 180)
 
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
