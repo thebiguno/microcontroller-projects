@@ -5,13 +5,13 @@
 
 int main (void){
 	serial_init_b(9600);
-	remote_init();
+	remote_init(0x00);
 	
 	uint8_t command;
 	
 	//Main program loop
 	while (1){
-		command = remote_get();
+		command = remote_command();
 		if (command == REMOTE_MENU) UDR0 = 'M';
 		else if (command == REMOTE_RIGHT) UDR0 = 'R';
 		else if (command == REMOTE_LEFT) UDR0 = 'L';

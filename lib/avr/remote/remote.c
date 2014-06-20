@@ -66,16 +66,22 @@ volatile uint8_t _state;	// 0 = idle; 1 = leading pulse seen; 2 = leading space 
 volatile uint8_t _byte_pos;
 volatile uint8_t _bit_pos;
 volatile uint8_t _byte;
+volatile uint8_t _address;
 volatile uint8_t _command;
+volatile uint8_t _device;
+volatile uint8_t _paired;
 volatile uint8_t _temp;  // holds the command until the final byte is done
 
-void remote_init() {
+void remote_init(uint8_t deviceid) {
+	_paired = deviceid;
+	
 	// timer
 	TCCRxA = 0x0; 						// normal mode
 	TCCRxB = PRESCALE;					// F_CPU / 1024 prescaler
 
 	// interrupts
 	DDRD &= ~_BV(PDx);  				// set pin as input
+	DDRB |= _BV(PB0);
 	
 	#if defined(__AVR_ATtiny13__)      || \
 		defined(__AVR_ATtiny85__)
@@ -106,7 +112,7 @@ void remote_reset() {
 	_state = 0;
 }
 
-uint8_t remote_get() {
+uint8_t remote_command() {
 	uint8_t result = _command;
 	_command = 0;
 	return result;
@@ -118,6 +124,7 @@ ISR(INT0_vect) {
 #endif
 	if (PIND & _BV(PDx)) {
 		// receiver high; protocol low
+		PORTB &= ~_BV(PB0);
 		if (_state == 0) {
 			if (TCNTx > LEADING_PULSE) {
 				_state = 1;
@@ -125,6 +132,7 @@ ISR(INT0_vect) {
 		}
 	} else {
 		// receiver low; protocol high
+		PORTB |= _BV(PB0);
 		if (_state == 1) {
 			if (TCNTx > LEADING_SPACE) {
 				_state = 2;
@@ -141,22 +149,40 @@ ISR(INT0_vect) {
 			} 
 			if (_bit_pos++ == 7) {
 				if (_byte_pos == 0) {
-					if (_byte != 0xee) {
+					if (_byte == 0xee || _byte == 0xe0) {
+						// these are the only two addresses that are expected, anything else just go back to state 0
+						// 0xEE is for normal commands
+						// 0xE0 is for pairing commands
+						_address = _byte;
+					} else {
 						_state = 0;
 					}
 					_byte_pos++;
 				} else if (_byte_pos == 1) {
 					if (_byte != 0x87) {
+						// this is the only magic value expected here
 						_state = 0;
 					}
 					_byte_pos++;
 				} else if (_byte_pos == 2) {
-					_temp = _byte & 0xfe;
+					_temp = _byte;
 					_command = _byte & 0xfe;
 					_byte_pos++;
 				} else if (_byte_pos == 3) {
-					// TODO check pairing
-					//_command = _temp;
+					_device = _byte;
+					if (((_device ^ _command) & 0x01) == 0x01) {
+						if (_address == 0xee) {
+							// command bit 0 is an odd parity bit with the device
+							if (_paired == 0 || _paired == _device) {
+								_command = _temp & 0xfe;
+							}
+						} else {
+							_command = (_temp & 0xfe) | 0xe0;
+							if (_command == REMOTE_PAIR) {
+								_paired = _device;
+							}
+						}
+					}
 					_state = 0;
 				} else {
 					_state = 0;
