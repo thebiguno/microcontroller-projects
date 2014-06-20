@@ -71,7 +71,7 @@
 // 1500 + 600, etc) and measure the resulting angles.  On my robot, I get approx. 16 degrees for each
 // phase offset of 300us.  By dividing this out (300 / (16 * PI / 180)) I get the value 1074.296, which 
 // means that for each radian I want to move, I adjust the phase by 1074.296.
-#define COXA_PHASE_MULTIPLIER			1074.296
+#define COXA_PHASE_MULTIPLIER			-1074.296
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
