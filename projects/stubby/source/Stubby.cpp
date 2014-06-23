@@ -5,7 +5,7 @@ using namespace digitalcave;
 //Set up the leg objects, including servo details and mounting angle
 
 Leg legs[LEG_COUNT] = {
-	Leg(FRONT_LEFT,		&PORTB, PORTB2, &PORTB, PORTB1, &PORTB, PORTB0, 2 * LEG_MOUNTING_ANGLE),
+	Leg(FRONT_LEFT,		&PORTB, PORTB0, &PORTB, PORTB1, &PORTB, PORTB2, 2 * LEG_MOUNTING_ANGLE),
 	Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, 1 * LEG_MOUNTING_ANGLE),
 	Leg(MIDDLE_LEFT,	&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * LEG_MOUNTING_ANGLE),
 	Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0 * LEG_MOUNTING_ANGLE),
@@ -57,19 +57,19 @@ int main (void){
 			pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL);
 		}
 	}
-	
+		
 	pwm_apply_batch();
 
 	_delay_ms(2000);
 
 	status_set_color(0xFF, 0xFF, 0x00);
 	
-	legs[FRONT_LEFT].setPosition(-84, 122, 0);
-	legs[FRONT_RIGHT].setPosition(84, 122, 0);
-	legs[MIDDLE_LEFT].setPosition(-140, 0, 0);
-	legs[MIDDLE_RIGHT].setPosition(140, 0, 0);
-	legs[REAR_LEFT].setPosition(-84, -122, 0);
-	legs[REAR_RIGHT].setPosition(84, -122, 0);
+	legs[FRONT_LEFT].setPosition(-65, 112, 0);
+	legs[FRONT_RIGHT].setPosition(65, 112, 0);
+	legs[MIDDLE_LEFT].setPosition(-130, 0, 0);
+	legs[MIDDLE_RIGHT].setPosition(130, 0, 0);
+	legs[REAR_LEFT].setPosition(-65, -112, 0);
+	legs[REAR_RIGHT].setPosition(65, -112, 0);
 	pwm_apply_batch();
 	
 	_delay_ms(1000);
@@ -82,11 +82,10 @@ int main (void){
 	//calibration();
 	
 	int8_t direction = 2;
-	uint8_t c = 25;
+	uint8_t c = 15;
 	while(1){
-		/*
 		c++;
-		if (c > 50) {
+		if (c > 30) {
 			direction = direction * -1;
 			c = 0;
 		}
@@ -97,7 +96,6 @@ int main (void){
 			legs[l].setPosition(x, y, z);
 		}
 		pwm_apply_batch();
-		*/
 	}
 }
 

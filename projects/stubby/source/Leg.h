@@ -65,18 +65,13 @@
 // figure 1.4, angle 'N'
 #define FEMUR_NEUTRAL_SERVO_ANGLE		(132 * M_PI / 180)
 
-//The lengths of the four segments in the Femur drive system.  See figure 1.5, segments a, b, c and d.
-#define COXA_A							23.9
-#define COXA_B							8.0
-#define COXA_C							28.8
-#define COXA_D							13.1
-//The difference in angle between the desired angle and the angle between segments d and a.  See
-// figure 1.4, angle 'E'
-#define COXA_E_OFFSET_ANGLE				(108 * M_PI / 180)
-//The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
-// figure 1.4, angle 'N'
-#define COXA_NEUTRAL_SERVO_ANGLE		(220 * M_PI / 180)
-
+//For the Coxa joint we just use a linear equation to determine the offsets, since it is close enough for
+// most purposes and eliminates a lot of math needed for the drive system calculations.  To determine
+// this value, set the coxa joint on a single leg to various phases (for instance, 1500 + 300, 1500 - 300, 
+// 1500 + 600, etc) and measure the resulting angles.  On my robot, I get approx. 16 degrees for each
+// phase offset of 300us.  By dividing this out (300 / (16 * PI / 180)) I get the value 1074.296, which 
+// means that for each radian I want to move, I adjust the phase by 1074.296.
+#define COXA_PHASE_MULTIPLIER			-1074.296
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
