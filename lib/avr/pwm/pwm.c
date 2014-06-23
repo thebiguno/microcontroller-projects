@@ -14,7 +14,11 @@ typedef struct pwm_event_t {
 	uint8_t portd_mask;
 
 	//Only used in OCRB; ignored for high event in OCRA.
+#ifdef PWM_8_BIT
+	uint8_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
+#else
 	uint16_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
+#endif
 } pwm_event_t;
 
 static uint8_t _set_phase_batch = 0;							//Set to 1 when set_phase_batch is called with a changed value.
@@ -32,7 +36,7 @@ static pwm_event_t _pwm_event_high_new;							//Double buffer of pwm high event;
 
 static pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];			//Array of pwm events.  Each event will set one or more pins low.
 static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];		//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
-static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
+static volatile void* _pwm_events_low_ptr;						//Pointer to current value in _pwm_events_low.  Reset in OCRA, incremented in OCRB.
 
 static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for _pwm_micros_to_clicks calls.
 static uint8_t _prescaler_mask = 0x0;							//Prescaler mask corresponding to _prescaler
@@ -67,6 +71,8 @@ static uint8_t _prescaler_mask = 0x0;							//Prescaler mask corresponding to _p
 #define TCCRB			TCCR1B
 #define OCRA			OCR1A
 #define OCRB			OCR1B
+#define OCRBL			OCR1BL
+#define OCRBH			OCR1BH
 #define TIMSKR 			TIMSK1
 #define OCIEA			OCIE1A
 #define OCIEB			OCIE1B
@@ -342,8 +348,8 @@ ISR(TIMER1_COMPA_vect){
 	
 	//Set to the first (sorted) compare value in the pwm_events_low array.  This is calculated 
 	// in pwm_apply_batch(), and updated above in this ISR.
-	_pwm_events_low_index = 0;
-	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
+	_pwm_events_low_ptr = (void*) _pwm_events_low;
+	OCRB = _pwm_events_low[0].compare_value;
 	
 	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase 
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
@@ -367,26 +373,60 @@ ISR(TIMER1_COMPA_vect){
  * The phase comparison.  When it overflows, we find the next highest value.
  */
 #ifdef PWM_8_BIT
-ISR(TIM0_COMPB_vect){
+ISR(TIM0_COMPB_vect, ISR_NAKED){
 #else
-ISR(TIMER1_COMPB_vect){
+ISR(TIMER1_COMPB_vect, ISR_NAKED){
 #endif
-	pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
-	_pwm_events_low_index++;
-	
+
+	asm volatile(
+			"PUSH	r16													\n"			//Push r16 to stack
+#ifndef PWM_8_BIT
+			"PUSH	r17													\n"			//Push r17 to stack (only needed for 16 bit PWM)
+#endif
+
+			"LD		r16,						%a[events_low]+			\n"			//Load portA low mask and increment pointer to portB mask
 #ifndef PWM_PORTA_UNUSED
-	PORTA &= e.porta_mask;
+			"AND	r16,						_SFR_IO_ADDR(PORTA)		\n"			//AND with the existing value of PORTA
+			"OUT	_SFR_IO_ADDR(PORTA),		r16						\n"			//Set PORTA to new value
 #endif
+
+			"LD		r16,						%a[events_low]+			\n"			//Load portB low mask and increment pointer to portC mask
 #ifndef PWM_PORTB_UNUSED
-	PORTB &= e.portb_mask;
+			"AND	r16,						_SFR_IO_ADDR(PORTB)		\n"			//AND with the existing value of PORTB
+			"OUT	_SFR_IO_ADDR(PORTB),		r16						\n"			//Set PORTB to new value
 #endif
+
+			"LD		r16,						%a[events_low]+			\n"			//Load portC low mask and increment pointer to portD mask
 #ifndef PWM_PORTC_UNUSED
-	PORTC &= e.portc_mask;
+			"AND	r16,						_SFR_IO_ADDR(PORTC)		\n"			//AND with the existing value of PORTC
+			"OUT	_SFR_IO_ADDR(PORTC),		r16						\n"			//Set PORTC to new value
 #endif
-#ifndef PWM_PORTD_UNUSED
-	PORTD &= e.portd_mask;
+
+			"LD		r16,						%a[events_low]+			\n"			//Load portD low mask and increment pointer to compare value
+#ifndef PWM_PORTA_UNUSED
+			"AND	r16,						_SFR_IO_ADDR(PORTD)		\n"			//AND with the existing value of PORTD
+			"OUT	_SFR_IO_ADDR(PORTD),		r16						\n"			//Set PORTD to new value
 #endif
-	
-	//Set the timer for the next lowest value.
-	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
+
+#ifdef PWM_8_BIT
+			"LD		r16,						%a[events_low]+			\n"			//Load new compare value
+			"OUT	OCRB,						r16						\n"			//Set new OCRB
+
+#else
+			"LD		r16,						%a[events_low]+			\n"			//Load first half of new compare value
+			"LD		r17,						%a[events_low]+			\n"			//Load second half of new compare value
+			"OUT	_SFR_IO_ADDR(OCRBH),		r16						\n"			//Set high half of new compare value
+			"OUT	_SFR_IO_ADDR(OCRBL),		r17						\n"			//Set high half of new compare value
+#endif
+
+#ifndef PWM_8_BIT
+			"POP	r17													\n"			//Pop r17 from stack (only needed for 16 bit PWM)
+#endif
+			"POP	r16													\n"			//Pop r16 from stack
+
+			"RETI														\n"			//Return from interrupt
+		: // no outputs
+		: // inputs
+		[events_low]		"e"		(_pwm_events_low_ptr)
+	);
 }
