@@ -9,6 +9,7 @@
 #include "time32/time.h"
 #include "time32/usa_dst.h"
 #include <util/delay.h>
+#include <math.h>
 
 #define MODE_HMS 0
 #define MODE_MD 1
@@ -30,8 +31,54 @@
 int r(int max) {
 	return rand() % max;
 }
+void hsv2rgb(struct ws2811_t *rgb, float h, float s, float v) {
+	if (s == 0) {
+		rgb->red = 255 * v;
+		rgb->green = 255 * v;
+		rgb->blue = 255 * v;
+		return;
+	}
+	h /= 60;		// sector 0 to 5
+	int i = floor(h);
+	float f = h - i;	// factorial part of h
+	float p = v * (1 - s);
+	float q = v * (1 - s * f);
+	float t = v * (1 - s * (1 - f));
+	switch(i) {
+		case 0:
+		rgb->red = 255 * v;
+		rgb->green = 255 * t;
+		rgb->blue = 255 * p;
+		break;
+		case 1:
+		rgb->red = 255 * q;
+		rgb->green = 255 * v;
+		rgb->blue = 255 * p;
+		break;
+		case 2:
+		rgb->red = 255 * p;
+		rgb->green = 255 * v;
+		rgb->blue = 255 * t;
+		break;
+		case 3:
+		rgb->red = 255 * p;
+		rgb->green = 255 * q;
+		rgb->blue = 255 * v;
+		break;
+		case 4:
+		rgb->red = 255 * t;
+		rgb->green = 255 * p;
+		rgb->blue = 255 * v;
+		break;
+		default:
+		rgb->red = 255 * v;
+		rgb->green = 255 * p;
+		rgb->blue = 255 * q;
+		break;
+	}
+}
 // recursive function to fill in the the spaces between two points in the plasma
-void a(uint8_t p1, uint8_t p2, uint8_t *x) {
+void a(uint8_t p1, uint8_t p2, float *hues) {
 	if (p1 == p2) return;
 	
 	uint8_t p = p1 + p2;
@@ -40,33 +87,32 @@ void a(uint8_t p1, uint8_t p2, uint8_t *x) {
 	if (p == p1 || p == p2) return;
 	p %= 60;
 	
-	uint8_t v = x[p1] + x[p2];
-	if (x[p2] < x[p1]) v += 24;
+	float v = hues[p1] + hues[p2];
+	if (hues[p2] < hues[p1]) v += 360;
 	v /= 2;
-	if (v < 0) v = 23;
-	if (v > 23) v = 0;
+	if (v > 360) v -= 360;
 	
-	x[p] = v;
+	hues[p] = v;
 	
-	a(p1, p, x);
-	a(p, p2, x);
+	a(p1, p, hues);
+	a(p, p2, hues);
 }
 
 // the complementary color index
 inline uint8_t complementary(uint8_t c) {
-	return (c + 12) % 24;
+	return (c + 12) % 12;
 }
 
 // the next triadic color index (clockwise)
 inline uint8_t triad(uint8_t c) {
-	return (c + 8) % 24;
+	return (c + 8) % 12;
 }
 
 inline uint8_t analagous_a(uint8_t c) {
-	return (c + 2) % 24;
+	return (c + 2) % 12;
 }
 inline uint8_t analagous_b(uint8_t c) {
-	return (c + 22) % 24;
+	return (c + 22) % 12;
 }
 
 int main() {
@@ -95,26 +141,9 @@ int main() {
 	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
 	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
 
-	ws2811_t vermillion = {.red = 0xcc, .green = 0x33, .blue = 0x00 };	// 15
-	ws2811_t amber = {.red = 0xcc, .green = 0x99, .blue = 0x00 };		// 45
-	ws2811_t lime = {.red = 0x99, .green = 0xcc, .blue = 0x00 };		// 75
-	ws2811_t harlequin = {.red = 0x33, .green = 0xcc, .blue = 0x00 };	// 105
-	ws2811_t malachite = {.red = 0x00, .green = 0xcc, .blue = 0x33 };	// 135
-	ws2811_t turquoise = {.red = 0x00, .green = 0xcc, .blue = 0x99 };	// 165
-	ws2811_t cerulean = {.red = 0x00, .green = 0x99, .blue = 0xcc };	// 195
-	ws2811_t sapphire = {.red = 0x00, .green = 0x33, .blue = 0xcc };	// 225
-	ws2811_t indigo = {.red = 0x33, .green = 0x00, .blue = 0xcc };		// 255
-	ws2811_t mulberry = {.red = 0x99, .green = 0x00, .blue = 0xcc };	// 285
-	ws2811_t fuchsia = {.red = 0xcc, .green = 0x00, .blue = 0x99 };		// 315
-	ws2811_t crimson = {.red = 0xcc, .green = 0x00, .blue = 0x33 };		// 345
-	
 	ws2811_t palette[24] = { 
-		red, vermillion, orange, amber, 
-		yellow, lime, chartreuse, harlequin, 
-		green, malachite, spring, turquoise, 
-		cyan, cerulean, azure, sapphire, 
-		blue, indigo, violet, mulberry, 
-		magenta, fuchsia, rose, crimson
+		red, orange, yellow, chartreuse, green, spring,
+		cyan, azure, blue, violet, magenta, rose
 	};
 	
 	struct ws2811_t colors[60];
@@ -123,7 +152,7 @@ int main() {
 	DDRB |= _BV(PB0);			// test output
 
 	// INT1 / PD3 and Timer2 are used by the IR receiver
-	remote_init();
+	remote_init(0x00);
 	
 	// Timer0 / T0 / PD4 is the 1 Hz square output of the RTC
 	TCCR0B |= _BV(CS02) | _BV(CS01) | _BV(CS00);
@@ -157,15 +186,16 @@ int main() {
 	uint8_t harmony = 0;
 
 	// plasma variables
-	uint8_t x[60];		// an array of palette indicies
+	float hues[60];
 	int8_t p1 = 0;		// starting locations
 	int8_t p2 = 20;
 	int8_t p3 = 40;
-	x[p1] = 0;			// starting colors
-	x[p2] = 8;
-	x[p3] = 16;
+	// start with red, green, blue
+	hues[p1] = 0;
+	hues[p2] = 120;
+	hues[p3] = 240;
 	
-	uint8_t c = 0;			// current color
+	float hue = 0;	// current solid hue
 
 	// hard coded location and time zone for now
 	set_zone(-7 * ONE_HOUR);
@@ -196,9 +226,9 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x480) {
+		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x560) {
 			TCNT1 = 0x00;
-			update = 1;
+		//	update = 1;
 		}
 		
 		// update display
@@ -351,22 +381,16 @@ int main() {
 					}
 				}
 			} else if (mode == MODE_SPECTRUM) {
-				uint8_t i = 0;
-				uint8_t x = 0;
-				while (i < 60) {
-					colors[i++] = palette[x];
-					colors[i++] = palette[x];
-					colors[i++] = palette[x++];
-					colors[i++] = palette[x];
-					colors[i++] = palette[x++];
+				for (uint8_t i = 0; i < 60; i++) {
+					hsv2rgb(&colors[i], i * 6, 1, 0.8);
 				}
 			} else if (mode == MODE_PLASMA) {
-				a(p1, p2, x);
-				a(p2, p3, x);
-				a(p3, p1, x);
+				a(p1, p2, hues);
+				a(p2, p3, hues);
+				a(p3, p1, hues);
 
 				for (int8_t i = 0; i < 60; i++) {
-					colors[i] = palette[x[i]];
+					hsv2rgb(&colors[i], hues[i], 1, 0.8);
 				}
 				p1 += r(3) - 1;
 				p2 += r(3) - 1;
@@ -377,21 +401,22 @@ int main() {
 				if (p1 > 19) p1 = 0;
 				if (p2 > 39) p2 = 20;
 				if (p3 > 59) p3 = 40;
-				x[p1] += (r(3) - 1);
-				x[p2] += (r(3) - 1);
-				x[p3] += (r(3) - 1);
-				if (x[p1] < 0) x[p1] = 23;
-				if (x[p2] < 0) x[p2] = 23;
-				if (x[p3] < 0) x[p3] = 23;
-				if (x[p1] > 23) p1 = 0;
-				if (x[p2] > 23) p2 = 0;
-				if (x[p3] > 23) p3 = 0;
+				hues[p1] += (r(4) - 1) * 3; // random 3 degree change in hue
+				hues[p2] += (r(4) - 1) * 3;
+				hues[p3] += (r(4) - 1) * 3;
+				if (hues[p1] < 0) hues[p1] = 354;
+				if (hues[p2] < 0) hues[p2] = 354;
+				if (hues[p3] < 0) hues[p3] = 354;
+				if (hues[p1] > 360) hues[p1] = 0;
+				if (hues[p2] > 360) hues[p2] = 0;
+				if (hues[p3] > 360) hues[p3] = 0;
 			} else if (mode == MODE_SOLID) {
-				c += (r(3) - 1);
-				if (c < 0) c = 23;
-				if (c > 23) c = 0;
+				hue += (r(4) - 1) * 3; // random 3 degree change in hue
+				if (hue < 0) hue = 354;
+				if (hue > 356) hue = 0;
+				
 				for (uint8_t i = 0; i < 60; i++) {
-					colors[i] = palette[c];
+					hsv2rgb(&colors[i], hue, 1, 0.8);
 				}
 			} else if (mode == MODE_YEAR) {
 				colors[sys.tm_year - 100] = yellow;
@@ -435,7 +460,7 @@ int main() {
 		}
 
 		// read ir
-		uint8_t command = remote_get();
+		uint8_t command = remote_command();
 		if (command >= REMOTE_MENU && command <= REMOTE_DOWN) update = 1;
 		if (mode < MODE_YEAR) {
 			if (command == REMOTE_LEFT) {
@@ -449,11 +474,11 @@ int main() {
 				sys.tm_year -= 100;
 				if (sys.tm_year < 0) sys.tm_year = 0;
 			} else if (command == REMOTE_UP) {
-				base_index = base_index + 2;
-				base_index %= 24;
+				base_index++;
+				base_index %= 12;
 			} else if (command == REMOTE_DOWN) {
-				base_index = base_index - 2;
-				if (base_index > 24) base_index = 22;
+				base_index--;
+				if (base_index > 12) base_index = 11;
 			} else if (command == REMOTE_CENTER) {
 				harmony++;
 				harmony %= 5;
