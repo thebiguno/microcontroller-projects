@@ -1,7 +1,7 @@
 #define WS2811_PORT PORTB
 
 #include <avr/interrupt.h>
-#include "lib/ws2811/ws2811_8.h"
+#include "lib/ws2811/ws2811_w.h"
 //#include "lib/rtc/ds1307/ds1307.h"
 #include "lib/serial/serial.h"
 #include "lib/rtc/pcf8563/pcf8563.h"
@@ -31,48 +31,41 @@
 int r(int max) {
 	return rand() % max;
 }
-void hsv2rgb(struct ws2811_t *rgb, float h, float s, float v) {
-	if (s == 0) {
-		rgb->red = 255 * v;
-		rgb->green = 255 * v;
-		rgb->blue = 255 * v;
-		return;
-	}
+void h2rgb(struct ws2811_t *rgb, float h) {
 	h /= 60;		// sector 0 to 5
 	int i = floor(h);
 	float f = h - i;	// factorial part of h
-	float p = v * (1 - s);
-	float q = v * (1 - s * f);
-	float t = v * (1 - s * (1 - f));
+	float q = 1 - f;
+	float t = 1 - (1 - f);
 	switch(i) {
 		case 0:
-		rgb->red = 255 * v;
+		rgb->red = 255;
 		rgb->green = 255 * t;
-		rgb->blue = 255 * p;
+		rgb->blue = 0;
 		break;
 		case 1:
 		rgb->red = 255 * q;
-		rgb->green = 255 * v;
-		rgb->blue = 255 * p;
+		rgb->green = 255;
+		rgb->blue = 0;
 		break;
 		case 2:
-		rgb->red = 255 * p;
-		rgb->green = 255 * v;
+		rgb->red = 0;
+		rgb->green = 255;
 		rgb->blue = 255 * t;
 		break;
 		case 3:
-		rgb->red = 255 * p;
+		rgb->red = 0;
 		rgb->green = 255 * q;
-		rgb->blue = 255 * v;
+		rgb->blue = 255;
 		break;
 		case 4:
 		rgb->red = 255 * t;
-		rgb->green = 255 * p;
-		rgb->blue = 255 * v;
+		rgb->green = 0;
+		rgb->blue = 255;
 		break;
 		default:
-		rgb->red = 255 * v;
-		rgb->green = 255 * p;
+		rgb->red = 255;
+		rgb->green = 0;
 		rgb->blue = 255 * q;
 		break;
 	}
@@ -382,7 +375,7 @@ int main() {
 				}
 			} else if (mode == MODE_SPECTRUM) {
 				for (uint8_t i = 0; i < 60; i++) {
-					hsv2rgb(&colors[i], i * 6, 1, 0.8);
+					h2rgb(&colors[i], i * 6);
 				}
 			} else if (mode == MODE_PLASMA) {
 				a(p1, p2, hues);
@@ -390,7 +383,7 @@ int main() {
 				a(p3, p1, hues);
 
 				for (int8_t i = 0; i < 60; i++) {
-					hsv2rgb(&colors[i], hues[i], 1, 0.8);
+					h2rgb(&colors[i], hues[i]);
 				}
 				p1 += r(3) - 1;
 				p2 += r(3) - 1;
@@ -416,7 +409,7 @@ int main() {
 				if (hue > 356) hue = 0;
 				
 				for (uint8_t i = 0; i < 60; i++) {
-					hsv2rgb(&colors[i], hue, 1, 0.8);
+					h2rgb(&colors[i], hue);
 				}
 			} else if (mode == MODE_YEAR) {
 				colors[sys.tm_year - 100] = yellow;
@@ -452,8 +445,7 @@ int main() {
 
 			struct ws2811_t tx[60];
 			for (int i = 0; i < 60; i++) tx[i] = colors[i]; //colors[(i + 30) % 60];
-			ws2811_set(tx, 60, 1);
-			ws2811_set(tx, 1, 1);
+			ws2811_set(tx);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
