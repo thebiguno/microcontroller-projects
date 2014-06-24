@@ -379,54 +379,71 @@ ISR(TIMER1_COMPB_vect, ISR_NAKED){
 #endif
 
 	asm volatile(
-			"PUSH	r16													\n"			//Push r16 to stack
+			//Save calling state
+			"PUSH	r30											\n"
+			"PUSH	r31											\n"
+			"PUSH	r20											\n"
 #ifndef PWM_8_BIT
-			"PUSH	r17													\n"			//Push r17 to stack (only needed for 16 bit PWM)
+			"PUSH	r21											\n"
 #endif
 
-			"LD		r16,						%a[events_low]+			\n"			//Load portA low mask and increment pointer to portB mask
+			"LD		r20,				%a[events_low]+			\n"			//Load portA low mask and increment pointer to portB mask
 #ifndef PWM_PORTA_UNUSED
-			"AND	r16,						_SFR_IO_ADDR(PORTA)		\n"			//AND with the existing value of PORTA
-			"OUT	_SFR_IO_ADDR(PORTA),		r16						\n"			//Set PORTA to new value
+			"AND	r20,				%[porta]				\n"			//AND with the existing value of PORTA
+			"OUT	%[porta],			r20						\n"			//Set PORTA to new value
 #endif
 
-			"LD		r16,						%a[events_low]+			\n"			//Load portB low mask and increment pointer to portC mask
+			"LD		r20,				%a[events_low]+			\n"			//Load portB low mask and increment pointer to portC mask
 #ifndef PWM_PORTB_UNUSED
-			"AND	r16,						_SFR_IO_ADDR(PORTB)		\n"			//AND with the existing value of PORTB
-			"OUT	_SFR_IO_ADDR(PORTB),		r16						\n"			//Set PORTB to new value
+			"AND	r20,				%[portb]				\n"			//AND with the existing value of PORTB
+			"OUT	%[portb],			r20						\n"			//Set PORTB to new value
 #endif
 
-			"LD		r16,						%a[events_low]+			\n"			//Load portC low mask and increment pointer to portD mask
+			"LD		r20,				%a[events_low]+			\n"			//Load portC low mask and increment pointer to portD mask
 #ifndef PWM_PORTC_UNUSED
-			"AND	r16,						_SFR_IO_ADDR(PORTC)		\n"			//AND with the existing value of PORTC
-			"OUT	_SFR_IO_ADDR(PORTC),		r16						\n"			//Set PORTC to new value
+			"AND	r20,				%[portc]				\n"			//AND with the existing value of PORTC
+			"OUT	%[portc],			r20						\n"			//Set PORTC to new value
 #endif
 
-			"LD		r16,						%a[events_low]+			\n"			//Load portD low mask and increment pointer to compare value
-#ifndef PWM_PORTA_UNUSED
-			"AND	r16,						_SFR_IO_ADDR(PORTD)		\n"			//AND with the existing value of PORTD
-			"OUT	_SFR_IO_ADDR(PORTD),		r16						\n"			//Set PORTD to new value
+			"LD		r20,				%a[events_low]+			\n"			//Load portD low mask and increment pointer to compare value
+#ifndef PWM_PORTD_UNUSED
+			"AND	r20,				%[portd]				\n"			//AND with the existing value of PORTD
+			"OUT	%[portd],			r20						\n"			//Set PORTD to new value
 #endif
 
 #ifdef PWM_8_BIT
-			"LD		r16,						%a[events_low]+			\n"			//Load new compare value
-			"OUT	OCRB,						r16						\n"			//Set new OCRB
+			"LD		r20,				%a[events_low]+			\n"			//Load new compare value
+			"OUT	%[ocrb],			r20						\n"			//Set new OCRB
 
 #else
-			"LD		r16,						%a[events_low]+			\n"			//Load first half of new compare value
-			"LD		r17,						%a[events_low]+			\n"			//Load second half of new compare value
-			"OUT	_SFR_IO_ADDR(OCRBH),		r16						\n"			//Set high half of new compare value
-			"OUT	_SFR_IO_ADDR(OCRBL),		r17						\n"			//Set high half of new compare value
+			"LD		Y,				%a[events_low]+			\n"			//Load high half of new compare value
+			"ST		%a[ocrb],			Y						\n"			//Set high half of new compare value
 #endif
 
+			//Restore calling state
 #ifndef PWM_8_BIT
-			"POP	r17													\n"			//Pop r17 from stack (only needed for 16 bit PWM)
+			"POP	r21											\n"
 #endif
-			"POP	r16													\n"			//Pop r16 from stack
-
-			"RETI														\n"			//Return from interrupt
+			"POP	r20											\n"
+			"POP	r31											\n"
+			"POP	r30											\n"
 		: // no outputs
 		: // inputs
-		[events_low]		"e"		(_pwm_events_low_ptr)
+		[events_low]		"e"		(_pwm_events_low_ptr),
+#ifndef PWM_PORTA_UNUSED
+		[porta]				"I"		(_SFR_IO_ADDR(PORTA)),
+#endif
+#ifndef PWM_PORTB_UNUSED
+		[portb]				"I"		(_SFR_IO_ADDR(PORTB)),
+#endif
+#ifndef PWM_PORTC_UNUSED
+		[portc]				"I"		(_SFR_IO_ADDR(PORTC)),
+#endif
+#ifndef PWM_PORTD_UNUSED
+		[portd]				"I"		(_SFR_IO_ADDR(PORTD)),
+#endif
+		[ocrb]				""		(_SFR_IO_ADDR(OCRB))
 	);
+	
+	reti();
 }
