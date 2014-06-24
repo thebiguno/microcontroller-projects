@@ -1,26 +1,23 @@
 #include <avr/io.h>
 
-#ifdef PWM_8_BIT
-	.global TIM0_COMPB_vect
-TIM0_COMPB_vect:
-#else
 	.global TIMER1_COMPB_vect
 TIMER1_COMPB_vect:
-#endif
-
 
 	;Save calling state
 	PUSH		r30
 	PUSH		r31
 	PUSH		r20
 	PUSH		r21
+	IN			r20,					_SFR_IO_ADDR(SREG)
+	PUSH		r20
 
-	;Load the pointer address into register Z
+	;Load the pointer address into register Z.  As with all
+	; 16 bit register accesses, you read the low byte first.
 	LDI			r30,					lo8(_pwm_events_low_ptr)
 	LDI			r31,					hi8(_pwm_events_low_ptr)
 
 #ifndef PWM_PORTA_UNUSED
-	;Load portA low mask and increment pointer to portB mask
+	;Load portA low mask and increment pointer
 	LD			r20,					Z+
 	
 	; AND PORTA and PORTA Mask
@@ -30,7 +27,7 @@ TIMER1_COMPB_vect:
 
 
 #ifndef PWM_PORTB_UNUSED
-	;Load portB low mask and increment pointer to portC mask
+	;Load portB low mask and increment pointer
 	LD			r20,					Z+
 
 	; AND PORTB and PORTB Mask
@@ -40,7 +37,7 @@ TIMER1_COMPB_vect:
 
 
 #ifndef PWM_PORTC_UNUSED
-	;Load portC low mask and increment pointer to portD mask
+	;Load portC low mask and increment pointer
 	LD			r20,					Z+
 
 	; AND PORTC and PORTC Mask
@@ -50,7 +47,7 @@ TIMER1_COMPB_vect:
 
 
 #ifndef PWM_PORTD_UNUSED
-	;Load portD low mask and increment pointer to compare value
+	;Load portD low mask and increment pointer
 	LD			r20,					Z+
 
 	; AND PORTD and PORTD Mask
@@ -64,11 +61,14 @@ TIMER1_COMPB_vect:
 	STS			OCR1BH,					r20
 	STS			OCR1BL,					r21
 
-	;Save register Z back to pointer address
+	;Save register Z back to pointer address.  As with all 
+	; 16 bit register access, you write the high byte first.
 	STS			_pwm_events_low_ptr+1,	r31
 	STS			_pwm_events_low_ptr,	r30
 
 	;Restore calling state
+	POP			r20
+	OUT			_SFR_IO_ADDR(SREG),		r20
 	POP			r21
 	POP			r20
 	POP			r31
