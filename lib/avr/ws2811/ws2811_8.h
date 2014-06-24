@@ -2,8 +2,7 @@
 #define ws2811_h
 
 #include <stdint.h>
-#include <util/delay_basic.h>
-#include <avr/interrupt.h>
+#include <util/delay.h>
 
 typedef struct ws2811_t {
     uint8_t green;
@@ -26,8 +25,7 @@ void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
 
 	// reset the controllers by pulling the data line low
 	uint8_t bitcount = 7;
-	WS2811_PORT = low_val;
-	_delay_loop_1(107); // at 3 clocks per iteration, this is 320 ticks or 40us at 8Mhz
+	//WS2811_PORT = low_val;
 
 	// note: the labels in this piece of assembly code aren't very explanatory. The real documentation
 	// of this code can be found in the spreadsheet ws2811@8Mhz.ods
@@ -63,7 +61,7 @@ void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
 			"        BRNE cont09                             \n"
 			"brk18:  OUT %[portout], %[downreg]              \n"
 			"        NOP                                     \n"
-			"end:    OUT %[portout], %[upreg]                \n": /* no output */
+			"end:    NOP                \n": /* no output */
 	: /* inputs */
 	[dataptr] "e" (values), 	// pointer to grb values
 	[upreg]   "r" (high_val),	// register that contains the "up" value for the output port (constant)
@@ -72,6 +70,8 @@ void ws2811_set(const void *values, uint8_t array_size, uint8_t pin) {
 	[bits]    "d" (bitcount),       // number of bits/2
 	[portout] "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
+		
+	_delay_us(50);
 		
 	sei();
 }

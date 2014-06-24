@@ -25,12 +25,11 @@ void ws2811_set(const void *values) {
 	
 	uint8_t low_val = WS2811_PORT & ~_BV(WS2811_PIN);
 	uint8_t high_val = WS2811_PORT | _BV(WS2811_PIN);
-	uint8_t values_end = (uint16_t) values + 60 * sizeof(ws2811_t); // TODO 60 should be from a define
 
 	asm volatile( 
 			// current byte being sent is in r0
-			// address of the end of the array is in r2
-			"            LDI r16, 179\n"						// load the byte count into r2 (1)
+			// address of the end of the array is in r16
+			"            LDI r16, 180\n"						// load the byte count into r2 (1)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// bit 7
@@ -102,7 +101,6 @@ void ws2811_set(const void *values) {
 	[ptr]   "e" (values), 	// pointer to grb values
 	[high]  "r" (high_val),	// register that contains the "up" value for the output port (constant)
 	[low]   "r" (low_val),	// register that contains the "down" value for the output port (constant)
-	[end]   "e" (values_end),// pointer the address following values
 	[port]  "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
 	

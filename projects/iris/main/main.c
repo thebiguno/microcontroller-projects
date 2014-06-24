@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include "lib/ws2811/ws2811_w.h"
 //#include "lib/rtc/ds1307/ds1307.h"
-#include "lib/serial/serial.h"
+//#include "lib/serial/serial.h"
 #include "lib/rtc/pcf8563/pcf8563.h"
 #include "lib/remote/remote.h"
 #include "time32/time.h"
@@ -111,7 +111,7 @@ inline uint8_t analagous_b(uint8_t c) {
 int main() {
 	
 	// the rtc has a slow start up time from power on, so just delay a bit here
-	_delay_ms(500);
+	_delay_ms(1000);
 	
 	DDRB |= _BV(1); // led strip output
 	
@@ -162,7 +162,7 @@ int main() {
 	pcf8563_init();
 	
 	// Initialize serial
-	serial_init_b(9600);
+	//serial_init_b(9600);
 
 	int8_t mday = -1;		// used to avoid computing sunrise, sunset, and moon phase more than once per day;
 	time_t systime;
@@ -219,9 +219,9 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x560) {
+		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x255) {
 			TCNT1 = 0x00;
-		//	update = 1;
+			update = 1;
 		}
 		
 		// update display
@@ -394,9 +394,9 @@ int main() {
 				if (p1 > 19) p1 = 0;
 				if (p2 > 39) p2 = 20;
 				if (p3 > 59) p3 = 40;
-				hues[p1] += (r(4) - 1) * 3; // random 3 degree change in hue
-				hues[p2] += (r(4) - 1) * 3;
-				hues[p3] += (r(4) - 1) * 3;
+				hues[p1] += (r(3) - 1) * 3; // random 3 degree change in hue
+				hues[p2] += (r(3) - 1) * 3;
+				hues[p3] += (r(3) - 1) * 3;
 				if (hues[p1] < 0) hues[p1] = 354;
 				if (hues[p2] < 0) hues[p2] = 354;
 				if (hues[p3] < 0) hues[p3] = 354;
@@ -404,7 +404,7 @@ int main() {
 				if (hues[p2] > 360) hues[p2] = 0;
 				if (hues[p3] > 360) hues[p3] = 0;
 			} else if (mode == MODE_SOLID) {
-				hue += (r(4) - 1) * 3; // random 3 degree change in hue
+				hue += (r(3) - 1) * 3; // random 3 degree change in hue
 				if (hue < 0) hue = 354;
 				if (hue > 356) hue = 0;
 				
