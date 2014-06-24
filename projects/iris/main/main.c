@@ -362,14 +362,20 @@ int main() {
 				// moon phase
 				if (phase > 0) {
 					// waxing
-					for (int8_t i = 15 - phase; i < 15 + phase; i++) {
-						if (i < 0) i = 60 + i;
+					// 15 -> 45
+					for (int8_t i = 14; i < 14 + phase; i++) {
 						colors[i] = fill;
+					}
+					
+					for (int8_t i = 14; i > 14 - phase; i--) {
+						colors[i < 0 ? i + 60 : i] = fill;
 					}
 				} else {
 					// waning
-					for (int8_t i = 45 - phase; i < 45 + phase; i++) {
-						if (i > 60) i = i - 60;
+					for (int8_t i = 44; i < 44 - phase; i++) {
+						colors[i > 60 ? i - 60 : i] = fill;
+					}
+					for (int8_t i = 44; i > 44 + phase; i--) {
 						colors[i] = fill;
 					}
 				}
@@ -412,7 +418,7 @@ int main() {
 					h2rgb(&colors[i], hue);
 				}
 			} else if (mode == MODE_YEAR) {
-				colors[sys.tm_year - 100] = yellow;
+				colors[sys.tm_year] = yellow;
 			} else if (mode == MODE_MONTH) {
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
@@ -444,7 +450,7 @@ int main() {
 			}
 
 			struct ws2811_t tx[60];
-			for (int i = 0; i < 60; i++) tx[i] = colors[i]; //colors[(i + 30) % 60];
+			for (int i = 0; i < 60; i++) tx[i] = colors[(i + 30) % 60];
 			ws2811_set(tx);
 			remote_reset();
 
@@ -465,6 +471,7 @@ int main() {
 				localtime_r(&systime, &sys);
 				sys.tm_year -= 100;
 				if (sys.tm_year < 0) sys.tm_year = 0;
+				if (sys.tm_year > 59) sys.tm_year = 59;
 			} else if (command == REMOTE_UP) {
 				base_index++;
 				base_index %= 12;
@@ -494,7 +501,7 @@ int main() {
 				else if (mode == MODE_YEAR) sys.tm_year = 59;
 				else if (mode == MODE_MONTH && sys.tm_mon > 0) sys.tm_mon--;
 				else if (mode == MODE_MONTH) sys.tm_mon = 11;
-				else if (mode == MODE_DAY && sys.tm_mday > 0) sys.tm_mday--;
+				else if (mode == MODE_DAY && sys.tm_mday > 1) sys.tm_mday--;
 				else if (mode == MODE_DAY) sys.tm_mday = 31;
 				else if (mode == MODE_HOUR && sys.tm_hour > 0) sys.tm_hour--;
 				else if (mode == MODE_HOUR) sys.tm_hour = 23;
