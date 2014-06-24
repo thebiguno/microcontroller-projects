@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include "lib/ws2811/ws2811_8.h"
 //#include "lib/rtc/ds1307/ds1307.h"
-#include "lib/serial/serial.h"
+//#include "lib/serial/serial.h"
 #include "lib/rtc/pcf8563/pcf8563.h"
 #include "lib/remote/remote.h"
 #include "time32/time.h"
@@ -118,7 +118,7 @@ inline uint8_t analagous_b(uint8_t c) {
 int main() {
 	
 	// the rtc has a slow start up time from power on, so just delay a bit here
-	_delay_ms(500);
+	_delay_ms(1000);
 	
 	DDRB |= _BV(1); // led strip output
 	
@@ -169,7 +169,7 @@ int main() {
 	pcf8563_init();
 	
 	// Initialize serial
-	serial_init_b(9600);
+	//serial_init_b(9600);
 
 	int8_t mday = -1;		// used to avoid computing sunrise, sunset, and moon phase more than once per day;
 	time_t systime;
@@ -226,9 +226,9 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x560) {
+		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x300) {
 			TCNT1 = 0x00;
-		//	update = 1;
+			//update = 1;
 		}
 		
 		// update display
@@ -382,7 +382,7 @@ int main() {
 				}
 			} else if (mode == MODE_SPECTRUM) {
 				for (uint8_t i = 0; i < 60; i++) {
-					hsv2rgb(&colors[i], i * 6, 1, 0.8);
+					hsv2rgb(&colors[i], i * 6, 1, 1);
 				}
 			} else if (mode == MODE_PLASMA) {
 				a(p1, p2, hues);
@@ -390,7 +390,7 @@ int main() {
 				a(p3, p1, hues);
 
 				for (int8_t i = 0; i < 60; i++) {
-					hsv2rgb(&colors[i], hues[i], 1, 0.8);
+					hsv2rgb(&colors[i], hues[i], 1, 1);
 				}
 				p1 += r(3) - 1;
 				p2 += r(3) - 1;
@@ -401,9 +401,9 @@ int main() {
 				if (p1 > 19) p1 = 0;
 				if (p2 > 39) p2 = 20;
 				if (p3 > 59) p3 = 40;
-				hues[p1] += (r(4) - 1) * 3; // random 3 degree change in hue
-				hues[p2] += (r(4) - 1) * 3;
-				hues[p3] += (r(4) - 1) * 3;
+				hues[p1] += (r(3) - 1) * 3; // random 3 degree change in hue
+				hues[p2] += (r(3) - 1) * 3;
+				hues[p3] += (r(3) - 1) * 3;
 				if (hues[p1] < 0) hues[p1] = 354;
 				if (hues[p2] < 0) hues[p2] = 354;
 				if (hues[p3] < 0) hues[p3] = 354;
@@ -411,7 +411,7 @@ int main() {
 				if (hues[p2] > 360) hues[p2] = 0;
 				if (hues[p3] > 360) hues[p3] = 0;
 			} else if (mode == MODE_SOLID) {
-				hue += (r(4) - 1) * 3; // random 3 degree change in hue
+				hue += (r(3) - 1) * 3; // random 3 degree change in hue
 				if (hue < 0) hue = 354;
 				if (hue > 356) hue = 0;
 				
@@ -453,7 +453,6 @@ int main() {
 			struct ws2811_t tx[60];
 			for (int i = 0; i < 60; i++) tx[i] = colors[i]; //colors[(i + 30) % 60];
 			ws2811_set(tx, 60, 1);
-			ws2811_set(tx, 1, 1);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
