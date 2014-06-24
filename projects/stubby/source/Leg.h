@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "Stubby.h"
+#include "Point.h"
 #include "trig.h"
 
 //*** See doc/diagrams.pdf for figure x.y references ***//
@@ -94,7 +95,8 @@ namespace digitalcave {
 			volatile uint8_t *port[JOINT_COUNT];
 			uint8_t pin[JOINT_COUNT];
 
-			int16_t x, y, z;								//Foot co-ordinates
+			Point p;										//Foot co-ordinates
+			Point neutralP;									//Neutral foot co-ordinates
 			double mounting_angle;							//The angle at which the leg is mounted, in degrees, relative to the X axis of a standard cartesian plane.
 			int8_t offset[JOINT_COUNT];						//Calibration offset in degrees
 			
@@ -108,19 +110,25 @@ namespace digitalcave {
 			/*
 			 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
 			 */
-			Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle);
+			Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP);
 			
 			/*
 			 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
-			 * sets the servo position for each of the three joints.  If given an angle outside of the valid range, it sets the leg as close as possible, and
+			 * sets the servo position for each of the three joints.
+			 * TODO If given an angle outside of the valid range, it sets the leg as close as possible, and
 			 * updates the variables with the actual leg location.
 			 */
-			void setPosition(int16_t x, int16_t y, int16_t z);
+			void setPosition(Point point);
 			
 			/*
-			 * Returns the last set foot position.  If a foot was set to an out-of-bounds location, it retrieves the corrected location.
+			 * Resets the foot position to neutral (as defined from the constructor).
 			 */
-			void getPosition(int16_t *x, int16_t *y, int16_t *z);
+			void resetPosition();
+			
+			/*
+			 * Returns the last set foot position.
+			 */
+			void getPosition(Point *point);
 			
 			/*
 			 * Gets the offset for the given joint

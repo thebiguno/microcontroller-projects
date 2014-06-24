@@ -10,11 +10,11 @@
 #define LEG_COUNT		6
 
 #define FRONT_LEFT		0
-#define FRONT_RIGHT		1
-#define MIDDLE_LEFT		2
-#define MIDDLE_RIGHT	3
-#define REAR_LEFT		4
-#define REAR_RIGHT		5
+#define MIDDLE_LEFT		1
+#define REAR_LEFT		2
+#define REAR_RIGHT		3
+#define MIDDLE_RIGHT	4
+#define FRONT_RIGHT		5
 
 #define JOINT_COUNT		3
 
