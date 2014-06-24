@@ -1,3 +1,20 @@
+/*
+ * PWM library which allows you to control an arbitrary number of outputs.  All
+ * outputs must have the same period, but each one can have a different phase.
+ * This library relies on a 16 bit TIMER1, so cannot be run on any chip which does
+ * not have access to this hardware.
+ *
+ * Please set CDEF PWM_PORTx_UNUSED for all ports which either are not on your chip,
+ * or which are not being used for PWM.  (If your chip does not have a given port, e.g.
+ * the ATMega168 does not have a PORTA, then there will be compile errors.  If you
+ * have the hardware, but are not using it for PWM, then it will just use (slightly) more
+ * memory and will be (slightly) slower.
+ * 
+ * Written by Wyatt Olson and Warren Janssens
+ * http://digitalcave.ca
+ * Released under the Creative Commons Attribution-NonCommercial-ShareAlike license.
+ */
+
 #ifndef PWM_H
 #define PWM_H
 
@@ -9,11 +26,12 @@
 //The absolute maximum number of pins defined.  The actual 'used' count is passed
 // into pwm_init, and there is no problem with having a larger number here than is
 // actually used (other than a bit of wasted SRAM space for pre-defined arrays).
-// By default we set this to 8 as that is a decently large number, but not so huge
-// that tons of excess SRAM is wasted.  If you are low on memory, feel free to redefine
-// this in your makefile (in the CDEFS variable, beside where F_CPU is defined).
+// By default we set this to 4 as that is a decently large number, but not so huge
+// that tons of excess SRAM is wasted.  If you are low on memory, or need more
+// outputs, feel free to redefine this in your makefile (in the CDEFS variable,
+// beside where F_CPU is defined).
 #ifndef PWM_MAX_PINS
-#define PWM_MAX_PINS 8
+#define PWM_MAX_PINS 4
 #endif
 
 
