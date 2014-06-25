@@ -4,8 +4,8 @@
 TIMER1_COMPB_vect:
 
 	;Save calling state
-	PUSH		r30
-	PUSH		r31
+	PUSH		ZL
+	PUSH		ZH
 	PUSH		r20
 	PUSH		r21
 	IN			r20,					_SFR_IO_ADDR(SREG)
@@ -13,8 +13,8 @@ TIMER1_COMPB_vect:
 
 	;Load the pointer address into register Z.  As with all
 	; 16 bit register accesses, you read the low byte first.
-	LDI			r30,					lo8(_pwm_events_low_ptr)
-	LDI			r31,					hi8(_pwm_events_low_ptr)
+	LDI			ZL,					lo8(_pwm_events_low_ptr)
+	LDI			ZH,					hi8(_pwm_events_low_ptr)
 
 #ifndef PWM_PORTA_UNUSED
 	;Load portA low mask and increment pointer
@@ -55,7 +55,8 @@ TIMER1_COMPB_vect:
 	OUT			_SFR_IO_ADDR(PORTD),	r20
 #endif
 
-	;Load the new compare value into OCRnB
+	;Load the new compare value into OCRnB.  As with all 
+	; 16 bit register access, you write the high byte first.
 	LD			r20,					Z+
 	LD			r21,					Z+
 	STS			OCR1BH,					r20
@@ -63,15 +64,15 @@ TIMER1_COMPB_vect:
 
 	;Save register Z back to pointer address.  As with all 
 	; 16 bit register access, you write the high byte first.
-	STS			_pwm_events_low_ptr+1,	r31
-	STS			_pwm_events_low_ptr,	r30
+	STS			_pwm_events_low_ptr,	ZH
+	STS			_pwm_events_low_ptr+1,	ZL
 
 	;Restore calling state
 	POP			r20
 	OUT			_SFR_IO_ADDR(SREG),		r20
 	POP			r21
 	POP			r20
-	POP			r31
-	POP			r30
+	POP			ZH
+	POP			ZL
 	
 	RETI
