@@ -348,3 +348,29 @@ ISR(TIMER1_COMPA_vect){
 	PORTD |= _pwm_event_high.portd_mask;
 #endif
 }
+
+/* 
+ * The phase comparison, implemented in C.  When it overflows, we find the next highest value.
+ * For a faster alternative, comment this out and use the ASM version in pwm.S
+ *
+ISR(TIMER1_COMPB_vect){
+	pwm_event_t* e = (pwm_event_t*) _pwm_events_low_ptr;
+	_pwm_events_low_ptr = (uint8_t*) _pwm_events_low_ptr + sizeof(pwm_event_t);
+	
+#ifndef PWM_PORTA_UNUSED
+	PORTA &= e->porta_mask;
+#endif
+#ifndef PWM_PORTB_UNUSED
+	PORTB &= e->portb_mask;
+#endif
+#ifndef PWM_PORTC_UNUSED
+	PORTC &= e->portc_mask;
+#endif
+#ifndef PWM_PORTD_UNUSED
+	PORTD &= e->portd_mask;
+#endif
+	
+	//Set the timer for the next lowest value.
+	OCR1B = ((pwm_event_t*) _pwm_events_low_ptr)->compare_value;
+}
+*/
