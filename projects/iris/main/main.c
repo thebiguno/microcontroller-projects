@@ -116,28 +116,21 @@ int main() {
 	DDRB |= _BV(1); // led strip output
 	
 	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t grey = {.red = 0xcc, .green = 0xcc, .blue = 0xcc };
 	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
 
-	ws2811_t red = {.red = 0xcc, .green = 0x00, .blue = 0x00 };			// 0
-	ws2811_t green = {.red = 0x00, .green = 0xcc, .blue = 0x00 };		// 120
-	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xcc };		// 240
-
-	ws2811_t yellow = {.red = 0xcc, .green = 0xcc, .blue = 0x00 };		// 60
-	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0xcc };		// 180
-	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0xcc };		// 300
-
-	ws2811_t orange = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 30
-	ws2811_t chartreuse = {.red = 0x66, .green = 0xcc, .blue = 0x00 };	// 90
-	ws2811_t spring = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 150
-	ws2811_t azure = {.red = 0x00, .green = 0x66, .blue = 0xcc };		// 210
-	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
-	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
-
-	ws2811_t palette[24] = { 
-		red, orange, yellow, chartreuse, green, spring,
-		cyan, azure, blue, violet, magenta, rose
-	};
+	struct ws2811_t palette[12];
+	h2rgb(&palette[0],0);	// red
+	h2rgb(&palette[1],30);	// orange
+	h2rgb(&palette[2],60);	// yellow
+	h2rgb(&palette[3],90);	// chartreuse
+	h2rgb(&palette[4],120);	// green
+	h2rgb(&palette[5],150);	// spring
+	h2rgb(&palette[6],180);	// cyan
+	h2rgb(&palette[7],210);	// azure
+	h2rgb(&palette[8],240);	// blue
+	h2rgb(&palette[9],270);	// violet
+	h2rgb(&palette[10],300);	// magenta
+	h2rgb(&palette[11],330);	// rose
 	
 	struct ws2811_t colors[60];
 
@@ -234,25 +227,25 @@ int main() {
 			base = palette[base_index];
 			if (harmony == 0) {
 				// complementary
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[complementary(base_index)];
 				other2 = base;
 			} else if (harmony == 1) {
 				// analogous
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[analagous_a(base_index)];
 				other2 = palette[analagous_b(base_index)];
 			} else if (harmony == 2) {
 				// split complementary
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[analagous_a(complementary(base_index))];
 				other2 = palette[analagous_b(complementary(base_index))];
 			} else if (harmony == 3) {
 				// triadic
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[triad(base_index)];
 				other2 = palette[triad(triad(base_index))];
@@ -418,35 +411,35 @@ int main() {
 					h2rgb(&colors[i], hue);
 				}
 			} else if (mode == MODE_YEAR) {
-				colors[sys.tm_year] = yellow;
+				colors[sys.tm_year] = palette[2];
 			} else if (mode == MODE_MONTH) {
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
-					colors[i] = green;
+					colors[i] = palette[4];
 				}
 			} else if (mode == MODE_DAY) {
 				if (sys.tm_mday < 31) {
 					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = cyan;
-					colors[i+1] = cyan;
+					colors[i] = palette[6];
+					colors[i+1] = palette[6];
 				} else {
-					colors[58] = cyan;
-					colors[59] = cyan;
-					colors[0] = cyan;
-					colors[1] = cyan;
+					colors[58] = palette[6];
+					colors[59] = palette[6];
+					colors[0] = palette[6];
+					colors[1] = palette[6];
 				}
 			} else if (mode == MODE_HOUR) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = (sys.tm_hour > 11) ? chartreuse : violet;
+					colors[i] = (sys.tm_hour > 11) ? palette[3] : palette[9];
 				}
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = blue;
+					colors[i] = palette[8];
 				}
 			} else if (mode == MODE_MIN) {
-				colors[sys.tm_min] = magenta;
+				colors[sys.tm_min] = palette[10];
 			} else if (mode == MODE_SEC) {
-				colors[sys.tm_sec] = red;
+				colors[sys.tm_sec] = palette[0];
 			}
 
 			struct ws2811_t tx[60];
