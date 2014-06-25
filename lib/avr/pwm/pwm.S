@@ -6,61 +6,67 @@ TIMER1_COMPB_vect:
 	;Save calling state
 	PUSH		ZL
 	PUSH		ZH
-	PUSH		r20
-	PUSH		r21
-	IN			r20,					_SFR_IO_ADDR(SREG)
-	PUSH		r20
+	PUSH		r24
+	PUSH		r25
+	IN			r24,					_SFR_IO_ADDR(SREG)
+	PUSH		r24
 
+	;XOR PORTD0
+	LDI			r25,					0x01
+	IN			r24,					_SFR_IO_ADDR(PORTD)
+	EOR			r24,					r25
+	OUT			_SFR_IO_ADDR(PORTD),	r24
+	
 	;Load the pointer address into register Z.  As with all
 	; 16 bit register accesses, you read the low byte first.
-	LDI			ZL,					lo8(_pwm_events_low_ptr)
-	LDI			ZH,					hi8(_pwm_events_low_ptr)
+	LDS			ZL,					_pwm_events_low_ptr
+	LDS			ZH,					_pwm_events_low_ptr+1
 
 #ifndef PWM_PORTA_UNUSED
 	;Load portA low mask and increment pointer
-	LD			r20,					Z+
-	
-	; AND PORTA and PORTA Mask
-	AND			r20,					_SFR_IO_ADDR(PORTA)
-	OUT			_SFR_IO_ADDR(PORTA),	r20
+	LD			r24,					Z+
+	IN			r25,					_SFR_IO_ADDR(PORTA)
+	; PORTx &= port_mask_x
+	AND			r24,					r25
+	OUT			_SFR_IO_ADDR(PORTA),	r24
 #endif
 
 
 #ifndef PWM_PORTB_UNUSED
 	;Load portB low mask and increment pointer
-	LD			r20,					Z+
-
-	; AND PORTB and PORTB Mask
-	AND			r20,					_SFR_IO_ADDR(PORTB)
-	OUT			_SFR_IO_ADDR(PORTB),	r20
+	LD			r24,					Z+
+	IN			r25,					_SFR_IO_ADDR(PORTB)
+	; PORTx &= port_mask_x
+	AND			r24,					r25
+	OUT			_SFR_IO_ADDR(PORTB),	r24
 #endif
 
 
 #ifndef PWM_PORTC_UNUSED
 	;Load portC low mask and increment pointer
-	LD			r20,					Z+
-
-	; AND PORTC and PORTC Mask
-	AND			r20,					_SFR_IO_ADDR(PORTC)
-	OUT			_SFR_IO_ADDR(PORTC),	r20
+	LD			r24,					Z+
+	IN			r25,					_SFR_IO_ADDR(PORTC)
+	; PORTx &= port_mask_x
+	AND			r24,					r25
+	OUT			_SFR_IO_ADDR(PORTC),	r24
 #endif
 
 
 #ifndef PWM_PORTD_UNUSED
 	;Load portD low mask and increment pointer
-	LD			r20,					Z+
-
-	; AND PORTD and PORTD Mask
-	AND			r20,					_SFR_IO_ADDR(PORTD)
-	OUT			_SFR_IO_ADDR(PORTD),	r20
+	LD			r24,					Z+
+	IN			r25,					_SFR_IO_ADDR(PORTD)
+	; PORTx &= port_mask_x
+	AND			r24,					r25
+	OUT			_SFR_IO_ADDR(PORTD),	r24
 #endif
 
 	;Load the new compare value into OCRnB.  As with all 
 	; 16 bit register access, you write the high byte first.
-	LD			r20,					Z+
-	LD			r21,					Z+
-	STS			OCR1BH,					r20
-	STS			OCR1BL,					r21
+	LD			r24,					Z+
+	LD			r25,					Z+
+	STS			OCR1BH,					r24
+	STS			OCR1BL,					r25
 
 	;Save register Z back to pointer address.  As with all 
 	; 16 bit register access, you write the high byte first.
@@ -68,10 +74,10 @@ TIMER1_COMPB_vect:
 	STS			_pwm_events_low_ptr,	ZL
 
 	;Restore calling state
-	POP			r20
-	OUT			_SFR_IO_ADDR(SREG),		r20
-	POP			r21
-	POP			r20
+	POP			r24
+	OUT			_SFR_IO_ADDR(SREG),		r24
+	POP			r25
+	POP			r24
 	POP			ZH
 	POP			ZL
 	
