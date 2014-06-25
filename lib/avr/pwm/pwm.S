@@ -64,8 +64,8 @@ TIMER1_COMPB_vect:
 
 	;Save register Z back to pointer address.  As with all 
 	; 16 bit register access, you write the high byte first.
-	STS			_pwm_events_low_ptr,	ZH
-	STS			_pwm_events_low_ptr+1,	ZL
+	STS			_pwm_events_low_ptr+1,	ZH
+	STS			_pwm_events_low_ptr,	ZL
 
 	;Restore calling state
 	POP			r20
