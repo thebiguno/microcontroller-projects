@@ -7,6 +7,11 @@ typedef struct pwm_pin_t {
 } pwm_pin_t;
 
 typedef struct pwm_event_t {
+	//Only used in OCR1B; ignored for high event in OCR1A.  This is the value which TCNT1 is firing 
+	// on *now*; you need to reference the next element in the array to get the value which is 
+	// to be reset for next time.
+	uint16_t compare_value;
+
 	//Port masks
 #ifndef PWM_PORTA_UNUSED
 	uint8_t porta_mask;
@@ -20,9 +25,6 @@ typedef struct pwm_event_t {
 #ifndef PWM_PORTD_UNUSED
 	uint8_t portd_mask;
 #endif
-
-	//Only used in OCR1B; ignored for high event in OCR1A.
-	uint16_t compare_value;			//This value of COMP1B (the value that TCNT1 is now, when firing in OCR1B interrupt).
 } pwm_event_t;
 
 
