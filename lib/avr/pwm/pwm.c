@@ -34,6 +34,7 @@ volatile void* _pwm_events_low_ptr;								//Pointer to current value in _pwm_ev
 static uint8_t _set_phase_batch = 0;							//Set to 1 when set_phase_batch is called with a changed value.
 static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is re-calculated; signals that the ISR COMPA needs to re-load phase values.
 static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCR1A from copying the double buffered pwm_events when this is 0.
+static volatile uint8_t _set_stop = 0;							//Set to 1 when stop is requested.  ISR COMPA will turn off timer.
 
 static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCR1A in changed in COMPA interrupt
 
@@ -150,13 +151,7 @@ void pwm_start(){
 }
 
 void pwm_stop(){
-	TCCR1B = 0x00;
-	TIMSK1 |= _BV(OCIE1A) | _BV(OCIE1B);
-
-	//Set pins low
-	for (uint8_t i = 0; i < _count; i++){
-		*(_pwm_pins[i].port) &= ~_BV(_pwm_pins[i].pin);
-	}
+	_set_stop = 1;
 }
 
 //The comparison method used to sort pwm_pin variables
@@ -324,6 +319,11 @@ ISR(TIMER1_COMPA_vect){
 	if (_set_period){
 		OCR1A = _set_period;
 		_set_period = 0;
+	}
+	if (_set_stop){
+		TCCR1B = 0x00;
+		TIMSK1 |= _BV(OCIE1A) | _BV(OCIE1B);
+		_set_stop = 0;
 	}
 	//Reset counter after the new compare values are updated (otherwise it affects the phase 
 	// of the next execution, causing jitter).
