@@ -93,19 +93,19 @@ void a(uint8_t p1, uint8_t p2, float *hues) {
 
 // the complementary color index
 inline uint8_t complementary(uint8_t c) {
-	return (c + 12) % 12;
+	return (c + 6) % 12;
 }
 
 // the next triadic color index (clockwise)
 inline uint8_t triad(uint8_t c) {
-	return (c + 8) % 12;
+	return (c + 4) % 12;
 }
 
 inline uint8_t analagous_a(uint8_t c) {
-	return (c + 2) % 12;
+	return (c + 1) % 12;
 }
 inline uint8_t analagous_b(uint8_t c) {
-	return (c + 22) % 12;
+	return (c + 11) % 12;
 }
 
 int main() {
