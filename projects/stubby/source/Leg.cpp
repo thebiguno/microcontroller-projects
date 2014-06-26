@@ -39,7 +39,8 @@ double solveServoTrapezoid(double desired_angle, double length_a, double length_
 	return (angle_C + angle_D + angle_E_offset) - angle_N;
 }
 
-Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle){
+Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP){
+	this->neutralP = neutralP;
 	this->index = index;
 	this->port[TIBIA] = tibia_port;
 	this->port[FEMUR] = femur_port;
@@ -50,16 +51,14 @@ Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatil
 	this->mounting_angle = mounting_angle;
 }
 
-void Leg::setPosition(int16_t x, int16_t y, int16_t z){
-	this->x = x;
-	this->y = y;
-	this->z = z;
+void Leg::setPosition(Point p){
+	this->p = p;
 	#ifdef DEBUG_SIMULATION
-	printf("Desired: %d mm, %d mm, %d mm\n", x, y, z);
+	printf("Desired: %d mm, %d mm, %d mm\n", p.x, p.y, p.z);
 	#endif
 
-	double x1 = x;
-	double y1 = y;
+	double x1 = p.x;
+	double y1 = p.y;
 	
 	//Rotate leg around 0, 0 such that the leg is pointing straight out at angle 0 (straight right).
 	rotate2d(&x1, &y1, 0, 0, this->mounting_angle * -1);
@@ -76,9 +75,9 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	//Find the distance between the femur joint and the end of the tibia.  Do this using the
 	// right triangle of (FEMUR_HEIGHT + COXA_HEIGHT - z), (leg_length - COXA_LENGTH).  See figure 
 	// 2.2, 'leg extension'
-	double leg_extension = sqrt((FEMUR_HEIGHT + COXA_HEIGHT - z) * (FEMUR_HEIGHT + COXA_HEIGHT - z) + (leg_length - COXA_LENGTH) * (leg_length - COXA_LENGTH));
+	double leg_extension = sqrt((FEMUR_HEIGHT + COXA_HEIGHT - p.z) * (FEMUR_HEIGHT + COXA_HEIGHT - p.z) + (leg_length - COXA_LENGTH) * (leg_length - COXA_LENGTH));
 	//Find the first part of the femur angle using law of cosines.  See figure 2.2 for a diagram of this.
-	double femur_angle_a = acos_f((((FEMUR_HEIGHT + COXA_HEIGHT - z) * (FEMUR_HEIGHT + COXA_HEIGHT - z)) + (leg_extension * leg_extension) - ((leg_length - COXA_LENGTH) * (leg_length - COXA_LENGTH))) / (2 * (FEMUR_HEIGHT + COXA_HEIGHT - z) * leg_extension));
+	double femur_angle_a = acos_f((((FEMUR_HEIGHT + COXA_HEIGHT - p.z) * (FEMUR_HEIGHT + COXA_HEIGHT - p.z)) + (leg_extension * leg_extension) - ((leg_length - COXA_LENGTH) * (leg_length - COXA_LENGTH))) / (2 * (FEMUR_HEIGHT + COXA_HEIGHT - p.z) * leg_extension));
 	//Find the second part of the femur angle using law of cosines.  See figure 2.3 for a diagram of this.
 	double femur_angle_b = acos_f(((FEMUR_LENGTH * FEMUR_LENGTH) + (leg_extension * leg_extension) - (TIBIA_LENGTH * TIBIA_LENGTH)) / (2 * FEMUR_LENGTH * leg_extension));
 	double femur_angle = femur_angle_a + femur_angle_b;
@@ -87,7 +86,7 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	double tibia_angle = acos_f(((FEMUR_LENGTH * FEMUR_LENGTH) + (TIBIA_LENGTH * TIBIA_LENGTH) - (leg_extension * leg_extension)) / (2 * FEMUR_LENGTH * TIBIA_LENGTH));
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f mm,%3.1f mm, leg_length: %3.1f mm; leg_extension: %3.1f mm\n", x,y,z, x1,y1, leg_length, leg_extension);
+	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f mm,%3.1f mm, leg_length: %3.1f mm; leg_extension: %3.1f mm\n", p.x,p.y,p.z, x1,y1, leg_length, leg_extension);
 	#endif
 	
 	this->setTibiaAngle(tibia_angle);
@@ -99,10 +98,12 @@ void Leg::setPosition(int16_t x, int16_t y, int16_t z){
 	// difficult for NaN, since it is impossible to say whether it is a small or large angle.
 }
 
-void Leg::getPosition(int16_t *x, int16_t *y, int16_t *z){
-	*x = this->x;
-	*y = this->y;
-	*z = this->z;
+void Leg::resetPosition(){
+	this->setPosition(this->neutralP);
+}
+
+void Leg::getPosition(Point *point){
+	p = this->p;
 }
 
 volatile uint8_t* Leg::getPort(uint8_t joint){

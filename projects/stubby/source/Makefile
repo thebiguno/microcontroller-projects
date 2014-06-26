@@ -4,7 +4,7 @@ PROJECT=stubby
 MMCU=atmega1284p
 COMPILER=avr-g++
 F_CPU=12000000
-SOURCES=Stubby.cpp Leg.cpp comm.c status.c trig.c lib/pwm/pwm.c lib/serial/serial.c lib/serial/serial_sync_tx.c
+SOURCES=Stubby.cpp Leg.cpp Point.cpp comm.c status.c trig.c lib/pwm/pwm.c lib/pwm/pwm.S lib/serial/serial.c lib/serial/serial_sync_tx.c
 AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 

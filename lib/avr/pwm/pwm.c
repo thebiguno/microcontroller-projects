@@ -7,76 +7,49 @@ typedef struct pwm_pin_t {
 } pwm_pin_t;
 
 typedef struct pwm_event_t {
-	//Port masks
-	uint8_t porta_mask;
-	uint8_t portb_mask;
-	uint8_t portc_mask;
-	uint8_t portd_mask;
+	//Only used in OCR1B; ignored for high event in OCR1A.  This is the value which TCNT1 is firing 
+	// on *now*; you need to reference the next element in the array to get the value which is 
+	// to be reset for next time.
+	uint16_t compare_value;
 
-	//Only used in OCRB; ignored for high event in OCRA.
-	uint16_t compare_value;			//This value of COMPB (the value that TCNT is now, when firing in OCRB interrupt).
+	//Port masks
+#ifndef PWM_PORTA_UNUSED
+	uint8_t porta_mask;
+#endif
+#ifndef PWM_PORTB_UNUSED
+	uint8_t portb_mask;
+#endif
+#ifndef PWM_PORTC_UNUSED
+	uint8_t portc_mask;
+#endif
+#ifndef PWM_PORTD_UNUSED
+	uint8_t portd_mask;
+#endif
 } pwm_event_t;
+
+
+volatile void* _pwm_events_low_ptr;								//Pointer to current value in _pwm_events_low.  Reset in OCR1A, incremented in OCR1B.
+
 
 static uint8_t _set_phase_batch = 0;							//Set to 1 when set_phase_batch is called with a changed value.
 static volatile uint8_t _set_phase = 0;							//Set to 1 when phase is re-calculated; signals that the ISR COMPA needs to re-load phase values.
-static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCRA from copying the double buffered pwm_events when this is 0.
+static volatile uint8_t _set_phase_lock = 0; 					//Set to 1 when we are in set_phase function.  Prevents OCR1A from copying the double buffered pwm_events when this is 0.
 
-static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCRA in changed in COMPA interrupt
+static uint16_t _set_period = 0; 								//New period defined; set in set_period, and updated to OCR1A in changed in COMPA interrupt
 
 //Variables used to store config data
 static pwm_pin_t _pwm_pins[PWM_MAX_PINS];						//Array of pins.  Index is important here, as that is how we refer to the pins from the outside world.
 static uint8_t _count;											//How many pins should be used
 
 static pwm_event_t _pwm_event_high;								//PWM event to set all pins high at start of period.  Calculated on a non-zero set_phase.
-static pwm_event_t _pwm_event_high_new;							//Double buffer of pwm high event; copied to pwm_events in OCRA when _set_phase is non-zero.
+static pwm_event_t _pwm_event_high_new;							//Double buffer of pwm high event; copied to pwm_events in OCR1A when _set_phase is non-zero.
 
 static pwm_event_t _pwm_events_low[PWM_MAX_PINS + 1];			//Array of pwm events.  Each event will set one or more pins low.
-static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];		//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCRA when _set_phase is non-zero.
-static volatile uint8_t _pwm_events_low_index;					//Current index of _pwm_events_low.  Reset in OCRA, incremented in OCRB.
+static pwm_event_t _pwm_events_low_new[PWM_MAX_PINS + 1];		//Double buffer of pwm events.  Calculated in each set_phase call; copied to pwm_events in OCR1A when _set_phase is non-zero.
 
 static uint16_t _prescaler = 0x0;								//Numeric prescaler (1, 8, etc).  Required for _pwm_micros_to_clicks calls.
 static uint8_t _prescaler_mask = 0x0;							//Prescaler mask corresponding to _prescaler
 
-//Figure out which registers to use, depending on the chip in use
-#if defined(__AVR_ATtiny25__)   || \
-	defined(__AVR_ATtiny45__)   || \
-	defined(__AVR_ATtiny85__)
-
-#define PWM_8_BIT
-#define TCCRA			TCCR0A
-#define TCCRB			TCCR0B
-#define OCRA			OCR0A
-#define OCRB			OCR0B
-#define TIMSKR			TIMSK
-#define OCIEA			OCIE0A
-#define OCIEB			OCIE0B
-#define FIR				TIFR	//Force Interrupt Register
-#define FOCA			OCF0A
-#define TCNT			TCNT0
-
-#elif defined(__AVR_ATmega168__)   || \
-	defined(__AVR_ATmega328__)     || \
-	defined(__AVR_ATmega328P__)    || \
-	defined(__AVR_ATmega324P__)    || \
-	defined(__AVR_ATmega644__)     || \
-	defined(__AVR_ATmega644P__)    || \
-	defined(__AVR_ATmega644PA__)   || \
-	defined(__AVR_ATmega1284P__)
-
-#define TCCRA			TCCR1A
-#define TCCRB			TCCR1B
-#define OCRA			OCR1A
-#define OCRB			OCR1B
-#define TIMSKR 			TIMSK1
-#define OCIEA			OCIE1A
-#define OCIEB			OCIE1B
-#define FIR				TCCR1C
-#define FOCA			FOC1A
-#define TCNT			TCNT1
-
-#else
-	#error You must confirm PWM setup for your chip!  Please verify that MMCU is set correctly, and that there is a matching check definition in pwm.h
-#endif
 
 static uint16_t _pwm_micros_to_clicks(uint32_t micros){
 	//There is a potential for an overflow here if micros * (F_CPU in MHz) does not fit into
@@ -151,15 +124,15 @@ void pwm_init(volatile uint8_t *ports[],
 		_prescaler_mask = _BV(CS12) | _BV(CS10);
 	}
 				
-	TCCRA = 0x00;
-	TCCRB |= _prescaler_mask;
+	TCCR1A = 0x00;
+	TCCR1B |= _prescaler_mask;
 	
-	//OCRA controls the PWM period
-	OCRA = _pwm_micros_to_clicks(period);
-	//OCRB controls the PWM phase.  It is initialized later.
+	//OCR1A controls the PWM period
+	OCR1A = _pwm_micros_to_clicks(period);
+	//OCR1B controls the PWM phase.  It is initialized later.
 	
 	//Enable compare interrupt on both channels
-	TIMSKR = _BV(OCIEA) | _BV(OCIEB);
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
 	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
@@ -167,18 +140,18 @@ void pwm_init(volatile uint8_t *ports[],
 #endif
 	
 	//Force interrupt on compare A initially
-	FIR |= _BV(FOCA);
+	TCCR1C |= _BV(FOC1A);
 }
 
 void pwm_start(){
-	TCNT = 0x00;	//Restart timer counter
-	TIMSKR = _BV(OCIEA) | _BV(OCIEB);	//Enable output compare match interrupt enable
-	TCCRB |= _prescaler_mask;	//Enable 
+	TCNT1 = 0x00;	//Restart timer counter
+	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	//Enable output compare match interrupt enable
+	TCCR1B |= _prescaler_mask;	//Enable 
 }
 
 void pwm_stop(){
-	TCCRB = 0x00;
-	TIMSKR |= _BV(OCIEA) | _BV(OCIEB);
+	TCCR1B = 0x00;
+	TIMSK1 |= _BV(OCIE1A) | _BV(OCIE1B);
 
 	//Set pins low
 	for (uint8_t i = 0; i < _count; i++){
@@ -230,18 +203,34 @@ void pwm_apply_batch(){
 	qsort(_pwm_pins_sorted, _count, sizeof _pwm_pins_sorted[0], _compare_values);
 
 	//Populate the _pwm_events_high variable and _pwm_events_low_new array, used in 
-	// OCRA and OCRB respectively to turn pins on / off.
+	// OCR1A and OCR1B respectively to turn pins on / off.
 	//First we reset everything in this array...
+#ifndef PWM_PORTA_UNUSED
 	_pwm_event_high_new.porta_mask = 0x00;
+#endif
+#ifndef PWM_PORTB_UNUSED
 	_pwm_event_high_new.portb_mask = 0x00;
+#endif
+#ifndef PWM_PORTC_UNUSED
 	_pwm_event_high_new.portc_mask = 0x00;
+#endif
+#ifndef PWM_PORTD_UNUSED
 	_pwm_event_high_new.portd_mask = 0x00;
+#endif
 	for (uint8_t i = 0; i < _count + 1; i++){
 		_pwm_events_low_new[i].compare_value = 0xFFFF;
+#ifndef PWM_PORTA_UNUSED
 		_pwm_events_low_new[i].porta_mask = 0xFF;
+#endif
+#ifndef PWM_PORTB_UNUSED
 		_pwm_events_low_new[i].portb_mask = 0xFF;
+#endif
+#ifndef PWM_PORTC_UNUSED
 		_pwm_events_low_new[i].portc_mask = 0xFF;
+#endif
+#ifndef PWM_PORTD_UNUSED
 		_pwm_events_low_new[i].portd_mask = 0xFF;
+#endif
 	}
 	//... then we look through the sorted _pwm_pins list, and collect all of the ports / pins which are
 	// set at the same compare values into a single event.
@@ -303,7 +292,7 @@ void pwm_apply_batch(){
 
 	_set_phase_batch = 0;
 
-	//Signal OCRA that we are ready to load new values
+	//Signal OCR1A that we are ready to load new values
 	_set_phase = 1;
 	_set_phase_lock = 0;
 }
@@ -333,17 +322,17 @@ ISR(TIMER1_COMPA_vect){
 		_set_phase = 0;
 	}
 	if (_set_period){
-		OCRA = _set_period;
+		OCR1A = _set_period;
 		_set_period = 0;
 	}
 	//Reset counter after the new compare values are updated (otherwise it affects the phase 
 	// of the next execution, causing jitter).
-	TCNT = 0;	
+	TCNT1 = 0;	
 	
 	//Set to the first (sorted) compare value in the pwm_events_low array.  This is calculated 
 	// in pwm_apply_batch(), and updated above in this ISR.
-	_pwm_events_low_index = 0;
-	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
+	_pwm_events_low_ptr = (void*) _pwm_events_low;
+	OCR1B = _pwm_events_low[0].compare_value;
 	
 	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase 
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
@@ -362,31 +351,28 @@ ISR(TIMER1_COMPA_vect){
 #endif
 }
 
-
 /* 
- * The phase comparison.  When it overflows, we find the next highest value.
- */
-#ifdef PWM_8_BIT
-ISR(TIM0_COMPB_vect){
-#else
+ * The phase comparison, implemented in C.  When it overflows, we find the next highest value.
+ * For a faster alternative, comment this out and use the ASM version in pwm.S
+ *
 ISR(TIMER1_COMPB_vect){
-#endif
-	pwm_event_t e = _pwm_events_low[_pwm_events_low_index];
-	_pwm_events_low_index++;
+	pwm_event_t* e = (pwm_event_t*) _pwm_events_low_ptr;
+	_pwm_events_low_ptr = (uint8_t*) _pwm_events_low_ptr + sizeof(pwm_event_t);
 	
 #ifndef PWM_PORTA_UNUSED
-	PORTA &= e.porta_mask;
+	PORTA &= e->porta_mask;
 #endif
 #ifndef PWM_PORTB_UNUSED
-	PORTB &= e.portb_mask;
+	PORTB &= e->portb_mask;
 #endif
 #ifndef PWM_PORTC_UNUSED
-	PORTC &= e.portc_mask;
+	PORTC &= e->portc_mask;
 #endif
 #ifndef PWM_PORTD_UNUSED
-	PORTD &= e.portd_mask;
+	PORTD &= e->portd_mask;
 #endif
 	
 	//Set the timer for the next lowest value.
-	OCRB = _pwm_events_low[_pwm_events_low_index].compare_value;
+	OCR1B = ((pwm_event_t*) _pwm_events_low_ptr)->compare_value;
 }
+*/
