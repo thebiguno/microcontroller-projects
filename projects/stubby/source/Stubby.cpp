@@ -86,7 +86,7 @@ void servo_init(){
 	}
 	pwm_apply_batch();
 
-	_delay_ms(100);
+	_delay_ms(500);
 	
 	pwm_stop();	
 }
