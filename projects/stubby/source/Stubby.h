@@ -28,12 +28,16 @@
 
 #define PWM_COUNT		(LEG_COUNT * JOINT_COUNT) + 3
 
-
 #ifndef DEBUG_SIMULATION
 #include "status.h"
-#include "lib/serial/serial.h"
 #include "comm.h"
+#include "lib/serial/serial.h"
 #endif
 
 #include "Leg.h"
+#include "gait.h"
+
+void servo_init();
+void calibration_init();
+	
 #endif

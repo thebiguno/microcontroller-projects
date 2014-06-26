@@ -1,15 +1,20 @@
-#ifndef GAIT
-#define GAIT
-
-#define TIBIA_STEP	(TIBIA_RAISED - TIBIA_LOWERED)
+#ifndef GAIT_H
+#define GAIT_H
 
 #include <avr/io.h>
+#include "Leg.h"
+#include "Point.h"
 
-#include "comm.h"
-#include "leg.h"
+using namespace digitalcave;
 
-void tripod_gait_step();
+/*
+ * Returns the offset for the given leg at the given step index
+ */
+Point gait_step(uint8_t leg_index, uint8_t step_index);
 
-void gait_init();
+/*
+ * Reteurns the number of steps in this gait
+ */
+uint8_t gait_step_count();
 
 #endif

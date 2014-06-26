@@ -1,5 +1,5 @@
-#ifndef STUBBY_LEG_H
-#define STUBBY_LEG_H
+#ifndef LEG_H
+#define LEG_H
 
 #ifndef DEBUG_SIMULATION
 #include <avr/io.h>
@@ -121,6 +121,11 @@ namespace digitalcave {
 			void setPosition(Point point);
 			
 			/*
+			 * Set the foot position, relative to neutralP.
+			 */
+			void setOffset(Point offset);
+			
+			/*
 			 * Resets the foot position to neutral (as defined from the constructor).
 			 */
 			void resetPosition();
@@ -128,7 +133,7 @@ namespace digitalcave {
 			/*
 			 * Returns the last set foot position.
 			 */
-			void getPosition(Point *point);
+			Point getPosition();
 			
 			/*
 			 * Gets the offset for the given joint

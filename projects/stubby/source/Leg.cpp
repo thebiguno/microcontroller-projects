@@ -40,7 +40,6 @@ double solveServoTrapezoid(double desired_angle, double length_a, double length_
 }
 
 Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP){
-	this->neutralP = neutralP;
 	this->index = index;
 	this->port[TIBIA] = tibia_port;
 	this->port[FEMUR] = femur_port;
@@ -49,6 +48,7 @@ Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatil
 	this->pin[FEMUR] = femur_pin;
 	this->pin[COXA] = coxa_pin;
 	this->mounting_angle = mounting_angle;
+	this->neutralP = neutralP;
 }
 
 void Leg::setPosition(Point p){
@@ -98,12 +98,17 @@ void Leg::setPosition(Point p){
 	// difficult for NaN, since it is impossible to say whether it is a small or large angle.
 }
 
+void Leg::setOffset(Point offset){
+	offset.add(this->neutralP);
+	this->setPosition(offset);
+}
+
 void Leg::resetPosition(){
 	this->setPosition(this->neutralP);
 }
 
-void Leg::getPosition(Point *point){
-	p = this->p;
+Point Leg::getPosition(){
+	return this->p;
 }
 
 volatile uint8_t* Leg::getPort(uint8_t joint){
