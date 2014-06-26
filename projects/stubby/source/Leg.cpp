@@ -119,7 +119,7 @@ void Leg::setTibiaAngle(double desired_angle){
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + this->offset[TIBIA] + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setFemurAngle(double desired_angle){
@@ -134,7 +134,7 @@ void Leg::setFemurAngle(double desired_angle){
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + this->offset[FEMUR] + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setCoxaAngle(double desired_angle){
@@ -142,6 +142,6 @@ void Leg::setCoxaAngle(double desired_angle){
 	printf(" Coxa:  desired angle: %3.1f°; ", desired_angle * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + desired_angle * COXA_PHASE_MULTIPLIER);
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + this->offset[COXA] + desired_angle * COXA_PHASE_MULTIPLIER);
 }
 
