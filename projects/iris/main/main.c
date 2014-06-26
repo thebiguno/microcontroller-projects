@@ -16,9 +16,9 @@
 #define MODE_WD 2
 #define MODE_PCT 3
 #define MODE_MOON 4
-#define MODE_SPECTRUM 5
-#define MODE_PLASMA 6
-#define MODE_SOLID 7
+#define MODE_SOLID 5
+#define MODE_SPECTRUM 6
+#define MODE_PLASMA 7
 
 #define MODE_YEAR 127
 #define MODE_MONTH 128
@@ -181,7 +181,7 @@ int main() {
 	hues[p2] = 120;
 	hues[p3] = 240;
 	
-	float hue = 0;	// current solid hue
+	uint16_t hue = 0;	// current solid hue
 
 	// hard coded location and time zone for now
 	set_zone(-7 * ONE_HOUR);
@@ -212,7 +212,7 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x255) {
+		if (mode == MODE_PLASMA && TCNT1 > 1024) {
 			TCNT1 = 0x00;
 			update = 1;
 		}
@@ -374,8 +374,10 @@ int main() {
 				}
 			} else if (mode == MODE_SPECTRUM) {
 				for (uint8_t i = 0; i < 60; i++) {
-					h2rgb(&colors[i], i * 6);
+					h2rgb(&colors[i], (hue + (i * 6)) % 360);
 				}
+				hue++;
+				hue %= 360;
 			} else if (mode == MODE_PLASMA) {
 				a(p1, p2, hues);
 				a(p2, p3, hues);
@@ -384,32 +386,37 @@ int main() {
 				for (int8_t i = 0; i < 60; i++) {
 					h2rgb(&colors[i], hues[i]);
 				}
-				p1 += r(3) - 1;
-				p2 += r(3) - 1;
-				p3 += r(3) - 1;
-				if (p1 < 0) p1 = 19;
-				if (p2 < 20) p2 = 39;
-				if (p3 < 40) p3 = 59;
-				if (p1 > 19) p1 = 0;
-				if (p2 > 39) p2 = 20;
-				if (p3 > 59) p3 = 40;
-				hues[p1] += (r(3) - 1) * 3; // random 3 degree change in hue
-				hues[p2] += (r(3) - 1) * 3;
-				hues[p3] += (r(3) - 1) * 3;
-				if (hues[p1] < 0) hues[p1] = 354;
-				if (hues[p2] < 0) hues[p2] = 354;
-				if (hues[p3] < 0) hues[p3] = 354;
-				if (hues[p1] > 360) hues[p1] = 0;
-				if (hues[p2] > 360) hues[p2] = 0;
-				if (hues[p3] > 360) hues[p3] = 0;
-			} else if (mode == MODE_SOLID) {
-				hue += (r(3) - 1) * 3; // random 3 degree change in hue
-				if (hue < 0) hue = 354;
-				if (hue > 356) hue = 0;
+				/*
+				colors[p1] = white;
+				colors[p2] = white;
+				colors[p3] = white;
+				*/
 				
+				p1 += r(5) - 2;
+				p2 += r(5) - 2;
+				p3 += r(5) - 2;
+				if (p1 < 0) p1 = 59;
+				if (p2 < 0) p2 = 59;
+				if (p3 < 0) p3 = 59;
+				if (p1 > 59) p1 = 0;
+				if (p2 > 50) p2 = 0;
+				if (p3 > 59) p3 = 0;
+				
+				hues[p1] += (r(31) - 15);
+				hues[p2] += (r(31) - 15);
+				hues[p3] += (r(31) - 15);
+				if (hues[p1] < 0) hues[p1] += 360;
+				if (hues[p2] < 0) hues[p2] += 360;
+				if (hues[p3] < 0) hues[p3] += 360;
+				if (hues[p1] > 359) hues[p1] -= 360;
+				if (hues[p2] > 359) hues[p2] -= 360;
+				if (hues[p3] > 359) hues[p3] -= 360;
+			} else if (mode == MODE_SOLID) {
 				for (uint8_t i = 0; i < 60; i++) {
 					h2rgb(&colors[i], hue);
 				}
+				hue++;
+				hue %= 360;
 			} else if (mode == MODE_YEAR) {
 				colors[sys.tm_year] = palette[2];
 			} else if (mode == MODE_MONTH) {
@@ -457,7 +464,7 @@ int main() {
 			if (command == REMOTE_LEFT) {
 				if (mode > MODE_HMS) mode--;
 			} else if (command == REMOTE_RIGHT) {
-				if (mode < MODE_SOLID) mode++;
+				if (mode < MODE_PLASMA) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
 				time(&systime);
