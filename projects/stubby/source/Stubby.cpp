@@ -19,21 +19,30 @@ int main (void){
 	
 	comm_init();
 	
+	mode_select();
+}
+
+void mode_select(){
 	//TODO Wait for start button before initializing servos.  If Select is pressed
 	// before start, we enter calibration mode.
 	uint16_t buttons = 0x00;
-	while ((buttons & _BV(CONTROLLER_BUTTON_VALUE_START)) == 0){
+	while (1){
 		buttons = comm_read_buttons();
-		
+	
 		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
-			calibration_init();
+			mode_calibration();
+			buttons = 0x00;
+		}
+		
+		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+			mode_remote_control();
 			buttons = 0x00;
 		}
 	}
-	
-	
+}
+
+void mode_remote_control(){
 	pwm_start();
-	
 	status_set_color(0x00, 0xFF, 0x00);
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -43,16 +52,30 @@ int main (void){
 	
 	//status_init();
 	
+	uint16_t buttons = 0x00;
 	int8_t step_index = 0;
+
+	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
 		Point left_stick = comm_read_left();
-		double left_angle = atan2(left_stick.y, left_stick.x);
+		Point right_stick = comm_read_right();
+		buttons = comm_read_buttons();
+
+		//Hit start to exit remote control mode
+		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+			break;
+		}
+
+		double linear_angle = atan2(left_stick.y, left_stick.x);
+
 		//Use pythagorean theorem to find the velocity, in the range [0..1].
-		double left_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15));
+		double linear_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
+		
+		//We only care about the X axis for right (rotational) stick
+		double rotational_velocity = right_stick.x / 15.0;
 	
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			Point step = gait_step(l, step_index, left_velocity);
-			step.rotateXY(left_angle);
+			Point step = gait_step(l, step_index, linear_velocity, linear_angle, rotational_velocity);
 			legs[l].setOffset(step);
 		}
 		step_index++;
@@ -61,41 +84,18 @@ int main (void){
 		}
 		pwm_apply_batch();
 		
-		_delay_ms(5);
-	}
-}
-
-void servo_init(){
-	//Set up the servos using the leg details + status LEDs
-	volatile uint8_t *ports[PWM_COUNT];
-	uint8_t pins[PWM_COUNT];
-
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			ports[(l * JOINT_COUNT) + j] = legs[l].getPort(j);
-			pins[(l * JOINT_COUNT) + j] = legs[l].getPin(j);
-			
-			legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
-		}
+		_delay_ms(100);
 	}
 	
-	ports[LED_RED] = &PORTD;		//Red LED
-	pins[LED_RED] = PORTD4;
-	ports[LED_GREEN] = &PORTD;		//Green LED
-	pins[LED_GREEN] = PORTD6;
-	ports[LED_BLUE] = &PORTD;		//Blue LED
-	pins[LED_BLUE] = PORTD5;
-	
-	pwm_init(ports, pins, PWM_COUNT, 20000);
-
+	//Reset legs to neutral position
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		legs[l].resetPosition();
 	}
 	pwm_apply_batch();
+	status_set_color(0x00, 0x00, 0x00);
+	_delay_ms(200);
 
-	_delay_ms(500);
-	
-	pwm_stop();	
+	pwm_stop();
 }
 
 /*
@@ -108,15 +108,29 @@ void servo_init(){
  *  -X commits changes to EEPROM
  *  -Start exits calibration mode (regardless of whether or not it is committed)
  */
-void calibration_init(){
+void mode_calibration(){
 	pwm_start();
+	
+	for (uint8_t i = 0; i < 5; i++){
+		status_set_color(0x00, 0x00, 0xFF);
+		_delay_ms(100);
+		status_set_color(0x00, 0x00, 0x00);
+		_delay_ms(100);
+	}
 	
 	uint8_t l = 0;
 	status_set_color(0xFF, 0x00, 0x00);
-	uint16_t buttons = 0x0000;
+	uint16_t buttons = 0x00;
 	//Loop until Start is pressed
-	while ((buttons & _BV(CONTROLLER_BUTTON_VALUE_START)) == 0){
-		if (buttons != 0x0000){
+	while (1){
+		buttons = comm_read_buttons();
+		_delay_ms(20);
+		if (buttons != 0x00){
+			//Start exits calibration mode (whether or not changes were made / applied / saved).
+			if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+				break;
+			}
+		
 			//Circle increments legs.
 			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0) {
 				l++;
@@ -177,7 +191,6 @@ void calibration_init(){
 				status_set_color(0xFF, 0xFF, 0x00);			//Yellow
 			}
 		}
-		buttons = comm_read_buttons();
 	}
 	
 	//Reload calibration from EEPROM; if it was committed, this will essentially
@@ -186,7 +199,45 @@ void calibration_init(){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
 			legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
 		}
+		legs[l].resetPosition();
 	}
+	pwm_apply_batch();
 	
+	status_set_color(0x00, 0x00, 0x00);
+	_delay_ms(500);
 	pwm_stop();
 }
+
+void servo_init(){
+	//Set up the servos using the leg details + status LEDs
+	volatile uint8_t *ports[PWM_COUNT];
+	uint8_t pins[PWM_COUNT];
+
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		for (uint8_t j = 0; j < JOINT_COUNT; j++){
+			ports[(l * JOINT_COUNT) + j] = legs[l].getPort(j);
+			pins[(l * JOINT_COUNT) + j] = legs[l].getPin(j);
+			
+			legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
+		}
+	}
+	
+	ports[LED_RED] = &PORTD;		//Red LED
+	pins[LED_RED] = PORTD4;
+	ports[LED_GREEN] = &PORTD;		//Green LED
+	pins[LED_GREEN] = PORTD6;
+	ports[LED_BLUE] = &PORTD;		//Blue LED
+	pins[LED_BLUE] = PORTD5;
+	
+	pwm_init(ports, pins, PWM_COUNT, 20000);
+
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		legs[l].resetPosition();
+	}
+	pwm_apply_batch();
+
+	_delay_ms(500);
+	
+	pwm_stop();	
+}
+

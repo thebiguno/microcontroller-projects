@@ -68,9 +68,9 @@ ISR(USART0_RX_vect){
 			if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_X){	//X Axis
 				right_stick.x = value - 15;
 			}
-			else if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_Y){	//Y Axis
-				right_stick.y = 15 - value;
-			}
+			//else if ((b & CONTROLLER_ANALOG_AXIS) == CONTROLLER_ANALOG_AXIS_Y){	//Y Axis
+			//	right_stick.y = 15 - value;
+			//}
 		}
 	}
 	else {	//Digital button event

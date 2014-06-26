@@ -38,6 +38,9 @@
 #include "Leg.h"
 
 void servo_init();
-void calibration_init();
+
+void mode_select();
+void mode_remote_control();
+void mode_calibration();
 	
 #endif
