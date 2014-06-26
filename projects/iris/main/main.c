@@ -16,9 +16,9 @@
 #define MODE_WD 2
 #define MODE_PCT 3
 #define MODE_MOON 4
-#define MODE_SPECTRUM 5
-#define MODE_PLASMA 6
-#define MODE_SOLID 7
+#define MODE_SOLID 5
+#define MODE_SPECTRUM 6
+#define MODE_PLASMA 7
 
 #define MODE_YEAR 127
 #define MODE_MONTH 128
@@ -93,19 +93,19 @@ void a(uint8_t p1, uint8_t p2, float *hues) {
 
 // the complementary color index
 inline uint8_t complementary(uint8_t c) {
-	return (c + 12) % 12;
+	return (c + 6) % 12;
 }
 
 // the next triadic color index (clockwise)
 inline uint8_t triad(uint8_t c) {
-	return (c + 8) % 12;
+	return (c + 4) % 12;
 }
 
 inline uint8_t analagous_a(uint8_t c) {
-	return (c + 2) % 12;
+	return (c + 1) % 12;
 }
 inline uint8_t analagous_b(uint8_t c) {
-	return (c + 22) % 12;
+	return (c + 11) % 12;
 }
 
 int main() {
@@ -116,28 +116,21 @@ int main() {
 	DDRB |= _BV(1); // led strip output
 	
 	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t grey = {.red = 0xcc, .green = 0xcc, .blue = 0xcc };
 	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
 
-	ws2811_t red = {.red = 0xcc, .green = 0x00, .blue = 0x00 };			// 0
-	ws2811_t green = {.red = 0x00, .green = 0xcc, .blue = 0x00 };		// 120
-	ws2811_t blue = {.red = 0x00, .green = 0x00, .blue = 0xcc };		// 240
-
-	ws2811_t yellow = {.red = 0xcc, .green = 0xcc, .blue = 0x00 };		// 60
-	ws2811_t cyan = {.red = 0x00, .green = 0xcc, .blue = 0xcc };		// 180
-	ws2811_t magenta = {.red = 0xcc, .green = 0x00, .blue = 0xcc };		// 300
-
-	ws2811_t orange = {.red = 0xcc, .green = 0x66, .blue = 0x00 };		// 30
-	ws2811_t chartreuse = {.red = 0x66, .green = 0xcc, .blue = 0x00 };	// 90
-	ws2811_t spring = {.red = 0x00, .green = 0xcc, .blue = 0x66 };		// 150
-	ws2811_t azure = {.red = 0x00, .green = 0x66, .blue = 0xcc };		// 210
-	ws2811_t violet = {.red = 0x66, .green = 0x00, .blue = 0xcc };		// 270
-	ws2811_t rose = {.red = 0xcc, .green = 0x00, .blue = 0x66 };		// 330
-
-	ws2811_t palette[24] = { 
-		red, orange, yellow, chartreuse, green, spring,
-		cyan, azure, blue, violet, magenta, rose
-	};
+	struct ws2811_t palette[12];
+	h2rgb(&palette[0],0);	// red
+	h2rgb(&palette[1],30);	// orange
+	h2rgb(&palette[2],60);	// yellow
+	h2rgb(&palette[3],90);	// chartreuse
+	h2rgb(&palette[4],120);	// green
+	h2rgb(&palette[5],150);	// spring
+	h2rgb(&palette[6],180);	// cyan
+	h2rgb(&palette[7],210);	// azure
+	h2rgb(&palette[8],240);	// blue
+	h2rgb(&palette[9],270);	// violet
+	h2rgb(&palette[10],300);	// magenta
+	h2rgb(&palette[11],330);	// rose
 	
 	struct ws2811_t colors[60];
 
@@ -188,7 +181,7 @@ int main() {
 	hues[p2] = 120;
 	hues[p3] = 240;
 	
-	float hue = 0;	// current solid hue
+	uint16_t hue = 0;	// current solid hue
 
 	// hard coded location and time zone for now
 	set_zone(-7 * ONE_HOUR);
@@ -219,7 +212,7 @@ int main() {
 			update = 1;
 		}
 		
-		if (mode >= MODE_PLASMA && mode < MODE_YEAR && TCNT1 > 0x255) {
+		if (mode == MODE_PLASMA && TCNT1 > 1024) {
 			TCNT1 = 0x00;
 			update = 1;
 		}
@@ -234,25 +227,25 @@ int main() {
 			base = palette[base_index];
 			if (harmony == 0) {
 				// complementary
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[complementary(base_index)];
 				other2 = base;
 			} else if (harmony == 1) {
 				// analogous
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[analagous_a(base_index)];
 				other2 = palette[analagous_b(base_index)];
 			} else if (harmony == 2) {
 				// split complementary
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[analagous_a(complementary(base_index))];
 				other2 = palette[analagous_b(complementary(base_index))];
 			} else if (harmony == 3) {
 				// triadic
-				markers = grey;
+				markers = white;
 				fill = base;
 				other1 = palette[triad(base_index)];
 				other2 = palette[triad(triad(base_index))];
@@ -381,8 +374,10 @@ int main() {
 				}
 			} else if (mode == MODE_SPECTRUM) {
 				for (uint8_t i = 0; i < 60; i++) {
-					h2rgb(&colors[i], i * 6);
+					h2rgb(&colors[i], (hue + (i * 6)) % 360);
 				}
+				hue++;
+				hue %= 360;
 			} else if (mode == MODE_PLASMA) {
 				a(p1, p2, hues);
 				a(p2, p3, hues);
@@ -391,62 +386,67 @@ int main() {
 				for (int8_t i = 0; i < 60; i++) {
 					h2rgb(&colors[i], hues[i]);
 				}
-				p1 += r(3) - 1;
-				p2 += r(3) - 1;
-				p3 += r(3) - 1;
-				if (p1 < 0) p1 = 19;
-				if (p2 < 20) p2 = 39;
-				if (p3 < 40) p3 = 59;
-				if (p1 > 19) p1 = 0;
-				if (p2 > 39) p2 = 20;
-				if (p3 > 59) p3 = 40;
-				hues[p1] += (r(3) - 1) * 3; // random 3 degree change in hue
-				hues[p2] += (r(3) - 1) * 3;
-				hues[p3] += (r(3) - 1) * 3;
-				if (hues[p1] < 0) hues[p1] = 354;
-				if (hues[p2] < 0) hues[p2] = 354;
-				if (hues[p3] < 0) hues[p3] = 354;
-				if (hues[p1] > 360) hues[p1] = 0;
-				if (hues[p2] > 360) hues[p2] = 0;
-				if (hues[p3] > 360) hues[p3] = 0;
-			} else if (mode == MODE_SOLID) {
-				hue += (r(3) - 1) * 3; // random 3 degree change in hue
-				if (hue < 0) hue = 354;
-				if (hue > 356) hue = 0;
+				/*
+				colors[p1] = white;
+				colors[p2] = white;
+				colors[p3] = white;
+				*/
 				
+				p1 += r(5) - 2;
+				p2 += r(5) - 2;
+				p3 += r(5) - 2;
+				if (p1 < 0) p1 = 59;
+				if (p2 < 0) p2 = 59;
+				if (p3 < 0) p3 = 59;
+				if (p1 > 59) p1 = 0;
+				if (p2 > 50) p2 = 0;
+				if (p3 > 59) p3 = 0;
+				
+				hues[p1] += (r(31) - 15);
+				hues[p2] += (r(31) - 15);
+				hues[p3] += (r(31) - 15);
+				if (hues[p1] < 0) hues[p1] += 360;
+				if (hues[p2] < 0) hues[p2] += 360;
+				if (hues[p3] < 0) hues[p3] += 360;
+				if (hues[p1] > 359) hues[p1] -= 360;
+				if (hues[p2] > 359) hues[p2] -= 360;
+				if (hues[p3] > 359) hues[p3] -= 360;
+			} else if (mode == MODE_SOLID) {
 				for (uint8_t i = 0; i < 60; i++) {
 					h2rgb(&colors[i], hue);
 				}
+				hue++;
+				hue %= 360;
 			} else if (mode == MODE_YEAR) {
-				colors[sys.tm_year] = yellow;
+				colors[sys.tm_year] = palette[2];
 			} else if (mode == MODE_MONTH) {
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
-					colors[i] = green;
+					colors[i] = palette[4];
 				}
 			} else if (mode == MODE_DAY) {
 				if (sys.tm_mday < 31) {
 					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = cyan;
-					colors[i+1] = cyan;
+					colors[i] = palette[6];
+					colors[i+1] = palette[6];
 				} else {
-					colors[58] = cyan;
-					colors[59] = cyan;
-					colors[0] = cyan;
-					colors[1] = cyan;
+					colors[58] = palette[6];
+					colors[59] = palette[6];
+					colors[0] = palette[6];
+					colors[1] = palette[6];
 				}
 			} else if (mode == MODE_HOUR) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = (sys.tm_hour > 11) ? chartreuse : violet;
+					colors[i] = (sys.tm_hour > 11) ? palette[3] : palette[9];
 				}
 				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = blue;
+					colors[i] = palette[8];
 				}
 			} else if (mode == MODE_MIN) {
-				colors[sys.tm_min] = magenta;
+				colors[sys.tm_min] = palette[10];
 			} else if (mode == MODE_SEC) {
-				colors[sys.tm_sec] = red;
+				colors[sys.tm_sec] = palette[0];
 			}
 
 			struct ws2811_t tx[60];
@@ -464,7 +464,7 @@ int main() {
 			if (command == REMOTE_LEFT) {
 				if (mode > MODE_HMS) mode--;
 			} else if (command == REMOTE_RIGHT) {
-				if (mode < MODE_SOLID) mode++;
+				if (mode < MODE_PLASMA) mode++;
 			} else if (command == REMOTE_MENU) {
 				mode = MODE_YEAR;
 				time(&systime);
