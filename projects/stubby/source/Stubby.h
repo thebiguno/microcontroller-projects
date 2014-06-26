@@ -32,10 +32,10 @@
 #include "status.h"
 #include "comm.h"
 #include "lib/serial/serial.h"
+#include "gait.h"
 #endif
 
 #include "Leg.h"
-#include "gait.h"
 
 void servo_init();
 void calibration_init();

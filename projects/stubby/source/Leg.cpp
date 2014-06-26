@@ -3,23 +3,6 @@
 using namespace digitalcave;
 
 /*
- * Abstraction of matrix rotation code.  Rotates a point at c1,c2 around an origin of o1,o2 by d°rees.
- */
-void rotate2d(double *c1, double *c2, double o1, double o2, double angle){
-	//Translate c1, c2 by o1, o2
-	*c1 -= o1;
-	*c2 -= o2;
-	
-	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
-	int16_t n1 = *c1 * cos_f(angle) - *c2 * sin_f(angle);
-	int16_t n2 = *c1 * sin_f(angle) + *c2 * cos_f(angle);
-
-	//Translate back to o1, o2
-	*c1 = n1 + o1;
-	*c2 = n2 + o2;
-}
-
-/*
  * Returns the angle which the servo needs to move from neutral.
  */
 double solveServoTrapezoid(double desired_angle, double length_a, double length_b, double length_c, double length_d, double angle_E_offset, double angle_N){
@@ -57,20 +40,17 @@ void Leg::setPosition(Point p){
 	printf("Desired: %d mm, %d mm, %d mm\n", p.x, p.y, p.z);
 	#endif
 
-	double x1 = p.x;
-	double y1 = p.y;
-	
 	//Rotate leg around 0, 0 such that the leg is pointing straight out at angle 0 (straight right).
-	rotate2d(&x1, &y1, 0, 0, this->mounting_angle * -1);
+	p.rotateXY(Point(0,0,0), this->mounting_angle * -1);
 	//Translate the leg according to the leg offset, to put the coxa joint at co-ordinates 0,0.
-	x1 -= LEG_OFFSET;
+	p.x -= LEG_OFFSET;
 	
 	//Find the angle of the leg, used to set the coxa joint.  See figure 2.1, 'coxa angle'.
-	double coxa_angle = atan2(y1, x1);
+	double coxa_angle = atan2(p.y, p.x);
 	
 	//Find the length of the leg, from coxa joint to end of tibia, on the x,y plane (to be later 
-	// used for X,Z inverse kinematics).  See figure 2.1, 'leg length', 'x1', and 'y1'.
-	double leg_length = sqrt((x1 * x1) + (y1 * y1));
+	// used for X,Z inverse kinematics).  See figure 2.1, 'leg length', 'p.x', and 'p.y'.
+	double leg_length = sqrt((p.x * p.x) + (p.y * p.y));
 
 	//Find the distance between the femur joint and the end of the tibia.  Do this using the
 	// right triangle of (FEMUR_HEIGHT + COXA_HEIGHT - z), (leg_length - COXA_LENGTH).  See figure 
@@ -86,7 +66,7 @@ void Leg::setPosition(Point p){
 	double tibia_angle = acos_f(((FEMUR_LENGTH * FEMUR_LENGTH) + (TIBIA_LENGTH * TIBIA_LENGTH) - (leg_extension * leg_extension)) / (2 * FEMUR_LENGTH * TIBIA_LENGTH));
 	
 	#ifdef DEBUG_SIMULATION
-	printf(" IK: x,y,z: %d,%d,%d; x1,y1: %3.1f mm,%3.1f mm, leg_length: %3.1f mm; leg_extension: %3.1f mm\n", p.x,p.y,p.z, x1,y1, leg_length, leg_extension);
+	printf(" IK: x,y,z: %d,%d,%d; leg_length: %3.1f mm; leg_extension: %3.1f mm\n", p.x,p.y,p.z, leg_length, leg_extension);
 	#endif
 	
 	this->setTibiaAngle(tibia_angle);

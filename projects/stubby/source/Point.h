@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #endif
+#include "trig.h"
+
 
 namespace digitalcave {
 	class Point {
@@ -20,6 +22,11 @@ namespace digitalcave {
 			 * Adds the specified offset point to this point.
 			 */
 			void add(Point offset);
+			
+			/*
+			 * Rotate this point by specified angle on the x,y plane around origin (z component is ignored)
+			 */
+			void rotateXY(Point origin, double angle);
 
 			int16_t x;
 			int16_t y;
