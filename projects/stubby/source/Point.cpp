@@ -16,6 +16,10 @@ void Point::add(Point offset){
 	this->z += offset.z;
 }
 
+void Point::rotateXY(double angle){
+	this->rotateXY(Point(0,0,0), angle);
+}
+
 void Point::rotateXY(Point origin, double angle){
 	//Translate x, y by o.x, o.y
 	this->x -= origin.x;

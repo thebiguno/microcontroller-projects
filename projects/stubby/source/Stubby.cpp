@@ -45,8 +45,15 @@ int main (void){
 	
 	int8_t step_index = 0;
 	while(1){
+		Point left_stick = comm_read_left();
+		double left_angle = atan2(left_stick.y, left_stick.x);
+		//Use pythagorean theorem to find the velocity, in the range [0..1].
+		double left_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15));
+	
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			legs[l].setOffset(gait_step(l, step_index));
+			Point step = gait_step(l, step_index, left_velocity);
+			step.rotateXY(left_angle);
+			legs[l].setOffset(step);
 		}
 		step_index++;
 		if (step_index > gait_step_count()){
@@ -54,7 +61,7 @@ int main (void){
 		}
 		pwm_apply_batch();
 		
-		_delay_ms(20);
+		_delay_ms(5);
 	}
 }
 

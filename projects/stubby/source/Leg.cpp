@@ -41,7 +41,7 @@ void Leg::setPosition(Point p){
 	#endif
 
 	//Rotate leg around 0, 0 such that the leg is pointing straight out at angle 0 (straight right).
-	p.rotateXY(Point(0,0,0), this->mounting_angle * -1);
+	p.rotateXY(this->mounting_angle * -1);
 	//Translate the leg according to the leg offset, to put the coxa joint at co-ordinates 0,0.
 	p.x -= LEG_OFFSET;
 	
