@@ -64,8 +64,8 @@ static Point rotational_step_points[STEP_COUNT] = {
 	Point(0,-8,0),
 };
 
-Point gait_step(uint8_t leg_index, uint8_t step_index, double linear_velocity, double linear_angle, double rotational_velocity){
-	if (leg_index == FRONT_RIGHT || leg_index == MIDDLE_LEFT || leg_index == REAR_RIGHT){
+Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double linear_angle, double rotational_velocity){
+	if (leg.getIndex() == FRONT_RIGHT || leg.getIndex() == MIDDLE_LEFT || leg.getIndex() == REAR_RIGHT){
 		step_index += (STEP_COUNT / 2);
 	}
 
@@ -82,11 +82,13 @@ Point gait_step(uint8_t leg_index, uint8_t step_index, double linear_velocity, d
 		result.add(linear_result);
 	}
 	
-	if (rotational_velocity > 0.3){
+	if (rotational_velocity > 0.3 || rotational_velocity < -0.3){
 		Point rotational_result(0,0,0);
 		rotational_result.add(rotational_step_points[step_index % STEP_COUNT]);
-		rotational_result.x *= rotational_velocity;
+		rotational_result.x *= fabs(rotational_velocity);
 		rotational_result.y *= rotational_velocity;
+		rotational_result.rotateXY(leg.getMountingAngle());
+		
 		result.add(rotational_result);
 	}
 	

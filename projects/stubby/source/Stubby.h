@@ -1,12 +1,6 @@
 #ifndef STUBBY_H
 #define STUBBY_H
 
-#ifndef DEBUG_SIMULATION
-#include <avr/io.h>
-#include <avr/eeprom.h>
-#include <util/delay.h>
-#endif
-
 #define LEG_COUNT		6
 
 #define FRONT_LEFT		0
@@ -28,14 +22,6 @@
 
 #define PWM_COUNT		(LEG_COUNT * JOINT_COUNT) + 3
 
-#ifndef DEBUG_SIMULATION
-#include "status.h"
-#include "comm.h"
-#include "lib/serial/serial.h"
-#include "gait.h"
-#endif
-
-#include "Leg.h"
 
 void servo_init();
 

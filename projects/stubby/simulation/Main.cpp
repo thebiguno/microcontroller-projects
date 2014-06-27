@@ -1,6 +1,5 @@
 #include "../source/Stubby.h"
-
-using namespace digitalcave;
+#include "../source/Leg.h"
 
 int main (void){
 	//Set up the leg objects, including servo details and mounting angle

@@ -1,6 +1,19 @@
 #include "Stubby.h"
 
-using namespace digitalcave;
+#ifndef DEBUG_SIMULATION
+#include <avr/io.h>
+#include <avr/eeprom.h>
+#include <util/delay.h>
+
+#include "status.h"
+#include "comm.h"
+#include "lib/serial/serial.h"
+#endif
+
+#include "gait.h"
+#include "trig.h"
+#include "Leg.h"
+
 
 //Set up the leg objects, including servo details and mounting angle.  Leg indices follows
 // DIP numbering format, starting at front left and proceeding counter clockwise around.
@@ -75,7 +88,7 @@ void mode_remote_control(){
 		double rotational_velocity = right_stick.x / 15.0;
 	
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			Point step = gait_step(l, step_index, linear_velocity, linear_angle, rotational_velocity);
+			Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
 			legs[l].setOffset(step);
 		}
 		step_index++;
@@ -84,7 +97,7 @@ void mode_remote_control(){
 		}
 		pwm_apply_batch();
 		
-		_delay_ms(100);
+		_delay_ms(10);
 	}
 	
 	//Reset legs to neutral position

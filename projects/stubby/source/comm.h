@@ -8,8 +8,6 @@
 #include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"
 
-using namespace digitalcave;
-
 void comm_init();
 
 /*

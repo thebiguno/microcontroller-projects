@@ -1,6 +1,18 @@
 #include "Leg.h"
 
-using namespace digitalcave;
+#ifndef DEBUG_SIMULATION
+#include <avr/io.h>
+#include "lib/pwm/pwm.h"
+#else
+#include "../simulation/debug.h"
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#endif
+
+#include <math.h>
+#include "Stubby.h"
+#include "Point.h"
 
 /*
  * Returns the angle which the servo needs to move from neutral.
@@ -76,6 +88,14 @@ void Leg::setPosition(Point p){
 	//TODO If the servo angles are out of bounds (either NaN or an integer outside of the valid PWM range), then re-calculate
 	// the x,y,z co-ordinates based on valid numbers.  This will be quite doable for out of bounds angles, but will be very
 	// difficult for NaN, since it is impossible to say whether it is a small or large angle.
+}
+
+uint8_t Leg::getIndex(){
+	return this->index;
+}
+
+double Leg::getMountingAngle(){
+	return this->index;
 }
 
 void Leg::setOffset(Point offset){

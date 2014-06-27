@@ -12,33 +12,31 @@
 #include "trig.h"
 
 
-namespace digitalcave {
-	class Point {
-		public:
-			Point();
-			Point(int16_t x, int16_t y, int16_t z);
-			
-			/*
-			 * Adds the specified offset point to this point.
-			 */
-			void add(Point offset);
-			
-			/*
-			 * Rotate this point by specified angle on the x,y plane 
-			 * around 0,0 (z component is ignored)
-			 */
-			void rotateXY(double angle);
+class Point {
+	public:
+		Point();
+		Point(int16_t x, int16_t y, int16_t z);
+		
+		/*
+			* Adds the specified offset point to this point.
+			*/
+		void add(Point offset);
+		
+		/*
+			* Rotate this point by specified angle on the x,y plane 
+			* around 0,0 (z component is ignored)
+			*/
+		void rotateXY(double angle);
 
-			/*
-			 * Rotate this point by specified angle on the x,y plane around 
-			 * the specified origin (z component is ignored)
-			 */
-			void rotateXY(Point origin, double angle);
+		/*
+			* Rotate this point by specified angle on the x,y plane around 
+			* the specified origin (z component is ignored)
+			*/
+		void rotateXY(Point origin, double angle);
 
-			int16_t x;
-			int16_t y;
-			int16_t z;
-	} ;
-}
+		int16_t x;
+		int16_t y;
+		int16_t z;
+};
 
 #endif
