@@ -97,7 +97,7 @@ void mode_remote_control(){
 		}
 		pwm_apply_batch();
 		
-		_delay_ms(10);
+		_delay_ms(15);
 	}
 	
 	//Reset legs to neutral position
@@ -105,6 +105,7 @@ void mode_remote_control(){
 		legs[l].resetPosition();
 	}
 	pwm_apply_batch();
+	
 	status_set_color(0x00, 0x00, 0x00);
 	_delay_ms(200);
 
@@ -117,9 +118,10 @@ void mode_remote_control(){
  *  -Left / Right adjusts coxa joint for selected leg
  *  -Up / Down adjusts femur joint for selected leg
  *  -L1 / L2 adjusts tibia joint for selected leg
- *  -Triangle resets all values back to 0
- *  -X commits changes to EEPROM
- *  -Start exits calibration mode (regardless of whether or not it is committed)
+ *  -Cross + Triangle resets all values back to 0
+ *  -Triangle by itself resets all values back to last saved
+ *  -Cross by itself saves changes to EEPROM
+ *  -Start exits calibration mode, discarding unsaved changes
  */
 void mode_calibration(){
 	pwm_start();
@@ -143,18 +145,15 @@ void mode_calibration(){
 			if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
 				break;
 			}
+			
+			//Blink lights out every button press
+			status_set_color(0x00, 0x00, 0x00);
+			_delay_ms(100);
 		
 			//Circle increments legs.
 			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0) {
 				l++;
 				if (l >= LEG_COUNT) l = 0;
-				
-				if (l == 0) status_set_color(0xFF, 0x00, 0x00);
-				else if (l == 1) status_set_color(0xFF, 0xFF, 0x00);
-				else if (l == 2) status_set_color(0x00, 0xFF, 0x00);
-				else if (l == 3) status_set_color(0xFF, 0xFF, 0xFF);
-				else if (l == 4) status_set_color(0x00, 0x00, 0xFF);
-				else if (l == 5) status_set_color(0xFF, 0x00, 0xFF);
 			}
 			
 			//Left / Right arrows adjust coxa joint
@@ -181,28 +180,60 @@ void mode_calibration(){
 				legs[l].setOffset(TIBIA, legs[l].getOffset(TIBIA) - 1);
 			}
 			
-			//Triangle button to revert all calibration to 0
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+			//Triangle + X buttons to revert all calibration to 0
+			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0 && (buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
 				for (uint8_t i = 0; i < LEG_COUNT; i++){
 					for (uint8_t j = 0; j < JOINT_COUNT; j++){
 						legs[i].setOffset(j, 0);
 					}
 				}
+				//Flash red 5 times to indicate revert
+				for (uint8_t i = 0; i < 5; i++){
+					status_set_color(0xFF, 0x00, 0x00);
+					_delay_ms(100);
+					status_set_color(0x00, 0x00, 0x00);
+					_delay_ms(100);
+				}
 			}
+			
+			//Triangle button to revert all calibration to last saved
+			else if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					for (uint8_t j = 0; j < JOINT_COUNT; j++){
+						legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
+					}
+				}
+				//Flash yellow 5 times to indicate revert
+				for (uint8_t i = 0; i < 5; i++){
+					status_set_color(0xFF, 0xFF, 0x00);
+					_delay_ms(100);
+					status_set_color(0x00, 0x00, 0x00);
+					_delay_ms(100);
+				}
+			}
+
+			//X button to commit changes to EEPROM
+			else if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					for (uint8_t j = 0; j < JOINT_COUNT; j++){
+						eeprom_update_byte((uint8_t*) (l * JOINT_COUNT) + j, legs[l].getOffset(j));
+					}
+				}
+				//Flash green 5 times to indicate save
+				for (uint8_t i = 0; i < 5; i++){
+					status_set_color(0x00, 0xFF, 0x00);
+					_delay_ms(100);
+					status_set_color(0x00, 0x00, 0x00);
+					_delay_ms(100);
+				}
+			}
+
 
 			for (uint8_t i = 0; i < LEG_COUNT; i++){
 				legs[i].resetPosition();
 			}
-			pwm_apply_batch();
 			
-			//X button to commit changes to EEPROM
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
-				//servo_save_calibration();
-				//Flash green to indicate save
-				status_set_color(0x00, 0xFF, 0x00);			//Green
-				_delay_ms(500);
-				status_set_color(0xFF, 0xFF, 0x00);			//Yellow
-			}
+			pwm_apply_batch();
 		}
 	}
 	

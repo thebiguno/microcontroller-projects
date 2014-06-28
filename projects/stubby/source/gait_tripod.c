@@ -16,13 +16,13 @@ static Point linear_step_points[STEP_COUNT] = {
 	
 	Point(-25,0,5),
 	Point(-18,0,10),
-	Point(-10,0,15),
-	Point(-2,0,20),
-	Point(6,0,20),
-	Point(0,0,20),
-	Point(8,0,20),
-	Point(15,0,20),
-	Point(20,0,15),
+	Point(-10,0,20),
+	Point(-2,0,30),
+	Point(6,0,30),
+	Point(0,0,30),
+	Point(8,0,30),
+	Point(15,0,30),
+	Point(20,0,20),
 	Point(24,0,10),
 	Point(25,0,5),
 	
@@ -47,13 +47,13 @@ static Point rotational_step_points[STEP_COUNT] = {
 	
 	Point(-3,27,5),
 	Point(-2,22,10),
-	Point(-1,18,15),
-	Point(-1,13,20),
-	Point(0,8,20),
-	Point(0,0,20),
-	Point(0,-8,20),
-	Point(-1,-13,20),
-	Point(-1,-18,15),
+	Point(-1,18,20),
+	Point(-1,13,30),
+	Point(0,8,30),
+	Point(0,0,30),
+	Point(0,-8,30),
+	Point(-1,-13,30),
+	Point(-1,-18,20),
 	Point(-2,-22,10),
 	Point(-3,-27,5),
 	
@@ -98,8 +98,8 @@ Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double line
 	if (result.y > 30) result.y = 30;
 	else if (result.y < -30) result.y = -30;
 	
-	if (result.z > 20) result.z = 20;
-	else if (result.z < -20) result.z = -20;
+	if (result.z > 30) result.z = 30;
+	else if (result.z < -30) result.z = -30;
 
 	return result;
 }
