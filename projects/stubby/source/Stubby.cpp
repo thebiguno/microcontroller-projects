@@ -98,6 +98,19 @@ void mode_remote_control(){
 				
 			}
 		}
+		else if (held & _BV(CONTROLLER_BUTTON_VALUE_CROSS)){
+			//We use the angle of the left stick to determine which way to lean
+			double left_angle = atan2(left_stick.y, left_stick.x);
+
+			//Use pythagorean theorem to find the velocity, in the range [0..1].
+			double left_amount = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
+			
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point offset(left_amount * 25,0,0);
+				offset.rotateXY(left_angle);
+				legs[l].setOffset(offset);
+			}
+		}
 		else {
 			double linear_angle = atan2(left_stick.y, left_stick.x);
 
