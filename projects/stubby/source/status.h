@@ -3,9 +3,7 @@
 
 #include <avr/io.h>
 
-#include "Stubby.h"
-#include "lib/pwm/pwm.h"
-
+void status_flash(uint8_t red, uint8_t green, uint8_t blue, uint8_t count);
 void status_init();
 void status_enable_timer();
 void status_disable_timer();
