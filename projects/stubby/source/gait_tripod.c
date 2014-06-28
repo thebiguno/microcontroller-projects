@@ -86,7 +86,7 @@ Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double line
 		Point rotational_result(0,0,0);
 		rotational_result.add(rotational_step_points[step_index % STEP_COUNT]);
 		rotational_result.x *= fabs(rotational_velocity);
-		rotational_result.y *= rotational_velocity;
+		rotational_result.y *= -1 * rotational_velocity;
 		rotational_result.rotateXY(leg.getMountingAngle());
 		
 		result.add(rotational_result);
