@@ -18,6 +18,11 @@ ifeq 'arduino' '$(AVRDUDE_PROGRAMMER)'
 	endif
 	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
 endif
+
+ifeq 'usbtiny' '$(AVRDUDE_PROGRAMMER)'
+	AVRDUDE_ARGS += -B 1
+endif
+
 #If an EFUSE variable has been set, we program the extended fuses too
 ifeq '' '$(EFUSE)'
 	EXTENDED_FUSE_WRITE=
