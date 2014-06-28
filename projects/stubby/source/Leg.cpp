@@ -106,7 +106,7 @@ void Leg::setOffset(Point offset){
 	else if (offset.y < -30) offset.y = -30;
 	
 	if (offset.z > 13) offset.z = 13;
-	else if (offset.z < -30) offset.z = -30;
+	else if (offset.z < -22) offset.z = -22;
 
 	offset.add(this->neutralP);
 	this->setPosition(offset);
