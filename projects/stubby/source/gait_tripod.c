@@ -92,15 +92,6 @@ Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double line
 		result.add(rotational_result);
 	}
 	
-	if (result.x > 30) result.x = 30;
-	else if (result.x < -30) result.x = -30;
-
-	if (result.y > 30) result.y = 30;
-	else if (result.y < -30) result.y = -30;
-	
-	if (result.z > 30) result.z = 30;
-	else if (result.z < -30) result.z = -30;
-
 	return result;
 }
 
