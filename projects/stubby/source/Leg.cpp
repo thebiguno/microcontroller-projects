@@ -128,12 +128,12 @@ uint8_t Leg::getPin(uint8_t joint){
 	return this->pin[joint];
 }
 
-int8_t Leg::getOffset(uint8_t joint){
-	return this->offset[joint];
+int8_t Leg::getCalibration(uint8_t joint){
+	return this->calibration[joint];
 }
 			
-void Leg::setOffset(uint8_t joint, int8_t offset){
-	this->offset[joint] = offset;
+void Leg::setCalibration(uint8_t joint, int8_t calibration){
+	this->calibration[joint] = calibration;
 }
 
 void Leg::setTibiaAngle(double desired_angle){
@@ -148,7 +148,7 @@ void Leg::setTibiaAngle(double desired_angle){
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + this->offset[TIBIA] * 16 + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + this->calibration[TIBIA] * 16 + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setFemurAngle(double desired_angle){
@@ -163,7 +163,7 @@ void Leg::setFemurAngle(double desired_angle){
 	printf(" servo angle: %3.1f°; ", angle_S * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + this->offset[FEMUR] * 16 + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + this->calibration[FEMUR] * 16 + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setCoxaAngle(double desired_angle){
@@ -171,6 +171,6 @@ void Leg::setCoxaAngle(double desired_angle){
 	printf(" Coxa:  desired angle: %3.1f°; ", desired_angle * 180 / M_PI);
 	#endif
 
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + this->offset[COXA] * 16 + desired_angle * COXA_PHASE_MULTIPLIER);
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + this->calibration[COXA] * 16 + desired_angle * COXA_PHASE_MULTIPLIER);
 }
 

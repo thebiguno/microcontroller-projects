@@ -8,6 +8,7 @@
 #include "status.h"
 #include "comm.h"
 #include "lib/serial/serial.h"
+#include "lib/pwm/pwm.h"
 #endif
 
 #include "gait.h"
@@ -36,21 +37,19 @@ int main (void){
 }
 
 void mode_select(){
-	//TODO Wait for start button before initializing servos.  If Select is pressed
-	// before start, we enter calibration mode.
-	uint16_t buttons = 0x00;
+	//Hit start to begin controlling the robot, or hit select to calibrate joints
 	while (1){
-		buttons = comm_read_buttons();
+		uint16_t buttons = comm_read_pressed_buttons();
 	
 		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
 			mode_calibration();
-			buttons = 0x00;
 		}
 		
 		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
 			mode_remote_control();
-			buttons = 0x00;
 		}
+		
+		_delay_ms(20);
 	}
 }
 
@@ -65,39 +64,62 @@ void mode_remote_control(){
 	
 	//status_init();
 	
-	uint16_t buttons = 0x00;
 	int8_t step_index = 0;
 
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
 		Point left_stick = comm_read_left();
 		Point right_stick = comm_read_right();
-		buttons = comm_read_buttons();
+		uint16_t pressed = comm_read_pressed_buttons();
+		uint16_t held = comm_read_held_buttons();
 
 		//Hit start to exit remote control mode
-		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+		if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
 			break;
 		}
 
-		double linear_angle = atan2(left_stick.y, left_stick.x);
-
-		//Use pythagorean theorem to find the velocity, in the range [0..1].
-		double linear_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
-		
-		//We only care about the X axis for right (rotational) stick
-		double rotational_velocity = right_stick.x / 15.0;
-	
-		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
-			legs[l].setOffset(step);
+		Point elevation_offset(0,0,0);
+		if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT1)) {
+			elevation_offset.add(Point(0,0,-20));
+		} 
+		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
+			elevation_offset.add(Point(0,0,20));
 		}
-		step_index++;
-		if (step_index > gait_step_count()){
-			step_index = 0;
+		
+		if (held & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)){
+			//We use the angle of the left stick to determine which way to lean
+			//double left_angle = atan2(left_stick.y, left_stick.x);
+
+			//Use pythagorean theorem to find the velocity, in the range [0..1].
+			//double left_amount = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
+			
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+
+				
+			}
+		}
+		else {
+			double linear_angle = atan2(left_stick.y, left_stick.x);
+
+			//Use pythagorean theorem to find the velocity, in the range [0..1].
+			double linear_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
+			
+			//We only care about the X axis for right (rotational) stick
+			double rotational_velocity = right_stick.x / 15.0;
+		
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+				step.add(elevation_offset);
+				legs[l].setOffset(step);
+			}
+			step_index++;
+			if (step_index > gait_step_count()){
+				step_index = 0;
+			}
 		}
 		pwm_apply_batch();
 		
-		_delay_ms(15);
+		_delay_ms(5);
 	}
 	
 	//Reset legs to neutral position
@@ -114,118 +136,101 @@ void mode_remote_control(){
 
 /*
  * Calibration mode.  Use the following buttons to calibrate:
- *  -Circle switches between legs.  As a new leg is selected, flash the leg color on the status LED.
+ *  -Square switches between legs.  As a new leg is selected, flash the leg color on the status LED.
  *  -Left / Right adjusts coxa joint for selected leg
  *  -Up / Down adjusts femur joint for selected leg
  *  -L1 / L2 adjusts tibia joint for selected leg
- *  -Cross + Triangle resets all values back to 0
- *  -Triangle by itself resets all values back to last saved
- *  -Cross by itself saves changes to EEPROM
+ *  -Circle + Triangle resets all values back to 0 (flash red)
+ *  -Triangle by itself resets all values back to last saved (flash yellow)
+ *  -Cross by itself saves changes to EEPROM (flash green)
  *  -Start exits calibration mode, discarding unsaved changes
  */
 void mode_calibration(){
 	pwm_start();
-	
-	for (uint8_t i = 0; i < 5; i++){
-		status_set_color(0x00, 0x00, 0xFF);
-		_delay_ms(100);
-		status_set_color(0x00, 0x00, 0x00);
-		_delay_ms(100);
-	}
-	
+
+	status_flash(0x00, 0x00, 0xFF, 5);
 	uint8_t l = 0;
-	status_set_color(0xFF, 0x00, 0x00);
-	uint16_t buttons = 0x00;
+	uint16_t held_buttons = 0x00;
+	uint16_t pressed_buttons = 0x00;
+	
 	//Loop until Start is pressed
 	while (1){
-		buttons = comm_read_buttons();
+		held_buttons = comm_read_held_buttons();
+		pressed_buttons = comm_read_pressed_buttons();
+		
 		_delay_ms(20);
-		if (buttons != 0x00){
+		
+		if (held_buttons != 0x00 || pressed_buttons != 0x00){
 			//Start exits calibration mode (whether or not changes were made / applied / saved).
-			if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+			if (pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
 				break;
 			}
-			
+
 			//Blink lights out every button press
 			status_set_color(0x00, 0x00, 0x00);
-			_delay_ms(100);
+			_delay_ms(60);
 		
-			//Circle increments legs.
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0) {
+			//Square increments legs.
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_SQUARE)) != 0) {
 				l++;
 				if (l >= LEG_COUNT) l = 0;
 			}
 			
 			//Left / Right arrows adjust coxa joint
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_PADRIGHT)) != 0) {
-				legs[l].setOffset(COXA, legs[l].getOffset(COXA) + 1);
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADRIGHT)) != 0) {
+				legs[l].setCalibration(COXA, legs[l].getCalibration(COXA) + 1);
 			}
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_PADLEFT)) != 0) {
-				legs[l].setOffset(COXA, legs[l].getOffset(COXA) - 1);
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADLEFT)) != 0) {
+				legs[l].setCalibration(COXA, legs[l].getCalibration(COXA) - 1);
 			}
 			
 			//Up / Down arrows adjust femur joint
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_PADUP)) != 0) {
-				legs[l].setOffset(FEMUR, legs[l].getOffset(FEMUR) + 1);
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADUP)) != 0) {
+				legs[l].setCalibration(FEMUR, legs[l].getCalibration(FEMUR) + 1);
 			}
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_PADDOWN)) != 0) {
-				legs[l].setOffset(FEMUR, legs[l].getOffset(FEMUR) - 1);
-			}
-			
-			//L1 / L2 buttons adjust the tibia joint
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT1)) != 0) {
-				legs[l].setOffset(TIBIA, legs[l].getOffset(TIBIA) + 1);
-			}
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)) != 0) {
-				legs[l].setOffset(TIBIA, legs[l].getOffset(TIBIA) - 1);
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADDOWN)) != 0) {
+				legs[l].setCalibration(FEMUR, legs[l].getCalibration(FEMUR) - 1);
 			}
 			
-			//Triangle + X buttons to revert all calibration to 0
-			if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0 && (buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
+			//L1 / L2 adjust the tibia joint
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT1)) != 0) {
+				legs[l].setCalibration(TIBIA, legs[l].getCalibration(TIBIA) + 1);
+			}
+			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)) != 0) {
+				legs[l].setCalibration(TIBIA, legs[l].getCalibration(TIBIA) - 1);
+			}
+			
+			//Hold Circle + press Triangle to revert all calibration to 0
+			if ((held_buttons & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0 && (pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				for (uint8_t i = 0; i < LEG_COUNT; i++){
 					for (uint8_t j = 0; j < JOINT_COUNT; j++){
-						legs[i].setOffset(j, 0);
+						legs[i].setCalibration(j, 0);
 					}
 				}
 				//Flash red 5 times to indicate revert
-				for (uint8_t i = 0; i < 5; i++){
-					status_set_color(0xFF, 0x00, 0x00);
-					_delay_ms(100);
-					status_set_color(0x00, 0x00, 0x00);
-					_delay_ms(100);
-				}
+				status_flash(0xFF, 0x00, 0x00, 5);
 			}
 			
 			//Triangle button to revert all calibration to last saved
-			else if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+			else if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					for (uint8_t j = 0; j < JOINT_COUNT; j++){
-						legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
+						legs[l].setCalibration(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
 					}
 				}
 				//Flash yellow 5 times to indicate revert
-				for (uint8_t i = 0; i < 5; i++){
-					status_set_color(0xFF, 0xFF, 0x00);
-					_delay_ms(100);
-					status_set_color(0x00, 0x00, 0x00);
-					_delay_ms(100);
-				}
+				status_flash(0xFF, 0xFF, 0x00, 5);
 			}
 
 			//X button to commit changes to EEPROM
-			else if ((buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
+			else if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					for (uint8_t j = 0; j < JOINT_COUNT; j++){
-						eeprom_update_byte((uint8_t*) (l * JOINT_COUNT) + j, legs[l].getOffset(j));
+						eeprom_update_byte((uint8_t*) (l * JOINT_COUNT) + j, legs[l].getCalibration(j));
 					}
 				}
 				//Flash green 5 times to indicate save
-				for (uint8_t i = 0; i < 5; i++){
-					status_set_color(0x00, 0xFF, 0x00);
-					_delay_ms(100);
-					status_set_color(0x00, 0x00, 0x00);
-					_delay_ms(100);
-				}
+				status_flash(0x00, 0xFF, 0x00, 5);
 			}
 
 
@@ -235,20 +240,27 @@ void mode_calibration(){
 			
 			pwm_apply_batch();
 		}
+		
+		if (l == 0) status_set_color(0xFF, 0x00, 0x00);
+		else if (l == 1) status_set_color(0xFF, 0xFF, 0x00);
+		else if (l == 2) status_set_color(0x00, 0xFF, 0x00);
+		else if (l == 3) status_set_color(0x00, 0xFF, 0xFF);
+		else if (l == 4) status_set_color(0x00, 0x00, 0xFF);
+		else if (l == 5) status_set_color(0xFF, 0x00, 0xFF);
 	}
 	
-	//Reload calibration from EEPROM; if it was committed, this will essentially
-	// be a NOP, otherwise we revert any changes done in this session.
+	//Reload calibration from EEPROM; if it was committed, this will do nothing,
+	// otherwise we revert any changes done in this session.
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
+			legs[l].setCalibration(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
 		}
 		legs[l].resetPosition();
 	}
 	pwm_apply_batch();
 	
 	status_set_color(0x00, 0x00, 0x00);
-	_delay_ms(500);
+	_delay_ms(200);
 	pwm_stop();
 }
 
@@ -262,7 +274,7 @@ void servo_init(){
 			ports[(l * JOINT_COUNT) + j] = legs[l].getPort(j);
 			pins[(l * JOINT_COUNT) + j] = legs[l].getPin(j);
 			
-			legs[l].setOffset(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
+			legs[l].setCalibration(j, eeprom_read_byte((uint8_t*) (l * JOINT_COUNT) + j));
 		}
 	}
 	

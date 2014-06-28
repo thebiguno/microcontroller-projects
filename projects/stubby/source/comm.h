@@ -12,9 +12,20 @@ void comm_init();
 
 /*
  * Read all buttons which have been pressed since the last
- * call to comm_read_buttons().
+ * call to comm_read_pressed_buttons().
  */
-uint16_t comm_read_buttons();
+uint16_t comm_read_pressed_buttons();
+
+/*
+ * Read all buttons which have been released since the last
+ * call to comm_read_released_buttons();
+ */
+uint16_t comm_read_released_buttons();
+
+/*
+ * Read all buttons which are currently being held.
+ */
+uint16_t comm_read_held_buttons();
 
 /*
  * Read the left stick (x and y).  0 is neutral, negative 
