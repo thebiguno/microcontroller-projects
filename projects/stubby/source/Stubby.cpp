@@ -80,10 +80,10 @@ void mode_remote_control(){
 
 		Point elevation_offset(0,0,0);
 		if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT1)) {
-			elevation_offset.add(Point(0,0,-20));
+			elevation_offset.add(Point(0,0,-15));
 		} 
 		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
-			elevation_offset.add(Point(0,0,20));
+			elevation_offset.add(Point(0,0,10));
 		}
 		
 		if (held & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)){
