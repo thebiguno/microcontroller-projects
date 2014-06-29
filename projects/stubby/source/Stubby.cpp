@@ -71,6 +71,7 @@ void mode_remote_control(){
 	status_enable_battery();
 	
 	int8_t step_index = 0;
+	int8_t height_offset = 0;
 
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
@@ -80,47 +81,37 @@ void mode_remote_control(){
 		Point right_stick = comm_read_right();
 		uint16_t pressed = comm_read_pressed_buttons();
 		uint16_t held = comm_read_held_buttons();
-		uint8_t disable_movement = 0x00;
 
 		//Hit start to exit remote control mode
 		if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
 			break;
 		}
 
-		Point elevation_offset(0,0,0);
-		if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT1)) {
-			elevation_offset.add(Point(0,0,-20));
-		} 
-		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
-			elevation_offset.add(Point(0,0,10));
-			disable_movement = 0x01;
+		//Change height
+		if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
+			if (right_stick.y > 10 || right_stick.y < -10){
+				height_offset = right_stick.y * -0.5;
+			}
+			else {
+				height_offset = 0;
+			}
 		}
 		
-		if (held & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)){
+		//2D Translate (left stick) and 3D rotate (right stick)
+		if (held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
 			//We use the angle of the left stick to determine which way to lean
-			//double left_angle = atan2(left_stick.y, left_stick.x);
+			//double left_angle = atan2(left_stick.y * -1.0, left_stick.x * -1.0);
 
 			//Use pythagorean theorem to find the velocity, in the range [0..1].
 			//double left_amount = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
 			
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
-
-				
+				Point translate(left_stick.x * -1.5, left_stick.y * -1.5, 0);
+				translate.add(Point(0, 0, height_offset));
+				legs[l].setOffset(translate);
 			}
 		}
-		else if (held & _BV(CONTROLLER_BUTTON_VALUE_CROSS)){
-			//We use the angle of the left stick to determine which way to lean
-			double left_angle = atan2(left_stick.y * -1.0, left_stick.x * -1.0);
-
-			//Use pythagorean theorem to find the velocity, in the range [0..1].
-			double left_amount = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
-			
-			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				Point offset(left_amount * 25,0,0);
-				offset.rotateXY(left_angle);
-				legs[l].setOffset(offset);
-			}
-		}
+		//Normal movement
 		else {
 			double linear_angle = atan2(left_stick.y, left_stick.x);
 
@@ -131,14 +122,9 @@ void mode_remote_control(){
 			double rotational_velocity = right_stick.x / 15.0;
 		
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				if (disable_movement){
-					legs[l].setOffset(elevation_offset);
-				}
-				else {
-					Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
-					step.add(elevation_offset);
-					legs[l].setOffset(step);
-				}
+				Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+				step.add(Point(0, 0, height_offset));
+				legs[l].setOffset(step);
 			}
 			step_index++;
 			if (step_index > gait_step_count()){

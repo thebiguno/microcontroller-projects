@@ -23,7 +23,7 @@
 #define LEG_MOUNTING_ANGLE				(60 * M_PI / 180)
 
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
-#define COXA_HEIGHT						50.0
+#define COXA_HEIGHT						55.0
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
 // figure 1.2, 'coxa length'
 #define COXA_LENGTH						49.0
