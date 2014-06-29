@@ -172,6 +172,16 @@ void mode_calibration(){
 	uint16_t held_buttons = 0x00;
 	uint16_t pressed_buttons = 0x00;
 	
+	//We calibrate against the servos in neutral phase, trying to match the angles as stated in Leg.h:
+	// TIBIA_NEUTRAL_SERVO_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE, and MOUNTING_ANGLE (yeah, coxa is different
+	// from the others).
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		for (uint8_t j = 0; j < JOINT_COUNT; j++){
+			pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL + (legs[l].getCalibration(j) * 10));
+		}
+	}
+
+	
 	//Loop until Start is pressed
 	while (1){
 		held_buttons = comm_read_held_buttons();
@@ -253,8 +263,10 @@ void mode_calibration(){
 			}
 
 
-			for (uint8_t i = 0; i < LEG_COUNT; i++){
-				legs[i].resetPosition();
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				for (uint8_t j = 0; j < JOINT_COUNT; j++){
+					pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL + (legs[l].getCalibration(j) * 10));
+				}
 			}
 			
 			pwm_apply_batch();
