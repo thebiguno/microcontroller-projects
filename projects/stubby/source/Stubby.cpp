@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 #include "status.h"
 #include "comm.h"
@@ -28,6 +29,7 @@ Leg legs[LEG_COUNT] = {
 };
 
 int main (void){
+	wdt_enable(WDTO_2S);
 	
 	servo_init();
 	
@@ -39,6 +41,8 @@ int main (void){
 void mode_select(){
 	//Hit start to begin controlling the robot, or hit select to calibrate joints
 	while (1){
+		wdt_reset();
+		
 		uint16_t buttons = comm_read_pressed_buttons();
 	
 		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
@@ -187,12 +191,13 @@ void mode_calibration(){
 	
 	//Loop until Start is pressed
 	while (1){
+		wdt_reset();
 		held_buttons = comm_read_held_buttons();
 		pressed_buttons = comm_read_pressed_buttons();
 		
 		_delay_ms(20);
 		
-		if (held_buttons != 0x00 || pressed_buttons != 0x00){
+		if (pressed_buttons != 0x00){
 			//Start exits calibration mode (whether or not changes were made / applied / saved).
 			if (pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
 				break;

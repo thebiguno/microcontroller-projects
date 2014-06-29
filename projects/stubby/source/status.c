@@ -3,6 +3,7 @@
 #include "lib/pwm/pwm.h"
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 void status_init(){
 	//Set up the timer to run at F_CPU / 1024, in normal mode (we reset TCNT0 in the ISR)
@@ -27,6 +28,7 @@ void status_disable_timer(){
 
 void status_flash(uint8_t red, uint8_t green, uint8_t blue, uint8_t count){
 	for (uint8_t i = 0; i < count; i++){
+		wdt_reset();
 		status_set_color(red, green, blue);
 		_delay_ms(100);
 		status_set_color(0x00, 0x00, 0x00);
