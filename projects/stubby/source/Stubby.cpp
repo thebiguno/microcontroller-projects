@@ -62,16 +62,19 @@ void mode_remote_control(){
 	}
 	pwm_apply_batch();
 	
-	//status_init();
+	status_enable_battery();
 	
 	int8_t step_index = 0;
 
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
+		wdt_reset();
+		
 		Point left_stick = comm_read_left();
 		Point right_stick = comm_read_right();
 		uint16_t pressed = comm_read_pressed_buttons();
 		uint16_t held = comm_read_held_buttons();
+		uint8_t disable_movement = 0x00;
 
 		//Hit start to exit remote control mode
 		if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
@@ -80,7 +83,7 @@ void mode_remote_control(){
 
 		Point elevation_offset(0,0,0);
 		if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT1)) {
-			elevation_offset.add(Point(0,0,-15));
+			elevation_offset.add(Point(0,0,-20));
 		} 
 		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
 			elevation_offset.add(Point(0,0,10));
