@@ -84,6 +84,7 @@ void mode_remote_control(){
 		} 
 		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
 			elevation_offset.add(Point(0,0,10));
+			disable_movement = 0x01;
 		}
 		
 		if (held & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)){
@@ -121,9 +122,14 @@ void mode_remote_control(){
 			double rotational_velocity = right_stick.x / 15.0;
 		
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
-				step.add(elevation_offset);
-				legs[l].setOffset(step);
+				if (disable_movement){
+					legs[l].setOffset(elevation_offset);
+				}
+				else {
+					Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+					step.add(elevation_offset);
+					legs[l].setOffset(step);
+				}
 			}
 			step_index++;
 			if (step_index > gait_step_count()){
