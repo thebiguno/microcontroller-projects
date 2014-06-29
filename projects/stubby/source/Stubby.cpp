@@ -35,6 +35,8 @@ int main (void){
 	
 	comm_init();
 	
+	status_init();
+	
 	mode_select();
 }
 
@@ -108,7 +110,7 @@ void mode_remote_control(){
 		}
 		else if (held & _BV(CONTROLLER_BUTTON_VALUE_CROSS)){
 			//We use the angle of the left stick to determine which way to lean
-			double left_angle = atan2(left_stick.y, left_stick.x);
+			double left_angle = atan2(left_stick.y * -1.0, left_stick.x * -1.0);
 
 			//Use pythagorean theorem to find the velocity, in the range [0..1].
 			double left_amount = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
@@ -147,6 +149,8 @@ void mode_remote_control(){
 		
 		_delay_ms(5);
 	}
+	
+	status_disable_battery();
 	
 	//Reset legs to neutral position
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
