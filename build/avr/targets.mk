@@ -66,6 +66,11 @@ readfuse:
 		$(AVRDUDE_ARGS) \
 		-U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h
 
+readeeprom: 
+	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+		$(AVRDUDE_ARGS) \
+		-U eeprom:r:-:h
+
 clean:
 	rm -f *.o
 	rm -f $(PROJECT).hex
