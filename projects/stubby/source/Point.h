@@ -18,21 +18,32 @@ class Point {
 		Point(int16_t x, int16_t y, int16_t z);
 		
 		/*
-			* Adds the specified offset point to this point.
-			*/
+		 * Adds the specified offset point to this point.
+		 */
 		void add(Point offset);
-		
-		/*
-			* Rotate this point by specified angle on the x,y plane 
-			* around 0,0 (z component is ignored)
-			*/
-		void rotateXY(double angle);
 
 		/*
-			* Rotate this point by specified angle on the x,y plane around 
-			* the specified origin (z component is ignored)
-			*/
+		 * Subtracts the specified offset point from this point.
+		 */
+		void subtract(Point offset);
+		
+		/*
+		 * Rotate this point by specified angle on the x,y plane 
+		 * around 0,0 (z component is ignored)
+		 */
+		void rotateXY(double angle);
+		
+		/*
+		 * Rotate this point by specified angle on the x,y plane around 
+		 * the specified origin (z component is ignored)
+		 */
 		void rotateXY(Point origin, double angle);
+
+		/*
+		 * Rotate this point by the specified angle around 
+		 * the axis intercepting points 0,0,0 and v.
+		 */
+		void rotateXYZ(Point v, double angle);
 
 		int16_t x;
 		int16_t y;
