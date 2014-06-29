@@ -29,15 +29,9 @@ class Point {
 		
 		/*
 		 * Rotate this point by specified angle on the x,y plane 
-		 * around 0,0 (z component is ignored)
+		 * around 0,0
 		 */
 		void rotateXY(double angle);
-		
-		/*
-		 * Rotate this point by specified angle on the x,y plane around 
-		 * the specified origin (z component is ignored)
-		 */
-		void rotateXY(Point origin, double angle);
 
 		/*
 		 * Rotate this point by the specified angle around 
