@@ -34,6 +34,18 @@ class Point {
 		void rotateXY(double angle);
 
 		/*
+		 * Rotate this point by specified angle on the x,z plane 
+		 * around 0,0
+		 */
+		void rotateXZ(double angle);
+		
+		/*
+		 * Rotate this point by specified angle on the y,z plane 
+		 * around 0,0
+		 */
+		void rotateYZ(double angle);
+		
+		/*
 		 * Rotate this point by the specified angle around 
 		 * the axis intercepting points 0,0,0 and v.
 		 */

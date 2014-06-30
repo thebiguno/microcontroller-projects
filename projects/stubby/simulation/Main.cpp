@@ -24,7 +24,33 @@ int main (void){
 	Point point(1, 2, 3);
 	point.rotateXYZ(Point(1,0,0), 90 * M_PI / 180);
 	
-	//printf("\nX,Y,Z: %d,%d,%d\n", point.x, point.y, point.z);
+	uint8_t value = 0x00;
+	for (uint8_t i = 0; i < 255; i++){
+		uint8_t new_value = rand() % 10 + 160;
+		
+		if (value == 0x00){
+			value = new_value;
+		}
+		else {
+			value = (3 * (uint16_t) value + new_value) >> 2;
+		}
+		
+		printf("%d: %d\n", new_value, value);
+	}
+	for (uint8_t i = 0; i < 255; i++){
+		uint8_t new_value = rand() % 20 + 160;
+		
+		if (value == 0x00){
+			value = new_value;
+		}
+		else {
+			value = (3 * (uint16_t) value + new_value) >> 2;
+		}
+		
+		printf("%d: %d\n", new_value, value);
+	}
+	
+	printf("\n%d\n", (uint16_t) (180 - value));
 	
 	return 0;
 }

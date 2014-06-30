@@ -99,12 +99,6 @@ class Leg {
 		void setFemurAngle(double angle);
 		void setCoxaAngle(double angle);
 		
-		/*
-		 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
-		 * sets the servo position for each of the three joints.
-		 */
-		void setPosition(Point point);
-					
 	public:
 		/*
 		 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
@@ -125,6 +119,12 @@ class Leg {
 		 * Returns the last set foot position.
 		 */
 		Point getPosition();
+
+		/*
+		 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
+		 * sets the servo position for each of the three joints.
+		 */
+		void setPosition(Point point);
 		
 		/*
 		 * Gets the offset for the given joint
