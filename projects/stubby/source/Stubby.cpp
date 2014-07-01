@@ -15,7 +15,7 @@
 #include "gait.h"
 #include "trig.h"
 #include "Leg.h"
-#include "lib/Point/Point.h"
+#include "Point.h"
 
 
 //Set up the leg objects, including servo details and mounting angle.  Leg indices follows
@@ -77,8 +77,8 @@ void mode_remote_control(){
 	while(1){
 		wdt_reset();
 		
-		Point left_stick = uc_read_left();
-		Point right_stick = uc_read_right();
+		uc_stick_t left_stick = uc_read_left();
+		uc_stick_t right_stick = uc_read_right();
 		uint16_t pressed = uc_read_pressed_buttons();
 		uint16_t held = uc_read_held_buttons();
 
@@ -111,7 +111,13 @@ void mode_remote_control(){
 		//Normal movement
 		else {
 			double linear_angle = 0;
-			if (left_stick.x != 0 || left_stick.y != 0){
+			if (left_stick.x == 0 && left_stick.y > 0){
+				linear_angle = M_PI / 2;
+			}
+			else if (left_stick.x == 0 && left_stick.y < 0){
+				linear_angle = M_PI / -2;
+			}
+			else if (left_stick.x != 0 || left_stick.y != 0){
 				linear_angle = atan2(left_stick.y, left_stick.x);
 			}
 

@@ -1,14 +1,13 @@
 #include <avr/interrupt.h>
 
-#include "../Point/Point.h"
 #include "../serial/serial.h"
 
 #include "client.h"
 
 //For X axis, 0 is neutral, negative numbers are left, positive are right.
 //For Y axis, 0 is neutral, negative numbers are down (back), positive are up (forward).
-static volatile Point left_stick(0,0,0);
-static volatile Point right_stick(0,0,0);
+static volatile uc_stick_t left_stick;
+static volatile uc_stick_t right_stick;
 static volatile uint16_t _pressed = 0x00;			//Bit mask of any buttons pressed.  Bits are cleared when read.
 static volatile uint16_t _released = 0x00;			//Bit mask of any buttons released.  Bits are cleared when read.
 static volatile uint16_t _held = 0x00;				//Bit mask of any buttons held.  Bits are cleared when released (in ISR).
@@ -55,13 +54,17 @@ uint16_t uc_read_held_buttons(){
 	return _held;
 }
 
-Point uc_read_left(){
-	Point p(left_stick.x, left_stick.y, 0);
-	return p;
+uc_stick_t uc_read_left(){
+	uc_stick_t result;
+	result.x = left_stick.x;
+	result.y = left_stick.y;
+	return result;
 }
-Point uc_read_right(){
-	Point p(right_stick.x, right_stick.y, 0);
-	return p;
+uc_stick_t uc_read_right(){
+	uc_stick_t result;
+	result.x = right_stick.x;
+	result.y = right_stick.y;
+	return result;
 }
 
 void _serial_init_rx(){
@@ -102,13 +105,14 @@ ISR(USART0_RX_vect){
 		}
 	}
 	else {	//Digital button event
+		uint16_t value = _BV((b & CONTROLLER_BUTTON_VALUE_MASK));
 		if ((b & CONTROLLER_BUTTON_PRESS_MASK) == CONTROLLER_BUTTON_PRESS){	//Pressed
-			_pressed |= _BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Mark as pressed; this is cleared when they are read.
-			_held |= _BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Mark as held; this is cleared when released
+			_pressed |= value;	//Mark as pressed; this is cleared when they are read.
+			_held |= value;	//Mark as held; this is cleared when released
 		}
 		else {	//Released
-			_released |= _BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Mark as released; this is cleared when they are read.
-			_held &= ~_BV((b & CONTROLLER_BUTTON_VALUE_MASK));	//Mark as no longer held
+			_released |= value;	//Mark as released; this is cleared when they are read.
+			_held &= ~value;	//Mark as no longer held
 		}
 	}
 	

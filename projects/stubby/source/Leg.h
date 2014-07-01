@@ -8,7 +8,7 @@
 #endif
 
 #include "Stubby.h"
-#include "lib/Point/Point.h"
+#include "Point.h"
 
 //*** See doc/diagrams.pdf for figure x.y references ***//
 

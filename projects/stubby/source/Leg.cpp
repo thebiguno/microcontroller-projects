@@ -12,7 +12,7 @@
 
 #include <math.h>
 #include "Stubby.h"
-#include "lib/Point/Point.h"
+#include "Point.h"
 
 /*
  * Returns the angle which the servo needs to move from neutral.

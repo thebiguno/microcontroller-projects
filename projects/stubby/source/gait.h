@@ -2,7 +2,7 @@
 #define GAIT_H
 
 #include <avr/io.h>
-#include "lib/Point/Point.h"
+#include "Point.h"
 #include "Leg.h"
 
 /*
