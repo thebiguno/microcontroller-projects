@@ -1,4 +1,9 @@
-#include "comm.h"
+#include <avr/interrupt.h>
+
+#include "../Point/Point.h"
+#include "../serial/serial.h"
+
+#include "client.h"
 
 //For X axis, 0 is neutral, negative numbers are left, positive are right.
 //For Y axis, 0 is neutral, negative numbers are down (back), positive are up (forward).
@@ -8,23 +13,24 @@ static volatile uint16_t _pressed = 0x00;			//Bit mask of any buttons pressed.  
 static volatile uint16_t _released = 0x00;			//Bit mask of any buttons released.  Bits are cleared when read.
 static volatile uint16_t _held = 0x00;				//Bit mask of any buttons held.  Bits are cleared when released (in ISR).
 
-void comm_init(){
+void uc_init(){
 	serial_init_b(38400);
 }
 
-void comm_configure_remote(){
+void uc_configure_remote(){
 	//Every few seconds we will send these controller init messages.
 	static uint8_t controller_init = 0x00;		//Whenever this resets to 0, we re-send controler init messages
 	controller_init++;
 	if (controller_init >= 0xFF){
+		//NOTE: You should change these values depending on your application.  These defaults make sense for most projects, though.
 		serial_write_b(0x41);	//Enable analog sticks
 		serial_write_b(0xFF);	//Set an analog repeat time of about 32ms.
 		controller_init = 0x00;
 	}	
 }
 
-uint16_t comm_read_pressed_buttons(){
-	comm_configure_remote();
+uint16_t uc_read_pressed_buttons(){
+	uc_configure_remote();
 	
 	if (_pressed == 0x00) return 0x00;
 	
@@ -33,8 +39,8 @@ uint16_t comm_read_pressed_buttons(){
 	return result;
 }
 
-uint16_t comm_read_released_buttons(){
-	comm_configure_remote();
+uint16_t uc_read_released_buttons(){
+	uc_configure_remote();
 	
 	if (_released == 0x00) return 0x00;
 	
@@ -43,17 +49,17 @@ uint16_t comm_read_released_buttons(){
 	return result;
 }
 
-uint16_t comm_read_held_buttons(){
-	comm_configure_remote();
+uint16_t uc_read_held_buttons(){
+	uc_configure_remote();
 	
 	return _held;
 }
 
-Point comm_read_left(){
+Point uc_read_left(){
 	Point p(left_stick.x, left_stick.y, 0);
 	return p;
 }
-Point comm_read_right(){
+Point uc_read_right(){
 	Point p(right_stick.x, right_stick.y, 0);
 	return p;
 }

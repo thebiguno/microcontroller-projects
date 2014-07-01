@@ -7,7 +7,7 @@
 #include <avr/wdt.h>
 
 #include "status.h"
-#include "comm.h"
+#include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"
 #include "lib/pwm/pwm.h"
 #endif
@@ -15,6 +15,7 @@
 #include "gait.h"
 #include "trig.h"
 #include "Leg.h"
+#include "lib/Point/Point.h"
 
 
 //Set up the leg objects, including servo details and mounting angle.  Leg indices follows
@@ -33,7 +34,7 @@ int main (void){
 	
 	servo_init();
 	
-	comm_init();
+	uc_init();
 	
 	status_init();
 	
@@ -45,7 +46,7 @@ void mode_select(){
 	while (1){
 		wdt_reset();
 		
-		uint16_t buttons = comm_read_pressed_buttons();
+		uint16_t buttons = uc_read_pressed_buttons();
 	
 		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
 			mode_calibration();
@@ -76,10 +77,10 @@ void mode_remote_control(){
 	while(1){
 		wdt_reset();
 		
-		Point left_stick = comm_read_left();
-		Point right_stick = comm_read_right();
-		uint16_t pressed = comm_read_pressed_buttons();
-		uint16_t held = comm_read_held_buttons();
+		Point left_stick = uc_read_left();
+		Point right_stick = uc_read_right();
+		uint16_t pressed = uc_read_pressed_buttons();
+		uint16_t held = uc_read_held_buttons();
 
 		//Hit start to exit remote control mode
 		if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
@@ -109,7 +110,10 @@ void mode_remote_control(){
 		}
 		//Normal movement
 		else {
-			double linear_angle = atan2(left_stick.y, left_stick.x);
+			double linear_angle = 0;
+			if (left_stick.x != 0 || left_stick.y != 0){
+				linear_angle = atan2(left_stick.y, left_stick.x);
+			}
 
 			//Use pythagorean theorem to find the velocity, in the range [0..1].
 			double linear_velocity = fmin(1.0, fmax(0.0, sqrt((left_stick.x * left_stick.x) + (left_stick.y * left_stick.y)) / 15.0));
@@ -177,8 +181,8 @@ void mode_calibration(){
 	//Loop until Start is pressed
 	while (1){
 		wdt_reset();
-		held_buttons = comm_read_held_buttons();
-		pressed_buttons = comm_read_pressed_buttons();
+		held_buttons = uc_read_held_buttons();
+		pressed_buttons = uc_read_pressed_buttons();
 		
 		_delay_ms(20);
 		
