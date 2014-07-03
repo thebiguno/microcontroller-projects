@@ -31,12 +31,12 @@
 * |------+------+------+------+------|                                   |------+------+------+------+------|
 * | PgDn | Left | Down | Right| Vol- |                                   |  <<  |   1  |   2  |   3  |   *  |
 * |------+------+------+------+------'                                   |------+------+------+------+------|
-* | TRNS | TRNS | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn |   .  |   /  |
+* | Shift| Ctrl | Home | End  | TRNS |                                   | TRNS | PgUp | PgDn |   .  |   /  |
 * `----------------------------------'                                   `----------------------------------'
 *                                    ,-------------.       ,-------------.
 *                                    |      |Teensy|       |      |   =  |
 *                             ,------|------|------|       |------+------+------.
-*                             | Caps |      |      |       |NL/Clr| KEnt |   0  |
+*                             | Caps | Ins  | Caps |       |NL/Clr| KEnt |   0  |
 *                             `--------------------'       `--------------------'
 *
 */
@@ -65,9 +65,9 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            F11 ,F12 ,F13 ,F14 ,VOLU,
            PGUP,HOME,UP  ,END ,MUTE,
            PGDN,LEFT,DOWN,RGHT,VOLD,
-           TRNS,TRNS,HOME,END ,TRNS,
+           LSFT,LCTL,HOME,END ,TRNS,
                           NO  ,FN0 ,
-                     CAPS,NO  ,NO  ,
+                     CAPS,INS ,CAPS,
            F6  ,F7  ,F8  ,F9  ,F10 ,
            MNXT,P7  ,P8  ,P9  ,PMNS,
            MPLY,P4  ,P5  ,P6  ,PPLS,
