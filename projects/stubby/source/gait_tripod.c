@@ -13,17 +13,17 @@ static Point linear_step_points[STEP_COUNT] = {
 	Point(-15,0,0),
 	Point(-20,0,0),
 	Point(-25,0,0),
+	Point(-30,0,0),
 	
-	Point(-25,0,5),
-	Point(-18,0,10),
-	Point(-10,0,15),
-	Point(-2,0,20),
-	Point(6,0,20),
-	Point(0,0,20),
-	Point(8,0,20),
-	Point(15,0,20),
-	Point(20,0,15),
-	Point(24,0,10),
+	Point(-25,0,10),
+	Point(-15,0,20),
+	Point(-5,0,30),
+	Point(5,0,30),
+	Point(10,0,30),
+	Point(15,0,30),
+	Point(20,0,30),
+	Point(24,0,20),
+	Point(25,0,10),
 	Point(25,0,5),
 	
 	Point(25,0,0),
@@ -47,13 +47,13 @@ static Point rotational_step_points[STEP_COUNT] = {
 	
 	Point(-3,27,5),
 	Point(-2,22,10),
-	Point(-1,18,15),
-	Point(-1,13,20),
-	Point(0,8,20),
-	Point(0,0,20),
-	Point(0,-8,20),
-	Point(-1,-13,20),
-	Point(-1,-18,15),
+	Point(-1,18,20),
+	Point(-1,13,30),
+	Point(0,8,30),
+	Point(0,0,30),
+	Point(0,-8,30),
+	Point(-1,-13,30),
+	Point(-1,-18,20),
 	Point(-2,-22,10),
 	Point(-3,-27,5),
 	
@@ -86,21 +86,12 @@ Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double line
 		Point rotational_result(0,0,0);
 		rotational_result.add(rotational_step_points[step_index % STEP_COUNT]);
 		rotational_result.x *= fabs(rotational_velocity);
-		rotational_result.y *= rotational_velocity;
+		rotational_result.y *= -1 * rotational_velocity;
 		rotational_result.rotateXY(leg.getMountingAngle());
 		
 		result.add(rotational_result);
 	}
 	
-	if (result.x > 30) result.x = 30;
-	else if (result.x < -30) result.x = -30;
-
-	if (result.y > 30) result.y = 30;
-	else if (result.y < -30) result.y = -30;
-	
-	if (result.z > 20) result.z = 20;
-	else if (result.z < -20) result.z = -20;
-
 	return result;
 }
 

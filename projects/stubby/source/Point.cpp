@@ -14,20 +14,28 @@ void Point::add(Point offset){
 	this->z += offset.z;
 }
 
-void Point::rotateXY(double angle){
-	this->rotateXY(Point(0,0,0), angle);
+void rotate2D(int16_t* c1, int16_t* c2, double angle){
+	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
+	int16_t n1 = *c1 * cos_f(angle) - *c2 * sin_f(angle);
+	int16_t n2 = *c1 * sin_f(angle) + *c2 * cos_f(angle);
+	
+	*c1 = n1;
+	*c2 = n2;
 }
 
-void Point::rotateXY(Point origin, double angle){
-	//Translate x, y by o.x, o.y
-	this->x -= origin.x;
-	this->y -= origin.y;
-	
-	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
-	int16_t x1 = this->x * cos_f(angle) - this->y * sin_f(angle);
-	int16_t y1 = this->x * sin_f(angle) + this->y * cos_f(angle);
+void Point::rotateXY(double angle){
+	rotate2D(&this->x, &this->y, angle);
+}
 
-	//Translate back
-	this->x = x1 + origin.x;
-	this->y = y1 + origin.y;
+void Point::rotateXZ(double angle){
+	rotate2D(&this->z, &this->x, angle);
+}
+
+void Point::rotateYZ(double angle){
+	rotate2D(&this->y, &this->z, angle);
+}
+
+void Point::rotateXYZ(Point v, double angle){
+	
+	
 }

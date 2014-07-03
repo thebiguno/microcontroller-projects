@@ -48,4 +48,42 @@
 #define CONTROLLER_BUTTON_VALUE_CROSS		0x0E
 #define CONTROLLER_BUTTON_VALUE_SQUARE		0x0F
 
+#include <avr/io.h>
+
+typedef struct uc_stick_t {
+	int8_t x;
+	int8_t y;
+} uc_stick_t;
+
+void uc_init();
+
+/*
+ * Read all buttons which have been pressed since the last
+ * call to uc_read_pressed_buttons().
+ */
+uint16_t uc_read_pressed_buttons();
+
+/*
+ * Read all buttons which have been released since the last
+ * call to uc_read_released_buttons();
+ */
+uint16_t uc_read_released_buttons();
+
+/*
+ * Read all buttons which are currently being held.
+ */
+uint16_t uc_read_held_buttons();
+
+/*
+ * Read the left stick (x and y).  0 is neutral, negative 
+ * numbers are left / down, positive numbers are right / up.
+ */
+uc_stick_t uc_read_left();
+
+/*
+ * Read the right stick (x and y).  0 is neutral, negative 
+ * numbers are left / down, positive numbers are right / up.
+ */
+uc_stick_t uc_read_right();
+
 #endif

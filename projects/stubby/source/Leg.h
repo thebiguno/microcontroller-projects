@@ -23,7 +23,7 @@
 #define LEG_MOUNTING_ANGLE				(60 * M_PI / 180)
 
 //The height from ground to the center of the coxa joint.  See figure 1.2, 'coxa height'.
-#define COXA_HEIGHT						50.0
+#define COXA_HEIGHT						55.0
 //The length of the leg segment between coxa and femur joints (measured between center of each joint).  See
 // figure 1.2, 'coxa length'
 #define COXA_LENGTH						49.0
@@ -92,68 +92,68 @@ class Leg {
 		Point p;										//Foot co-ordinates
 		Point neutralP;									//Neutral foot co-ordinates
 		double mounting_angle;							//The angle at which the leg is mounted, in degrees, relative to the X axis of a standard cartesian plane.
-		int8_t offset[JOINT_COUNT];						//Calibration offset in degrees
+		int8_t calibration[JOINT_COUNT];				//Calibration offset in degrees
 		
 		//Set the angle for each servo.  This includes the servo abstraction code.
 		void setTibiaAngle(double angle);
 		void setFemurAngle(double angle);
 		void setCoxaAngle(double angle);
 		
-		/*
-			* Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
-			* sets the servo position for each of the three joints.
-			*/
-		void setPosition(Point point);
-					
 	public:
 		/*
-			* Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
-			*/
+		 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
+		 */
 		Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP);
 		
 		/*
-			* Set the foot position, relative to neutralP.
-			*/
+		 * Set the foot position, relative to neutralP.
+		 */
 		void setOffset(Point offset);
 		
 		/*
-			* Resets the foot position to neutral (as defined from the constructor).
-			*/
+		 * Resets the foot position to neutral (as defined from the constructor).
+		 */
 		void resetPosition();
 		
 		/*
-			* Returns the last set foot position.
-			*/
+		 * Returns the last set foot position.
+		 */
 		Point getPosition();
+
+		/*
+		 * Sets the foot position, in absolute x, y, z co-ordinates.  Performs the IK calculations, the absolute angle to servo angle calculations, and
+		 * sets the servo position for each of the three joints.
+		 */
+		void setPosition(Point point);
 		
 		/*
-			* Gets the offset for the given joint
-			*/
-		int8_t getOffset(uint8_t joint);
+		 * Gets the offset for the given joint
+		 */
+		int8_t getCalibration(uint8_t joint);
 		
 		/*
-			* Sets the offset for the given joint
-			*/
-		void setOffset(uint8_t joint, int8_t offset);
+		 * Sets the offset for the given joint
+		 */
+		void setCalibration(uint8_t joint, int8_t offset);
 		
 		/*
-			* Returns the index
-			*/
+		 * Returns the index
+		 */
 		uint8_t getIndex();
 		
 		/*
-			* Returns the mounting angle
-			*/
+		 * Returns the mounting angle
+		 */
 		double getMountingAngle();
 		
 		/*
-			* Gets the specified port
-			*/
+		 * Gets the specified port
+		 */
 		volatile uint8_t* getPort(uint8_t joint);
 		
 		/*
-			* Gets the specified pin
-			*/
+		 * Gets the specified pin
+		 */
 		uint8_t getPin(uint8_t joint);
 };
 #endif
