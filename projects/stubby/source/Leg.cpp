@@ -99,6 +99,12 @@ double Leg::getMountingAngle(){
 }
 
 void Leg::setOffset(Point offset){
+	Point foot(0,0,0);
+	foot.x = this->getCalibration(CALIBRATION_X);
+	foot.y = this->getCalibration(CALIBRATION_Y);
+	foot.z = this->getCalibration(CALIBRATION_Z);
+	offset.add(foot);
+
 	if (offset.x > 30) offset.x = 30;
 	else if (offset.x < -30) offset.x = -30;
 
@@ -113,7 +119,7 @@ void Leg::setOffset(Point offset){
 }
 
 void Leg::resetPosition(){
-	this->setPosition(this->neutralP);
+	this->setOffset(Point(0,0,0));
 }
 
 Point Leg::getPosition(){
@@ -128,12 +134,13 @@ uint8_t Leg::getPin(uint8_t joint){
 	return this->pin[joint];
 }
 
-int8_t Leg::getCalibration(uint8_t joint){
-	return this->calibration[joint];
+int8_t Leg::getCalibration(uint8_t i){
+	if (i < CALIBRATION_COUNT) return this->calibration[i];
+	else return 0;
 }
 			
-void Leg::setCalibration(uint8_t joint, int8_t calibration){
-	this->calibration[joint] = calibration;
+void Leg::setCalibration(uint8_t i, int8_t calibration){
+	if (i < CALIBRATION_COUNT) this->calibration[i] = calibration;
 }
 
 void Leg::setTibiaAngle(double desired_angle){
