@@ -7,8 +7,9 @@ How to program the HC-06 boards (which is apparently the one which I have, or so
 2) Software
 	a) Start by putting a jumper on the programming header.  This connects KEY to VCC, putting the module in programming mode.
 	b) Connect RX / TX on the FTDI cable to the TX / RX on the board (using voltage dividers, zeners, whatever as needed to keep voltages at the proper level).
-	c) In a serial terminal (Arduino's terminal works well), set to BAUD=9600 with no CR/LF.  (Note that other modules may require BAUD=38400 with LF+CR... again, this seems to be a HC-05 vs HC-06 thing, but my module appears to have properties of both of these).
+	c) In a serial terminal (Arduino's terminal works well), set to BAUD=9600 with no CR/LF.  (Note that other modules may require BAUD=38400 with LF+CR... again, this seems to be a HC-05 vs HC-06 thing, but my module appears to have properties of both of these).  (Also note that on my module, once you change the baud rate here, it also applies to programming it in the future.  My personal standard is to set these, plus other serial omodules like the XBee, to 38400.)
 	d) Type "AT" (no quotes) to verify that the module is responding.  You should see "OK" echoed back.
-	e) You can now use various AT commands to set baud rate, Bluetooth name, etc.  Google "HC-05 Programming" (or HC-06) for details.  See for instance http://www.puntoflotante.net/BOLT-SYSTEM-BLUETOOTH-AT-COMMANDS.htm for an example of what this will look like.
+	e) (For my use): Set Pin to 0000 and baud to 38400, if these are not already set properly.
+	f) You can now use various AT commands to set baud rate, Bluetooth name, etc.  Google "HC-05 Programming" (or HC-06) for details.  See for instance http://www.puntoflotante.net/BOLT-SYSTEM-BLUETOOTH-AT-COMMANDS.htm for an example of what this will look like.
 
 That's it!  Enjoy your Bluetooth serial hacking!
