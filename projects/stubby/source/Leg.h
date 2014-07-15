@@ -92,7 +92,7 @@ class Leg {
 		Point p;										//Foot co-ordinates
 		Point neutralP;									//Neutral foot co-ordinates
 		double mounting_angle;							//The angle at which the leg is mounted, in degrees, relative to the X axis of a standard cartesian plane.
-		int8_t calibration[JOINT_COUNT];				//Calibration offset in degrees
+		int8_t calibration[CALIBRATION_COUNT];			//Calibration offset (in degrees for 0..2, and in mm for 3..5)
 		
 		//Set the angle for each servo.  This includes the servo abstraction code.
 		void setTibiaAngle(double angle);
