@@ -12,12 +12,12 @@ OS=$(shell uname -s)
 
 #AVRDude options
 ifeq ($(OS),Linux)
-	AVRDUDE=avrdude
 	AVRDUDE_PORT=/dev/ttyUSB0
 else
-	AVRDUDE=avrdude
 	AVRDUDE_PORT=/dev/tty.usbserial*
 endif
+DFU=dfu-programmer
+AVRDUDE=avrdude
 AVRDUDE_PROGRAMMER=stk500v1
 
 OBJCOPY=avr-objcopy

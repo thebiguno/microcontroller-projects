@@ -51,25 +51,42 @@ $(PROJECT).out: $(SOURCES)
 
 
 program: all
+ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
+	$(DFU) $(MMCU) erase
+	$(DFU) $(MMCU) flash $(PROJECT).hex
+else
 	$(AVRDUDE_PREP_COMMANDS)
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U flash:w:$(PROJECT).hex 
-		
+endif
+
 fuse:
+ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
+	echo "Cannot set fuses in DFU Programmer mode"
+else
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m $(EXTENDED_FUSE_WRITE)
+endif
 
 readfuse: 
+ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
+	echo "Cannot set fuses in DFU Programmer mode"
+else
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h
+endif
 
 readeeprom: 
+ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
+	$(DFU) $(MMCU) dump-eeprom --quiet | hexdump
+else
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U eeprom:r:-:h
+endif
 
 clean:
 	rm -f *.o
