@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Wed 16 Jul 2014 08:21:20 AM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, July 16, 2014 'pmt' 01:16:46 pm
 
 BeginCmp
 TimeStamp = /538BCD08;
@@ -38,13 +38,6 @@ EndCmp
 BeginCmp
 TimeStamp = /538BCD1F;
 Reference = C6;
-ValeurCmp = 2200uF;
-IdModule  = C1V7;
-EndCmp
-
-BeginCmp
-TimeStamp = /53C5E745;
-Reference = C7;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -92,20 +85,6 @@ IdModule  = TQFP44;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C60797;
-Reference = J1;
-ValeurCmp = CONN_2X2;
-IdModule  = PIN_ARRAY_2X2;
-EndCmp
-
-BeginCmp
-TimeStamp = /532EDC04;
-Reference = K1;
-ValeurCmp = XTAL;
-IdModule  = CRYSTAL_RESONATOR;
-EndCmp
-
-BeginCmp
 TimeStamp = /53337638;
 Reference = P1;
 ValeurCmp = BATT (4.8V-6V);
@@ -120,10 +99,10 @@ IdModule  = ISP;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C60783;
+TimeStamp = /53C6C67B;
 Reference = P3;
-ValeurCmp = CONN_10;
-IdModule  = SIL-10;
+ValeurCmp = CONN_6;
+IdModule  = SIL-6;
 EndCmp
 
 BeginCmp
@@ -185,28 +164,28 @@ EndCmp
 BeginCmp
 TimeStamp = /53C5D39E;
 Reference = R8;
-ValeurCmp = 100;
+ValeurCmp = 1k;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /53C60BB7;
 Reference = R9;
-ValeurCmp = 100;
+ValeurCmp = 1k;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /533C55EC;
 Reference = R10;
-ValeurCmp = 100;
+ValeurCmp = 1k;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /53C60BB1;
 Reference = R11;
-ValeurCmp = 100;
+ValeurCmp = 1k;
 IdModule  = SM0603;
 EndCmp
 
@@ -274,6 +253,13 @@ IdModule  = DPDT;
 EndCmp
 
 BeginCmp
+TimeStamp = /53C6C696;
+Reference = SW2;
+ValeurCmp = DPDT;
+IdModule  = DPDT_Wide;
+EndCmp
+
+BeginCmp
 TimeStamp = /53C5DDE3;
 Reference = VR1;
 ValeurCmp = MCP1702;
@@ -285,6 +271,13 @@ TimeStamp = /535B0A48;
 Reference = VR2;
 ValeurCmp = MCP1702;
 IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /53C6D12E;
+Reference = X1;
+ValeurCmp = CRYSTAL_RESONATOR;
+IdModule  = CRYSTAL_RESONATOR;
 EndCmp
 
 BeginCmp
