@@ -20,7 +20,7 @@ ifeq 'arduino' '$(AVRDUDE_PROGRAMMER)'
 endif
 
 ifeq 'usbtiny' '$(AVRDUDE_PROGRAMMER)'
-	AVRDUDE_ARGS += -B 1
+	AVRDUDE_SPEED = -B 1
 endif
 
 #If an EFUSE variable has been set, we program the extended fuses too
@@ -57,7 +57,7 @@ ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
 else
 	$(AVRDUDE_PREP_COMMANDS)
 	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
-		$(AVRDUDE_ARGS) \
+		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
 		-U flash:w:$(PROJECT).hex 
 endif
 
