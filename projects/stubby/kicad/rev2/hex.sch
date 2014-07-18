@@ -259,13 +259,13 @@ $EndComp
 $Comp
 L GND #PWR07
 U 1 1 53378132
-P 6400 2750
-F 0 "#PWR07" H 6400 2750 30  0001 C CNN
-F 1 "GND" H 6400 2680 30  0001 C CNN
-F 2 "" H 6400 2750 60  0000 C CNN
-F 3 "" H 6400 2750 60  0000 C CNN
-	1    6400 2750
-	0    -1   -1   0   
+P 6500 3100
+F 0 "#PWR07" H 6500 3100 30  0001 C CNN
+F 1 "GND" H 6500 3030 30  0001 C CNN
+F 2 "" H 6500 3100 60  0000 C CNN
+F 3 "" H 6500 3100 60  0000 C CNN
+	1    6500 3100
+	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR08
@@ -337,7 +337,7 @@ Text Notes 1400 7150 0    60   ~ 0
 Expansion Port
 Text Notes 2000 1500 0    60   ~ 0
 5v and 3.3v Regulators
-Text Notes 6450 2950 2    60   ~ 0
+Text Notes 6450 3200 2    60   ~ 0
 Battery Meter
 Text Notes 8600 5600 0    60   ~ 0
 RGB LED
@@ -1109,7 +1109,7 @@ Wire Wire Line
 Connection ~ 9050 4750
 Connection ~ 8950 4750
 Wire Wire Line
-	5900 2550 5900 2750
+	5900 2550 5900 3000
 Wire Wire Line
 	8750 5400 9250 5400
 Wire Wire Line
@@ -1583,4 +1583,25 @@ Wire Wire Line
 	2650 6100 2100 6100
 Wire Wire Line
 	2100 6100 2100 6500
+Wire Wire Line
+	6500 2750 6500 3100
+Wire Wire Line
+	6500 3000 6350 3000
+Wire Wire Line
+	6500 2750 6400 2750
+Connection ~ 6500 3000
+Wire Wire Line
+	5900 3000 5950 3000
+Connection ~ 5900 2750
+$Comp
+L CP1 C7
+U 1 1 53C9893A
+P 6150 3000
+F 0 "C7" H 6200 3100 50  0000 L CNN
+F 1 "47uF" H 6200 2900 50  0000 L CNN
+F 2 "~" H 6150 3000 60  0000 C CNN
+F 3 "~" H 6150 3000 60  0000 C CNN
+	1    6150 3000
+	0    -1   -1   0   
+$EndComp
 $EndSCHEMATC
