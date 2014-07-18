@@ -30,7 +30,6 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:hex
-LIBS:custom
 LIBS:hex-cache
 EELAYER 27 0
 EELAYER END
@@ -38,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "16 jul 2014"
+Date "18 jul 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -736,9 +735,9 @@ Text Label 4950 4950 0    60   ~ 0
 MISO
 Text Label 4950 4850 0    60   ~ 0
 MOSI
-Text Label 6150 6150 0    60   ~ 0
+Text Label 5050 6150 0    60   ~ 0
 AVR_TX
-Text Label 6150 6050 0    60   ~ 0
+Text Label 4950 6050 0    60   ~ 0
 AVR_RX
 $Comp
 L +3.3V #PWR020
@@ -1118,8 +1117,6 @@ Wire Wire Line
 Wire Wire Line
 	8750 5100 9250 5100
 Wire Wire Line
-	1900 6100 1900 6500
-Wire Wire Line
 	2750 3700 2800 3700
 Wire Wire Line
 	2800 3700 2800 3850
@@ -1133,8 +1130,6 @@ Wire Wire Line
 	4650 1100 5200 1100
 Connection ~ 5000 900 
 Connection ~ 5900 2650
-Wire Wire Line
-	2000 6200 2000 6500
 Wire Wire Line
 	8200 4600 7200 4600
 Wire Wire Line
@@ -1267,8 +1262,6 @@ Wire Wire Line
 Wire Wire Line
 	6050 7850 2550 7850
 Wire Wire Line
-	2100 6300 2100 6500
-Wire Wire Line
 	6650 3650 6650 6950
 Wire Wire Line
 	6650 6950 5950 6950
@@ -1283,17 +1276,15 @@ Wire Wire Line
 Wire Wire Line
 	7650 6250 7650 6150
 Wire Wire Line
-	2450 7950 2450 6300
+	2450 6300 2450 7950
 Wire Wire Line
-	2450 6300 2100 6300
+	1900 6300 2450 6300
 Wire Wire Line
 	2550 7850 2550 6200
 Wire Wire Line
 	2550 6200 2000 6200
 Wire Wire Line
 	2650 7750 2650 6100
-Wire Wire Line
-	2650 6100 1900 6100
 Wire Wire Line
 	1800 6000 2750 6000
 Wire Wire Line
@@ -1584,4 +1575,12 @@ F 3 "~" H 2150 4050 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	2300 4050 2850 4050
+Wire Wire Line
+	1900 6300 1900 6500
+Wire Wire Line
+	2000 6200 2000 6500
+Wire Wire Line
+	2650 6100 2100 6100
+Wire Wire Line
+	2100 6100 2100 6500
 $EndSCHEMATC
