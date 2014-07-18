@@ -1,6 +1,8 @@
 #ifndef ds1307_h
 #define ds1307_h
 
+#include <stdint.h>
+
 struct ds1307_time_t {
 	uint8_t  second;
 	uint8_t  minute;
