@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Wednesday, July 16, 2014 'pmt' 12:51:13 pm
+PCBNEW-LibModule-V1  Monday, July 21, 2014 'pmt' 01:17:46 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -15,6 +15,7 @@ DIGITALCAVE_URL_SMALL_REVERSE
 DPDT
 DPDT_Wide
 FUSE_TE5
+HC05_Edge
 ISP
 ISP_EDGE
 LE-MM103
@@ -517,12 +518,12 @@ $PAD
 Sh "3" C 1.524 1.524 0 0 0
 Dr 1.016 0 0
 At STD N 00E0FFFF
-Ne 3 "GND"
+Ne 1 "GND"
 Po 0 0
 $EndPAD
 $SHAPE3D
-Na "pin_array/pins_array_3x1.wrl"
-Sc 1 1 1
+Na "Device/crystal_low_profile.wrl"
+Sc 0.4 0.4 0.4
 Of 0 0 0
 Ro 0 0 0
 $EndSHAPE3D
@@ -16486,6 +16487,107 @@ Ne 0 ""
 Po 2.54 0
 $EndPAD
 $EndMODULE FUSE_TE5
+$MODULE HC05_Edge
+Po 0 0 0 15 53960F83 00000000 ~~
+Li HC05_Edge
+Kw Bluetooth HC05 HC06
+Sc 0
+AR /539609FF
+Op 0 0 0
+T0 -10.16 -2.54 1.72974 1.08712 0 0.27178 N I 21 N "P2"
+T1 5.08 -2.54 1.524 1.016 0 0.254 N I 21 N "CONN_13"
+$PAD
+Sh "1" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 3 "/TX"
+Po -14.5 0
+$EndPAD
+$PAD
+Sh "2" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 2 "/RX"
+Po -13 0
+$EndPAD
+$PAD
+Sh "3" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -11.5 0
+$EndPAD
+$PAD
+Sh "4" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -10 0
+$EndPAD
+$PAD
+Sh "5" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -8.5 0
+$EndPAD
+$PAD
+Sh "6" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -7 0
+$EndPAD
+$PAD
+Sh "7" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -5.5 0
+$EndPAD
+$PAD
+Sh "8" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -4 0
+$EndPAD
+$PAD
+Sh "9" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -2.5 0
+$EndPAD
+$PAD
+Sh "10" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1 0
+$EndPAD
+$PAD
+Sh "11" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.5 0
+$EndPAD
+$PAD
+Sh "12" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 4 "/VCC"
+Po 2 0
+$EndPAD
+$PAD
+Sh "13" R 1.1 2.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 1 "/GND"
+Po 3.5 0
+$EndPAD
+$EndMODULE HC05_Edge
 $MODULE ISP
 Po 0 0 0 15 5383BA06 00000000 ~~
 Li ISP
@@ -16896,6 +16998,12 @@ At STD N 00E0FFFF
 Ne 0 ""
 Po 1.905 0
 $EndPAD
+$SHAPE3D
+Na "discret/leds/led5_vertical_verde.wrl"
+Sc 1 1 1
+Of 0 0 0
+Ro 0 0 0
+$EndSHAPE3D
 $EndMODULE LED_RGB
 $MODULE MOUNT_HOLE
 Po 0 0 0 15 4FE4C57C 00000000 ~~
