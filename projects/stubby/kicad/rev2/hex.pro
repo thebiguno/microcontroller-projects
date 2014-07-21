@@ -1,4 +1,4 @@
-update=Wednesday, May 21, 2014 'amt' 10:48:47 am
+update=Monday, July 21, 2014 'pmt' 01:18:35 pm
 version=1
 last_client=eeschema
 [cvpcb]
@@ -12,10 +12,10 @@ version=1
 version=1
 LastNetListRead=
 UseCmpFile=1
-PadDrill=0.000000000000
-PadDrillOvalY=0.000000000000
-PadSizeH=0.889000000000
-PadSizeV=1.200000000000
+PadDrill=1.016000000000
+PadDrillOvalY=1.016000000000
+PadSizeH=1.524000000000
+PadSizeV=1.524000000000
 PcbTextSizeV=1.500000000000
 PcbTextSizeH=1.500000000000
 PcbTextThickness=0.300000000000
@@ -28,7 +28,7 @@ DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
 [pcbnew/libraries]
-LibDir=../../../lib/kicad/modules
+LibDir=../../../../lib/kicad/modules
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -49,7 +49,7 @@ LibName17=hex
 LibName18=custom
 [eeschema]
 version=1
-LibDir=../../../lib/kicad/library
+LibDir=../../../../lib/kicad/modules
 NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100

@@ -37,7 +37,7 @@ $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "18 jul 2014"
+Date "21 jul 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -896,28 +896,6 @@ F 3 "~" H 2250 2400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR026
-U 1 1 538BD173
-P 10200 2300
-F 0 "#PWR026" H 10200 2300 30  0001 C CNN
-F 1 "GND" H 10200 2230 30  0001 C CNN
-F 2 "" H 10200 2300 60  0000 C CNN
-F 3 "" H 10200 2300 60  0000 C CNN
-	1    10200 2300
-	1    0    0    -1  
-$EndComp
-$Comp
-L CP1 C2
-U 1 1 538BD17A
-P 10200 2050
-F 0 "C2" H 10250 2150 50  0000 L CNN
-F 1 "2200uF" H 10250 1950 50  0000 L CNN
-F 2 "~" H 10200 2050 60  0000 C CNN
-F 3 "~" H 10200 2050 60  0000 C CNN
-	1    10200 2050
-	1    0    0    -1  
-$EndComp
-$Comp
 L ATMEGA1284-A IC1
 U 1 1 53C5CDBB
 P 3900 5150
@@ -1068,8 +1046,6 @@ Wire Wire Line
 	8850 1750 9200 1750
 Connection ~ 9050 1750
 Connection ~ 8950 1750
-Wire Wire Line
-	8850 1850 10200 1850
 Connection ~ 8950 1850
 Connection ~ 9050 1850
 Wire Wire Line
@@ -1358,8 +1334,6 @@ Wire Wire Line
 Wire Wire Line
 	10200 1700 10200 1650
 Wire Wire Line
-	10200 2300 10200 2250
-Wire Wire Line
 	3800 7150 3800 7200
 Connection ~ 3800 7200
 Wire Wire Line
@@ -1604,4 +1578,6 @@ F 3 "~" H 6150 3000 60  0000 C CNN
 	1    6150 3000
 	0    -1   -1   0   
 $EndComp
+Wire Wire Line
+	10000 1850 8850 1850
 $EndSCHEMATC

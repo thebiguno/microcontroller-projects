@@ -1,15 +1,8 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, July 18, 2014 'pmt' 02:52:30 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, July 21, 2014 'pmt' 01:24:41 pm
 
 BeginCmp
 TimeStamp = /538BCD08;
 Reference = C1;
-ValeurCmp = 2200uF;
-IdModule  = C1V7;
-EndCmp
-
-BeginCmp
-TimeStamp = /538BD17A;
-Reference = C2;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -117,6 +110,48 @@ TimeStamp = /5346FA4A;
 Reference = P4;
 ValeurCmp = CONN_8;
 IdModule  = SIL-8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD64AD;
+Reference = P5;
+ValeurCmp = CONN_6;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD6523;
+Reference = P6;
+ValeurCmp = CONN_13;
+IdModule  = HC05_Edge;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD64FD;
+Reference = P7;
+ValeurCmp = CONN_6;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD654B;
+Reference = P8;
+ValeurCmp = CONN_10;
+IdModule  = SIL-10;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD6F40;
+Reference = P9;
+ValeurCmp = CONN_2;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CD7069;
+Reference = P10;
+ValeurCmp = CONN_1;
+IdModule  = SIL-1;
 EndCmp
 
 BeginCmp
