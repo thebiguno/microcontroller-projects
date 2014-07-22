@@ -1,8 +1,15 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, July 21, 2014 'pmt' 01:24:41 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, July 22, 2014 'pmt' 12:45:11 pm
 
 BeginCmp
 TimeStamp = /538BCD08;
 Reference = C1;
+ValeurCmp = 2200uF;
+IdModule  = C1V7;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CE84F9;
+Reference = C2;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -22,43 +29,36 @@ IdModule  = SM0603;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C5E0F9;
-Reference = C5;
-ValeurCmp = 1uF;
-IdModule  = SM0603;
-EndCmp
-
-BeginCmp
 TimeStamp = /538BCD1F;
-Reference = C6;
+Reference = C5;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
 
 BeginCmp
 TimeStamp = /53C9893A;
-Reference = C7;
+Reference = C6;
 ValeurCmp = 47uF;
 IdModule  = C1V5;
 EndCmp
 
 BeginCmp
 TimeStamp = /5342F877;
-Reference = C8;
+Reference = C7;
 ValeurCmp = 20pF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5342F86B;
-Reference = C9;
+Reference = C8;
 ValeurCmp = 20pF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /532EDCAD;
-Reference = C10;
+Reference = C9;
 ValeurCmp = 1uF;
 IdModule  = SM0603;
 EndCmp
@@ -82,6 +82,13 @@ TimeStamp = /53C5CDBB;
 Reference = IC1;
 ValeurCmp = ATMEGA1284-A;
 IdModule  = TQFP44;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CE7F68;
+Reference = JP1;
+ValeurCmp = CONN_3;
+IdModule  = SIL-3;
 EndCmp
 
 BeginCmp
@@ -206,28 +213,28 @@ EndCmp
 BeginCmp
 TimeStamp = /53C5D39E;
 Reference = R8;
-ValeurCmp = 1k;
+ValeurCmp = 100;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /53C60BB7;
 Reference = R9;
-ValeurCmp = 1k;
+ValeurCmp = 100;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /533C55EC;
 Reference = R10;
-ValeurCmp = 1k;
+ValeurCmp = 100;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /53C60BB1;
 Reference = R11;
-ValeurCmp = 1k;
+ValeurCmp = 100;
 IdModule  = SM0603;
 EndCmp
 
@@ -243,6 +250,13 @@ TimeStamp = /533AEE68;
 Reference = R13;
 ValeurCmp = 1k;
 IdModule  = SM0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CE8D22;
+Reference = R14;
+ValeurCmp = 68;
+IdModule  = R3;
 EndCmp
 
 BeginCmp
@@ -295,22 +309,8 @@ IdModule  = DPDT;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C6C696;
-Reference = SW2;
-ValeurCmp = DPDT;
-IdModule  = DPDT_Wide;
-EndCmp
-
-BeginCmp
-TimeStamp = /53C5DDE3;
-Reference = VR1;
-ValeurCmp = MCP1702;
-IdModule  = TO92;
-EndCmp
-
-BeginCmp
 TimeStamp = /535B0A48;
-Reference = VR2;
+Reference = VR1;
 ValeurCmp = MCP1702;
 IdModule  = TO92;
 EndCmp
@@ -334,6 +334,13 @@ TimeStamp = /533C55FC;
 Reference = ZD2;
 ValeurCmp = ZD 3v3;
 IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CE8D01;
+Reference = ZD3;
+ValeurCmp = ZD 5v1;
+IdModule  = DO-41;
 EndCmp
 
 EndListe

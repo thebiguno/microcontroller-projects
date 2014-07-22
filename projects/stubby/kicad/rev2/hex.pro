@@ -1,4 +1,4 @@
-update=Monday, July 21, 2014 'pmt' 01:18:35 pm
+update=Tuesday, July 22, 2014 'pmt' 12:23:06 pm
 version=1
 last_client=eeschema
 [cvpcb]
@@ -49,7 +49,7 @@ LibName17=hex
 LibName18=custom
 [eeschema]
 version=1
-LibDir=../../../../lib/kicad/modules
+LibDir=../../../../lib/kicad/library
 NetFmtName=PcbnewAdvanced
 RptD_X=0
 RptD_Y=100
