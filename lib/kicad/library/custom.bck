@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Mon 28 Apr 2014 07:38:04 PM MDT
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, July 22, 2014 'pmt' 12:24:37 pm
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -31,7 +31,12 @@ $ENDCMP
 #
 $CMP RGB_LED
 D RGB LED (Common Cathode)
-K RGB_LED
+K RGB_LED_COMMON_CATHODE
+$ENDCMP
+#
+$CMP RGB_LED_COMMON_CATHODE
+D RGB LED (Common Cathode)
+K RGB_LED_COMMON_CATHODE
 $ENDCMP
 #
 $CMP STPIC6D595

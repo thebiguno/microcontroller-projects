@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Thu 01 May 2014 09:50:26 PM MDT
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, July 22, 2014 'pmt' 12:26:44 pm
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -29,9 +29,14 @@ D Peak Boost Buck Inverting Switching Regulator
 K Buck, Power
 $ENDCMP
 #
-$CMP RGB_LED
+$CMP RGB_LED_COMMON_ANODE
+D RGB LED (Common Anode)
+K RGB_LED_COMMON_ANODE
+$ENDCMP
+#
+$CMP RGB_LED_COMMON_CATHODE
 D RGB LED (Common Cathode)
-K RGB_LED
+K RGB_LED_COMMON_CATHODE
 $ENDCMP
 #
 $CMP STPIC6D595
