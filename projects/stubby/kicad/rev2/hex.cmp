@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le Friday, July 25, 2014 'amt' 12:35:49 am
+Cmp-Mod V01 Genere par PcbNew le Fri 25 Jul 2014 08:17:17 AM MDT
 
 BeginCmp
 TimeStamp = 53CFFA78
@@ -468,7 +468,7 @@ BeginCmp
 TimeStamp = 53D158C6
 Path = /53D147AC
 Reference = C10;
-ValeurCmp = 10uF;
+ValeurCmp = 100uF;
 IdModule  = SM0805;
 EndCmp
 
