@@ -1,9 +1,9 @@
-Cmp-Mod V01 Genere par PcbNew le Fri 25 Jul 2014 08:17:17 AM MDT
+Cmp-Mod V01 Genere par PcbNew le Fri 25 Jul 2014 08:26:34 AM MDT
 
 BeginCmp
 TimeStamp = 53CFFA78
 Path = /53CFFE5D
-Reference = P1;
+Reference = P6;
 ValeurCmp = CONN_9;
 IdModule  = SIL-9;
 EndCmp
@@ -19,7 +19,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6CE84
 Path = /53C6C67B
-Reference = P9;
+Reference = P10;
 ValeurCmp = CONN_6;
 IdModule  = SIL-6;
 EndCmp
@@ -27,7 +27,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CD66B7
 Path = /53CD64FD
-Reference = P8;
+Reference = P1;
 ValeurCmp = CONN_6;
 IdModule  = SIL-6;
 EndCmp
@@ -35,7 +35,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CD66E0
 Path = /53CD654B
-Reference = P10;
+Reference = P3;
 ValeurCmp = CONN_10;
 IdModule  = SIL-10;
 EndCmp
@@ -43,7 +43,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CD690F
 Path = /53CD6F40
-Reference = P6;
+Reference = P5;
 ValeurCmp = CONN_2;
 IdModule  = SIL-2;
 EndCmp
@@ -51,7 +51,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CD66A8
 Path = /53CD64AD
-Reference = P4;
+Reference = P2;
 ValeurCmp = CONN_6;
 IdModule  = SIL-6;
 EndCmp
@@ -67,7 +67,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C69FCB
 Path = /533C55FC
-Reference = ZD3;
+Reference = ZD2;
 ValeurCmp = ZD 3v3;
 IdModule  = SOT23;
 EndCmp
@@ -83,7 +83,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53420A02
 Path = /53C5D59D
-Reference = ZD2;
+Reference = ZD1;
 ValeurCmp = ZD 3v3;
 IdModule  = SOT23;
 EndCmp
@@ -171,7 +171,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A0AF
 Path = /53337638
-Reference = P2;
+Reference = P8;
 ValeurCmp = BATT (4.8V-6V);
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
@@ -179,7 +179,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A101
 Path = /532FA2B1
-Reference = P3;
+Reference = P9;
 ValeurCmp = PROG;
 IdModule  = ISP;
 EndCmp
@@ -187,7 +187,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A114
 Path = /538BCD08
-Reference = C8;
+Reference = C10;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -203,7 +203,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C9891C
 Path = /53C9893A
-Reference = C7;
+Reference = C9;
 ValeurCmp = 47uF;
 IdModule  = C1V5;
 EndCmp
@@ -219,7 +219,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CD67C3
 Path = /53CD6523
-Reference = P5;
+Reference = P4;
 ValeurCmp = CONN_13;
 IdModule  = HC05_Edge;
 EndCmp
@@ -259,7 +259,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CE7D84
 Path = /53CE84F9
-Reference = C9;
+Reference = C11;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -283,7 +283,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53CEB3CC
 Path = /53D1E5FA
-Reference = D2;
+Reference = D3;
 ValeurCmp = RGB_LED_COMMON_CATHODE;
 IdModule  = LED_RGB;
 EndCmp
@@ -291,7 +291,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C69FD5
 Path = /53C60BB7
-Reference = R10;
+Reference = R9;
 ValeurCmp = 100;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -299,7 +299,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C69FDF
 Path = /53C60BB1
-Reference = R11;
+Reference = R10;
 ValeurCmp = 100;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -307,7 +307,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C69FF3
 Path = /53C5D39E
-Reference = R6;
+Reference = R5;
 ValeurCmp = 100;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -315,7 +315,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C69FFD
 Path = /53483955
-Reference = R3;
+Reference = R2;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -323,7 +323,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A007
 Path = /5342F877
-Reference = C5;
+Reference = C6;
 ValeurCmp = 20pF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -331,7 +331,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A011
 Path = /5342F86B
-Reference = C6;
+Reference = C7;
 ValeurCmp = 20pF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -339,7 +339,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A01B
 Path = /533C55EC
-Reference = R7;
+Reference = R6;
 ValeurCmp = 100;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -347,7 +347,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A025
 Path = /533AEE68
-Reference = R5;
+Reference = R4;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -363,7 +363,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A039
 Path = /532EDCAD
-Reference = C4;
+Reference = C5;
 ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -371,7 +371,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A043
 Path = /53335945
-Reference = C2;
+Reference = C4;
 ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -379,7 +379,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A04D
 Path = /53335959
-Reference = C1;
+Reference = C3;
 ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -387,7 +387,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A057
 Path = /533780B6
-Reference = R8;
+Reference = R7;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -395,7 +395,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C991ED
 Path = /533780C5
-Reference = R9;
+Reference = R8;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -403,7 +403,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A06B
 Path = /533781D4
-Reference = R12;
+Reference = R11;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -411,7 +411,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A075
 Path = /533781DA
-Reference = R14;
+Reference = R13;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -419,7 +419,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A07F
 Path = /533781E0
-Reference = R13;
+Reference = R12;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -427,7 +427,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A089
 Path = /533AEE5B
-Reference = R4;
+Reference = R3;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -435,7 +435,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53C6A0F6
 Path = /53483946
-Reference = D1;
+Reference = D2;
 ValeurCmp = LED;
 IdModule  = LED-0805-MARKED_ANODE;
 EndCmp
@@ -451,7 +451,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53D147FB
 Path = /53D14F8D
-Reference = C11;
+Reference = C8;
 ValeurCmp = 47uF;
 IdModule  = SM1206POL;
 EndCmp
@@ -459,7 +459,7 @@ EndCmp
 BeginCmp
 TimeStamp = 53D14817
 Path = /538BCD1F
-Reference = C3;
+Reference = C2;
 ValeurCmp = 2200uF;
 IdModule  = C1V7;
 EndCmp
@@ -467,15 +467,15 @@ EndCmp
 BeginCmp
 TimeStamp = 53D158C6
 Path = /53D147AC
-Reference = C10;
-ValeurCmp = 100uF;
+Reference = C1;
+ValeurCmp = 10uF;
 IdModule  = SM0805;
 EndCmp
 
 BeginCmp
 TimeStamp = 53D158D0
 Path = /53D14B10
-Reference = D3;
+Reference = D1;
 ValeurCmp = DIODESCH;
 IdModule  = POWERDI_123;
 EndCmp
