@@ -693,7 +693,7 @@ Text Label 7450 5500 0    60   ~ 0
 LED_RD
 Text Label 5750 5850 0    60   ~ 0
 LED_BL
-Text Label 5750 5950 0    60   ~ 0
+Text Label 5750 5750 0    60   ~ 0
 LED_GR
 Text Label 2800 3000 0    60   ~ 0
 RESET
@@ -746,7 +746,7 @@ Text Label 3050 7550 0    60   ~ 0
 I2C_SDA
 Text Label 3050 7650 0    60   ~ 0
 I2C_SCL
-Text Label 5750 5750 0    60   ~ 0
+Text Label 5750 5950 0    60   ~ 0
 LED_RD
 Entry Wire Line
 	7100 6550 7000 6650

@@ -1,13 +1,11 @@
-update=Tuesday, July 22, 2014 'pmt' 12:23:06 pm
+update=Friday, July 25, 2014 'amt' 12:11:11 am
 version=1
-last_client=eeschema
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
 [cvpcb/libraries]
 EquName1=devcms
-[general]
-version=1
 [pcbnew]
 version=1
 LastNetListRead=
@@ -88,3 +86,5 @@ LibName29=contrib
 LibName30=valves
 LibName31=hex
 LibName32=custom
+[general]
+version=1
