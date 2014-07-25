@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, July 24, 2014 'pmt' 01:24:53 pm
+Cmp-Mod V01 Created by CvPcb (2013-dec-23)-stable date = Thu 24 Jul 2014 10:17:58 PM MDT
 
 BeginCmp
 TimeStamp = /53335959;
@@ -85,9 +85,9 @@ IdModule  = LED-0805-MARKED_ANODE;
 EndCmp
 
 BeginCmp
-TimeStamp = /535B2302;
+TimeStamp = /53D1E5FA;
 Reference = D2;
-ValeurCmp = RGB_LED;
+ValeurCmp = RGB_LED_COMMON_CATHODE;
 IdModule  = LED_RGB;
 EndCmp
 
