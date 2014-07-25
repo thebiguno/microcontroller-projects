@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, July 22, 2014 'pmt' 12:26:44 pm
+EESchema-DOCLIB  Version 2.0  Date: Thursday, July 24, 2014 'amt' 11:15:44 am
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -27,6 +27,10 @@ $ENDCMP
 $CMP MC34063A
 D Peak Boost Buck Inverting Switching Regulator
 K Buck, Power
+$ENDCMP
+#
+$CMP NCP1400A
+D NCP1400A_Boost_RegulatorNCP1400A Boost Regulator
 $ENDCMP
 #
 $CMP RGB_LED_COMMON_ANODE
