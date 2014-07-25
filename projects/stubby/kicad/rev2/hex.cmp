@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, July 23, 2014 'pmt' 12:09:03 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, July 24, 2014 'pmt' 01:24:53 pm
 
 BeginCmp
 TimeStamp = /53335959;
@@ -64,6 +64,20 @@ IdModule  = C1V7;
 EndCmp
 
 BeginCmp
+TimeStamp = /53D147AC;
+Reference = C10;
+ValeurCmp = 10uF;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /53D14F8D;
+Reference = C11;
+ValeurCmp = 47uF;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
 TimeStamp = /53483946;
 Reference = D1;
 ValeurCmp = LED;
@@ -75,6 +89,13 @@ TimeStamp = /535B2302;
 Reference = D2;
 ValeurCmp = RGB_LED;
 IdModule  = LED_RGB;
+EndCmp
+
+BeginCmp
+TimeStamp = /53D14B10;
+Reference = D3;
+ValeurCmp = DIODESCH;
+IdModule  = POWERDI_123;
 EndCmp
 
 BeginCmp
@@ -92,9 +113,16 @@ IdModule  = SIL-3;
 EndCmp
 
 BeginCmp
-TimeStamp = /5346FA4A;
+TimeStamp = /53D1477C;
+Reference = L1;
+ValeurCmp = 22uH;
+IdModule  = SM1007;
+EndCmp
+
+BeginCmp
+TimeStamp = /53CFFE5D;
 Reference = P1;
-ValeurCmp = CONN_8;
+ValeurCmp = CONN_9;
 IdModule  = SIL-9;
 EndCmp
 
@@ -166,13 +194,6 @@ TimeStamp = /532C9BB8;
 Reference = R1;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /53CE8D22;
-Reference = R2;
-ValeurCmp = 68;
-IdModule  = R3;
 EndCmp
 
 BeginCmp
@@ -316,17 +337,17 @@ IdModule  = TO92;
 EndCmp
 
 BeginCmp
+TimeStamp = /53D14435;
+Reference = VR2;
+ValeurCmp = NCP1400A;
+IdModule  = SOT23-5;
+EndCmp
+
+BeginCmp
 TimeStamp = /53C6D12E;
 Reference = X1;
 ValeurCmp = CRYSTAL_RESONATOR;
 IdModule  = CRYSTAL_RESONATOR;
-EndCmp
-
-BeginCmp
-TimeStamp = /53CE8D01;
-Reference = ZD1;
-ValeurCmp = ZD 5v1;
-IdModule  = DO-41;
 EndCmp
 
 BeginCmp
