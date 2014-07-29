@@ -691,9 +691,9 @@ Text Label 5650 6300 0    60   ~ 0
 PWM17
 Text Label 7300 5750 0    60   ~ 0
 LED_RD
-Text Label 5600 5700 0    60   ~ 0
-LED_BL
 Text Label 5600 5800 0    60   ~ 0
+LED_BL
+Text Label 5600 5900 0    60   ~ 0
 LED_GR
 Text Label 2650 2950 0    60   ~ 0
 RESET
@@ -746,7 +746,7 @@ Text Label 2900 7500 0    60   ~ 0
 I2C_SDA
 Text Label 2900 7600 0    60   ~ 0
 I2C_SCL
-Text Label 5600 5900 0    60   ~ 0
+Text Label 5600 5700 0    60   ~ 0
 LED_RD
 Entry Wire Line
 	6950 6500 6850 6600
@@ -1526,8 +1526,6 @@ Wire Wire Line
 Wire Wire Line
 	10050 2250 10050 2200
 Connection ~ 1950 800 
-Wire Wire Line
-	750  1500 1950 1500
 $Comp
 L CONN_9 P6
 U 1 1 53CFFE5D
@@ -1670,7 +1668,6 @@ Wire Wire Line
 Wire Wire Line
 	750  2050 850  2050
 Connection ~ 1400 900 
-Connection ~ 750  1500
 Wire Wire Line
 	8400 6650 8550 6650
 Wire Wire Line
@@ -1733,13 +1730,12 @@ Wire Wire Line
 Connection ~ 1250 1000
 Wire Wire Line
 	1250 1400 1250 1500
-Connection ~ 1250 1500
 $Comp
 L RGB_LED_COMMON_ANODE D3
 U 1 1 53D808BD
 P 9350 5600
 F 0 "D3" H 9400 5850 50  0000 C CNN
-F 1 "RGB_LED_COMMON_ANODE" H 9350 5250 50  0000 C CNN
+F 1 "CLVBA-FKA" H 9350 5250 50  0000 C CNN
 F 2 "~" H 9400 5600 60  0000 C CNN
 F 3 "~" H 9400 5600 60  0000 C CNN
 	1    9350 5600
@@ -1758,4 +1754,6 @@ F 3 "" H 9750 5600 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	9650 5600 9750 5600
+Wire Wire Line
+	1250 1500 1950 1500
 $EndSCHEMATC
