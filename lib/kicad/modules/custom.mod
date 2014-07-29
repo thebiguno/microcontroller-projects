@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Tuesday, July 29, 2014 'pmt' 02:37:04 pm
+PCBNEW-LibModule-V1  Tuesday, July 29, 2014 'pmt' 04:20:40 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -20570,7 +20570,7 @@ Po 6.35 -11.43
 $EndPAD
 $EndMODULE XBEE_SPARKFUN_BREAKOUT
 $MODULE mouse_bites
-Po 0 0 0 15 53965586 00000000 ~~
+Po 0 0 0 15 53D81E2B 00000000 ~~
 Li mouse_bites
 Sc 0
 AR 
@@ -20578,22 +20578,22 @@ Op 0 0 0
 T0 0 -1.27 1 1 0 0.15 N I 21 N "mouse_bites"
 T1 0 1.27 1 1 0 0.15 N I 21 N "VAL**"
 $PAD
-Sh "" C 0.508 0.508 0 0 0
-Dr 0.508 0 0
+Sh "" C 0.762 0.762 0 0 0
+Dr 0.762 0 0
 At HOLE N 00E0FFFF
 Ne 0 ""
 Po -1.27 0
 $EndPAD
 $PAD
-Sh "" C 0.508 0.508 0 0 0
-Dr 0.508 0 0
+Sh "" C 0.762 0.762 0 0 0
+Dr 0.762 0 0
 At HOLE N 00E0FFFF
 Ne 0 ""
 Po 0 0
 $EndPAD
 $PAD
-Sh "" C 0.508 0.508 0 0 0
-Dr 0.508 0 0
+Sh "" C 0.762 0.762 0 0 0
+Dr 0.762 0 0
 At HOLE N 00E0FFFF
 Ne 0 ""
 Po 1.27 0
