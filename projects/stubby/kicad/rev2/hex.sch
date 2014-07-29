@@ -38,7 +38,7 @@ $Descr User 11000 9500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "25 jul 2014"
+Date "28 jul 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -1705,17 +1705,6 @@ F 3 "" H 2850 1800 60  0000 C CNN
 	1    2850 1800
 	0    1    1    0   
 $EndComp
-$Comp
-L C C8
-U 1 1 53D14F8D
-P 2850 2500
-F 0 "C8" H 2850 2600 40  0000 L CNN
-F 1 "47uF" H 2856 2415 40  0000 L CNN
-F 2 "~" H 2888 2350 30  0000 C CNN
-F 3 "~" H 2850 2500 60  0000 C CNN
-	1    2850 2500
-	1    0    0    -1  
-$EndComp
 Connection ~ 2850 2200
 Wire Wire Line
 	2850 2700 2850 2800
@@ -1775,6 +1764,17 @@ F 1 "RGB_LED_COMMON_CATHODE" H 9450 5300 50  0000 C CNN
 F 2 "~" H 9450 5650 60  0000 C CNN
 F 3 "~" H 9450 5650 60  0000 C CNN
 	1    9450 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1 C8
+U 1 1 53D6D662
+P 2850 2500
+F 0 "C8" H 2900 2600 50  0000 L CNN
+F 1 "47uF" H 2900 2400 50  0000 L CNN
+F 2 "~" H 2850 2500 60  0000 C CNN
+F 3 "~" H 2850 2500 60  0000 C CNN
+	1    2850 2500
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
