@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Tuesday, July 29, 2014 'amt' 11:21:18 am
+Cmp-Mod V01 Created by PcbNew date = Tuesday, July 29, 2014 'pmt' 02:38:33 pm
 
 BeginCmp
 TimeStamp = /53D147AC;
@@ -99,10 +99,10 @@ IdModule  = LED-0805-MARKED_ANODE;
 EndCmp
 
 BeginCmp
-TimeStamp = /53D1E5FA;
+TimeStamp = /53D808BD;
 Reference = D3;
-ValeurCmp = RGB_LED_COMMON_CATHODE;
-IdModule  = LED_RGB;
+ValeurCmp = RGB_LED_COMMON_ANODE;
+IdModule  = 4-PLCC;
 EndCmp
 
 BeginCmp
