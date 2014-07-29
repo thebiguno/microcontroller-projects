@@ -1,58 +1,4 @@
-eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:02:03 PM MDT
-#Cmp ( order = Reference )
-| C1         10uF        
-| C2         2200uF      
-| C3         1uF         
-| C4         1uF         
-| C5         1uF         
-| C6         20pF        
-| C7         20pF        
-| C8         47uF        
-| C9         47uF        
-| C10        2200uF      
-| C11        2200uF      
-| D1         DIODESCH    
-| D2         LED         
-| D3         RGB_LED_COMMON_CATHODE
-| IC1        ATMEGA1284-A
-| JP1        CONN_3      
-| L1         22uH        
-| P1         CONN_6      
-| P2         CONN_6      
-| P3         CONN_10     
-| P4         CONN_13     
-| P5         CONN_2      
-| P6         CONN_9      
-| P7         CONN_1      
-| P8         BATT (4.8V-6V)
-| P9         PROG        
-| P10        CONN_6      
-| R1         1k          
-| R2         1k          
-| R3         1k          
-| R4         1k          
-| R5         100         
-| R6         100         
-| R7         1k          
-| R8         1k          
-| R9         100         
-| R10        100         
-| R11        1k          
-| R12        1k          
-| R13        1k          
-| S1         FRNT LFT    
-| S2         FRNT RGT    
-| S3         MID LFT     
-| S4         MID RGT     
-| S5         REAR LFT    
-| S6         REAR RGT    
-| SW1        DPDT        
-| VR1        MCP1702     
-| VR2        NCP1400A    
-| X1         CRYSTAL_RESONATOR
-| ZD1        ZD 3v3      
-| ZD2        ZD 3v3      
-#End Cmp
+eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:25:31 PM MDT
 
 #Cmp ( order = Value )
 | 20pF         C6        
@@ -66,7 +12,7 @@ eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:02:03 PM MDT
 | 2200uF       C2        
 | 2200uF       C10       
 | 2200uF       C11       
-| DIODESCH     D1        
+| DFLS130L     D1        
 | LED          D2        
 | RGB_LED_COMMON_CATHODE D3        
 | ATMEGA1284-A IC1       
@@ -82,19 +28,17 @@ eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:02:03 PM MDT
 | BATT (4.8V-6V) P8        
 | PROG         P9        
 | CONN_6       P10       
-| 100          R5        
-| 100          R6        
-| 100          R9        
-| 100          R10       
 | 1k           R1        
 | 1k           R2        
 | 1k           R3        
 | 1k           R4        
+| 1k           R5        
+| 1k           R6        
 | 1k           R7        
 | 1k           R8        
+| 1k           R9        
+| 1k           R10       
 | 1k           R11       
-| 1k           R12       
-| 1k           R13       
 | FRNT LFT     S1        
 | FRNT RGT     S2        
 | MID LFT      S3        
