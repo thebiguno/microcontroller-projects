@@ -1,4 +1,57 @@
-eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:25:31 PM MDT
+eeschema (2014-01-10 BZR 4027)-stable  >> Creation date: Wednesday, July 30, 2014 'pmt' 02:42:10 pm
+#Cmp ( order = Reference )
+| C1         10uF        
+| C2         2200uF+     
+| C3         1uF         
+| C4         1uF         
+| C5         1uF         
+| C6         20pF        
+| C7         20pF        
+| C8         47uF        
+| C9         2200uF+     
+| C10        47uF+       
+| C11        2200uF+     
+| C12        2200uF+     
+| D1         DFLS130L    
+| D2         LED         
+| D3         CLVBA-FKA   
+| IC1        ATMEGA1284-A
+| JP1        CONN_3      
+| L1         22uH        
+| P1         CONN_6      
+| P2         CONN_6      
+| P3         CONN_10     
+| P4         CONN_13     
+| P5         CONN_2      
+| P6         CONN_9      
+| P7         CONN_1      
+| P8         BATT (4.8V-6V)
+| P9         PROG        
+| P10        CONN_6      
+| R1         1k          
+| R2         1k          
+| R3         4k7         
+| R4         4k7         
+| R5         1k          
+| R6         100k        
+| R7         100k        
+| R8         1k          
+| R9         1k          
+| R10        1k          
+| R11        1k          
+| S1         FRNT LFT    
+| S2         FRNT RGT    
+| S3         MID LFT     
+| S4         MID RGT     
+| S5         REAR LFT    
+| S6         REAR RGT    
+| SW1        DPDT        
+| VR1        MCP1702     
+| VR2        NCP1400A    
+| X1         CRYSTAL_RESONATOR
+| ZD1        ZD 3v3      
+| ZD2        ZD 3v3      
+#End Cmp
 
 #Cmp ( order = Value )
 | 20pF         C6        
@@ -8,13 +61,14 @@ eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:25:31 PM MDT
 | 1uF          C5        
 | 10uF         C1        
 | 47uF         C8        
-| 47uF         C9        
-| 2200uF       C2        
-| 2200uF       C10       
-| 2200uF       C11       
+| 47uF+        C10       
+| 2200uF+      C2        
+| 2200uF+      C9        
+| 2200uF+      C11       
+| 2200uF+      C12       
 | DFLS130L     D1        
 | LED          D2        
-| RGB_LED_COMMON_CATHODE D3        
+| CLVBA-FKA    D3        
 | ATMEGA1284-A IC1       
 | CONN_3       JP1       
 | 22uH         L1        
@@ -30,15 +84,15 @@ eeschema (2013-dec-23)-stable  >> Creation date: Mon 28 Jul 2014 10:25:31 PM MDT
 | CONN_6       P10       
 | 1k           R1        
 | 1k           R2        
-| 1k           R3        
-| 1k           R4        
 | 1k           R5        
-| 1k           R6        
-| 1k           R7        
 | 1k           R8        
 | 1k           R9        
 | 1k           R10       
 | 1k           R11       
+| 4k7          R3        
+| 4k7          R4        
+| 100k         R6        
+| 100k         R7        
 | FRNT LFT     S1        
 | FRNT RGT     S2        
 | MID LFT      S3        
