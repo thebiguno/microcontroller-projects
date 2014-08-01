@@ -1,5 +1,5 @@
 /*
- * Sample skeleton source file.
+ * Toggles pin B4
  */
 
 #include <avr/io.h>

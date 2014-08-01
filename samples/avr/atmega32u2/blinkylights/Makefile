@@ -1,6 +1,6 @@
 include ../../build/variables.mk
 
-PROJECT=Skeleton
+PROJECT=blinkylights
 MMCU=atmega32u2
 F_CPU=16000000
 SOURCES=main.c
