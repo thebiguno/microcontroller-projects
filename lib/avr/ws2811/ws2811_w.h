@@ -2,7 +2,7 @@
 #define ws2811_h
 
 #ifndef WS2811_PIN
-#define WS2811_PIN 1
+#define WS2811_PIN 2
 #endif
 
 #include <stdint.h>

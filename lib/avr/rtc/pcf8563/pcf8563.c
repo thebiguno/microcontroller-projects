@@ -4,7 +4,7 @@
 
 void pcf8563_init() {
 	// register, control 1, control 2
-	uint8_t data[8] = { 0x0d, 0x83, 0x00 };
+	uint8_t data[3] = { 0x0d, 0x83, 0x00 };
 	twi_write_to(0x51, data, 2, TWI_BLOCK, TWI_STOP);
 	data[0] = 0x00;
 	data[1] = 0x00;

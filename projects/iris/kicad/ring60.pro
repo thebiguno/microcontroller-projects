@@ -1,6 +1,6 @@
-update=Tuesday, May 20, 2014 'pmt' 03:12:37 pm
+update=Wednesday, July 16, 2014 'pmt' 09:04:02 pm
 version=1
-last_client=eeschema
+last_client=kicad
 [pcbnew]
 version=1
 LastNetListRead=
@@ -38,8 +38,6 @@ LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
 LibDir=
-[general]
-version=1
 [cvpcb]
 version=1
 NetIExt=net
@@ -89,3 +87,5 @@ LibName29=contrib
 LibName30=valves
 LibName31=ring60
 LibName32=custom
+[general]
+version=1

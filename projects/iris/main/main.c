@@ -2,9 +2,9 @@
 
 #include <avr/interrupt.h>
 #include "lib/ws2811/ws2811_w.h"
-//#include "lib/rtc/ds1307/ds1307.h"
+#include "lib/rtc/ds1307/ds1307.h"
 //#include "lib/serial/serial.h"
-#include "lib/rtc/pcf8563/pcf8563.h"
+//#include "lib/rtc/pcf8563/pcf8563.h"
 #include "lib/remote/remote.h"
 #include "time32/time.h"
 #include "time32/usa_dst.h"
@@ -113,7 +113,7 @@ int main() {
 	// the rtc has a slow start up time from power on, so just delay a bit here
 	_delay_ms(1000);
 	
-	DDRB |= _BV(1); // led strip output
+	DDRB |= _BV(2); // led strip output
 	
 	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
 	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
@@ -151,8 +151,10 @@ int main() {
 
 	sei();
 	
+	_delay_ms(1000);
+	
 	// Initialize RTC chip
-	pcf8563_init();
+	ds1307_init();
 	
 	// Initialize serial
 	//serial_init_b(9600);
@@ -168,7 +170,7 @@ int main() {
 	uint8_t week = 0;
 	uint8_t mode = 0;
 	uint8_t update = 1;
-	struct pcf8563_t rtc;
+	struct ds1307_time_t rtc;
 	uint8_t harmony = 0;
 
 	// plasma variables
@@ -188,12 +190,13 @@ int main() {
 	set_dst(usa_dst); // mountain
 	set_position(183762, -410606); // calgary
 
-	pcf8563_get(&rtc);
-	sys.tm_year = 114;//rtc.year - 1900;
-	sys.tm_mon = 5;//rtc.month - 1;				// rtc is 1 based; time lib is 0 based
-	sys.tm_mday = 7;//rtc.mday;
-	sys.tm_hour = 20;//rtc.hour;
-	sys.tm_min = 23;//rtc.minute;
+	ds1307_get(&rtc);
+	sys.tm_year = rtc.year - 1900;
+	sys.tm_mon = rtc.month - 1;				// rtc is 1 based; time lib is 0 based
+	sys.tm_mday = rtc.mday;
+	sys.tm_hour = rtc.hour;
+	sys.tm_min = rtc.minute;
+	sys.tm_sec = rtc.second;
 	systime = mktime(&sys);
 	set_system_time(systime);
 	
@@ -526,7 +529,7 @@ int main() {
 					rtc.hour = sys.tm_hour;
 					rtc.minute = sys.tm_min;
 					rtc.second = sys.tm_sec;
-					pcf8563_set(&rtc);
+					ds1307_set(&rtc);
 					mode = MODE_HMS;
 				}
 			} else if (command == REMOTE_MENU) {
