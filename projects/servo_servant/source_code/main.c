@@ -13,6 +13,8 @@
 // Pin and Setting Definitions
 //------------------------------------------------------------------------------
 
+// Display definitions
+//// Segments I/O
 #define LEDDDR DDRB
 #define LEDPORT PORTB
 #define LEDPORTA PORTB0
@@ -25,23 +27,34 @@
 //#define LEDPORTDOT XXXX // decimal not acessable on module
 #define LEDPORTDOT PORTB4 // colon, unused
 
-#define LEDDIGDDR DDRC
-#define LEDDIGPORT PORTC
-#define LEDDIGPORT1 PORTC2
-#define LEDDIGPORT2 PORTC4
-#define LEDDIGPORT3 PORTC5
-#define LEDDIGPORT4 PORTC6
+//// Digit select I/O
+#define LEDDIGDDR DDRD
+#define LEDDIGPORT PORTD
+#define LEDDIGPORT1 PORTD0
+#define LEDDIGPORT2 PORTD1
+#define LEDDIGPORT3 PORTD2
+#define LEDDIGPORT4 PORTD3
 
-//Button definitions
-#define BUTTONDDR DDRD
-#define BUTTONPORT PORTD
-#define BUTTONPORT_Z PORTD5
-#define BUTTONPORT_UP PORTD6
-#define BUTTONPORT_DN PORTD7
-#define BUTTONPIN PIND
-#define BUTTONPIN_Z PIND5
-#define BUTTONPIN_UP PIND6
-#define BUTTONPIN_DN PIND7
+// Button definitions
+//// Button I/O
+#define BUTTONDDR DDRC
+#define BUTTONPORT PORTC
+#define BUTTONPORT_Z PORTC2
+#define BUTTONPORT_UP PORTC4
+#define BUTTONPORT_DN PORTC5
+#define BUTTONPIN PINC
+#define BUTTONPIN_UP PINC2
+#define BUTTONPIN_Z PINC4
+#define BUTTONPIN_DN PINC5
+
+//// Button interrupts
+#define BUTTONPCIE PCIE1 // All buttons on same port change bank
+#define BUTTONPCMSK PCMSK1
+#define BUTTONPCINT_UP PCINT11 // C2
+#define BUTTONPCINT_Z PCINT10 // C4
+#define BUTTONPCINT_DN PCINT9 // C5
+#define BUTTONPCIF PCIF1
+#define BUTTONPCINT_vect PCINT1_vect
 
 //------------------------------------------------------------------------------
 // Global variables
@@ -67,9 +80,7 @@ void SetDigit1(void);
 void SetDigit2(void);
 void SetDigit3(void);
 void SetDigit4(void);
-
-//Temp
-void FutureButtonISR(void);
+void DebounceSwitch(void);
 
 //------------------------------------------------------------------------------
 // Functions
@@ -78,6 +89,8 @@ void FutureButtonISR(void);
 void InitIO(void)
 {
 
+
+  // Configure hardware
   LEDDDR |= (_BV(LEDPORTA) | // Set as outputs
              _BV(LEDPORTB) |
              _BV(LEDPORTC) |
@@ -114,6 +127,14 @@ void InitIO(void)
               _BV(LEDPORTF) |
               _BV(LEDPORTG));
 
+  // Configure interrupts
+  cli();
+  PCICR |= _BV(BUTTONPCIE); // Enable port change interrupts
+  BUTTONPCMSK |= (_BV(BUTTONPCINT_Z) | // Enable interrupts for each pin
+                  _BV(BUTTONPCINT_UP) |
+                  _BV(BUTTONPCINT_DN));
+  sei();
+
 }
 
 //------------------------------------------------------------------------------
@@ -132,6 +153,52 @@ void InitTimer(void)
 
   sei(); // Enable global interrupts
 
+}
+
+//------------------------------------------------------------------------------
+// Interrupt driven push button control
+// Inputs are active low
+ISR(BUTTONPCINT_vect)
+{
+
+  if((BUTTONPIN & _BV(BUTTONPIN_UP)) & // No buttons pressed (button release)
+     (BUTTONPIN & _BV(BUTTONPIN_Z)) &
+     (BUTTONPIN & _BV(BUTTONPIN_DN)))
+  {
+    
+  }
+  else if(~BUTTONPIN & _BV(BUTTONPIN_UP)) // UP button only
+  {
+    Position++;
+  }
+  else if(~BUTTONPIN & _BV(BUTTONPIN_Z)) // Zero button only
+  {
+    Position=0;
+  }
+  else if(~BUTTONPIN & _BV(BUTTONPIN_DN)) // DN button only
+  {
+    Position--;
+  }
+  /*
+  else if(~BUTTONPIN & (_BV(BUTTONPIN_Z) | // Z and UP buttons only
+                       _BV(BUTTONPIN_UP)))
+  {
+    
+  }
+  else if(~BUTTONPIN & (_BV(BUTTONPIN_Z) | // Z and DN buttons only
+                       _BV(BUTTONPIN_DN)))
+  {
+    
+  }
+  else if(~BUTTONPIN & (_BV(BUTTONPIN_UP) | // UP and DN buttons only 
+                       _BV(BUTTONPIN_DN)))
+  {
+    
+  }
+  */
+
+  DebounceSwitch(); // disables individual pin interrupt until debounced
+    
 }
 
 //------------------------------------------------------------------------------
@@ -326,20 +393,6 @@ void SetLEDSign(unsigned char Sign, unsigned char DigPortNum)
 }
 
 //------------------------------------------------------------------------------
-void FutureButtonISR()
-{
-
-  // Debounce
-
-  // If UP button, increment Position unless at 100
-
-  // If DN button, decrement Position unless at -100
-
-  // If Z button, set Position to 0
-
-}
-
-//------------------------------------------------------------------------------
 // Sets the first display digit, which is the sign
 void SetDigit1(void)
 {
@@ -357,9 +410,6 @@ void SetDigit1(void)
 
 //------------------------------------------------------------------------------
 // Sets the second display digit, which is the leading number (10^2)
-//
-// *** Needs ABS
-//
 void SetDigit2(void)
 {
   if(Position / 100)
@@ -371,9 +421,6 @@ void SetDigit2(void)
 
 //------------------------------------------------------------------------------
 // Sets the third display digit, which is the middle number (10^1)
-//
-// *** Needs ABS
-//
 void SetDigit3(void)
 {
   if(Position / 10)
@@ -387,12 +434,15 @@ void SetDigit3(void)
 
 //------------------------------------------------------------------------------
 // Sets the fourth display digit, which is the last number (10^0)
-//
-// *** Currently broken
-//
 void SetDigit4(void)
 {
   SetLEDDigit(abs(Position % 10), LEDDIGPORT4);
+}
+
+//-
+void DebounceSwitch(void)
+{
+
 }
 
 //==============================================================================
@@ -404,15 +454,15 @@ int main (void)
   InitTimer();
 
   // For testing only
-  Position = -20;
+  Position = 0;
 
 
   //Main program loop
   while (1)
   {
 
-    _delay_ms(1000);
-    Position++;
+    //_delay_ms(1000);
+    //Position++;
 
   }
 
@@ -442,6 +492,53 @@ int main (void)
       }
 
     }
+
+
+
+
+
+
+  // Need some preprocessor magic in the case statements    
+  switch(BUTTONPIN & (_BV(BUTTONPIN_UP) |
+                      _BV(BUTTONPIN_Z) |
+                      _BV(BUTTONPIN_DN)))
+  {
+  case 0: // No buttons active
+    //PositionDirection = 0;
+    break;
+  case _BV(BUTTONPIN_Z): // BUTTON_Z only active
+    Position = 0;
+    break;
+  case _BV(BUTTONPIN_UP): // BUTTON_UP only active
+    if(Position < 100)
+    {
+      Position++;
+    }
+    break;
+  case _(BUTTONPIN_DN): // BUTTON_DN only active
+    if(Position > -100)
+    {
+      Position--;
+    }
+    break;
+    // Place holders in case I decide to use them
+    //  case : // BUTTON_Z and BUTTON_UP active
+    //PositionDirection = 0;
+    //break;
+    //case : // BUTTON_Z and BUTTON_DN active
+    //PositionDirection = 0;
+    //break;
+    //case : // BUTTON_Z and BUTTON_UP and BUTTON_DN active
+    //PositionDirection = 0;
+    //break;
+    //case : // BUTTON_UP and BUTTON_DN active
+    //PositionDirection = 0;
+    //break;
+  default:
+    //PositionDirection = 0;
+    break;
+  }
+
 
 
 */
