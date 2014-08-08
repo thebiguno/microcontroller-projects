@@ -111,7 +111,7 @@ inline uint8_t analagous_b(uint8_t c) {
 int main() {
 	
 	// the rtc has a slow start up time from power on, so just delay a bit here
-	_delay_ms(1000);
+	_delay_ms(500);
 	
 	DDRB |= _BV(2); // led strip output
 	
@@ -151,10 +151,7 @@ int main() {
 
 	sei();
 	
-	_delay_ms(1000);
-	
-	// Initialize RTC chip
-	ds1307_init();
+	_delay_ms(500);
 	
 	// Initialize serial
 	//serial_init_b(9600);
@@ -190,6 +187,8 @@ int main() {
 	set_dst(usa_dst); // mountain
 	set_position(183762, -410606); // calgary
 
+	// Initialize RTC chip
+	ds1307_init();
 	ds1307_get(&rtc);
 	sys.tm_year = rtc.year - 1900;
 	sys.tm_mon = rtc.month - 1;				// rtc is 1 based; time lib is 0 based
@@ -421,13 +420,22 @@ int main() {
 				hue++;
 				hue %= 360;
 			} else if (mode == MODE_YEAR) {
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = markers;
+				}
 				colors[sys.tm_year] = palette[2];
 			} else if (mode == MODE_MONTH) {
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = markers;
+				}
 				uint8_t mon = (sys.tm_mon % 12) * 5;
 				for (uint8_t i = mon + 1; i < mon + 5; i++) {
 					colors[i] = palette[4];
 				}
 			} else if (mode == MODE_DAY) {
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = markers;
+				}
 				if (sys.tm_mday < 31) {
 					uint8_t i = (sys.tm_mday - 1) * 2;
 					colors[i] = palette[6];
@@ -439,16 +447,22 @@ int main() {
 					colors[1] = palette[6];
 				}
 			} else if (mode == MODE_HOUR) {
+				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = (sys.tm_hour > 11) ? palette[3] : palette[9];
 				}
-				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = hour + 1; i < hour + 5; i++) {
 					colors[i] = palette[8];
 				}
 			} else if (mode == MODE_MIN) {
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = markers;
+				}
 				colors[sys.tm_min] = palette[10];
 			} else if (mode == MODE_SEC) {
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = markers;
+				}
 				colors[sys.tm_sec] = palette[0];
 			}
 
@@ -523,12 +537,6 @@ int main() {
 					set_system_time(systime);
 					
 					// store the new system time to the rtc
-					rtc.year = sys.tm_year + 1900;	// years since 0
-					rtc.month = sys.tm_mon + 1;		// rtc is 1 based; time lib is 0 based
-					rtc.mday = sys.tm_mday;
-					rtc.hour = sys.tm_hour;
-					rtc.minute = sys.tm_min;
-					rtc.second = sys.tm_sec;
 					ds1307_set(&rtc);
 					mode = MODE_HMS;
 				}
