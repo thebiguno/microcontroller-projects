@@ -66,6 +66,7 @@ unsigned char DigitSign = 0; // Takes place of DigitNum1
 unsigned char DigitNum2 = 0; // Second digit from left
 unsigned char DigitNum3 = 0; // Third digit from left
 unsigned char DigitNum4 = 0; // Fourth digit from left
+unsigned char DebounceCounter = 0; // Counter for debouncing timer
 
 //------------------------------------------------------------------------------
 // Function prototypes
@@ -197,16 +198,27 @@ ISR(BUTTONPCINT_vect)
   }
   */
 
-  DebounceSwitch(); // disables individual pin interrupt until debounced
+  DebounceSwitch(); // disables pin change interrupts until debounce time expires
     
 }
 
 //------------------------------------------------------------------------------
 // Interrupt driven display driver, each interrupt increments the ScanPos and
 // illuminates the next digit display.
+// Also controls debounce time
 ISR(TIMER0_COMPA_vect)
 {
 
+  // Debounce timing, reenables pin change interrupts after 50 interrupts (50ms)
+  DebounceCounter++;
+  if(DebounceCounter >= 150)
+  {
+    BUTTONPCMSK |= (_BV(BUTTONPCINT_UP) | // Re-enable pin change interrupts
+                    _BV(BUTTONPCINT_Z) |
+                    _BV(BUTTONPCINT_DN));
+  }
+
+  // Display scan timing
   switch(++ScanPos)
   {
   case 1:
@@ -439,9 +451,17 @@ void SetDigit4(void)
   SetLEDDigit(abs(Position % 10), LEDDIGPORT4);
 }
 
-//-
+//------------------------------------------------------------------------------
 void DebounceSwitch(void)
 {
+
+  // Disable interrupt for all pins
+  BUTTONPCMSK &= ~(_BV(BUTTONPCINT_UP) | //
+                   _BV(BUTTONPCINT_Z) |
+                   _BV(BUTTONPCINT_DN));
+
+  // Initialise the debounce counter, debounce 50ms (50 timer interrupts, handled in timer ISR) 
+  DebounceCounter = 0;
 
 }
 
