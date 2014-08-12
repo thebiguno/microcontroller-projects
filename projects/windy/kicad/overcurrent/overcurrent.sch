@@ -578,8 +578,6 @@ Text Label 1500 6900 1    60   ~ 0
 LCD_E
 Text Label 8050 3500 0    60   ~ 0
 SS
-Text Label 8050 5500 0    60   ~ 0
-LCD_RW
 Text Label 5000 3700 2    60   ~ 0
 DAT0_DO
 Text Label 5000 3400 2    60   ~ 0
@@ -1358,8 +1356,6 @@ Wire Wire Line
 	2600 5600 1700 5600
 Wire Wire Line
 	1700 5600 1700 6900
-Text Label 1400 6900 1    60   ~ 0
-LCD_RW
 Text Label 4000 5600 0    60   ~ 0
 MOSI
 Text Label 4000 5800 0    60   ~ 0
@@ -1434,4 +1430,8 @@ Text Label 8050 3900 0    60   ~ 0
 BTN_1
 Text Label 8050 4000 0    60   ~ 0
 BTN_2
+Wire Wire Line
+	1400 6900 1400 6350
+Wire Wire Line
+	1400 6350 1350 6350
 $EndSCHEMATC

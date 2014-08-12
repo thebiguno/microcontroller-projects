@@ -59,7 +59,7 @@ void hd44780_set_ddram_address(uint8_t address);
 
 /*
  * Reads the busy flag and DDRAM address.
- * Bit 7 (BF) is the busy flag.
+ * Bit 7 (BF) is the busy flag; 0 = not busy, 1 = busy.
  * Bits 0 to 7 (AC) are the DDRAM address.
  */
 uint8_t hd44780_get_busyflag_address();
