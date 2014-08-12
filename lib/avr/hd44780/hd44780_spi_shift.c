@@ -5,9 +5,9 @@
 #include <avr/io.h>
 
 void hd44780_init() {
-	// Set MOSI and SCK output
-	DDR_SPI |= (1<<DD_MOSI) | (1<<DD_SCK);
-	SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0);
+	
+	DDRB |= (1<<PB3) | (1<<PB5); // Set MOSI and SCK output
+	SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0); // enable, master, F_CPU/64
 }
 
 /* 
@@ -127,4 +127,20 @@ uint8_t hd44780_get() {
  */
 void hd44780_write_buffer_bounds(uint8_t x, uint8_t y, char* text, uint8_t sz) {
 	
+}
+
+inline void select0() {
+	PORTB &= ~_BV(PB3); // set MOSI/RS is low
+	HD44780_E_PORT &= ~_BV(HD44780_E_PIN);
+}
+
+void latch() {
+	#ifdef HD44780_EXTRA_CLK
+	// pulse in one more time latch the current data on the shift register
+	PORTB |= _BV(5);
+	PORTB &= ~_BV(5);
+	#endif
+	
+	
+}
 }
