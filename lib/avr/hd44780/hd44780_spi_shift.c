@@ -1,3 +1,7 @@
+/*
+ * Driver for HD44780 in 8 bit mode using SPI and a shift register.
+ */
+
 #include <avr/io.h>
 
 void hd44780_init();
@@ -7,7 +11,9 @@ void hd44780_init();
  * Return cursor to the left edge of the first line.
  * Make the entry mode 'increment' (I/D = 1).
  */
-void hd44780_clear();
+void hd44780_clear() {
+	uint8_t b = 0x01; // bit 0 high
+}
 
 /* 
  * Set DDRAM address to 0x00.
@@ -15,14 +21,19 @@ void hd44780_clear();
  * Return the display to its original status if shifted.
  * Contents of DDRAM are NOT changed.
  */
-void hd44780_home();
+void hd44780_home() {
+	uint8_t b = 0x02; // bit 1 high
+}
 
 /* 
  * Set the moving direction of cursor and display.
  * Bit 0 (SH) is the shift control; 0 = manual, 1 = automatic.
  * Bit 1 (I/D) is the increment/decrement control; 0 = left/decrement, 1 = right/increment.
  */
-void hd44780_set_mode(uint8_t mode);
+void hd44780_set_mode(uint8_t b) {
+	b &= 0x03;	// only use 2 bits input
+	b |= 0x04;	// bit 2 high
+}
 
 /* 
  * Set the moving direction of cursor and display.
@@ -30,14 +41,20 @@ void hd44780_set_mode(uint8_t mode);
  * Bit 1 (C) is cursor on/off control; 0 = off, 1 = on.
  * Bit 2 (D) is display on/off control; 0 = off, 1 = on.
  */
-void hd44780_set_display(uint8_t display);
+void hd44780_set_display(uint8_t b) {
+	b &= 0x07;	// only use 3 bits from input
+	b |= 0x08;	// bit 3 high
+}
 
 /* 
  * Shifts the cursor or screen the left or right.
  * Bit 2 (R/L) is left/right control; 0 = left, 1 = right.
  * Bit 3 (S/C) is screen/cursor control; 0 = cursor, 1 = screen.
  */
-void hd44780_set_shift(uint8_t shift);
+void hd44780_set_shift(uint8_t b) {
+	b &= 0x0f;	// only use 4 bits from input
+	b |= 0x10;	// bit 4 high
+}
 
 /* 
  * Set the moving direction of cursor and display.
@@ -45,38 +62,55 @@ void hd44780_set_shift(uint8_t shift);
  * Bit 3 (N) is line number control; 0 = 1 line, 1 = 2 line.
  * Bit 4 (DL) is data length control; 0 = 4-bit, 1 = 8-bit.
  */
-void hd44780_set_function(uint8_t function);
+void hd44780_set_function(uint8_t b) {
+	b &= 0x1f;	// only use 5 bits from input
+	b |= 0x20;	// bit 5 high
+}
 
 /*
  * Sets the address pointer for CGRAM, allowing read or write of a byte of CGRAM data.
  */
-void hd44780_set_cgram_address(uint8_t address);
+void hd44780_set_cgram_address(uint8_t b) {
+	b &= 0x3f;	// only use 6 bits from input
+	b |= 0x40;	// bit 6 high
+}
 
 /*
  * Sets the address pointer for DDRAM, allowing read or write of a byte of DDRAM data.
  */
-void hd44780_set_ddram_address(uint8_t address);
+void hd44780_set_ddram_address(uint8_t address) {
+	b &= 0x7f;	// only use 7 bits from input
+	b |= 0x80;	// bit 7 high
+}
 
 /*
  * Reads the busy flag and DDRAM address.
  * Bit 7 (BF) is the busy flag.
  * Bits 0 to 7 (AC) are the DDRAM address.
  */
-uint8_t hd44780_get_busyflag_address();
+uint8_t hd44780_get_busyflag_address() {
+	
+}
 
 /*
  * Writes a byte of data to either DDRAM or CGRAM.
  * The address may be automatically incremented/decremented according to the entry mode.
  */
-void hd44780_set(uint8_t b);
+void hd44780_set(uint8_t b) {
+	
+}
 
 /*
  * Reads a byte of data to either DDRAM or CGRAM.
  * The address may be automatically incremented/decremented according to the entry mode.
  */
-uint8_t hd44780_get();
+uint8_t hd44780_get() {
+	
+}
 
 /* 
  * Position the cursor and write text.
  */
-void hd44780_write_buffer_bounds(uint8_t x, uint8_t y, char* text, uint8_t sz);
+void hd44780_write_buffer_bounds(uint8_t x, uint8_t y, char* text, uint8_t sz) {
+	
+}
