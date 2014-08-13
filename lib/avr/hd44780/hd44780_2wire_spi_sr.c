@@ -1,5 +1,7 @@
 /*
- * Driver for HD44780 in 8 bit mode using SPI and a shift register.
+ * Driver for HD44780 in 4 bit mode using SPI and a shift register with no latch.
+ * This driver requires only MOSI and SCK.
+ * See http://www.circuitvalley.com/2011/12/two-wire-serial-lcd-16x2-graphics.html
  */
 
 #include <avr/io.h>
