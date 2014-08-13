@@ -3,11 +3,14 @@
  */
 
 #include <avr/io.h>
+#include <util/delay_basic.h>
 
 void hd44780_init() {
 	
 	DDRB |= (1<<PB3) | (1<<PB5); // Set MOSI and SCK output
 	SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0); // enable, master, F_CPU/64
+	
+	hd44780_clear();
 }
 
 /* 
@@ -16,8 +19,7 @@ void hd44780_init() {
  * Make the entry mode 'increment' (I/D = 1).
  */
 void hd44780_clear() {
-	uint8_t b = 0x01; // bit 0 high
-	SPDR = b;
+	cmd(0x01);
 }
 
 /* 
@@ -27,19 +29,16 @@ void hd44780_clear() {
  * Contents of DDRAM are NOT changed.
  */
 void hd44780_home() {
-	uint8_t b = 0x02; // bit 1 high
-	SPDR = b;
+	cmd(0x02);
 }
 
 /* 
  * Set the moving direction of cursor and display.
- * Bit 0 (SH) is the shift control; 0 = manual, 1 = automatic.
+ * Bit 0 (SH) is the display shift control; 0 = no shift, 1 = shift.
  * Bit 1 (I/D) is the increment/decrement control; 0 = left/decrement, 1 = right/increment.
  */
 void hd44780_set_mode(uint8_t b) {
-	b &= 0x03;	// only use 2 bits input
-	b |= 0x04;	// bit 2 high
-	SPDR = b;
+	cmd(b & 0x03 | 0x04);
 }
 
 /* 
@@ -49,9 +48,7 @@ void hd44780_set_mode(uint8_t b) {
  * Bit 2 (D) is display on/off control; 0 = off, 1 = on.
  */
 void hd44780_set_display(uint8_t b) {
-	b &= 0x07;	// only use 3 bits from input
-	b |= 0x08;	// bit 3 high
-	SPDR = b;
+	cmd(b & 0x07 | 0x08);
 }
 
 /* 
@@ -60,9 +57,7 @@ void hd44780_set_display(uint8_t b) {
  * Bit 3 (S/C) is screen/cursor control; 0 = cursor, 1 = screen.
  */
 void hd44780_set_shift(uint8_t b) {
-	b &= 0x0f;	// only use 4 bits from input
-	b |= 0x10;	// bit 4 high
-	SPDR = b;
+	cmd(b & 0x0f | 0x10);
 }
 
 /* 
@@ -72,28 +67,35 @@ void hd44780_set_shift(uint8_t b) {
  * Bit 4 (DL) is data length control; 0 = 4-bit, 1 = 8-bit.
  */
 void hd44780_set_function(uint8_t b) {
-	b &= 0x1f;	// only use 5 bits from input
-	b |= 0x10;	// bit 4 high to force 8 bit mode
-	b |= 0x20;	// bit 5 high
-	SPDR = b;
+	cmd(b & 0x1f | 0x10 | 0x20);
 }
 
 /*
  * Sets the address pointer for CGRAM, allowing read or write of a byte of CGRAM data.
  */
 void hd44780_set_cgram_address(uint8_t b) {
-	b &= 0x3f;	// only use 6 bits from input
-	b |= 0x40;	// bit 6 high
-	SPDR = b;
+	cmd(b & 0x3f | 0x40);
 }
 
 /*
  * Sets the address pointer for DDRAM, allowing read or write of a byte of DDRAM data.
+ * For a 1 line display, the valid address range is 0x00 to 0x4f.
+ * For a 2 line display, the valid address range is 0x00 to 0x27 for line one and 0x40 to 0x67 for line 2.
+ * (displays with more lines have individually addressable modules).
  */
 void hd44780_set_ddram_address(uint8_t address) {
-	b &= 0x7f;	// only use 7 bits from input
-	b |= 0x80;	// bit 7 high
+	cmd(b & 0x7f | 0x80);
+}
+
+/*
+ * Writes a byte of data to either DDRAM or CGRAM.
+ * The address may be automatically incremented/decremented according to the entry mode.
+ */
+void hd44780_set(uint8_t b) {
+	rs1();
 	SPDR = b;
+	while(!(SPSR & (1<<SPIF)));
+	latch();
 }
 
 /*
@@ -107,40 +109,79 @@ uint8_t hd44780_get_busyflag_address() {
 }
 
 /*
- * Writes a byte of data to either DDRAM or CGRAM.
- * The address may be automatically incremented/decremented according to the entry mode.
- */
-void hd44780_set(uint8_t b) {
-	
-}
-
-/*
  * Reads a byte of data to either DDRAM or CGRAM.
  * The address may be automatically incremented/decremented according to the entry mode.
  */
 uint8_t hd44780_get() {
-	
+	// this driver can't implement this since the data pins are connected to the shift register
+	return 0;
 }
 
-/* 
- * Position the cursor and write text.
+/*
+ * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
  */
-void hd44780_write_buffer_bounds(uint8_t x, uint8_t y, char* text, uint8_t sz) {
-	
+void hd44780_set_c(char* text, uint8_t sz) {
+	for (uint8_t i = 0; i < sz; i++) {
+		hd44780_set(text[i]);
+	}
+}
+/*
+ * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
+ */
+void hd44780_set_b(uint8_t* bytes, uint8_t sz) {
+	for (uint8_t i = 0; i < sz; i++) {
+		hd44780_set(bytes[i]);
+	}
 }
 
-inline void select0() {
-	PORTB &= ~_BV(PB3); // set MOSI/RS is low
-	HD44780_E_PORT &= ~_BV(HD44780_E_PIN);
+inline void rs0() {
+	PORTB |= ~_BV(PB3); // set MOSI/RS low
 }
-
-void latch() {
-	#ifdef HD44780_EXTRA_CLK
-	// pulse in one more time latch the current data on the shift register
-	PORTB |= _BV(5);
-	PORTB &= ~_BV(5);
+inline void rs1() {
+	PORTB &= _BV(PB3); // set MOSI/RS high
+}
+inline void cmd(uint8_t b) {
+	rs0();
+	SPDR = b;
+	while(!(SPSR & (1<<SPIF)));
+	latch();
+}
+inline void latch() {
+	#ifdef HD44780_LATCH
+	// pulse SCK one more time latch the current data on the shift register
+	// this is required when using a shift register with a latch and CLK and RCLK are wired together
+	PORTB |= _BV(PB5);
+	PORTB &= ~_BV(PB5);
 	#endif
-	
-	
-}
+
+	HD44780_E_PORT &= _BV(HD44780_E_PIN);
+	pulse();
+	HD44780_E_PORT |= ~_BV(HD44780_E_PIN);
+	pulse();
+	#endif
+}	
+
+inline void pulse() {
+	#if F_CPU > 3333333
+	asm volatile("nop\n\t" 
+	#if F_CPU > 6666666
+	"nop\n\t" 
+	#endif
+	#if F_CPU > 9999999
+	"nop\n\t" 
+	#endif
+	#if F_CPU > 13333333
+	"nop\n\t" 
+	#endif
+	#if F_CPU > 16666666
+	"nop\n\t" 
+	#endif
+	#if F_CPU > 19999999
+	"nop\n\t" 
+	#endif
+	#if F_CPU > 23333333
+	"nop\n\t" 
+	#endif
+	::);
+	#endif
 }
