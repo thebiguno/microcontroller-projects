@@ -20,76 +20,35 @@ Hd44780::Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *spi_
 	this->mosi_bv = _BV(mosi_pin);
 	this->sclk_bv = _BV(sclk_pin);
 }
-/* 
- * Clear all display data, and set DDRAM address to 0x00.
- * Return cursor to the left edge of the first line.
- * Make the entry mode 'increment' (I/D = 1).
- */
+
 void Hd44780::clear() {
 	this->cmd(0x01);
 }
 
-/* 
- * Set DDRAM address to 0x00.
- * Return cursor to the left edge of the first line.
- * Return the display to its original status if shifted.
- * Contents of DDRAM are NOT changed.
- */
 void Hd44780::home() {
 	this->cmd(0x02);
 }
 
-/* 
- * Set the moving direction of cursor and display.
- * Bit 0 (SH) is the display shift control; 0 = no shift, 1 = shift.
- * Bit 1 (I/D) is the increment/decrement control; 0 = left/decrement, 1 = right/increment.
- */
 void Hd44780::setMode(uint8_t b) {
 	this->cmd(b & 0x03 | 0x04);
 }
 
-/* 
- * Set the moving direction of cursor and display.
- * Bit 0 (B) is cursor blink on/off control; 0 = off, 1 = on.
- * Bit 1 (C) is cursor on/off control; 0 = off, 1 = on.
- * Bit 2 (D) is display on/off control; 0 = off, 1 = on.
- */
 void Hd44780::setDisplay(uint8_t b) {
 	this->cmd(b & 0x07 | 0x08);
 }
 
-/* 
- * Shifts the cursor or screen the left or right.
- * Bit 2 (R/L) is left/right control; 0 = left, 1 = right.
- * Bit 3 (S/C) is screen/cursor control; 0 = cursor, 1 = screen.
- */
 void Hd44780::setShift(uint8_t b) {
 	this->cmd(b & 0x0f | 0x10);
 }
 
-/* 
- * Set the moving direction of cursor and display.
- * Bit 2 (F) is dot format control; 0 = 5x8, 1 = 5x11.
- * Bit 3 (N) is line number control; 0 = 1 line, 1 = 2 line.
- * Bit 4 (DL) is data length control; 0 = 4-bit, 1 = 8-bit.
- */
 void Hd44780::setFunction(uint8_t b) {
 	this->cmd(b & 0x1f | 0x10 | 0x20);
 }
 
-/*
- * Sets the address pointer for CGRAM, allowing read or write of a byte of CGRAM data.
- */
 void Hd44780::setCgramAddress(uint8_t b) {
 	this->cmd(b & 0x3f | 0x40);
 }
 
-/*
- * Sets the address pointer for DDRAM, allowing read or write of a byte of DDRAM data.
- * For a 1 line display, the valid address range is 0x00 to 0x4f.
- * For a 2 line display, the valid address range is 0x00 to 0x27 for line one and 0x40 to 0x67 for line 2.
- * (displays with more lines have individually addressable modules).
- */
 void Hd44780::setDdramAddress(uint8_t address) {
 	this->cmd(b & 0x7f | 0x80);
 }
