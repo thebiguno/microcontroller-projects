@@ -57,10 +57,6 @@ void rs0();
 void rs1();
 void latch();
 
-/*
- * Writes a byte of data to either DDRAM or CGRAM.
- * The address may be automatically incremented/decremented according to the entry mode.
- */
 void Hd44780::setByte(uint8_t b) {
 	SPDR = b;
 	while(!(SPSR & (1<<SPIF)));
@@ -74,37 +70,12 @@ void Hd44780::cmd(uint8_t b) {
 	latch();
 }
 
-/*
- * Reads the busy flag and DDRAM address.
- * Bit 7 (BF) is the busy flag; 0 = not busy, 1 = busy.
- * Bits 0 to 7 (AC) are the DDRAM address.
- */
-uint8_t Hd44780::getBusyFlagAddress() {
-	// can't implement this since the data pins are connected to the shift register
-	return 0;
-}
-
-/*
- * Reads a byte of data to either DDRAM or CGRAM.
- * The address may be automatically incremented/decremented according to the entry mode.
- */
-uint8_t Hd44780::getByte() {
-	// can't implement this since the data pins are connected to the shift register
-	return 0;
-}
-
-/*
- * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
- */
 void Hd44780::setText(char* text, uint8_t sz) {
 	for (uint8_t i = 0; i < sz; i++) {
 		this->set(text[i]);
 		_delay_us(37);
 	}
 }
-/*
- * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
- */
 void Hd44780::setBytes(uint8_t* bytes, uint8_t sz) {
 	for (uint8_t i = 0; i < sz; i++) {
 		this->set(bytes[i]);
