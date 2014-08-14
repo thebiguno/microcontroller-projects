@@ -1,4 +1,4 @@
-update=Thursday, July 31, 2014 'amt' 08:27:26 am
+update=Wednesday, August 13, 2014 'pmt' 08:02:11 pm
 version=1
 last_client=eeschema
 [cvpcb]
@@ -50,7 +50,7 @@ version=1
 PageLayoutDescrFile=
 SubpartIdSeparator=0
 SubpartFirstId=65
-LibDir=
+LibDir=../../../../lib/kicad/library
 NetFmtName=
 RptD_X=0
 RptD_Y=100
@@ -88,3 +88,4 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=lib
+LibName32=custom

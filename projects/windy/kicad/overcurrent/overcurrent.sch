@@ -30,6 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:lib
+LIBS:custom
 LIBS:overcurrent-cache
 EELAYER 24 0
 EELAYER END
@@ -577,15 +578,9 @@ NoConn ~ 2700 6900
 Text Label 1500 6900 1    60   ~ 0
 LCD_E
 Text Label 8050 3500 0    60   ~ 0
-SS
-Text Label 5000 3700 2    60   ~ 0
-DAT0_DO
+SD_CS
 Text Label 5000 3400 2    60   ~ 0
 VCC
-Text Label 5000 3200 2    60   ~ 0
-DAT3_CS
-Text Label 5000 3100 2    60   ~ 0
-DAT2_NC
 $Comp
 L CONN_6 P?
 U 1 1 53DCEC62
@@ -885,14 +880,8 @@ Wire Wire Line
 Wire Wire Line
 	1350 6100 700  6100
 Connection ~ 700  6900
-Text Label 5000 3500 2    60   ~ 0
-CLK_SCK
 Text Label 5000 3600 2    60   ~ 0
 GND
-Text Label 5000 3300 2    60   ~ 0
-CMD_DI
-Text Label 5000 3800 2    60   ~ 0
-DAT1_RSV
 Wire Wire Line
 	4150 3200 5000 3200
 Wire Wire Line
@@ -902,7 +891,7 @@ Wire Wire Line
 Wire Wire Line
 	4150 3700 5000 3700
 Text Label 4150 3200 0    60   ~ 0
-SS
+SD_CS
 Text Label 4150 3300 0    60   ~ 0
 MOSI
 Text Label 4150 3500 0    60   ~ 0
@@ -1313,17 +1302,6 @@ Connection ~ 9350 5250
 Wire Wire Line
 	9550 5050 9550 5250
 Connection ~ 9550 5250
-$Comp
-L 74HC595 U?
-U 1 1 53E9842E
-P 3300 6050
-F 0 "U?" H 3450 6650 70  0000 C CNN
-F 1 "74HC595" H 3300 5450 70  0000 C CNN
-F 2 "" H 3300 6050 60  0000 C CNN
-F 3 "" H 3300 6050 60  0000 C CNN
-	1    3300 6050
-	-1   0    0    -1  
-$EndComp
 Wire Wire Line
 	2600 6300 2500 6300
 Wire Wire Line
@@ -1356,17 +1334,12 @@ Wire Wire Line
 	2600 5600 1700 5600
 Wire Wire Line
 	1700 5600 1700 6900
-Text Label 4000 5600 0    60   ~ 0
+Text Label 3600 5600 0    60   ~ 0
 MOSI
-Text Label 4000 5800 0    60   ~ 0
+Text Label 3600 6200 0    60   ~ 0
 SCK
-NoConn ~ 2600 6500
-Text Label 8050 5600 0    60   ~ 0
+Text Label 8050 3400 0    60   ~ 0
 LCD_E
-Text Label 4000 6100 0    60   ~ 0
-SCK
-Text Label 4000 5900 0    60   ~ 0
-VCC
 $Comp
 L GND #PWR?
 U 1 1 53E9907A
@@ -1380,10 +1353,6 @@ F 3 "" H 3000 7200 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	3000 7200 3000 6900
-Wire Wire Line
-	2800 6900 4000 6900
-Wire Wire Line
-	4000 6900 4000 6200
 Connection ~ 3000 6900
 Text Label 1300 6900 1    60   ~ 0
 MOSI
@@ -1409,29 +1378,51 @@ Wire Notes Line
 	3000 2600 3000 900 
 Wire Notes Line
 	6900 650  6900 2750
-$Comp
-L CONN_3 K?
-U 1 1 53E9A382
-P 7850 2600
-F 0 "K?" V 7800 2600 50  0000 C CNN
-F 1 "CONN_3" V 7900 2600 40  0000 C CNN
-F 2 "" H 7850 2600 60  0000 C CNN
-F 3 "" H 7850 2600 60  0000 C CNN
-	1    7850 2600
-	1    0    0    -1  
-$EndComp
 Text Label 7500 2500 2    60   ~ 0
 BTN_1
-Text Label 7500 2600 2    60   ~ 0
+Text Label 7500 2800 2    60   ~ 0
 GND
-Text Label 7500 2700 2    60   ~ 0
+Text Label 7500 2600 2    60   ~ 0
 BTN_2
-Text Label 8050 3900 0    60   ~ 0
+Text Label 8050 5500 0    60   ~ 0
 BTN_1
-Text Label 8050 4000 0    60   ~ 0
+Text Label 8050 5400 0    60   ~ 0
 BTN_2
 Wire Wire Line
 	1400 6900 1400 6350
 Wire Wire Line
 	1400 6350 1350 6350
+$Comp
+L 74HC164 U?
+U 1 1 53EC1E15
+P 3100 6100
+F 0 "U?" H 3000 6700 60  0000 C CNN
+F 1 "74HC164" H 3100 5800 60  0000 C CNN
+F 2 "" H 3100 6100 60  0000 C CNN
+F 3 "" H 3100 6100 60  0000 C CNN
+	1    3100 6100
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 5600 3600 5700
+Wire Wire Line
+	3600 6900 3600 6300
+Connection ~ 3600 6900
+Wire Wire Line
+	2800 6900 3600 6900
+Text Label 7500 2700 2    60   ~ 0
+SW_1
+$Comp
+L CONN_4 P?
+U 1 1 53EC248F
+P 7850 2650
+F 0 "P?" V 7800 2650 50  0000 C CNN
+F 1 "CONN_4" V 7900 2650 50  0000 C CNN
+F 2 "" H 7850 2650 60  0000 C CNN
+F 3 "" H 7850 2650 60  0000 C CNN
+	1    7850 2650
+	1    0    0    -1  
+$EndComp
+Text Label 8050 5600 0    60   ~ 0
+SW_1
 $EndSCHEMATC
