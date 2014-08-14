@@ -98,19 +98,6 @@ class Hd44780 {
 	void setByte(uint8_t b);
 
 	/*
-	 * Reads the busy flag and DDRAM address.
-	 * Bit 7 (BF) is the busy flag; 0 = not busy, 1 = busy.
-	 * Bits 0 to 7 (AC) are the DDRAM address.
-	 */
-	uint8_t getBusyFlagAddress();
-
-	/*
-	 * Reads a byte of data to either DDRAM or CGRAM.
-	 * The address may be automatically incremented/decremented according to the entry mode.
-	 */
-	uint8_t getByte();
-
-	/*
 	 * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
 	 */
 	void setText(char* text, uint8_t sz);
