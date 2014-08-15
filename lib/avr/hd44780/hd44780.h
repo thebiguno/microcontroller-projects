@@ -116,7 +116,7 @@ namespace digitalcave {
 		/*
 		 * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
 		 */
-		void setBytes(uint8_t* bytes, uint8_t sz);
+		void setBytes(uint8_t bytes[], uint8_t sz);
 	};
 }
 

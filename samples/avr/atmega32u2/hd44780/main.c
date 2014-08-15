@@ -6,7 +6,7 @@ using namespace digitalcave;
 
 int main (void){
 	Hd44780 display(&PORTB, 0, &PORTB, 2, 1);
-	display.init();
+	display.initSpi();
 	display.setFunction(0x0e);	// 5x8, 2-line, 8-bit
 	_delay_us(37);
 	display.setMode(0x02);		// no shift, increment

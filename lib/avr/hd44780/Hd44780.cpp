@@ -84,7 +84,7 @@ void Hd44780::setText(char* text, uint8_t sz) {
 		_delay_us(37);
 	}
 }
-void Hd44780::setBytes(uint8_t* bytes, uint8_t sz) {
+void Hd44780::setBytes(uint8_t bytes[], uint8_t sz) {
 	for (uint8_t i = 0; i < sz; i++) {
 		this->setByte(bytes[i]);
 		_delay_us(37);
