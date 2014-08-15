@@ -1,9 +1,9 @@
 include ../../build/variables.mk
 
-PROJECT=Blinkenlights
+PROJECT=shiftcpp
 MMCU=atmega168
 F_CPU=16000000
-SOURCES=main.c lib/shiftcpp/shift.cpp
+SOURCES=main.cpp lib/ShiftRegister/ShiftRegister.cpp
 COMPILER=avr-g++
 
 # You can also define anything here and it will override 
