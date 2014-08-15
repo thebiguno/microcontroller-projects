@@ -9,7 +9,8 @@
  */
 
 #include <avr/io.h>
-#include <util/delay_basic.h>
+#include <util/delay.h>
+#include "Hd44780.h"
 
 using namespace digitalcave;
 
@@ -19,6 +20,13 @@ Hd44780::Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *spi_
 	this->spi_port = spi_port;
 	this->mosi_bv = _BV(mosi_pin);
 	this->sclk_bv = _BV(sclk_pin);
+
+	*(this->e_port - 0x01) |= this->e_bv;
+}
+
+void Hd44780::initSpi() {
+	*(this->spi_port - 0x01) |= (this->mosi_bv | this->sclk_bv);
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0);
 }
 
 void Hd44780::clear() {
@@ -30,27 +38,27 @@ void Hd44780::home() {
 }
 
 void Hd44780::setMode(uint8_t b) {
-	this->cmd(b & 0x03 | 0x04);
+	this->cmd(b & (0x03 | 0x04));
 }
 
 void Hd44780::setDisplay(uint8_t b) {
-	this->cmd(b & 0x07 | 0x08);
+	this->cmd(b & (0x07 | 0x08));
 }
 
 void Hd44780::setShift(uint8_t b) {
-	this->cmd(b & 0x0f | 0x10);
+	this->cmd(b & (0x0f | 0x10));
 }
 
 void Hd44780::setFunction(uint8_t b) {
-	this->cmd(b & 0x1f | 0x10 | 0x20);
+	this->cmd(b & (0x1f | 0x10 | 0x20));
 }
 
 void Hd44780::setCgramAddress(uint8_t b) {
-	this->cmd(b & 0x3f | 0x40);
+	this->cmd(b & (0x3f | 0x40));
 }
 
-void Hd44780::setDdramAddress(uint8_t address) {
-	this->cmd(b & 0x7f | 0x80);
+void Hd44780::setDdramAddress(uint8_t b) {
+	this->cmd(b & (0x7f | 0x80));
 }
 
 void rs0();
@@ -60,35 +68,29 @@ void latch();
 void Hd44780::setByte(uint8_t b) {
 	SPDR = b;
 	while(!(SPSR & (1<<SPIF)));
-	rs1();
+	*this->spi_port |= this->mosi_bv;
 	latch();
 }
 void Hd44780::cmd(uint8_t b) {
 	SPDR = b;
 	while(!(SPSR & (1<<SPIF)));
-	rs0();
+	*this->spi_port &= ~this->mosi_bv;
 	latch();
 }
 
 void Hd44780::setText(char* text, uint8_t sz) {
 	for (uint8_t i = 0; i < sz; i++) {
-		this->set(text[i]);
+		this->setByte(text[i]);
 		_delay_us(37);
 	}
 }
 void Hd44780::setBytes(uint8_t* bytes, uint8_t sz) {
 	for (uint8_t i = 0; i < sz; i++) {
-		this->set(bytes[i]);
+		this->setByte(bytes[i]);
 		_delay_us(37);
 	}
 }
 
-inline void rs0() {
-	this->spi_port &= ~this->mosi_bv;
-}
-inline void rs1() {
-	this->spi_port |= this->mosi_bv;
-}
 inline void wait() {
 	#if F_CPU > 3333333
 	asm volatile("nop\n\t" 
@@ -113,18 +115,17 @@ inline void wait() {
 	::);
 	#endif
 }
-inline void latch() {
+void Hd44780::latch() {
 	#ifdef HD44780_LATCH
 	// pulse SCK one more time latch the current data on the shift register
 	// this is required when using a shift register with a latch and CLK and RCLK are wired together
-	this->spi_port |= this->sclk_bv;
-	this->spi_port &= ~this->sclk_bv;
+	*this->spi_port |= this->sclk_bv;
+	*this->spi_port &= ~this->sclk_bv;
 	#endif
 
-	this->e_port |= this->e_bv;
+	*this->e_port |= this->e_bv;
 	wait();
-	this->e_port &= ~this->e_bv;
+	*this->e_port &= ~this->e_bv;
 	wait();
-	#endif
 }
 
