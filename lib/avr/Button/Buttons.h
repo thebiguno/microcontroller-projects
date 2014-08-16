@@ -7,7 +7,7 @@
 namespace digitalcave {
 	/*
 	 * This class can debounce update eight buttons and switches per instance.
-	 * The number of samples taken and the press and release periods can be controlled either by using a loop and blocking, or by using a timer and a counter.
+	 * Debouning is performed with a sliding window of size 8 so the sample frequency = stabilization period / 8.
 	 * General purpose buttons have press and release periods from 50 to 100 ms.
 	 * Repeate action buttons have press and release periods from 20 to 40 ms (to increase the repeat rate).
 	 * Reset buttons have press periods from 250 to 500 ms, and release periods from 50 to 100 ms (to prevent accidental presses).
@@ -33,7 +33,9 @@ namespace digitalcave {
 		
 		/*
 		 * Samples the pins once.
-		 * This method should be called every 6 to 60 milliseconds.
+		 * This method should be called as frequently as 3 milliseconds for a stabilization period of 20 ms,
+		 * or as infrequently as 60 ms for a stabilization period of 480 ms.
+		 * Typically this method should be called every 10 to 12 ms for a stabilization period of 80 to 96 ms.
 		 */
 		void sample();
 		

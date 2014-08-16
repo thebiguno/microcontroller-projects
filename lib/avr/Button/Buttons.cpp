@@ -30,7 +30,7 @@ void Buttons::sample() {
 	for (uint8_t i = 0; i < 8; i++) {
 		x = x >> 1;
 		if (this->pins_bv & _BV(i)) {
-			uint8_t v = (this->window[i] << 1) | (x & _BV(i));	// shift and put latest reading in least significant bit
+			uint8_t v = (this->window[i] << 1) | (x & _BV(1));	// shift and put latest reading in least significant bit
 			this->window[i] = v;
 			if (v == 0x00) {									// check for change from unpressed (1) to pressed (0)
 				this->current &= ~_BV(i);						// mark button as pressed
