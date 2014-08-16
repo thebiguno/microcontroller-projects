@@ -12,7 +12,7 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins) {
 	this->release = 0xFF;
 	
 	*(port - 0x1) &= ~pins;	// input
-	*(port - 0x2) |= pins;	// pull-up
+	*this->pin |= pins;		// pull-up
 }
 
 uint8_t Buttons::poll() {
@@ -24,7 +24,7 @@ uint8_t Buttons::poll() {
 }
 
 void Buttons::sample() {
-	uint8_t x = *pin;
+	uint8_t x = *this->pin;
 	this->press |= x;
 	this->release &= x;
 }
@@ -33,6 +33,20 @@ uint8_t Buttons::integrate() {
 	this->current &= ~release;		// 1->0 for released
 	this->current &= this->pins_bv;
 	this->press = 0x00;
+	this->release = 0xFF;
+	return this->current;
+}
+
+uint8_t Buttons::integratePressed() {
+	this->current |= ~press;		// 0->1 for pressed
+	this->current &= this->pins_bv;
+	this->press = 0x00;
+	return this->current;
+}
+
+uint8_t Buttons::integrateReleased() {
+	this->current &= ~release;		// 1->0 for released
+	this->current &= this->pins_bv;
 	this->release = 0xFF;
 	return this->current;
 }
