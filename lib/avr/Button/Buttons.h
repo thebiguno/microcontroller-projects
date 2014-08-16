@@ -5,13 +5,16 @@
 #include <stdlib.h>
 
 namespace digitalcave {
+	/*
+	 * This library is suitable for general SPST-NO buttons and switches that have a minimum 100 ms press time.
+	 */
 	class Buttons {
 
 	private:
 		volatile uint8_t *port;
 		uint8_t pins_bv;
-		uint8_t state;
-		uint8_t lastState;
+		uint8_t current;
+		uint8_t last;
 
 	public:
 		/*
