@@ -5,6 +5,7 @@ using namespace digitalcave;
 
 Buttons::Buttons(volatile uint8_t *port, uint8_t pins) {
 	this->port = port;
+	this->pin = this->port - 0x2;
 	this->pins_bv = pins;
 	this->last = 0;
 	
@@ -13,18 +14,24 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins) {
 }
 
 uint8_t Buttons::poll() {
-	volatile uint8_t *pin = this->port - 0x2;
-	uint8_t press = 0x00;
-	uint8_t release = 0xFF;
 	for (uint8_t i = 0; i < 8; i++) {
-		uint8_t x = *pin;
-		press |= x;
-		release &= x;
+		this->sample();
 		_delay_ms(12);
 	}
+	return this->integrate();
+}
+
+void Buttons::sample() {
+	uint8_t x = *pin;
+	this->press |= x;
+	this->release &= x;
+}
+uint8_t Buttons::integrate() {
 	this->current |= ~press;		// 0->1 for pressed
 	this->current &= ~release;		// 1->0 for released
 	this->current &= this->pins_bv;
+	this->press = 0x00;
+	this->release = 0xFF;
 	return this->current;
 }
 

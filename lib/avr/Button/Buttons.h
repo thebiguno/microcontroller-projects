@@ -12,9 +12,12 @@ namespace digitalcave {
 
 	private:
 		volatile uint8_t *port;
+		volatile uint8_t *pin;
 		uint8_t pins_bv;
 		uint8_t current;
 		uint8_t last;
+		uint8_t press;
+		uint8_t release;
 
 	public:
 		/*
@@ -24,20 +27,30 @@ namespace digitalcave {
 		Buttons(volatile uint8_t *port, uint8_t pins);
 		
 		/*
-		 * Samples the pins 8 times every 12 ms ensuring that buttons remain closed for 100 ms.
+		 * Samples the pins once.
+		 */
+		void sample();
+		
+		/*
+		 * Samples the pins 8 times at 12 ms intervals ensuring that buttons remain open or closed for 100 ms before integrating the samples.
  		 * Returns the mask of buttons that are pressed.
 		 * Any pin that is pressed will have its bit set.
 		 */
 		uint8_t poll();
-			
+		
 		/*
-		 * Returns the mask of the buttons that are pressed, as determined by the last call to poll.
-		 * Any pin that is pressed will have its bit set.
+		 * Integrate the press and release samples and update the current state.
+ 		 * Returns the mask of buttons that are pressed.
+		 */
+		uint8_t integrate();
+		
+		/*
+ 		 * Returns the mask of buttons that are pressed, as it was the last time the samples were integrated.
 		 */
 		uint8_t pressed();
 		
 		/*
-		 * Returns the mask of buttons that have changed state since the last time pressed was called.
+		 * Returns the mask of buttons that have changed state since the last time this method was called.
 		 * Any pin that has changed since the last call to this method will have its bit set.
 		 */
 		uint8_t changed();
