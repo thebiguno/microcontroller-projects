@@ -32,7 +32,7 @@ namespace digitalcave {
 		void sample();
 		
 		/*
-		 * Samples the pins 8 times at 12 ms intervals ensuring that buttons remain open or closed for 100 ms before integrating the samples.
+		 * Samples the pins 10 times at 10 ms intervals ensuring that buttons remain open or closed for 100 ms before integrating the samples.
  		 * Returns the mask of buttons that are pressed.
 		 * Any pin that is pressed will have its bit set.
 		 */

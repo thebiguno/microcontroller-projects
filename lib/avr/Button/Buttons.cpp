@@ -7,16 +7,18 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins) {
 	this->port = port;
 	this->pin = this->port - 0x2;
 	this->pins_bv = pins;
-	this->last = 0;
+	this->last = 0x00;
+	this->press = 0x00;
+	this->release = 0xFF;
 	
 	*(port - 0x1) &= ~pins;	// input
 	*(port - 0x2) |= pins;	// pull-up
 }
 
 uint8_t Buttons::poll() {
-	for (uint8_t i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < 10; i++) {
 		this->sample();
-		_delay_ms(12);
+		_delay_ms(10);
 	}
 	return this->integrate();
 }
