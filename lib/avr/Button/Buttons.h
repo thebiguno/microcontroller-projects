@@ -22,8 +22,7 @@ namespace digitalcave {
 		uint8_t pins_bv;
 		uint8_t current;
 		uint8_t last;
-		uint8_t press;
-		uint8_t release;
+		uint8_t window[8];
 
 	public:
 		/*
@@ -34,35 +33,17 @@ namespace digitalcave {
 		
 		/*
 		 * Samples the pins once.
+		 * This method should be called every 6 to 60 milliseconds.
 		 */
 		void sample();
 		
 		/*
-		 * Samples the pins 10 times at 10 ms intervals.
-		 * This is used for general purpose buttons where the press and release periods are both 100 ms, and it is acceptable to block.
+		 * Samples the pins 8 times at 10 ms intervals.
+		 * This is used for general purpose buttons where the press and release periods are both 80 ms, and it is acceptable to block.
  		 * Returns the mask of buttons that are pressed.
 		 * Any pin that is pressed will have its bit set.
 		 */
 		uint8_t poll();
-		
-		/*
-		 * Integrate the pressed and released samples into thee current state.
-		 * This is used when the press period is equal to the release period.
- 		 * Returns the mask of buttons that are pressed.
-		 */
-		uint8_t integrate();
-		
-		/*
-		 * Integrate the press samples into the current state.
-		 * This is used when the press period differs from the release period.
-		 */
-		uint8_t integratePress();
-		
-		/*
-		 * Integrate the release samples into the current state.
-		 * This is used when the release period differs from the press period.
-		 */
-		uint8_t integrateRelease();
 		
 		/*
  		 * Returns the mask of buttons that are pressed, as it was the last time the samples were integrated.

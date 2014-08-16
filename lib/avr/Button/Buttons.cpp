@@ -8,47 +8,37 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins) {
 	this->pin = this->port - 0x2;
 	this->pins_bv = pins;
 	this->last = 0x00;
-	this->press = 0x00;
-	this->release = 0xFF;
+	this->current = 0x00;
+	for (uint8_t i = 0; i < 8; i++) {
+		this->window[i] = 0xff;
+	}
 	
 	*(port - 0x1) &= ~pins;	// input
 	*this->pin |= pins;		// pull-up
 }
 
 uint8_t Buttons::poll() {
-	for (uint8_t i = 0; i < 10; i++) {
+	for (uint8_t i = 0; i < 8; i++) {
 		this->sample();
 		_delay_ms(10);
 	}
-	return this->integrate();
+	return this->pressed();
 }
 
 void Buttons::sample() {
 	uint8_t x = *this->pin;
-	this->press |= x;
-	this->release &= x;
-}
-uint8_t Buttons::integrate() {
-	this->current |= ~press;		// 0->1 for pressed
-	this->current &= ~release;		// 1->0 for released
-	this->current &= this->pins_bv;
-	this->press = 0x00;
-	this->release = 0xFF;
-	return this->current;
-}
-
-uint8_t Buttons::integratePressed() {
-	this->current |= ~press;		// 0->1 for pressed
-	this->current &= this->pins_bv;
-	this->press = 0x00;
-	return this->current;
-}
-
-uint8_t Buttons::integrateReleased() {
-	this->current &= ~release;		// 1->0 for released
-	this->current &= this->pins_bv;
-	this->release = 0xFF;
-	return this->current;
+	for (uint8_t i = 0; i < 8; i++) {
+		x = x >> 1;
+		if (this->pins_bv & _BV(i)) {
+			uint8_t v = (this->window[i] << 1) | (x & _BV(i));	// shift and put latest reading in least significant bit
+			this->window[i] = v;
+			if (v == 0x00) {									// check for change from unpressed (1) to pressed (0)
+				this->current &= ~_BV(i);						// mark button as pressed
+			} else if (v == 0xff) {								// check for change from pressed (0) to unpressed (1)
+				this->current |= _BV(i);						// mark button released
+			}
+		}
+	}
 }
 
 uint8_t Buttons::changed() {
