@@ -12,34 +12,33 @@ namespace digitalcave {
 		uint8_t pins_bv;
 		uint8_t state;
 		uint8_t lastState;
-		double us;
 
 	public:
 		/*
 		 * Creates a new Buttons class that can debounce the selected pins of a given port.
-		 * The sample size is always 8, with us microseconds between samples.
 		 * The selected pins are configured for input and pull ups are enabled making this library suitable only for active-low configuration.
-		 * There is a delay of us microseconds between samples.  The allowable values for this argument are described in the documentation for _delay_us here:
-		 * http://www.nongnu.org/avr-libc/user-manual/group__util__delay.html
 		 */
-		Buttons(volatile uint8_t *port, uint8_t pins, double us);
+		Buttons(volatile uint8_t *port, uint8_t pins);
 		
 		/*
-		 * Samples the port 8 times and returns the mask of buttons that are pressed.
-		 * Any pin that is pressed will have the value 1.
+		 * Samples the pins 8 times every 12 ms ensuring that buttons remain closed for 100 ms.
+ 		 * Returns the mask of buttons that are pressed.
+		 * Any pin that is pressed will have its bit set.
 		 */
 		uint8_t poll();
 			
 		/*
-		 * Returns the mask of the buttons that are pressed.
-		 * Any pin that is pressed will have the value 1.
+		 * Returns the mask of the buttons that are pressed, as determined by the last call to poll.
+		 * Any pin that is pressed will have its bit set.
 		 */
 		uint8_t pressed();
 		
 		/*
 		 * Returns the mask of buttons that have changed state since the last time pressed was called.
-		 * Any pin that changed since the last call to changed will have the value 0.
+		 * Any pin that has changed since the last call to this method will have its bit set.
 		 */
 		uint8_t changed();
 	};
 }
+
+#endif
