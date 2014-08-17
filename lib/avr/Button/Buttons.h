@@ -22,14 +22,21 @@ namespace digitalcave {
 		uint8_t pins_bv;
 		uint8_t current;
 		uint8_t last;
+		uint8_t pressed_bv;
+		uint8_t released_bv;
 		uint8_t window[8];
 
 	public:
 		/*
 		 * Creates a new Buttons class that can debounce the selected pins of a given port.
 		 * The selected pins are configured for input and pull ups are enabled making this library suitable only for active-low configuration.
+		 * The number of pressed and released samples to consider when changing state can be controlled with pressed and released which take values from 1 to 8.
+		 * For a general purpose button with a press/release period of 100 ms and uniform sampling, set pressed and released to 1 and call sample every 100 ms.
+		 * For a general purpose button with a press/release period of 100 ms and windowed sampling, set pressed and released to 8 and call sample every 12 ms.
+		 * For a toggle buttons with a press period of 100 ms and a release period of 400 ms, set pressed to 2 and released to 8 and call sample every 50 ms.
+		 * For a reset button with a press period of 800 ms and a release period af 100 ms, set pressed to 8 and released to 1 and call sample every 100 ms.
 		 */
-		Buttons(volatile uint8_t *port, uint8_t pins);
+		Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t released);
 		
 		/*
 		 * Samples the pins once.
@@ -37,15 +44,7 @@ namespace digitalcave {
 		 * or as infrequently as 60 ms for a stabilization period of 480 ms.
 		 * Typically this method should be called every 10 to 12 ms for a stabilization period of 80 to 96 ms.
 		 */
-		void sample();
-		
-		/*
-		 * Samples the pins 8 times at 10 ms intervals.
-		 * This is used for general purpose buttons where the press and release periods are both 80 ms, and it is acceptable to block.
- 		 * Returns the mask of buttons that are pressed.
-		 * Any pin that is pressed will have its bit set.
-		 */
-		uint8_t poll();
+		uint8_t sample();
 		
 		/*
  		 * Returns the mask of buttons that are pressed, as it was the last time the samples were integrated.
