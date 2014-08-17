@@ -33,9 +33,9 @@ void Buttons::sample() {
 			uint8_t v = (this->window[i] << 1) | (x & _BV(1));	// shift and put latest reading in least significant bit
 			this->window[i] = v;
 			if (v == 0x00) {									// check for change from unpressed (1) to pressed (0)
-				this->current &= ~_BV(i);						// mark button as pressed
+				this->current |= _BV(i);						// mark button as pressed
 			} else if (v == 0xff) {								// check for change from pressed (0) to unpressed (1)
-				this->current |= _BV(i);						// mark button released
+				this->current &= ~_BV(i);						// mark button released
 			}
 		}
 	}
