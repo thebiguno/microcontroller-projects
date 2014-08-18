@@ -188,8 +188,8 @@ int main() {
 	set_position(183762, -410606); // calgary
 
 	// Initialize RTC chip
+//	ds1307_get(&rtc);
 	ds1307_init();
-	ds1307_get(&rtc);
 	sys.tm_year = rtc.year - 1900;
 	sys.tm_mon = rtc.month - 1;				// rtc is 1 based; time lib is 0 based
 	sys.tm_mday = rtc.mday;
@@ -537,6 +537,7 @@ int main() {
 					set_system_time(systime);
 					
 					// store the new system time to the rtc
+					ds1307_init();
 					ds1307_set(&rtc);
 					mode = MODE_HMS;
 				}
