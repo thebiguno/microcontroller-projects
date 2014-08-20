@@ -3,6 +3,7 @@
 #include <avr/interrupt.h>
 #include "lib/ws2811/ws2811_w.h"
 #include "lib/rtc/ds1307/ds1307.h"
+#include "lib/twi/twi.h"
 //#include "lib/serial/serial.h"
 //#include "lib/rtc/pcf8563/pcf8563.h"
 #include "lib/remote/remote.h"
@@ -113,6 +114,8 @@ int main() {
 	// the rtc has a slow start up time from power on, so just delay a bit here
 	_delay_ms(500);
 	
+	twi_init();
+	
 	DDRB |= _BV(2); // led strip output
 	
 	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
@@ -188,7 +191,7 @@ int main() {
 	set_position(183762, -410606); // calgary
 
 	// Initialize RTC chip
-//	ds1307_get(&rtc);
+	ds1307_get(&rtc);
 	ds1307_init();
 	sys.tm_year = rtc.year - 1900;
 	sys.tm_mon = rtc.month - 1;				// rtc is 1 based; time lib is 0 based
@@ -198,6 +201,7 @@ int main() {
 	sys.tm_sec = rtc.second;
 	systime = mktime(&sys);
 	set_system_time(systime);
+	ds1307_set(&rtc);
 	
 	uint8_t base_index = 0;
 	
