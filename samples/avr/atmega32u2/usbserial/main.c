@@ -25,7 +25,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 #include <util/delay.h>
-#include "usb_serial.h"
+#include "lib/usb/serial/serial.h"
 
 #define LED_CONFIG	(DDRD |= (1<<6))
 #define LED_ON		(PORTD |= (1<<6))

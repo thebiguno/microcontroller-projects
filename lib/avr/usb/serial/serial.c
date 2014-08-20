@@ -30,9 +30,10 @@
 // Version 1.6: fix zero length packet bug
 // Version 1.7: fix usb_serial_set_control
 
-#define USB_SERIAL_PRIVATE_INCLUDE
-#include "usb_serial.h"
+#include "serial.h"
 
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 /**************************************************************************
  *
@@ -42,7 +43,7 @@
 
 // You can change these to give your code its own name.  On Windows,
 // these are only used before an INF file (driver install) is loaded.
-#define STR_MANUFACTURER	L"Your Name"
+#define STR_MANUFACTURER	L"Digital Cave"
 #define STR_PRODUCT		L"USB Serial"
 
 // All USB serial devices are supposed to have a serial number
