@@ -11,11 +11,11 @@ int main (void){
 	//Do setup here
 	
 	// read PD0 and PD1, sampled over 80 us
-	Buttons buttons(&PORTD, 0x03);
+	Buttons buttons(&PORTD, 0x03, 1, 1);
 	
 	//Main program loop
 	while (1) {
-		uint8_t pressed = buttons.poll();
+		uint8_t pressed = buttons.sample();
 	}
 }
 
