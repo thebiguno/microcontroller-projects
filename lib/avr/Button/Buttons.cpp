@@ -29,8 +29,8 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t 
 uint8_t Buttons::sample() {
 	uint8_t x = *this->pin;
 	for (uint8_t i = 0; i < 8; i++) {
-		x = x >> 1;
-		if (this->pins_bv & _BV(i)) {
+		x >>= 1;
+		if (this->pins_bv & _BV(i)) {										// only check the pins that are of interest
 			uint8_t v = (this->window[i] << 1) | (x & _BV(1));				// shift and put latest reading in least significant bit
 			this->window[i] = v;
 			if ((v & this->pressed_bv) == 0x00) {							// check for change from unpressed (1) to pressed (0)
