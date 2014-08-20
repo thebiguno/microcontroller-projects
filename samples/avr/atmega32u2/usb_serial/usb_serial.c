@@ -110,7 +110,7 @@
 #define CDC_ACM_ENDPOINT	2
 #define CDC_RX_ENDPOINT		3
 #define CDC_TX_ENDPOINT		4
-#if defined(__AVR_AT90USB162__)
+#if defined(__AVR_AT90USB162__) || defined(__AVR_ATmega32U2__)
 #define CDC_ACM_SIZE		16
 #define CDC_ACM_BUFFER		EP_SINGLE_BUFFER
 #define CDC_RX_SIZE		32
