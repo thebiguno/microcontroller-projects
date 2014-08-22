@@ -22,7 +22,6 @@
  */
 
 #include <avr/io.h>
-#include <avr/pgmspace.h>
 #include <stdint.h>
 #include <util/delay.h>
 #include "lib/usb/serial/serial.h"
@@ -89,6 +88,7 @@ int main(void)
 
 		// and then listen for commands and process them
 		while (1) {
+			usb_serial
 			send_str(PSTR("> "));
 			n = recv_str(buf, sizeof(buf));
 			if (n == 255) break;
