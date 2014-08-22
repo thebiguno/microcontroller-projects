@@ -1,0 +1,51 @@
+1234567890123456
+
+normal display
+12:32 12.3Hz CHG	123rpm CHG/VLT/CUR/FRQ/SRV
+12.3A 12.3V 151W
+measurements taken once per second (TCNT0 > last)
+
+centre button to adjust thresholds
+up/down button to switch between Hz and rpm
+
+threshold config
+ 5A 12.0V  0.5Hz	remain braking until below these values
+25A 14.5V 15.0Hz	start braking at these values
+          900rpm
+
+left and right to select value to adjust (cursor on unit of selected)
+up and down to change value
+centre button to change time
+
+2014-01-01 14:56
+30s             			OFF -> 5s -> 10s -> 15s -> 30s -> 60s
+
+left and right to select value to adjust (cursor on unit of selected)
+up and down to change value
+centre button to change time
+
+log format
+datetime           ,mod,volt,amps,hz
+yyyy-MM-dd HH:mm:ss,chg,12.3,12.3,12.3
+
+amps: 0A to 40A +/- 1A
+volts: 0V to 30V +/- 0.5V (presets for 6V, 12V, 24V batteries?; voltage divider for 24V batteries?)
+frequency: 0Hz to 15Hz +/- 0.5Hz
+frequency: 0rpm to 900rpm +/- 10rpm
+
+60 rpm = 1 Hz
+300 rpm = 5 Hz
+600 rpm = 10 Hz
+900 rpm = 15 Hz
+1200 rpm = 20 Hz
+
+T0 SQW 60 times per minute
+	TCNT0 reset to 0 when COMP0A = 60
+T1 TACH 0 to 900 times per minute
+	TCNT1 reset to 0 when COMP0A = 60
+	Hz = TCNT1 / TCNT0
+	
+Relay pin PB0 is an input to detect when system is in service mode.
+When automatic shutdown is required, PB0 becomes and output and is set high to engage the relay.
+
+cut in of 1Hz = 100 windings/coil
