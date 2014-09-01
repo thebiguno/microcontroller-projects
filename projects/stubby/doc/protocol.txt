@@ -27,26 +27,34 @@ date.
 Commands have a variable payload.  A description of payloads is below.
 Portions in [square brackets] are optional.
 
-Command						Direction			Payload
-----------------------------------------------------------------------------
-SendAcknowledge				Stubby -> PC		Command being ack'd (1 byte)
-SendComplete				Stubby -> PC		Command completed (1 byte)
+Command						Direction				Payload															Response
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)									None
+SendComplete				Stubby -> Control		Command completed (1 byte)										None
 
-RequestMove					PC -> Stubby		Distance (2 btyes), Angle (4 bytes), [Speed (1 byte)]
-RequestTurn					PC -> Stubby		Angle (4 bytes), [Speed (1 byte)]
-RequestTranslate			PC -> Stubby		Axis (1 byte), Distance (1 byte)
-RequestRotate				PC -> Stubby		Axis (1 byte), Angle (4 bytes)
+RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc	ControlConfig message
+SendControlConfig			Stubby -> Control		Configuration for controller									None
 
-RequestDistance				PC -> Stubby		Null
-SendDistance				Stubby -> PC		Distance (2 bytes)
+RequestPowerOn				Control -> Stubby		Null															Ack
+RequestPowerOff				Control -> Stubby		Null															Ack
+RequestPowerToggle			Control -> Stubby		Null															Ack
 
-RequestOptical				PC -> Stubby		Null
-SendOptical					Stubby -> PC		1 byte / sensor (TODO: How many sensors?)
+RequestMove					Control -> Stubby		Angle (4 bytes) [Speed (1 byte) [Distance (2 bytes)]]			Ack (If distance is included, Complete when done)
+RequestTurn					Control -> Stubby		Speed (1 byte) [Angle (4 bytes)]								Ack (If angle is included, Complete when done)
+RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)								Ack
+RequestRotate				Control -> Stubby		Axis (1 byte), Angle (4 bytes)									Ack
 
-RequestBattery				PC -> Stubby		Null
-SendBattery					Stubby -> PC		1 byte
+RequestDistance				Control -> Stubby		Null															Distance message
+SendDistance				Stubby -> Control		Distance (2 bytes)												None
 
-RequestDebug				PC -> Stubby		Null
-SendDebug					Stubby -> PC		Variable depending on message, max 254 bytes
+RequestOptical				Control -> Stubby		Null															Optical message
+SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)						None
 
-RequestSetLED				PC -> Stubby		3 bytes (RGB value)
+RequestBattery				Control -> Stubby		Null															Battery message
+SendBattery					Stubby -> Control		1 byte															None
+
+RequestEnableDebug			Control -> Stubby		Null															Ack
+RequestDisableDebug			Control -> Stubby		Null															Ack
+SendDebug					Stubby -> Control		Variable depending on message, max 254 bytes					None
+
+RequestSetLED				Control -> Stubby		3 bytes (RGB value)												Ack
