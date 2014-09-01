@@ -1,0 +1,52 @@
+Protocol Info
+-------------
+
+Message Structure (bi-directional):
+Segment				Length
+---------------------------------
+Frame start			1 byte (0x7e)
+Length				1 byte
+Command				1 byte
+Payload				0 - 254 bytes
+Checksum			1 byte
+
+Commands:
+---------
+There are four logical message types: 
+1) PC initiates a message to Stubby
+2) Stubby responds to a message from PC
+3) Stubby initiates a message to PC
+4) PC responds to a message from Stubby
+
+Message types 1 and 2 comprise the majority of communication.  Message 
+types 3 and 4 imply an event-driven programming model.  Initially, we 
+do not want to do this as it adds complexity to the new programmer,
+however we do not want to preclude this from being added at a later 
+date.
+
+Commands have a variable payload.  A description of payloads is below.
+Portions in [square brackets] are optional.
+
+Command						Direction			Payload
+----------------------------------------------------------------------------
+SendAcknowledge				Stubby -> PC		Command being ack'd (1 byte)
+SendComplete				Stubby -> PC		Command completed (1 byte)
+
+RequestMove					PC -> Stubby		Distance (2 btyes), Angle (4 bytes), [Speed (1 byte)]
+RequestTurn					PC -> Stubby		Angle (4 bytes), [Speed (1 byte)]
+RequestTranslate			PC -> Stubby		Axis (1 byte), Distance (1 byte)
+RequestRotate				PC -> Stubby		Axis (1 byte), Angle (4 bytes)
+
+RequestDistance				PC -> Stubby		Null
+SendDistance				Stubby -> PC		Distance (2 bytes)
+
+RequestOptical				PC -> Stubby		Null
+SendOptical					Stubby -> PC		1 byte / sensor (TODO: How many sensors?)
+
+RequestBattery				PC -> Stubby		Null
+SendBattery					Stubby -> PC		1 byte
+
+RequestDebug				PC -> Stubby		Null
+SendDebug					Stubby -> PC		Variable depending on message, max 254 bytes
+
+RequestSetLED				PC -> Stubby		3 bytes (RGB value)
