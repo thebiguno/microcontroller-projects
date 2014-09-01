@@ -38,7 +38,7 @@ $Descr User 11000 9500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "26 aug 2014"
+Date "1 sep 2014"
 Rev "1.0"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -289,28 +289,6 @@ F 2 "~" V 8280 5600 30  0000 C CNN
 F 3 "~" H 8350 5600 30  0000 C CNN
 	1    8350 5600
 	0    -1   -1   0   
-$EndComp
-$Comp
-L R R3
-U 1 1 533AEE5B
-P 5450 7350
-F 0 "R3" V 5530 7350 40  0000 C CNN
-F 1 "4k7" V 5457 7351 40  0000 C CNN
-F 2 "~" V 5380 7350 30  0000 C CNN
-F 3 "~" H 5450 7350 30  0000 C CNN
-	1    5450 7350
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R4
-U 1 1 533AEE68
-P 5650 7350
-F 0 "R4" V 5730 7350 40  0000 C CNN
-F 1 "4k7" V 5657 7351 40  0000 C CNN
-F 2 "~" V 5580 7350 30  0000 C CNN
-F 3 "~" H 5650 7350 30  0000 C CNN
-	1    5650 7350
-	1    0    0    -1  
 $EndComp
 Text Notes 2100 1000 0    60   ~ 0
 3.3v LDO Regulator
@@ -718,17 +696,6 @@ F 3 "" H 1700 8300 60  0000 C CNN
 $EndComp
 Text Label 5450 2600 3    60   ~ 0
 ADC_BATTERY_METER
-$Comp
-L +3.3V #PWR019
-U 1 1 535AE513
-P 5550 6950
-F 0 "#PWR019" H 5550 6910 30  0001 C CNN
-F 1 "+3.3V" H 5550 7060 30  0000 C CNN
-F 2 "" H 5550 6950 60  0000 C CNN
-F 3 "" H 5550 6950 60  0000 C CNN
-	1    5550 6950
-	1    0    0    -1  
-$EndComp
 Text Label 1600 7750 0    60   ~ 0
 I2C_SDA
 Text Label 1600 7850 0    60   ~ 0
@@ -1324,20 +1291,6 @@ Wire Wire Line
 	5150 4900 5150 3200
 Wire Wire Line
 	4750 4900 5150 4900
-Connection ~ 4950 7750
-Connection ~ 5550 7000
-Wire Wire Line
-	5550 7000 5550 6950
-Wire Wire Line
-	5650 7000 5650 7100
-Wire Wire Line
-	5450 7000 5650 7000
-Wire Wire Line
-	5450 7100 5450 7000
-Wire Wire Line
-	5650 7850 5650 7600
-Wire Wire Line
-	5450 7600 5450 7750
 Wire Wire Line
 	5450 2600 5750 2600
 Wire Wire Line
@@ -1617,15 +1570,10 @@ Wire Wire Line
 	3750 2250 3750 2150
 Wire Wire Line
 	1750 900  1750 1000
-Connection ~ 5050 7850
-Wire Wire Line
-	5450 7750 1500 7750
 Wire Wire Line
 	4950 5300 4950 7750
 Wire Wire Line
 	4750 5300 4950 5300
-Wire Wire Line
-	1600 7850 5650 7850
 Wire Wire Line
 	7500 6200 7500 6100
 Wire Wire Line
@@ -1872,4 +1820,8 @@ NoConn ~ 1250 5050
 NoConn ~ 1350 5050
 NoConn ~ 1450 5050
 NoConn ~ 1550 5050
+Wire Wire Line
+	4950 7750 1500 7750
+Wire Wire Line
+	5050 7850 1600 7850
 $EndSCHEMATC
