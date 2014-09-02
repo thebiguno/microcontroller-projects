@@ -1,4 +1,4 @@
-(kicad_pcb (version 3) (host pcbnew "(2013-dec-23)-stable")
+(kicad_pcb (version 3) (host pcbnew "(2014-01-10 BZR 4027)-stable")
 
   (general
     (links 163)
@@ -641,19 +641,19 @@
     )
   )
 
-  (module SIL-1 (layer F.Cu) (tedit 53CD69F8) (tstamp 53CD6918)
+  (module SIL-1 (layer B.Cu) (tedit 53CD69F8) (tstamp 53CD6918)
     (at 36.83 59.69)
     (descr "Connecteurs 1 pin")
     (tags "CONN DEV")
     (path /53CD7069)
-    (fp_text reference P7 (at 0 -1.7) (layer F.SilkS) hide
-      (effects (font (size 0.8 0.8) (thickness 0.15)))
+    (fp_text reference P7 (at 0 1.7) (layer B.SilkS) hide
+      (effects (font (size 0.8 0.8) (thickness 0.15)) (justify mirror))
     )
-    (fp_text value CONN_1 (at 0.1 -1.7) (layer F.SilkS) hide
-      (effects (font (size 0.8 0.8) (thickness 0.15)))
+    (fp_text value CONN_1 (at 0.1 1.7) (layer B.SilkS) hide
+      (effects (font (size 0.8 0.8) (thickness 0.15)) (justify mirror))
     )
     (pad 1 smd rect (at 0 0) (size 1.524 1.524)
-      (layers F.Cu F.Paste F.Mask)
+      (layers B.Cu B.Paste B.Mask)
       (net 56 N-000007)
     )
   )
@@ -3686,8 +3686,8 @@
   (gr_text Prog (at 38.735 60.325) (layer F.SilkS)
     (effects (font (size 0.508 0.508) (thickness 0.127)))
   )
-  (gr_text Key (at 36.83 58.42) (layer F.SilkS)
-    (effects (font (size 0.508 0.508) (thickness 0.127)))
+  (gr_text Key (at 36.83 58.42) (layer B.SilkS)
+    (effects (font (size 0.508 0.508) (thickness 0.127)) (justify mirror))
   )
   (gr_arc (start 82.55 52.07) (end 85.09 52.07) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_arc (start 38.1 52.07) (end 38.1 54.61) (angle 90) (layer Edge.Cuts) (width 0.1))
@@ -4470,8 +4470,8 @@
   (segment (start 60.445 26.035) (end 60.445 24.13) (width 0.762) (layer F.Cu) (net 55) (status 10))
   (segment (start 60.445 24.13) (end 60.445 23.0575) (width 0.762) (layer F.Cu) (net 55) (tstamp 5403DD20))
   (segment (start 60.445 23.0575) (end 62.5475 20.955) (width 0.762) (layer F.Cu) (net 55) (tstamp 5403DD15) (status 20))
-  (segment (start 36.83 59.69) (end 36.83 61.595) (width 0.254) (layer F.Cu) (net 56))
-  (segment (start 36.83 61.595) (end 37.465 62.23) (width 0.254) (layer F.Cu) (net 56) (tstamp 5405D00D))
+  (segment (start 36.83 59.69) (end 36.83 61.595) (width 0.254) (layer B.Cu) (net 56) (status 400000))
+  (segment (start 36.83 61.595) (end 37.465 62.23) (width 0.254) (layer B.Cu) (net 56) (tstamp 5405E2B9) (status 800000))
   (segment (start 48.895 62.23) (end 48.895 62.865) (width 0.254) (layer F.Cu) (net 57))
   (segment (start 48.895 62.865) (end 49.53 63.5) (width 0.254) (layer F.Cu) (net 57) (tstamp 5405CFF5))
   (segment (start 56.61 60.23) (end 56.61 57.785) (width 0.254) (layer F.Cu) (net 57) (tstamp 5405CFFD))
