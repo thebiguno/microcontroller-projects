@@ -10,66 +10,13 @@
  * can ensure that the receiving client does not miss an event.  The idle
  * polling does not re-send analog data.
  *
- * Every message, whether outgoing or incoming, is contained within a single 
- * byte.  This allows us to avoid keeping track of message state on both sides,
- * and also allows us to ignore the need for checksums (checksumming of a single
- * byte is handled by the XBee; checksumming a multiple byte message would have
- * to be done by the application layer).
+ * See lib/protocol/protocol.txt for protocol details and lib/universal_controller/protocol.txt 
+ * for Universal Controller-specific commands.
  *
- * Protocol is as follows:
+ * We announce the controller id ('U', for Universal Controller) every once in a while.
  *
- * Sending: Controller status:
- *  
- *  [TAAVVVVV]
- *  [T00SBBBB]
- *  Bit 8 (MSB): 0 == analog stick message, 1 == digital button message
- *
- *  Analog stick message:
- *  Bit 7      : 0 == Left stick, 1 == Right Stick
- *  Bit 6      : 0 == X axis, 1 == Y axis
- *  Bit 5::1   : Analog stick value: For the Y axis, 0x00 is all the way forward and 
- *               0x1F is all the way back; for the X axis, 0x00 is all the way left 
- *               and 0x1F is all the way right.
- *
- *  Digital button message:
- *  Bit 7      : 0 == Normal button press / release event, 1 == No Buttons Pressed event.
- *               When bit 7 is 1, the remainder of the message is ignored.  By convention
- *               we fill buts 6::1 with zeros in this state, meaning that the 'No button
- *               pressed' message will always be 0xC0.
- *  Bit 6      : Unused, set to 0
- *  Bit 5      : 0 = Released, 1 = Pressed
- *  Bit 4::1   : Button number.  Use lib/universal_controller/client.h for defines.
- *
- *
- * Receiving: Message format: [CCXXXXXX]
- *     C: Command (see below)
- *     X: Command-specific message, left padded with zeros
- *
- *  Commands:
- *    00: Enable / Disable Buttons
- *      [000AAAAX]
- *      A: Button address.  Specify a button to modify (0x00 - 0x0F).
- *      X: New value.  1 = enabled, 0 = disabled
- *    01: Enable / Disable Analog Sticks
- *      [0100000X]
- *      X: New value.  1 = enabled, 0 = disabled
- *    10: Set poll frequency (non-changes will be re-sent after this time)
- *      [10XXXXXX]
- *      X: New poll value, to be shifted 8 bits left and set in OCR1A.
- *         For instance, to set OCR1A = 0x0F00 (the default value), you would send the
- *         value 001111 (0x0F) as shifting this 8 bits gives 0x0F00.
- *         0x0F (expanded to 0x0F00) results in an idle poll time of about 500ms.
- *         0x3F (expanded to 0x3F00) results in an idle poll time of about 2s.
- *         0x01 (expanded to 0x0100) results in an idle poll time of about 10ms.
- *         0x00 results in completely disabling idle polling (only send change events).
- *    11: Set maximum analog repeat frequency (you can't send analog stick changes faster than this).
- *      [11XXXXXX]
- *      X: New poll value, to be shifted 2 bits left and set in OCR0A.  Analog values cannot be sent until 
- *         this compare ISR fires.  Set this high enough to not be sending un-needed data constantly, 
- *         but low enough that you can get good response times from the controller.
- *         0x3F (expanded to 0xFC) is the maximum, and results in an analog repeat time of about 32ms.
- *         0x10 (expanded to 0x40) is the default, and results in an analog repeat time of about 8ms.
- *         0x00 results in completely disabling the timer and sends all analog events, no matter how fast they come.
+ * By default, all 16 buttons and both joysticks are enabled.  To change this,
+ * use the enable / disable button / joystick commands.
  */
 
 
@@ -77,11 +24,13 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "lib/psx/psx.h"
 #include "lib/serial/serial.h"
+#include "lib/universal_controller/client.h"
+#include "lib/protocol/protocol.h"
+#include "lib/psx/psx.h"
 
 //Configuration state
-static uint8_t analog_enabled = 0;
+static uint8_t analog_enabled = 0x01;
 static uint16_t button_mask = 0xFFFF;
 
 //Temporal controller state
@@ -95,6 +44,57 @@ static uint16_t last_buttons = 0x00;
 static volatile uint8_t digital_poll_event = 0x00;	//Set this to non-zero to force sending button pressed status
 static volatile uint8_t analog_poll_event = 0x00;	//Set this to non-zero to force sending analog stick state
 static volatile uint8_t analog_release_event = 0x00;	//Set this to non-zero to send analog state
+
+void _serial_init_rx(){
+	//Enable RX interrupts
+	UCSR0B |= _BV(RXCIE0);
+	
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
+	sei();
+#endif	
+}
+
+void protocol_write(uint8_t byte){
+	serial_write_b(byte);
+}
+
+void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
+	switch (cmd){
+		case MESSAGE_UC_BUTTON_ENABLE:
+			button_mask |= _BV(message[0]);
+			break;
+		case MESSAGE_UC_BUTTON_DISABLE:
+			button_mask &= ~_BV(message[0]);
+			break;
+		case MESSAGE_UC_JOYSTICK_ENABLE:
+			analog_enabled = 0x01;
+			break;
+		case MESSAGE_UC_JOYSTICK_DISABLE:
+			analog_enabled = 0x00;
+			break;
+		case MESSAGE_UC_SET_POLL_FREQUENCY:
+			if (message[0] == 0x00){
+				OCR1A = 0x0000;
+				TIMSK1 &= ~_BV(OCIE1A);  //Disable compare interrupt
+			}
+			else {
+				OCR1A = (message[0] << 6);
+				TIMSK1 |= _BV(OCIE1A);  //Enable compare interrupt
+			}
+			break;
+		case MESSAGE_UC_SET_ANALOG_FREQUENCY:
+			if (message[0] == 0x00){
+				OCR0A = 0x00;
+				TIMSK0 &= ~_BV(OCIE0A);  //Disable compare interrupt
+			}
+			else {
+				OCR0A = message[0];
+				TIMSK0 |= _BV(OCIE1A);  //Enable compare interrupt
+			}
+			break;
+	}
+}
 
 int main (void){
 	//Do setup here
@@ -120,52 +120,17 @@ int main (void){
 		&PORTC, PORTC3); //Attention (Yellow)
 		
 	sei();
+	uint16_t announceControlIdTimer = 0x0000;
 		
 	//Main program loop
 	while (1){
-	
-		//Check if there are any incoming command messages
-		if (serial_available()){
-			uint8_t message;
-			serial_read_c((char*) &message);
-
-			switch (message >> 6){
-				case 0x00:
-					if (message & 0x01){
-						message = message >> 1;
-						button_mask |= _BV(message);
-					}
-					else {
-						message = message >> 1;
-						button_mask &= ~_BV(message);
-					}
-					break;
-				case 0x01:
-					analog_enabled = message & 0x01;
-					break;
-				case 0x02:
-					if ((message & 0x3F) == 0x00){
-						OCR1A = 0x0000;
-						TIMSK1 &= ~_BV(OCIE1A);  //Disable compare interrupt
-					}
-					else {
-						OCR1A = ((message & 0x3F) << 8);
-						TIMSK1 |= _BV(OCIE1A);  //Enable compare interrupt
-					}
-					break;
-				case 0x03:
-					if ((message & 0x3F) == 0x00){
-						OCR0A = 0x00;
-						TIMSK0 &= ~_BV(OCIE0A);  //Disable compare interrupt
-					}
-					else {
-						OCR0A = ((message & 0x3F) << 2);
-						TIMSK0 |= _BV(OCIE1A);  //Enable compare interrupt
-					}
-					break;
-			}
+		//If it is time to send the control ID again, do so and reset the counter.
+		if (announceControlIdTimer == 0x0000){
+			uint8_t value = 'U';
+			protocol_send_message(MESSAGE_ANNOUNCE_CONTROL_ID, &value, 1);
 		}
-		
+		announceControlIdTimer++;
+	
 		//Poll the gamepad
 		psx_read_gamepad();
 		
@@ -180,23 +145,23 @@ int main (void){
 				//If this was triggered by a real button event, show the current state (newly pressed or newly released)
 				if (button_changes & _BV(x)){
 					if (buttons & _BV(x)){
-						serial_write_c(x | 0x90);	//b1001, then 4 bit button address
+						protocol_send_message(MESSAGE_UC_BUTTON_PUSH, &x, 1);
 					}
 					else {
-						serial_write_c(x | 0x80);	//b1000, then 4 bit button address
+						protocol_send_message(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
 					}
 				}
 				//If this was trggered by a poll event, only show buttons currently pressed
 				else if (digital_poll_event){
 					if (buttons & _BV(x)){
-						serial_write_c(x | 0x90);	//b1001, then 4 bit button address
+						protocol_send_message(MESSAGE_UC_BUTTON_PUSH, &x, 1);
 					}
 				}
 			}
 
 			//Show 'no buttons pressed' regardless of whether it was newly generated (release event) or if it was generated by poll timeout.
 			if (buttons == 0x00){
-				serial_write_c((char) 0xC0);		//Static message meaning 'no buttons pressed'
+				protocol_send_message(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
 			}
 
 			last_buttons = buttons;
@@ -212,21 +177,17 @@ int main (void){
 			uint8_t rx = psx_stick(PSS_RX) >> 3;
 			uint8_t ry = psx_stick(PSS_RY) >> 3;
 
-			if (lx != last_lx || analog_poll_event){
+			if (analog_poll_event || lx != last_lx || ly != last_ly || rx != last_rx || ry != last_ry){
 				last_lx = lx;
-				serial_write_c(0x00 | lx);		//Address = 00
-			}
-			if (ly != last_ly || analog_poll_event){
 				last_ly = ly;
-				serial_write_c(0x20 | ly);		//Address = 01
-			}
-			if (rx != last_rx || analog_poll_event){
 				last_rx = rx;
-				serial_write_c(0x40 | rx);		//Address = 10
-			}
-			if (ry != last_ry || analog_poll_event){
 				last_ry = ry;
-				serial_write_c(0x60 | ry);		//Address = 11
+				uint8_t values[4];
+				values[0] = lx;
+				values[1] = ly;
+				values[2] = rx;
+				values[3] = ry;
+				protocol_send_message(MESSAGE_UC_JOYSTICK_MOVE, values, 4);
 			}
 			
 			analog_release_event = 0x00;
@@ -249,4 +210,10 @@ ISR(TIMER1_COMPA_vect){
 	digital_poll_event = 0x01;
 	analog_poll_event = 0x01;
 }
+
+ISR(USART_RX_vect){
+	uint8_t b = UDR0;
+	protocol_receive_byte(b);
+}
+
 

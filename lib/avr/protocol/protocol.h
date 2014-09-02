@@ -6,6 +6,17 @@
 #define PROTOCOL_ERROR_UNEXPECTED_START_OF_FRAME	1
 #define PROTOCOL_ERROR_INVALID_CHECKSUM				2
 
+//Generic messages are in 0x0X space...
+#define MESSAGE_ANNOUNCE_CONTROL_ID				0x00
+#define MESSAGE_SEND_ACKNOWLEDGE				0x01
+#define MESSAGE_SEND_COMPLETE					0x02
+#define MESSAGE_REQUEST_ENABLE_DEBUG			0x03
+#define MESSAGE_REQUEST_DISABLE_DEBUG			0x04
+#define MESSAGE_SEND_DEBUG						0x05
+#define MESSAGE_REQUEST_BATTERY					0x06
+#define MESSAGE_SEND_BATTERY					0x07
+
+
 
 /*
  * This library allows for bi-directional, multi byte commands to be sent between two devices.  It is designed to be

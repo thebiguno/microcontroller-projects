@@ -29,22 +29,6 @@
 #define CALIBRATION_Y		(JOINT_COUNT + 1)
 #define CALIBRATION_Z		(JOINT_COUNT + 2)
 
-//Generic messages are in 0x0X space...
-#define MESSAGE_SEND_ACKNOWLEDGE				0x00
-#define MESSAGE_SEND_COMPLETE					0x01
-#define MESSAGE_REQUEST_CONTROL_CONFIG			0x02
-#define MESSAGE_SEND_CONTROL_CONFIG				0x03
-#define MESSAGE_REQUEST_ENABLE_DEBUG			0x04
-#define MESSAGE_REQUEST_DISABLE_DEBUG			0x05
-#define MESSAGE_SEND_DEBUG						0x06
-#define MESSAGE_REQUEST_BATTERY					0x07
-#define MESSAGE_SEND_BATTERY					0x08
-
-//Universal Controller messages are in 0x1X space...
-#define MESSAGE_UC_BUTTON_PUSH					0x10
-#define MESSAGE_UC_BUTTON_RELEASE				0x11
-#define MESSAGE_UC_JOYSTICK_MOVE				0x12
-
 //PC / Stubby-specific messages are in 0x2X space...
 #define MESSAGE_REQUEST_POWER_ON				0x20
 #define MESSAGE_REQUEST_POWER_OFF				0x21
