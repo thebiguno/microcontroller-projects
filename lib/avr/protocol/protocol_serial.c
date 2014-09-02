@@ -1,8 +1,3 @@
-/*
- * An asynchronous implementation of the rx portion of the serial library.  This will let you 
- * avoid the need to poll for incoming data.
- */
-
 #include "../serial/serial.h"
 #include "protocol.h"
 #include <avr/interrupt.h>

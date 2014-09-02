@@ -14,31 +14,75 @@
 
 #include "gait.h"
 #include "trig.h"
+#include "servo.h"
 #include "Leg.h"
 #include "Point.h"
 
 
 //Set up the leg objects, including servo details and mounting angle.  Leg indices follows
-// DIP numbering format, starting at front left and proceeding counter clockwise around.
+// // DIP numbering format, starting at front left and proceeding counter clockwise around.
 Leg legs[LEG_COUNT] = {
+#if PCB_REVISION == 1
 	Leg(FRONT_LEFT,		&PORTB, PORTB0, &PORTB, PORTB1, &PORTB, PORTB2, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0)),
 	Leg(MIDDLE_LEFT,	&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0)),
 	Leg(REAR_LEFT,		&PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0)),
 	Leg(REAR_RIGHT,		&PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0)),
 	Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0)),
 	Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0))
+#elif PCB_REVISION == 2
+	#error TODO Add support for Rev2 PCB
+#else
+	#error Unsupported PCB_REVISION value.
+#endif
 };
+
+//Stubby state, as bit masks:
+#define STATE_POWER			0x01		// bit 1 is power (1 == on, 0 == off)
+static uint8_t state;
+
+static volatile uc_stick_t left_stick;
+static volatile uc_stick_t right_stick;
+
+static uint16_t uc_buttons_pressed;
+static uint16_t uc_buttons_released;
+static uint16_t uc_buttons_held;
 
 int main (void){
 	wdt_enable(WDTO_2S);
 	
-	servo_init();
-	
-	uc_init();
-	
+	servo_init(legs);
+	serial_init_b(38400);
 	status_init();
 	
 	mode_select();
+}
+
+void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
+	if (cmd == MESSAGE_REQUEST_POWER_ON){
+		state |= STATE_POWER;
+	}
+	else if (cmd == MESSAGE_REQUEST_POWER_OFF){
+		state &= ~STATE_POWER;
+	}
+	else if (cmd == MESSAGE_REQUEST_POWER_TOGGLE){
+		state ^= STATE_POWER;
+	}
+	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
+		uint16_t pressed_value = _BV(message[0]);
+		uc_buttons_pressed |= pressed_value;	//Mark as pressed; this is cleared when they are read.
+		uc_buttons_held |= pressed_value;		//Mark as held; this is cleared when released
+	}
+	else if (cmd == MESSAGE_UC_BUTTON_RELEASE){
+		uint16_t released_value = _BV(message[0]);
+		uc_buttons_released |= released_value;	//Mark as released; this is cleared when they are read.
+		uc_buttons_held &= ~released_value;		//Mark as no longer held
+	}
+	else if (cmd == MESSAGE_UC_JOYSTICK_MOVE){
+		left_stick.x = message[0] - 127;
+		left_stick.y = 127 - message[1];
+		right_stick.x = message[2] - 127;
+		right_stick.y = 127 - message[3];
+	}
 }
 
 void mode_select(){
@@ -46,13 +90,11 @@ void mode_select(){
 	while (1){
 		wdt_reset();
 		
-		uint16_t buttons = uc_read_pressed_buttons();
-	
-		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
+		if (uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
 			mode_calibration();
 		}
 		
-		if (buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+		if (state & STATE_POWER){
 			mode_remote_control();
 		}
 		
@@ -71,24 +113,20 @@ void mode_remote_control(){
 	
 	status_enable_battery();
 	
-	int8_t step_index = 0;
+	static int8_t step_index = 0;
 
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
 		wdt_reset();
 		
-		uc_stick_t left_stick = uc_read_left();
-		uc_stick_t right_stick = uc_read_right();
-		uint16_t pressed = uc_read_pressed_buttons();
-		uint16_t held = uc_read_held_buttons();
-
 		//Hit start to exit remote control mode
-		if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
+		//if (pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
+		if (!(state & STATE_POWER)){
 			break;
 		}
 
 		//Translation: XY (left stick) and Z (right stick)
-		if (held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
+		if (uc_buttons_held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
 				Point translate(left_stick.x * -1.5, left_stick.y * -1.5, 0);
 				if (right_stick.y > 10 || right_stick.y < -10){
@@ -98,7 +136,7 @@ void mode_remote_control(){
 			}
 		}
 		//Rotation: Pitch / Roll (left stick) and Yaw (right stick)
-		else if (held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
+		else if (uc_buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
 				legs[l].setOffset(Point(0,0,0));
 				Point p = legs[l].getPosition();
@@ -172,8 +210,6 @@ void mode_calibration(){
 	status_flash(0x00, 0x00, 0xFF, 5);
 	uint8_t l = 0;
 	uint8_t mode = 0x00;		//switch between calibration modes: neutral angle offset (for joint calibration), and position calibration (for X,Y,Z positioning calibration)
-	uint16_t held_buttons = 0x00;
-	uint16_t pressed_buttons = 0x00;
 	
 	//We calibrate against the servos in neutral phase, trying to match the angles as stated in Leg.h:
 	// TIBIA_NEUTRAL_SERVO_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE, and MOUNTING_ANGLE (yeah, coxa is different
@@ -188,14 +224,12 @@ void mode_calibration(){
 	//Loop until Start is pressed
 	while (1){
 		wdt_reset();
-		held_buttons = uc_read_held_buttons();
-		pressed_buttons = uc_read_pressed_buttons();
 		
 		_delay_ms(20);
 		
-		if (pressed_buttons != 0x00){
+		if (uc_buttons_pressed != 0x00){
 			//Start exits calibration mode (whether or not changes were made / applied / saved).
-			if (pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_START)){
+			if (uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_START)){
 				break;
 			}
 
@@ -204,44 +238,44 @@ void mode_calibration(){
 			_delay_ms(60);
 			
 			//Select changes modes.  Flash 5 purple for mode == 1, 5 blue for mode == 0.
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_SELECT)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_SELECT)) != 0) {
 				mode ^= 0x01;
 				status_flash((mode ? 0xFF : 0x00), 0x00, 0xFF, 5);
 			}
 
 		
 			//Square increments legs.
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_SQUARE)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_SQUARE)) != 0) {
 				l++;
 				if (l >= LEG_COUNT) l = 0;
 			}
 			
 			//Left / Right arrows adjust coxa joint / X position
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADRIGHT)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_PADRIGHT)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_X : COXA, legs[l].getCalibration(mode ? CALIBRATION_X : COXA) + 1);
 			}
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADLEFT)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_PADLEFT)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_X : COXA, legs[l].getCalibration(mode ? CALIBRATION_X : COXA) - 1);
 			}
 			
 			//Up / Down arrows adjust femur joint / Y position
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADUP)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_PADUP)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_Y : FEMUR, legs[l].getCalibration(mode ? CALIBRATION_Y : FEMUR) + 1);
 			}
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_PADDOWN)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_PADDOWN)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_Y : FEMUR, legs[l].getCalibration(mode ? CALIBRATION_Y : FEMUR) - 1);
 			}
 			
 			//L1 / L2 adjust the tibia joint / Z position
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT1)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_LEFT1)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_Z : TIBIA, legs[l].getCalibration(mode ? CALIBRATION_Z : TIBIA) + 1);
 			}
-			if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)) != 0) {
+			if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)) != 0) {
 				legs[l].setCalibration(mode ? CALIBRATION_Z : TIBIA, legs[l].getCalibration(mode ? CALIBRATION_Z : TIBIA) - 1);
 			}
 			
 			//Hold Circle + press Triangle to revert all calibration (in the current mode) to 0
-			if ((held_buttons & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0 && (pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+			if ((uc_buttons_held & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0 && (uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				if (mode){
 					for (uint8_t i = 0; i < LEG_COUNT; i++){
 						for (uint8_t j = JOINT_COUNT; j < CALIBRATION_COUNT; j++){
@@ -261,7 +295,7 @@ void mode_calibration(){
 			}
 			
 			//Triangle button to revert all calibration (in all modes) to last saved
-			else if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+			else if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					for (uint8_t j = 0; j < CALIBRATION_COUNT; j++){
 						legs[l].setCalibration(j, eeprom_read_byte((uint8_t*) (l * CALIBRATION_COUNT) + j));
@@ -273,7 +307,7 @@ void mode_calibration(){
 			}
 
 			//X button to commit all changes (in all modes) to EEPROM
-			else if ((pressed_buttons & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
+			else if ((uc_buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_CROSS)) != 0) {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					for (uint8_t j = 0; j < CALIBRATION_COUNT; j++){
 						eeprom_update_byte((uint8_t*) (l * CALIBRATION_COUNT) + j, legs[l].getCalibration(j));
@@ -321,39 +355,3 @@ void mode_calibration(){
 	_delay_ms(200);
 	pwm_stop();
 }
-
-void servo_init(){
-	//Set up the servos using the leg details + status LEDs
-	volatile uint8_t *ports[PWM_COUNT];
-	uint8_t pins[PWM_COUNT];
-
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		for (uint8_t j = 0; j < JOINT_COUNT; j++){
-			ports[(l * JOINT_COUNT) + j] = legs[l].getPort(j);
-			pins[(l * JOINT_COUNT) + j] = legs[l].getPin(j);
-		}
-		
-		for (uint8_t j = 0; j < CALIBRATION_COUNT; j++){
-			legs[l].setCalibration(j, eeprom_read_byte((uint8_t*) (l * CALIBRATION_COUNT) + j));
-		}
-	}
-	
-	ports[LED_RED] = &PORTD;		//Red LED
-	pins[LED_RED] = PORTD4;
-	ports[LED_GREEN] = &PORTD;		//Green LED
-	pins[LED_GREEN] = PORTD6;
-	ports[LED_BLUE] = &PORTD;		//Blue LED
-	pins[LED_BLUE] = PORTD5;
-	
-	pwm_init(ports, pins, PWM_COUNT, 20000);
-
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		legs[l].resetPosition();
-	}
-	pwm_apply_batch();
-
-	_delay_ms(500);
-	
-	pwm_stop();	
-}
-
