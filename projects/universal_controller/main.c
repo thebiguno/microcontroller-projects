@@ -99,14 +99,14 @@ void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 int main (void){
 	//Do setup here
 	
-	//We use timer 0 to send analog status every X millis (default about 36ms, adjustable with 11xxxxxx command)
+	//We use timer 0 to limit the sending analog status to a maximum of every X millis (default about 36ms, adjustable with MESSAGE_UC_SET_ANALOG_FREQUENCY command)
 	TCCR0A = 0x0; //Normal mode (we reset TCNT0 when sending data)
 	TCCR0B |= _BV(CS02) | _BV(CS00);	//F_CPU / 1024 prescaler
-	OCR0A = 0x40;		//Set analog stick compare value; this will result in showing analog values at most once every ~8ms
+	OCR0A = 0xFF;		//Set analog stick compare value; this will result in showing analog values at most once every ~8ms
 	TIMSK0 = _BV(OCIE0A);  //Enable compare interrupt on A
 	
 	
-	//We use timer 1 to send a status byte every X millis (default about 500ms, adjustable with 10xxxxxx command)
+	//We use timer 1 to send a status byte every X millis (default about 500ms, adjustable with MESSAGE_UC_SET_POLL_FREQUENCY command)
 	TCCR1A = 0x0; //Normal mode (we reset TCNT1 when sending data)
 	TCCR1B |= _BV(CS12) | _BV(CS10);	//F_CPU / 1024 prescaler
 	OCR1A = 0x0F00;		//Set poll compare value; this will result in forcing status to be fired every ~500ms
@@ -171,13 +171,14 @@ int main (void){
 
 		//Check analog (stick) state and send 
 		if (analog_enabled && (analog_release_event || (OCR0A == 0))){
-			//We only send the 5 MSB of the sticks.
-			uint8_t lx = psx_stick(PSS_LX) >> 3;
-			uint8_t ly = psx_stick(PSS_LY) >> 3;
-			uint8_t rx = psx_stick(PSS_RX) >> 3;
-			uint8_t ry = psx_stick(PSS_RY) >> 3;
+			uint8_t lx = psx_stick(PSS_LX);
+			uint8_t ly = psx_stick(PSS_LY);
+			uint8_t rx = psx_stick(PSS_RX);
+			uint8_t ry = psx_stick(PSS_RY);
 
-			if (analog_poll_event || lx != last_lx || ly != last_ly || rx != last_rx || ry != last_ry){
+			//By masking off the two LSB, we prevent re-sending analog values on minimal change.  From experience, the 2 LSB are mostly just noise anyway.
+			#define MASK 0xF7
+			if (analog_poll_event || (lx & MASK) != (last_lx & MASK) || (ly & MASK) != (last_ly & MASK) || (rx & MASK) != (last_rx & MASK) || (ry & MASK) != (last_ry & MASK)){
 				last_lx = lx;
 				last_ly = ly;
 				last_rx = rx;
