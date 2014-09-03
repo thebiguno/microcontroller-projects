@@ -65,8 +65,8 @@
 #include <avr/io.h>
 
 typedef struct uc_stick_t {
-	int8_t x;
-	int8_t y;
+	int16_t x;
+	int16_t y;
 } uc_stick_t;
 
 void uc_init();
