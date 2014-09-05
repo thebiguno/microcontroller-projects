@@ -59,7 +59,7 @@ void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	else if (cmd == MESSAGE_REQUEST_POWER_OFF){
 		state &= ~STATE_POWER;
 	}
-	else if (cmd == MESSAGE_REQUEST_POWER_TOGGLE || (cmd == MESSAGE_UC_BUTTON_PUSH && message[0] == CONTROLLER_BUTTON_VALUE_START)){
+	else if (cmd == MESSAGE_UC_BUTTON_PUSH && message[0] == CONTROLLER_BUTTON_VALUE_START){
 		state ^= STATE_POWER;
 	}
 	//This is a Universal Controller message (namespace 0x1X)
