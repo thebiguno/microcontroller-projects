@@ -173,7 +173,7 @@ void mode_remote_control(){
 		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
 			//We get the magic number of 1440 by multiplying 180 by 8... it is identical to saying right_stick.x / 8 * (M_PI / 180), but faster
 			double pitch = left_stick.y * M_PI / 1440;
-			double roll = left_stick.x * -M_PI / 1440
+			double roll = left_stick.x * -M_PI / 1440;
 			double yaw = right_stick.x * M_PI / 1440;
 			doRotate(pitch, roll, yaw);
 		}
