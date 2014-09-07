@@ -30,7 +30,7 @@ Portions in [square brackets] are optional.
 Command						Direction				Payload															Response
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General commands
-SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)													None
+SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)														None
 SendComplete				Stubby -> Control		Command completed (1 byte)															None
 
 RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc						ControlConfig message
@@ -51,7 +51,6 @@ UCJoystickMove				Control -> Stubby		Value of all joystick axis (4 bytes, order 
 -- Processing API commands
 RequestPowerOn				Control -> Stubby		Null																				Ack
 RequestPowerOff				Control -> Stubby		Null																				Ack
-RequestPowerToggle			Control -> Stubby		Null																				Ack
 
 RequestMove					Control -> Stubby		Direction (1 byte) Rotation (1 byte) [Speed (1 byte) [Distance (2 bytes)]]			Ack (If distance is included, Complete when done)
 RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)													Ack
