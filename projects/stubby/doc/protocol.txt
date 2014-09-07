@@ -30,38 +30,37 @@ Portions in [square brackets] are optional.
 Command						Direction				Payload															Response
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General commands
-SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)									None
-SendComplete				Stubby -> Control		Command completed (1 byte)										None
+SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)													None
+SendComplete				Stubby -> Control		Command completed (1 byte)															None
 
-RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc	ControlConfig message
-SendControlConfig			Stubby -> Control		Configuration for controller									None
+RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc						ControlConfig message
+SendControlConfig			Stubby -> Control		Configuration for controller														None
 
-RequestEnableDebug			Control -> Stubby		Null															Ack
-RequestDisableDebug			Control -> Stubby		Null															Ack
-SendDebug					Stubby -> Control		Variable depending on message, max 254 bytes					None
+RequestEnableDebug			Control -> Stubby		Null																				Ack
+RequestDisableDebug			Control -> Stubby		Null																				Ack
+SendDebug					Stubby -> Control		Variable depending on message, max 254 bytes										None
 
-RequestBattery				Control -> Stubby		Null															Battery message
-SendBattery					Stubby -> Control		1 byte															None
+RequestBattery				Control -> Stubby		Null																				Battery message
+SendBattery					Stubby -> Control		1 byte																				None
 
 -- Universal Controller commands
-UCButtonPush				Control -> Stubby		Index of button which was just pressed (1 byte)					None
-UCButtonRelease				Control -> Stubby		Index of button which was just released (1 byte)				None
-UCJoystickMove				Control -> Stubby		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)			None
+UCButtonPush				Control -> Stubby		Index of button which was just pressed (1 byte)										None
+UCButtonRelease				Control -> Stubby		Index of button which was just released (1 byte)									None
+UCJoystickMove				Control -> Stubby		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)								None
 
 -- Processing API commands
-RequestPowerOn				Control -> Stubby		Null															Ack
-RequestPowerOff				Control -> Stubby		Null															Ack
-RequestPowerToggle			Control -> Stubby		Null															Ack
+RequestPowerOn				Control -> Stubby		Null																				Ack
+RequestPowerOff				Control -> Stubby		Null																				Ack
+RequestPowerToggle			Control -> Stubby		Null																				Ack
 
-RequestMove					Control -> Stubby		Angle (4 bytes) [Speed (1 byte) [Distance (2 bytes)]]			Ack (If distance is included, Complete when done)
-RequestTurn					Control -> Stubby		Speed (1 byte) [Angle (4 bytes)]								Ack (If angle is included, Complete when done)
-RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)								Ack
-RequestRotate				Control -> Stubby		Axis (1 byte), Angle (4 bytes)									Ack
+RequestMove					Control -> Stubby		Direction (1 byte) Rotation (1 byte) [Speed (1 byte) [Distance (2 bytes)]]			Ack (If distance is included, Complete when done)
+RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)													Ack
+RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
 
-RequestDistance				Control -> Stubby		Null															Distance message
-SendDistance				Stubby -> Control		Distance (2 bytes)												None
+RequestDistance				Control -> Stubby		Null																				Distance message
+SendDistance				Stubby -> Control		Distance (2 bytes)																	None
 
-RequestOptical				Control -> Stubby		Null															Optical message
-SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)						None
+RequestOptical				Control -> Stubby		Null																				Optical message
+SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)											None
 
-RequestSetLED				Control -> Stubby		3 bytes (RGB value)												Ack
+RequestSetLED				Control -> Stubby		3 bytes (RGB value)																	Ack

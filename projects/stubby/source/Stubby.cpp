@@ -85,6 +85,58 @@ void mode_select(){
 	}
 }
 
+/*
+ * Performs a single move operation.  Returns the distance moved.
+ */
+uint8_t doMove(double linear_angle, double linear_velocity, double rotational_velocity){
+	static int8_t step_index = 0;
+	
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+		legs[l].setOffset(step);
+	}
+	step_index++;
+	if (step_index > gait_step_count()){
+		step_index = 0;
+	}
+	
+	pwm_apply_batch();
+	_delay_ms(5);
+	
+	//TODO In the current implementation of gait_tripod, we move 5mm with each iteration of the
+	// step procedure at maximum velocity (and the distance scales linearly with velocity).
+	// Eventually we need to add something to the gait code where we can query this value; for
+	// now, a constant with linear scaling factor is fine.
+	return 5 * linear_velocity;
+}
+
+/*
+ * Performs a single rotation operation instantaneously (no stepping / smoothing).
+ */
+void doRotate(double pitch, double roll, double yaw){
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		legs[l].setOffset(Point(0,0,0));
+		Point p = legs[l].getPosition();
+		p.rotateXY(yaw);	
+		p.rotateYZ(pitch);
+		p.rotateXZ(roll);
+		legs[l].setPosition(p);
+	}
+	
+	pwm_apply_batch();
+	_delay_ms(5);
+}
+
+void doTranslate(uint16_t x, uint16_t y, uint16_t z){
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		Point translate(x, y, z);
+		legs[l].setOffset(translate);
+	}
+	
+	pwm_apply_batch();
+	_delay_ms(5);
+}
+
 void mode_remote_control(){
 	pwm_start();
 	status_set_color(0x00, 0xFF, 0x00);
@@ -96,8 +148,6 @@ void mode_remote_control(){
 	
 	status_enable_battery();
 	
-	static int8_t step_index = 0;
-
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
 		wdt_reset();
@@ -114,24 +164,18 @@ void mode_remote_control(){
 
 		//Translation: XY (left stick) and Z (right stick)
 		if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
-			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				Point translate(left_stick.x * -0.2, left_stick.y * -0.2, 0);
-				if (right_stick.y > 50 || right_stick.y < -50){
-					translate.add(Point(0, 0, right_stick.y * -0.1));
-				}
-				legs[l].setOffset(translate);
-			}
+			uint16_t x = left_stick.x * -0.2;
+			uint16_t y = left_stick.y * -0.2;
+			uint16_t z = (right_stick.y > 50 || right_stick.y < -50) ? right_stick.y * -0.1 : 0;
+			doTranslate(x, y, z);
 		}
 		//Rotation: Pitch / Roll (left stick) and Yaw (right stick)
 		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
-			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				legs[l].setOffset(Point(0,0,0));
-				Point p = legs[l].getPosition();
-				p.rotateXY(right_stick.x * M_PI / 1440);	//We get the magic number of 1440 by multiplying 180 by 8... it is identical to saying right_stick.x / 8 * (M_PI / 180), but faster
-				p.rotateYZ(left_stick.y * M_PI / 1440);
-				p.rotateXZ(left_stick.x * -M_PI / 1440);
-				legs[l].setPosition(p);
-			}
+			//We get the magic number of 1440 by multiplying 180 by 8... it is identical to saying right_stick.x / 8 * (M_PI / 180), but faster
+			double pitch = left_stick.y * M_PI / 1440;
+			double roll = left_stick.x * -M_PI / 1440
+			double yaw = right_stick.x * M_PI / 1440;
+			doRotate(pitch, roll, yaw);
 		}
 		//Normal movement
 		else {
@@ -151,19 +195,9 @@ void mode_remote_control(){
 			
 			//We only care about the X axis for right (rotational) stick
 			double rotational_velocity = right_stick.x / 127.0;
-		
-			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
-				legs[l].setOffset(step);
-			}
-			step_index++;
-			if (step_index > gait_step_count()){
-				step_index = 0;
-			}
+			
+			doMove(linear_angle, linear_velocity, rotational_velocity);
 		}
-		pwm_apply_batch();
-		
-		_delay_ms(5);
 	}
 	
 	status_disable_battery();
