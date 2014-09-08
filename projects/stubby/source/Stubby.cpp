@@ -121,13 +121,7 @@ void doTranslate(uint16_t x, uint16_t y, uint16_t z){
  * Called from ISR; keep things as short as possible.
  */
 void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
-	if (cmd == MESSAGE_REQUEST_POWER_ON){
-		power = 0x01;
-	}
-	else if (cmd == MESSAGE_REQUEST_POWER_OFF){
-		power = 0x00;
-	}
-	else if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
+	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
 		if (message[0] == 'U'){
 			controller = CONTROLLER_UC;
 		}

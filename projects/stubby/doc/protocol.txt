@@ -52,7 +52,8 @@ UCJoystickMove				Control -> Stubby		Value of all joystick axis (4 bytes, order 
 RequestPowerOn				Control -> Stubby		Null																				Ack
 RequestPowerOff				Control -> Stubby		Null																				Ack
 
-RequestMove					Control -> Stubby		Direction (1 byte) Rotation (1 byte) [Speed (1 byte) [Distance (2 bytes)]]			Ack (If distance is included, Complete when done)
+RequestMove					Control -> Stubby		Linear Angle (1 byte), Rotational Angle (1 byte), 
+													[Linear Velocity (1 byte), Rotational Velocity (1 byte), [Distance (2 bytes)]]		Ack (If distance is included, Complete when done)
 RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)													Ack
 RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
 

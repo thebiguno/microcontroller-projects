@@ -42,9 +42,10 @@ public class Stubby {
 		if (distance < 0) direction = direction + (float) Math.PI;	//Support going backwards
 		int[] data = new int[7];
 		data[0] = Protocol.radianToByte(direction);
-		data[1] = speed & 0xFF;
-		data[2] = (distance >> 8) & 0xFF;
-		data[3] = distance & 0xFF;
+		data[1] = 0;		//Rotation in place
+		data[2] = speed & 0xFF;
+		data[3] = (distance >> 8) & 0xFF;
+		data[4] = distance & 0xFF;
 		protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data));
 	}
 	

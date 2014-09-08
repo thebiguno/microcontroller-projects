@@ -291,9 +291,9 @@ void uc_calibration(){
 }
 
 void uc_command_executor(){
-	//Hit start to begin controlling the robot, or hit select to calibrate joints
 	wdt_reset();
 	
+	//Hit start to begin controlling the robot, or hit select to calibrate joints
 	if (uc_read_pressed_buttons() & _BV(CONTROLLER_BUTTON_VALUE_SELECT)){
 		uc_calibration();
 	}

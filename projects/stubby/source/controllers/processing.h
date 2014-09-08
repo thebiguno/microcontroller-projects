@@ -2,6 +2,8 @@
 #define PROCESSING_H
 
 #include <stdint.h>
+#include "Stubby.h"
+#include "util/convert.h"
 
 //PC / Stubby-specific messages are in 0x2X space...
 #define MESSAGE_REQUEST_POWER_ON				0x20
