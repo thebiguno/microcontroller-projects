@@ -177,7 +177,7 @@ int main (void){
 			uint8_t ry = psx_stick(PSS_RY);
 
 			//By masking off the two LSB, we prevent re-sending analog values on minimal change.  From experience, the 2 LSB are mostly just noise anyway.
-			#define MASK 0xF7
+			#define MASK 0xFC
 			if (analog_poll_event || (lx & MASK) != (last_lx & MASK) || (ly & MASK) != (last_ly & MASK) || (rx & MASK) != (last_rx & MASK) || (ry & MASK) != (last_ry & MASK)){
 				last_lx = lx;
 				last_ly = ly;
