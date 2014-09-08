@@ -1,7 +1,7 @@
 #ifndef CONVERT_H
 #define CONVERT_H
 
-#include <avr/io.h>
+#include <stdint.h>
 #include <math.h>
 
 double convert_byte_to_radian(uint8_t x);

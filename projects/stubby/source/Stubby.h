@@ -1,6 +1,15 @@
 #ifndef STUBBY_H
 #define STUBBY_H
 
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include <stdint.h>
+
+#include "lib/protocol/protocol.h"
+#include "lib/universal_controller/client.h"
+#include "lib/serial/serial.h"
+#include "lib/pwm/pwm.h"
+
 #define PCB_REVISION		1
 
 #define LEG_COUNT			6
@@ -29,21 +38,25 @@
 #define CALIBRATION_Y		(JOINT_COUNT + 1)
 #define CALIBRATION_Z		(JOINT_COUNT + 2)
 
-//PC / Stubby-specific messages are in 0x2X space...
-#define MESSAGE_REQUEST_POWER_ON				0x20
-#define MESSAGE_REQUEST_POWER_OFF				0x21
-#define MESSAGE_REQUEST_MOVE					0x22
-#define MESSAGE_REQUEST_TURN					0x23
-#define MESSAGE_REQUEST_TRANSLATE				0x24
-#define MESSAGE_REQUEST_ROTATE					0x25
-#define MESSAGE_REQUEST_DISTANCE				0x26
-#define MESSAGE_SEND_DISTANCE					0x27
-#define MESSAGE_REQUEST_OPTICAL					0x28
-#define MESSAGE_SEND_OPTICAL					0x29
-#define MESSAGE_REQUEST_SET_LED					0x2A
+//State variables
+#define POWER_OFF				0x00
+#define POWER_ON				0x01
+
+#define CONTROLLER_NONE			0x00
+#define CONTROLLER_UC			0x01
+#define CONTROLLER_PROCESSING	0x02
 
 
 void servo_init();
+
+uint8_t get_power();
+void set_power(uint8_t power);
+
+uint8_t get_controller();
+
+uint8_t doMove(double linear_angle, double linear_velocity, double rotational_velocity);
+void doTranslate(uint16_t x, uint16_t y, uint16_t z);
+void doRotate(double pitch, double roll, double yaw);
 
 void mode_select();
 void mode_remote_control();

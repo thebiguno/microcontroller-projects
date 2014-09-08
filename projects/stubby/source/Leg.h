@@ -1,11 +1,7 @@
 #ifndef LEG_H
 #define LEG_H
 
-#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#else
-#include <stdint.h>
-#endif
 
 #include "Stubby.h"
 #include "Point.h"

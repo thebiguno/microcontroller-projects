@@ -1,15 +1,9 @@
 #ifndef POINT_H
 #define POINT_H
 
-#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#else
-#include "../simulation/debug.h"
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#endif
-#include "trig.h"
+
+#include "util/trig.h"
 
 
 class Point {

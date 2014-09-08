@@ -1,13 +1,7 @@
 #ifndef TRIG_H
 #define TRIG_H
 
-#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#else
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#endif
 #include <math.h>
 
 /*
