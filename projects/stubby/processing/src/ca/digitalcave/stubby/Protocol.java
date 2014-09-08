@@ -1,7 +1,7 @@
 package ca.digitalcave.stubby;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,10 +46,17 @@ public class Protocol {
 		return serial;
 	}
 	
-	protected void dispatch(int cmd, int[] data){
-		System.out.println("Received command " + Integer.toHexString(cmd));
-		if (mailbox.get(cmd) == null) mailbox.put(cmd, Collections.synchronizedList(new ArrayList<Message>()));
+	protected void dispatch(int cmd, int[] data, int length){
+		System.out.print("Received command: " + Integer.toHexString(cmd) + ", value: ");
+		for (int i = 0; i < length; i++) {
+			System.out.print(Integer.toHexString(data[i]) + ", ");
+		}
+		System.out.println();
+		if (mailbox.get(cmd) == null) mailbox.put(cmd, Collections.synchronizedList(new LinkedList<Message>()));
 		mailbox.get(cmd).add(new Message(cmd, data));
+		if (mailbox.get(cmd).size() > 255){
+			mailbox.get(cmd).remove(0);	//Limit the length of the array by removing the oldest entries.
+		}
 	}
 
 	private int[] buf = new int[MAX_SIZE];
@@ -60,18 +67,7 @@ public class Protocol {
 	private int cmd = 0;
 	private int chk = 0x00;
 	
-	public void receiveByte() {
-//		System.err.println("Recieved Byte");
-//		if (serial.available() == 0) return;
-		
-		int b = serial.read();
-		System.err.println("Recieved Byte: " + Integer.toHexString(b));
-		if (b == -1) {
-			System.err.println("End of stream");
-			// end of stream
-			return;
-		}
-
+	public void receiveByte(int b) {
 		if (err && b == START) {
 			// recover from error condition
 			System.err.println("Recover from error condition");
@@ -124,7 +120,7 @@ public class Protocol {
 			}
 			if (pos == (len + 2)) {
 				if (chk == 0xff) {
-					dispatch(cmd, buf);
+					dispatch(cmd, buf, pos - 3);
 				} else {
 					err = true;
 					System.err.println("Invalid checksum");

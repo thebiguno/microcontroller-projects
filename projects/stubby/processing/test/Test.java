@@ -14,4 +14,8 @@ public class Test extends PApplet {
 	public void serialEvent(Serial serial){
 		System.out.println(Integer.toHexString(serial.read()));
 	}
+	
+	public void draw() {
+		
+	}
 }
