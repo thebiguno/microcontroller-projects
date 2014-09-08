@@ -120,12 +120,13 @@ int main (void){
 		&PORTC, PORTC3); //Attention (Yellow)
 		
 	sei();
-	uint16_t announceControlIdTimer = 0x0000;
+	uint8_t announceControlIdTimer = 0x00;
 		
 	//Main program loop
 	while (1){
-		//If it is time to send the control ID again, do so and reset the counter.
-		if (announceControlIdTimer == 0x0000){
+		//If it is time to send the control ID again, do so and reset the counter.  By sending every 256 loops, 
+		// it works out to be about once ever 2 - 3 seconds.
+		if (announceControlIdTimer == 0x00){
 			uint8_t value = 'U';
 			protocol_send_message(MESSAGE_ANNOUNCE_CONTROL_ID, &value, 1);
 		}

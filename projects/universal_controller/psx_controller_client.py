@@ -76,7 +76,9 @@ while True:
 		if (pos == (length + 2)):
 			if (chk == 0xff):
 				#Finished the message; decode it
-				if (cmd == 0x10 or cmd == 0x11):
+				if (cmd == 0x00):
+					sys.stdout.write("Control ID: " + chr(buf[0]) + "\n")
+				elif (cmd == 0x10 or cmd == 0x11):
 					sys.stdout.write("Button ")
 					button = buf[0]
 					if button == 0x00:
