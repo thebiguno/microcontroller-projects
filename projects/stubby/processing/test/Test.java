@@ -1,6 +1,6 @@
-import ca.digitalcave.stubby.Stubby;
 import processing.core.PApplet;
 import processing.serial.Serial;
+import ca.digitalcave.stubby.Stubby;
 
 public class Test extends PApplet {
 	public static void main(String args[]) {
@@ -8,7 +8,13 @@ public class Test extends PApplet {
 	}
 	
 	public void setup(){
-		Stubby stubby = new Stubby(this, "/dev/tty.usbserial-FTE0U36U");
+		Stubby stubby = new Stubby(this, "/dev/rfcomm0");
+		stubby.turnOn();
+		stubby.moveForward(200);
+		stubby.moveLeft(200);
+		stubby.moveBackward(200);
+		stubby.moveRight(200);
+		stubby.turnOff();
 	}
 
 	public void serialEvent(Serial serial){

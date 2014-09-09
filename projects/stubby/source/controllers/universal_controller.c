@@ -45,12 +45,7 @@ uc_stick_t uc_read_right(){
 void uc_remote_control(){
 	pwm_start();
 	status_set_color(0x00, 0xFF, 0x00);
-	
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		legs[l].resetPosition();
-	}
-	pwm_apply_batch();
-	
+	doResetLegs();
 	status_enable_battery();
 	
 	//Hit Start to exit remote control mode, and go back to startup
@@ -109,13 +104,7 @@ void uc_remote_control(){
 	}
 	
 	status_disable_battery();
-	
-	//Reset legs to neutral position
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		legs[l].resetPosition();
-	}
-	pwm_apply_batch();
-	
+	doResetLegs();
 	status_set_color(0x00, 0x00, 0x00);
 	_delay_ms(200);
 
@@ -252,9 +241,7 @@ void uc_calibration(){
 			}
 
 			if (mode){
-				for (uint8_t l = 0; l < LEG_COUNT; l++){
-					legs[l].resetPosition();
-				}
+				doResetLegs();
 			}
 			else {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){

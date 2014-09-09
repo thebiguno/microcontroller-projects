@@ -10,13 +10,17 @@ import processing.serial.Serial;
 
 public class Protocol {
 	private final Serial serial;
-	
-	public final ConcurrentHashMap<Integer, List<Message>> mailbox = new ConcurrentHashMap<Integer, List<Message>>();
+
+	private long lastControllerIdMessageSent = 0;
+
+	private final ConcurrentHashMap<Integer, List<Message>> mailbox = new ConcurrentHashMap<Integer, List<Message>>();
 
 	public final int START = 0x7e;
 	public final int ESCAPE = 0x7d;
 
 	private final int MAX_SIZE = 255;
+	
+	public static final int ANNOUNCE_CONTROL_ID = 0x00;
 	
 	public static final int SEND_ACKNOWLEDGE = 0x01;
 	public static final int SEND_COMPLETE = 0x02;
@@ -37,6 +41,25 @@ public class Protocol {
 
 	public static final int REQUEST_SET_LED = 0x2A;
 
+	boolean isMessageWaiting(int command){
+		return (mailbox.get(command) != null && mailbox.get(command).size() > 0);
+	}
+	Message popMessage(int command){
+		if (mailbox.get(command) == null || mailbox.get(command).size() == 0) return null;
+		return mailbox.get(command).remove(0);
+	}
+	boolean waitForAcknowledge(int command){
+		while (!isMessageWaiting(Protocol.SEND_ACKNOWLEDGE)){
+			try {Thread.sleep(10);} catch (InterruptedException e){} 
+		}
+		return (popMessage(Protocol.SEND_ACKNOWLEDGE).getCommand() == command);
+	}
+	boolean waitForComplete(int command){
+		while (!isMessageWaiting(Protocol.SEND_COMPLETE)){
+			try {Thread.sleep(10);} catch (InterruptedException e){} 
+		}
+		return (popMessage(Protocol.SEND_COMPLETE).getCommand() == command);
+	}
 	
 	public Protocol(Serial serial) {
 		this.serial = serial;
@@ -143,6 +166,16 @@ public class Protocol {
 	}
 
 	public void sendMessage(Message message) {
+		if (lastControllerIdMessageSent + 3000 < System.currentTimeMillis()){
+			//If we have not sent the control ID message in the previous three seconds, do so now.
+			sendByte(START, false);
+			sendByte(2, true);
+			sendByte(ANNOUNCE_CONTROL_ID, true);
+			sendByte('P', true);	//Data
+			sendByte(0xFF - 'P', true);	//Checksum 
+			lastControllerIdMessageSent = System.currentTimeMillis();
+		}
+		
 		sendByte(START, false);
 		sendByte(message.getData().length + 1, true);
 		sendByte(message.getCommand(), true);

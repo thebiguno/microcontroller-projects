@@ -28,29 +28,43 @@ public class Stubby {
 		serial.setProtocol(protocol);
 	}
 	
-	/**
-	 * Move the specified number of mm in the indicated direction at the given speed
-	 * 
-	 * Distance is measured in mm
-	 *  
-	 * @param distance Measured in mm
-	 * @param speed Value from 0 to 255.  255 is fastest.
-	 * @params direction Value in radians; 0 is forward; Math.PI (or -Math.PI) is backwards; Math.PI / 2 is right; -Math.PI / 2 is left.
-	 */
-	public void move(int distance, int speed, float direction){
-		if (distance == 0) return;
-		if (distance < 0) direction = direction + (float) Math.PI;	//Support going backwards
-		int[] data = new int[7];
-		data[0] = Protocol.radianToByte(direction);
-		data[1] = 0;		//Rotation in place
-		data[2] = speed & 0xFF;
-		data[3] = (distance >> 8) & 0xFF;
-		data[4] = distance & 0xFF;
-		protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data));
+	public boolean turnOn(){
+		protocol.sendMessage(new Message(Protocol.REQUEST_POWER_ON, new int[0]));
+		return protocol.waitForAcknowledge(Protocol.REQUEST_POWER_ON);
+	}
+	public boolean turnOff(){
+		protocol.sendMessage(new Message(Protocol.REQUEST_POWER_OFF, new int[0]));
+		return protocol.waitForAcknowledge(Protocol.REQUEST_POWER_OFF);
 	}
 	
-	public void move(int distance, float direction){
-		move(distance, 0xFF, direction);
+	/**
+	 * Move the specified distance in the indicated direction at the given speed
+	 * 
+	 * @param linearAngle Angle to move.  0 is straight forward, negative angles are right, and positive angles are left.  Angle in radians.
+	 * @param rotationalAngle Rotational angle to turn.  Measured the same as linear angle.
+	 * @param linearVelocity Speed to move; unsigned 8 bit integer value between 255 (fastest) and 0 (slowest).
+	 * @param rotationalVelocity Speed to turn; same range as linearVelocity.
+	 * @param distance Distance to move (in mm).
+	 * @return
+	 */
+	public boolean move(float linearAngle, float rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
+		if (distance == 0) return true;
+		linearAngle += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
+		if (distance < 0) linearAngle = linearAngle + (float) Math.PI;	//Support going backwards
+		int[] data = new int[6];
+		data[0] = Protocol.radianToByte(linearAngle);	
+		data[1] = Protocol.radianToByte(rotationalAngle);
+		data[2] = linearVelocity & 0xFF;
+		data[3] = rotationalVelocity & 0xFF;
+		data[4] = (distance >> 8) & 0xFF;
+		data[5] = distance & 0xFF;
+		protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data));
+		protocol.waitForAcknowledge(Protocol.REQUEST_MOVE);
+		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
+	}
+	
+	public void move(float linearAngle, int distance){
+		move(linearAngle, 0, 255, 0, distance);
 	}
 	
 	/**
@@ -58,7 +72,7 @@ public class Stubby {
 	 * @param steps
 	 */
 	public void moveForward(int distance){
-		move(distance, 0);
+		move(0, distance);
 	}
 
 	/**
@@ -66,23 +80,23 @@ public class Stubby {
 	 * @param steps
 	 */
 	public void moveBackward(int distance){
-		move(distance, (float) Math.PI);
+		move((float) Math.PI, distance);
 	}
 	
 	/**
 	 * Convenience method to walk right.
 	 * @param steps
 	 */
-	public void moveRight(int steps){
-		move(steps, (float) Math.PI / 2);
+	public void moveRight(int distance){
+		move((float) Math.PI / -2, distance);
 	}
 
 	/**
 	 * Convenience method to walk right.
 	 * @param steps
 	 */
-	public void moveLeft(int steps){
-		move(steps, (float) Math.PI / -2);
+	public void moveLeft(int distance){
+		move((float) Math.PI / 2, distance);
 	}
 	
 	/**

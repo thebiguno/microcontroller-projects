@@ -6,7 +6,8 @@
 #include "Stubby.h"
 #include "Leg.h"
 #include "Point.h"
-#include "../hardware/status.h"
+#include "hardware/status.h"
+
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
 #include <util/delay.h>

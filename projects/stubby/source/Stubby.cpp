@@ -42,7 +42,7 @@ int main (void){
 	while (1){
 		wdt_reset();
 
-		_delay_ms(100);
+		//_delay_ms(100);
 		//PORTD ^= _BV(PORTD4);
 
 		if (controller == CONTROLLER_UC){
@@ -63,6 +63,21 @@ void set_power(uint8_t _power){
 }
 uint8_t get_controller(){
 	return controller;
+}
+
+void doAcknowledgeCommand(uint8_t command){
+	protocol_send_message(MESSAGE_SEND_ACKNOWLEDGE, &command, 1);
+}
+
+void doCompleteCommand(uint8_t command){
+	protocol_send_message(MESSAGE_SEND_COMPLETE, &command, 1);
+}
+
+void doResetLegs(){
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		legs[l].resetPosition();
+	}
+	pwm_apply_batch();
 }
 
 /*

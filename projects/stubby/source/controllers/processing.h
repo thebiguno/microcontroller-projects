@@ -2,7 +2,12 @@
 #define PROCESSING_H
 
 #include <stdint.h>
+#include <util/delay.h>
+#include <avr/wdt.h>
+
 #include "Stubby.h"
+#include "Leg.h"
+#include "hardware/status.h"
 #include "util/convert.h"
 
 //PC / Stubby-specific messages are in 0x2X space...
