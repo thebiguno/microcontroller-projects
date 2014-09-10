@@ -45,8 +45,8 @@ uc_stick_t uc_read_right(){
 void uc_remote_control(){
 	pwm_start();
 	status_set_color(0x00, 0xFF, 0x00);
-	doResetLegs();
 	status_enable_battery();
+	doResetLegs();
 	
 	//Hit Start to exit remote control mode, and go back to startup
 	while(1){
