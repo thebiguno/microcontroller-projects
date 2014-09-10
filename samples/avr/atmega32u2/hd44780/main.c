@@ -5,25 +5,25 @@
 using namespace digitalcave;
 
 int main (void){
-	Hd44780 display(&PORTB, 0, &PORTB, 2, 1);
-	display.initSpi();
-	display.setFunction(0x0e);	// 5x8, 2-line, 8-bit
-	_delay_us(37);
-	display.setMode(0x02);		// no shift, increment
-	_delay_us(37);
-	display.clear();
-	_delay_ms(1.52);
+	_delay_ms(100);
+	DDRB |= _BV(PINB4);
 	
+	Hd44780 display(&PORTB, 0, &PORTB, 2, 1, display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
+
 	display.setDdramAddress(0x00);
-	_delay_ms(37);
-	display.setText("Hello World", 11);
+	_delay_ms(64);
+	display.setText((char *)"Hello World", 11);
 	display.setDdramAddress(0x40);
-	_delay_ms(37);
-	display.setText("Ol\xe1 Mundo", 9);
+	_delay_ms(64);
+	display.setText((char *)"\xba\xdd\xc6\xc1\xdc", 5);
 
 	//Main program loop
+	
+//	SPDR = 0x5a;
+//	while(!(SPSR & (1<<SPIF)));
+//	PORTB &= ~_BV(PB2);
+
 	while (1){
-		;
 	}
 }
 
