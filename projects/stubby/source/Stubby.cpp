@@ -129,7 +129,7 @@ uint8_t doMove(double linear_angle, double linear_velocity, double rotational_ve
 	// sure if this is due to slippage, bad measurements, not enough timing, or something else.
 	// Regardless, by making this number smaller, we end up with the right measurement in real
 	// world applications.  Yay for fudge!
-	return 3.95 * linear_velocity;
+	return 4.5 * linear_velocity;
 }
 
 /*
