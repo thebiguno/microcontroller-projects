@@ -140,6 +140,6 @@ void Leg::setFemurAngle(double desired_angle){
 }
 
 void Leg::setCoxaAngle(double desired_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + (this->calibration[COXA] * 10) + desired_angle * COXA_PHASE_MULTIPLIER);
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) ((PHASE_NEUTRAL + (this->calibration[COXA] * 10) + desired_angle * COXA_PHASE_MULTIPLIER) * COXA_LINEAR_SLOPE_MULTIPLIER) + COXA_LINEAR_OFFSET);
 }
 
