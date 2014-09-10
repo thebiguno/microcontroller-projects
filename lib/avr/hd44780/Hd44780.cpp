@@ -14,16 +14,19 @@
 
 using namespace digitalcave;
 
-Hd44780::Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function) {
+Hd44780::Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *rs_port, uint8_t rs_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function) {
 	this->e_port = e_port;
 	this->e_bv = _BV(e_pin);
+	this->rs_port = rs_port;
+	this->rs_bv = _BV(rs_pin);
 	this->spi_port = spi_port;
 	this->mosi_bv = _BV(mosi_pin);
 	this->sclk_bv = _BV(sclk_pin);
 
 	*(this->e_port - 0x01) |= this->e_bv;
+	*(this->rs_port - 0x01) |= this->rs_bv;
 	*(this->spi_port - 0x01) |= (this->mosi_bv | this->sclk_bv);
-//	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0) | _BV(SPR1);
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0);
 
 	// _delay_ms(0x7f);
 	// this->cmd(0x30);	// function set: 8-bit interface
@@ -75,20 +78,19 @@ void Hd44780::setDdramAddress(uint8_t b) {
 void rs0();
 void rs1();
 void latch();
-void data(uint8_t);
 
 void Hd44780::setByte(uint8_t b) {
-//	SPDR = b;
-//	while(!(SPSR & (1<<SPIF)));
-	this->data(b);
-	*this->spi_port |= this->mosi_bv;
+	*this->rs_port |= this->rs_bv;
+	SPDR = b;
+	while(!(SPSR & (1<<SPIF)));
+	_delay_us(64);
 	latch();
 }
 void Hd44780::cmd(uint8_t b) {
-//	SPDR = b;
-//	while(!(SPSR & (1<<SPIF)));
-	this->data(b);
-	*this->spi_port &= ~this->mosi_bv;
+	*this->rs_port &= ~this->rs_bv;
+	SPDR = b;
+	while(!(SPSR & (1<<SPIF)));
+	_delay_us(64);
 	latch();
 }
 
@@ -110,32 +112,3 @@ void Hd44780::latch() {
 	*this->e_port &= ~this->e_bv;
 	_delay_us(40);
 }
-
-void Hd44780::data(uint8_t out_byte) {
-	/* make sure clock is low */
-	*this->spi_port &= ~this->sclk_bv;
-        
-        int i;
-        for(i=0; i<8; i++)
-        {
-                /* loop through bits */
-                
-                if (out_byte & 0x80)
-                {
-                        /* this bit is high */
-					*this->spi_port |= this->mosi_bv;
-                }
-                else
-                {
-                        /* this bit is low */
-					*this->spi_port &= ~this->mosi_bv;
-                }
-                out_byte = out_byte << 1;
-                
-	/* pulse the the shift register clock */
-	*this->spi_port |= this->sclk_bv;
-	_delay_ms(1);
-	*this->spi_port &= ~this->sclk_bv;
-	}
-}
-

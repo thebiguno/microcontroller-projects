@@ -11,11 +11,12 @@ namespace digitalcave {
 		private:
 		volatile uint8_t *e_port;
 		uint8_t e_bv;
+		volatile uint8_t *rs_port;
+		uint8_t rs_bv;
 		volatile uint8_t *spi_port;
 		uint8_t mosi_bv;
 		uint8_t sclk_bv;
 		void cmd(uint8_t cmd);
-		void data(uint8_t data);
 		void latch();
 
 		public:
@@ -50,7 +51,7 @@ namespace digitalcave {
 		 * SCK must be connected to SCK on the shift register.
 		 * SS must either be configured as an output or if configured as in input then in must be held high.
 		 */
-		Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function);
+		Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *rs_port, uint8_t rs_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function);
 	
 		/* 
 		 * Clear all display data, and set DDRAM address to 0x00.
