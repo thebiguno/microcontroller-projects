@@ -5,9 +5,9 @@ extern Leg legs[LEG_COUNT];
 static volatile uc_stick_t left_stick;
 static volatile uc_stick_t right_stick;
 
-static uint16_t uc_buttons_pressed;
-static uint16_t uc_buttons_released;
-static uint16_t uc_buttons_held;
+static volatile uint16_t uc_buttons_pressed;
+static volatile uint16_t uc_buttons_released;
+static volatile uint16_t uc_buttons_held;
 
 uint16_t uc_read_pressed_buttons(){
 	if (uc_buttons_pressed == 0x00) return 0x00;

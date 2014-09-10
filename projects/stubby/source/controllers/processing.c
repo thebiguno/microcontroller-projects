@@ -1,13 +1,13 @@
 #include "processing.h"
 
-uint8_t power_change_required = 0x00;
-uint8_t movement_required = 0x00;
-uint8_t movement_ack_required = 0x00;
-double desired_linear_angle;
-double desired_rotational_angle;
-double desired_linear_velocity;
-double desired_rotational_velocity;
-uint16_t desired_distance = 0;
+static volatile uint8_t power_change_required = 0x00;
+static volatile uint8_t movement_required = 0x00;
+static volatile uint8_t movement_ack_required = 0x00;
+static volatile double desired_linear_angle;
+static volatile double desired_rotational_angle;
+static volatile double desired_linear_velocity;
+static volatile double desired_rotational_velocity;
+static volatile uint16_t desired_distance = 0;
 
 extern Leg legs[LEG_COUNT];
 
