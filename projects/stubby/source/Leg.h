@@ -40,7 +40,7 @@
 #define TIBIA_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.3, angle 'E'
-#define TIBIA_E_OFFSET_ANGLE			(9.3 * M_PI / 180)
+#define TIBIA_E_OFFSET_ANGLE			(20 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.3, angle 'N'
 #define TIBIA_NEUTRAL_SERVO_ANGLE		(135 * M_PI / 180)

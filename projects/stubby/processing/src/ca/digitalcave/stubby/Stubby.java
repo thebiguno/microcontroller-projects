@@ -29,12 +29,10 @@ public class Stubby {
 	}
 	
 	public boolean turnOn(){
-		protocol.sendMessage(new Message(Protocol.REQUEST_POWER_ON, new int[0]));
-		return protocol.waitForAcknowledge(Protocol.REQUEST_POWER_ON);
+		return protocol.sendMessage(new Message(Protocol.REQUEST_POWER_ON, new int[0]), 1000, 2);
 	}
 	public boolean turnOff(){
-		protocol.sendMessage(new Message(Protocol.REQUEST_POWER_OFF, new int[0]));
-		return protocol.waitForAcknowledge(Protocol.REQUEST_POWER_OFF);
+		return protocol.sendMessage(new Message(Protocol.REQUEST_POWER_OFF, new int[0]), 1000, 2);
 	}
 	
 	/**
@@ -58,8 +56,9 @@ public class Stubby {
 		data[3] = rotationalVelocity & 0xFF;
 		data[4] = (distance >> 8) & 0xFF;
 		data[5] = distance & 0xFF;
-		protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data));
-		protocol.waitForAcknowledge(Protocol.REQUEST_MOVE);
+		if (!protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data), 500, 2)){
+			return false;
+		}
 		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
 	}
 	

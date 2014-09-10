@@ -2,6 +2,7 @@
 
 uint8_t power_change_required = 0x00;
 uint8_t movement_required = 0x00;
+uint8_t movement_ack_required = 0x00;
 double desired_linear_angle;
 double desired_rotational_angle;
 double desired_linear_velocity;
@@ -15,12 +16,14 @@ void processing_command_executor(){
 	
 	if (power_change_required){
 		if (get_power()){
+			doAcknowledgeCommand(POWER_ON);
 			pwm_start();
 			status_set_color(0x00, 0xFF, 0x00);
 			doResetLegs();
 			status_enable_battery();
 		}
 		else {
+			doAcknowledgeCommand(POWER_OFF);
 			status_disable_battery();
 			doResetLegs();
 			status_set_color(0x00, 0x00, 0x00);
@@ -29,6 +32,11 @@ void processing_command_executor(){
 			pwm_stop();
 		}
 		power_change_required = 0x00;
+	}
+	
+	if (movement_ack_required){
+		doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
+		movement_ack_required = 0x00;
 	}
 	
 	if (movement_required){
@@ -54,12 +62,10 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	if (cmd == MESSAGE_REQUEST_POWER_ON){
 		set_power(POWER_ON);
 		power_change_required = 0x01;
-		doAcknowledgeCommand(POWER_ON);
 	}
 	else if (cmd == MESSAGE_REQUEST_POWER_OFF){
 		set_power(POWER_OFF);
 		power_change_required = 0x01;
-		doAcknowledgeCommand(POWER_OFF);
 	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
 		if (length == 2){		//Only linear angle and rotational angle
@@ -86,6 +92,6 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			desired_rotational_velocity = message[3] / 255.0;
 			desired_distance = message[4] << 8 | message[5];
 		}
-		doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
+		movement_ack_required = 0x01;
 	}
 }

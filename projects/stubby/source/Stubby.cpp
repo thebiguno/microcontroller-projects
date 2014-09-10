@@ -66,18 +66,41 @@ uint8_t get_controller(){
 }
 
 void doAcknowledgeCommand(uint8_t command){
-	protocol_send_message(MESSAGE_SEND_ACKNOWLEDGE, &command, 1);
+	uint8_t data[1];
+	data[0] = command;
+	protocol_send_message(MESSAGE_SEND_ACKNOWLEDGE, data, 1);
 }
 
 void doCompleteCommand(uint8_t command){
-	protocol_send_message(MESSAGE_SEND_COMPLETE, &command, 1);
+	uint8_t data[1];
+	data[0] = command;
+	protocol_send_message(MESSAGE_SEND_COMPLETE, data, 1);
 }
 
 void doResetLegs(){
-	for (uint8_t l = 0; l < LEG_COUNT; l++){
-		legs[l].resetPosition();
+	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+		legs[l].setOffset(Point(0,0,30));
 	}
 	pwm_apply_batch();
+	_delay_ms(200);
+
+	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+		legs[l].setOffset(Point(0,0,0));
+	}
+	pwm_apply_batch();
+	_delay_ms(200);
+
+	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+		legs[l].setOffset(Point(0,0,30));
+	}
+	pwm_apply_batch();
+	_delay_ms(200);
+
+	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+		legs[l].setOffset(Point(0,0,0));
+	}
+	pwm_apply_batch();
+	_delay_ms(200);
 }
 
 /*
@@ -102,7 +125,11 @@ uint8_t doMove(double linear_angle, double linear_velocity, double rotational_ve
 	// step procedure at maximum velocity (and the distance scales linearly with velocity).
 	// Eventually we need to add something to the gait code where we can query this value; for
 	// now, a constant with linear scaling factor is fine.
-	return 5 * linear_velocity;
+	//Note: Through experimentation we find that each step is slightly smaller than 5mm... not 
+	// sure if this is due to slippage, bad measurements, not enough timing, or something else.
+	// Regardless, by making this number smaller, we end up with the right measurement in real
+	// world applications.  Yay for fudge!
+	return 3.95 * linear_velocity;
 }
 
 /*

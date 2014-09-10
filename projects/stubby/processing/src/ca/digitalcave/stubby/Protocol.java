@@ -1,9 +1,11 @@
 package ca.digitalcave.stubby;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import processing.serial.Serial;
 
@@ -70,11 +72,11 @@ public class Protocol {
 	}
 	
 	protected void dispatch(int cmd, int[] data, int length){
-		System.out.print("Received command: " + Integer.toHexString(cmd) + ", value: ");
-		for (int i = 0; i < length; i++) {
-			System.out.print(Integer.toHexString(data[i]) + ", ");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < length; i++){
+			sb.append(Integer.toHexString(data[i])).append(" ");
 		}
-		System.out.println();
+		Logger.getLogger(this.getClass().getName()).info("Received command: " + Integer.toHexString(cmd) + ", value: [ " + sb.toString() + "]");
 		if (mailbox.get(cmd) == null) mailbox.put(cmd, Collections.synchronizedList(new LinkedList<Message>()));
 		mailbox.get(cmd).add(new Message(cmd, data));
 		if (mailbox.get(cmd).size() > 255){
@@ -165,7 +167,28 @@ public class Protocol {
 		}
 	}
 
-	public void sendMessage(Message message) {
+	public boolean sendMessage(Message message, long ackTimeout, int retryCount) {
+		for (int retry = 0; retry < retryCount; retry++){
+			sendMessage(message);
+			for (long i = 0; i < ackTimeout; i++){
+				try {Thread.sleep(1);} catch (InterruptedException e){}
+				if (isMessageWaiting(Protocol.SEND_ACKNOWLEDGE)){
+					final Message ackMessage = popMessage(Protocol.SEND_ACKNOWLEDGE);
+					if (ackMessage.getData()[0] == message.getCommand()){
+						return true;
+					}
+					else {
+						Logger.getLogger(this.getClass().getName()).warning("Ack command (" + Integer.toHexString(ackMessage.getData()[0]) + ") did not match expected command (" + Integer.toHexString(message.getCommand()) + ")");
+					}
+				}
+			}
+			Logger.getLogger(this.getClass().getName()).warning("Attempt to send command (" + Integer.toHexString(message.getCommand()) + ") timed out.");
+		}
+		
+		Logger.getLogger(this.getClass().getName()).warning("Attempt to re-send command (" + Integer.toHexString(message.getCommand()) + ") failed.");
+		return false;
+	}
+	public boolean sendMessage(Message message) {
 		if (lastControllerIdMessageSent + 3000 < System.currentTimeMillis()){
 			//If we have not sent the control ID message in the previous three seconds, do so now.
 			sendByte(START, false);
@@ -191,6 +214,14 @@ public class Protocol {
 		checksum = (0xFF - checksum);
 
 		sendByte(checksum, true);
+		
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < message.getData().length; i++){
+			sb.append(Integer.toHexString(message.getData()[i])).append(" ");
+		}
+		Logger.getLogger(this.getClass().getName()).info("Sent command: " + Integer.toHexString(message.getCommand()) + ", value: [ " + sb.toString() + "]");
+		
+		return true;
 	}
 
 	public static float byteToRadian(int x) {

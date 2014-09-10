@@ -61,12 +61,16 @@ void uc_remote_control(){
 		}
 
 		
+		uint16_t buttons_pressed = uc_read_pressed_buttons();
 		uint16_t buttons_held = uc_read_held_buttons();
 		uc_stick_t left_stick = uc_read_left();
 		uc_stick_t right_stick = uc_read_right();
 
+		if (buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_CROSS)){
+			doResetLegs();
+		}
 		//Translation: XY (left stick) and Z (right stick)
-		if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
+		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_LEFT2)){
 			uint16_t x = left_stick.x * -0.2;
 			uint16_t y = left_stick.y * -0.2;
 			uint16_t z = (right_stick.y > 50 || right_stick.y < -50) ? right_stick.y * -0.1 : 0;
@@ -198,7 +202,7 @@ void uc_calibration(){
 			}
 			
 			//Hold Circle + press Triangle to revert all calibration (in the current mode) to 0
-			if ((uc_read_pressed_buttons() & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0 && (buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
+			if ((uc_read_held_buttons() & _BV(CONTROLLER_BUTTON_VALUE_CIRCLE)) != 0 && (buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_TRIANGLE)) != 0) {
 				if (mode){
 					for (uint8_t i = 0; i < LEG_COUNT; i++){
 						for (uint8_t j = JOINT_COUNT; j < CALIBRATION_COUNT; j++){
