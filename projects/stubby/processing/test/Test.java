@@ -11,6 +11,7 @@ public class Test extends PApplet {
 		Stubby stubby = new Stubby(this, "/dev/rfcomm0");
 		stubby.turnOn();
 		stubby.moveForward(1000);
+		stubby.moveBackward(1000);
 		stubby.turnOff();
 	}
 

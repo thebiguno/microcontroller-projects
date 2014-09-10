@@ -56,7 +56,7 @@ public class Stubby {
 		data[3] = rotationalVelocity & 0xFF;
 		data[4] = (distance >> 8) & 0xFF;
 		data[5] = distance & 0xFF;
-		if (!protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data), 500, 2)){
+		if (!protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data), 1000, 2)){
 			return false;
 		}
 		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
