@@ -8,10 +8,10 @@
 #include "Point.h"
 
 /*
- * Returns the angle which the servo needs to move from neutral.
+ * Returns the angle which the servo needs to move from neutral.  Used for both tibia and femur.
  */
-double solveServoTrapezoid(double desired_angle, double length_a, double length_b, double length_c, double length_d, double angle_E_offset, double angle_N){
-	//See diagrams in doc/drive_system.png for description of sides and angles
+double solveServoTrapezoid(double desired_angle, double length_a, double length_b, double length_c, double length_d, double angle_E_offset, double angle_E_offset2, double angle_N){
+	//See diagrams in doc/diagrams.pdf for description of sides and angles
 	//Use law of cosines to find the length of the line between the control rod connection point and the servo shaft
 	double length_e = sqrt(length_d * length_d + length_a * length_a - 2 * length_d * length_a * cos_f(desired_angle + angle_E_offset));
 	
@@ -20,7 +20,7 @@ double solveServoTrapezoid(double desired_angle, double length_a, double length_
 	//Use law of cosines to find the angle between the line we just calculated (e) and the line between the joint and the servo shaft (d)
 	double angle_D = acos_f((length_e * length_e + length_a * length_a - length_d * length_d) / (2 * length_e * length_a));
 	
-	return (angle_C + angle_D + angle_E_offset) - angle_N;
+	return (angle_C + angle_D + angle_E_offset2) - angle_N;
 }
 
 Leg::Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP){
@@ -126,20 +126,22 @@ void Leg::setCalibration(uint8_t i, int8_t calibration){
 }
 
 void Leg::setTibiaAngle(double desired_angle){
-	//See diagrams in doc/drive_system.png for description of sides and angles
-	double angle_S = solveServoTrapezoid(desired_angle, TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
+	//See diagrams in doc/diagrams.pdf for description of sides and angles
+	double angle_S = solveServoTrapezoid(desired_angle, TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, TIBIA_E_OFFSET_ANGLE, TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
 
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + (this->calibration[TIBIA] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setFemurAngle(double desired_angle){
-	//See diagrams in doc/drive_system.png for description of sides and angles
-	double angle_S = solveServoTrapezoid(desired_angle, FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
+	//See diagrams in doc/diagrams.pdf for description of sides and angles
+	double angle_S = solveServoTrapezoid(desired_angle, FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, FEMUR_E_OFFSET_ANGLE, FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
 	
 	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + (this->calibration[FEMUR] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
 void Leg::setCoxaAngle(double desired_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) ((PHASE_NEUTRAL + (this->calibration[COXA] * 10) + desired_angle * COXA_PHASE_MULTIPLIER) * COXA_LINEAR_SLOPE_MULTIPLIER) + COXA_LINEAR_OFFSET);
+	//See diagrams in doc/diagrams.pdf for description of sides and angles.  This is a bit different from the tibia / femur ones.
+	double angle_S = solveServoTrapezoid(desired_angle, COXA_A, COXA_B, COXA_C, COXA_D, COXA_E_OFFSET_ANGLE, 0, COXA_NEUTRAL_SERVO_ANGLE);
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + (this->calibration[COXA] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
 }
 
