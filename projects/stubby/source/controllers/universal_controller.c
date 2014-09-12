@@ -245,7 +245,9 @@ void uc_calibration(){
 			}
 
 			if (mode){
-				doResetLegs();
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					legs[l].setOffset(Point(0,0,0));
+				}
 			}
 			else {
 				for (uint8_t l = 0; l < LEG_COUNT; l++){

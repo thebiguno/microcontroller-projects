@@ -1,14 +1,19 @@
 #ifndef STUBBY_H
 #define STUBBY_H
 
+#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <stdint.h>
-
 #include "lib/protocol/protocol.h"
 #include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"
 #include "lib/pwm/pwm.h"
+#else
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#endif
 
 #define PCB_REVISION		1
 

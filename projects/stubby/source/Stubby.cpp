@@ -5,7 +5,7 @@
 #include "gait/gait.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
-#include "util/trig.h"
+#include "util/math.h"
 
 #include "Leg.h"
 #include "Point.h"

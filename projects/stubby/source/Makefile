@@ -8,7 +8,7 @@ SOURCES=Stubby.cpp Leg.cpp Point.cpp \
 	controllers/processing.c controllers/universal_controller.c \
 	gait/gait_tripod.c \
 	hardware/servo.c hardware/status.c \
-	util/convert.c util/trig.c \
+	util/convert.c util/math.c \
 	lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/pwm/pwm.c lib/pwm/pwm.S lib/serial/serial.c lib/serial/serial_sync_tx.c
 AVRDUDE_PROGRAMMER=usbtiny
 
