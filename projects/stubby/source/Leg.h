@@ -65,17 +65,13 @@
 // figure 1.4, angle 'N'
 #define FEMUR_NEUTRAL_SERVO_ANGLE		(132 * M_PI / 180)
 
-//The lengths of the four segments in the Coxa drive system.  See figure 1.5, segments a, b, c and d.
-#define COXA_A							22.9
-#define COXA_B							8.2
-#define COXA_C							28.1
-#define COXA_D							13.1
-//180 degrees minus this angle is angle E.  This must be measured when the servo is in its neutral position.  See
-// figure 1.5, angle 'E offset'.  ***Note: this angle will be a negative number***
-#define COXA_E_OFFSET_ANGLE			(-105 * M_PI / 180)
-//The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
-// figure 1.5, angle 'N'
-#define COXA_NEUTRAL_SERVO_ANGLE		(100 * M_PI / 180)
+//For the Coxa joint we just use a linear equation to determine the offsets, since it is close enough for
+// most purposes and eliminates a lot of math needed for the drive system calculations.  To determine
+// this value, set the coxa joint on a single leg to various phases (for instance, 1500 + 300, 1500 - 300, 
+// 1500 + 600, etc) and measure the resulting angles.  On my robot, I get approx. 16 degrees for each
+// phase offset of 300us.  By dividing this out (300 / (16 * PI / 180)) I get the value 1074.296, which 
+// means that for each radian I want to move, I adjust the phase by 1074.296.
+#define COXA_PHASE_MULTIPLIER			-1074.296
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
@@ -86,6 +82,15 @@
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.
 #define SERVO_TRAVEL					(150 * M_PI / 180)
+
+//This is a calibration constant which helps Stubby move in a straight line.  The design of the coxa joint / servos
+// means that there is slightly more leg travel on one side of neutral than the other; this makes Stubby veer
+// to the left slightly when walking.  By applying this slope multiplier and offset, we can compensate for this.
+// This value seems to work for me, but different frame modifications may result in different offsets.  Just try 
+// changing this value as you see fit, testing each new one.  A value of 1 means no offset; values less than 1
+// will vary gait in one direction, values greater than 1 will vary in the other direction.
+#define COXA_LINEAR_SLOPE_MULTIPLIER	1.3
+#define COXA_LINEAR_OFFSET				PHASE_NEUTRAL - (PHASE_NEUTRAL * COXA_LINEAR_SLOPE_MULTIPLIER)
 
 /*
 	* C++ implementation of Stubby the Hexapod leg.
