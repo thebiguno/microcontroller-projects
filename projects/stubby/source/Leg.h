@@ -66,16 +66,16 @@
 #define FEMUR_NEUTRAL_SERVO_ANGLE		(132 * M_PI / 180)
 
 //The lengths of the four segments in the Coxa drive system.  See figure 1.5, segments a, b, c and d.
-#define COXA_A							22.1
-#define COXA_B							8.1
-#define COXA_C							28.0
-#define COXA_D							13.13
+#define COXA_A							22.9
+#define COXA_B							8.2
+#define COXA_C							28.1
+#define COXA_D							13.1
 //180 degrees minus this angle is angle E.  This must be measured when the servo is in its neutral position.  See
 // figure 1.5, angle 'E offset'.  ***Note: this angle will be a negative number***
-#define COXA_E_OFFSET_ANGLE			(-95 * M_PI / 180)
+#define COXA_E_OFFSET_ANGLE			(-105 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.5, angle 'N'
-#define COXA_NEUTRAL_SERVO_ANGLE		(120 * M_PI / 180)
+#define COXA_NEUTRAL_SERVO_ANGLE		(100 * M_PI / 180)
 
 //Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
 // a linear travel between one end and the other.
