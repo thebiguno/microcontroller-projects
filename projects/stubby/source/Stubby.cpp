@@ -133,6 +133,29 @@ uint8_t doMove(double linear_angle, double linear_velocity, double rotational_ve
 }
 
 /*
+ * Performs a single turn operation.  Returns the angle moved (radians).
+ */
+double doTurn(double rotational_velocity){
+	static int8_t step_index = 0;
+	
+	for (uint8_t l = 0; l < LEG_COUNT; l++){
+		Point step = gait_step(legs[l], step_index, 0, 0, rotational_velocity);
+		legs[l].setOffset(step);
+	}
+	step_index++;
+	if (step_index > gait_step_count()){
+		step_index = 0;
+	}
+	
+	pwm_apply_batch();
+	_delay_ms(5);
+	
+	//How much of an angle it has moved in this step operation.  This multiplier was
+	// arrived at by trial and error.  It rotates faster one way than the other.  Yeah, baby!
+	return ((rotational_velocity < 0 ? 1.6 : 1.3) * M_PI / 180) * rotational_velocity;
+}
+
+/*
  * Performs a single rotation operation instantaneously (no stepping / smoothing).
  */
 void doRotate(double pitch, double roll, double yaw){
@@ -149,6 +172,9 @@ void doRotate(double pitch, double roll, double yaw){
 	_delay_ms(5);
 }
 
+/*
+ * Performs a single translation operation instantaneously (no stepping / smoothing).
+ */
 void doTranslate(uint16_t x, uint16_t y, uint16_t z){
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		Point translate(x, y, z);

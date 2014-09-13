@@ -10,8 +10,14 @@ public class Test extends PApplet {
 	public void setup(){
 		Stubby stubby = new Stubby(this, "/dev/rfcomm0");
 		stubby.turnOn();
-		stubby.moveForward(1000);
-		stubby.moveBackward(1000);
+//		stubby.move(5 * Math.PI / 6, 500);
+//		stubby.move(11 * Math.PI / 6, 500);
+//		stubby.moveForward(1000);
+//		stubby.moveBackward(500);
+		stubby.moveForward(300);
+		stubby.turnAroundClockwise();
+		stubby.moveForward(300);
+		stubby.turnAround();
 		stubby.turnOff();
 	}
 

@@ -232,14 +232,14 @@ public class Protocol {
 		return (int) (40.584510488433314f * r);
 	}
 
-	public static void floatToArr(float f, int[] b, int offset) {
-		int bits = Float.floatToIntBits(f);
+	public static void floatToArr(double f, int[] b, int offset) {
+		int bits = Float.floatToIntBits((float) f);
 		for (int i = offset; i < offset + 4; i++) {
 			b[i] = bits & 0xFF;
 			bits = bits >> 8;
 		}		
 	}
-	public static float arrToFloat(int[] b, int offset) {
+	public static double arrToFloat(int[] b, int offset) {
 		int bits = 0;
 		for (int i = offset + 3; i >= offset; i--){
 			bits = (bits << 8) + b[i];

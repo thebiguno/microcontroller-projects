@@ -1,7 +1,9 @@
 #include "processing.h"
 
 static volatile uint8_t power_change_required = 0x00;
-static volatile uint8_t movement_required = 0x00;
+static volatile uint8_t move_required = 0x00;
+static volatile uint8_t turn_required = 0x00;
+
 static volatile double desired_linear_angle;
 static volatile double desired_rotational_angle;
 static volatile double desired_linear_velocity;
@@ -22,7 +24,6 @@ void processing_command_executor(){
 		}
 		else {
 			status_disable_battery();
-			doResetLegs();
 			status_set_color(0x00, 0x00, 0x00);
 			_delay_ms(200);
 
@@ -31,21 +32,37 @@ void processing_command_executor(){
 		power_change_required = 0x00;
 	}
 	
-	if (movement_required){
-		if (desired_distance > 0){
-			uint8_t step_distance = doMove(desired_linear_angle, desired_linear_velocity, desired_rotational_velocity);
-			if (step_distance < desired_distance){
-				desired_distance -= step_distance;
-			}
-			else {
-				desired_distance = 0;
-				movement_required = 0x00;
-				doResetLegs();
-				doCompleteCommand(MESSAGE_REQUEST_MOVE);
-			}
+	if (move_required){
+		uint8_t step_distance = doMove(desired_linear_angle, desired_linear_velocity, desired_rotational_velocity);
+		if (step_distance < desired_distance){
+			desired_distance -= step_distance;
 		}
-		else if (desired_rotational_angle > 0.01 || desired_rotational_angle < -0.01){
-			
+		else {
+			desired_distance = 0;
+			desired_linear_angle = 0;
+			desired_linear_velocity = 0;
+			desired_rotational_angle = 0;
+			desired_rotational_velocity = 0;
+			move_required = 0x00;
+			doResetLegs();
+			doCompleteCommand(MESSAGE_REQUEST_MOVE);
+		}
+	}
+	
+	if (turn_required){
+		double step_angle = doTurn(desired_rotational_velocity);
+		if (step_angle > 0 && step_angle < desired_rotational_angle){
+			desired_rotational_angle -= step_angle;
+		}
+		else if (step_angle < 0 && step_angle > desired_rotational_angle){
+			desired_rotational_angle -= step_angle;
+		}
+		else {
+			desired_rotational_angle = 0;
+			desired_rotational_velocity = 0;
+			turn_required = 0x00;
+			doResetLegs();
+			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
 	}
 }
@@ -62,8 +79,9 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_OFF);
 	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
+		move_required = 0x01;
+		/*
 		if (length == 2){		//Only linear angle and rotational angle
-			movement_required = 0x01;
 			desired_linear_angle = convert_byte_to_radian(message[0]);
 			desired_rotational_angle = convert_byte_to_radian(message[1]);
 			desired_linear_velocity = 1.0;
@@ -71,21 +89,30 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			desired_distance = 0xFFFF;
 		}
 		else if (length == 4){	//Previous 2 arguments plus linear / rotational velocity
-			movement_required = 0x01;
 			desired_linear_angle = convert_byte_to_radian(message[0]);
 			desired_rotational_angle = convert_byte_to_radian(message[1]);
 			desired_linear_velocity = message[2] / 255.0;
 			desired_rotational_velocity = message[3] / 255.0;
 			desired_distance = 0xFFFF;
 		}
-		else if (length == 6){	//Previous 4 arguments plus distance (2 bytes)
-			movement_required = 0x01;
+		else
+		*/
+		if (length == 6){
 			desired_linear_angle = convert_byte_to_radian(message[0]);
 			desired_rotational_angle = convert_byte_to_radian(message[1]);
 			desired_linear_velocity = message[2] / 255.0;
 			desired_rotational_velocity = message[3] / 255.0;
 			desired_distance = message[4] << 8 | message[5];
+			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
 		}
-		doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
+	}
+	else if (cmd == MESSAGE_REQUEST_TURN){
+		if (length == 5){
+			turn_required = 0x01;
+			desired_rotational_angle = convert_bytes_to_double(message, 1);
+			desired_rotational_velocity = message[0] / 255.0;
+			if (desired_rotational_angle < 0) desired_rotational_velocity *= -1;
+			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
+		}
 	}
 }

@@ -38,20 +38,22 @@ public class Stubby {
 	/**
 	 * Move the specified distance in the indicated direction at the given speed
 	 * 
-	 * @param linearAngle Angle to move.  0 is straight forward, negative angles are right, and positive angles are left.  Angle in radians.
+	 * @param linearAngle Angle to move.  0 is straight forward, negative angles are right, and positive angles are left.  Angle in degrees.
 	 * @param rotationalAngle Rotational angle to turn.  Measured the same as linear angle.
 	 * @param linearVelocity Speed to move; unsigned 8 bit integer value between 255 (fastest) and 0 (slowest).
 	 * @param rotationalVelocity Speed to turn; same range as linearVelocity.
 	 * @param distance Distance to move (in mm).
 	 * @return
 	 */
-	public boolean move(double linearAngle, double rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
+	public boolean move(int linearAngle, int rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
 		if (distance == 0) return true;
-		linearAngle += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
-		if (distance < 0) linearAngle = linearAngle + Math.PI;	//Support going backwards
+		double linearAngleRadians = linearAngle * Math.PI / 180;
+		double rotationalAngleRadians = rotationalAngle * Math.PI / 180;
+		linearAngleRadians += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
+		if (distance < 0) linearAngleRadians = linearAngleRadians + Math.PI;	//Support going backwards
 		int[] data = new int[6];
-		data[0] = Protocol.radianToByte(linearAngle);	
-		data[1] = Protocol.radianToByte(rotationalAngle);
+		data[0] = Protocol.radianToByte(linearAngleRadians);	
+		data[1] = Protocol.radianToByte(rotationalAngleRadians);
 		data[2] = linearVelocity & 0xFF;
 		data[3] = rotationalVelocity & 0xFF;
 		data[4] = (distance >> 8) & 0xFF;
@@ -62,49 +64,86 @@ public class Stubby {
 		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
 	}
 	
-	public void move(double linearAngle, int distance){
-		move(linearAngle, 0, 255, 0, distance);
+	public boolean move(int linearAngle, int distance){
+		return move(linearAngle, 0, 255, 0, distance);
 	}
 	
 	/**
 	 * Convenience method to walk forward.
 	 * @param steps
 	 */
-	public void moveForward(int distance){
-		move(0, distance);
+	public boolean moveForward(int distance){
+		return move(0, distance);
 	}
 
 	/**
 	 * Convenience method to walk backward.
 	 * @param steps
 	 */
-	public void moveBackward(int distance){
-		move((float) Math.PI, distance);
+	public boolean moveBackward(int distance){
+		return move(180, distance);
 	}
 	
 	/**
 	 * Convenience method to walk right.
 	 * @param steps
 	 */
-	public void moveRight(int distance){
-		move((float) Math.PI / -2, distance);
+	public boolean moveRight(int distance){
+		return move(-90, distance);
 	}
 
 	/**
-	 * Convenience method to walk right.
+	 * Convenience method to walk left.
 	 * @param steps
 	 */
-	public void moveLeft(int distance){
-		move((float) Math.PI / 2, distance);
+	public boolean moveLeft(int distance){
+		return move(90, distance);
 	}
 	
 	/**
 	 * Rotates to the specified angle.  Positive values rotate
 	 * clockwise, negative rotate counter clockwise.
-	 * @param angle In radians, with 0 being the direction the robot is currently facing.
+	 * @param angle In degrees, with 0 being the direction the robot is currently facing.  Negative angles are to the right (clockwise), positive to the right (counter clockwise)
+	 * @param rotationalVelocity Speed to turn, between 0 and 255
 	 */
-	public void turn(float angle){
-		
+	public boolean turn(int angle, int rotationalVelocity){
+		if (angle == 0) return true;
+		double angleRadians = angle * Math.PI / -180;
+		int[] data = new int[5];
+		data[0] = rotationalVelocity & 0xFF;
+		Protocol.floatToArr(angleRadians, data, 1);
+		if (!protocol.sendMessage(new Message(Protocol.REQUEST_TURN, data), 1000, 2)){
+			return false;
+		}
+		return protocol.waitForComplete(Protocol.REQUEST_TURN);
+	}
+	/**
+	 * Convenience method to turn right
+	 * @return
+	 */
+	public boolean turnRight(){
+		return turn(-90, 255);
+	}
+	/**
+	 * Convenience method to turn left
+	 * @return
+	 */
+	public boolean turnLeft(){
+		return turn(90, 255);
+	}
+	/**
+	 * Convenience method to turn around 180 degrees (counter clockwise)
+	 * @return
+	 */
+	public boolean turnAround(){
+		return turn(180, 255);
+	}
+	/**
+	 * Convenience method to turn around 180 degrees (clockwise)
+	 * @return
+	 */
+	public boolean turnAroundClockwise(){
+		return turn(-180, 255);
 	}
 	
 	/**
