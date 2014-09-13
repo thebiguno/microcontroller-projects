@@ -45,10 +45,10 @@ public class Stubby {
 	 * @param distance Distance to move (in mm).
 	 * @return
 	 */
-	public boolean move(float linearAngle, float rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
+	public boolean move(double linearAngle, double rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
 		if (distance == 0) return true;
 		linearAngle += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
-		if (distance < 0) linearAngle = linearAngle + (float) Math.PI;	//Support going backwards
+		if (distance < 0) linearAngle = linearAngle + Math.PI;	//Support going backwards
 		int[] data = new int[6];
 		data[0] = Protocol.radianToByte(linearAngle);	
 		data[1] = Protocol.radianToByte(rotationalAngle);
@@ -62,7 +62,7 @@ public class Stubby {
 		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
 	}
 	
-	public void move(float linearAngle, int distance){
+	public void move(double linearAngle, int distance){
 		move(linearAngle, 0, 255, 0, distance);
 	}
 	

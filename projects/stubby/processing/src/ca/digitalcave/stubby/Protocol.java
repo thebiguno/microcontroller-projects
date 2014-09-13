@@ -223,12 +223,12 @@ public class Protocol {
 		return true;
 	}
 
-	public static float byteToRadian(int x) {
+	public static double byteToRadian(int x) {
 		float r = 0.024639942381096f * x;
-		return (r > Math.PI) ? r - (2.0f * (float) Math.PI) : r; // convert quadrants III & IV into negative values
+		return (r > Math.PI) ? r - (2.0 * Math.PI) : r; // convert quadrants III & IV into negative values
 	}
-	public static int radianToByte(float x) {
-		float r = x < 0 ? 2.0f * (float) Math.PI + x : x; // convert quadrants III & IV into positive values
+	public static int radianToByte(double x) {
+		double r = x < 0 ? 2.0 * Math.PI + x : x; // convert quadrants III & IV into positive values
 		return (int) (40.584510488433314f * r);
 	}
 
