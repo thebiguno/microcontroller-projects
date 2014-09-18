@@ -39,7 +39,7 @@ encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
 Date "1 sep 2014"
-Rev "1.0"
+Rev "2.0"
 Comp "Wyatt Olson"
 Comment1 ""
 Comment2 ""
