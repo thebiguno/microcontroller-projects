@@ -1203,7 +1203,7 @@ textstyle6
  71
 0
  42
-8.0
+5.0
   3
 
   4
@@ -1331,7 +1331,7 @@ textstyle10
  71
 0
  42
-5.0
+8.0
   3
 
   4
@@ -9745,7 +9745,7 @@ DOT2
   1
 \H1.42857;Adafruit\PMagnetometer
   7
-textstyle9
+textstyle6
  50
 0.0
  73
@@ -10139,7 +10139,7 @@ BYLAYER
   1
 \H2.28571;Femur 1 and 2
   7
-textstyle6
+textstyle7
  50
 0.0
  73
@@ -10471,7 +10471,7 @@ BYLAYER
   1
 \H2.28571;Femur 3
   7
-textstyle7
+textstyle8
  50
 90.0
  73
@@ -10847,7 +10847,7 @@ BYLAYER
   1
 \H1.42857;Stubby Control Board
   7
-textstyle10
+textstyle9
  50
 0.0
  73
@@ -11593,7 +11593,7 @@ BYLAYER
   1
 \H2.28571;PCB Layer\P (rev 2.0 board)
   7
-textstyle8
+textstyle10
  50
 0.0
  73
@@ -12315,33 +12315,9 @@ AcDbArc
  51
 299.9999999999999432
   0
-CIRCLE
-  5
-1C5
-100
-AcDbEntity
-100
-AcDbCircle
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--21.5900000000000318
- 20
--10.0
- 30
-0.0
- 40
-2.0
-  0
 DIMENSION
   5
-1C6
+1C5
 100
 AcDbEntity
   8
@@ -12357,13 +12333,13 @@ AcDbDimension
  10
 -26.1792183578473505
  20
--7.9999999999999991
+-9.0
  30
 0.0
  11
 -29.0
  21
--13.0
+-14.0
  31
 0.0
  70
@@ -12385,13 +12361,13 @@ AcDbAlignedDimension
  13
 -21.5900000000000318
  23
--8.0
+-9.0
  33
 0.0
  14
 -21.5900000000000318
  24
--12.0
+-11.0
  34
 0.0
 1001
@@ -12409,7 +12385,7 @@ DSTYLE
   0
 LINE
   5
-1C7
+1C6
 100
 AcDbEntity
 100
@@ -12437,7 +12413,7 @@ BYLAYER
   0
 LINE
   5
-1C8
+1C7
 100
 AcDbEntity
 100
@@ -12465,7 +12441,7 @@ BYLAYER
   0
 ARC
   5
-1C9
+1C8
 100
 AcDbEntity
   8
@@ -12495,7 +12471,7 @@ AcDbArc
   0
 LINE
   5
-1CA
+1C9
 100
 AcDbEntity
 100
@@ -12523,7 +12499,7 @@ BYLAYER
   0
 ARC
   5
-1CB
+1CA
 100
 AcDbEntity
   8
@@ -12553,7 +12529,7 @@ AcDbArc
   0
 ARC
   5
-1CC
+1CB
 100
 AcDbEntity
   8
@@ -12581,33 +12557,9 @@ AcDbArc
  51
 330.0000000000000568
   0
-CIRCLE
-  5
-1CD
-100
-AcDbEntity
-100
-AcDbCircle
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-21.5900000000000283
- 20
--10.0000000000000053
- 30
-0.0
- 40
-2.0
-  0
 LINE
   5
-1CE
+1CC
 100
 AcDbEntity
 100
@@ -12635,7 +12587,7 @@ BYLAYER
   0
 INSERT
   5
-1CF
+1CD
 100
 AcDbEntity
 100
@@ -12659,7 +12611,7 @@ magnetometer
   0
 LINE
   5
-1D0
+1CE
 100
 AcDbEntity
 100
@@ -12687,7 +12639,7 @@ BYLAYER
   0
 LINE
   5
-1D1
+1CF
 100
 AcDbEntity
 100
@@ -12715,7 +12667,7 @@ BYLAYER
   0
 ARC
   5
-1D2
+1D0
 100
 AcDbEntity
   8
@@ -12745,7 +12697,7 @@ AcDbArc
   0
 ARC
   5
-1D3
+1D1
 100
 AcDbEntity
   8
@@ -12775,7 +12727,7 @@ AcDbArc
   0
 ARC
   5
-1D4
+1D2
 100
 AcDbEntity
   8
@@ -12803,6 +12755,98 @@ AcDbArc
  51
 330.0
   0
+DIMENSION
+  5
+1D3
+100
+AcDbEntity
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+100
+AcDbDimension
+ 10
+7.0
+ 20
+-34.9999999999999929
+ 30
+0.0
+ 11
+10.0
+ 21
+-36.0
+ 31
+0.0
+ 70
+129
+ 71
+8
+ 72
+2
+ 41
+1.0
+ 42
+0.0
+  1
+7/64"
+  3
+Standard
+100
+AcDbAlignedDimension
+ 13
+2.5719999999999978
+ 23
+-34.9999999999999929
+ 33
+0.0
+ 14
+2.5719999999999978
+ 24
+-36.9999999999999929
+ 34
+0.0
+1001
+ACAD
+1000
+DSTYLE
+1002
+{
+1070
+144
+1040
+1
+1002
+}
+  0
+CIRCLE
+  5
+1D4
+100
+AcDbEntity
+100
+AcDbCircle
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-21.5900000000000318
+ 20
+-10.0
+ 30
+0.0
+ 40
+1.0
+  0
 CIRCLE
   5
 1D5
@@ -12819,13 +12863,13 @@ AcDbCircle
   6
 BYLAYER
  10
-2.5719999999999978
+21.589999999999975
  20
--35.9999999999999929
+-10.0
  30
 0.0
  40
-1.8
+1.0
   0
 CIRCLE
   5
@@ -12849,13 +12893,15 @@ BYLAYER
  30
 0.0
  40
-1.8
+1.0
   0
-DIMENSION
+CIRCLE
   5
 1D7
 100
 AcDbEntity
+100
+AcDbCircle
   8
 0
  62
@@ -12864,60 +12910,14 @@ AcDbEntity
 -1
   6
 BYLAYER
-100
-AcDbDimension
  10
-7.0
+2.5719999999999978
  20
--34.1999999999999957
+-35.9999999999999929
  30
 0.0
- 11
-10.3638537472830841
- 21
--36.8666142213187058
- 31
-0.0
- 70
-129
- 71
-8
- 72
-2
- 41
+ 40
 1.0
- 42
-0.0
-  1
-7/64"
-  3
-Standard
-100
-AcDbAlignedDimension
- 13
-2.5719999999999978
- 23
--34.1999999999999957
- 33
-0.0
- 14
-2.5719999999999978
- 24
--37.7999999999999901
- 34
-0.0
-1001
-ACAD
-1000
-DSTYLE
-1002
-{
-1070
-144
-1040
-1
-1002
-}
   0
 ENDBLK
   5

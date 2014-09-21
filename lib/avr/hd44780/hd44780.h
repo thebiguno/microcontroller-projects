@@ -11,6 +11,8 @@ namespace digitalcave {
 		private:
 		volatile uint8_t *e_port;
 		uint8_t e_bv;
+		volatile uint8_t *rs_port;
+		uint8_t rs_bv;
 		volatile uint8_t *spi_port;
 		uint8_t mosi_bv;
 		uint8_t sclk_bv;
@@ -18,24 +20,38 @@ namespace digitalcave {
 		void latch();
 
 		public:
+			static const uint8_t MODE_SHIFT_OFF = 0x00;
+			static const uint8_t MODE_SHIFT_ON = 0x01;
+			static const uint8_t MODE_CURSOR_LEFT_DECR = 0x00;
+			static const uint8_t MODE_CURSOR_RGHT_INCR = 0x02;
+			
+			static const uint8_t DISPLAY_BLINK_OFF = 0x00;
+			static const uint8_t DISPLAY_BLINK_ON = 0x01;
+			static const uint8_t DISPLAY_CURSOR_OFF = 0x00;
+			static const uint8_t DISPLAY_CURSOR_ON = 0x02;
+			static const uint8_t DISPLAY_OFF = 0x00;
+			static const uint8_t DISPLAY_ON = 0x04;
+			
+			static const uint8_t SHIFT_LEFT = 0x00;
+			static const uint8_t SHIFT_RIGHT = 0x04;
+			static const uint8_t SHIFT_CURSOR = 0x00;
+			static const uint8_t SHIFT_SCREEN = 0x08;
+			
+			static const uint8_t FUNCTION_SIZE_5x8 = 0x00;
+			static const uint8_t FUNCTION_SIZE_5x11 = 0x04;
+			static const uint8_t FUNCTION_LINE_1 = 0x00;
+			static const uint8_t FUNCTION_LINE_2 = 0x08;
+
+
 		/*
 		 * Creates a new HD44780 module in 3-wire mode.
 		 * The port and pin are that are connected to E on the module.
-		 * MOSI and SCK must be configured for output externally.
-		 * SPI must be configured as master and enabled externally.
-		 * MOSI must be connected to DI on the shift register and to RS on the HD44780 module.
+		 * The port and pin are that are connected to RS on the module.
+		 * MOSI must be connected to DI on the shift register.
 		 * SCK must be connected to SCK on the shift register.
 		 * SS must either be configured as an output or if configured as in input then in must be held high.
 		 */
-		Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin);
-	
-		// TODO add constructors for 2-wire and 7-wire operation
-	
-		/*
-		 * Initialize SPI.
-		 * This is optional if the hardware is configured elsewhere.
-		 */
-		void initSpi();
+		Hd44780(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *rs_port, uint8_t rs_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function);
 	
 		/* 
 		 * Clear all display data, and set DDRAM address to 0x00.
@@ -78,15 +94,6 @@ namespace digitalcave {
 		 * The device will remain busy for 37 us.
 		 */
 		void setShift(uint8_t shift);
-
-		/* 
-		 * Set the moving direction of cursor and display.
-		 * Bit 2 (F) is dot format control; 0 = 5x8, 1 = 5x11.
-		 * Bit 3 (N) is line number control; 0 = 1 line, 1 = 2 line.
-		 * Bit 4 (DL) is data length control; 0 = 4-bit, 1 = 8-bit.
-		 * The device will remain busy for 37 us.
-		 */
-		void setFunction(uint8_t function);
 
 		/*
 		 * Sets the address pointer for CGRAM, allowing read or write of a byte of CGRAM data.
