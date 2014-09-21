@@ -1,4 +1,4 @@
-#include "trig.h"
+#include "math.h"
 
 //In this library, we pass in / pass out angles in radians.  Internally, we use a custom measurement which maps
 // 90 degrees (PI / 2 radians) into 256 segments (hereafter this unit is called a 'segment', or 'seg').
@@ -70,11 +70,22 @@ double sin_f(double angle_r){
 	angle = constrain_angle(angle, &quadrant);
 	return lookup_sin[angle] * (quadrant >= 3 ? -1 : 1);
 }
-/*
-int main() {
-	for (double i = -1; i <= 1.001; i+=0.001){
-		printf("%1.3f, %d, %3.0f, %d\n", i, (uint8_t) ((i * 100) + 100), acos(i) * (180 / M_PI), acos_d(i));
+
+uint16_t sqrt_f(uint16_t q){
+	uint8_t r;
+	uint8_t mask;
+	uint8_t i = 8 * sizeof(r) - 1;
+
+	r = mask = 1 << i;
+
+	for (; i > 0; i--){
+		mask >>=  1;
+
+		if (q < ( uint16_t ) r * r ) r -= mask;
+		else r += mask;
 	}
-	printf("%1.3f, %d, %3.0f, %d\n", 1.0, (uint8_t) ((1.0 * 100) + 100), acos(1.0) * (180 / M_PI), acos_d(1.0));
+
+	if (q < (uint16_t) r * r ) r -= 1;
+
+	return r ; 
 }
-*/

@@ -26,4 +26,9 @@ double cos_f(double angle);
  */
 double sin_f(double angle);
 
+/*
+ * Fast square root function; from http://www.mikrocontroller.net/articles/AVR_Arithmetik#avr-gcc_Implementierung_.2816_Bit.29
+ */
+uint16_t sqrt_f(uint16_t q);
+
 #endif

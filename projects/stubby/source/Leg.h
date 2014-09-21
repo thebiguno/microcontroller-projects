@@ -3,8 +3,12 @@
 
 #ifndef DEBUG_SIMULATION
 #include <avr/io.h>
+#include "lib/pwm/pwm.h"
 #else
+#include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include "../simulation/debug.h"
 #endif
 
 #include "Stubby.h"
@@ -44,7 +48,7 @@
 #define TIBIA_D							34.0
 //The difference in angle between the desired angle and the angle between segments d and a.  See
 // figure 1.3, angle 'E'
-#define TIBIA_E_OFFSET_ANGLE			(9.3 * M_PI / 180)
+#define TIBIA_E_OFFSET_ANGLE			(20 * M_PI / 180)
 //The angle at which the servo horn extends from the servo when a neutral PWM signal is applied.  See
 // figure 1.3, angle 'N'
 #define TIBIA_NEUTRAL_SERVO_ANGLE		(135 * M_PI / 180)
@@ -78,6 +82,15 @@
 //Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
 // travel in each direction from neutral is half of this number.
 #define SERVO_TRAVEL					(150 * M_PI / 180)
+
+//This is a calibration constant which helps Stubby move in a straight line.  The design of the coxa joint / servos
+// means that there is slightly more leg travel on one side of neutral than the other; this makes Stubby veer
+// to the left slightly when walking.  By applying this slope multiplier and offset, we can compensate for this.
+// This value seems to work for me, but different frame modifications may result in different offsets.  Just try 
+// changing this value as you see fit, testing each new one.  A value of 1 means no offset; values less than 1
+// will vary gait in one direction, values greater than 1 will vary in the other direction.
+#define COXA_LINEAR_SLOPE_MULTIPLIER	1.3
+#define COXA_LINEAR_OFFSET				PHASE_NEUTRAL - (PHASE_NEUTRAL * COXA_LINEAR_SLOPE_MULTIPLIER)
 
 /*
 	* C++ implementation of Stubby the Hexapod leg.
