@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, September 19, 2014 'pmt' 03:55:47 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, September 22, 2014 'amt' 10:31:49 am
 
 BeginCmp
 TimeStamp = /538BCD1F;
@@ -372,10 +372,10 @@ IdModule  = SOT23-5;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C6D12E;
+TimeStamp = /542050F0;
 Reference = X1;
-ValeurCmp = CRYSTAL_RESONATOR;
-IdModule  = CRYSTAL_RESONATOR;
+ValeurCmp = CRYSTAL;
+IdModule  = CRYSTAL_SMD_5x3.2;
 EndCmp
 
 BeginCmp
