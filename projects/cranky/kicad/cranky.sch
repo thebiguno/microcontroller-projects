@@ -993,17 +993,17 @@ Text Label 6450 900  0    60   ~ 0
 VCC
 Text Label 6050 1200 3    60   ~ 0
 GND
-Text Label 3400 1200 3    60   ~ 0
-MAP
-Text Label 3500 1200 3    60   ~ 0
-MAT
 Text Label 3600 1200 3    60   ~ 0
-CLT
+MAP
 Text Label 3800 1200 3    60   ~ 0
-O2
+MAT
+Text Label 3900 1200 3    60   ~ 0
+CLT
 Text Label 4000 1200 3    60   ~ 0
+O2
+Text Label 3300 1200 3    60   ~ 0
 CRNK
-Text Label 4100 1200 3    60   ~ 0
+Text Label 3400 1200 3    60   ~ 0
 CAM
 Text Label 4300 1200 3    60   ~ 0
 IGN1
@@ -1549,28 +1549,55 @@ F 3 "" H 2950 850 60  0000 C CNN
 	1    2950 850 
 	0    -1   -1   0   
 $EndComp
-Text Label 3300 1200 3    60   ~ 0
+Text Label 3500 1200 3    60   ~ 0
 TPS
 $Comp
 L CONN_4 P3
 U 1 1 541F9842
-P 3950 850
-F 0 "P3" V 3900 850 50  0000 C CNN
-F 1 "SENSOR2" V 4000 850 50  0000 C CNN
-F 2 "" H 3950 850 60  0000 C CNN
-F 3 "" H 3950 850 60  0000 C CNN
-	1    3950 850 
-	0    -1   -1   0   
-$EndComp
-$Comp
-L CONN_4 P2
-U 1 1 541F984D
 P 3450 850
-F 0 "P2" V 3400 850 50  0000 C CNN
+F 0 "P3" V 3400 850 50  0000 C CNN
 F 1 "SENSOR1" V 3500 850 50  0000 C CNN
 F 2 "" H 3450 850 60  0000 C CNN
 F 3 "" H 3450 850 60  0000 C CNN
 	1    3450 850 
 	0    -1   -1   0   
 $EndComp
+$Comp
+L CONN_4 P2
+U 1 1 541F984D
+P 3950 850
+F 0 "P2" V 3900 850 50  0000 C CNN
+F 1 "SENSOR2" V 4000 850 50  0000 C CNN
+F 2 "" H 3950 850 60  0000 C CNN
+F 3 "" H 3950 850 60  0000 C CNN
+	1    3950 850 
+	0    -1   -1   0   
+$EndComp
+Text Label 4650 4650 0    60   ~ 0
+RXD
+Text Label 4650 4750 0    60   ~ 0
+TXD
+Text Label 4650 3650 0    60   ~ 0
+XTAL1
+Text Label 4650 3750 0    60   ~ 0
+XTAL2
+$Comp
+L C C15
+U 1 1 54203A24
+P 2000 2300
+F 0 "C15" H 2000 2400 40  0000 L CNN
+F 1 "1u" H 2006 2215 40  0000 L CNN
+F 2 "" H 2038 2150 30  0000 C CNN
+F 3 "" H 2000 2300 60  0000 C CNN
+	1    2000 2300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1450 2650 2000 2650
+Wire Wire Line
+	2000 2650 2000 2500
+Wire Wire Line
+	1450 1850 2000 1850
+Wire Wire Line
+	2000 1850 2000 2100
 $EndSCHEMATC

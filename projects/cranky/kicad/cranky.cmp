@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Sunday, September 21, 2014 'pmt' 09:32:21 pm
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Monday, September 22, 2014 'amt' 08:40:11 am
 
 BeginCmp
 TimeStamp = /541DB545;
@@ -99,6 +99,13 @@ IdModule  = smd_c:c_0805;
 EndCmp
 
 BeginCmp
+TimeStamp = /54203A24;
+Reference = C15;
+ValeurCmp = 1u;
+IdModule  = smd_c:c_0805;
+EndCmp
+
+BeginCmp
 TimeStamp = /541F3168;
 Reference = D1;
 ValeurCmp = 1N4005;
@@ -164,21 +171,21 @@ EndCmp
 BeginCmp
 TimeStamp = /541F96E2;
 Reference = P1;
-ValeurCmp = CONN_4;
+ValeurCmp = POWER;
 IdModule  = custom:SCREW_TERMINAL_4;
 EndCmp
 
 BeginCmp
 TimeStamp = /541F984D;
 Reference = P2;
-ValeurCmp = CONN_4;
+ValeurCmp = SENSOR1;
 IdModule  = custom:SCREW_TERMINAL_4;
 EndCmp
 
 BeginCmp
 TimeStamp = /541F9842;
 Reference = P3;
-ValeurCmp = CONN_4;
+ValeurCmp = SENSOR2;
 IdModule  = custom:SCREW_TERMINAL_4;
 EndCmp
 
