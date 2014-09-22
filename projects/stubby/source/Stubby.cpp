@@ -119,7 +119,7 @@ uint8_t doMove(double linear_angle, double linear_velocity, double rotational_ve
 	}
 	
 	pwm_apply_batch();
-	_delay_ms(5);
+	_delay_ms(3);
 	
 	//TODO In the current implementation of gait_tripod, we move 5mm with each iteration of the
 	// step procedure at maximum velocity (and the distance scales linearly with velocity).
