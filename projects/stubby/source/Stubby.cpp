@@ -3,6 +3,7 @@
 #include "controllers/processing.h"
 #include "controllers/universal_controller.h"
 #include "gait/gait.h"
+#include "hardware/magnetometer.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
 #include "util/math.h"
@@ -38,6 +39,7 @@ int main (void){
 	servo_init(legs);
 	serial_init_b(38400);
 	status_init();
+//	magnetometer_init();
 	
 	while (1){
 		wdt_reset();
@@ -107,6 +109,9 @@ void doResetLegs(){
  * Performs a single move operation.  Returns the distance moved.
  */
 uint8_t doMove(double linear_angle, double linear_velocity, double rotational_velocity){
+//	double heading = magnetometer_read_heading();
+//	if (heading < 0) heading = 0;
+
 	static int8_t step_index = 0;
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
