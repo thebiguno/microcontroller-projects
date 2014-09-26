@@ -1,7 +1,7 @@
 (export (version D)
   (design
-    (source /Users/warren/Documents/Projects/ergo60/kicad/thumb/design.sch)
-    (date "Monday, March 10, 2014 'amt' 09:13:17 am")
+    (source /Users/warren/Documents/Projects/dcprojects/projects/ergo60/kicad/thumb/design.sch)
+    (date "Friday, September 26, 2014 'pmt' 04:29:36 pm")
     (tool "eeschema (2014-02-26 BZR 4721)-product"))
   (components
     (comp (ref SW10)
@@ -125,6 +125,13 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 52F3E1AA)))
   (libparts
+    (libpart (lib conn) (part CONN_1)
+      (description "1 pin")
+      (fields
+        (field (name Reference) P)
+        (field (name Value) CONN_1))
+      (pins
+        (pin (num 1) (name 1) (type passive))))
     (libpart (lib device) (part DIODE)
       (description "Diode simple")
       (footprints
@@ -144,13 +151,6 @@
       (pins
         (pin (num 1) (name 1) (type passive))
         (pin (num 2) (name 2) (type passive))))
-    (libpart (lib conn) (part CONN_1)
-      (description "1 pin")
-      (fields
-        (field (name Reference) P)
-        (field (name Value) CONN_1))
-      (pins
-        (pin (num 1) (name 1) (type passive))))
     (libpart (lib conn) (part CONN_6)
       (description "ymbole general de connecteur")
       (fields
@@ -164,10 +164,10 @@
         (pin (num 5) (name 5) (type passive))
         (pin (num 6) (name 6) (type passive)))))
   (libraries
-    (library (logical conn)
-      (uri "/Library/Application Support/kicad/library/conn.lib"))
     (library (logical device)
-      (uri "/Library/Application Support/kicad/library/device.lib")))
+      (uri "/Library/Application Support/kicad/library/device.lib"))
+    (library (logical conn)
+      (uri "/Library/Application Support/kicad/library/conn.lib")))
   (nets
     (net (code 1) (name C1)
       (node (ref SW10) (pin 2))
