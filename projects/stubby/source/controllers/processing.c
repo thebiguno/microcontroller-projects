@@ -4,10 +4,15 @@ static volatile uint8_t power_change_required = 0x00;
 static volatile uint8_t move_required = 0x00;
 static volatile uint8_t turn_required = 0x00;
 
+static volatile uint8_t start_heading_required = 0x00;
+
 static volatile double desired_linear_angle;
 static volatile double desired_rotational_angle;
 static volatile double desired_linear_velocity;
 static volatile double desired_rotational_velocity;
+#if MAGNETOMETER == 1
+static volatile double desired_heading;
+#endif
 static volatile uint16_t desired_distance = 0;
 
 extern Leg legs[LEG_COUNT];
@@ -32,8 +37,20 @@ void processing_command_executor(){
 		power_change_required = 0x00;
 	}
 	
+#if MAGNETOMETER == 1
+	if (start_heading_required){
+		desired_heading = magnetometer_read_heading();
+	}
+#endif
+	
 	if (move_required){
-		uint8_t step_distance = doMove(desired_linear_angle, desired_linear_velocity, desired_rotational_velocity);
+#if MAGNETOMETER == 1
+		double current_heading = magnetometer_read_heading();
+		double veer_correction = (current_heading - desired_heading) * 10;
+#else
+		double veer_correction = 0;
+#endif
+		uint8_t step_distance = doMove(desired_linear_angle, desired_linear_velocity, veer_correction);
 		if (step_distance < desired_distance){
 			desired_distance -= step_distance;
 		}
@@ -99,11 +116,14 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		*/
 		if (length == 6){
 			desired_linear_angle = convert_byte_to_radian(message[0]);
-			desired_rotational_angle = convert_byte_to_radian(message[1]);
+			desired_rotational_angle = 0; //convert_byte_to_radian(message[1]);
 			desired_linear_velocity = message[2] / 255.0;
-			desired_rotational_velocity = message[3] / 255.0;
+			desired_rotational_velocity = 0; //message[3] / 255.0;
 			desired_distance = message[4] << 8 | message[5];
 			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
+#if MAGNETOMETER == 1
+			start_heading_required = 0x01;
+#endif
 		}
 	}
 	else if (cmd == MESSAGE_REQUEST_TURN){

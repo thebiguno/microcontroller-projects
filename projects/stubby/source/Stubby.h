@@ -5,6 +5,8 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <stdint.h>
+
+#include "lib/magnetometer/magnetometer.h"
 #include "lib/protocol/protocol.h"
 #include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"
@@ -15,7 +17,11 @@
 #include <stdio.h>
 #endif
 
+//Set PCB_REVISION to 1 or 2 depending on which board you have.  There are differences in the PWM pinout, the status LED, etc.
 #define PCB_REVISION		1
+
+//Set MAGNETOMETER to 0 if you do not have a magnetometer on the board.
+#define MAGNETOMETER		1
 
 #define LEG_COUNT			6
 
