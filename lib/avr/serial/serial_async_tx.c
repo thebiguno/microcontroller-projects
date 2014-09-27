@@ -55,7 +55,7 @@ void serial_write_a(uint8_t *data, uint8_t len){
 }
 
 void serial_write_b(uint8_t data){
-	serial_write_c((char) data)
+	serial_write_c((char) data);
 }
 
 
