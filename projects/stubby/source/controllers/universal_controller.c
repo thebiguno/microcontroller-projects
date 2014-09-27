@@ -113,9 +113,17 @@ void uc_remote_control(){
 			}
 		}
 		
-		char temp[64];
-		sprintf(temp, "%1.3f\t%1.3f\n", heading_read(), magnetometer_read_heading());
-		serial_write_s(temp);
+		static uint8_t foo = 0;
+		foo++;
+		if (foo > 100){
+			foo = 0;
+			char temp[64];
+			sprintf(temp, "%1.3f\n", magnetometer_read_heading());
+			//int16_t raw[3];
+			//magnetometer_read_raw(raw);
+			//sprintf(temp, "%d\t%d\t%d\n", raw[0], raw[1], raw[2]);
+			serial_write_s(temp);
+		}
 	}
 	
 	status_disable_battery();
