@@ -6,7 +6,6 @@
 #include <avr/wdt.h>
 #include <stdint.h>
 
-#include "lib/magnetometer/magnetometer.h"
 #include "lib/protocol/protocol.h"
 #include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"

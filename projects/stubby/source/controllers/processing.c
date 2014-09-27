@@ -1,7 +1,5 @@
 #include "processing.h"
 
-#include <stdio.h>
-
 static volatile uint8_t power_change_required = 0x00;
 static volatile uint8_t move_required = 0x00;
 static volatile uint8_t turn_required = 0x00;
@@ -47,8 +45,8 @@ void processing_command_executor(){
 		}
 		step_index++;
 		if (step_index > gait_step_count()){
-			double current_heading = magnetometer_read_heading();
-			veer_correction = (desired_move_heading - current_heading) * 20;
+			double current_heading = heading_read();
+			veer_correction = (desired_move_heading - current_heading) * 10;
 			step_index = 0;
 			char temp[64];
 			sprintf(temp, "veer_correction: %2.3f", veer_correction);
@@ -91,8 +89,14 @@ void processing_command_executor(){
 		pwm_apply_batch();
 		_delay_ms(5);
 
-		double current_heading = magnetometer_read_heading();
-		if (current_heading + 0.01 >= desired_turn_heading && current_heading - 0.01 <= desired_turn_heading){
+		double current_heading = heading_read();
+		if (step_index == 0){
+			char temp[64];
+			sprintf(temp, "current: %2.3f, desired: %2.3f, diff: %2.3f", current_heading, desired_turn_heading, fabs(normalize_angle(desired_turn_heading - current_heading)));
+			doSendDebug(temp, 64);
+		}
+		
+		if (fabs(normalize_angle(desired_turn_heading - current_heading)) <= 0.04){
 			turn_required = 0x00;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
@@ -123,7 +127,7 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			desired_move_velocity = message[1] / 255.0;
 			desired_move_distance = message[2] << 8 | message[3];
 			
-			desired_move_heading = magnetometer_read_heading();
+			desired_move_heading = heading_read();
 			
 			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
 		}
@@ -131,7 +135,7 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	else if (cmd == MESSAGE_REQUEST_TURN){
 		if (length == 2){
 			turn_required = 0x01;
-			double current_heading = magnetometer_read_heading();
+			double current_heading = heading_read();
 			double desired_angle = convert_byte_to_radian(message[0]);
 			
 			desired_turn_heading = normalize_angle(desired_angle + current_heading);

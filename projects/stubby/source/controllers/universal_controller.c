@@ -1,5 +1,8 @@
 #include "universal_controller.h"
 
+#include <stdio.h>
+#include "../hardware/heading.h"
+
 extern Leg legs[LEG_COUNT];
 
 static volatile uc_stick_t left_stick;
@@ -103,8 +106,16 @@ void uc_remote_control(){
 			//We only care about the X axis for right (rotational) stick
 			double rotational_velocity = right_stick.x / 127.0;
 			
-			doMove(linear_angle, linear_velocity, rotational_velocity);
+			if (rotational_velocity <= 0.3 && rotational_velocity > -0.3) rotational_velocity = 0;
+			if (linear_velocity <= 0.3) linear_velocity = 0;
+			if (linear_velocity != 0 || rotational_velocity != 0){
+				doMove(linear_angle, linear_velocity, rotational_velocity);
+			}
 		}
+		
+		char temp[64];
+		sprintf(temp, "%1.3f\t%1.3f\n", heading_read(), magnetometer_read_heading());
+		serial_write_s(temp);
 	}
 	
 	status_disable_battery();

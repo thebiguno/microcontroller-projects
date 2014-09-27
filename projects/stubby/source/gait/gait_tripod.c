@@ -66,31 +66,27 @@ static Point rotational_step_points[STEP_COUNT] = {
 
 Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double linear_angle, double rotational_velocity){
 	if (leg.getIndex() == FRONT_RIGHT || leg.getIndex() == MIDDLE_LEFT || leg.getIndex() == REAR_RIGHT){
-		step_index += (STEP_COUNT / 2);
+		step_index = (step_index + (STEP_COUNT / 2)) % STEP_COUNT;
 	}
 
 	Point result(0,0,0);
 	
-	if (linear_velocity > 0.3){
-		Point linear_result(0,0,0);
-		linear_result.add(linear_step_points[step_index % STEP_COUNT]);
-		linear_result.x *= linear_velocity;
-		linear_result.y *= linear_velocity;
-		
-		linear_result.rotateXY(linear_angle);
-		
-		result.add(linear_result);
-	}
+	Point linear_result(0,0,0);
+	linear_result.add(linear_step_points[step_index]);
+	linear_result.x *= linear_velocity;
+	linear_result.y *= linear_velocity;
 	
-	if (rotational_velocity > 0.3 || rotational_velocity < -0.3){
-		Point rotational_result(0,0,0);
-		rotational_result.add(rotational_step_points[step_index % STEP_COUNT]);
-		rotational_result.x *= fabs(rotational_velocity);
-		rotational_result.y *= -1 * rotational_velocity;
-		rotational_result.rotateXY(leg.getMountingAngle());
+	linear_result.rotateXY(linear_angle);
+	
+	result.add(linear_result);
+	
+	Point rotational_result(0,0,0);
+	rotational_result.add(rotational_step_points[step_index]);
+	rotational_result.x *= fabs(rotational_velocity);
+	rotational_result.y *= -1 * rotational_velocity;
+	rotational_result.rotateXY(leg.getMountingAngle());
 		
-		result.add(rotational_result);
-	}
+	result.add(rotational_result);
 	
 	return result;
 }

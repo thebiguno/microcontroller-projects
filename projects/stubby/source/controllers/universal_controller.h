@@ -3,10 +3,10 @@
 
 #include "lib/universal_controller/client.h"
 #include "lib/pwm/pwm.h"
+#include "hardware/status.h"
+#include "types/Point.h"
 #include "Stubby.h"
 #include "Leg.h"
-#include "Point.h"
-#include "hardware/status.h"
 
 #include <avr/eeprom.h>
 #include <avr/wdt.h>

@@ -1,13 +1,15 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-#include <stdint.h>
-#include <util/delay.h>
 #include <avr/wdt.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <util/delay.h>
 
 #include "Stubby.h"
 #include "Leg.h"
 #include "gait/gait.h"
+#include "hardware/heading.h"
 #include "hardware/status.h"
 #include "util/convert.h"
 
@@ -18,11 +20,13 @@
 #define MESSAGE_REQUEST_TURN					0x23
 #define MESSAGE_REQUEST_TRANSLATE				0x24
 #define MESSAGE_REQUEST_ROTATE					0x25
-#define MESSAGE_REQUEST_DISTANCE				0x26
-#define MESSAGE_SEND_DISTANCE					0x27
-#define MESSAGE_REQUEST_OPTICAL					0x28
-#define MESSAGE_SEND_OPTICAL					0x29
-#define MESSAGE_REQUEST_SET_LED					0x2A
+#define MESSAGE_REQUEST_HEADING					0x26
+#define MESSAGE_SEND_HEADING					0x27
+#define MESSAGE_REQUEST_DISTANCE				0x28
+#define MESSAGE_SEND_DISTANCE					0x29
+#define MESSAGE_REQUEST_OPTICAL					0x2A
+#define MESSAGE_SEND_OPTICAL					0x2B
+#define MESSAGE_REQUEST_SET_LED					0x2C
 
 /*
  * Main processing method, where we look for incoming commands and perform actions as requested.

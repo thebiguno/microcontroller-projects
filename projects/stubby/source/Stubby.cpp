@@ -3,6 +3,7 @@
 #include "controllers/processing.h"
 #include "controllers/universal_controller.h"
 #include "gait/gait.h"
+#include "hardware/heading.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
 #include "types/Point.h"
@@ -40,14 +41,22 @@ int main (void){
 	serial_init_b(38400);
 	status_init();
 #if MAGNETOMETER == 1
-	magnetometer_init();
+	magnetometer_set_offsets(186, 1431, 608);
+	heading_init();
 #endif
-	
+	/*
+	while(1){
+		wdt_reset();
+		int16_t raw[3];
+		magnetometer_read_raw(raw);
+		char temp[64];
+		sprintf(temp, "%d\t%d\t%d\n", raw[0], raw[1], raw[2]);
+		serial_write_s(temp);
+		_delay_ms(100);
+	}
+	*/
 	while (1){
 		wdt_reset();
-
-		//_delay_ms(100);
-		//PORTD ^= _BV(PORTD4);
 
 		if (controller == CONTROLLER_UC){
 			//PORTD ^= _BV(PORTD5);
