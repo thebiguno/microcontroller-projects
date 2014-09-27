@@ -86,6 +86,7 @@ void doSendDebug(char* message, uint8_t length){
 		protocol_send_message(MESSAGE_SEND_DEBUG, (uint8_t*) message, length);
 	}
 }
+
 void doResetLegs(){
 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
 		legs[l].setOffset(Point(0,0,30));
@@ -198,6 +199,8 @@ void doTranslate(uint16_t x, uint16_t y, uint16_t z){
  * Called from ISR; keep things as short as possible.
  */
 void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
+	sei();
+	
 	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
 		if (message[0] == 'U'){
 			controller = CONTROLLER_UC;
