@@ -77,7 +77,14 @@ void uc_remote_control(){
 			uint16_t x = left_stick.x * -0.2;
 			uint16_t y = left_stick.y * -0.2;
 			uint16_t z = (right_stick.y > 50 || right_stick.y < -50) ? right_stick.y * -0.1 : 0;
-			doTranslate(x, y, z);
+
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point translate(x, y, z);
+				legs[l].setOffset(translate);
+			}
+			
+			pwm_apply_batch();
+			_delay_ms(5);
 		}
 		//Rotation: Pitch / Roll (left stick) and Yaw (right stick)
 		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
@@ -85,7 +92,18 @@ void uc_remote_control(){
 			double pitch = left_stick.y * M_PI / 1440;
 			double roll = left_stick.x * -M_PI / 1440;
 			double yaw = right_stick.x * M_PI / 1440;
-			doRotate(pitch, roll, yaw);
+			
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				legs[l].setOffset(Point(0,0,0));
+				Point p = legs[l].getPosition();
+				p.rotateXY(yaw);	
+				p.rotateYZ(pitch);
+				p.rotateXZ(roll);
+				legs[l].setPosition(p);
+			}
+			
+			pwm_apply_batch();
+			_delay_ms(5);
 		}
 		//Normal movement
 		else {
@@ -109,7 +127,19 @@ void uc_remote_control(){
 			if (rotational_velocity <= 0.3 && rotational_velocity > -0.3) rotational_velocity = 0;
 			if (linear_velocity <= 0.3) linear_velocity = 0;
 			if (linear_velocity != 0 || rotational_velocity != 0){
-				doMove(linear_angle, linear_velocity, rotational_velocity);
+				static int8_t step_index = 0;
+				
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+					legs[l].setOffset(step);
+				}
+				step_index++;
+				if (step_index > gait_step_count()){
+					step_index = 0;
+				}
+				
+				pwm_apply_batch();
+				_delay_ms(3);
 			}
 		}
 	}

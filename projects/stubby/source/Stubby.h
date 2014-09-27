@@ -67,12 +67,7 @@ uint8_t get_controller();
 void doAcknowledgeCommand(uint8_t command);
 void doCompleteCommand(uint8_t command);
 void doSendDebug(char* message, uint8_t length);
-
 void doResetLegs();
-uint8_t doMove(double linear_angle, double linear_velocity, double rotational_velocity);
-double doTurn(double rotational_velocity);
-void doTranslate(uint16_t x, uint16_t y, uint16_t z);
-void doRotate(double pitch, double roll, double yaw);
 
 void mode_select();
 void mode_remote_control();

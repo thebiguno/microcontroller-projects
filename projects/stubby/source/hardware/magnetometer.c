@@ -80,18 +80,8 @@ EMPTY_INTERRUPT(TIMER2_COMPB_vect)
 ISR(TIMER2_OVF_vect){
 	sei();
 	static uint8_t i = 0;
-	i++;
-	if (i >= 5){
+	if (i++ >= 5){
 		i = 0;
 		magnetometer_take_reading();
-		
-		static uint8_t c = 0;
-		c ^= 1;
-		if (c){
-			status_set_color(0xFF, 0x00, 0x00);
-		}
-		else {
-			status_set_color(0x00, 0x00, 0xFF);
-		}
 	}
 }

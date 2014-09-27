@@ -3,6 +3,7 @@
 
 #include "lib/universal_controller/client.h"
 #include "lib/pwm/pwm.h"
+#include "gait/gait.h"
 #include "hardware/status.h"
 #include "types/Point.h"
 #include "Stubby.h"

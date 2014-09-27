@@ -35,72 +35,76 @@ void processing_command_executor(){
 	}
 	
 	if (move_required){
-		static double veer_correction = 0;
+		double current_heading = magnetometer_read_heading();
+		double veer_correction = (desired_move_heading - current_heading);
 
-		static int8_t step_index = 0;
-		
-		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			Point step = gait_step(legs[l], step_index, desired_move_velocity, desired_move_angle, veer_correction);
-			legs[l].setOffset(step);
-		}
-		step_index++;
-		if (step_index > gait_step_count()){
-			double current_heading = magnetometer_read_heading();
-			veer_correction = (desired_move_heading - current_heading) * 10;
-			step_index = 0;
-			char temp[64];
-			sprintf(temp, "veer_correction: %2.3f", veer_correction);
-			doSendDebug(temp, 64);
-		}
-		
-		pwm_apply_batch();
-		_delay_ms(3);
-		
 		//In the current implementation of gait_tripod, we move 5mm with each iteration of the
 		// step procedure at maximum velocity (and the distance scales linearly with velocity).
 		//Note: Through experimentation we find that each step is slightly smaller than 5mm... not 
 		// sure if this is due to slippage, bad measurements, not enough timing, or something else.
 		// Regardless, by making this number smaller, we end up with the right measurement in real
 		// world applications.  Yay for fudge!
-		uint8_t step_distance = 4.5 * desired_move_velocity;
-		if (step_distance < desired_move_distance){
-			desired_move_distance -= step_distance;
-		}
-		else {
+		#define STEP_DISTANCE 4.5
+		
+		static int8_t step_index = 0;
+		
+		if (desired_move_distance < (STEP_DISTANCE * desired_move_velocity)){
 			move_required = 0x00;
 			veer_correction = 0;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
+		else {
+			if (step_index == 0){
+				char temp[64];
+				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_move_heading, veer_correction);
+				doSendDebug(temp, 64);
+			}
+
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point step = gait_step(legs[l], step_index, desired_move_velocity, desired_move_angle, veer_correction);
+				legs[l].setOffset(step);
+			}
+			step_index++;
+			if (step_index > gait_step_count()){
+				step_index = 0;
+			}
+			
+			pwm_apply_batch();
+			_delay_ms(3);
+			
+			desired_move_distance -= (STEP_DISTANCE * desired_move_velocity);
+		}
 	}
 	
 	if (turn_required){
 		static int8_t step_index = 0;
-		
-		for (uint8_t l = 0; l < LEG_COUNT; l++){
-			Point step = gait_step(legs[l], step_index, 0, 0, desired_turn_velocity);
-			legs[l].setOffset(step);
-		}
-		step_index++;
-		if (step_index > gait_step_count()){
-			step_index = 0;
-		}
-		
-		pwm_apply_batch();
-		_delay_ms(5);
-
 		double current_heading = magnetometer_read_heading();
-		if (step_index == 0){
-			char temp[64];
-			sprintf(temp, "current: %2.3f, desired: %2.3f, diff: %2.3f", current_heading, desired_turn_heading, fabs(normalize_angle(desired_turn_heading - current_heading)));
-			doSendDebug(temp, 64);
-		}
 		
 		if (fabs(normalize_angle(desired_turn_heading - current_heading)) <= 0.04){
 			turn_required = 0x00;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
+		else {
+			if (step_index == 0){
+				char temp[64];
+				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_turn_heading, fabs(normalize_angle(desired_turn_heading - current_heading)));
+				doSendDebug(temp, 64);
+			}
+
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point step = gait_step(legs[l], step_index, 0, 0, desired_turn_velocity);
+				legs[l].setOffset(step);
+			}
+			step_index++;
+			if (step_index > gait_step_count()){
+				step_index = 0;
+			}
+		}
+		
+		pwm_apply_batch();
+		_delay_ms(5);
 	}
 }
 
