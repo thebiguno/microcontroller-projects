@@ -5,10 +5,10 @@
 #include "gait/gait.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
+#include "types/Point.h"
 #include "util/math.h"
 
 #include "Leg.h"
-#include "Point.h"
 
 
 //Set up the leg objects, including servo details and mounting angle.  Leg indices follows

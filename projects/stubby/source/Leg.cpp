@@ -1,8 +1,5 @@
 #include "Leg.h"
 
-#include "Stubby.h"
-#include "Point.h"
-
 /*
  * Returns the angle which the servo needs to move from neutral.  Used for both tibia and femur.
  */

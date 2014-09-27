@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include "../simulation/debug.h"
 #endif
+#include "types/Point.h"
 
 #include "Stubby.h"
-#include "Point.h"
 
 //*** See doc/diagrams.pdf for figure x.y references ***//
 
