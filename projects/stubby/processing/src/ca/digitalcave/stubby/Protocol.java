@@ -25,6 +25,10 @@ public class Protocol {
 	
 	public static final int SEND_ACKNOWLEDGE = 0x01;
 	public static final int SEND_COMPLETE = 0x02;
+	
+	public static final int REQUEST_ENABLE_DEBUG = 0x03;
+	public static final int REQUEST_DISABLE_DEBUG = 0x04;
+	public static final int SEND_DEBUG = 0x05;
 
 	public static final int REQUEST_POWER_ON	= 0x20;
 	public static final int REQUEST_POWER_OFF = 0x21;
@@ -71,15 +75,24 @@ public class Protocol {
 	}
 	
 	protected void dispatch(int cmd, int[] data, int length){
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < length; i++){
-			sb.append(Integer.toHexString(data[i])).append(" ");
+		if (cmd == SEND_DEBUG){
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < length; i++){
+				sb.append((char) data[i]);
+			}
+			Logger.getLogger(this.getClass().getName()).info("Debug: " + sb.toString());
 		}
-		Logger.getLogger(this.getClass().getName()).info("Received command: " + Integer.toHexString(cmd) + ", value: [ " + sb.toString() + "]");
-		if (mailbox.get(cmd) == null) mailbox.put(cmd, Collections.synchronizedList(new LinkedList<Message>()));
-		mailbox.get(cmd).add(new Message(cmd, data));
-		if (mailbox.get(cmd).size() > 255){
-			mailbox.get(cmd).remove(0);	//Limit the length of the array by removing the oldest entries.
+		else {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < length; i++){
+				sb.append(Integer.toHexString(data[i])).append(" ");
+			}
+			Logger.getLogger(this.getClass().getName()).info("Received command: " + Integer.toHexString(cmd) + ", value: [ " + sb.toString() + "]");
+			if (mailbox.get(cmd) == null) mailbox.put(cmd, Collections.synchronizedList(new LinkedList<Message>()));
+			mailbox.get(cmd).add(new Message(cmd, data));
+			if (mailbox.get(cmd).size() > 255){
+				mailbox.get(cmd).remove(0);	//Limit the length of the array by removing the oldest entries.
+			}
 		}
 	}
 

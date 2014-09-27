@@ -34,6 +34,12 @@ public class Stubby {
 	public boolean turnOff(){
 		return protocol.sendMessage(new Message(Protocol.REQUEST_POWER_OFF, new int[0]), 1000, 2);
 	}
+	public boolean enableDebug(){
+		return protocol.sendMessage(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
+	}
+	public boolean disableDebug(){
+		return protocol.sendMessage(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
+	}
 	
 	/**
 	 * Move the specified distance in the indicated direction at the given speed

@@ -31,6 +31,7 @@ Leg legs[LEG_COUNT] = {
 //Stubby state variables
 static uint8_t power = 0x00;			//0 is off, 1 is on
 static uint8_t controller = 0x00;		//0 is no controller, 1 is Universal Controller, 2 is Processing API
+static uint8_t debug = 0x00;			//0 is no debug, 1 is show debug
 
 int main (void){
 	wdt_enable(WDTO_2S);
@@ -80,6 +81,11 @@ void doCompleteCommand(uint8_t command){
 	protocol_send_message(MESSAGE_SEND_COMPLETE, data, 1);
 }
 
+void doSendDebug(char* message, uint8_t length){
+	if (debug){
+		protocol_send_message(MESSAGE_SEND_DEBUG, (uint8_t*) message, length);
+	}
+}
 void doResetLegs(){
 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
 		legs[l].setOffset(Point(0,0,30));
@@ -203,6 +209,14 @@ void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		else {
 			controller = CONTROLLER_NONE;
 		}
+	}
+	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG){
+		debug = 0x01;
+		doAcknowledgeCommand(MESSAGE_REQUEST_ENABLE_DEBUG);
+	}
+	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG){
+		debug = 0x00;
+		doAcknowledgeCommand(MESSAGE_REQUEST_DISABLE_DEBUG);
 	}
 	//This is a Universal Controller message (namespace 0x1X)
 	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){

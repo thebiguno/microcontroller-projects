@@ -67,6 +67,7 @@ uint8_t get_controller();
 
 void doAcknowledgeCommand(uint8_t command);
 void doCompleteCommand(uint8_t command);
+void doSendDebug(char* message, uint8_t length);
 
 void doResetLegs();
 uint8_t doMove(double linear_angle, double linear_velocity, double rotational_velocity);
