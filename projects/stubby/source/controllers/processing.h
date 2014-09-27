@@ -9,7 +9,7 @@
 #include "Stubby.h"
 #include "Leg.h"
 #include "gait/gait.h"
-#include "hardware/heading.h"
+#include "hardware/magnetometer.h"
 #include "hardware/status.h"
 #include "util/convert.h"
 

@@ -45,7 +45,7 @@ void processing_command_executor(){
 		}
 		step_index++;
 		if (step_index > gait_step_count()){
-			double current_heading = heading_read();
+			double current_heading = magnetometer_read_heading();
 			veer_correction = (desired_move_heading - current_heading) * 10;
 			step_index = 0;
 			char temp[64];
@@ -89,7 +89,7 @@ void processing_command_executor(){
 		pwm_apply_batch();
 		_delay_ms(5);
 
-		double current_heading = heading_read();
+		double current_heading = magnetometer_read_heading();
 		if (step_index == 0){
 			char temp[64];
 			sprintf(temp, "current: %2.3f, desired: %2.3f, diff: %2.3f", current_heading, desired_turn_heading, fabs(normalize_angle(desired_turn_heading - current_heading)));
@@ -117,7 +117,7 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	}
 	else if (cmd == MESSAGE_REQUEST_HEADING){
 		uint8_t data[1];
-		data[0] = convert_radian_to_byte(heading_read());
+		data[0] = convert_radian_to_byte(magnetometer_read_heading());
 		protocol_send_message(MESSAGE_SEND_HEADING, data, 1);
 	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
@@ -127,7 +127,7 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			desired_move_velocity = message[1] / 255.0;
 			desired_move_distance = message[2] << 8 | message[3];
 			
-			desired_move_heading = heading_read();
+			desired_move_heading = magnetometer_read_heading();
 			
 			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
 		}
@@ -135,7 +135,7 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	else if (cmd == MESSAGE_REQUEST_TURN){
 		if (length == 2){
 			turn_required = 0x01;
-			double current_heading = heading_read();
+			double current_heading = magnetometer_read_heading();
 			double desired_angle = convert_byte_to_radian(message[0]);
 			
 			desired_turn_heading = normalize_angle(desired_angle + current_heading);

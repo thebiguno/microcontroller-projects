@@ -1,7 +1,7 @@
 #include "universal_controller.h"
 
 #include <stdio.h>
-#include "../hardware/heading.h"
+#include "../hardware/magnetometer.h"
 
 extern Leg legs[LEG_COUNT];
 
@@ -111,18 +111,6 @@ void uc_remote_control(){
 			if (linear_velocity != 0 || rotational_velocity != 0){
 				doMove(linear_angle, linear_velocity, rotational_velocity);
 			}
-		}
-		
-		static uint8_t foo = 0;
-		foo++;
-		if (foo > 100){
-			foo = 0;
-			char temp[64];
-			sprintf(temp, "%1.3f\n", magnetometer_read_heading());
-			//int16_t raw[3];
-			//magnetometer_read_raw(raw);
-			//sprintf(temp, "%d\t%d\t%d\n", raw[0], raw[1], raw[2]);
-			serial_write_s(temp);
 		}
 	}
 	
