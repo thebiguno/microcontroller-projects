@@ -38,13 +38,16 @@ public class Protocol {
 	public static final int REQUEST_TRANSLATE = 0x24;
 	public static final int REQUEST_ROTATE = 0x25;
 
-	public static final int REQUEST_DISTANCE = 0x26;
-	public static final int SEND_DISTANCE = 0x27;
+	public static final int REQUEST_HEADING = 0x26;
+	public static final int SEND_HEADING = 0x27;
 
-	public static final int REQUEST_OPTICAL = 0x28;
-	public static final int SEND_OPTICAL = 0x29;
+	public static final int REQUEST_DISTANCE = 0x28;
+	public static final int SEND_DISTANCE = 0x29;
 
-	public static final int REQUEST_SET_LED = 0x2A;
+	public static final int REQUEST_OPTICAL = 0x2A;
+	public static final int SEND_OPTICAL = 0x2B;
+
+	public static final int REQUEST_SET_LED = 0x2C;
 
 	boolean isMessageWaiting(int command){
 		return (mailbox.get(command) != null && mailbox.get(command).size() > 0);
@@ -78,9 +81,13 @@ public class Protocol {
 		if (cmd == SEND_DEBUG){
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < length; i++){
+				if (data[i] == 0) break;
 				sb.append((char) data[i]);
 			}
 			Logger.getLogger(this.getClass().getName()).info("Debug: " + sb.toString());
+		}
+		else if (cmd == SEND_HEADING){
+			Logger.getLogger(this.getClass().getName()).info("Heading: " + (int) (byteToRadian(data[0]) * 180 / Math.PI));
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
@@ -179,7 +186,7 @@ public class Protocol {
 		}
 	}
 
-	public boolean sendMessage(Message message, long ackTimeout, int retryCount) {
+	public boolean sendMessageAndBlockForAck(Message message, long ackTimeout, int retryCount) {
 		for (int retry = 0; retry < retryCount; retry++){
 			sendMessage(message);
 			for (long i = 0; i < ackTimeout; i++){

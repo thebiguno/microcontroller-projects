@@ -57,6 +57,9 @@ RequestTurn					Control -> Stubby		Angle (1 bytes), Velocity (1 byte)											
 RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)													Ack
 RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
 
+RequestHeading				Control -> Stubby		Null																				Heading message
+SendHeading					Stubby -> Control		Anle (1 byte)																		None
+
 RequestDistance				Control -> Stubby		Null																				Distance message
 SendDistance				Stubby -> Control		Distance (2 bytes)																	None
 

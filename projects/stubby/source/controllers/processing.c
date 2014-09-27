@@ -111,6 +111,11 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		power_change_required = 0x01;
 		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_OFF);
 	}
+	else if (cmd == MESSAGE_REQUEST_HEADING){
+		uint8_t data[1];
+		data[0] = convert_radian_to_byte(heading_read());
+		protocol_send_message(MESSAGE_SEND_HEADING, data, 1);
+	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
 		if (length == 4){
 			move_required = 0x01;

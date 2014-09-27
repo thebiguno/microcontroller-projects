@@ -29,17 +29,22 @@ public class Stubby {
 	}
 	
 	public boolean turnOn(){
-		return protocol.sendMessage(new Message(Protocol.REQUEST_POWER_ON, new int[0]), 1000, 2);
+		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_POWER_ON, new int[0]), 1000, 2);
 	}
 	public boolean turnOff(){
-		return protocol.sendMessage(new Message(Protocol.REQUEST_POWER_OFF, new int[0]), 1000, 2);
+		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_POWER_OFF, new int[0]), 1000, 2);
 	}
 	public boolean enableDebug(){
-		return protocol.sendMessage(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
+		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
 	}
 	public boolean disableDebug(){
-		return protocol.sendMessage(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
+		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
 	}
+
+	public void requestHeading(){
+		protocol.sendMessage(new Message(Protocol.REQUEST_HEADING, new int[0]));
+	}
+
 	
 	/**
 	 * Move the specified distance in the indicated direction at the given speed
@@ -64,7 +69,7 @@ public class Stubby {
 		data[1] = velocity & 0xFF;
 		data[2] = (distance >> 8) & 0xFF;
 		data[3] = distance & 0xFF;
-		if (!protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data), 1000, 2)){
+		if (!protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_MOVE, data), 1000, 2)){
 			return false;
 		}
 		return protocol.waitForComplete(Protocol.REQUEST_MOVE);
@@ -118,7 +123,7 @@ public class Stubby {
 		int[] data = new int[2];
 		data[0] = Protocol.radianToByte(angleRadians);
 		data[1] = velocity & 0xFF;
-		if (!protocol.sendMessage(new Message(Protocol.REQUEST_TURN, data), 1000, 2)){
+		if (!protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_TURN, data), 1000, 2)){
 			return false;
 		}
 		return protocol.waitForComplete(Protocol.REQUEST_TURN);
