@@ -7,6 +7,7 @@
 
 #include "Stubby.h"
 #include "Leg.h"
+#include "gait/gait.h"
 #include "hardware/status.h"
 #include "util/convert.h"
 

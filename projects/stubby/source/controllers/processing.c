@@ -1,19 +1,18 @@
 #include "processing.h"
 
+#include <stdio.h>
+
 static volatile uint8_t power_change_required = 0x00;
 static volatile uint8_t move_required = 0x00;
 static volatile uint8_t turn_required = 0x00;
 
-static volatile uint8_t start_heading_required = 0x00;
+static volatile double desired_move_heading;
+static volatile double desired_move_angle;
+static volatile double desired_move_velocity;
+static volatile uint16_t desired_move_distance;
 
-static volatile double desired_linear_angle;
-static volatile double desired_rotational_angle;
-static volatile double desired_linear_velocity;
-static volatile double desired_rotational_velocity;
-#if MAGNETOMETER == 1
-static volatile double desired_heading;
-#endif
-static volatile uint16_t desired_distance = 0;
+static volatile double desired_turn_heading;
+static volatile double desired_turn_velocity;
 
 extern Leg legs[LEG_COUNT];
 
@@ -37,46 +36,63 @@ void processing_command_executor(){
 		power_change_required = 0x00;
 	}
 	
-#if MAGNETOMETER == 1
-	if (start_heading_required){
-		desired_heading = magnetometer_read_heading();
-	}
-#endif
-	
 	if (move_required){
-#if MAGNETOMETER == 1
-		double current_heading = magnetometer_read_heading();
-		double veer_correction = (current_heading - desired_heading) * 10;
-#else
-		double veer_correction = 0;
-#endif
-		uint8_t step_distance = doMove(desired_linear_angle, desired_linear_velocity, veer_correction);
-		if (step_distance < desired_distance){
-			desired_distance -= step_distance;
+		static double veer_correction = 0;
+
+		static int8_t step_index = 0;
+		
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			Point step = gait_step(legs[l], step_index, desired_move_velocity, desired_move_angle, veer_correction);
+			legs[l].setOffset(step);
+		}
+		step_index++;
+		if (step_index > gait_step_count()){
+			double current_heading = magnetometer_read_heading();
+			veer_correction = (desired_move_heading - current_heading) * 20;
+			step_index = 0;
+			char temp[64];
+			sprintf(temp, "veer_correction: %2.3f", veer_correction);
+			doSendDebug(temp, 64);
+		}
+		
+		pwm_apply_batch();
+		_delay_ms(3);
+		
+		//In the current implementation of gait_tripod, we move 5mm with each iteration of the
+		// step procedure at maximum velocity (and the distance scales linearly with velocity).
+		//Note: Through experimentation we find that each step is slightly smaller than 5mm... not 
+		// sure if this is due to slippage, bad measurements, not enough timing, or something else.
+		// Regardless, by making this number smaller, we end up with the right measurement in real
+		// world applications.  Yay for fudge!
+		uint8_t step_distance = 4.5 * desired_move_velocity;
+		if (step_distance < desired_move_distance){
+			desired_move_distance -= step_distance;
 		}
 		else {
-			desired_distance = 0;
-			desired_linear_angle = 0;
-			desired_linear_velocity = 0;
-			desired_rotational_angle = 0;
-			desired_rotational_velocity = 0;
 			move_required = 0x00;
+			veer_correction = 0;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
 	}
 	
 	if (turn_required){
-		double step_angle = doTurn(desired_rotational_velocity);
-		if (step_angle > 0 && step_angle < desired_rotational_angle){
-			desired_rotational_angle -= step_angle;
+		static int8_t step_index = 0;
+		
+		for (uint8_t l = 0; l < LEG_COUNT; l++){
+			Point step = gait_step(legs[l], step_index, 0, 0, desired_turn_velocity);
+			legs[l].setOffset(step);
 		}
-		else if (step_angle < 0 && step_angle > desired_rotational_angle){
-			desired_rotational_angle -= step_angle;
+		step_index++;
+		if (step_index > gait_step_count()){
+			step_index = 0;
 		}
-		else {
-			desired_rotational_angle = 0;
-			desired_rotational_velocity = 0;
+		
+		pwm_apply_batch();
+		_delay_ms(5);
+
+		double current_heading = magnetometer_read_heading();
+		if (current_heading + 0.01 >= desired_turn_heading && current_heading - 0.01 <= desired_turn_heading){
 			turn_required = 0x00;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
@@ -96,42 +112,27 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_OFF);
 	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
-		move_required = 0x01;
-		/*
-		if (length == 2){		//Only linear angle and rotational angle
-			desired_linear_angle = convert_byte_to_radian(message[0]);
-			desired_rotational_angle = convert_byte_to_radian(message[1]);
-			desired_linear_velocity = 1.0;
-			desired_rotational_velocity = 0.0;		//TODO 
-			desired_distance = 0xFFFF;
-		}
-		else if (length == 4){	//Previous 2 arguments plus linear / rotational velocity
-			desired_linear_angle = convert_byte_to_radian(message[0]);
-			desired_rotational_angle = convert_byte_to_radian(message[1]);
-			desired_linear_velocity = message[2] / 255.0;
-			desired_rotational_velocity = message[3] / 255.0;
-			desired_distance = 0xFFFF;
-		}
-		else
-		*/
-		if (length == 6){
-			desired_linear_angle = convert_byte_to_radian(message[0]);
-			desired_rotational_angle = 0; //convert_byte_to_radian(message[1]);
-			desired_linear_velocity = message[2] / 255.0;
-			desired_rotational_velocity = 0; //message[3] / 255.0;
-			desired_distance = message[4] << 8 | message[5];
+		if (length == 4){
+			move_required = 0x01;
+			desired_move_angle = convert_byte_to_radian(message[0]);
+			desired_move_velocity = message[1] / 255.0;
+			desired_move_distance = message[2] << 8 | message[3];
+			
+			desired_move_heading = magnetometer_read_heading();
+			
 			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
-#if MAGNETOMETER == 1
-			start_heading_required = 0x01;
-#endif
 		}
 	}
 	else if (cmd == MESSAGE_REQUEST_TURN){
-		if (length == 5){
+		if (length == 2){
 			turn_required = 0x01;
-			desired_rotational_angle = convert_bytes_to_double(message, 1);
-			desired_rotational_velocity = message[0] / 255.0;
-			if (desired_rotational_angle < 0) desired_rotational_velocity *= -1;
+			double current_heading = magnetometer_read_heading();
+			double desired_angle = convert_byte_to_radian(message[0]);
+			
+			desired_turn_heading = normalize_angle(desired_angle + current_heading);
+			desired_turn_velocity = message[1] / 255.0;
+			if (desired_angle < 0) desired_turn_velocity *= -1;
+			
 			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
 		}
 	}

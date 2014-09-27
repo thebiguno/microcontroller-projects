@@ -51,19 +51,19 @@ public class Stubby {
 	 * @param distance Distance to move (in mm).
 	 * @return
 	 */
-	public boolean move(int linearAngle, int rotationalAngle, int linearVelocity, int rotationalVelocity, int distance){
+	public boolean move(int angle, int velocity, int distance){
 		if (distance == 0) return true;
-		double linearAngleRadians = linearAngle * Math.PI / 180;
-		double rotationalAngleRadians = rotationalAngle * Math.PI / 180;
-		linearAngleRadians += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
-		if (distance < 0) linearAngleRadians = linearAngleRadians + Math.PI;	//Support going backwards
-		int[] data = new int[6];
-		data[0] = Protocol.radianToByte(linearAngleRadians);	
-		data[1] = Protocol.radianToByte(rotationalAngleRadians);
-		data[2] = linearVelocity & 0xFF;
-		data[3] = rotationalVelocity & 0xFF;
-		data[4] = (distance >> 8) & 0xFF;
-		data[5] = distance & 0xFF;
+		double angleRadians = angle * Math.PI / 180;
+		angleRadians += (float) Math.PI / 2;		//Internally, Stubby uses X axis for steps; here we want to use Y.
+		if (distance < 0){
+			angleRadians = angleRadians + Math.PI;	//Support going backwards
+			distance = distance * -1;
+		}
+		int[] data = new int[4];
+		data[0] = Protocol.radianToByte(angleRadians);
+		data[1] = velocity & 0xFF;
+		data[2] = (distance >> 8) & 0xFF;
+		data[3] = distance & 0xFF;
 		if (!protocol.sendMessage(new Message(Protocol.REQUEST_MOVE, data), 1000, 2)){
 			return false;
 		}
@@ -71,7 +71,7 @@ public class Stubby {
 	}
 	
 	public boolean move(int linearAngle, int distance){
-		return move(linearAngle, 0, 255, 0, distance);
+		return move(linearAngle, 255, distance);
 	}
 	
 	/**
@@ -112,12 +112,12 @@ public class Stubby {
 	 * @param angle In degrees, with 0 being the direction the robot is currently facing.  Negative angles are to the right (clockwise), positive to the right (counter clockwise)
 	 * @param rotationalVelocity Speed to turn, between 0 and 255
 	 */
-	public boolean turn(int angle, int rotationalVelocity){
+	public boolean turn(int angle, int velocity){
 		if (angle == 0) return true;
 		double angleRadians = angle * Math.PI / -180;
-		int[] data = new int[5];
-		data[0] = rotationalVelocity & 0xFF;
-		Protocol.floatToArr(angleRadians, data, 1);
+		int[] data = new int[2];
+		data[0] = Protocol.radianToByte(angleRadians);
+		data[1] = velocity & 0xFF;
 		if (!protocol.sendMessage(new Message(Protocol.REQUEST_TURN, data), 1000, 2)){
 			return false;
 		}
