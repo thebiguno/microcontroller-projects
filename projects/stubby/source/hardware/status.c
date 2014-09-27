@@ -90,6 +90,8 @@ ISR(ADC_vect){
 		value = (15 * (uint16_t) value + new_value) >> 4;
 	}
 	
+	pwm_set_phase_batch(LED_BLUE, 0x00);
+	
 	if (value >= BATTERY_LEVEL_FULL){
 		pwm_set_phase_batch(LED_RED, 0x00 * PHASE_MULTIPLIER);
 		pwm_set_phase_batch(LED_GREEN, 0xFF * PHASE_MULTIPLIER);
