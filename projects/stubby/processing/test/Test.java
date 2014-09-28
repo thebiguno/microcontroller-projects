@@ -11,10 +11,12 @@ public class Test extends PApplet {
 		Stubby stubby = new Stubby(this, "/dev/ttyUSB0");
 		stubby.enableDebug();
 		stubby.turnOn();
-		//stubby.moveForward(1000);
+		stubby.moveForward(1000);
+		stubby.moveBackward(1000);
 		//stubby.turnAroundClockwise();
-		stubby.moveRight(1000);
-		stubby.moveLeft(1000);
+		//stubby.moveForward(1000);
+//		stubby.moveRight(1000);
+//		stubby.moveLeft(1000);
 //		stubby.turnLeft();
 //		stubby.turnRight();
 		//stubby.moveForward(1000);
@@ -26,6 +28,7 @@ public class Test extends PApplet {
 //			stubby.requestHeading();
 //			try {Thread.sleep(100);} catch (InterruptedException e) {}
 //		}
+//		try {Thread.sleep(10000);} catch (InterruptedException e) {}
 		stubby.turnOff();
 	}
 
