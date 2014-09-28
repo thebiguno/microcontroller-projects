@@ -36,7 +36,7 @@ void processing_command_executor(){
 	
 	if (move_required){
 		double current_heading = magnetometer_read_heading();
-		double veer_correction = (desired_move_heading - current_heading);
+		double veer_correction = difference_between_angles(desired_move_heading, current_heading);
 
 		//In the current implementation of gait_tripod, we move 5mm with each iteration of the
 		// step procedure at maximum velocity (and the distance scales linearly with velocity).
@@ -81,7 +81,8 @@ void processing_command_executor(){
 		static int8_t step_index = 0;
 		double current_heading = magnetometer_read_heading();
 		
-		if (fabs(normalize_angle(desired_turn_heading - current_heading)) <= 0.04){
+		double difference = fabs(difference_between_angles(desired_turn_heading, current_heading));
+		if (difference <= 0.04){
 			turn_required = 0x00;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
@@ -89,7 +90,7 @@ void processing_command_executor(){
 		else {
 			if (step_index == 0){
 				char temp[64];
-				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_turn_heading, fabs(normalize_angle(desired_turn_heading - current_heading)));
+				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_turn_heading, difference);
 				doSendDebug(temp, 64);
 			}
 
