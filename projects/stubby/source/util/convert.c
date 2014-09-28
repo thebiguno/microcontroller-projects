@@ -40,5 +40,6 @@ double normalize_angle(double radians){
 }
 
 double difference_between_angles(double a1, double a2){
-	return normalize_angle(atan2(sin_f(a2), cos_f(a2)) - atan2(sin_f(a1), cos_f(a1)));
+	//return normalize_angle(atan2(sin_f(a2), cos_f(a2)) - atan2(sin_f(a1), cos_f(a1)));
+	return normalize_angle(a1 - a2);
 }
