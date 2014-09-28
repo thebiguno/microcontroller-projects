@@ -71,7 +71,6 @@ void processing_command_executor(){
 			}
 			
 			pwm_apply_batch();
-			_delay_ms(3);
 			
 			desired_move_distance -= (STEP_DISTANCE * desired_move_velocity);
 		}
@@ -105,8 +104,9 @@ void processing_command_executor(){
 		}
 		
 		pwm_apply_batch();
-		_delay_ms(5);
 	}
+	
+	_delay_ms(3);
 }
 
 void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
