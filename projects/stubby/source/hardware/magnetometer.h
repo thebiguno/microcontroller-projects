@@ -9,6 +9,8 @@
 
 #include "status.h"
 
+#include "Stubby.h"
+
 /*
  * Initializes the magnetometer and performs a self calibration
  */

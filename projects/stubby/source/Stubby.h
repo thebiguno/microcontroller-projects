@@ -20,7 +20,7 @@
 #define PCB_REVISION		1
 
 //Set MAGNETOMETER to 0 if you do not have a magnetometer on the board.
-#define MAGNETOMETER		1
+#define MAGNETOMETER		0
 
 #define LEG_COUNT			6
 

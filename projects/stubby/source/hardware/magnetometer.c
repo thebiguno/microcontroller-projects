@@ -3,6 +3,7 @@
 #define MAGNETOMETER_ADDRESS 0x1E
 #define ALPHA 0.2
 
+#if MAGNETOMETER == 1
 static int16_t filtered[2];
 static int16_t offsets[2];
 
@@ -85,3 +86,8 @@ ISR(TIMER2_OVF_vect){
 		magnetometer_take_reading();
 	}
 }
+#else
+double magnetometer_read_heading(){
+	return 0;
+}
+#endif
