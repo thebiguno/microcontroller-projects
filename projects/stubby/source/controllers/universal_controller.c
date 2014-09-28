@@ -123,7 +123,7 @@ void uc_remote_control(){
 			
 			//We only care about the X axis for right (rotational) stick
 			double rotational_velocity = right_stick.x / 127.0;
-			
+
 			if (rotational_velocity <= 0.3 && rotational_velocity > -0.3) rotational_velocity = 0;
 			if (linear_velocity <= 0.3) linear_velocity = 0;
 			if (linear_velocity != 0 || rotational_velocity != 0){
@@ -137,10 +137,14 @@ void uc_remote_control(){
 				if (step_index > gait_step_count()){
 					step_index = 0;
 				}
-				
-				pwm_apply_batch();
-				_delay_ms(3);
 			}
+			else {
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					legs[l].setOffset(Point(0,0,0));
+				}
+			}
+			pwm_apply_batch();
+			_delay_ms(3);
 		}
 	}
 	
