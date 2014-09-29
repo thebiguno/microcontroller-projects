@@ -16,12 +16,7 @@ void servo_init(Leg *legs){
 		}
 	}
 	
-	ports[LED_RED] = &PORTD;		//Red LED
-	pins[LED_RED] = PORTD4;
-	ports[LED_GREEN] = &PORTD;		//Green LED
-	pins[LED_GREEN] = PORTD6;
-	ports[LED_BLUE] = &PORTD;		//Blue LED
-	pins[LED_BLUE] = PORTD5;
+	status_init(ports, pins);
 	
 	pwm_init(ports, pins, PWM_COUNT, 20000);
 
@@ -30,7 +25,7 @@ void servo_init(Leg *legs){
 	}
 	pwm_apply_batch();
 
-	_delay_ms(500);
+	delay_ms(500);
 	
 	pwm_stop();	
 }

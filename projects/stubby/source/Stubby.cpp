@@ -39,7 +39,7 @@ int main (void){
 	
 	servo_init(legs);
 	serial_init_b(38400);
-	status_init();
+	battery_init();
 #if MAGNETOMETER == 1
 	magnetometer_set_offsets(186, 1431);
 	magnetometer_init();
@@ -52,7 +52,7 @@ int main (void){
 		char temp[64];
 		sprintf(temp, "%d\t%d\t%d\n", raw[0], raw[1], raw[2]);
 		serial_write_s(temp);
-		_delay_ms(100);
+		delay_ms(100);
 	}
 	*/
 	while (1){
@@ -101,25 +101,25 @@ void doResetLegs(){
 		legs[l].setOffset(Point(0,0,30));
 	}
 	pwm_apply_batch();
-	_delay_ms(200);
+	delay_ms(200);
 
 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
 		legs[l].setOffset(Point(0,0,0));
 	}
 	pwm_apply_batch();
-	_delay_ms(200);
+	delay_ms(200);
 
 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
 		legs[l].setOffset(Point(0,0,30));
 	}
 	pwm_apply_batch();
-	_delay_ms(200);
+	delay_ms(200);
 
 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
 		legs[l].setOffset(Point(0,0,0));
 	}
 	pwm_apply_batch();
-	_delay_ms(200);
+	delay_ms(200);
 }
 
 /*

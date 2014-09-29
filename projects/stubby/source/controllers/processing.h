@@ -4,11 +4,11 @@
 #include <avr/wdt.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <util/delay.h>
 
 #include "Stubby.h"
 #include "Leg.h"
 #include "gait/gait.h"
+#include "hardware/battery.h"
 #include "hardware/magnetometer.h"
 #include "hardware/status.h"
 #include "util/convert.h"

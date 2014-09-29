@@ -48,7 +48,7 @@ uc_stick_t uc_read_right(){
 void uc_remote_control(){
 	pwm_start();
 	status_set_color(0x00, 0xFF, 0x00);
-	status_enable_battery();
+	battery_enable_status();
 	doResetLegs();
 	
 	//Hit Start to exit remote control mode, and go back to startup
@@ -84,7 +84,7 @@ void uc_remote_control(){
 			}
 			
 			pwm_apply_batch();
-			_delay_ms(5);
+			delay_ms(5);
 		}
 		//Rotation: Pitch / Roll (left stick) and Yaw (right stick)
 		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
@@ -103,7 +103,7 @@ void uc_remote_control(){
 			}
 			
 			pwm_apply_batch();
-			_delay_ms(5);
+			delay_ms(5);
 		}
 		//Normal movement
 		else {
@@ -144,14 +144,14 @@ void uc_remote_control(){
 				}
 			}
 			pwm_apply_batch();
-			_delay_ms(3);
+			delay_ms(3);
 		}
 	}
 	
-	status_disable_battery();
+	battery_disable_status();
 	doResetLegs();
 	status_set_color(0x00, 0x00, 0x00);
-	_delay_ms(200);
+	delay_ms(200);
 
 	pwm_stop();
 }
@@ -188,7 +188,7 @@ void uc_calibration(){
 	while (1){
 		wdt_reset();
 		
-		_delay_ms(20);
+		delay_ms(20);
 		
 		uint16_t buttons_pressed = uc_read_pressed_buttons();
 		
@@ -203,7 +203,7 @@ void uc_calibration(){
 
 			//Blink lights out every button press
 			status_set_color(0x00, 0x00, 0x00);
-			_delay_ms(60);
+			delay_ms(60);
 			
 			//Select changes modes.  Flash 5 purple for mode == 1, 5 blue for mode == 0.
 			if ((buttons_pressed & _BV(CONTROLLER_BUTTON_VALUE_SELECT)) != 0) {
@@ -320,7 +320,7 @@ void uc_calibration(){
 	pwm_apply_batch();
 	
 	status_set_color(0x00, 0x00, 0x00);
-	_delay_ms(200);
+	delay_ms(200);
 	pwm_stop();
 }
 
@@ -335,7 +335,7 @@ void uc_command_executor(){
 		uc_remote_control();
 	}
 	
-	_delay_ms(20);
+	delay_ms(20);
 }
 
 /*

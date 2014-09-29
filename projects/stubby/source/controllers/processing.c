@@ -22,12 +22,12 @@ void processing_command_executor(){
 			pwm_start();
 			status_set_color(0x00, 0xFF, 0x00);
 			doResetLegs();
-			status_enable_battery();
+			battery_enable_status();
 		}
 		else {
-			status_disable_battery();
+			battery_disable_status();
 			status_set_color(0x00, 0x00, 0x00);
-			_delay_ms(200);
+			delay_ms(200);
 
 			pwm_stop();
 		}
@@ -106,7 +106,7 @@ void processing_command_executor(){
 		pwm_apply_batch();
 	}
 	
-	_delay_ms(3);
+	delay_ms(3);
 }
 
 void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){

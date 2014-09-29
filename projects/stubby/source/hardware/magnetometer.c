@@ -1,5 +1,7 @@
 #include "magnetometer.h"
 
+volatile uint8_t interval_do_magnetometer_reading = 0x00;		//Mailbox value, set in timer2 ISR and read in delay
+
 #define MAGNETOMETER_ADDRESS 0x1E
 #define ALPHA 0.2
 
@@ -24,14 +26,14 @@ void magnetometer_init(){
 	//Discard the first reading after mode change
 	message[0] = 0x03;
 	twi_write_to(MAGNETOMETER_ADDRESS, message, 1, TWI_BLOCK, TWI_STOP);
-	_delay_ms(100);
+	delay_ms(100);
 	message[0] = 0x06;
 	twi_read_from(MAGNETOMETER_ADDRESS, message, 6, TWI_STOP);
 
 	//Read an actual value
 	message[0] = 0x03;
 	twi_write_to(MAGNETOMETER_ADDRESS, message, 1, TWI_BLOCK, TWI_STOP);
-	_delay_ms(100);
+	delay_ms(100);
 	message[0] = 0x06;
 	twi_read_from(MAGNETOMETER_ADDRESS, message, 6, TWI_STOP);
 
@@ -74,17 +76,6 @@ void magnetometer_take_reading(){
 
 double magnetometer_read_heading(){
 	return atan2(filtered[1], filtered[0]);
-}
-
-EMPTY_INTERRUPT(TIMER2_COMPA_vect)
-EMPTY_INTERRUPT(TIMER2_COMPB_vect)
-ISR(TIMER2_OVF_vect){
-	sei();
-	static uint8_t i = 0;
-	if (i++ >= 5){
-		i = 0;
-		magnetometer_take_reading();
-	}
 }
 #else
 double magnetometer_read_heading(){

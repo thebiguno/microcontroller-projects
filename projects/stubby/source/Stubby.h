@@ -6,6 +6,7 @@
 #include <avr/wdt.h>
 #include <stdint.h>
 
+#include "util/delays.h"
 #include "lib/protocol/protocol.h"
 #include "lib/universal_controller/client.h"
 #include "lib/serial/serial.h"

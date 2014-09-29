@@ -1,12 +1,7 @@
-#ifndef MAGNETOMETER_H
-#define MAGNETOMETER_H
+#ifndef TIMER_2_H
+#define TIMER_2_H
 
 #include <avr/interrupt.h>
-#include <math.h>
-
-#include "lib/twi/twi.h"
-
-#include "status.h"
 
 #include "Stubby.h"
 
@@ -21,6 +16,11 @@ void magnetometer_init();
  * be obtained from an in-situ calibration.
  */
 void magnetometer_set_offsets(int16_t x, int16_t y);
+
+/*
+ * Read the raw magnetometer data
+ */
+void magnetometer_read_raw(int16_t* data);
 
 /*
  * Read the compass heading, with 0 pointing straight north, positive values
