@@ -6,8 +6,6 @@
  */
 
 #include "serial.h"
-#include <avr/interrupt.h>
-#include <util/delay.h>
 
 //Defined in rx / tx modules
 void _serial_init_rx();
