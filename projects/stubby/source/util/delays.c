@@ -6,7 +6,7 @@ void magnetometer_take_reading();
 
 //Defined in hardware/battery.c
 void battery_set_level();
-extern volatile uint8_t battery_level;						//Defined in battery.c
+extern volatile uint8_t battery_level;
 
 
 
@@ -25,5 +25,5 @@ void delay_ms(uint16_t ms){
 		ms--;
 	}
 
-	_delay_ms(200);
+	_delay_ms(ms);
 }

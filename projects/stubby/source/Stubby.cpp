@@ -6,6 +6,7 @@
 #include "hardware/magnetometer.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
+#include "hardware/timer2.h"
 #include "types/Point.h"
 #include "util/math.h"
 
@@ -44,27 +45,19 @@ int main (void){
 	magnetometer_set_offsets(186, 1431);
 	magnetometer_init();
 #endif
-	/*
-	while(1){
-		wdt_reset();
-		int16_t raw[3];
-		magnetometer_read_raw(raw);
-		char temp[64];
-		sprintf(temp, "%d\t%d\t%d\n", raw[0], raw[1], raw[2]);
-		serial_write_s(temp);
-		delay_ms(100);
-	}
-	*/
+	timer2_init();
+
 	while (1){
 		wdt_reset();
 
 		if (controller == CONTROLLER_UC){
-			//PORTD ^= _BV(PORTD5);
 			uc_command_executor();
 		}
 		else if (controller == CONTROLLER_PROCESSING){
 			processing_command_executor();
 		}
+		
+		delay_ms(10);
 	}
 }
 

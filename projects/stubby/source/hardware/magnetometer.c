@@ -12,6 +12,8 @@ static int16_t offsets[2];
 void magnetometer_init(){
 	twi_init();
 	
+	PORTD |= _BV(PORTD5);
+	
 	uint8_t message[6];
 	message[0] = 0x00;		//Register 0
 	message[1] = 0x78;		//8 sample average, 75 Hz, normal mode
@@ -40,11 +42,6 @@ void magnetometer_init(){
 	//Initialize the filtered values
 	filtered[0] = (((uint16_t) message[0]) << 8 | message[1]) + offsets[0];
 	filtered[1] = (((uint16_t) message[4]) << 8 | message[5]) + offsets[1];
-	
-	//Set up the timer to run at F_CPU / 1024, in normal mode
-	TCCR2A = 0x0;
-	TCCR2B |= _BV(CS22) | _BV(CS21) | _BV(CS20);
-	TIMSK2 = _BV(TOIE2);
 }
 
 void magnetometer_set_offsets(int16_t x, int16_t y){

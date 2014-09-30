@@ -11,15 +11,14 @@ static uint8_t value = 0x00;
 
 
 void battery_init(){
-	//ADC Enable, ADC interrupt, prescaler = 0x7 (F_CPU / 128)
-	ADCSRA |= _BV(ADEN) | _BV(ADIE) | 0x07;
+	//ADC Enable, ADC interrupt, prescaler F_CPU / 128
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 
-	//Free running mode (already default, but in case it was set previously)
+	//Free running mode (the default, but in case it was set previously)
 	ADCSRB = 0x00;
 	
 	//Set AREF mode: AREF = VCC, ADC Left Adjust, Pin A7
 	ADMUX = _BV(REFS0) | _BV(ADLAR) | 0x07;
-	
 }
 
 void battery_enable_status(){
