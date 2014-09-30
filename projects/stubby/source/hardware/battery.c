@@ -2,7 +2,7 @@
 
 #define ALPHA 0.2
 
-static uint8_t battery_status_enabled = 0x00;		//Should the battery levels show on status light?
+uint8_t battery_status_enabled = 0x00;		//Should the battery levels show on status light?
 volatile uint8_t battery_level = 0x00;		//Raw battery level; set in ADC ISR, cleared in status_set_battery_level()
 
 //The value is the running average; initially we set this to 0x00 as a flag to take the first
