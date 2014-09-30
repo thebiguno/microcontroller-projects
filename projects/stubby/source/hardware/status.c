@@ -3,7 +3,7 @@
 //The magic number 78 comes from X/20000 = color/255; X = color * 20000 / 255; X = color * 78.
 #define PHASE_MULTIPLIER		(uint8_t) (20000/255)
 
-void status_init(volatile uint8_t **ports, uint8_t *pins){
+void status_init(volatile uint8_t *ports[3], uint8_t pins[3]){
 	ports[LED_RED] = &PORTD;		//Red LED
 	pins[LED_RED] = PORTD4;
 	ports[LED_GREEN] = &PORTD;		//Green LED
