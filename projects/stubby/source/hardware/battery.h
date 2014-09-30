@@ -5,7 +5,7 @@
 
 #include "status.h"
 
-#include "lib/pwm/pwm.h"
+#include "../lib/pwm/pwm.h"
 
 
 //The minimum ADC value which indicates a full battery

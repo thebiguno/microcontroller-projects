@@ -5,13 +5,13 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "Stubby.h"
-#include "Leg.h"
-#include "gait/gait.h"
-#include "hardware/battery.h"
-#include "hardware/magnetometer.h"
-#include "hardware/status.h"
-#include "util/convert.h"
+#include "../Stubby.h"
+#include "../Leg.h"
+#include "../gait/gait.h"
+#include "../hardware/battery.h"
+#include "../hardware/magnetometer.h"
+#include "../hardware/status.h"
+#include "../util/convert.h"
 
 //PC / Stubby-specific messages are in 0x2X space...
 #define MESSAGE_REQUEST_POWER_ON				0x20

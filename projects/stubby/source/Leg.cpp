@@ -78,7 +78,7 @@ uint8_t Leg::getIndex(){
 }
 
 double Leg::getMountingAngle(){
-	return this->index;
+	return this->mounting_angle;
 }
 
 void Leg::setOffset(Point offset){

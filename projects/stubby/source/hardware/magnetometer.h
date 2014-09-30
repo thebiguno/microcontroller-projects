@@ -4,11 +4,11 @@
 #include <avr/interrupt.h>
 #include <math.h>
 
-#include "lib/twi/twi.h"
-
+#include "../Stubby.h"
 #include "status.h"
 
-#include "Stubby.h"
+#include "../lib/twi/twi.h"
+
 
 /*
  * Initializes the magnetometer and performs a self calibration
