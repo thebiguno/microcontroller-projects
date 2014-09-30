@@ -16,6 +16,17 @@ static volatile uint8_t plug[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0
 static volatile uint8_t inj[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
 //static volatile uint8_t frequency;
 
+/* TODO
+ * below a configured RPM (i.e. 300) don't calculate the PWM for the injectors, just use defalt cranking values
+ * implement a rev limiter; either retard  the ignition advance, or cut fuel; configurable rev upper limit and restored limit
+ * configure if coolant temperature sensor is in use or not (i.e. air cooled engine)
+ * configure injector opening time (ms)
+ *           injector battery voltage correction (ms/V)
+ *           pwm time threshold (ms)
+ *           injector pwm period (µs)
+ */
+
+
 // an 8x8 matrix of spark advance values specified in degrees
 // first index is the rpm zone, 0 for slow, 7 for fast
 // second index is the engine load, 0 for low, 7 for high
