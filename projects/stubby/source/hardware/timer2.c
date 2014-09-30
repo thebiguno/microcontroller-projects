@@ -19,7 +19,7 @@ ISR(TIMER2_OVF_vect){
 	if ((i & 0x07) == 0x00){
 		interval_do_magnetometer_reading = 0x01;
 	}
-	if ((i & 0x0F) == 0x00){
+	if ((i & 0x1F) == 0x00){
 		ADCSRA |= _BV(ADSC);		//Start ADC
 	}
 }
