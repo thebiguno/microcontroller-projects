@@ -1,9 +1,16 @@
 #ifndef GAIT_H
 #define GAIT_H
 
+#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#include "types/Point.h"
-#include "Leg.h"
+#else
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#endif
+
+#include "../types/Point.h"
+#include "../Leg.h"
 
 /*
  * Returns the offset for the given leg at the given step index, scaled by the given velocity

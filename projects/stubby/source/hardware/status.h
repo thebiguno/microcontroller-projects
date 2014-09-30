@@ -2,8 +2,10 @@
 #define STATUS_H
 
 #include <avr/io.h>
-#include "Stubby.h"
-#include "lib/pwm/pwm.h"
+
+#include "../Stubby.h"
+
+#include "../lib/pwm/pwm.h"
 
 void status_init(volatile uint8_t **ports, uint8_t *pins);
 

@@ -9,7 +9,7 @@
 #include <stdio.h>
 #endif
 
-#include "util/math.h"
+#include "../util/math.h"
 
 
 class Point {
