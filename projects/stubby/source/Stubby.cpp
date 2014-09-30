@@ -119,8 +119,6 @@ void doResetLegs(){
  * Called from ISR; keep things as short as possible.
  */
 void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
-	sei();
-	
 	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
 		if (message[0] == 'U'){
 			controller = CONTROLLER_UC;

@@ -12,8 +12,6 @@ static int16_t offsets[2];
 void magnetometer_init(){
 	twi_init();
 	
-	PORTD |= _BV(PORTD5);
-	
 	uint8_t message[6];
 	message[0] = 0x00;		//Register 0
 	message[1] = 0x78;		//8 sample average, 75 Hz, normal mode

@@ -39,6 +39,10 @@ ISR(USART0_RX_vect){
 #error You must define USART vectors for your chip!  Please verify that MMCU is set correctly, and that there is a matching vector definition in serial_asynchronous.c
 void error1() {
 #endif
+	UCSR0B &= ~_BV(RXCIE0);	//Disable RX interrupts so we don't recurse
+	sei();
+	
 	uint8_t b = UDR0;
 	protocol_receive_byte(b);
+	UCSR0B |= _BV(RXCIE0);	//Re-enable RX interrupts
 }
