@@ -14,7 +14,6 @@ void delay_ms(uint16_t ms){
 	//Check various mailbox flags for stuff to do, and decrease ms accordingly
 #if MAGNETOMETER == 1
 	if (interval_do_magnetometer_reading){
-		PORTD |= _BV(PORTD5);
 		magnetometer_take_reading();
 #if F_CPU == 12000000
 		_ms -= 0.33;	//Determined from logic probes at 12MHz
@@ -24,12 +23,10 @@ void delay_ms(uint16_t ms){
 #error Unknown CPU speed; please update delay_ms
 #endif
 		interval_do_magnetometer_reading = 0x00;
-		PORTD &= ~_BV(PORTD5);
 	}
 #endif
 	
 	if (battery_level){
-		PORTD |= _BV(PORTD4);
 		battery_set_level();
 		//We only adjust ms if we are updating the status lights... otherwise, the extra delay is negligable
 		if (battery_status_enabled){
@@ -41,7 +38,6 @@ void delay_ms(uint16_t ms){
 #error Unknown CPU speed; please update delay_ms
 #endif
 		}
-		PORTD &= ~_BV(PORTD4);
 	}
 
 	_delay_ms(_ms);
