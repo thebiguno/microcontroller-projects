@@ -9,6 +9,10 @@ void battery_set_level();
 extern volatile uint8_t battery_level;
 extern uint8_t battery_status_enabled;
 
+//Defined in Stubby.cpp
+extern uint8_t pending_acknowledge;
+extern uint8_t pending_complete;
+
 void delay_ms(uint16_t ms){
 	double _ms = (double) ms;
 	//Check various mailbox flags for stuff to do, and decrease ms accordingly
@@ -38,6 +42,20 @@ void delay_ms(uint16_t ms){
 #error Unknown CPU speed; please update delay_ms
 #endif
 		}
+	}
+	
+	if (pending_acknowledge){
+		uint8_t data[1];
+		data[0] = pending_acknowledge;
+		protocol_send_message(MESSAGE_SEND_ACKNOWLEDGE, data, 1);
+		pending_acknowledge = 0x00;
+	}
+	
+	if (pending_complete){
+		uint8_t data[1];
+		data[0] = pending_complete;
+		protocol_send_message(MESSAGE_SEND_COMPLETE, data, 1);
+		pending_complete = 0x00;
 	}
 
 	_delay_ms(_ms);
