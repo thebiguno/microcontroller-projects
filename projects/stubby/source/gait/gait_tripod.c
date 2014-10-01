@@ -36,32 +36,34 @@ static Point linear_step_points[STEP_COUNT] = {
 //The lookup table for moving a foot such that the robot
 // rotates clockwise on the spot.  Starting at neutral,
 // the foot rotates counter clockwise, then lifts, and
-// moves clockwise.
+// moves clockwise.  We do not include any Z component, 
+// since the linear_step_points have it, and they are
+// always included.
 static Point rotational_step_points[STEP_COUNT] = {
 	Point(0,0,0),
-	Point(0,7,0),
-	Point(-1,14,0),
-	Point(-1,21,0),
-	Point(-2,28,0),
-	Point(-2,35,0),
+	Point(0,5,0),
+	Point(-1,10,0),
+	Point(-1,15,0),
+	Point(-2,20,0),
+	Point(-2,25,0),
+	Point(-3,30,0),
 	
-	Point(-2,35,5),
-	Point(-2,28,10),
-	Point(-1,21,20),
-	Point(-1,14,30),
-	Point(0,7,30),
-	Point(0,0,30),
-	Point(0,-7,30),
-	Point(-1,-14,30),
-	Point(-1,-21,20),
-	Point(-2,-28,10),
-	Point(-2,-35,5),
+	Point(-2,30,0),
+	Point(-1,15,0),
+	Point(-1,5,0),
+	Point(0,0,0),
+	Point(0,0,0),
+	Point(0,-10,0),
+	Point(-1,-20,0),
+	Point(-1,-25,0),
+	Point(-2,-30,0),
 	
-	Point(-2,-35,0),
-	Point(-2,-28,0),
-	Point(-1,-21,0),
-	Point(-1,-14,0),
-	Point(0,-7,0),
+	Point(-2,-30,0),
+	Point(-2,-25,0),
+	Point(-2,-20,0),
+	Point(-1,-15,0),
+	Point(-1,-10,0),
+	Point(0,-5,0),
 };
 
 Point gait_step(Leg leg, uint8_t step_index, double linear_velocity, double linear_angle, double rotational_velocity){
