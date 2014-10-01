@@ -147,14 +147,14 @@ public class Stubby {
 	 * @return
 	 */
 	public boolean turnAround(){
-		return turn(180, 255);
+		return turn(179, 255);
 	}
 	/**
 	 * Convenience method to turn around 180 degrees (clockwise)
 	 * @return
 	 */
 	public boolean turnAroundClockwise(){
-		return turn(-180, 255);
+		return turn(-179, 255);
 	}
 	
 	/**
