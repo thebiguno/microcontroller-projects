@@ -5,7 +5,7 @@ MMCU=atmega1284p
 COMPILER=avr-g++
 F_CPU=12000000
 SOURCES=Stubby.cpp Leg.cpp \
-	controllers/processing.c controllers/universal_controller.c \
+	controllers/calibration.c controllers/processing.c controllers/universal_controller.c \
 	gait/gait_tripod.c \
 	hardware/battery.c hardware/magnetometer.c  hardware/servo.c hardware/status.c hardware/timer2.c \
 	types/Point.cpp \

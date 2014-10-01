@@ -1,5 +1,6 @@
 #include "Stubby.h"
 
+#include "controllers/calibration.h"
 #include "controllers/processing.h"
 #include "controllers/universal_controller.h"
 #include "gait/gait.h"
@@ -43,10 +44,8 @@ int main (void){
 	servo_init(legs);
 	serial_init_b(38400);
 	battery_init();
-#if MAGNETOMETER == 1
 	magnetometer_set_offsets(186, 1431);
 	magnetometer_init();
-#endif
 	timer2_init();
 
 	while (1){

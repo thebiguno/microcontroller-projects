@@ -27,13 +27,13 @@ date.
 Commands have a variable payload.  A description of payloads is below.
 Portions in [square brackets] are optional.
 
-Command						Direction				Payload															Response
+Command						Direction				Payload																				Response
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- General commands
 SendAcknowledge				Stubby -> Control		Command being ack'd (1 byte)														None
 SendComplete				Stubby -> Control		Command completed (1 byte)															None
 
-RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc						ControlConfig message
+RequestControlConfig		Control -> Stubby		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), Calibration = 'C', etc		None
 SendControlConfig			Stubby -> Control		Configuration for controller														None
 
 RequestEnableDebug			Control -> Stubby		Null																				Ack
@@ -67,3 +67,13 @@ RequestOptical				Control -> Stubby		Null																				Optical message
 SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)											None
 
 RequestSetLED				Control -> Stubby		3 bytes (RGB value)																	Ack
+
+-- Calibration program commands
+RequestJointCalibration		Control -> Stubby		Null																				SendJointCalibration message
+SendJointCalibration		Either -> Either		18 bytes, ordered LEG0_TIBIA, LEG0_FEMUR, LEG0_COXA, ... LEG5_COXA					None
+
+RequestFootCalibration		Control -> Stubby		Null																				SendFootCalibration message
+SendFootCalibration			Either -> Either		18 bytes, ordered LEG0_X, LEG0_Y, LEG0_Z, LEG1_X, ... LEG5_Z						None
+
+RequestMagnetometerCalibration	Control -> Stubby	Null																				SendMagnetometerCalibration message
+SendMagnetometerCalibration	Either -> Either		4 bytes (two 16 bit signed integers, MSB first): X offset, Y offset					None

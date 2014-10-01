@@ -42,6 +42,11 @@ void magnetometer_init(){
 	filtered[1] = (((uint16_t) message[4]) << 8 | message[5]) + offsets[1];
 }
 
+void magnetometer_get_offsets(int16_t *x, int16_t *y){
+	x[0] = offsets[0];
+	y[0] = offsets[1];
+}
+
 void magnetometer_set_offsets(int16_t x, int16_t y){
 	offsets[0] = x;
 	offsets[1] = y;
@@ -73,7 +78,18 @@ double magnetometer_read_heading(){
 	return atan2(filtered[1], filtered[0]);
 }
 #else
+
+void magnetometer_init(){
+}
+
 double magnetometer_read_heading(){
 	return 0;
 }
+
+void magnetometer_get_offsets(int16_t *x, int16_t *y){
+}
+
+void magnetometer_set_offsets(int16_t x, int16_t y){
+}
+
 #endif

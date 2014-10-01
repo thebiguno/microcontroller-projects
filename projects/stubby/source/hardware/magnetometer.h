@@ -16,6 +16,11 @@
 void magnetometer_init();
 
 /*
+ * Get the currently set offsets (x & y).
+ */
+void magnetometer_get_offsets(int16_t *x, int16_t *y);
+
+/*
  * Set the offsets (x & y).  This is used to center the readings around zero.  These
  * values will depend on the location and surroundings of the magnetometer, and should
  * be obtained from an in-situ calibration.
