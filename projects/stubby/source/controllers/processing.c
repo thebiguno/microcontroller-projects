@@ -10,11 +10,19 @@ static volatile uint8_t turn_required = 0x00;
 static volatile double desired_move_heading;
 static volatile double desired_move_angle;
 static volatile double desired_move_velocity;
-static volatile uint16_t desired_move_distance;
+static volatile double desired_move_distance;
 
 static volatile double desired_turn_heading;
 static volatile double desired_turn_angle;
 static volatile double desired_turn_velocity;
+
+//In the current implementation of gait_tripod, we move 5mm with each iteration of the
+// step procedure at maximum velocity (and the distance scales linearly with velocity).
+//Note: Through experimentation we find that each step is slightly smaller than 5mm... not 
+// sure if this is due to slippage, bad measurements, not enough timing, or something else.
+// Regardless, by making this number smaller, we end up with the right measurement in real
+// world applications.  Yay for fudge!
+#define STEP_DISTANCE					4.0
 
 #define VEER_CORRECTION_MULTIPLIER		5
 #define VEER_CORRECTION_EXPONENT		3
@@ -86,14 +94,6 @@ void processing_command_executor(){
 			if (veer_correction > 0.5) veer_correction = 0.5;
 			else if (veer_correction < -0.5) veer_correction = -0.5;
 
-			//In the current implementation of gait_tripod, we move 5mm with each iteration of the
-			// step procedure at maximum velocity (and the distance scales linearly with velocity).
-			//Note: Through experimentation we find that each step is slightly smaller than 5mm... not 
-			// sure if this is due to slippage, bad measurements, not enough timing, or something else.
-			// Regardless, by making this number smaller, we end up with the right measurement in real
-			// world applications.  Yay for fudge!
-			#define STEP_DISTANCE 4.5
-			
 			static int8_t step_index = 0;
 			
 			if (desired_move_distance < (STEP_DISTANCE * desired_move_velocity)){
@@ -142,7 +142,7 @@ void processing_command_executor(){
 					Point step = gait_step(legs[l], step_index, 0, 0, velocity);
 					legs[l].setOffset(step);
 				}
-				if (step_index == 0){
+				if (step_index == 0 && debug){
 					char temp[64];
 					sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_turn_heading, difference);
 					doSendDebug(temp, 64);
@@ -158,7 +158,7 @@ void processing_command_executor(){
 		}
 	}
 	
-	delay_ms(3);
+	delay_ms(1);
 }
 
 void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
