@@ -12,6 +12,8 @@ static volatile uint16_t desired_move_distance;
 static volatile double desired_turn_heading;
 static volatile double desired_turn_velocity;
 
+#define VEER_CORRECTION_MULTIPLIER		3
+
 extern Leg legs[LEG_COUNT];
 
 void processing_command_executor(){
@@ -36,7 +38,9 @@ void processing_command_executor(){
 	
 	if (move_required){
 		double current_heading = magnetometer_read_heading();
-		double veer_correction = difference_between_angles(desired_move_heading, current_heading);
+		double veer_correction = difference_between_angles(desired_move_heading, current_heading) * VEER_CORRECTION_MULTIPLIER;
+		if (veer_correction > 0.5) veer_correction = 0.5;
+		else if (veer_correction < -0.5) veer_correction = -0.5;
 
 		//In the current implementation of gait_tripod, we move 5mm with each iteration of the
 		// step procedure at maximum velocity (and the distance scales linearly with velocity).
@@ -55,10 +59,10 @@ void processing_command_executor(){
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
 		else {
-			if (step_index == 0){
-				char temp[64];
-				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_move_heading, veer_correction);
-				doSendDebug(temp, 64);
+			if ((step_index & 0x01) == 0x00){
+				char temp[8];
+				sprintf(temp, "%1.3f", veer_correction);
+				doSendDebug(temp, 8);
 			}
 
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -80,23 +84,26 @@ void processing_command_executor(){
 		static int8_t step_index = 0;
 		double current_heading = magnetometer_read_heading();
 		
-		double difference = fabs(difference_between_angles(desired_turn_heading, current_heading));
-		if (difference <= 0.04){
+		double difference = difference_between_angles(desired_turn_heading, current_heading);
+		if (fabs(difference) <= 0.01){
 			turn_required = 0x00;
 			doResetLegs();
 			doCompleteCommand(MESSAGE_REQUEST_MOVE);
 		}
 		else {
+			double velocity = fmax(0.1, fmin(desired_turn_velocity, fabs(difference) / 1.3));
+			if (difference < 0) velocity *= -1;
+
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				Point step = gait_step(legs[l], step_index, 0, 0, velocity);
+				legs[l].setOffset(step);
+			}
 			if (step_index == 0){
 				char temp[64];
 				sprintf(temp, "current: %1.3f, desired: %1.3f, diff: %1.3f", current_heading, desired_turn_heading, difference);
 				doSendDebug(temp, 64);
 			}
-
-			for (uint8_t l = 0; l < LEG_COUNT; l++){
-				Point step = gait_step(legs[l], step_index, 0, 0, desired_turn_velocity);
-				legs[l].setOffset(step);
-			}
+			
 			step_index++;
 			if (step_index > gait_step_count()){
 				step_index = 0;
@@ -145,7 +152,6 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			
 			desired_turn_heading = normalize_angle(desired_angle + current_heading);
 			desired_turn_velocity = message[1] / 255.0;
-			if (desired_angle < 0) desired_turn_velocity *= -1;
 			
 			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
 		}
