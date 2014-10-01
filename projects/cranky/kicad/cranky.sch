@@ -429,13 +429,13 @@ ADC4
 Text Label 5700 5550 0    60   ~ 0
 ADC5
 Text Label 9800 3500 0    60   ~ 0
-INJ1
+-INJ1
 Text Label 9800 4000 0    60   ~ 0
-INJ2
+-INJ2
 Text Label 9800 4500 0    60   ~ 0
-INJ3
+-INJ3
 Text Label 9800 5000 0    60   ~ 0
-INJ4
+-INJ4
 $Comp
 L VCC #PWR01
 U 1 1 541DC093
@@ -507,24 +507,24 @@ F 3 "" H 8850 2800 30  0000 C CNN
 	0    1    1    0   
 $EndComp
 Text Label 9800 1050 0    60   ~ 0
-IGN1
+-IGN1
 Text Label 9800 1550 0    60   ~ 0
-IGN2
+-IGN2
 Text Label 9800 2050 0    60   ~ 0
-IGN3
+-IGN3
 Text Label 9800 2550 0    60   ~ 0
-IGN4
+-IGN4
 Text Notes 8750 950  0    60   ~ 0
 Ignition Coils
 Text Notes 9250 3450 0    60   ~ 0
 Injectors
-Text Label 8600 1350 2    60   ~ 0
+Text Label 8600 1300 2    60   ~ 0
 PD6
-Text Label 8600 1850 2    60   ~ 0
+Text Label 8600 1800 2    60   ~ 0
 PB0
-Text Label 8600 2350 2    60   ~ 0
+Text Label 8600 2300 2    60   ~ 0
 PB2
-Text Label 8600 2850 2    60   ~ 0
+Text Label 8600 2800 2    60   ~ 0
 PB4
 Text Label 8900 3700 2    60   ~ 0
 PD5
@@ -546,38 +546,38 @@ Text Label 5700 6400 0    60   ~ 0
 PD6
 Text Label 5700 6500 0    60   ~ 0
 PD7
-Text Label 3200 3550 0    60   ~ 0
+Text Label 11900 5300 0    60   ~ 0
 +BATT
-Text Label 2400 3450 2    60   ~ 0
+Text Label 13200 3850 2    60   ~ 0
 FP
-Text Label 3200 3150 0    60   ~ 0
+Text Label 12200 3500 0    60   ~ 0
 MAP
-Text Label 2400 3250 2    60   ~ 0
+Text Label 13200 3650 2    60   ~ 0
 MAT
-Text Label 3200 3250 0    60   ~ 0
+Text Label 12200 3600 0    60   ~ 0
 CLT
-Text Label 2400 3350 2    60   ~ 0
+Text Label 13200 3750 2    60   ~ 0
 O2
-Text Label 2400 3050 2    60   ~ 0
+Text Label 13200 3450 2    60   ~ 0
 CRNK
-Text Label 3200 3050 0    60   ~ 0
+Text Label 12200 3400 0    60   ~ 0
 CAM
-Text Label 3200 2650 0    60   ~ 0
-IGN1
-Text Label 3200 2750 0    60   ~ 0
-IGN2
-Text Label 3200 2850 0    60   ~ 0
-IGN3
-Text Label 3200 2950 0    60   ~ 0
-IGN4
-Text Label 2400 2650 2    60   ~ 0
-INJ1
-Text Label 2400 2750 2    60   ~ 0
-INJ2
-Text Label 2400 2850 2    60   ~ 0
-INJ3
-Text Label 2400 2950 2    60   ~ 0
-INJ4
+Text Label 11900 4300 0    60   ~ 0
+-IGN1
+Text Label 11900 4400 0    60   ~ 0
+-IGN2
+Text Label 11900 4500 0    60   ~ 0
+-IGN3
+Text Label 11900 4600 0    60   ~ 0
+-IGN4
+Text Label 11100 4300 2    60   ~ 0
+-INJ1
+Text Label 11100 4400 2    60   ~ 0
+-INJ2
+Text Label 11100 4500 2    60   ~ 0
+-INJ3
+Text Label 11100 4600 2    60   ~ 0
+-INJ4
 $Comp
 L R R13
 U 1 1 541EF5AE
@@ -690,7 +690,7 @@ F 3 "" H 1350 2950 60  0000 C CNN
 	1    1350 2950
 	1    0    0    -1  
 $EndComp
-Text Label 2400 3150 2    60   ~ 0
+Text Label 13200 3550 2    60   ~ 0
 TPS
 Text Label 5700 4800 0    60   ~ 0
 XTAL1
@@ -779,8 +779,8 @@ Text Label 5700 5050 0    60   ~ 0
 PC0
 Text Label 6600 2500 3    60   ~ 0
 PC1
-Text Label 3200 3350 0    60   ~ 0
-FI
+Text Label 12200 3700 0    60   ~ 0
+IDLE
 Text Notes 6700 750  0    60   ~ 0
 Fast Idle Solenoid
 $Comp
@@ -819,19 +819,19 @@ $EndComp
 $Comp
 L CONN_12X2 J1
 U 1 1 54219A05
-P 2800 3200
-F 0 "J1" H 2800 3850 60  0000 C CNN
-F 1 "AMPSEAL_23" V 2800 3200 50  0000 C CNN
-F 2 "" H 2800 3200 60  0000 C CNN
-F 3 "" H 2800 3200 60  0000 C CNN
-	1    2800 3200
+P 11500 4850
+F 0 "J1" H 11500 5500 60  0000 C CNN
+F 1 "AMPSEAL_23" V 11500 4850 50  0000 C CNN
+F 2 "" H 11500 4850 60  0000 C CNN
+F 3 "" H 11500 4850 60  0000 C CNN
+	1    11500 4850
 	1    0    0    -1  
 $EndComp
-Text Label 2400 3550 2    60   ~ 0
+Text Label 11100 5200 2    60   ~ 0
 VCC
-Text Label 2400 3750 2    60   ~ 0
+Text Label 11100 5400 2    60   ~ 0
 GNDPWR
-Text Label 3200 3450 0    60   ~ 0
+Text Label 11900 5100 0    60   ~ 0
 DGND
 $Comp
 L R R1
@@ -1155,7 +1155,6 @@ F 3 "" H 6800 4500 60  0000 C CNN
 	1    6800 4500
 	1    0    0    -1  
 $EndComp
-NoConn ~ 3200 3750
 $Comp
 L OPTO-TRANSISTOR4_2 U1
 U 1 1 54238CA2
@@ -1237,7 +1236,7 @@ L FUSE F?
 U 1 1 542A3C2A
 P 3650 1100
 F 0 "F?" H 3750 1150 40  0000 C CNN
-F 1 "20A ATO" H 3550 1050 40  0000 C CNN
+F 1 "MAIN 20A ATO" H 3550 1050 40  0000 C CNN
 F 2 "" H 3650 1100 60  0000 C CNN
 F 3 "" H 3650 1100 60  0000 C CNN
 	1    3650 1100
@@ -1254,8 +1253,8 @@ F 3 "" H 4500 1050 60  0000 C CNN
 	1    4500 1050
 	1    0    0    -1  
 $EndComp
-Text Label 3200 3650 0    60   ~ 0
-+12_SW
+Text Label 11900 5200 0    60   ~ 0
+IGN_SW
 $Comp
 L GNDPWR #PWR?
 U 1 1 542A3D95
@@ -1269,7 +1268,7 @@ F 3 "" H 4100 1700 60  0000 C CNN
 $EndComp
 NoConn ~ 4900 1000
 Text Label 4100 1300 2    60   ~ 0
-+12_SW
+IGN_SW
 $Comp
 L +BATT #PWR?
 U 1 1 542A3E4A
@@ -1323,7 +1322,7 @@ L FUSE F?
 U 1 1 542A4899
 P 6200 1850
 F 0 "F?" H 6300 1900 40  0000 C CNN
-F 1 "10A ATO" H 6100 1800 40  0000 C CNN
+F 1 "FP 10A ATO" H 6100 1800 40  0000 C CNN
 F 2 "" H 6200 1850 60  0000 C CNN
 F 3 "" H 6200 1850 60  0000 C CNN
 	1    6200 1850
@@ -1334,7 +1333,7 @@ L FUSE F?
 U 1 1 542A48A4
 P 7400 1850
 F 0 "F?" H 7500 1900 40  0000 C CNN
-F 1 "2A PPTC" H 7300 1800 40  0000 C CNN
+F 1 "IDLE 2A PPTC" H 7300 1800 40  0000 C CNN
 F 2 "" H 7400 1850 60  0000 C CNN
 F 3 "" H 7400 1850 60  0000 C CNN
 	1    7400 1850
@@ -1349,7 +1348,7 @@ L FUSE F?
 U 1 1 542A4A1B
 P 8000 1250
 F 0 "F?" H 8100 1300 40  0000 C CNN
-F 1 "5A ATO" H 7900 1200 40  0000 C CNN
+F 1 "INJB 5A ATO" H 7900 1200 40  0000 C CNN
 F 2 "" H 8000 1250 60  0000 C CNN
 F 3 "" H 8000 1250 60  0000 C CNN
 	1    8000 1250
@@ -1360,16 +1359,14 @@ L FUSE F?
 U 1 1 542A4A26
 P 7700 1250
 F 0 "F?" H 7800 1300 40  0000 C CNN
-F 1 "5A ATO" H 7600 1200 40  0000 C CNN
+F 1 "INJ A 5A ATO" H 7600 1200 40  0000 C CNN
 F 2 "" H 7700 1250 60  0000 C CNN
 F 3 "" H 7700 1250 60  0000 C CNN
 	1    7700 1250
 	0    -1   -1   0   
 $EndComp
-Text Label 8000 1700 3    60   ~ 0
-INJ+A
-Text Label 7700 1700 3    60   ~ 0
-INJ+B
+Text Label 7700 2000 3    60   ~ 0
++INJA
 Wire Wire Line
 	5700 4800 6000 4800
 Wire Wire Line
@@ -1655,17 +1652,7 @@ Wire Wire Line
 Wire Wire Line
 	8000 1500 8000 2000
 Wire Wire Line
-	8000 1600 7900 1600
-Wire Wire Line
-	7900 1600 7900 2000
-Connection ~ 8000 1600
-Wire Wire Line
 	7700 1500 7700 2000
-Wire Wire Line
-	7700 1600 7800 1600
-Wire Wire Line
-	7800 1600 7800 2000
-Connection ~ 7700 1600
 Wire Wire Line
 	7700 800  7700 1000
 Wire Wire Line
@@ -1701,7 +1688,7 @@ Connection ~ 5400 1500
 Wire Wire Line
 	6400 1500 6600 1500
 Connection ~ 6600 1500
-Text Label 2400 3650 2    60   ~ 0
+Text Label 11900 5400 0    60   ~ 0
 GNDPWR
 Connection ~ 5000 800 
 Wire Wire Line
@@ -1709,4 +1696,28 @@ Wire Wire Line
 Connection ~ 8000 800 
 Wire Wire Line
 	5000 800  8000 800 
+$Comp
+L CONN_20X2 P?
+U 1 1 542B8B11
+P 11500 2850
+F 0 "P?" H 11500 3900 60  0000 C CNN
+F 1 "CONN_20X2" V 11500 2850 50  0000 C CNN
+F 2 "" H 11500 2850 60  0000 C CNN
+F 3 "" H 11500 2850 60  0000 C CNN
+	1    11500 2850
+	1    0    0    -1  
+$EndComp
+Text Label 8000 2000 3    60   ~ 0
++INJB
+NoConn ~ 11900 3600
+NoConn ~ 11900 3700
+NoConn ~ 11900 3800
+NoConn ~ 11100 3800
+NoConn ~ 11100 3700
+Text Label 11100 4700 2    60   ~ 0
++INJA
+Text Label 11900 4700 0    60   ~ 0
++INJB
+Text Label 11100 5300 2    60   ~ 0
++BATT
 $EndSCHEMATC

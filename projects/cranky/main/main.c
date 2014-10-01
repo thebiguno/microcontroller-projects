@@ -1,17 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static volatile uint8_t load_zone;
-static volatile uint8_t rpm_zone;
-static volatile uint8_t tooth = 0;		// a value between 0 and 35
-static volatile uint16_t last_t = 0;	// the time of the last tooth signal
-static volatile uint8_t cam = 0;		// a value between 0 and 3
-static volatile uint16_t cam_teeth = 0;	// how many teeth between cam signals
-static volatile uint8_t cal = 11; 		// calibration has been performed (worst case is 10 rotations)
-static volatile uint8_t pl;	// the current spark plug
-static volatile uint8_t in; // the current injector
-static volatile uint8_t dc; // the injector duty cycle
-
 static volatile uint8_t plug[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
 static volatile uint8_t inj[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
 //static volatile uint8_t frequency;
@@ -24,36 +13,79 @@ static volatile uint8_t inj[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7)
  *           injector battery voltage correction (ms/V)
  *           pwm time threshold (ms)
  *           injector pwm period (µs)
+ *           molex minifit connectors
+ *           coolant temperature guage pwm
+ *           clean tacho guage out
+ *           determine both spark and injector configuration
+ *           organize tuning values into a register array
+ *           organize sensor data and computed values into register array
+ *           write serial (or usb) code for reading / writing register
+ *           use a union for the register
  */
 
 
-// an 8x8 matrix of spark advance values specified in degrees
-// first index is the rpm zone, 0 for slow, 7 for fast
-// second index is the engine load, 0 for low, 7 for high
-// TODO tune these values
-static uint8_t advance[8][8] = {
-	// low load     ...     high load
-	{  0,  8,  5,  3,  2,  1,  1,  0 },		// slow; < 500 rpm
-	{ 14, 12, 10,  8,  8,  6,  6,  5 },
-	{ 20, 13, 16, 14, 13, 11, 10,  9 },
-	{ 26, 19, 21, 19, 18, 16, 15, 14 },
-	{ 32, 21, 26, 24, 23, 21, 20, 18 },
-	{ 38, 31, 31, 29, 28, 26, 24, 23 },
-	{ 43, 34, 37, 35, 33, 31, 29, 27 },
-	{ 46, 44, 42, 40, 38, 36, 34, 32 }		// fast
-};
+union u {
+	struct s {
+		// tuning values
+		
+		// an 8x8 matrix of spark advance values specified in degrees
+		// first index is the rpm zone, 0 for slow, 7 for fast
+		// second index is the engine load, 0 for low, 7 for high
+		// determines how many degrees to advance the spark based on the rpm zone and load zone
+		static uint8_t advance[8][8] = {
+			// low load     ...     high load
+			{  0,  8,  5,  3,  2,  1,  1,  0 },		// slow; < 500 rpm
+			{ 14, 12, 10,  8,  8,  6,  6,  5 },
+			{ 20, 13, 16, 14, 13, 11, 10,  9 },
+			{ 26, 19, 21, 19, 18, 16, 15, 14 },
+			{ 32, 21, 26, 24, 23, 21, 20, 18 },
+			{ 38, 31, 31, 29, 28, 26, 24, 23 },
+			{ 43, 34, 37, 35, 33, 31, 29, 27 },
+			{ 46, 44, 42, 40, 38, 36, 34, 32 }		// fast
+		};
+		// determines how open the injectors should be based on the rpm zone and load zone
+		static uint8_t injector[8][8] = {
+			// low load    ...    high load
+			{ 10, 10, 10, 10, 10, 10, 10, 10 },		// slow; < 500 rpm
+			{ 20, 20, 20, 20, 20, 20, 20, 20 },
+			{ 30, 30, 30, 30, 30, 30, 30, 30 },
+			{ 40, 40, 40, 40, 40, 40, 40, 40 },
+			{ 50, 50, 50, 50, 50, 50, 50, 50 },
+			{ 60, 60, 60, 60, 60, 60, 60, 60 },
+			{ 70, 70, 70, 70, 70, 70, 70, 70 },
+			{ 80, 80, 80, 80, 80, 80, 80, 80 },		// fast
+		};
+		// maps the throttle position into load zones
+		static uint8_t load_zones[8] = { 32, 64, 96, 128, 160, 192, 224, 256 };
+		// maps the frequency into rpm zones
+		static uint8_t rpm_zones[8] = { 128, 64, 32, 16, 8, 4, 2, 1 };
+		static uint16_t max_dwell;					// the maximum dwell in us (TODO or should this be a value in timer ticks?)
+		
+		// running values
+		static volatile uint8_t load_zone;
+		static volatile uint8_t rpm_zone;
+		static volatile uint8_t cam_tooth = 0;		// the current cam tooth; a value between 0 and 3
+		static volatile uint8_t crank_tooth = 0;	// the current crank tooth; a value between 0 and 35
+		static volatile uint16_t last_t = 0;		// the timer2 value at the last tooth signal
+		static volatile uint16_t cam_teeth = 0;		// how many crank events between cam events
+		static volatile uint8_t cal = 11; 			// calibration has been performed (worst case is 10 rotations)
+		static volatile uint8_t pl;					// the current spark plug; a value between 0 and 3
+		static volatile uint16_t dwell;				// the spark plug dwell in us (TODO or should this be a value in timer ticks?)
+		static volatile uint8_t in; 				// the current injector; a value between 0 and 3
+		static volatile uint8_t dc; 				// the injector duty cycle
+		static volatile uint8_t advance;			// the current spark advance in degrees;
 
-static uint8_t injector[8][8] = {
-	// low load    ...    high load
-	{ 10, 10, 10, 10, 10, 10, 10, 10 },		// slow; < 500 rpm
-	{ 20, 20, 20, 20, 20, 20, 20, 20 },
-	{ 30, 30, 30, 30, 30, 30, 30, 30 },
-	{ 40, 40, 40, 40, 40, 40, 40, 40 },
-	{ 50, 50, 50, 50, 50, 50, 50, 50 },
-	{ 60, 60, 60, 60, 60, 60, 60, 60 },
-	{ 70, 70, 70, 70, 70, 70, 70, 70 },
-	{ 80, 80, 80, 80, 80, 80, 80, 80 },		// fast
-};
+		static volatile uint8_t adc_pin;			// the adc pin currently being read
+		static volatile uint8_t adc_tp;				// adc reading of the throttle position sensor
+		static volatile uint8_t adc_batt;			// adc reading of the battery voltage
+		static volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
+		static volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
+		static volatile uint8_t adc_clt;			// adc reading of the coolant temperature
+	};
+	uint8_t reg[512]; // TODO make this the right size
+}
+
+
 
 //In general:
 // Low MAP (low engine load) = more spark advance
@@ -130,7 +162,7 @@ int main(void) {
 	EICRA = _BV(ISC00) | _BV(ISC01) | _BV(ISC10) | _BV(ISC11); // INT0 and INT1 interrupt on rising edge
 	EIMSK = _BV(INT0) | _BV(INT1); // enable interrupts on INT0 (crank) and INT1 (cam sync)
 	
-	// set up pin outputs
+	// set up pin outputs // TODO, this is now wrong
 	DDRB = _BV(PINB0) | _BV(PINB1) | _BV(PINB2) | _BV(PINB3);	// spark plugs
 	DDRD = _BV(PIND4) | _BV(PIND5) | _BV(PIND6) | _BV(PIND7);	// injectors
 
@@ -190,7 +222,7 @@ ISR(INT0_vect) {
 	} else if (tooth == 12 || tooth == 30) {
 		// now 60 degrees before 0/180 degrees, set the timer for the spark advance
 		uint8_t adv = advance[rpm_zone][load_zone]; // in degrees
-		adv = 10;
+		adv = 10; // TODO remove
 		// 60 degrees - advance degrees (1024 prescale -> 8 prescale)
 		// t is a /1024 prescaled value and maxes out at about 66 @ 500 rpm
 		// OCR1A is a /8 prescaled value
