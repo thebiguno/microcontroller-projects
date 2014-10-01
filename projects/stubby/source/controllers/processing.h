@@ -28,6 +28,10 @@
 #define MESSAGE_SEND_OPTICAL					0x2B
 #define MESSAGE_REQUEST_SET_LED					0x2C
 
+#if MAGNETOMETER == 0
+#warning   Without a magnetometer, Processing API command MESSAGE_REQUEST_TURN will not work, and MESSAGE_REQUEST_MOVE will not be accurate.
+#endif
+
 /*
  * Main processing method, where we look for incoming commands and perform actions as requested.
  */
