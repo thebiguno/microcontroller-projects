@@ -33,9 +33,9 @@ Leg legs[LEG_COUNT] = {
 //Stubby state variables
 static volatile uint8_t power = 0x00;					//0 is off, 1 is on
 static volatile uint8_t controller = 0x00;				//0 is no controller, 1 is Universal Controller, 2 is Processing API
-static volatile uint8_t debug = 0x00;					//0 is no debug, 1 is show debug
-volatile uint8_t pending_acknowledge = 0x00;		//When set, we will send a message in the delay code
-volatile uint8_t pending_complete = 0x00;		//When set, we will send a message in the delay code
+volatile uint8_t debug = 0x00;							//0 is no debug, 1 is show debug
+volatile uint8_t pending_acknowledge = 0x00;			//When set, we will send a message in the delay code
+volatile uint8_t pending_complete = 0x00;				//When set, we will send a message in the delay code
 
 int main (void){
 	wdt_enable(WDTO_2S);
