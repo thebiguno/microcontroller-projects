@@ -59,6 +59,7 @@
 #define CONTROLLER_NONE			0x00
 #define CONTROLLER_UC			0x01
 #define CONTROLLER_PROCESSING	0x02
+#define CONTROLLER_CALIBRATION	0x03
 
 
 void servo_init();

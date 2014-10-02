@@ -7,6 +7,7 @@
 #include "../Stubby.h"
 #include "../Leg.h"
 #include "../gait/gait.h"
+#include "../hardware/battery.h"
 #include "../hardware/magnetometer.h"
 #include "../types/Point.h"
 #include "../util/delays.h"
@@ -25,9 +26,9 @@
 #define MESSAGE_SEND_MAGNETOMETER_CALIBRATION			0x38
 
 //Reset Calibration modes
-#define RESET_CALIBRATION_JOINTS						0x01
-#define RESET_CALIBRATION_FEET							0x02
-#define RESET_CALIBRATION_MAGNETOMETER					0x03
+#define MODE_CALIBRATION_JOINTS							0x01
+#define MODE_CALIBRATION_FEET							0x02
+#define MODE_CALIBRATION_MAGNETOMETER					0x03
 
 /*
  * Main entry point to the calibration code.  When controller is set to Calibration, this method is called from main().
