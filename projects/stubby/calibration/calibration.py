@@ -37,16 +37,16 @@ Stubby Calibration: Please selection an option below:
 	1) Joint Calibration
 	2) X,Y,Z Foot Position Calibration
 	3) Magnetometer Calibration"
-	L) Load All Values from EEPROM
-	S) Save All Values to EEPROM
+	L) Load all values from EEPROM
+	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
 """)
 		choice = raw_input("Selected Option: ")
 	
 		if (choice == "1"):
-			doJointCalibration(ser)
+			doLegCalibration(ser, MODE_CALIBRATION_JOINTS)
 		elif (choice == "2"):
-			doFootCalibration(ser)
+			doLegCalibration(ser, MODE_CALIBRATION_FEET)
 		elif (choice == "3"):
 			doMagnetometerCalibration(ser)
 		elif (choice == "L" or choice == "l"):
@@ -63,65 +63,88 @@ Stubby Calibration: Please selection an option below:
 		
 ########## Primary functions here ##########
 
-def doJointCalibration(ser):
-		writeMessage(ser, MESSAGE_REQUEST_JOINT_CALIBRATION, [])
-		response = readMessage(ser)
-		if (response == False):
-			print("Communication failure")
-			return
-		elif (response["command"] != MESSAGE_SEND_JOINT_CALIBRATION):
-			print("Invalid response detected")
-			return
+def doLegCalibration(ser, mode):
+	requestMessage = 0x00
+	sendMessage = 0x00
+	if (mode == MODE_CALIBRATION_JOINTS):
+		requestMessage = MESSAGE_REQUEST_JOINT_CALIBRATION
+		sendMessage = MESSAGE_SEND_JOINT_CALIBRATION
+	elif (mode == MODE_CALIBRATION_FEET):
+		requestMessage = MESSAGE_REQUEST_FOOT_CALIBRATION
+		sendMessage = MESSAGE_SEND_FOOT_CALIBRATION
+	else:
+		print("Invalid mode detected")
+		return
+		
 
-		d = response["data"]
-		print(d)
-		while True:
-			print("\nPlease select a leg to modify")
-			for l in range(0, 6):
-				print("	" + str(l) + ") Leg " + str(l))
-			print("	R) Reset all joint values to 0")
-			print("	Q) Return to main menu")
-			
-			leg = raw_input("Selected Option: ")
-			if (digit.match(leg) and int(leg) >= 0 and int(leg) <= 5):
-				leg = int(leg)
-				while True:
+	writeMessage(ser, requestMessage, [])
+	response = readMessage(ser)
+	if (response == False):
+		print("Communication failure")
+		return
+	elif (response["command"] != sendMessage):
+		print("Invalid response detected")
+		return
+
+	d = response["data"]
+	while True:
+		print("\nPlease select a leg to modify")
+		print("	0) Front Left")
+		print("	1) Middle Left")
+		print("	2) Rear Left")
+		print("	3) Rear Right")
+		print("	4) Middle Right")
+		print("	5) Front Right")
+		print("	R) Reset all joint values to 0")
+		print("	Q) Return to main menu")
+		
+		leg = raw_input("Selected Option: ")
+		if (digit.match(leg) and int(leg) >= 0 and int(leg) <= 5):
+			leg = int(leg)
+			while True:
+				if (mode == MODE_CALIBRATION_JOINTS):
 					print("\nPlease select a joint to modify")
 					print("	0) Tibia")
 					print("	1) Femur")
 					print("	2) Coxa")
 					print("	Q) Return to leg selection menu")
+				elif (mode == MODE_CALIBRATION_FEET):
+					print("\nPlease select a foot co-ordinate to modify")
+					print("	0) X")
+					print("	1) Y")
+					print("	2) Z")
+					print("	Q) Return to leg selection menu")
+					
+				joint = raw_input("Selected Option: ")
+				if (digit.match(joint) and int(joint) >= 0 and int(joint) <= 2):
+					joint = int(joint)
+					print("\nPress '+' to increment, '-' to decrement, a valid number (-128 to 127), or 'Q' to return to joint selection.")
+					while True:
+						key = raw_input("Selected Option (current value: " + str(toSignedByte(d[leg * 3 + int(joint)])) + "): ")
 
-					joint = raw_input("Selected Option: ")
-					if (digit.match(joint) and int(joint) >= 0 and int(joint) <= 2):
-						joint = int(joint)
-						print("\nPress '+' to increment, '-' to decrement, a valid number (-128 to 127), or 'Q' to return to joint selection.")
-						while True:
-							key = raw_input("Selected Option (current value: " + str(toSignedByte(d[leg * 3 + int(joint)])) + "): ")
-
-							if (key == "+"):
-								d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] + 1))
-							elif (key == "-"):
-								d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] - 1))
-							elif (integer.match(key) and int(key) >= -128 and int(key) <= 127):
-								d[leg * 3 + int(joint)] = toUnsignedByte(int(key))
-							elif (key == "Q" or key == "q"):
-								break;
-							else:
-								print("Invalid value")
-							writeMessage(ser, MESSAGE_SEND_JOINT_CALIBRATION, d)
-							
-					elif (joint == "Q" or joint == "q"):
-						break;
-					else:
-						print("Invalid joint selected.")
-			elif (leg == "R" or leg == "r"):
-				writeMessage(ser, MESSAGE_RESET_CALIBRATION, [MODE_CALIBRATION_JOINTS])
-			elif (leg == "Q" or leg == "q"):
-				print("Exiting to main menu")
-				return
-			else:
-				print("Invalid leg selected.")
+						if (key == "+"):
+							d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] + 1))
+						elif (key == "-"):
+							d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] - 1))
+						elif (integer.match(key) and int(key) >= -128 and int(key) <= 127):
+							d[leg * 3 + int(joint)] = toUnsignedByte(int(key))
+						elif (key == "Q" or key == "q"):
+							break;
+						else:
+							print("Invalid value")
+						writeMessage(ser, sendMessage, d)
+						
+				elif (joint == "Q" or joint == "q"):
+					break;
+				else:
+					print("Invalid joint selected.")
+		elif (leg == "R" or leg == "r"):
+			writeMessage(ser, MESSAGE_RESET_CALIBRATION, [mode])
+		elif (leg == "Q" or leg == "q"):
+			print("Exiting to main menu")
+			return
+		else:
+			print("Invalid leg selected.")
 
 ########## Helper functions here ##########
 
@@ -215,6 +238,11 @@ def readMessage(ser):
 					pos = pos + 1
 
 def toSignedByte(b):
+	if (b > 255):
+		b = 256
+	elif (b < 0):
+		b = 0
+		
 	if (b > 127):
 		return (b - 256)
 	else:
@@ -222,9 +250,9 @@ def toSignedByte(b):
 
 def toUnsignedByte(b):
 	if (b < 0):
-		return (256 + b)
+		return (256 + b) & 0xFF
 	else:
-		return b
+		return b & 0xFF
 
 ########## Main startup hooks here ##########
 

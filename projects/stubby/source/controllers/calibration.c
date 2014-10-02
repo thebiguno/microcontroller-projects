@@ -183,7 +183,7 @@ void calibration_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length)
 		if (length == 18){
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
 				for (uint8_t j = 0; j < JOINT_COUNT; j++){
-					legs[l].setCalibration(j + CALIBRATION_COUNT, message[(l * JOINT_COUNT) + j]);
+					legs[l].setCalibration(j + JOINT_COUNT, message[(l * JOINT_COUNT) + j]);
 				}
 			}
 			
