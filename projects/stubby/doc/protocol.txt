@@ -77,3 +77,4 @@ SendFootCalibration			Either -> Either		18 bytes, ordered LEG0_X, LEG0_Y, LEG0_Z
 
 RequestMagnetometerCalibration	Control -> Stubby	Null																				SendMagnetometerCalibration message
 SendMagnetometerCalibration	Either -> Either		4 bytes (two 16 bit signed integers, MSB first): X offset, Y offset					None
+StartMagnetometerCalibration	Control -> Stubby	Null																				Repeated SendMagnetometerCalibration messages

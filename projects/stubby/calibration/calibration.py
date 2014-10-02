@@ -20,6 +20,7 @@ MESSAGE_REQUEST_FOOT_CALIBRATION = 0x35
 MESSAGE_SEND_FOOT_CALIBRATION = 0x36
 MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION = 0x37
 MESSAGE_SEND_MAGNETOMETER_CALIBRATION = 0x38
+MESSAGE_START_MAGNETOMETER_CALIBRATION = 0x39
 
 MODE_CALIBRATION_JOINTS = 0x01
 MODE_CALIBRATION_FEET = 0x02
@@ -120,14 +121,14 @@ def doLegCalibration(ser, mode):
 					joint = int(joint)
 					print("\nPress '+' to increment, '-' to decrement, a valid number (-128 to 127), or 'Q' to return to joint selection.")
 					while True:
-						key = raw_input("Selected Option (current value: " + str(toSignedByte(d[leg * 3 + int(joint)])) + "): ")
+						key = raw_input("Selected Option (current value: " + str(to_int8_t(d[leg * 3 + int(joint)])) + "): ")
 
 						if (key == "+"):
-							d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] + 1))
+							d[leg * 3 + int(joint)] = to_uint8_t(to_int8_t(d[leg * 3 + int(joint)] + 1))
 						elif (key == "-"):
-							d[leg * 3 + int(joint)] = toUnsignedByte(toSignedByte(d[leg * 3 + int(joint)] - 1))
+							d[leg * 3 + int(joint)] = to_uint8_t(to_int8_t(d[leg * 3 + int(joint)] - 1))
 						elif (integer.match(key) and int(key) >= -128 and int(key) <= 127):
-							d[leg * 3 + int(joint)] = toUnsignedByte(int(key))
+							d[leg * 3 + int(joint)] = to_uint8_t(int(key))
 						elif (key == "Q" or key == "q"):
 							break;
 						else:
@@ -145,6 +146,80 @@ def doLegCalibration(ser, mode):
 			return
 		else:
 			print("Invalid leg selected.")
+
+def doMagnetometerCalibration(ser):
+	while True:
+		writeMessage(ser, MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION, [])
+		response = readMessage(ser)
+		if (response == False):
+			print("Communication failure")
+			return
+		elif (response["command"] != MESSAGE_SEND_MAGNETOMETER_CALIBRATION):
+			print("Invalid response detected")
+			return
+		
+		d = response["data"]
+	
+		print("\nPlease select an option")
+		print("	C) Show current magnetometer offsets")
+		print("	A) Start auto magnetometer offset calibration")
+		print("	M) Set manual magnetometer offsets")
+		print("	Q) Return to main menu")
+		
+		option = raw_input("Selected Option: ")
+
+		if (option == "C" or option == "c"):
+			x = to_int16_t((d[0] << 8) + d[1])
+			y = to_int16_t((d[2] << 8) + d[3])
+			print("Current offsets: x=" + str(x) + ", y=" + str(y))
+		elif (option == "A" or option == "a"):
+			print("Stubby will now slowly turn in place, for about 3 - 5 rotations.  Please stand by...")
+			writeMessage(ser, MESSAGE_START_MAGNETOMETER_CALIBRATION, [])
+			xValues = []
+			yValues = []
+			print("Reading raw values:\nx\ty")
+			while True:
+				rawValue = readMessage(ser)
+				if (rawValue == False):
+					break
+				rawData = rawValue["data"]
+				xValue = to_int16_t((rawData[0] << 8) + rawData[1]);
+				yValue = to_int16_t((rawData[2] << 8) + rawData[3]);
+				xValues.append(xValue)
+				yValues.append(yValue)
+				print(str(xValue) + "\t" + str(yValue))
+			xAverage = -1 * sum(xValues) / len(xValues)
+			yAverage = -1 * sum(yValues) / len(yValues)
+			print("Auto calculated offsets: " + str(xAverage) + ", " + str(yAverage))
+			useNewOffsets = raw_input("Do you want to use these offsets? (Y/N) ")
+			if (useNewOffsets == "Y" or useNewOffsets == "y"):
+				#Send new calibration values
+				data = []
+				data.append((to_uint16_t(xAverage) >> 8) & 0xFF)
+				data.append((to_uint16_t(xAverage)) & 0xFF)
+				data.append((to_uint16_t(yAverage) >> 8) & 0xFF)
+				data.append((to_uint16_t(yAverage)) & 0xFF)
+				writeMessage(ser, MESSAGE_SEND_MAGNETOMETER_CALIBRATION, data)
+			
+		elif (option == "M" or option == "m"):
+			xOffset = raw_input("X Offset: ")
+			yOffset = raw_input("Y Offset: ")
+			if (not(integer.match(xOffset)) or not(integer.match(yOffset))):
+				print("Invalid offset specified.  Please enter a valid integer.")
+			else:
+				data = []
+				data.append((to_uint16_t(int(xOffset)) >> 8) & 0xFF)
+				data.append((to_uint16_t(int(xOffset))) & 0xFF)
+				data.append((to_uint16_t(int(yOffset)) >> 8) & 0xFF)
+				data.append((to_uint16_t(int(yOffset))) & 0xFF)
+				writeMessage(ser, MESSAGE_SEND_MAGNETOMETER_CALIBRATION, data)
+				
+		elif (option == "Q" or option == "q"):
+			print("Exiting to main menu")
+			return
+		else:
+			print("Invalid option selected.")
+
 
 ########## Helper functions here ##########
 
@@ -237,22 +312,41 @@ def readMessage(ser):
 					buf[pos - 3] = b
 					pos = pos + 1
 
-def toSignedByte(b):
-	if (b > 255):
-		b = 256
-	elif (b < 0):
-		b = 0
+#These next four functions are the equivalent of casting to the specified c types.
+def to_int8_t(b):
+	if (b > 0xFF):
+		b = 0xFF
+	elif (b < 0x00):
+		b = 0x00
 		
-	if (b > 127):
-		return (b - 256)
+	if (b > 0x7F):
+		return (b - 0xFF)
 	else:
 		return b
 
-def toUnsignedByte(b):
-	if (b < 0):
-		return (256 + b) & 0xFF
+def to_uint8_t(b):
+	if (b < 0x00):
+		return (0xFF + b) & 0xFF
 	else:
 		return b & 0xFF
+	
+def to_int16_t(i):
+	if (i > 0xFFFF):
+		i = 0xFFFF
+	elif (i < 0x0000):
+		i = 0x0000
+		
+	if (i > 0x7FFF):
+		return (i - 0xFFFF)
+	else:
+		return i
+
+def to_uint16_t(i):
+	if (i < 0x0000):
+		return (0xFFFF + i) & 0xFFFF
+	else:
+		return i & 0xFFFF
+
 
 ########## Main startup hooks here ##########
 

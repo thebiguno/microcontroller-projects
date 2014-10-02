@@ -44,7 +44,11 @@ int main (void){
 	servo_init(legs);
 	serial_init_b(38400);
 	battery_init();
-	magnetometer_set_offsets(186, 1431);
+
+	int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
+	int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
+	magnetometer_set_offsets(x, y);
+
 	magnetometer_init();
 	timer2_init();
 

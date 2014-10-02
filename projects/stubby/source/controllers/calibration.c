@@ -12,6 +12,7 @@ static volatile uint8_t resetCalibration = 0x00;
 static volatile uint8_t requestJointCalibration = 0x00;
 static volatile uint8_t requestFootCalibration = 0x00;
 static volatile uint8_t requestMagnetometerCalibration = 0x00;
+static volatile uint8_t startMagnetometerCalibration = 0x00;
 
 void doSaveCalibration(){
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -75,6 +76,40 @@ void calibration_command_executor(){
 			}
 			pwm_apply_batch();
 			mode = 0x00;
+		}
+		else if (mode == MODE_CALIBRATION_MAGNETOMETER && startMagnetometerCalibration){
+			startMagnetometerCalibration = 0x00;
+			uint8_t step_index = 0;
+
+			delay_ms(200);
+			//Rotate slowly in place, constantly sending magnetometer readings to the computer.  This 
+			// many iterations should be about 3 - 5 full turns.
+			for (uint16_t i = 0; i < 2000; i++){
+				wdt_reset();
+				for (uint8_t l = 0; l < LEG_COUNT; l++){
+					Point step = gait_step(legs[l], step_index, 0, 0, 0.5);
+					legs[l].setOffset(step);
+				}
+				pwm_apply_batch();
+				
+				step_index++;
+				if (step_index > gait_step_count()){
+					step_index = 0;
+				}
+				
+				delay_ms(20);
+				
+				//Send magnetometer reading
+				int16_t x;
+				int16_t y;
+				magnetometer_get_raw(&x, &y);
+				uint8_t message[4];
+				message[0] = (x >> 8) & 0xFF;
+				message[1] = x & 0xFF;
+				message[2] = (y >> 8) & 0xFF;
+				message[3] = y & 0xFF;
+				protocol_send_message(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, message, 4);
+			}
 		}
 		else if (mode) {
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -202,5 +237,9 @@ void calibration_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length)
 			
 			mode = MODE_CALIBRATION_MAGNETOMETER;
 		}
+	}
+	else if (cmd == MESSAGE_START_MAGNETOMETER_CALIBRATION){
+		startMagnetometerCalibration = 0x01;
+		mode = MODE_CALIBRATION_MAGNETOMETER;
 	}
 }

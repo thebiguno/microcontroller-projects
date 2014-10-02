@@ -28,6 +28,11 @@ void magnetometer_get_offsets(int16_t *x, int16_t *y);
 void magnetometer_set_offsets(int16_t x, int16_t y);
 
 /*
+ * Read the raw values into x and y
+ */
+void magnetometer_get_raw(int16_t *x, int16_t *y);
+
+/*
  * Read the compass heading, with 0 pointing straight north, positive values
  * pointing east, and negative values pointing west.  Value is in radians.
  */
