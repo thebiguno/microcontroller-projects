@@ -1,5 +1,6 @@
 #include "Stubby.h"
 
+#include "controllers/calibration.h"
 #include "controllers/processing.h"
 #include "controllers/universal_controller.h"
 #include "gait/gait.h"
@@ -32,7 +33,7 @@ Leg legs[LEG_COUNT] = {
 
 //Stubby state variables
 static volatile uint8_t power = 0x00;					//0 is off, 1 is on
-static volatile uint8_t controller = 0x00;				//0 is no controller, 1 is Universal Controller, 2 is Processing API
+volatile uint8_t controller = 0x00;						//0 is no controller, 1 is Universal Controller, 2 is Processing API, 3 is Calibration API
 volatile uint8_t debug = 0x00;							//0 is no debug, 1 is show debug
 volatile uint8_t pending_acknowledge = 0x00;			//When set, we will send a message in the delay code
 volatile uint8_t pending_complete = 0x00;				//When set, we will send a message in the delay code
@@ -43,10 +44,12 @@ int main (void){
 	servo_init(legs);
 	serial_init_b(38400);
 	battery_init();
-#if MAGNETOMETER == 1
-	magnetometer_set_offsets(186, 1431);
+
+	int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
+	int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
+	magnetometer_set_offsets(x, y);
+
 	magnetometer_init();
-#endif
 	timer2_init();
 
 	while (1){
@@ -57,6 +60,9 @@ int main (void){
 		}
 		else if (controller == CONTROLLER_PROCESSING){
 			processing_command_executor();
+		}
+		else if (controller == CONTROLLER_CALIBRATION){
+			calibration_command_executor();
 		}
 		
 		delay_ms(10);
@@ -124,6 +130,9 @@ void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		else if (message[0] == 'P'){
 			controller = CONTROLLER_PROCESSING;
 		}
+		else if (message[0] == 'C'){
+			controller = CONTROLLER_CALIBRATION;
+		}
 		//TODO Put any other supported control modes here.
 		else {
 			controller = CONTROLLER_NONE;
@@ -144,6 +153,10 @@ void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 	//This is a Processing API message (namespace 0x2X)
 	else if (controller == CONTROLLER_PROCESSING && (cmd & 0xF0) == 0x20){
 		processing_dispatch_message(cmd, message, length);
+	}
+	//This is a Calibration API message (namespace 0x3X)
+	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
+		calibration_dispatch_message(cmd, message, length);
 	}
 	else {
 		//TODO Send debug message 'unknown command' or similar

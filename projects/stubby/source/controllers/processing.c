@@ -94,7 +94,7 @@ void processing_command_executor(){
 			if (veer_correction > 0.5) veer_correction = 0.5;
 			else if (veer_correction < -0.5) veer_correction = -0.5;
 
-			static int8_t step_index = 0;
+			static uint8_t step_index = 0;
 			
 			if (desired_move_distance < (STEP_DISTANCE * desired_move_velocity)){
 				move_required = 0x00;
@@ -125,7 +125,7 @@ void processing_command_executor(){
 		}
 		
 		if (turn_required){
-			static int8_t step_index = 0;
+			static uint8_t step_index = 0;
 			double current_heading = magnetometer_read_heading();
 			
 			double difference = difference_between_angles(desired_turn_heading, current_heading);
