@@ -37,7 +37,7 @@ def main(ser):
 Stubby Calibration: Please selection an option below:
 	1) Joint Calibration
 	2) X,Y,Z Foot Position Calibration
-	3) Magnetometer Calibration"
+	3) Magnetometer Calibration
 	L) Load all values from EEPROM
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
@@ -351,10 +351,10 @@ def to_uint16_t(i):
 ########## Main startup hooks here ##########
 
 if (__name__=="__main__"):
-	if (len(sys.argv) != 3):
-		print("Usage: " + sys.argv[0] + " <port> <baud>")
+	if (len(sys.argv) != 2):
+		print("Usage: " + sys.argv[0] + " <port>")
 		sys.exit(0)
 
-	ser = serial.Serial(sys.argv[1], sys.argv[2], timeout=1)
+	ser = serial.Serial(sys.argv[1], 38400, timeout=1)
 
 	main(ser)
