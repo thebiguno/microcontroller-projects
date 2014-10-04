@@ -3,8 +3,8 @@
 
 static volatile uint8_t ign_pins[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
 static volatile uint8_t inj_pins[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
-uint8_t ign_pin;
-uint8_t inj_pin;
+volatile uint8_t ign_pin;
+volatile uint8_t inj_pin;
 
 //static volatile uint8_t frequency;
 
@@ -40,40 +40,36 @@ typedef struct {
 	// maps the frequency into rpm zones
 	uint8_t rpm_zones[8];
 
-	uint16_t max_ign_dwell;				// the maximum dwell in timer0 ticks
+	volatile uint16_t max_ign_dwell;	// the maximum dwell in timer0 ticks
 	
 	// running values
-	uint8_t load_zone;			// the current load zone; a value between 0 and 8
-	uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
-	uint8_t cam;				// the current cam tooth; a value between 0 and 3
-	uint8_t crank;				// the current crank tooth; a value between 0 and 35
-	uint16_t crank_ticks;		// the number of timer2 ticks since the last crank tooth
-	uint16_t cam_teeth;			// how many crank teeth between cam teeth
-	uint8_t crank_cal		; 	// crank calibration has been performed; worst case is 10 rotations; 0 means calibrated
-	uint8_t ign;				// the current spark plug; a value between 0 and 3
-	uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
-	uint8_t ign_adv_deg;		// the current spark advance in degrees
-	uint8_t inj; 				// the current injector; a value between 0 and 3
-	uint8_t inj_dc;				// the injector duty cycle in timer2 ticks
+	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
+	volatile uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
+	volatile uint8_t cam;				// the current cam tooth; a value between 0 and 3
+	volatile uint8_t crank;				// the current crank tooth; a value between 0 and 35
+	volatile uint8_t ign;				// the current spark plug; a value between 0 and 3
+	volatile uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
+	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
+	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
+	volatile uint8_t inj_dc;			// the injector duty cycle in timer2 ticks
 
-	uint8_t adc_pin;			// the adc pin currently being read
-	uint8_t adc_tp;				// adc reading of the throttle position sensor
-	uint8_t adc_batt;			// adc reading of the battery voltage
-	uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
-	uint8_t adc_mat;			// adc reading of the manifold air temperature
-	uint8_t adc_clt;			// adc reading of the coolant temperature
+	volatile uint8_t adc_pin;			// the adc pin currently being read
+	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
+	volatile uint8_t adc_batt;			// adc reading of the battery voltage
+	volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
+	volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
+	volatile uint8_t adc_clt;			// adc reading of the coolant temperature
 } reg_t;
 
-typedef union {
-	volatile reg_t s;
-	volatile uint8_t a[512]; // TODO make this the right size
-} reg_u;
+union reg_u {
+	reg_t s;
+	uint8_t a[512]; // TODO make this the right size
+} u;
 
-reg_u u;
-reg_t values = u.s;
-
-// these variables are not available for read/write
-
+// these things are not in the struct since they are never read/write over serial
+volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
+volatile uint16_t crank_ticks;		// the number of timer2 ticks since the last crank tooth
+volatile uint8_t crank_cal;		 	// crank calibration has been performed; worst case is 10 rotations; 0 means calibrated
 
 // the crank position is used to determine injection and spark timing.
 // the cam position may be used to determine injection and spark timing for sequential operation
@@ -83,7 +79,6 @@ reg_t values = u.s;
 // the manifold pressure is used to adjust the spark advance
 // the rpm (crank) is used to determine the spark advance
 // the throttle possition is used to determine the load
-
 
 
 // Low MAP (low engine load) = more spark advance
@@ -130,18 +125,18 @@ int main(void) {
 	// TODO load these tuning values from EEPROM
 	for (uint8_t i = 0; i < 8; i++) {
 		for (uint8_t j = 0; j < 8; i++) {
-			values.ign_advance[i][j] = i * 5 - j;
-			values.inj_duration[i][j] = i * 10;
+			u.s.ign_advance[i][j] = i * 5 - j;
+			u.s.inj_duration[i][j] = i * 10;
 		}
-		values.rpm_zones[i] = (i+1) * 32;
-		values.load_zones[7-i] = 2 ^ i;
+		u.s.rpm_zones[7-i] = (i+1) * 32;
+		u.s.load_zones[7-i] = 2 ^ i;
 	}
 	
-	values.crank = 0;
-	values.cam = 0;
-	values.crank_ticks = 0;
-	values.cam_teeth = 0;
-	values.crank_cal = 0;
+	u.s.crank = 0;
+	u.s.cam = 0;
+	crank_ticks = 0;
+	cam_teeth = 0;
+	crank_cal = 0;
 	
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
@@ -194,24 +189,24 @@ int main(void) {
 ISR(ADC_vect) {
 	// throttle position
 	if (ADCH < 32) {
-		values.load_zone = 0;
+		u.s.load_zone = 0;
 	} else if (ADCH < 64) {
-		values.load_zone = 1;
+		u.s.load_zone = 1;
 	} else if (ADCH < 96) {
-		values.load_zone = 2;
+		u.s.load_zone = 2;
 	} else if (ADCH < 128) {
-		values.load_zone = 3;
+		u.s.load_zone = 3;
 	} else if (ADCH < 160) {
-		values.load_zone = 4;
+		u.s.load_zone = 4;
 	} else if (ADCH < 192) {
-		values.load_zone = 5;
+		u.s.load_zone = 5;
 	} else if (ADCH < 224) {
-		values.load_zone = 6;
+		u.s.load_zone = 6;
 	} else {
-		values.load_zone = 7;
+		u.s.load_zone = 7;
 	}
 	
-	values.inj_dc = values.inj_duration[values.rpm_zone][values.load_zone];
+	u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 }
 
 // crank ISR
@@ -219,30 +214,30 @@ ISR(ADC_vect) {
 // each tooth represents 10 degrees
 ISR(INT0_vect) {
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
-	if (t > (last_t << 1)) {
+	if (t > (crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
-		values.crank = values.crank + 2;
-		values.cam_teeth = values.cam_teeth + 2;
+		u.s.crank = u.s.crank + 2;
+		cam_teeth = cam_teeth + 2;
 		t = t / 3; // approximate the duration of the single tooth, accounting for the length of the gap
 	} else {
-		tooth++;
-		cam_teeth++;
+		u.s.crank++;
+		u.s.cam++;
 	}
 	
 	TCNT0 = 0; // reset timer0 to zero
 	
-	if (values.crank == 13 || values.crank == 16 || values.crank == 31) {
+	if (u.s.crank == 13 || u.s.crank == 16 || u.s.crank == 31) {
 		// tooth count is wrong, this is normal so just try adjusting
-		values.crank = values.crank + 2;
-	} else if (values.crank == 12 || values.crank == 30) {
+		u.s.crank = u.s.crank + 2;
+	} else if (u.s.crank == 12 || u.s.crank == 30) {
 		// now 60 degrees before 0/180 degrees, set the timer for the spark advance
-		uint8_t values.adv = values.advance[values.rpm_zone][values.load_zone]; // in degrees
-		values.adv = 10; // TODO remove
+		u.s.ign_adv_deg = u.s.ign_advance[u.s.rpm_zone][u.s.load_zone]; // in degrees
+		u.s.ign_adv_deg = 10; // TODO remove
 		// 60 degrees - advance degrees (1024 prescale -> 8 prescale)
 		// t is a /1024 prescaled value and maxes out at about 66 @ 500 rpm
 		// OCR1A is a /8 prescaled value
 		// multiply by 128 to convert form /1024 to /8
-		uint16_t deg = 60 - adv;
+		uint16_t deg = 60 - u.s.ign_adv_deg;
 		
 		uint16_t comp = deg * t / 10 * 128; // this isn't terribly accurate due to rounding
 		OCR1A = comp; // set up timer1 compA for on time
@@ -250,66 +245,57 @@ ISR(INT0_vect) {
 		TCNT1 = 0;	// reset timer1 to zero
 		
 //		PORTB=0xFF;
-	} else if (tooth == 1 && cam == 2) {
+	} else if (u.s.crank == 1 && u.s.cam == 2) {
 		// #1BDTC; #4 just finished burning, #1 ignition just happened, #3 ignites next, #2 injects next
-		values.ign = plug[0];
-	} else if (tooth == 1 && cam == 0) {
+		u.s.ign = 0;
+	} else if (u.s.crank == 1 && u.s.cam == 0) {
 		// #2BDTC; #3 just finished burning, #2 ignition just happened, #4 ignites next, #1 injects next
-	 	values.ign= plug[1];
-	} else if (tooth == 19 && cam == 2) {  // in cam signal gap, so 2 not 3
+		u.s.ign = 1;
+	} else if (u.s.crank == 19 && u.s.cam == 2) {  // in cam signal gap, so 2 not 3
 		// #3BTDC; #1 just finished burning, #3 ignition just happened, #2 ignites next, #3 injects next
-		values.ign = plug[2];
-	} else if (tooth == 19 && cam == 1) {
+		u.s.ign = 2;
+	} else if (u.s.crank == 19 && u.s.cam == 1) {
 		// #4BTDC; #2 just finished burning, #4 ignition just happened, #1 ignites next, #4 injects next
-		values.ign = plug[3];
-	} else if (values.crank == 15 && values.cam == 2) {
-		in_pin = inj_pins[0];
-	} else if (values.crank == 15 && values.cam == 0) {
-		in_pin = inj_pins[1];
-	} else if (tooth == 33 && cam == 2) {
-		inj_pin = inj_pins[2];
-	} else if (tooth == 33 && cam == 1) {
-		inj_pin = inj_pins[3];
-	} else if (tooth >= 35) {
-		tooth = 0;
+		u.s.ign = 3;
+	} else if (u.s.crank == 15 && u.s.cam == 2) {
+		u.s.inj = 0;
+	} else if (u.s.crank == 15 && u.s.cam == 0) {
+		u.s.inj = 1;
+	} else if (u.s.crank == 33 && u.s.cam == 2) {
+		u.s.inj = 2;
+	} else if (u.s.crank == 33 && u.s.cam == 1) {
+		u.s.inj = 3;
+	} else if (u.s.crank >= 35) {
+		u.s.crank = 0;
 	}
+	ign_pin = ign_pins[u.s.ign];
+	inj_pin = inj_pins[u.s.inj];
 	
-	last_t = t;	
+	crank_ticks = t;
 }
 
 // cam sync ISR
 ISR(INT1_vect) {
 	// now on either tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
-	cam++;
+	u.s.cam++;
 	
 	// normally 14 or 16 tooth events between cam events, more means a gap
 	if (cam_teeth > 20) {
 		// gap detected, now at #2BTDC
-		cam = 0;
+		u.s.cam = 0;
 		//tooth = 33;
 	}
 	cam_teeth = 0;
 	
-	if (cam == 0) {
+	// TODO this should probably be in the main loop instead
+	if (u.s.cam == 0) {
 		// determine rpm zone once per revolution
-		// TODO tune these rpm zone values
-		if (last_t > 128) { // ~500 rpm and slower
-			values.rpm_zone = 0;
-		} else if (last_t > 64) {
-			values.rpm_zone = 1;
-		} else if (last_t > 32) {
-			values.rpm_zone = 2;
-		} else if (last_t > 16) {
-			values.rpm_zone = 3;
-		} else if (last_t > 8) {
-			values.rpm_zone = 4;
-		} else if (last_t > 4) {
-			values.rpm_zone = 5;
-		} else if (last_t > 2) {
-			values.rpm_zone = 6;
-		} else {
-			values.rpm_zone = 7;
+		for (uint8_t i = 0; i < 8; i++) {
+			if (crank_ticks > u.s.rpm_zones[i]) {
+				u.s.rpm_zone = i;
+				break;
+			}
 		}
 		// start ADC again -- read throttle position once per revolution
 		//ADCSRA |= _BV(ADSC);
@@ -318,9 +304,9 @@ ISR(INT1_vect) {
 
 // ignition spark on
 ISR(TIMER1_COMPA_vect) {
-	if ((tooth > 12 && tooth < 19) || tooth >= 30 || tooth < 1) {
-//		if ((tooth > 11 && tooth < 19) || (tooth > 29 && tooth < 26) || (tooth == 0)) {
-		PORTB = pl;
+	if ((u.s.crank > 12 && u.s.crank < 19) || u.s.crank >= 30 || u.s.crank < 1) {
+//		if ((u.s.crank > 11 && u.s.crank < 19) || (u.s.crank > 29 && u.s.crank < 26) || (u.s.crank == 0)) {
+		PORTB = ign_pin;
 	}
 }
 
@@ -335,11 +321,11 @@ ISR(TIMER1_COMPB_vect) {
 // injector pwm frequency
 ISR(TIMER2_COMPA_vect) {
 	// -30 to +70 degrees around TDC
-	if ((tooth > 14 && tooth < 26) || tooth > 33 || tooth < 8) {
-		PORTD |= in;
+	if ((u.s.crank > 14 && u.s.crank < 26) || u.s.crank > 33 || u.s.crank < 8) {
+		PORTD |= inj_pin;
 	}
 	TCNT2 = 0;
-	OCR2B = (uint16_t) r.ign_dc * 165 / 255;	// 165 * 8 clock cycles = 66 us
+	OCR2B = (uint16_t) u.s.inj_dc * 165 / 255;	// 165 * 8 clock cycles = 66 us
 }
 
 // injector pwm phase
