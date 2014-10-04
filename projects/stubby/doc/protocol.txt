@@ -54,7 +54,7 @@ RequestPowerOff				Control -> Stubby		Null																				Ack
 
 RequestMove					Control -> Stubby		Angle (1 byte), Velocity (1 byte), Distance (2 bytes)								Ack + Complete when done
 RequestTurn					Control -> Stubby		Angle (1 bytes), Velocity (1 byte)													Ack + Complete when done
-RequestTranslate			Control -> Stubby		Axis (1 byte), Distance (1 byte)													Ack
+RequestTranslate			Control -> Stubby		Amount (3 bytes, order X, Y, Z)														Ack
 RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
 
 RequestHeading				Control -> Stubby		Null																				Heading message
