@@ -6,6 +6,7 @@ static volatile uint8_t heading_confirmation_required = 0x00;
 static volatile uint8_t power_change_required = 0x00;
 static volatile uint8_t move_required = 0x00;
 static volatile uint8_t turn_required = 0x00;
+static volatile uint8_t translation_required = 0x00;
 
 static volatile double desired_move_heading;
 static volatile double desired_move_angle;
@@ -15,6 +16,10 @@ static volatile double desired_move_distance;
 static volatile double desired_turn_heading;
 static volatile double desired_turn_angle;
 static volatile double desired_turn_velocity;
+
+static volatile int8_t bodyTranslationX = 0;
+static volatile int8_t bodyTranslationY = 0;
+static volatile int8_t bodyTranslationZ = 0;
 
 //In the current implementation of gait_tripod, we move 5mm with each iteration of the
 // step procedure at maximum velocity (and the distance scales linearly with velocity).
@@ -111,6 +116,7 @@ void processing_command_executor(){
 
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					Point step = gait_step(legs[l], step_index, desired_move_velocity, desired_move_angle, veer_correction);
+					step.add(Point(bodyTranslationX, bodyTranslationY, fmin(3, bodyTranslationZ)));
 					legs[l].setOffset(step);
 				}
 				step_index++;
@@ -123,8 +129,7 @@ void processing_command_executor(){
 				desired_move_distance -= (STEP_DISTANCE * desired_move_velocity);
 			}
 		}
-		
-		if (turn_required){
+		else if (turn_required){
 			static uint8_t step_index = 0;
 			double current_heading = magnetometer_read_heading();
 			
@@ -140,6 +145,7 @@ void processing_command_executor(){
 
 				for (uint8_t l = 0; l < LEG_COUNT; l++){
 					Point step = gait_step(legs[l], step_index, 0, 0, velocity);
+					step.add(Point(bodyTranslationX, bodyTranslationY, fmin(3, bodyTranslationZ)));
 					legs[l].setOffset(step);
 				}
 				if (step_index == 0 && debug){
@@ -156,6 +162,17 @@ void processing_command_executor(){
 			
 			pwm_apply_batch();
 		}
+		else if (translation_required){
+			translation_required = 0x00;
+			
+			for (uint8_t l = 0; l < LEG_COUNT; l++){
+				legs[l].setOffset(Point(bodyTranslationX, bodyTranslationY, bodyTranslationZ));
+			}
+			
+			pwm_apply_batch();
+		}
+		
+
 	}
 	
 	delay_ms(1);
@@ -198,6 +215,17 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			desired_turn_velocity = message[1] / 255.0;
 			
 			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
+		}
+	}
+	else if (cmd == MESSAGE_REQUEST_TRANSLATE){
+		if (length == 3){
+			translation_required = 0x01;
+			
+			bodyTranslationX = message[0];
+			bodyTranslationY = message[1];
+			bodyTranslationZ = message[2];
+			
+			doAcknowledgeCommand(MESSAGE_REQUEST_TRANSLATE);
 		}
 	}
 }

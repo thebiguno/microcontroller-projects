@@ -23,9 +23,9 @@ class Point {
 		void add(Point offset);
 
 		/*
-		 * Subtracts the specified offset point from this point.
+		 * Replace this point with the specified point
 		 */
-		void subtract(Point offset);
+		void set(int16_t x, int16_t y, int16_t z);
 		
 		/*
 		 * Rotate this point by specified angle on the x,y plane 
@@ -49,7 +49,7 @@ class Point {
 		 * Rotate this point by the specified angle around 
 		 * the axis intercepting points 0,0,0 and v.
 		 */
-		void rotateXYZ(Point v, double angle);
+		//void rotateXYZ(Point v, double angle);
 
 		int16_t x;
 		int16_t y;

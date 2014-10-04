@@ -158,6 +158,23 @@ public class Stubby {
 	}
 	
 	/**
+	 * Sets a translation offset on Stubby's body, in mm, for each axis.
+	 * Valid offsets are between -128 and 127 (although Stubby may not physically
+	 * be able to move to all these values).
+	 * @param x Positive X values shift the body to the right
+	 * @param y Positive Y values shift the body forward
+	 * @param z Positive Z values shift the body up
+	 * @return
+	 */
+	public boolean translate(int x, int y, int z){
+		int[] data = new int[3];
+		data[0] = (x * -1) & 0xFF;
+		data[1] = (y * -1) & 0xFF;
+		data[2] = (z * -1) & 0xFF;
+		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_TRANSLATE, data), 1000, 2);
+	}
+	
+	/**
 	 * Reads the distance sensor (value in mm)
 	 * @return
 	 */
