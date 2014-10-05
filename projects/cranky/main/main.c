@@ -55,10 +55,13 @@ typedef struct {
 
 	volatile uint8_t adc_pin;			// the adc pin currently being read
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
+	volatile uint8_t adc_o2;			// adc reading of the exhaust gas oxygen sensor
 	volatile uint8_t adc_batt;			// adc reading of the battery voltage
 	volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
 	volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
 	volatile uint8_t adc_clt;			// adc reading of the coolant temperature
+	
+	volatile uint8_t 
 } reg_t;
 
 union reg_u {
@@ -71,9 +74,34 @@ volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
 volatile uint16_t crank_ticks;		// the number of timer2 ticks since the last crank tooth
 volatile uint8_t crank_cal;		 	// crank calibration has been performed; worst case is 10 rotations; 0 means calibrated
 
+/* 
+// additional parameters that may become tuning parameters or constants
+float inj_ms;
+float inj_opening_ms = 1.0;
+float inj_battery_correction_ms_V = 0.2;
+float inj_pwm_current_limit_pct = 18;
+float inj_pwm_time_threshold_ms = 0.7;
+float inj_fast_idle_temp_c = -18;
+
+float inj_cranking_ms = 2.0;
+float inj_pwm_40c = 11.0;	// -40
+float inj_pwm_80c = 2.2;	// +80
+
+//-45, -30, -15, 0, 15, 30, 45, 60, 75
+uint8_t enrichment_pct = { 156, 148, 140, 132, 124, 116, 108, 100 };
+
+float tpsdot_threshold_vs = 0.98;
+float accel_time_s = 0.2;
+float cold_accel_enrichment_ms = 2.0;
+float cold_accel_mult_pct = 150;
+float decel_fuel_pct = 20;
+*/
+
+
+
 // the crank position is used to determine injection and spark timing.
 // the cam position may be used to determine injection and spark timing for sequential operation
-// the battery voltage
+// the battery voltage is used to adjust injector duty cycle and ignition dwell time in a low voltage situation
 // the coolant temperature is used to determine the if the fast idle solenoid should be open or closed
 // the coolant temperature is also used to adjust the spark advance
 // the manifold pressure is used to adjust the spark advance
@@ -101,18 +129,20 @@ volatile uint8_t crank_cal;		 	// crank calibration has been performed; worst ca
 //                1                 3                 2                 4               60 deg before TDC
 
 // hardware map
-// C6	/rst								c5	nc
-// d0	rxd									c4	nc
-// d1	txd									c3	nc
-// d2	int0	crank hall effect input		c2	nc
-// d3	int1	cam hall effect input		c1	nc
-// d4			injector #1 output			c0	adc			throttle position
+// C6	/rst								c5	adc			exaust o2 input
+// d0	rxd		serial						c4	adc			coolant temperature input
+// d1	txd		serial						c3	adc			manifold temperature input
+// d2	int0	crank hall effect input		c2	adc			manifold pressure input
+// d3	int1	cam hall effect input		c1	dout		fast idle solenoid output
+// d4			spare dout					c0	dout		fuel pump relay output
 // b6	xtal								
-// b7	xtal								b5	sck
-// d5	dout	injector #2 output			b4	miso
-// d6	dout	injector #3 output			b3	mosi/dout	spark #4 output
-// d7	dout	injector #4 output			b2	dout		spark #3 output
-// b0	dout	spark #1 output				b1	dout		spark #2 output
+// b7	xtal								b5	sck			spare dout
+// d5	dout	injector #1 output			b4	miso		ignition #4 output
+// d6	dout	ignition #1 output			b3	mosi		injector #4 output
+// d7	dout	injector #2 output			b2	dout		ignition #3 output
+// b0	dout	ignition #2 output			b1	dout		injector #3 output
+
+// c6	adc		battery voltage input		c7	adc			throttle position input
 
 // The ECM identifies cylinders at TDC and determines ignition timing as follows:
 // * There is a crank input signal every 10 deg rotation of the crankshaft
@@ -181,32 +211,40 @@ int main(void) {
 	ADCSRA |= _BV(ADSC);	// start an analog conversion for throttle position
 
 	while(1) {
-		// do nothing, all code is in an ISR
+		// nothing in the main loop is time sensative
+		
+		for (uint8_t i = 0; i < 8; i++) {
+			if (crank_ticks > u.s.rpm_zones[i]) {
+				u.s.rpm_zone = i;
+				break;
+			}
+		}
+		for (uint8_t i = 0; i < 8; i++) {
+			if (u.s.adc_tp < u.s.load_zones[i]) {
+				u.s.load_zone = i;
+				break;
+			}
+		}
+		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
+		
+		// continually poll ADC2 ~ ADC7
+		if ((ADCSRA & ADSC) == 0x00) {
+			if (ADMUX > 0x7) ADMUX = 0x02;
+			ADCSRA |= _BV(ADSC);
+		}
 	}
 }
 
 // analog ISR
 ISR(ADC_vect) {
-	// throttle position
-	if (ADCH < 32) {
-		u.s.load_zone = 0;
-	} else if (ADCH < 64) {
-		u.s.load_zone = 1;
-	} else if (ADCH < 96) {
-		u.s.load_zone = 2;
-	} else if (ADCH < 128) {
-		u.s.load_zone = 3;
-	} else if (ADCH < 160) {
-		u.s.load_zone = 4;
-	} else if (ADCH < 192) {
-		u.s.load_zone = 5;
-	} else if (ADCH < 224) {
-		u.s.load_zone = 6;
-	} else {
-		u.s.load_zone = 7;
+	switch(u.s.adc_pin) {
+		case 2: u.s.adc_map = ADCH; break;
+		case 3: u.s.adc_mat = ADCH; break;
+		case 4: u.s.adc_clt = ADCH; break;
+		case 5: u.s.adc_o2 = ADCH; break;
+		case 6: u.s.adc_batt = ADCH; break;
+		case 7: u.s.adc_tp = ADCH; break;
 	}
-	
-	u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 }
 
 // crank ISR
@@ -276,7 +314,7 @@ ISR(INT0_vect) {
 
 // cam sync ISR
 ISR(INT1_vect) {
-	// now on either tooth 25 or 33
+	// now on either crank tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
 	u.s.cam++;
 	
@@ -284,22 +322,8 @@ ISR(INT1_vect) {
 	if (cam_teeth > 20) {
 		// gap detected, now at #2BTDC
 		u.s.cam = 0;
-		//tooth = 33;
 	}
 	cam_teeth = 0;
-	
-	// TODO this should probably be in the main loop instead
-	if (u.s.cam == 0) {
-		// determine rpm zone once per revolution
-		for (uint8_t i = 0; i < 8; i++) {
-			if (crank_ticks > u.s.rpm_zones[i]) {
-				u.s.rpm_zone = i;
-				break;
-			}
-		}
-		// start ADC again -- read throttle position once per revolution
-		//ADCSRA |= _BV(ADSC);
-	}
 }
 
 // ignition spark on
