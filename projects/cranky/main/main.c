@@ -25,6 +25,17 @@ volatile uint8_t inj_pin;
  *           write serial (or usb) code for reading / writing register
  *           use a union for the register
  */
+
+#define PROTOCOL_START  0x7e
+#define PROTOCOL_ESCAPE 0x7d
+
+typedef struct {
+	volatile uint8_t position;
+	volatile uint8_t length;
+	volatile uint8_t address;
+	volatile uint8_t state;		// bit 0 = escape; bit 1 = framing error;
+} protocol_t;
+
 typedef struct {
 	// tuning values
 	
@@ -40,7 +51,8 @@ typedef struct {
 	// maps the frequency into rpm zones
 	uint8_t rpm_zones[8];
 
-	volatile uint16_t max_ign_dwell;	// the maximum dwell in timer0 ticks
+	volatile uint8_t cranking_ticks;	// above this value = cranking; below this value = running normally
+	volatile uint8_t max_ign_dwell;		// the maximum dwell in timer0 ticks
 	
 	// running values
 	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
@@ -53,26 +65,28 @@ typedef struct {
 	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
 	volatile uint8_t inj_dc;			// the injector duty cycle in timer2 ticks
 
-	volatile uint8_t adc_pin;			// the adc pin currently being read
+	volatile uint8_t crank_sync;	 	// crank sync has been performed; worst case is 10 rotations; 0 means calibrated
+	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
+
+	volatile uint8_t adc;				// 0 to disable reading values from the adc
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t adc_o2;			// adc reading of the exhaust gas oxygen sensor
 	volatile uint8_t adc_batt;			// adc reading of the battery voltage
 	volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
 	volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
 	volatile uint8_t adc_clt;			// adc reading of the coolant temperature
-	
-	volatile uint8_t 
 } reg_t;
 
-union reg_u {
+static union reg_u {
 	reg_t s;
 	uint8_t a[512]; // TODO make this the right size
 } u;
 
+static protocol_t input;
+static protocol_t output;
+
 // these things are not in the struct since they are never read/write over serial
 volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
-volatile uint16_t crank_ticks;		// the number of timer2 ticks since the last crank tooth
-volatile uint8_t crank_cal;		 	// crank calibration has been performed; worst case is 10 rotations; 0 means calibrated
 
 /* 
 // additional parameters that may become tuning parameters or constants
@@ -164,9 +178,9 @@ int main(void) {
 	
 	u.s.crank = 0;
 	u.s.cam = 0;
-	crank_ticks = 0;
+	u.s.crank_ticks = 0;
 	cam_teeth = 0;
-	crank_cal = 0;
+	u.s.crank_sync = 0;
 	
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
@@ -206,7 +220,9 @@ int main(void) {
 	DDRB = _BV(PINB0) | _BV(PINB1) | _BV(PINB2) | _BV(PINB3);	// spark plugs
 	DDRD = _BV(PIND4) | _BV(PIND5) | _BV(PIND6) | _BV(PIND7);	// injectors
 
-	sei();
+	UCSR0B |= _BV(RXCIE0);		// enable serial rx interrupts
+	
+	sei();						// enable interrupts
 
 	ADCSRA |= _BV(ADSC);	// start an analog conversion for throttle position
 
@@ -214,7 +230,7 @@ int main(void) {
 		// nothing in the main loop is time sensative
 		
 		for (uint8_t i = 0; i < 8; i++) {
-			if (crank_ticks > u.s.rpm_zones[i]) {
+			if (u.s.crank_ticks > u.s.rpm_zones[i]) {
 				u.s.rpm_zone = i;
 				break;
 			}
@@ -230,6 +246,7 @@ int main(void) {
 		// continually poll ADC2 ~ ADC7
 		if ((ADCSRA & ADSC) == 0x00) {
 			if (ADMUX > 0x7) ADMUX = 0x02;
+			else ADMUX++;
 			ADCSRA |= _BV(ADSC);
 		}
 	}
@@ -237,13 +254,13 @@ int main(void) {
 
 // analog ISR
 ISR(ADC_vect) {
-	switch(u.s.adc_pin) {
-		case 2: u.s.adc_map = ADCH; break;
-		case 3: u.s.adc_mat = ADCH; break;
-		case 4: u.s.adc_clt = ADCH; break;
-		case 5: u.s.adc_o2 = ADCH; break;
-		case 6: u.s.adc_batt = ADCH; break;
-		case 7: u.s.adc_tp = ADCH; break;
+	switch(ADMUX) {
+		case 0x02: u.s.adc_map = ADCH; break;
+		case 0x03: u.s.adc_mat = ADCH; break;
+		case 0x04: u.s.adc_clt = ADCH; break;
+		case 0x05: u.s.adc_o2 = ADCH; break;
+		case 0x06: u.s.adc_batt = ADCH; break;
+		case 0x07: u.s.adc_tp = ADCH; break;
 	}
 }
 
@@ -252,7 +269,7 @@ ISR(ADC_vect) {
 // each tooth represents 10 degrees
 ISR(INT0_vect) {
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
-	if (t > (crank_ticks << 1)) {
+	if (t > (u.s.crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
 		cam_teeth = cam_teeth + 2;
@@ -309,7 +326,14 @@ ISR(INT0_vect) {
 	ign_pin = ign_pins[u.s.ign];
 	inj_pin = inj_pins[u.s.inj];
 	
-	crank_ticks = t;
+	u.s.crank_ticks = t;
+}
+
+// timer 0 overflow
+ISR(TIMER0_OVF_vect) {
+	// if time 0 overflows it means that the crank is turning slower than 384 rpm
+	u.s.crank_ticks = 255;
+	TCNT0 = 255;
 }
 
 // cam sync ISR
@@ -355,5 +379,95 @@ ISR(TIMER2_COMPA_vect) {
 // injector pwm phase
 ISR(TIMER2_COMPB_vect) {
 	PORTD = 0;
+}
+
+void write_pump() {
+	if (!(UCSR0A & _BV(UDRE0))) {
+		// hardware not ready
+		return;
+	}
+	
+	if (output.position == output.length) {
+		// nothing to do
+		return;
+	}
+	
+	if (output.state == 0x01) {
+		UDR0 = 0x20 ^ u.a[output.address++];
+		output.state = 0x00;
+		return;
+	}
+	
+	uint8_t b = u.a[output.address];
+	switch (output.position) {
+		case 0:
+		UDR0 = PROTOCOL_START;
+		break;
+		case 1:
+		UDR0 = output.length;
+		break;
+		case 2:
+		UDR0 = output.address;
+		break;
+		default:
+		if (b == PROTOCOL_START || b == PROTOCOL_ESCAPE) {
+			UDR0 = PROTOCOL_ESCAPE;
+			output.state = 0x01;
+		} else {
+			UDR0 = b;
+			output.address++;
+		}
+		break;
+	}
+}
+
+ISR(USART_RX_vect) {
+	uint8_t b = UDR0;
+	
+	if (input.state == 0x02 && b == PROTOCOL_START) {
+		// recover from any previous error condition
+		input.state = 0x00;
+		input.position = 0;
+	} else {
+		return;
+	}
+	
+	if (input.position > 0 && b == PROTOCOL_START) {
+		// unexpected start of frame
+		input.state = 0x02;
+		return;
+	}
+	
+	if (input.position > 0 && b == PROTOCOL_ESCAPE) {
+		// unescape the next byte
+		input.state = 0x01;
+		return;
+	}
+	
+	if (input.state == 0x01) {
+		// unescape current byte
+		b = 0x20 ^ b;
+		input.state = 0x00;
+	}
+	
+	switch (input.position) {
+		input.position++;
+		case 0:
+		break;
+		case 1:
+		input.length = b;
+		break;
+		case 2:
+		input.address = b;
+		break;
+		default:
+		// TODO add bounds checking once register size is known
+		u.a[input.address++ - 3] = b;
+		
+		if (input.position == input.length) {
+			input.position = 0;
+		}
+		break;
+	}
 }
 
