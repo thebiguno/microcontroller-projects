@@ -67,7 +67,7 @@ typedef struct {
 
 	volatile uint8_t crank_sync;	 	// crank sync has been performed; worst case is 10 rotations; 0 means calibrated
 	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
-
+										// 1000/(t*51.2*36/1000)/0.0166666666667
 	volatile uint8_t adc;				// 0 to disable reading values from the adc
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t adc_o2;			// adc reading of the exhaust gas oxygen sensor
@@ -172,15 +172,15 @@ int main(void) {
 			u.s.ign_advance[i][j] = i * 5 - j;
 			u.s.inj_duration[i][j] = i * 10;
 		}
-		u.s.rpm_zones[7-i] = (i+1) * 32;
-		u.s.load_zones[7-i] = 2 ^ i;
+		u.s.rpm_zones[7-i] = (i*10) + 5;	// rpm = 382>434>501>592>723>930>1302>2170>8138 (not ideal for real life)
+		u.s.load_zones[7-i] = 2 ^ i;		
 	}
 	
 	u.s.crank = 0;
 	u.s.cam = 0;
 	u.s.crank_ticks = 0;
-	cam_teeth = 0;
 	u.s.crank_sync = 0;
+	cam_teeth = 0;
 	
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
