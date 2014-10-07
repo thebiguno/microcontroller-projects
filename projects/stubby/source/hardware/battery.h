@@ -16,8 +16,7 @@
 //The magic number 78 comes from X/20000 = color/255; X = color * 20000 / 255; X = color * 78.
 #define PHASE_MULTIPLIER		(uint8_t) (20000/255)
 
-//Defines a linear progression for valid battery values.  Includes the magic number 78 
-// as calculated in 
+//Defines a linear progression for valid battery values.
 #define BATTERY_STATUS_MULTIPLIER		255 / (BATTERY_LEVEL_FULL - BATTERY_LEVEL_EMPTY) * PHASE_MULTIPLIER
 
 void battery_init();
