@@ -10,6 +10,10 @@ static int16_t filtered[2];
 static int16_t offsets[2];
 
 void magnetometer_init(){
+	int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
+	int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
+	magnetometer_set_offsets(x, y);
+
 	twi_init();
 	
 	uint8_t message[6];

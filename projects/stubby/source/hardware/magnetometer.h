@@ -1,6 +1,7 @@
 #ifndef MAGNETOMETER_H
 #define MAGNETOMETER_H
 
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <math.h>
 
