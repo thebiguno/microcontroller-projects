@@ -382,7 +382,7 @@ BeginCmp
 TimeStamp = /535B0A48;
 Reference = VR1;
 ValeurCmp = MCP1702;
-IdModule  = TO92;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
