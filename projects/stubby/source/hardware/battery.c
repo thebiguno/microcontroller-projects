@@ -38,22 +38,15 @@ void battery_set_level(){
 	}
 	
 	if (battery_status_enabled){
-		pwm_set_phase_batch(LED_BLUE, 0x00);
-	
 		if (value >= BATTERY_LEVEL_FULL){
-			pwm_set_phase_batch(LED_RED, 0x00 * PHASE_MULTIPLIER);
-			pwm_set_phase_batch(LED_GREEN, 0xFF * PHASE_MULTIPLIER);
+			status_set_color(0x00, 0xFF, 0x00);
 		}
 		else if (value <= BATTERY_LEVEL_EMPTY){
-			pwm_set_phase_batch(LED_RED, 0xFF * PHASE_MULTIPLIER);
-			pwm_set_phase_batch(LED_GREEN, 0x00 * PHASE_MULTIPLIER);
+			status_set_color(0xFF, 0x00, 0x00);
 		}
 		else {
-			pwm_set_phase_batch(LED_RED, (BATTERY_LEVEL_FULL - value) * BATTERY_STATUS_MULTIPLIER);
-			pwm_set_phase_batch(LED_GREEN, (value - BATTERY_LEVEL_EMPTY) * BATTERY_STATUS_MULTIPLIER);
+			status_set_color((BATTERY_LEVEL_FULL - value) * BATTERY_STATUS_MULTIPLIER, (value - BATTERY_LEVEL_EMPTY) * BATTERY_STATUS_MULTIPLIER, 0x00);
 		}
-		
-		pwm_apply_batch();
 	}
 
 	battery_level = 0x00;

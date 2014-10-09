@@ -158,7 +158,9 @@ void pwm_stop(){
 static int16_t _compare_values(const void *pin1, const void *pin2){
 	 const pwm_pin_t *pwm1 = (const pwm_pin_t*) pin1;
 	 const pwm_pin_t *pwm2 = (const pwm_pin_t*) pin2;
-	 return pwm1->compare_value - pwm2->compare_value;
+	 if (pwm1->compare_value < pwm2->compare_value) return -1;
+	 else if (pwm1->compare_value > pwm2->compare_value) return 1;
+	 else return 0;
 }
 
 void pwm_set_phase(uint8_t index, uint32_t phase){
