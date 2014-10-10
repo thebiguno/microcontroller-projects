@@ -31,6 +31,7 @@ LIBS:contrib
 LIBS:valves
 LIBS:hex
 LIBS:custom
+LIBS:hex-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 11000 9500
