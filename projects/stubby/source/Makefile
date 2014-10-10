@@ -22,6 +22,10 @@ else
 endif
 endif
 
+ifndef TWI_FREQ
+	TWI_FREQ=400000L
+endif
+
 PROJECT=stubby
 MMCU=atmega1284p
 COMPILER=avr-g++
@@ -37,7 +41,7 @@ AVRDUDE_PROGRAMMER=usbtiny
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS+=-DPCB_REVISION=$(PCB_REVISION) -DMAGNETOMETER=$(MAGNETOMETER) -DDISTANCE_SENSOR=$(DISTANCE_SENSOR) -DSERIAL_BUFFER_SIZE=255 -DPWM_MAX_PINS=21 -Wl,-u,vfprintf -lprintf_flt -lm
+CDEFS+=-DTWI_FREQ=$(TWI_FREQ) -DPCB_REVISION=$(PCB_REVISION) -DMAGNETOMETER=$(MAGNETOMETER) -DDISTANCE_SENSOR=$(DISTANCE_SENSOR) -DSERIAL_BUFFER_SIZE=255 -DPWM_MAX_PINS=21 -Wl,-u,vfprintf -lprintf_flt -lm
 
 LFUSE=0xF7
 HFUSE=0xD1
