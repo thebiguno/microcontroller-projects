@@ -7,11 +7,19 @@
 
 #include "../lib/pwm/pwm.h"
 
-
-//The minimum ADC value which indicates a full battery
-#define BATTERY_LEVEL_FULL		180
-//The maximum ADC value which indicates an empty battery
-#define BATTERY_LEVEL_EMPTY		150
+#if PCB_REVISION == 1
+	//The minimum ADC value which indicates a full battery
+	#define BATTERY_LEVEL_FULL		180
+	//The maximum ADC value which indicates an empty battery
+	#define BATTERY_LEVEL_EMPTY		150
+#elif PCB_REVISION == 2
+	//The minimum ADC value which indicates a full battery
+	#define BATTERY_LEVEL_FULL		143
+	//The maximum ADC value which indicates an empty battery
+	#define BATTERY_LEVEL_EMPTY		100
+#else
+#warning Non-standard PCB revision specified.  Please calibrate battery.
+#endif
 
 //Defines a linear progression for valid battery values.
 #define BATTERY_STATUS_MULTIPLIER		255 / (BATTERY_LEVEL_FULL - BATTERY_LEVEL_EMPTY)
