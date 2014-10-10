@@ -186,10 +186,10 @@ public class Stubby {
 	 * Returns NaN if there was an error.
 	 * @return
 	 */
-	public double getHeading(){
+	public int getHeading(){
 		final Message reply = protocol.sendMessageAndBlockForReply(new Message(Protocol.REQUEST_HEADING, new int[0]), Protocol.SEND_HEADING, 100, 2);
-		if (reply == null) return Double.NaN;
-		return Math.toDegrees(Protocol.byteToRadian(reply.getData()[0]));
+		if (reply == null) return Integer.MAX_VALUE;
+		return (int) Math.toDegrees(Protocol.byteToRadian(reply.getData()[0]));
 	}
 
 	
