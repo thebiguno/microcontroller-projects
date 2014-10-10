@@ -56,7 +56,7 @@ ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
 	$(DFU) $(MMCU) flash $(PROJECT).hex
 else
 	$(AVRDUDE_PREP_COMMANDS)
-	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+	$(AVRDUDE) -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
 		-U flash:w:$(PROJECT).hex 
 endif
@@ -65,7 +65,7 @@ fuse:
 ifeq 'dfu' '$(AVRDUDE_PROGRAMMER)'
 	echo "Cannot set fuses in DFU Programmer mode"
 else
-	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+	$(AVRDUDE) -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m $(EXTENDED_FUSE_WRITE)
 endif
