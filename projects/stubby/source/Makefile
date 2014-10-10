@@ -35,7 +35,7 @@ SOURCES=Stubby.cpp Leg.cpp \
 	hardware/battery.c hardware/magnetometer_HMC5883L.c  hardware/servo.c hardware/status.c hardware/timer2.c \
 	types/Point.cpp \
 	util/convert.c util/delays.c util/math.c \
-	lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/pwm/pwm.c lib/pwm/pwm.S lib/serial/serial.c lib/serial/serial_sync_tx.c lib/twi/twi.c lib/Ring/Ring.cpp
+	lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/pwm/pwm.c lib/pwm/pwm.S lib/serial/serial.c lib/serial/serial_async_tx.c lib/twi/twi.c lib/Ring/Ring.cpp
 AVRDUDE_PROGRAMMER=usbtiny
 
 # You can also define anything here and it will override 
