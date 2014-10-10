@@ -19,7 +19,7 @@ void servo_init(Leg *legs){
 	status_init(ports, pins);
 	
 	pwm_init(ports, pins, PWM_COUNT, 20000);
-	status_set_color(0x00, 0x00, 0xFF);
+	status_set_color(0x00, 0x00, 0x00);
 	
 	for (uint8_t l = 0; l < LEG_COUNT; l++){
 		legs[l].resetPosition();
