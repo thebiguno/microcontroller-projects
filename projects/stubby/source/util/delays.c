@@ -1,8 +1,10 @@
 #include "util/delays.h"
 
-//Defined in hardware/magnetometer.c
-extern volatile uint8_t interval_do_magnetometer_reading;
+extern volatile uint8_t interval_do_magnetometer_reading;	//Defined in magnetometer_HMC5883L.c
+extern volatile uint8_t interval_do_distance_reading;		//Defined in distance_HCSR04.c
+
 void magnetometer_take_reading();
+void distance_measure();
 
 //Defined in hardware/battery.c
 void battery_set_level();
@@ -43,6 +45,15 @@ void delay_ms(uint16_t ms){
 #endif
 		}
 	}
+	
+#if DISTANCE_SENSOR == 1
+	if (interval_do_distance_reading){
+		distance_measure();
+		_ms -= 0.33;	//TODO Figure out average time to read distance sensor
+		interval_do_distance_reading = 0x00;
+	}
+#endif
+
 	
 	if (pending_acknowledge){
 		uint8_t data[1];

@@ -32,7 +32,7 @@ COMPILER=avr-g++
 SOURCES=Stubby.cpp Leg.cpp \
 	controllers/calibration.c controllers/processing.c controllers/universal_controller.c \
 	gait/gait_tripod.c \
-	hardware/battery.c hardware/magnetometer_HMC5883L.c  hardware/servo.c hardware/status.c hardware/timer2.c \
+	hardware/battery.c hardware/distance_HCSR04.c hardware/magnetometer_HMC5883L.c  hardware/servo.c hardware/status.c hardware/timer2.c \
 	types/Point.cpp \
 	util/convert.c util/delays.c util/math.c \
 	lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/pwm/pwm.c lib/pwm/pwm.S lib/serial/serial.c lib/serial/serial_async_tx.c lib/twi/twi.c lib/Ring/Ring.cpp
