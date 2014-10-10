@@ -1,10 +1,10 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, October 09, 2014 'pmt' 02:52:36 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, October 10, 2014 'amt' 09:13:01 am
 
 BeginCmp
 TimeStamp = /538BCD1F;
 Reference = C1;
 ValeurCmp = 2200uF+;
-IdModule  = c_elec_10x10;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -50,10 +50,10 @@ IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
-TimeStamp = /53D7D2B4;
+TimeStamp = /5437F501;
 Reference = C8;
-ValeurCmp = 2200uF+;
-IdModule  = c_elec_10x10;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
@@ -110,6 +110,20 @@ TimeStamp = /54233E5D;
 Reference = C16;
 ValeurCmp = 0.22uF;
 IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5437F507;
+Reference = C17;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /543806C5;
+Reference = C18;
+ValeurCmp = 470uF;
+IdModule  = C1V5;
 EndCmp
 
 BeginCmp
@@ -288,13 +302,6 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /53C60BB7;
-Reference = R9;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /541CA469;
 Reference = R10;
 ValeurCmp = 1k;
@@ -393,17 +400,17 @@ IdModule  = SOT23-5;
 EndCmp
 
 BeginCmp
+TimeStamp = /5437F4EF;
+Reference = VR3;
+ValeurCmp = MCP1702;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
 TimeStamp = /542050F0;
 Reference = X1;
 ValeurCmp = CRYSTAL;
 IdModule  = CRYSTAL_SMD_5x3.2;
-EndCmp
-
-BeginCmp
-TimeStamp = /53C5D59D;
-Reference = ZD1;
-ValeurCmp = ZD 3v3;
-IdModule  = SOT23;
 EndCmp
 
 BeginCmp
