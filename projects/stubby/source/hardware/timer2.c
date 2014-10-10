@@ -16,10 +16,21 @@ ISR(TIMER2_OVF_vect){
 	static uint8_t i = 0;
 	i++;
 	
+#if F_CPU == 12000000
 	if ((i & 0x03) == 0x00){
 		interval_do_magnetometer_reading = 0x01;
 	}
 	if ((i & 0x1F) == 0x00){
 		ADCSRA |= _BV(ADSC);		//Start ADC
 	}
+#elif F_CPU == 20000000
+	if ((i & 0x07) == 0x00){
+		interval_do_magnetometer_reading = 0x01;
+	}
+	if ((i & 0x3F) == 0x00){
+		ADCSRA |= _BV(ADSC);		//Start ADC
+	}
+#else
+#warning Non-standard CPU speed.  Please specify a delay.
+#endif	
 }
