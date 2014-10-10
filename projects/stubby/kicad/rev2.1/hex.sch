@@ -38,7 +38,7 @@ $Descr User 11000 9500
 encoding utf-8
 Sheet 1 1
 Title "Hexapod Controller"
-Date "30 sep 2014"
+Date "10 oct 2014"
 Rev "2.1"
 Comp "Wyatt Olson"
 Comment1 ""
@@ -796,17 +796,6 @@ F 3 "" H 3750 5100 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L ZENER ZD1
-U 1 1 53C5D59D
-P 7150 6400
-F 0 "ZD1" H 7150 6500 50  0000 C CNN
-F 1 "ZD 3v3" H 7150 6300 40  0000 C CNN
-F 2 "~" H 7150 6400 60  0000 C CNN
-F 3 "~" H 7150 6400 60  0000 C CNN
-	1    7150 6400
-	0    -1   -1   0   
-$EndComp
-$Comp
 L +5V #PWR020
 U 1 1 53C5DDD6
 P 4800 2050
@@ -871,17 +860,6 @@ F 2 "" H 8400 6550 60  0000 C CNN
 F 3 "" H 8400 6550 60  0000 C CNN
 	1    8400 6550
 	0    1    -1   0   
-$EndComp
-$Comp
-L R R9
-U 1 1 53C60BB7
-P 8250 6950
-F 0 "R9" V 8330 6950 40  0000 C CNN
-F 1 "1k" V 8257 6951 40  0000 C CNN
-F 2 "~" V 8180 6950 30  0000 C CNN
-F 3 "~" H 8250 6950 30  0000 C CNN
-	1    8250 6950
-	0    -1   -1   0   
 $EndComp
 $Comp
 L CONN_6 P6
@@ -1311,7 +1289,7 @@ Wire Wire Line
 Connection ~ 3750 1750
 Connection ~ 2700 1750
 Wire Wire Line
-	7900 6950 8000 6950
+	7900 6950 9250 6950
 Wire Wire Line
 	7900 6000 7900 6950
 Wire Wire Line
@@ -1436,8 +1414,6 @@ Wire Wire Line
 Wire Wire Line
 	4800 6000 4800 6100
 Wire Wire Line
-	8500 6950 9250 6950
-Wire Wire Line
 	7800 7050 9250 7050
 Connection ~ 7500 6100
 Wire Wire Line
@@ -1473,14 +1449,6 @@ Wire Wire Line
 	6100 750  6100 1050
 Wire Wire Line
 	6100 1050 5950 1050
-Connection ~ 7150 6000
-Wire Wire Line
-	7150 6200 7150 6000
-Connection ~ 7500 6700
-Wire Wire Line
-	7150 6700 7500 6700
-Wire Wire Line
-	7150 6600 7150 6700
 Wire Wire Line
 	7500 6600 7500 6800
 Wire Wire Line
@@ -1974,6 +1942,4 @@ Wire Wire Line
 Connection ~ 5250 5000
 Text Label 8600 7050 0    60   ~ 0
 MODULE_RX
-Text Label 8600 6950 0    60   ~ 0
-MODULE_TX
 $EndSCHEMATC
