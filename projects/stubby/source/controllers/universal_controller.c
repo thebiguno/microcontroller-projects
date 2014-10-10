@@ -1,8 +1,5 @@
 #include "universal_controller.h"
 
-#include <stdio.h>
-#include "../hardware/magnetometer.h"
-
 extern Leg legs[LEG_COUNT];
 
 static volatile uc_stick_t left_stick;
