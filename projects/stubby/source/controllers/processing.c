@@ -175,7 +175,13 @@ void processing_command_executor(){
 
 	}
 	
+#if F_CPU == 12000000
 	delay_ms(1);
+#elif F_CPU == 20000000
+	delay_ms(5);
+#else
+#warning Non-standard CPU speed.  Please specify a delay.
+#endif
 }
 
 void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
