@@ -200,6 +200,13 @@ void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		data[0] = convert_radian_to_byte(magnetometer_read_heading());
 		protocol_send_message(MESSAGE_SEND_HEADING, data, 1);
 	}
+	else if (cmd == MESSAGE_REQUEST_DISTANCE){
+		uint8_t data[2];
+		uint16_t distance = distance_read();
+		data[0] = (distance >> 8) & 0xFF;
+		data[1] = distance & 0xFF;
+		protocol_send_message(MESSAGE_SEND_DISTANCE, data, 2);
+	}
 	else if (cmd == MESSAGE_REQUEST_MOVE){
 		if (length == 4){
 			move_required = 0x01;

@@ -58,10 +58,10 @@ RequestTranslate			Control -> Stubby		Amount (3 bytes, order X, Y, Z)											
 RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
 
 RequestHeading				Control -> Stubby		Null																				Heading message
-SendHeading					Stubby -> Control		Anle (1 byte)																		None
+SendHeading					Stubby -> Control		Angle (1 byte)																		None
 
 RequestDistance				Control -> Stubby		Null																				Distance message
-SendDistance				Stubby -> Control		Distance (2 bytes)																	None
+SendDistance				Stubby -> Control		Distance (2 bytes, MSB first)																	None
 
 RequestOptical				Control -> Stubby		Null																				Optical message
 SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)											None

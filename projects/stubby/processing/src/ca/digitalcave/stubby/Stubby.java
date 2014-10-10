@@ -41,11 +41,6 @@ public class Stubby {
 		return protocol.sendMessageAndBlockForAck(new Message(Protocol.REQUEST_ENABLE_DEBUG, new int[0]), 1000, 2);
 	}
 
-	public void requestHeading(){
-		protocol.sendMessage(new Message(Protocol.REQUEST_HEADING, new int[0]));
-	}
-
-	
 	/**
 	 * Move the specified distance in the indicated direction at the given speed
 	 * 
@@ -175,30 +170,46 @@ public class Stubby {
 	}
 	
 	/**
-	 * Reads the distance sensor (value in mm)
+	 * Reads the distance sensor and returns the value in mm; returns -1 if there was an error.
 	 * @return
 	 */
-	public long readDistanceSensor(){
-		return 0;
+	public int getDistance(){
+		final Message reply = protocol.sendMessageAndBlockForReply(new Message(Protocol.REQUEST_DISTANCE, new int[0]), Protocol.SEND_DISTANCE, 100, 2);
+		if (reply == null) return -1;
+		int distance = (reply.getData()[0] << 8) + reply.getData()[1];
+		return distance;
 	}
 	
 	/**
-	 * Sets the distance servo angle (in radians).  0 is straight forward; negative 
-	 * values are looking down, positive values are looking up.
-	 * @param angle
-	 */
-	public void setDistanceAngle(double angle){
-		
-	}
-	
-	/**
-	 * Reads the specified optical sensor (return value will be a byte between 0 and 255)
-	 * @param sensor The sensor index; 0 is furthest left, and increments going right.
+	 * Reads the current heading, and returns the value in degrees.  0 is north, negative numbers are rotating
+	 * westward (counter clockwise) from north, and positive numbers are rotating eastward (clockwise) from north.
+	 * Returns NaN if there was an error.
 	 * @return
 	 */
-	public int readOpticalSensor(int sensor){
-		return 0;
+	public double getHeading(){
+		final Message reply = protocol.sendMessageAndBlockForReply(new Message(Protocol.REQUEST_HEADING, new int[0]), Protocol.SEND_HEADING, 100, 2);
+		if (reply == null) return Double.NaN;
+		return Math.toDegrees(Protocol.byteToRadian(reply.getData()[0]));
 	}
+
+	
+//	/**
+//	 * Sets the distance servo angle (in radians).  0 is straight forward; negative 
+//	 * values are looking down, positive values are looking up.
+//	 * @param angle
+//	 */
+//	public void setDistanceAngle(double angle){
+//		
+//	}
+//	
+//	/**
+//	 * Reads the specified optical sensor (return value will be a byte between 0 and 255)
+//	 * @param sensor The sensor index; 0 is furthest left, and increments going right.
+//	 * @return
+//	 */
+//	public int readOpticalSensor(int sensor){
+//		return 0;
+//	}
 	
 	public void dispose(){
 		protocol.getSerial().stop();
