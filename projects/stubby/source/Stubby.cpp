@@ -50,6 +50,7 @@ int main (void){
 	serial_init_b(38400);
 	battery_init();
 	magnetometer_init();
+	distance_init();
 	timer2_init();
 
 	while (1){
