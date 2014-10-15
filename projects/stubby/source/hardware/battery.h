@@ -14,7 +14,7 @@
 	#define BATTERY_LEVEL_EMPTY		150
 #elif PCB_REVISION == 2
 	//The minimum ADC value which indicates a full battery
-	#define BATTERY_LEVEL_FULL		143
+	#define BATTERY_LEVEL_FULL		128
 	//The maximum ADC value which indicates an empty battery
 	#define BATTERY_LEVEL_EMPTY		100
 #else
