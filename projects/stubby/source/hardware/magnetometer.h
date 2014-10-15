@@ -7,6 +7,7 @@
 
 #include "../Stubby.h"
 #include "status.h"
+#include "../util/convert.h"
 
 #include "../lib/twi/twi.h"
 

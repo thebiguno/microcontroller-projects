@@ -89,7 +89,7 @@ void magnetometer_take_reading(){
 }
 
 double magnetometer_read_heading(){
-	return atan2(filtered[1], filtered[0]);
+	return normalize_angle(atan2(filtered[1], filtered[0]) + MAGNETOMETER_ORIENTATION_OFFSET);
 }
 #else
 

@@ -11,6 +11,11 @@
 #Defaults to 1
 #MAGNETOMETER=1
 
+#The orientation of the magnetometer.  This value will be added to the output heading
+# to make 0 point North.  For rev 2.1 (and 2.0 if you mount the Adafruit magnetometer
+# in the recommended way) boards, this is PI radians (180 degrees).
+#MAGNETOMETER_ORIENTATION_OFFSET=3.1415926
+
 #Is a distance sensor on board?  Set to 1 for yes, 0 for no.
 #Defaults to 1
 #DISTANCE_SENSOR=1
