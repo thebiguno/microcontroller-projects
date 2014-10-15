@@ -86,9 +86,6 @@ public class Protocol {
 			}
 			Logger.getLogger(this.getClass().getName()).info("Debug: " + sb.toString());
 		}
-		else if (cmd == SEND_HEADING){
-			Logger.getLogger(this.getClass().getName()).info("Heading: " + byteToRadian(data[0]));
-		}
 		else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < length; i++){
