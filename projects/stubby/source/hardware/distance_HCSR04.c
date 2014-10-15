@@ -1,8 +1,5 @@
 #include "distance.h"
 
-#include <stdio.h>
-
-
 volatile uint8_t interval_do_distance_reading = 0x00;		//Mailbox value, set in timer2 ISR and read in delay
 
 #if DISTANCE_SENSOR == 1
