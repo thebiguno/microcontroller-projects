@@ -86,9 +86,6 @@ public class Protocol {
 			}
 			Logger.getLogger(this.getClass().getName()).info("Debug: " + sb.toString());
 		}
-		else if (cmd == SEND_HEADING){
-			Logger.getLogger(this.getClass().getName()).info("Heading: " + byteToRadian(data[0]));
-		}
 		else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < length; i++){
@@ -207,6 +204,24 @@ public class Protocol {
 		Logger.getLogger(this.getClass().getName()).warning("Attempt to re-send command (" + Integer.toHexString(message.getCommand()) + ") failed.");
 		return false;
 	}
+	
+	public Message sendMessageAndBlockForReply(Message message, int replyMessageType, long ackTimeout, int retryCount) {
+		for (int retry = 0; retry < retryCount; retry++){
+			sendMessage(message);
+			for (long i = 0; i < ackTimeout; i++){
+				try {Thread.sleep(1);} catch (InterruptedException e){}
+				if (isMessageWaiting(replyMessageType)){
+					final Message responseMessage = popMessage(replyMessageType);
+					return responseMessage;
+				}
+			}
+			Logger.getLogger(this.getClass().getName()).warning("Attempt to send command (" + Integer.toHexString(message.getCommand()) + ") timed out.");
+		}
+		
+		Logger.getLogger(this.getClass().getName()).warning("Attempt to re-send command (" + Integer.toHexString(message.getCommand()) + ") failed.");
+		return null;
+	}
+	
 	public boolean sendMessage(Message message) {
 		if (lastControllerIdMessageSent + 3000 < System.currentTimeMillis()){
 			//If we have not sent the control ID message in the previous three seconds, do so now.

@@ -1,8 +1,5 @@
 #include "universal_controller.h"
 
-#include <stdio.h>
-#include "../hardware/magnetometer.h"
-
 extern Leg legs[LEG_COUNT];
 
 static volatile uc_stick_t left_stick;
@@ -84,7 +81,13 @@ void uc_remote_control(){
 			}
 			
 			pwm_apply_batch();
+#if F_CPU == 12000000
 			delay_ms(5);
+#elif F_CPU == 20000000
+			delay_ms(10);
+#else
+#warning Non-standard CPU speed.  Please specify a delay.
+#endif
 		}
 		//Rotation: Pitch / Roll (left stick) and Yaw (right stick)
 		else if (buttons_held & _BV(CONTROLLER_BUTTON_VALUE_RIGHT2)){
@@ -103,7 +106,13 @@ void uc_remote_control(){
 			}
 			
 			pwm_apply_batch();
+#if F_CPU == 12000000
 			delay_ms(5);
+#elif F_CPU == 20000000
+			delay_ms(10);
+#else
+#warning Non-standard CPU speed.  Please specify a delay.
+#endif
 		}
 		//Normal movement
 		else {
@@ -144,7 +153,14 @@ void uc_remote_control(){
 				}
 			}
 			pwm_apply_batch();
-			delay_ms(3);
+#if F_CPU == 12000000
+			delay_ms(5);
+#elif F_CPU == 20000000
+			delay_ms(8);
+#else
+#warning Non-standard CPU speed.  Please specify a delay.
+#endif
+
 		}
 	}
 	

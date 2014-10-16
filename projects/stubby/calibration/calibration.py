@@ -35,20 +35,20 @@ def main(ser):
 """
 
 Stubby Calibration: Please selection an option below:
-	1) Joint Calibration
-	2) X,Y,Z Foot Position Calibration
-	3) Magnetometer Calibration
-	L) Load all values from EEPROM
+	J) Joint Calibration
+	F) X,Y,Z Foot Position Calibration
+	M) Magnetometer Calibration
+	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
 """)
 		choice = raw_input("Selected Option: ")
 	
-		if (choice == "1"):
+		if (choice == "J" or choice == "j"):
 			doLegCalibration(ser, MODE_CALIBRATION_JOINTS)
-		elif (choice == "2"):
+		elif (choice == "F" or choice == "f"):
 			doLegCalibration(ser, MODE_CALIBRATION_FEET)
-		elif (choice == "3"):
+		elif (choice == "M" or choice == "m"):
 			doMagnetometerCalibration(ser)
 		elif (choice == "L" or choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
@@ -70,9 +70,52 @@ def doLegCalibration(ser, mode):
 	if (mode == MODE_CALIBRATION_JOINTS):
 		requestMessage = MESSAGE_REQUEST_JOINT_CALIBRATION
 		sendMessage = MESSAGE_SEND_JOINT_CALIBRATION
+		raw_input("""
+Joint calibration allows builders to ensure that each joint (coxa, femur, and tibia) 
+is set to the correct neutral angle, despite tolerances between each servo, mounting horn,
+etc.  For the Inverse Kinematics engine to work accurately, it is essential that each
+joint is as close to nominal as possible.
+
+When entering this mode, Stubby should be lifted off the ground by its main body.  Each
+leg will return to its neutral position (i.e. the position where each servo is sent a 
+1500us PWM signal).  A protractor can then be used to measure each joint, according
+to the diagrams available at:
+http://git.digitalcave.ca/gitweb/?p=projects.git;a=blob_plain;f=projects/stubby/doc/diagrams.pdf
+
+The calibration units for this mode are tens of mirco seconds (us), modifying the PWM signal 
+directly.  For instance, if the drive calculations indicate that a servo should be sent a 1200us 
+PWM signal to achieve the desired angle, and there is a calibration value of 3, the actual
+signal will be 1230us.
+
+See http://stubby.digitalcave.ca/stubby/calibration.jsp for additional instructions on 
+calibration, including pictures.
+
+Press enter to set the logs to their PWM neutral positions, and to begin calibration.
+""")
 	elif (mode == MODE_CALIBRATION_FEET):
 		requestMessage = MESSAGE_REQUEST_FOOT_CALIBRATION
 		sendMessage = MESSAGE_SEND_FOOT_CALIBRATION
+		raw_input("""
+Foot calibration allows builders to fine-tune the x,y,z position of each foot.  Positive
+x values will move the foot to the right; positive y values will move the foot forward;
+positive z values will move the foot up.
+
+When starting calibration, Stubby should be lifted off the ground by its main body.  Each
+leg will return to its default Inverse Kinematics-calculated position (i.e. the positions
+used in the Leg array constructor in Stubby.cpp).  You can then visually inspect each
+leg to ensure that it is positioned properly.  (Most likely, no changes are going to be 
+required in this mode.  If any changes are needed, it will likely be to the Z axis only, 
+and it will likely only require a few mm of changes).
+
+The calibration units for this mode are mm.  For instance, if the calibration value for
+the z axis was set to 3, the foot would be 3mm higher than if it calibration value was 
+set to 0.
+
+See http://stubby.digitalcave.ca/stubby/calibration.jsp for additional instructions on 
+calibration, including pictures.
+
+Press enter to set the logs to their default positions, and to begin calibration.
+""")
 	else:
 		print("Invalid mode detected")
 		return
@@ -122,7 +165,6 @@ def doLegCalibration(ser, mode):
 					print("\nPress '+' to increment, '-' to decrement, a valid number (-128 to 127), or 'Q' to return to joint selection.")
 					while True:
 						key = raw_input("Selected Option (current value: " + str(to_int8_t(d[leg * 3 + int(joint)])) + "): ")
-
 						if (key == "+"):
 							d[leg * 3 + int(joint)] = to_uint8_t(to_int8_t(d[leg * 3 + int(joint)] + 1))
 						elif (key == "-"):
@@ -148,6 +190,28 @@ def doLegCalibration(ser, mode):
 			print("Invalid leg selected.")
 
 def doMagnetometerCalibration(ser):
+	raw_input("""
+Magnetometer calibration determines what offset values are required for the magnetometer
+to be properly centered.  Each magnetometer will be different, and depending on the 
+magnetic fields surrounding the servos, each frame / servo combination will likely
+be different as well.
+
+The best way to calibrate the magnetometer is to use the automatic routine.  Place
+Stubby on the floor or a table, far from the edge.  When calibration starts, Stubby
+will slowly turn in place for a minute or two, completing about 3 - 5 full rotations.
+
+While rotating, Stubby repeatedly reads the magnetometer, and sends the data to the 
+calibration program.  When completed, the calibration program analyzes the data, and
+computes the required calibration offsets.
+
+The calibration units for this mode are offsets on the raw magnetometer readings.
+
+See http://stubby.digitalcave.ca/stubby/calibration.jsp for additional instructions on 
+calibration, including pictures.
+
+Please place Stubby on the floor, and press enter.
+""")
+
 	while True:
 		writeMessage(ser, MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION, [])
 		response = readMessage(ser)
@@ -162,7 +226,7 @@ def doMagnetometerCalibration(ser):
 	
 		print("\nPlease select an option")
 		print("	C) Show current magnetometer offsets")
-		print("	A) Start auto magnetometer offset calibration")
+		print("	S) Start auto magnetometer offset calibration")
 		print("	M) Set manual magnetometer offsets")
 		print("	Q) Return to main menu")
 		
@@ -172,12 +236,15 @@ def doMagnetometerCalibration(ser):
 			x = to_int16_t((d[0] << 8) + d[1])
 			y = to_int16_t((d[2] << 8) + d[3])
 			print("Current offsets: x=" + str(x) + ", y=" + str(y))
-		elif (option == "A" or option == "a"):
+		elif (option == "S" or option == "s"):
+			xOffset = to_int16_t((d[0] << 8) + d[1])
+			yOffset = to_int16_t((d[2] << 8) + d[3])
+
 			print("Stubby will now slowly turn in place, for about 3 - 5 rotations.  Please stand by...")
 			writeMessage(ser, MESSAGE_START_MAGNETOMETER_CALIBRATION, [])
 			xValues = []
 			yValues = []
-			print("Reading raw values:\nx\ty")
+			print("Reading raw values and showing adjusted values with current offsets (" + str(xOffset) + ", " + str(yOffset) + "):\nX\tY\tadj. X\tadj. Y")
 			while True:
 				rawValue = readMessage(ser)
 				if (rawValue == False):
@@ -187,11 +254,12 @@ def doMagnetometerCalibration(ser):
 				yValue = to_int16_t((rawData[2] << 8) + rawData[3]);
 				xValues.append(xValue)
 				yValues.append(yValue)
-				print(str(xValue) + "\t" + str(yValue))
+				print(str(xValue) + "\t" + str(yValue) + "\t" + str(xValue + xOffset) + "\t" + str(yValue + yOffset))
 			xAverage = -1 * sum(xValues) / len(xValues)
 			yAverage = -1 * sum(yValues) / len(yValues)
-			print("Auto calculated offsets: " + str(xAverage) + ", " + str(yAverage))
-			useNewOffsets = raw_input("Do you want to use these offsets? (Y/N) ")
+			print("Current offsets: " + str(xOffset) + ", " + str(yOffset))
+			print("New (auto calculated) offsets: " + str(xAverage) + ", " + str(yAverage))
+			useNewOffsets = raw_input("Do you want to use these new offsets? (Y/N) ")
 			if (useNewOffsets == "Y" or useNewOffsets == "y"):
 				#Send new calibration values
 				data = []

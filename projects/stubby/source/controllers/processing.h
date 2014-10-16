@@ -9,6 +9,7 @@
 #include "../Leg.h"
 #include "../gait/gait.h"
 #include "../hardware/battery.h"
+#include "../hardware/distance.h"
 #include "../hardware/magnetometer.h"
 #include "../hardware/status.h"
 #include "../util/convert.h"

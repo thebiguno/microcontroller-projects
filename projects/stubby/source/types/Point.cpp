@@ -14,6 +14,12 @@ void Point::add(Point offset){
 	this->z += offset.z;
 }
 
+void Point::set(int16_t x, int16_t y, int16_t z){
+	this->x = x;
+	this->y = y;
+	this->z = z;
+}
+
 void rotate2D(int16_t* c1, int16_t* c2, double angle){
 	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
 	int16_t n1 = *c1 * cos_f(angle) - *c2 * sin_f(angle);
@@ -35,7 +41,3 @@ void Point::rotateYZ(double angle){
 	rotate2D(&this->y, &this->z, angle);
 }
 
-void Point::rotateXYZ(Point v, double angle){
-	
-	
-}

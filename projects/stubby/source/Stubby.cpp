@@ -25,7 +25,12 @@ Leg legs[LEG_COUNT] = {
 	Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0)),
 	Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0))
 #elif PCB_REVISION == 2
-	#error TODO Add support for Rev2 PCB
+	Leg(FRONT_LEFT,		&PORTA, PORTA6, &PORTA, PORTA5, &PORTA, PORTA4, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0)),
+	Leg(MIDDLE_LEFT,	&PORTA, PORTA3, &PORTB, PORTB0, &PORTB, PORTB1, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0)),
+	Leg(REAR_LEFT,		&PORTB, PORTB2, &PORTB, PORTB3, &PORTB, PORTB4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0)),
+	Leg(REAR_RIGHT,		&PORTD, PORTD4, &PORTD, PORTD3, &PORTD, PORTD2, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0)),
+	Leg(MIDDLE_RIGHT,	&PORTD, PORTD7, &PORTD, PORTD6, &PORTD, PORTD5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0)),
+	Leg(FRONT_RIGHT,	&PORTC, PORTC4, &PORTC, PORTC3, &PORTC, PORTC2, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0))
 #else
 	#error Unsupported PCB_REVISION value.
 #endif
@@ -44,12 +49,8 @@ int main (void){
 	servo_init(legs);
 	serial_init_b(38400);
 	battery_init();
-
-	int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
-	int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
-	magnetometer_set_offsets(x, y);
-
 	magnetometer_init();
+	distance_init();
 	timer2_init();
 
 	while (1){

@@ -78,8 +78,13 @@ void protocol_receive_byte(uint8_t b){
 			_pos++;
 			return;
 		case 1: // length
-			_len = b;
-			_pos++;
+			if (b == 0){
+				_err = PROTOCOL_ERROR_INVALID_LENGTH;
+			}
+			else {
+				_len = b;
+				_pos++;
+			}
 			return;
 		case 2:
 			_api = b;

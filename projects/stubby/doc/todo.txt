@@ -1,6 +1,5 @@
 Outstanding TODO Items:
--Python calibration script
--Rev 2 board assembly and testing
--Translate / Rotate via Processing API
+-Rotate via Processing API
 -Move individual feet to specified position via Processing API
+-Rev 2 board assembly and testing
 -Distance sensor via Processing API
