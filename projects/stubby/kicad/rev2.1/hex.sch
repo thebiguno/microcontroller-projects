@@ -38,7 +38,7 @@ $Descr User 15000 10000
 encoding utf-8
 Sheet 1 1
 Title "Stubby the Hexapod Controller"
-Date "15 oct 2014"
+Date "16 oct 2014"
 Rev "2.1"
 Comp "Wyatt Olson (http://stubby.digitalcave.ca)"
 Comment1 ""
@@ -709,9 +709,9 @@ Text Label 10300 5700 0    60   ~ 0
 LED_GR
 Text Label 9950 5450 1    60   ~ 0
 PWM_BUS
-Text Label 9000 7800 1    60   ~ 0
+Text Label 9700 7800 1    60   ~ 0
 DIST_TRIG
-Text Label 8900 7800 1    60   ~ 0
+Text Label 9600 7800 1    60   ~ 0
 DIST_ECHO
 Text Label 5650 3950 0    60   ~ 0
 XTAL2
@@ -1115,27 +1115,27 @@ $EndComp
 $Comp
 L +5V #PWR031
 U 1 1 53FCA756
-P 9100 7950
-F 0 "#PWR031" H 9100 8040 20  0001 C CNN
-F 1 "+5V" H 9100 8040 30  0000 C CNN
-F 2 "" H 9100 7950 60  0000 C CNN
-F 3 "" H 9100 7950 60  0000 C CNN
-	1    9100 7950
+P 9800 7950
+F 0 "#PWR031" H 9800 8040 20  0001 C CNN
+F 1 "+5V" H 9800 8040 30  0000 C CNN
+F 2 "" H 9800 7950 60  0000 C CNN
+F 3 "" H 9800 7950 60  0000 C CNN
+	1    9800 7950
 	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR032
 U 1 1 53FCA75C
-P 8800 7950
-F 0 "#PWR032" H 8800 7950 30  0001 C CNN
-F 1 "GND" H 8800 7880 30  0001 C CNN
-F 2 "" H 8800 7950 60  0000 C CNN
-F 3 "" H 8800 7950 60  0000 C CNN
-	1    8800 7950
+P 9500 7950
+F 0 "#PWR032" H 9500 7950 30  0001 C CNN
+F 1 "GND" H 9500 7880 30  0001 C CNN
+F 2 "" H 9500 7950 60  0000 C CNN
+F 3 "" H 9500 7950 60  0000 C CNN
+	1    9500 7950
 	-1   0    0    1   
 $EndComp
-Text Notes 8550 8600 0    80   ~ 0
-Distance Sensor + Servo
+Text Notes 9100 8550 0    80   ~ 0
+Distance Sensor
 $Comp
 L GND #PWR033
 U 1 1 53FCAC57
@@ -1400,17 +1400,13 @@ Wire Wire Line
 Wire Wire Line
 	5650 2700 5650 3650
 Wire Wire Line
-	8900 7250 9600 7250
-Wire Wire Line
-	9600 7250 9600 3750
+	9600 3750 9600 7950
 Wire Wire Line
 	9600 3750 7750 3750
 Wire Wire Line
 	9700 3650 7750 3650
 Wire Wire Line
-	9700 7350 9700 3650
-Wire Wire Line
-	9000 7350 9700 7350
+	9700 3650 9700 7950
 Wire Wire Line
 	8050 5450 7750 5450
 Wire Wire Line
@@ -1580,12 +1576,12 @@ Wire Wire Line
 $Comp
 L CONN_4 P10
 U 1 1 53FCDB55
-P 8950 8300
-F 0 "P10" V 8900 8300 50  0000 C CNN
-F 1 "CONN_4" V 9000 8300 50  0000 C CNN
-F 2 "" H 8950 8300 60  0000 C CNN
-F 3 "" H 8950 8300 60  0000 C CNN
-	1    8950 8300
+P 9650 8300
+F 0 "P10" V 9600 8300 50  0000 C CNN
+F 1 "CONN_4" V 9700 8300 50  0000 C CNN
+F 2 "" H 9650 8300 60  0000 C CNN
+F 3 "" H 9650 8300 60  0000 C CNN
+	1    9650 8300
 	0    1    1    0   
 $EndComp
 NoConn ~ 3250 6550
@@ -1700,10 +1696,6 @@ F 3 "" H 6500 8450 60  0000 C CNN
 	1    6500 8550
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9000 7950 9000 7350
-Wire Wire Line
-	8900 7250 8900 7950
 Wire Wire Line
 	7950 5550 7950 7700
 Wire Wire Line
@@ -2009,13 +2001,7 @@ Wire Notes Line
 Text Notes 5100 8000 0    80   ~ 0
 Magnetometer
 Wire Notes Line
-	8450 7150 10250 7150
-Wire Notes Line
 	10250 7150 10250 8700
-Wire Notes Line
-	10250 8700 8450 8700
-Wire Notes Line
-	8450 8700 8450 7150
 Text Notes 12050 7200 0    60   ~ 0
 FTDI Headers\n
 Text Notes 10950 7100 0    60   ~ 0
@@ -2105,7 +2091,7 @@ L C C19
 U 1 1 543D7C01
 P 6900 7900
 F 0 "C19" H 6900 8000 40  0000 L CNN
-F 1 "0.1uF" V 7000 7650 40  0000 L CNN
+F 1 "1uF" V 7000 7650 40  0000 L CNN
 F 2 "~" H 6938 7750 30  0000 C CNN
 F 3 "~" H 6900 7900 60  0000 C CNN
 	1    6900 7900
@@ -2128,4 +2114,10 @@ Connection ~ 6600 7900
 NoConn ~ 7750 3850
 Wire Wire Line
 	12850 2050 11700 2050
+Wire Notes Line
+	10250 7150 8950 7150
+Wire Notes Line
+	8950 7150 8950 8700
+Wire Notes Line
+	8950 8700 10250 8700
 $EndSCHEMATC
