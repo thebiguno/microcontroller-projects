@@ -1,4 +1,4 @@
-update=Friday, September 19, 2014 'pmt' 03:55:03 pm
+update=Thursday, October 16, 2014 'pmt' 12:22:33 pm
 version=1
 last_client=eeschema
 [cvpcb]
@@ -86,5 +86,5 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-LibName31=hex
-LibName32=custom
+LibName31=custom
+LibName32=stubby

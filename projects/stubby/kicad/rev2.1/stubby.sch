@@ -29,9 +29,9 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:hex
 LIBS:custom
-LIBS:hex-cache
+LIBS:stubby
+LIBS:stubby-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 15000 10000
@@ -388,12 +388,12 @@ $EndComp
 $Comp
 L DPDT SW2
 U 1 1 533C3A10
-P 8500 1300
-F 0 "SW2" H 8500 1400 60  0000 C CNN
-F 1 "DPDT" H 8500 1200 60  0000 C CNN
-F 2 "" H 8500 1300 60  0000 C CNN
-F 3 "" H 8500 1300 60  0000 C CNN
-	1    8500 1300
+P 8500 1250
+F 0 "SW2" H 8500 1350 60  0000 C CNN
+F 1 "DPDT" H 8500 1150 60  0000 C CNN
+F 2 "" H 8500 1250 60  0000 C CNN
+F 3 "" H 8500 1250 60  0000 C CNN
+	1    8500 1250
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -953,7 +953,7 @@ Text Label 2000 6450 0    60   ~ 0
 XBEE_GND
 Text Label 3150 6500 0    60   ~ 0
 BLUETOOTH_GND
-Text Label 8750 1000 0    60   ~ 0
+Text Label 7550 1300 0    60   ~ 0
 BATTERY
 $Comp
 L +BATT #PWR025
@@ -1237,8 +1237,6 @@ Wire Wire Line
 	2200 2350 1950 2350
 Connection ~ 1350 2350
 Wire Wire Line
-	7850 1500 7850 1600
-Wire Wire Line
 	4150 6550 4300 6550
 Connection ~ 3950 6450
 Wire Wire Line
@@ -1311,11 +1309,7 @@ Wire Wire Line
 Connection ~ 10500 6350
 Wire Wire Line
 	1600 1000 2050 1000
-Connection ~ 7850 1300
-Connection ~ 9100 1600
 Connection ~ 9350 1600
-Wire Wire Line
-	8050 1100 7850 1100
 Wire Wire Line
 	1650 800  1600 800 
 Connection ~ 2050 1600
@@ -1323,21 +1317,6 @@ Wire Wire Line
 	2250 1500 2250 1700
 Wire Wire Line
 	6850 3250 6850 3350
-Wire Wire Line
-	8050 1500 7850 1500
-Connection ~ 9100 1100
-Wire Wire Line
-	7850 1000 9100 1000
-Wire Wire Line
-	9100 1500 8950 1500
-Wire Wire Line
-	9100 1600 9100 1500
-Wire Wire Line
-	9100 1100 8950 1100
-Wire Wire Line
-	9100 1000 9100 1300
-Wire Wire Line
-	9100 1300 8950 1300
 Wire Wire Line
 	10500 6850 10500 7050
 Wire Wire Line
@@ -1387,8 +1366,6 @@ Wire Wire Line
 	11100 5850 10050 5850
 Wire Wire Line
 	10050 5700 11100 5700
-Wire Wire Line
-	7850 1000 7850 1300
 Wire Wire Line
 	9350 2750 9250 2750
 Wire Wire Line
@@ -1495,9 +1472,6 @@ Wire Wire Line
 Wire Wire Line
 	11050 4800 10050 4800
 Connection ~ 8750 2850
-Connection ~ 7850 1100
-Wire Wire Line
-	7500 1300 8050 1300
 Connection ~ 5650 4450
 Wire Wire Line
 	5650 4600 5650 4450
@@ -1910,8 +1884,6 @@ Wire Wire Line
 	3650 2550 3650 2050
 Connection ~ 3650 2050
 Wire Wire Line
-	7850 1600 9350 1600
-Wire Wire Line
 	2250 900  1600 900 
 $Comp
 L +BATT #PWR042
@@ -2120,4 +2092,30 @@ Wire Notes Line
 	8950 7150 8950 8700
 Wire Notes Line
 	8950 8700 10250 8700
+Wire Wire Line
+	8450 1600 9350 1600
+Wire Wire Line
+	8750 1600 8750 1500
+Wire Wire Line
+	8450 1500 8450 1600
+Connection ~ 8750 1600
+Wire Wire Line
+	8650 1000 8650 1050
+Wire Wire Line
+	8000 1000 8650 1000
+Wire Wire Line
+	8350 1000 8350 1050
+Wire Wire Line
+	8550 1550 8550 1500
+Wire Wire Line
+	8000 1550 8550 1550
+Wire Wire Line
+	8250 1550 8250 1500
+Wire Wire Line
+	8000 1000 8000 1550
+Wire Wire Line
+	8000 1300 7500 1300
+Connection ~ 8350 1000
+Connection ~ 8000 1300
+Connection ~ 8250 1550
 $EndSCHEMATC
