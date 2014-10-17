@@ -1,4 +1,4 @@
-include ../../../build/variables.mk
+include ../../../build/avr/variables.mk
 
 PROJECT=cranky
 MMCU=atmega48
@@ -15,4 +15,4 @@ LFUSE=0xDF
 
 AVRDUDE_PROGRAMMER=usbtiny
 
-include ../../../build/targets.mk
+include ../../../build/avr/targets.mk
