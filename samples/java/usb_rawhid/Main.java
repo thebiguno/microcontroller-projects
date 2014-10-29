@@ -13,12 +13,14 @@ public class Main {
 
 		HIDDevice device = HIDManager.getInstance().openById(0x16c0, 0x0480, null);
 
-		final byte buf[] = new byte[64]; 
+		final byte buf[] = new byte[64];
+		byte b0 = 0x00;
 
 		while (true) {
 			device.read(buf);
 			System.out.println(new String(buf));
-			buf[0] = (byte) 0x00;
+			b0 ^= 0xFF;	//Send a different byte each time
+			buf[0] = b0;
 			device.write(buf);
 			System.out.println(bytesToHex(buf));
 		}
