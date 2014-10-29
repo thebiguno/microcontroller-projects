@@ -278,7 +278,7 @@ int8_t usb_rawhid_recv(uint8_t *buffer, uint8_t timeout)
 	UENUM = RAWHID_RX_ENDPOINT;
 	// wait for data to be available in the FIFO
 	while (1) {
-		if (UEINTX & (1<<RWAL)) break;
+		if (UEINTX & _BV(RWAL)) break;	
 		SREG = intr_state;
 		if (rx_timeout_count == 0) return 0;
 		if (!usb_configuration) return -1;
@@ -771,11 +771,10 @@ static inline void usb_ack_out(void)
 // other endpoints are manipulated by the user-callable
 // functions, and the start-of-frame interrupt.
 //
-ISR(USB_COM_vect)
-{
-        uint8_t intbits;
+ISR(USB_COM_vect){
+	uint8_t intbits;
 	const uint8_t *list;
-        const uint8_t *cfg;
+	const uint8_t *cfg;
 	uint8_t i, n, len, en;
 	uint8_t bmRequestType;
 	uint8_t bRequest;
@@ -786,19 +785,19 @@ ISR(USB_COM_vect)
 	const uint8_t *desc_addr;
 	uint8_t	desc_length;
 
-        UENUM = 0;
+	UENUM = 0;
 	intbits = UEINTX;
-        if (intbits & (1<<RXSTPI)) {
-                bmRequestType = UEDATX;
-                bRequest = UEDATX;
-                wValue = UEDATX;
-                wValue |= (UEDATX << 8);
-                wIndex = UEDATX;
-                wIndex |= (UEDATX << 8);
-                wLength = UEDATX;
-                wLength |= (UEDATX << 8);
-                UEINTX = ~((1<<RXSTPI) | (1<<RXOUTI) | (1<<TXINI));
-                if (bRequest == GET_DESCRIPTOR) {
+	if (intbits & (1<<RXSTPI)) {
+		bmRequestType = UEDATX;
+		bRequest = UEDATX;
+		wValue = UEDATX;
+		wValue |= (UEDATX << 8);
+		wIndex = UEDATX;
+		wIndex |= (UEDATX << 8);
+		wLength = UEDATX;
+		wLength |= (UEDATX << 8);
+		UEINTX = ~((1<<RXSTPI) | (1<<RXOUTI) | (1<<TXINI));
+		if (bRequest == GET_DESCRIPTOR) {
 			list = (const uint8_t *)descriptor_list;
 			for (i=0; ; i++) {
 				if (i >= NUM_DESC_LIST) {
@@ -839,7 +838,8 @@ ISR(USB_COM_vect)
 				usb_send_in();
 			} while (len || n == ENDPOINT0_SIZE);
 			return;
-                }
+		}
+	
 		if (bRequest == SET_ADDRESS) {
 			usb_send_in();
 			usb_wait_in_ready();
@@ -883,8 +883,7 @@ ISR(USB_COM_vect)
 			usb_send_in();
 			return;
 		}
-		if ((bRequest == CLEAR_FEATURE || bRequest == SET_FEATURE)
-		  && bmRequestType == 0x02 && wValue == 0) {
+		if ((bRequest == CLEAR_FEATURE || bRequest == SET_FEATURE) && bmRequestType == 0x02 && wValue == 0) {
 			i = wIndex & 0x7F;
 			if (i >= 1 && i <= MAX_ENDPOINT) {
 				usb_send_in();

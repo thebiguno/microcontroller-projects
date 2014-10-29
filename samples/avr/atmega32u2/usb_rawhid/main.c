@@ -30,13 +30,12 @@
 #define CPU_PRESCALE(n)	(CLKPR = 0x80, CLKPR = (n))
 
 volatile uint8_t do_output=0;
-uint8_t buffer[64];
+uint8_t tx_buffer[64] = {'T','e','s','t','i','n','g',' ','1',',','2',',','3','.',' ','(','0','x','X','X','X','X',')'};
+uint8_t rx_buffer[64];
 
 int main(void)
 {
-	int8_t r;
-	uint8_t i;
-	uint16_t val, count=0;
+	uint16_t count=0;
 
 	// set for 16 MHz clock
 	CPU_PRESCALE(0);
@@ -51,54 +50,30 @@ int main(void)
 	// and do whatever it does to actually be ready for input
 	_delay_ms(1000);
 
-        // Configure timer 0 to generate a timer overflow interrupt every
-        // 256*1024 clock cycles, or approx 61 Hz when using 16 MHz clock
-        TCCR0A = 0x00;
-        TCCR0B = 0x05;
-        TIMSK0 = (1<<TOIE0);
+	// Configure timer 0 to generate a timer overflow interrupt every
+	// 256*1024 clock cycles, or approx 61 Hz when using 16 MHz clock
+	TCCR0A = 0x00;
+	TCCR0B = 0x05;
+	TIMSK0 = (1<<TOIE0);
+
+	DDRB = 0xFF;
 
 	while (1) {
 		// if received data, do something with it
-		r = usb_rawhid_recv(buffer, 0);
-		if (r > 0) {
-			// output 4 bits to Port B
-			DDRB = 0xFF;
-			PORTD ^= 0xFF; //buffer[0];
+		if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+			PORTB = rx_buffer[0];
 		}
 		// if time to send output, transmit something interesting
 		if (do_output) {
 			do_output = 0;
-			// send a packet, first 2 bytes 0xABCD
-			buffer[0] = 'T';
-			buffer[1] = 'e';
-			buffer[2] = 's';
-			buffer[3] = 't';
-			buffer[4] = 'i';
-			buffer[5] = 'n';
-			buffer[6] = 'g';
-			buffer[7] = ' ';
-			buffer[8] = '1';
-			buffer[9] = ',';
-			buffer[10] = '2';
-			buffer[11] = ',';
-			buffer[12] = '3';
-			buffer[13] = '.';
-			buffer[14] = ' ';
-			buffer[15] = '(';
-			buffer[16] = '0';
-			buffer[17] = 'x';
-			buffer[18] = (((count >> 12) & 0x0F) <= 9) ? ((count >> 12) & 0x0F) + 0x30 : ((count >> 12) & 0x0F) + 0x37; 
-			buffer[19] = (((count >>  8) & 0x0F) <= 9) ? ((count >>  8) & 0x0F) + 0x30 : ((count >>  8) & 0x0F) + 0x37;
-			buffer[20] = (((count >>  4) & 0x0F) <= 9) ? ((count >>  4) & 0x0F) + 0x30 : ((count >>  4) & 0x0F) + 0x37;
-			buffer[21] = (((count >>  0) & 0x0F) <= 9) ? ((count >>  0) & 0x0F) + 0x30 : ((count >>  0) & 0x0F) + 0x37;
-			buffer[22] = ')';
-			
-			// most of the packet filled with zero
-			for (i=23; i<64; i++) {
-				buffer[i] = 0;
-			}
+			// send a packet with test string and 16 bit counter
+			tx_buffer[18] = (((count >> 12) & 0x0F) <= 9) ? ((count >> 12) & 0x0F) + 0x30 : ((count >> 12) & 0x0F) + 0x37; 
+			tx_buffer[19] = (((count >>  8) & 0x0F) <= 9) ? ((count >>  8) & 0x0F) + 0x30 : ((count >>  8) & 0x0F) + 0x37;
+			tx_buffer[20] = (((count >>  4) & 0x0F) <= 9) ? ((count >>  4) & 0x0F) + 0x30 : ((count >>  4) & 0x0F) + 0x37;
+			tx_buffer[21] = (((count >>  0) & 0x0F) <= 9) ? ((count >>  0) & 0x0F) + 0x30 : ((count >>  0) & 0x0F) + 0x37;
+
 			// send the packet
-			usb_rawhid_send(buffer, 50);
+			usb_rawhid_send(tx_buffer, 50);
 			count++;
 		}
 	}
