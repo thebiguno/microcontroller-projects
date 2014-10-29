@@ -26,7 +26,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "usb_rawhid.h"
-#include "analog.h"
 
 #define CPU_PRESCALE(n)	(CLKPR = 0x80, CLKPR = (n))
 
@@ -62,30 +61,42 @@ int main(void)
 		// if received data, do something with it
 		r = usb_rawhid_recv(buffer, 0);
 		if (r > 0) {
-			// output 4 bits to D0, D1, D2, D3 pins
-			DDRD = 0x0F;
-			PORTD = (PORTD & 0xF0) | (buffer[0] & 0x0F);
-			// ignore the other 63.5 bytes....
+			// output 4 bits to Port B
+			DDRB = 0xFF;
+			PORTD ^= 0xFF; //buffer[0];
 		}
 		// if time to send output, transmit something interesting
 		if (do_output) {
 			do_output = 0;
 			// send a packet, first 2 bytes 0xABCD
-			buffer[0] = 0xAB;
-			buffer[1] = 0xCD;
- 			// put A/D measurements into next 24 bytes
-			for (i=0; i<12; i++) {
-				val = analogRead(i);
-				buffer[i * 2 + 2] = val >> 8;
-				buffer[i * 2 + 3] = val & 255;
-			}
+			buffer[0] = 'T';
+			buffer[1] = 'e';
+			buffer[2] = 's';
+			buffer[3] = 't';
+			buffer[4] = 'i';
+			buffer[5] = 'n';
+			buffer[6] = 'g';
+			buffer[7] = ' ';
+			buffer[8] = '1';
+			buffer[9] = ',';
+			buffer[10] = '2';
+			buffer[11] = ',';
+			buffer[12] = '3';
+			buffer[13] = '.';
+			buffer[14] = ' ';
+			buffer[15] = '(';
+			buffer[16] = '0';
+			buffer[17] = 'x';
+			buffer[18] = (((count >> 12) & 0x0F) <= 9) ? ((count >> 12) & 0x0F) + 0x30 : ((count >> 12) & 0x0F) + 0x37; 
+			buffer[19] = (((count >>  8) & 0x0F) <= 9) ? ((count >>  8) & 0x0F) + 0x30 : ((count >>  8) & 0x0F) + 0x37;
+			buffer[20] = (((count >>  4) & 0x0F) <= 9) ? ((count >>  4) & 0x0F) + 0x30 : ((count >>  4) & 0x0F) + 0x37;
+			buffer[21] = (((count >>  0) & 0x0F) <= 9) ? ((count >>  0) & 0x0F) + 0x30 : ((count >>  0) & 0x0F) + 0x37;
+			buffer[22] = ')';
+			
 			// most of the packet filled with zero
-			for (i=26; i<62; i++) {
+			for (i=23; i<64; i++) {
 				buffer[i] = 0;
 			}
-			// put a count in the last 2 bytes
-			buffer[62] = count >> 8;
-			buffer[63] = count & 255;
 			// send the packet
 			usb_rawhid_send(buffer, 50);
 			count++;
