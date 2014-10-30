@@ -24,7 +24,7 @@ try:
 			b = '\xFF'
 		arr = dev.read(64)
 		print("Read: " + str(len(arr)))
-		print(''.join([chr(x) for x in arr]) + "\n")
+		print(arr + "\n")
 		time.sleep(1)
 except Exception, e:
 	traceback.print_exc()
