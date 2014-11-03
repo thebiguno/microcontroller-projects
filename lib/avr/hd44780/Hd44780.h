@@ -17,7 +17,6 @@ namespace digitalcave {
 			uint8_t mosi_bv;
 			uint8_t sclk_bv;
 			virtual void cmd(uint8_t cmd);
-			void latch();
 			
 			/*
 			 * Perform the needed display initialization.  This should only be called
