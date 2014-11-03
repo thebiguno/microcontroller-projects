@@ -10,6 +10,9 @@ namespace digitalcave {
 
 	class Hd44780_Shift : public Hd44780 {
 	
+		private:
+			void latch();
+		
 		protected:
 			virtual void cmd(uint8_t cmd);
 

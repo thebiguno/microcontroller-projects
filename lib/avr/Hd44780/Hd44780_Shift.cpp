@@ -46,3 +46,9 @@ void Hd44780_Shift::cmd(uint8_t b) {
 	_delay_us(64);
 	latch();
 }
+void Hd44780_Shift::latch() {
+	*this->e_port |= this->e_bv;
+	_delay_us(450);
+	*this->e_port &= ~this->e_bv;
+	_delay_us(40);
+}

@@ -71,9 +71,4 @@ void Hd44780::setBytes(uint8_t bytes[], uint8_t sz) {
 		_delay_us(64);
 	}
 }
-void Hd44780::latch() {
-	*this->e_port |= this->e_bv;
-	_delay_us(450);
-	*this->e_port &= ~this->e_bv;
-	_delay_us(40);
-}
+
