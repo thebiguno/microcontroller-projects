@@ -41,7 +41,7 @@ int main(void)
 	CPU_PRESCALE(0);
 
 	// Initialize the USB, and then wait for the host to set configuration.
-	// If the Teensy is powered without a PC connected to the USB port,
+	// If the AVR is powered without a PC connected to the USB port,
 	// this will wait forever.
 	usb_init();
 	while (!usb_configured()) /* wait */ ;
