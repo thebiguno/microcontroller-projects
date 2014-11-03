@@ -6,7 +6,6 @@ using namespace digitalcave;
 
 int main (void){
 	_delay_ms(100);
-	DDRB |= _BV(PINB4);
 	
 	Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
 
