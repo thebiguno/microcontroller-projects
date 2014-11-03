@@ -34,24 +34,48 @@
  **************************************************************************/
 
 // You can change these to give your code its own name.
-#define STR_MANUFACTURER	L"MfgName"
-#define STR_PRODUCT		L"Teensy Raw HID Example"
+#ifndef USB_STR_MANUFACTURER
+#define USB_STR_MANUFACTURER	L"digitalcave.ca"
+#endif
+#ifndef USB_STR_PRODUCT
+#define USB_STR_PRODUCT		L"RawHID"
+#endif
+#ifndef USB_STRING_DESCRIPTOR_LENGTH
+//The maximum length of USB_STR_MANUFACTURER and USB_STR_PRODUCT.  Keep this as small as possible to save PROGMEM space
+#define USB_STRING_DESCRIPTOR_LENGTH 16
+#endif
 
 // These 4 numbers identify your device.  Set these to
 // something that is (hopefully) not used by any others!
-#define VENDOR_ID		0x16C0
-#define PRODUCT_ID		0x0480
-#define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
-#define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
+#ifndef USB_VENDOR_ID
+#define USB_VENDOR_ID		0x16C0
+#endif
+#ifndef USB_PRODUCT_ID
+#define USB_PRODUCT_ID		0x0480
+#endif
+#ifndef USB_RAWHID_USAGE_PAGE
+#define USB_RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
+#endif
+#ifndef USB_RAWHID_USAGE
+#define USB_RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
+#endif
 
 // These determine the bandwidth that will be allocated
 // for your communication.  You do not need to use it
 // all, but allocating more than necessary means reserved
 // bandwidth is no longer available to other USB devices.
-#define RAWHID_TX_SIZE		64	// transmit packet size
-#define RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
-#define RAWHID_RX_SIZE		64	// receive packet size
-#define RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
+#ifndef USB_RAWHID_TX_SIZE
+#define USB_RAWHID_TX_SIZE		64	// transmit packet size
+#endif
+#ifndef USB_RAWHID_TX_INTERVAL
+#define USB_RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
+#endif
+#ifndef USB_RAWHID_RX_SIZE
+#define USB_RAWHID_RX_SIZE		64	// receive packet size
+#endif
+#ifndef USB_RAWHID_RX_INTERVAL
+#define USB_RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
+#endif
 
 
 /**************************************************************************
@@ -74,8 +98,8 @@
 #endif
 
 static const uint8_t PROGMEM endpoint_config_table[] = {
-	1, EP_TYPE_INTERRUPT_IN,  EP_SIZE(RAWHID_TX_SIZE) | RAWHID_TX_BUFFER,
-	1, EP_TYPE_INTERRUPT_OUT,  EP_SIZE(RAWHID_RX_SIZE) | RAWHID_RX_BUFFER,
+	1, EP_TYPE_INTERRUPT_IN,  EP_SIZE(USB_RAWHID_TX_SIZE) | RAWHID_TX_BUFFER,
+	1, EP_TYPE_INTERRUPT_OUT,  EP_SIZE(USB_RAWHID_RX_SIZE) | RAWHID_RX_BUFFER,
 	0,
 	0
 };
@@ -102,8 +126,8 @@ static const uint8_t PROGMEM device_descriptor[] = {
 	0,					// bDeviceSubClass
 	0,					// bDeviceProtocol
 	ENDPOINT0_SIZE,				// bMaxPacketSize0
-	LSB(VENDOR_ID), MSB(VENDOR_ID),		// idVendor
-	LSB(PRODUCT_ID), MSB(PRODUCT_ID),	// idProduct
+	LSB(USB_VENDOR_ID), MSB(USB_VENDOR_ID),		// idVendor
+	LSB(USB_PRODUCT_ID), MSB(USB_PRODUCT_ID),	// idProduct
 	0x00, 0x01,				// bcdDevice
 	1,					// iManufacturer
 	2,					// iProduct
@@ -112,16 +136,16 @@ static const uint8_t PROGMEM device_descriptor[] = {
 };
 
 static const uint8_t PROGMEM rawhid_hid_report_desc[] = {
-	0x06, LSB(RAWHID_USAGE_PAGE), MSB(RAWHID_USAGE_PAGE),
-	0x0A, LSB(RAWHID_USAGE), MSB(RAWHID_USAGE),
+	0x06, LSB(USB_RAWHID_USAGE_PAGE), MSB(USB_RAWHID_USAGE_PAGE),
+	0x0A, LSB(USB_RAWHID_USAGE), MSB(USB_RAWHID_USAGE),
 	0xA1, 0x01,				// Collection 0x01
 	0x75, 0x08,				// report size = 8 bits
 	0x15, 0x00,				// logical minimum = 0
 	0x26, 0xFF, 0x00,			// logical maximum = 255
-	0x95, RAWHID_TX_SIZE,			// report count
+	0x95, USB_RAWHID_TX_SIZE,			// report count
 	0x09, 0x01,				// usage
 	0x81, 0x02,				// Input (array)
-	0x95, RAWHID_RX_SIZE,			// report count
+	0x95, USB_RAWHID_RX_SIZE,			// report count
 	0x09, 0x02,				// usage
 	0x91, 0x02,				// Output (array)
 	0xC0					// end collection
@@ -166,15 +190,15 @@ static const uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
 	5,					// bDescriptorType
 	RAWHID_TX_ENDPOINT | 0x80,		// bEndpointAddress
 	0x03,					// bmAttributes (0x03=intr)
-	RAWHID_TX_SIZE, 0,			// wMaxPacketSize
-	RAWHID_TX_INTERVAL,			// bInterval
+	USB_RAWHID_TX_SIZE, 0,			// wMaxPacketSize
+	USB_RAWHID_TX_INTERVAL,			// bInterval
 	// endpoint descriptor, USB spec 9.6.6, page 269-271, Table 9-13
 	7,					// bLength
 	5,					// bDescriptorType
 	RAWHID_RX_ENDPOINT,			// bEndpointAddress
 	0x03,					// bmAttributes (0x03=intr)
-	RAWHID_RX_SIZE, 0,			// wMaxPacketSize
-	RAWHID_RX_INTERVAL			// bInterval
+	USB_RAWHID_RX_SIZE, 0,			// wMaxPacketSize
+	USB_RAWHID_RX_INTERVAL			// bInterval
 };
 
 // If you're desperate for a little extra code memory, these strings
@@ -183,22 +207,22 @@ static const uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
 struct usb_string_descriptor_struct {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
-	int16_t wString[];
+	const wchar_t wString[USB_STRING_DESCRIPTOR_LENGTH];
 };
-static const struct usb_string_descriptor_struct PROGMEM string0 = {
+static struct usb_string_descriptor_struct string0 = {
 	4,
 	3,
 	{0x0409}
 };
 static const struct usb_string_descriptor_struct PROGMEM string1 = {
-	sizeof(STR_MANUFACTURER),
+	sizeof(USB_STR_MANUFACTURER),
 	3,
-	STR_MANUFACTURER
+	USB_STR_MANUFACTURER
 };
 static const struct usb_string_descriptor_struct PROGMEM string2 = {
-	sizeof(STR_PRODUCT),
+	sizeof(USB_STR_PRODUCT),
 	3,
-	STR_PRODUCT
+	USB_STR_PRODUCT
 };
 
 // This table defines which descriptor data is sent for each specific
@@ -214,8 +238,8 @@ static const struct descriptor_list_struct {
 	{0x2200, RAWHID_INTERFACE, rawhid_hid_report_desc, sizeof(rawhid_hid_report_desc)},
 	{0x2100, RAWHID_INTERFACE, config1_descriptor+RAWHID_HID_DESC_OFFSET, 9},
 	{0x0300, 0x0000, (const uint8_t *)&string0, 4},
-	{0x0301, 0x0409, (const uint8_t *)&string1, sizeof(STR_MANUFACTURER)},
-	{0x0302, 0x0409, (const uint8_t *)&string2, sizeof(STR_PRODUCT)}
+	{0x0301, 0x0409, (const uint8_t *)&string1, sizeof(USB_STR_MANUFACTURER)},
+	{0x0302, 0x0409, (const uint8_t *)&string2, sizeof(USB_STR_PRODUCT)}
 };
 #define NUM_DESC_LIST (sizeof(descriptor_list)/sizeof(struct descriptor_list_struct))
 
@@ -287,202 +311,202 @@ int8_t usb_rawhid_recv(uint8_t *buffer, uint8_t timeout)
 		UENUM = RAWHID_RX_ENDPOINT;
 	}
 	// read bytes from the FIFO
-	#if (RAWHID_RX_SIZE >= 64)
+	#if (USB_RAWHID_RX_SIZE >= 64)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 63)
+	#if (USB_RAWHID_RX_SIZE >= 63)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 62)
+	#if (USB_RAWHID_RX_SIZE >= 62)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 61)
+	#if (USB_RAWHID_RX_SIZE >= 61)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 60)
+	#if (USB_RAWHID_RX_SIZE >= 60)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 59)
+	#if (USB_RAWHID_RX_SIZE >= 59)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 58)
+	#if (USB_RAWHID_RX_SIZE >= 58)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 57)
+	#if (USB_RAWHID_RX_SIZE >= 57)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 56)
+	#if (USB_RAWHID_RX_SIZE >= 56)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 55)
+	#if (USB_RAWHID_RX_SIZE >= 55)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 54)
+	#if (USB_RAWHID_RX_SIZE >= 54)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 53)
+	#if (USB_RAWHID_RX_SIZE >= 53)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 52)
+	#if (USB_RAWHID_RX_SIZE >= 52)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 51)
+	#if (USB_RAWHID_RX_SIZE >= 51)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 50)
+	#if (USB_RAWHID_RX_SIZE >= 50)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 49)
+	#if (USB_RAWHID_RX_SIZE >= 49)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 48)
+	#if (USB_RAWHID_RX_SIZE >= 48)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 47)
+	#if (USB_RAWHID_RX_SIZE >= 47)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 46)
+	#if (USB_RAWHID_RX_SIZE >= 46)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 45)
+	#if (USB_RAWHID_RX_SIZE >= 45)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 44)
+	#if (USB_RAWHID_RX_SIZE >= 44)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 43)
+	#if (USB_RAWHID_RX_SIZE >= 43)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 42)
+	#if (USB_RAWHID_RX_SIZE >= 42)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 41)
+	#if (USB_RAWHID_RX_SIZE >= 41)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 40)
+	#if (USB_RAWHID_RX_SIZE >= 40)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 39)
+	#if (USB_RAWHID_RX_SIZE >= 39)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 38)
+	#if (USB_RAWHID_RX_SIZE >= 38)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 37)
+	#if (USB_RAWHID_RX_SIZE >= 37)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 36)
+	#if (USB_RAWHID_RX_SIZE >= 36)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 35)
+	#if (USB_RAWHID_RX_SIZE >= 35)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 34)
+	#if (USB_RAWHID_RX_SIZE >= 34)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 33)
+	#if (USB_RAWHID_RX_SIZE >= 33)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 32)
+	#if (USB_RAWHID_RX_SIZE >= 32)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 31)
+	#if (USB_RAWHID_RX_SIZE >= 31)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 30)
+	#if (USB_RAWHID_RX_SIZE >= 30)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 29)
+	#if (USB_RAWHID_RX_SIZE >= 29)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 28)
+	#if (USB_RAWHID_RX_SIZE >= 28)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 27)
+	#if (USB_RAWHID_RX_SIZE >= 27)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 26)
+	#if (USB_RAWHID_RX_SIZE >= 26)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 25)
+	#if (USB_RAWHID_RX_SIZE >= 25)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 24)
+	#if (USB_RAWHID_RX_SIZE >= 24)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 23)
+	#if (USB_RAWHID_RX_SIZE >= 23)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 22)
+	#if (USB_RAWHID_RX_SIZE >= 22)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 21)
+	#if (USB_RAWHID_RX_SIZE >= 21)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 20)
+	#if (USB_RAWHID_RX_SIZE >= 20)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 19)
+	#if (USB_RAWHID_RX_SIZE >= 19)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 18)
+	#if (USB_RAWHID_RX_SIZE >= 18)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 17)
+	#if (USB_RAWHID_RX_SIZE >= 17)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 16)
+	#if (USB_RAWHID_RX_SIZE >= 16)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 15)
+	#if (USB_RAWHID_RX_SIZE >= 15)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 14)
+	#if (USB_RAWHID_RX_SIZE >= 14)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 13)
+	#if (USB_RAWHID_RX_SIZE >= 13)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 12)
+	#if (USB_RAWHID_RX_SIZE >= 12)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 11)
+	#if (USB_RAWHID_RX_SIZE >= 11)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 10)
+	#if (USB_RAWHID_RX_SIZE >= 10)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 9)
+	#if (USB_RAWHID_RX_SIZE >= 9)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 8)
+	#if (USB_RAWHID_RX_SIZE >= 8)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 7)
+	#if (USB_RAWHID_RX_SIZE >= 7)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 6)
+	#if (USB_RAWHID_RX_SIZE >= 6)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 5)
+	#if (USB_RAWHID_RX_SIZE >= 5)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 4)
+	#if (USB_RAWHID_RX_SIZE >= 4)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 3)
+	#if (USB_RAWHID_RX_SIZE >= 3)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 2)
+	#if (USB_RAWHID_RX_SIZE >= 2)
 	*buffer++ = UEDATX;
 	#endif
-	#if (RAWHID_RX_SIZE >= 1)
+	#if (USB_RAWHID_RX_SIZE >= 1)
 	*buffer++ = UEDATX;
 	#endif
 	// release the buffer
 	UEINTX = 0x6B;
 	SREG = intr_state;
-	return RAWHID_RX_SIZE;
+	return USB_RAWHID_RX_SIZE;
 }
 
 // send a packet, with timeout
@@ -507,202 +531,202 @@ int8_t usb_rawhid_send(const uint8_t *buffer, uint8_t timeout)
 		UENUM = RAWHID_TX_ENDPOINT;
 	}
 	// write bytes from the FIFO
-	#if (RAWHID_TX_SIZE >= 64)
+	#if (USB_RAWHID_TX_SIZE >= 64)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 63)
+	#if (USB_RAWHID_TX_SIZE >= 63)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 62)
+	#if (USB_RAWHID_TX_SIZE >= 62)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 61)
+	#if (USB_RAWHID_TX_SIZE >= 61)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 60)
+	#if (USB_RAWHID_TX_SIZE >= 60)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 59)
+	#if (USB_RAWHID_TX_SIZE >= 59)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 58)
+	#if (USB_RAWHID_TX_SIZE >= 58)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 57)
+	#if (USB_RAWHID_TX_SIZE >= 57)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 56)
+	#if (USB_RAWHID_TX_SIZE >= 56)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 55)
+	#if (USB_RAWHID_TX_SIZE >= 55)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 54)
+	#if (USB_RAWHID_TX_SIZE >= 54)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 53)
+	#if (USB_RAWHID_TX_SIZE >= 53)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 52)
+	#if (USB_RAWHID_TX_SIZE >= 52)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 51)
+	#if (USB_RAWHID_TX_SIZE >= 51)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 50)
+	#if (USB_RAWHID_TX_SIZE >= 50)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 49)
+	#if (USB_RAWHID_TX_SIZE >= 49)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 48)
+	#if (USB_RAWHID_TX_SIZE >= 48)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 47)
+	#if (USB_RAWHID_TX_SIZE >= 47)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 46)
+	#if (USB_RAWHID_TX_SIZE >= 46)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 45)
+	#if (USB_RAWHID_TX_SIZE >= 45)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 44)
+	#if (USB_RAWHID_TX_SIZE >= 44)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 43)
+	#if (USB_RAWHID_TX_SIZE >= 43)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 42)
+	#if (USB_RAWHID_TX_SIZE >= 42)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 41)
+	#if (USB_RAWHID_TX_SIZE >= 41)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 40)
+	#if (USB_RAWHID_TX_SIZE >= 40)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 39)
+	#if (USB_RAWHID_TX_SIZE >= 39)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 38)
+	#if (USB_RAWHID_TX_SIZE >= 38)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 37)
+	#if (USB_RAWHID_TX_SIZE >= 37)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 36)
+	#if (USB_RAWHID_TX_SIZE >= 36)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 35)
+	#if (USB_RAWHID_TX_SIZE >= 35)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 34)
+	#if (USB_RAWHID_TX_SIZE >= 34)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 33)
+	#if (USB_RAWHID_TX_SIZE >= 33)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 32)
+	#if (USB_RAWHID_TX_SIZE >= 32)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 31)
+	#if (USB_RAWHID_TX_SIZE >= 31)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 30)
+	#if (USB_RAWHID_TX_SIZE >= 30)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 29)
+	#if (USB_RAWHID_TX_SIZE >= 29)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 28)
+	#if (USB_RAWHID_TX_SIZE >= 28)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 27)
+	#if (USB_RAWHID_TX_SIZE >= 27)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 26)
+	#if (USB_RAWHID_TX_SIZE >= 26)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 25)
+	#if (USB_RAWHID_TX_SIZE >= 25)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 24)
+	#if (USB_RAWHID_TX_SIZE >= 24)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 23)
+	#if (USB_RAWHID_TX_SIZE >= 23)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 22)
+	#if (USB_RAWHID_TX_SIZE >= 22)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 21)
+	#if (USB_RAWHID_TX_SIZE >= 21)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 20)
+	#if (USB_RAWHID_TX_SIZE >= 20)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 19)
+	#if (USB_RAWHID_TX_SIZE >= 19)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 18)
+	#if (USB_RAWHID_TX_SIZE >= 18)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 17)
+	#if (USB_RAWHID_TX_SIZE >= 17)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 16)
+	#if (USB_RAWHID_TX_SIZE >= 16)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 15)
+	#if (USB_RAWHID_TX_SIZE >= 15)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 14)
+	#if (USB_RAWHID_TX_SIZE >= 14)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 13)
+	#if (USB_RAWHID_TX_SIZE >= 13)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 12)
+	#if (USB_RAWHID_TX_SIZE >= 12)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 11)
+	#if (USB_RAWHID_TX_SIZE >= 11)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 10)
+	#if (USB_RAWHID_TX_SIZE >= 10)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 9)
+	#if (USB_RAWHID_TX_SIZE >= 9)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 8)
+	#if (USB_RAWHID_TX_SIZE >= 8)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 7)
+	#if (USB_RAWHID_TX_SIZE >= 7)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 6)
+	#if (USB_RAWHID_TX_SIZE >= 6)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 5)
+	#if (USB_RAWHID_TX_SIZE >= 5)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 4)
+	#if (USB_RAWHID_TX_SIZE >= 4)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 3)
+	#if (USB_RAWHID_TX_SIZE >= 3)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 2)
+	#if (USB_RAWHID_TX_SIZE >= 2)
 	UEDATX = *buffer++;
 	#endif
-	#if (RAWHID_TX_SIZE >= 1)
+	#if (USB_RAWHID_TX_SIZE >= 1)
 	UEDATX = *buffer++;
 	#endif
 	// transmit it now
 	UEINTX = 0x3A;
 	SREG = intr_state;
-	return RAWHID_TX_SIZE;
+	return USB_RAWHID_TX_SIZE;
 }
 
 
@@ -900,7 +924,7 @@ ISR(USB_COM_vect){
 		}
 		if (wIndex == RAWHID_INTERFACE) {
 			if (bmRequestType == 0xA1 && bRequest == HID_GET_REPORT) {
-				len = RAWHID_TX_SIZE;
+				len = USB_RAWHID_TX_SIZE;
 				do {
 					// wait for host ready for IN packet
 					do {
@@ -919,7 +943,7 @@ ISR(USB_COM_vect){
 				return;
 			}
 			if (bmRequestType == 0x21 && bRequest == HID_SET_REPORT) {
-				len = RAWHID_RX_SIZE;
+				len = USB_RAWHID_RX_SIZE;
 				do {
 					n = len < ENDPOINT0_SIZE ? len : ENDPOINT0_SIZE;
 					usb_wait_receive_out();
