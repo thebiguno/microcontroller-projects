@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Thursday, September 25, 2014 'amt' 09:36:50 am
+PCBNEW-LibModule-V1  Tuesday, November 04, 2014 'pmt' 02:06:42 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -48,6 +48,7 @@ SIP3-75
 SM0603_VALUE
 SM1007
 SMD_ARRAY_20_25M
+SW_6x3
 TB_2
 TB_3
 TO92_SMALL
@@ -20603,6 +20604,35 @@ Ne 0 ""
 Po 1.905 1.27
 $EndPAD
 $EndMODULE SMD_ARRAY_20_25M
+$MODULE SW_6x3
+Po 0 0 0 15 54593FDE 00000000 ~~
+Li SW_6x3
+Cd Switch 6x3mm
+Kw SWITCH
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -1 1 1 0 0.15 N I 21 N "SW_6x3"
+T1 0 1 1 1 0 0.15 N I 21 N "VAL**"
+DS 3.5 1.5 3.5 -1.5 0.15 21
+DS 3.5 -1.5 -3.5 -1.5 0.15 21
+DS -3.5 -1.5 -3.5 1.5 0.15 21
+DS -3.5 1.5 3.5 1.5 0.15 21
+$PAD
+Sh "1" R 2 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.5 0
+$EndPAD
+$PAD
+Sh "2" R 2 1.5 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.5 0
+$EndPAD
+$EndMODULE SW_6x3
 $MODULE TB_2
 Po 0 0 0 15 53F764FB 00000000 ~~
 Li TB_2
