@@ -2,6 +2,7 @@
 #include <util/delay.h>
 
 #include "lib/Hd44780/Hd44780_Direct.h"
+#include "lib/pwm/pwm.h"
 #include "lib/usb/rawhid/usb_rawhid.h"
 
 using namespace digitalcave;
@@ -36,6 +37,20 @@ int main (void){
 	_delay_ms(64);
 	display.setBytes(custom, 64);
 
+	volatile uint8_t *ports[2];
+	uint8_t pins[2];
+	ports[0] = &PORTB;
+	ports[1] = &PORTB;
+	pins[0] = PORTB0;
+	pins[1] = PORTB1;
+	pwm_init(ports, pins, 2, 1000);
+	pwm_set_phase(0, 500);
+	pwm_set_phase(1, 500);
+	
+	display.setDdramAddress(0x00);
+	_delay_ms(64);
+	display.setText(" Start Program", 14);
+	
 	while (1) {
 		// if received data, do something with it
 		if (usb_rawhid_recv(rx_buffer, 0) >= 32) {
