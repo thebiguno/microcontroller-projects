@@ -10,7 +10,7 @@ COMPILER=avr-g++
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS+=-DUSB_RAWHID_TX_SIZE=0 -DUSB_RAWHID_RX_SIZE=32 -DPWM_PORTA_UNUSED
+CDEFS+=-DPWM_PORTA_UNUSED
 
 
 include build/targets.mk
