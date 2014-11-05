@@ -1,0 +1,80 @@
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, November 05, 2014 'pmt' 12:22:17 pm
+
+BeginCmp
+TimeStamp = /545804FB;
+Reference = C4;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5459532C;
+Reference = C5;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /545A58B3;
+Reference = IC1;
+ValeurCmp = ATMEGA32U2;
+IdModule  = TQFP32;
+EndCmp
+
+BeginCmp
+TimeStamp = /545A62EA;
+Reference = IC2;
+ValeurCmp = AT90S8515-P;
+IdModule  = DIP-40__600;
+EndCmp
+
+BeginCmp
+TimeStamp = /545A8E2A;
+Reference = P1;
+ValeurCmp = CONN_01X02;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /545805FA;
+Reference = R2;
+ValeurCmp = 22;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /545805E8;
+Reference = R3;
+ValeurCmp = 22;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54580AFB;
+Reference = R4;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5458183C;
+Reference = R6;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54580AA8;
+Reference = SW1;
+ValeurCmp = SW_PUSH_SMALL;
+IdModule  = SW_6x3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5458175B;
+Reference = SW2;
+ValeurCmp = SW_PUSH_SMALL;
+IdModule  = SW_6x3;
+EndCmp
+
+EndListe
