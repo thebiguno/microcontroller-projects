@@ -273,11 +273,11 @@ void usb_init(void)
 	HW_CONFIG();
 	USB_FREEZE();				// enable USB
 	PLL_CONFIG();				// config PLL
-        while (!(PLLCSR & (1<<PLOCK))) ;	// wait for PLL lock
-        USB_CONFIG();				// start USB clock
-        UDCON = 0;				// enable attach resistor
+	while (!(PLLCSR & (1<<PLOCK))) ;	// wait for PLL lock
+	USB_CONFIG();				// start USB clock
+	UDCON = 0;				// enable attach resistor
 	usb_configuration = 0;
-        UDIEN = (1<<EORSTE)|(1<<SOFE);
+	UDIEN = (1<<EORSTE)|(1<<SOFE);
 	sei();
 }
 
@@ -288,10 +288,8 @@ uint8_t usb_configured(void)
 	return usb_configuration;
 }
 
-
 // receive a packet, with timeout
-int8_t usb_rawhid_recv(uint8_t *buffer, uint8_t timeout)
-{
+int8_t usb_rawhid_recv(uint8_t *buffer, uint8_t timeout){
 	uint8_t intr_state;
 
 	// if we're not online (enumerated and configured), error
@@ -321,8 +319,7 @@ int8_t usb_rawhid_recv(uint8_t *buffer, uint8_t timeout)
 }
 
 // send a packet, with timeout
-int8_t usb_rawhid_send(const uint8_t *buffer, uint8_t timeout)
-{
+int8_t usb_rawhid_send(const uint8_t *buffer, uint8_t timeout){
 	uint8_t intr_state;
 
 	// if we're not online (enumerated and configured), error
@@ -373,16 +370,16 @@ ISR(USB_GEN_vect)
 {
 	uint8_t intbits, t;
 
-        intbits = UDINT;
-        UDINT = 0;
-        if (intbits & (1<<EORSTI)) {
+	intbits = UDINT;
+	UDINT = 0;
+	if (intbits & (1<<EORSTI)) {
 		UENUM = 0;
 		UECONX = 1;
 		UECFG0X = EP_TYPE_CONTROL;
 		UECFG1X = EP_SIZE(ENDPOINT0_SIZE) | EP_SINGLE_BUFFER;
 		UEIENX = (1<<RXSTPE);
 		usb_configuration = 0;
-        }
+	}
 	if ((intbits & (1<<SOFI)) && usb_configuration) {
 		t = rx_timeout_count;
 		if (t) rx_timeout_count = --t;
@@ -394,20 +391,16 @@ ISR(USB_GEN_vect)
 
 
 // Misc functions to wait for ready and send/receive packets
-static inline void usb_wait_in_ready(void)
-{
+static inline void usb_wait_in_ready(void){
 	while (!(UEINTX & (1<<TXINI))) ;
 }
-static inline void usb_send_in(void)
-{
+static inline void usb_send_in(void){
 	UEINTX = ~(1<<TXINI);
 }
-static inline void usb_wait_receive_out(void)
-{
+static inline void usb_wait_receive_out(void){
 	while (!(UEINTX & (1<<RXOUTI))) ;
 }
-static inline void usb_ack_out(void)
-{
+static inline void usb_ack_out(void){
 	UEINTX = ~(1<<RXOUTI);
 }
 
@@ -505,8 +498,8 @@ ISR(USB_COM_vect){
 					UECFG1X = pgm_read_byte(cfg++);
 				}
 			}
-        		UERST = 0x1E;
-        		UERST = 0;
+			UERST = 0x1E;
+			UERST = 0;
 			return;
 		}
 		if (bRequest == GET_CONFIGURATION && bmRequestType == 0x80) {
