@@ -1,3 +1,4 @@
+#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -6,6 +7,12 @@
 #include "lib/usb/rawhid/usb_rawhid.h"
 
 using namespace digitalcave;
+
+#define PWM_PHASE						0xFF
+#define PWM_CONTRAST_PIN				0
+#define PWM_BRIGHTNESS_PIN				1
+#define EEPROM_CONTRAST_ADDRESS			((uint8_t*) 0x00)
+#define EEPROM_BRIGHTNESS_ADDRESS		((uint8_t*) 0x01)
 
 uint8_t rx_buffer[64];
 
@@ -43,23 +50,38 @@ int main (void){
 	ports[1] = &PORTB;
 	pins[0] = PORTB0;
 	pins[1] = PORTB1;
-	pwm_init(ports, pins, 2, 1000);
-	pwm_set_phase(0, 500);
-	pwm_set_phase(1, 500);
+	pwm_init(ports, pins, 2, PWM_PHASE);
+	pwm_set_phase(PWM_CONTRAST_PIN, eeprom_read_byte(EEPROM_CONTRAST_ADDRESS));
+	pwm_set_phase(PWM_BRIGHTNESS_PIN, eeprom_read_byte(EEPROM_BRIGHTNESS_ADDRESS));
 	
 	display.setDdramAddress(0x00);
-	_delay_ms(64);
-	display.setText(" Start Program", 14);
+	display.setText((char*) "  Wyatt  Olson  ", 16);
+	display.setDdramAddress(0x40);
+	display.setText((char*) " digitalcave.ca ", 16);
 	
 	while (1) {
 		// if received data, do something with it
-		if (usb_rawhid_recv(rx_buffer, 0) >= 32) {
+		uint8_t count = usb_rawhid_recv(rx_buffer, 0);
+		if (count >= 33 && rx_buffer[0] == 0x01) {
 			display.setDdramAddress(0x00);
-			_delay_ms(64);
-			display.setText((char*) &rx_buffer[0], 16);
+			display.setText((char*) &rx_buffer[1], 16);
 			display.setDdramAddress(0x40);
-			display.setText((char*) &rx_buffer[16], 16);
-
+			display.setText((char*) &rx_buffer[17], 16);
+		}
+		else if (count >= 2 && rx_buffer[0] == 0x02){
+			pwm_set_phase(0, rx_buffer[1]);
+			eeprom_update_byte(EEPROM_CONTRAST_ADDRESS, rx_buffer[1]);
+		}
+		else if (count >= 2 && rx_buffer[0] == 0x03){
+			pwm_set_phase(1, rx_buffer[1]);
+			eeprom_update_byte(EEPROM_BRIGHTNESS_ADDRESS, rx_buffer[1]);
+		}
+		
+		//Turn off backlight / display if USB is not configured
+		if (!usb_configured()){
+			pwm_stop();
+			while (!usb_configured());
+			pwm_start();
 		}
 	}
 }

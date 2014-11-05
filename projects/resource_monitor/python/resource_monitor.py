@@ -5,7 +5,7 @@
 #
 ########################################################
 
-import hid		#https://github.com/olsoneric/pyhidapi (forked from https://github.com/apmorton/pyhidapi)
+import hid		#https://github.com/apmorton/pyhidapi
 import psutil	#https://github.com/giampaolo/psutil
 import pynvml	#https://pypi.python.org/pypi/nvidia-ml-py/
 import sensors	#https://pypi.python.org/pypi/PySensors/
@@ -13,7 +13,7 @@ import sensors	#https://pypi.python.org/pypi/PySensors/
 import sys
 from time import sleep
 
-buf = list("CXXXMXXdd\xDFRXXDXX#GXXMXXdd\xDFWXXUXX")
+buf = list("\x01CXXXMXXdd\xDFRXXDXX#GXXMXXdd\xDFWXXUXX")
 dev = hid.Device(vid=5824, pid=1152)
 
 def main():
@@ -33,16 +33,16 @@ def main():
 			state["cpu"].pop(0)
 		last60 = state["cpu"][-60:]
 		
-		buf[1] = writeBarGraph(state["cpu"][-1])
-		buf[2] = writeBarGraph(sum(last60) / len(last60))
-		buf[3] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
+		buf[2] = writeBarGraph(state["cpu"][-1])
+		buf[3] = writeBarGraph(sum(last60) / len(last60))
+		buf[4] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
 		
 		#Memory Usage:
 		state["memory"].append(int(psutil.virtual_memory().percent / 11))
 		if (len(state["memory"]) > 60):
 			state["memory"].pop(0)
-		buf[5] = writeBarGraph(state["memory"][-1])
-		buf[6] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
+		buf[6] = writeBarGraph(state["memory"][-1])
+		buf[7] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
 
 		#CPU Temperature:
 		for chip in sensors.iter_detected_chips():
@@ -61,8 +61,8 @@ def main():
 		state["gpu"].append(int((15 - pynvml.nvmlDeviceGetPowerState(gpuHandle)) / 15.0 * 100) / 11)
 		if (len(state["gpu"]) > 60):
 			state["gpu"].pop(0)
-		buf[18] = writeBarGraph(state["gpu"][-1])
-		buf[19] = writeBarGraph(sum(state["gpu"]) / len(state["gpu"]))
+		buf[19] = writeBarGraph(state["gpu"][-1])
+		buf[20] = writeBarGraph(sum(state["gpu"]) / len(state["gpu"]))
 		
 		
 		#GPU Memory Usage:
@@ -70,15 +70,15 @@ def main():
 		state["gpu_memory"].append(int(float(gpu_memory.used) * 100 / gpu_memory.total) / 11)
 		if (len(state["gpu_memory"]) > 60):
 			state["gpu_memory"].pop(0)
-		buf[21] = writeBarGraph(state["gpu_memory"][-1])
-		buf[22] = writeBarGraph(sum(state["gpu_memory"]) / len(state["gpu_memory"]))
+		buf[22] = writeBarGraph(state["gpu_memory"][-1])
+		buf[23] = writeBarGraph(sum(state["gpu_memory"]) / len(state["gpu_memory"]))
 		
 		#GPU Temperature:
 		gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
 		if (gpu_temp > 99):
 			gpu_temp = 99
-		buf[23] = str(gpu_temp / 10)
-		buf[24] = str(gpu_temp % 10)
+		buf[24] = str(gpu_temp / 10)
+		buf[25] = str(gpu_temp % 10)
 
 		#Disk I/O:
 		disk = psutil.disk_io_counters()
@@ -93,10 +93,10 @@ def main():
 		if (len(state["disk_write"]) > 60):
 			state["disk_write"].pop(0)
 			
-		buf[11] = writeBarGraph(scaleNetwork(state["disk_read"][-1]))
-		buf[12] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
-		buf[27] = writeBarGraph(scaleNetwork(state["disk_write"][-1]))
-		buf[28] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
+		buf[12] = writeBarGraph(scaleNetwork(state["disk_read"][-1]))
+		buf[13] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
+		buf[28] = writeBarGraph(scaleNetwork(state["disk_write"][-1]))
+		buf[29] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
 		
 		
 		#Network I/O:
@@ -112,16 +112,16 @@ def main():
 		if (len(state["net_upload"]) > 60):
 			state["net_upload"].pop(0)
 			
-		buf[14] = writeBarGraph(scaleNetwork(state["net_download"][-1]))
-		buf[15] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
-		buf[30] = writeBarGraph(scaleNetwork(state["net_upload"][-1]))
-		buf[31] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[15] = writeBarGraph(scaleNetwork(state["net_download"][-1]))
+		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
+		buf[31] = writeBarGraph(scaleNetwork(state["net_upload"][-1]))
+		buf[32] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
 
 		#Exception report
 		if (exception):
-			buf[16] = '*'
+			buf[17] = '*'
 		else:
-			buf[16] = ' '
+			buf[17] = ' '
 
 		sendData()
 
@@ -165,7 +165,14 @@ if (__name__=="__main__"):
 	try:
 		pynvml.nvmlInit()
 		sensors.init()
-		main()
+		if (len(sys.argv) == 1):
+			main()
+		else if (len(sys.argv) == 3 and sys.argv[1] == "C"):
+			dev.write("\x02" + chr(int(argv[2])))
+		else if (len(sys.argv) == 3 and sys.argv[1] == "B"):
+			dev.write("\x03" + chr(int(argv[2])))
+		else:
+			print("Usage: " + sys.argv[0] + " [C+ | C- | B+ | B-]")
 	finally:
 		pynvml.nvmlShutdown()
 		sensors.cleanup()
