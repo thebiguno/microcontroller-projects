@@ -35,34 +35,28 @@ public class Main {
 			System.exit(0);
 		}
 
-		final byte buf[] = (" CXXXMXXdd WXXUXX#GXXMXXdd RXXDXX").getBytes();
-		buf[0] = (byte) 0x01;
-		buf[9] = (byte) 0xDF;
-		buf[25] = (byte) 0xDF;
+		final byte buf[] = (" CXXXXMXXRXWXUXDX/home 99% 36°57°").getBytes();
+		buf[0] = (byte) 0x01;	//Message type
+		buf[29] = (byte) 0xDF;	//Degrees
+		buf[32] = (byte) 0xDF;	//Degrees
 
 		while (true) {
 			buf[2] = getRandom();
 			buf[3] = getRandom();
 			buf[4] = getRandom();
-			buf[6] = getRandom();
+			buf[5] = getRandom();
 			buf[7] = getRandom();
-			buf[8] = (byte) (Math.random() * 10 + 0x30);
-			buf[9] = (byte) (Math.random() * 10 + 0x30);
+			buf[8] = getRandom();
+			buf[10] = getRandom();
 			buf[12] = getRandom();
-			buf[13] = getRandom();
-			buf[15] = getRandom();
+			buf[14] = getRandom();
 			buf[16] = getRandom();
-			buf[17] = (byte) (Math.random() > 0.9 ? 0xEF : ' ');
-			buf[19] = getRandom();
-			buf[20] = getRandom();
-			buf[22] = getRandom();
-			buf[23] = getRandom();
+			buf[23] = (byte) (Math.random() * 10 + 0x30);
 			buf[24] = (byte) (Math.random() * 10 + 0x30);
-			buf[25] = (byte) (Math.random() * 10 + 0x30);
-			buf[28] = getRandom();
-			buf[29] = getRandom();
-			buf[31] = getRandom();
-			buf[32] = getRandom();
+			buf[27] = (byte) (Math.random() * 10 + 0x30);
+			buf[28] = (byte) (Math.random() * 10 + 0x30);
+			buf[30] = (byte) (Math.random() * 10 + 0x30);
+			buf[31] = (byte) (Math.random() * 10 + 0x30);
 			device.write(buf);
 			System.out.println(bytesToHex(buf));
 			Thread.sleep(1000);
