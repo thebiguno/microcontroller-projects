@@ -17,26 +17,26 @@ using namespace digitalcave;
 
 Hd44780_Direct::Hd44780_Direct(uint8_t function) {
 	DDRD = 0xFF;
-	DDRB |= 0xC0;
+	DDRB |= _BV(PORTB1) | _BV(PORTB2);
 	
 	this->init_display(function);
 }
 
 void Hd44780_Direct::setByte(uint8_t b) {
-	PORTB |= _BV(PORTB7);	//Set RS high for data
+	PORTB |= _BV(PORTB1);	//Set RS high for data
 	PORTD = b;
 	_delay_us(64);
-	PORTB |= _BV(PORTB6);
+	PORTB |= _BV(PORTB2);
 	_delay_us(450);
-	PORTB &= ~_BV(PORTB6);
+	PORTB &= ~_BV(PORTB2);
 	_delay_us(40);
 }
 void Hd44780_Direct::cmd(uint8_t b) {
-	PORTB &= ~_BV(PORTB7);	//Set RS low for command
+	PORTB &= ~_BV(PORTB1);	//Set RS low for command
 	PORTD = b;
 	_delay_us(64);
-	PORTB |= _BV(PORTB6);
+	PORTB |= _BV(PORTB2);
 	_delay_us(450);
-	PORTB &= ~_BV(PORTB6);
+	PORTB &= ~_BV(PORTB2);
 	_delay_us(40);
 }
