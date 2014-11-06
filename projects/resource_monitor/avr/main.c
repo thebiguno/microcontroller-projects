@@ -1,5 +1,6 @@
 #include <avr/eeprom.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 
 #include "lib/Hd44780/Hd44780_Direct.h"
@@ -13,10 +14,13 @@ using namespace digitalcave;
 #define PWM_BRIGHTNESS_PIN				1
 #define EEPROM_CONTRAST_ADDRESS			((uint8_t*) 0x00)
 #define EEPROM_BRIGHTNESS_ADDRESS		((uint8_t*) 0x01)
+#define MAX_COUNTER						0x0FFF
 
-uint8_t rx_buffer[64];
+static uint8_t rx_buffer[64];
 
 int main (void){
+	wdt_enable(WDTO_8S);
+	
 	// Initialize the USB, and then wait for the host to set configuration.
 	// If the AVR is powered without a PC connected to the USB port,
 	// this will wait forever.
@@ -62,6 +66,9 @@ int main (void){
 	while (1) {
 		// if received data, do something with it
 		uint8_t count = usb_rawhid_recv(rx_buffer, 0);
+		if (count > 0){
+			wdt_reset();
+		}
 		if (count >= 33 && rx_buffer[0] == 0x01) {
 			display.setDdramAddress(0x00);
 			display.setText((char*) &rx_buffer[1], 16);
@@ -75,13 +82,6 @@ int main (void){
 		else if (count >= 2 && rx_buffer[0] == 0x03){
 			pwm_set_phase(1, rx_buffer[1]);
 			eeprom_update_byte(EEPROM_BRIGHTNESS_ADDRESS, rx_buffer[1]);
-		}
-		
-		//Turn off backlight / display if USB is not configured
-		if (!usb_configured()){
-			pwm_stop();
-			while (!usb_configured());
-			pwm_start();
 		}
 	}
 }
