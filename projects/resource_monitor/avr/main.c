@@ -46,10 +46,10 @@ int main (void){
 
 	volatile uint8_t *ports[2];
 	uint8_t pins[2];
-	ports[0] = &PORTB;
-	ports[1] = &PORTB;
-	pins[0] = PORTB0;
-	pins[1] = PORTB1;
+	ports[PWM_CONTRAST_PIN] = &PORTC;
+	ports[PWM_BRIGHTNESS_PIN] = &PORTB;
+	pins[PWM_CONTRAST_PIN] = PORTC2;
+	pins[PWM_BRIGHTNESS_PIN] = PORTB0;
 	pwm_init(ports, pins, 2, PWM_PHASE);
 	pwm_set_phase(PWM_CONTRAST_PIN, eeprom_read_byte(EEPROM_CONTRAST_ADDRESS));
 	pwm_set_phase(PWM_BRIGHTNESS_PIN, eeprom_read_byte(EEPROM_BRIGHTNESS_ADDRESS));
