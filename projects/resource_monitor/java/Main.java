@@ -19,7 +19,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		ClassPathLibraryLoader.loadNativeHIDLibrary();
 
-		HIDDevice device = HIDManager.getInstance().openById(0x4242, 0xFF00, null);
+		HIDDevice device = HIDManager.getInstance().openById(0x4200, 0xFF00, null);
 
 		if (args.length == 1){
 			final byte buf[] = new byte[2];
