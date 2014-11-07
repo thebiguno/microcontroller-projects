@@ -13,7 +13,7 @@ import sensors	#https://pypi.python.org/pypi/PySensors/
 import sys
 from time import sleep
 
-buf = list("\x01CXXXMXXdd\xDFRXXDXX#GXXMXXdd\xDFWXXUXX")
+buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
 dev = hid.Device(vid=5824, pid=1152)
 
 def main():
@@ -24,6 +24,15 @@ def main():
 		"net_upload": [], "net_download": [], "net_upload_last": psutil.net_io_counters().bytes_sent, "net_download_last": psutil.net_io_counters().bytes_recv
 	}
 	
+	mp_index = 0
+	mp_timer = 0
+	mountpoints = [
+		{"label": "    / ", "mountpoint": "/"},
+		{"label": "/home ", "mountpoint": "/home"},
+		{"label": "/data ", "mountpoint": "/mnt/data"},
+		{"label": "/bkup ", "mountpoint": "/mnt/backup"}
+	]
+	
 	while True:
 		exception = False
 		
@@ -31,55 +40,21 @@ def main():
 		state["cpu"].append(int(psutil.cpu_percent() / 11));
 		if (len(state["cpu"]) > 300):
 			state["cpu"].pop(0)
+		last10 = state["cpu"][-10:]
 		last60 = state["cpu"][-60:]
 		
 		buf[2] = writeBarGraph(state["cpu"][-1])
-		buf[3] = writeBarGraph(sum(last60) / len(last60))
-		buf[4] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
+		buf[3] = writeBarGraph(sum(last10) / len(last10))
+		buf[4] = writeBarGraph(sum(last60) / len(last60))
+		buf[5] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
 		
 		#Memory Usage:
 		state["memory"].append(int(psutil.virtual_memory().percent / 11))
-		if (len(state["memory"]) > 60):
+		if (len(state["memory"]) > 10):
 			state["memory"].pop(0)
-		buf[6] = writeBarGraph(state["memory"][-1])
-		buf[7] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
-
-		#CPU Temperature:
-		for chip in sensors.iter_detected_chips():
-			for feature in chip:
-				if (feature.label == "Physical id 0"):
-					cpu_temp = int(feature.get_value())
-					if (cpu_temp > 99):
-						cpu_temp = 99
-					buf[7] = str(cpu_temp / 10)
-					buf[8] = str(cpu_temp % 10)
+		buf[7] = writeBarGraph(state["memory"][-1])
+		buf[8] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
 		
-		#GPU Stuff
-		gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
-		
-		#GPU Usage:
-		state["gpu"].append(int((15 - pynvml.nvmlDeviceGetPowerState(gpuHandle)) / 15.0 * 100) / 11)
-		if (len(state["gpu"]) > 60):
-			state["gpu"].pop(0)
-		buf[19] = writeBarGraph(state["gpu"][-1])
-		buf[20] = writeBarGraph(sum(state["gpu"]) / len(state["gpu"]))
-		
-		
-		#GPU Memory Usage:
-		gpu_memory = pynvml.nvmlDeviceGetMemoryInfo(gpuHandle)
-		state["gpu_memory"].append(int(float(gpu_memory.used) * 100 / gpu_memory.total) / 11)
-		if (len(state["gpu_memory"]) > 60):
-			state["gpu_memory"].pop(0)
-		buf[22] = writeBarGraph(state["gpu_memory"][-1])
-		buf[23] = writeBarGraph(sum(state["gpu_memory"]) / len(state["gpu_memory"]))
-		
-		#GPU Temperature:
-		gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
-		if (gpu_temp > 99):
-			gpu_temp = 99
-		buf[24] = str(gpu_temp / 10)
-		buf[25] = str(gpu_temp % 10)
-
 		#Disk I/O:
 		disk = psutil.disk_io_counters()
 
@@ -88,15 +63,13 @@ def main():
 		state["disk_write"].append(disk.write_bytes - state["disk_write_last"])
 		state["disk_write_last"] = disk.write_bytes
 
-		if (len(state["disk_read"]) > 60):
+		if (len(state["disk_read"]) > 10):
 			state["disk_read"].pop(0)
-		if (len(state["disk_write"]) > 60):
+		if (len(state["disk_write"]) > 10):
 			state["disk_write"].pop(0)
 			
-		buf[12] = writeBarGraph(scaleNetwork(state["disk_read"][-1]))
-		buf[13] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
-		buf[28] = writeBarGraph(scaleNetwork(state["disk_write"][-1]))
-		buf[29] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
+		buf[10] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
+		buf[12] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
 		
 		
 		#Network I/O:
@@ -107,21 +80,57 @@ def main():
 		state["net_upload"].append(net.bytes_sent - state["net_upload_last"])
 		state["net_upload_last"] = net.bytes_sent
 		
-		if (len(state["net_download"]) > 60):
+		if (len(state["net_download"]) > 10):
 			state["net_download"].pop(0)
-		if (len(state["net_upload"]) > 60):
+		if (len(state["net_upload"]) > 10):
 			state["net_upload"].pop(0)
 			
-		buf[15] = writeBarGraph(scaleNetwork(state["net_download"][-1]))
-		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
-		buf[31] = writeBarGraph(scaleNetwork(state["net_upload"][-1]))
-		buf[32] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
+		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
 
+
+		#CPU Temperature:
+		for chip in sensors.iter_detected_chips():
+			for feature in chip:
+				if (feature.label == "Physical id 0"):
+					cpu_temp = int(feature.get_value())
+					if (cpu_temp > 99):
+						cpu_temp = 99
+					buf[27] = str(cpu_temp / 10)
+					buf[28] = str(cpu_temp % 10)
+		
+		#GPU Temperature:
+		gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
+		gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
+		if (gpu_temp > 99):
+			gpu_temp = 99
+		buf[30] = str(gpu_temp / 10)
+		buf[31] = str(gpu_temp % 10)
+
+		#Rotate through mount points and show percentage
+		mp = mountpoints[mp_index]
+		disk_percent = int(psutil.disk_usage(mp["mountpoint"]).percent)
+		buf[17] = mp["label"][0]
+		buf[18] = mp["label"][1]
+		buf[19] = mp["label"][2]
+		buf[20] = mp["label"][3]
+		buf[21] = mp["label"][4]
+		buf[22] = mp["label"][5]
+		buf[23] = str(disk_percent / 10)
+		buf[24] = str(disk_percent % 10)
+		
+		mp_timer = mp_timer + 1
+		if (mp_timer >= 5):
+			mp_timer = 0;
+			mp_index = mp_index + 1
+			if (mp_index >= len(mountpoints)):
+				mp_index = 0;
+		
 		#Exception report
-		if (exception):
-			buf[17] = '*'
-		else:
-			buf[17] = ' '
+		#if (exception):
+		#	buf[17] = '*'
+		#else:
+		#	buf[17] = ' '
 
 		sendData()
 
@@ -167,12 +176,12 @@ if (__name__=="__main__"):
 		sensors.init()
 		if (len(sys.argv) == 1):
 			main()
-		else if (len(sys.argv) == 3 and sys.argv[1] == "C"):
-			dev.write("\x02" + chr(int(argv[2])))
-		else if (len(sys.argv) == 3 and sys.argv[1] == "B"):
-			dev.write("\x03" + chr(int(argv[2])))
+		elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
+			dev.write("\x02" + chr(int(sys.argv[2])))
+		elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
+			dev.write("\x03" + chr(int(sys.argv[2])))
 		else:
-			print("Usage: " + sys.argv[0] + " [C+ | C- | B+ | B-]")
+			print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
 	finally:
 		pynvml.nvmlShutdown()
 		sensors.cleanup()
