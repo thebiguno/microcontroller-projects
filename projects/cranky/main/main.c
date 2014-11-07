@@ -75,6 +75,9 @@ typedef struct {
 	volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
 	volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
 	volatile uint8_t adc_clt;			// adc reading of the coolant temperature
+	
+	volatile uint8_t read_addr;			// the address to start reading from
+	volatile uint8_t read_len;			// the number of bytes to read
 } reg_t;
 
 static union reg_u {
