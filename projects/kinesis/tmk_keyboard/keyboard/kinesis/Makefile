@@ -111,6 +111,9 @@ debug-on: all
 debug-off: EXTRAFLAGS += -DNO_DEBUG -DNO_PRINT
 debug-off: all
 
+qwerty: OPT_DEFS += -DKEYMAP_QWERTY
+qwerty: all
+
 dvorak: OPT_DEFS += -DKEYMAP_DVORAK
 dvorak: all
 
