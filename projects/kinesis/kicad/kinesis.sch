@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "5 nov 2014"
+Date "6 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -142,7 +142,7 @@ $EndComp
 Wire Wire Line
 	6000 6000 6500 6000
 Text Label 6000 6000 0    60   ~ 0
-HWB
+R8
 $Comp
 L R R6
 U 1 1 5458183C
@@ -226,16 +226,6 @@ Entry Wire Line
 Entry Wire Line
 	10100 1800 10200 1900
 Entry Wire Line
-	10100 1900 10200 2000
-Entry Wire Line
-	10100 2000 10200 2100
-Entry Wire Line
-	10100 2100 10200 2200
-Entry Wire Line
-	10100 2200 10200 2300
-Entry Wire Line
-	10100 2300 10200 2400
-Entry Wire Line
 	10100 2600 10200 2700
 Entry Wire Line
 	10100 2700 10200 2800
@@ -277,16 +267,6 @@ Entry Wire Line
 	10100 4050 10200 4150
 Entry Wire Line
 	10100 4300 10200 4400
-Entry Wire Line
-	10100 4400 10200 4500
-Entry Wire Line
-	10100 4700 10200 4800
-Entry Wire Line
-	10100 4800 10200 4900
-Entry Wire Line
-	10100 4900 10200 5000
-Entry Wire Line
-	10100 5000 10200 5100
 NoConn ~ 7600 4700
 NoConn ~ 7600 4800
 NoConn ~ 7600 1600
@@ -414,11 +394,11 @@ DATA
 NoConn ~ 10100 4500
 NoConn ~ 10100 4600
 Text Label 9700 3000 0    60   ~ 0
-R10
+KP
 Text Label 9700 3100 0    60   ~ 0
-R11
-Text Label 9700 4300 0    60   ~ 0
-R9
+PGM
+Text Label 9700 2300 0    60   ~ 0
+BUZZ
 NoConn ~ 7600 2100
 NoConn ~ 7600 2500
 $Comp
@@ -509,15 +489,7 @@ Wire Wire Line
 Wire Wire Line
 	5300 3700 5800 3700
 Entry Wire Line
-	5800 3900 5900 4000
-Entry Wire Line
 	5800 4000 5900 4100
-Entry Wire Line
-	5800 4100 5900 4200
-Entry Wire Line
-	5800 4200 5900 4300
-Entry Wire Line
-	5800 4300 5900 4400
 Wire Wire Line
 	5300 3900 5800 3900
 Wire Wire Line
@@ -528,8 +500,6 @@ Wire Wire Line
 	5300 4200 5800 4200
 Wire Wire Line
 	5300 4300 5800 4300
-Text Label 5600 3700 0    60   ~ 0
-HWB
 Wire Wire Line
 	2600 2500 3100 2500
 NoConn ~ 3100 2700
@@ -619,12 +589,10 @@ Text Label 5400 2300 0    60   ~ 0
 C
 Text Label 5400 2400 0    60   ~ 0
 G
-Text Label 5400 3900 0    60   ~ 0
-R9
 Text Label 5400 4000 0    60   ~ 0
-R10
+PGM
 Text Label 5400 4100 0    60   ~ 0
-R11
+KP
 $Comp
 L VCC #PWR09
 U 1 1 545A7C1C
@@ -653,4 +621,21 @@ F 3 "" H 7100 6000 60  0000 C CNN
 	1    7100 6000
 	0    1    1    0   
 $EndComp
+NoConn ~ 5800 3900
+NoConn ~ 5800 4200
+NoConn ~ 5800 4300
+NoConn ~ 10100 1900
+NoConn ~ 10100 2000
+NoConn ~ 10100 2100
+NoConn ~ 10100 2200
+NoConn ~ 10100 2300
+Text Label 9700 4300 0    60   ~ 0
+GND
+NoConn ~ 10100 4400
+NoConn ~ 10100 4700
+NoConn ~ 10100 4800
+NoConn ~ 10100 4900
+NoConn ~ 10100 5000
+Entry Wire Line
+	5800 4100 5900 4200
 $EndSCHEMATC

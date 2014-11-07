@@ -147,7 +147,7 @@ void pwm_init(volatile uint8_t *ports[],
 void pwm_start(){
 	TCNT1 = 0x00;	//Restart timer counter
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	//Enable output compare match interrupt enable
-	TCCR1B |= _prescaler_mask;	//Enable 
+	TCCR1B |= _prescaler_mask;	//Enable
 }
 
 void pwm_stop(){
@@ -324,8 +324,22 @@ ISR(TIMER1_COMPA_vect){
 	}
 	if (_set_stop){
 		TCCR1B = 0x00;
-		TIMSK1 |= _BV(OCIE1A) | _BV(OCIE1B);
+		
+#ifndef PWM_PORTA_UNUSED
+		PORTA &= ~_pwm_event_high.porta_mask;
+#endif
+#ifndef PWM_PORTB_UNUSED
+		PORTB &= ~_pwm_event_high.portb_mask;
+#endif
+#ifndef PWM_PORTC_UNUSED
+		PORTC &= ~_pwm_event_high.portc_mask;
+#endif
+#ifndef PWM_PORTD_UNUSED
+		PORTD &= ~_pwm_event_high.portd_mask;
+#endif
+		
 		_set_stop = 0;
+		return;
 	}
 	//Reset counter after the new compare values are updated (otherwise it affects the phase 
 	// of the next execution, causing jitter).

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Resource monitor - client-side daemon
 #
 # Uses psutil to monitor system resources, and updates the data over USB using raw HID packets
@@ -10,11 +11,12 @@ import psutil	#https://github.com/giampaolo/psutil
 import pynvml	#https://pypi.python.org/pypi/nvidia-ml-py/
 import sensors	#https://pypi.python.org/pypi/PySensors/
 
+import os
 import sys
 from time import sleep
 
 buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
-dev = hid.Device(vid=5824, pid=1152)
+dev = 0
 
 def main():
 	state = {
@@ -171,18 +173,30 @@ def writeBarGraph(value):
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
+	pynvml.nvmlInit()
+	sensors.init()
+
 	try:
-		pynvml.nvmlInit()
-		sensors.init()
-		if (len(sys.argv) == 1):
-			main()
-		elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
-			dev.write("\x02" + chr(int(sys.argv[2])))
-		elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
-			dev.write("\x03" + chr(int(sys.argv[2])))
-		else:
-			print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
-	finally:
+		while (True):
+			try:
+				dev = hid.Device(vid=0x4200, pid=0xFF00)
+
+				if (len(sys.argv) == 1):
+					main()
+				elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
+					dev.write("\x02" + chr(int(sys.argv[2])))
+				elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
+					dev.write("\x03" + chr(int(sys.argv[2])))
+				else:
+					print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
+					sys.exit(-1)
+			except hid.HIDException:
+				sleep(1)
+			finally:
+				if ("close" in dir(dev)):
+					dev.close()
+	except:
 		pynvml.nvmlShutdown()
 		sensors.cleanup()
-		dev.close()
+		raise
+
