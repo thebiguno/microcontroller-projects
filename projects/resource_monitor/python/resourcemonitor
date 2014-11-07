@@ -11,6 +11,7 @@ import psutil	#https://github.com/giampaolo/psutil
 import pynvml	#https://pypi.python.org/pypi/nvidia-ml-py/
 import sensors	#https://pypi.python.org/pypi/PySensors/
 
+import os
 import sys
 from time import sleep
 
@@ -172,6 +173,22 @@ def writeBarGraph(value):
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
+	#Check for existing PID file, and fork if nothing else running
+	pid = os.getpid()
+	pidfile = "/tmp/resource-monitor.pid"
+	
+	if os.path.isfile(pidfile):
+		print("Found existing PID file, exiting")
+		sys.exit()
+	else:
+		file(pidfile, 'w').write(pid)
+	
+	childPid = os.fork()
+	
+	if (childPid != os.getpid()):
+		print("Successfully forked daemon process")
+		sys.exit(0)
+	
 	pynvml.nvmlInit()
 	sensors.init()
 
@@ -190,7 +207,6 @@ if (__name__=="__main__"):
 					print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
 					sys.exit(-1)
 			except hid.HIDException:
-				print("Sleeping")
 				sleep(1)
 			finally:
 				if ("close" in dir(dev)):
@@ -199,4 +215,6 @@ if (__name__=="__main__"):
 		pynvml.nvmlShutdown()
 		sensors.cleanup()
 		raise
+	finally:
+		os.unlink(pidfile)
 
