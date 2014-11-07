@@ -10,10 +10,8 @@
 using namespace digitalcave;
 
 #define BRIGHTNESS_PORT					PORTB
-#define BRIGHTNESS_DDR					DDRB
 #define BRIGHTNESS_PIN					PORTB0
 #define CONTRAST_PORT					PORTC
-#define CONTRAST_DDR					DDRC
 #define CONTRAST_PIN					PORTC2
 
 #define PWM_PHASE						0xFF
@@ -86,9 +84,6 @@ void initPwm(){
 }
 
 void doSplash(){
-	BRIGHTNESS_DDR |= _BV(BRIGHTNESS_PIN);
-	CONTRAST_DDR |= _BV(CONTRAST_PIN);
-
 	state = STATE_SPLASH;
 	timeout_millis = 0;
 	
@@ -99,9 +94,8 @@ void doSplash(){
 }
 
 void doDisplay(){
-	BRIGHTNESS_DDR |= _BV(BRIGHTNESS_PIN);
-	CONTRAST_DDR |= _BV(CONTRAST_PIN);
-
+	pwm_start();
+	
 	state = STATE_DISPLAY;
 	timeout_millis = 0;
 	
@@ -112,9 +106,8 @@ void doDisplay(){
 }
 
 void doSleep(){
-	BRIGHTNESS_DDR &= ~_BV(BRIGHTNESS_PIN);
-	CONTRAST_DDR &= ~_BV(CONTRAST_PIN);
-
+	pwm_stop();
+	
 	display.setDdramAddress(0x00);
 	display.setText((char*) "                ", 16);
 	display.setDdramAddress(0x40);
