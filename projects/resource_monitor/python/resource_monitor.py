@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Resource monitor - client-side daemon
 #
 # Uses psutil to monitor system resources, and updates the data over USB using raw HID packets
@@ -14,7 +15,7 @@ import sys
 from time import sleep
 
 buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
-dev = hid.Device(vid=5824, pid=1152)
+dev = hid.Device(vid=0x4242, pid=0xFF00)
 
 def main():
 	state = {
