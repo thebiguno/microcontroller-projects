@@ -185,8 +185,10 @@ if (__name__=="__main__"):
 					main()
 				elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
 					dev.write("\x02" + chr(int(sys.argv[2])))
+					sys.exit(0)
 				elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
 					dev.write("\x03" + chr(int(sys.argv[2])))
+					sys.exit(0)
 				else:
 					print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
 					sys.exit(-1)
@@ -196,7 +198,7 @@ if (__name__=="__main__"):
 				if ("close" in dir(dev)):
 					dev.close()
 	except:
+		raise
+	finally:
 		pynvml.nvmlShutdown()
 		sensors.cleanup()
-		raise
-
