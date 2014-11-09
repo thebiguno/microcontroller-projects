@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             kF5,          \
                     kF6,kE6,kH5,          \
                                           \
-    kA3,kC3,kB3,kA4,kC4,kB4,kA5,kI9,kI8,  \
+    kA3,kC3,kB3,kA4,kC4,kB4,kA5,kI5,kI4,  \
                                           \
         kJ4,kK4,kL4,kN4,kO4,kP4,          \
         kJ5,kK5,kL5,kN5,kO5,kP5,          \
@@ -52,16 +52,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     kG7,                                  \
     kI7,kH6,kI6                           \
 ) {                                       \
-    { KC_##kA0,KC_##kB0,KC_##kC0,KC_##kD0,KC_##kE0,KC_##kF0,KC_##kG0,KC_##kH0,KC_##kI0,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   },   \
-    { KC_##kA1,KC_##kB1,KC_##kC1,KC_##kD1,KC_##kE1,KC_##kF1,KC_##kG1,KC_##kH1,KC_##kI1,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   },   \
-    { KC_##kA2,KC_##kB2,KC_##kC2,KC_##kD2,KC_##kE2,KC_##kF2,KC_##kG2,KC_##kH2,KC_##kI2,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   },   \
-    { KC_##kA3,KC_##kB3,KC_##kC3,KC_##kD3,KC_##kE3,KC_##kF3,KC_##kG3,KC_##kH3,KC_##kI3,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   },   \
-    { KC_##kA4,KC_##kB4,KC_##kC4,KC_##kD4,KC_NO   ,KC_##kF4,KC_##kG4,KC_##kH4,KC_NO   ,KC_##kJ4,KC_NO   ,KC_##kL4,KC_NO   ,KC_##kN4,KC_##kO4,KC_NO   },   \
-    { KC_##kA5,KC_NO   ,KC_NO   ,KC_##kD5,KC_NO   ,KC_##kF5,KC_NO   ,KC_##kH5,KC_NO   ,KC_##kJ5,KC_NO   ,KC_##kL5,KC_NO   ,KC_##kN5,KC_##kO5,KC_NO   },   \
-    { KC_NO   ,KC_NO   ,KC_NO   ,KC_##kD6,KC_##kE6,KC_##kF6,KC_##kG6,KC_##kH6,KC_##kI6,KC_##kJ6,KC_##kK6,KC_##kL6,KC_NO   ,KC_##kN6,KC_##kO6,KC_##kP6},   \
-    { KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kE7,KC_NO   ,KC_##kG7,KC_NO   ,KC_##kI7,KC_##kJ7,KC_##kK7,KC_##kL7,KC_NO   ,KC_##kN7,KC_##kO7,KC_##kP7},   \
-    { KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kI8,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   ,KC_NO,   KC_NO   },   \
-    { KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kI9,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO,   KC_NO   ,KC_NO,   KC_NO   }    \
+	{ KC_##kA0,KC_##kA1,KC_##kA2,KC_##kA3,KC_##kA4,KC_##kA5,KC_NO   ,KC_NO   }, \
+	{ KC_##kB0,KC_##kB1,KC_##kB2,KC_##kB3,KC_##kB4,KC_NO   ,KC_NO   ,KC_NO   }, \
+	{ KC_##kC0,KC_##kC1,KC_##kC2,KC_##kC3,KC_##kC4,KC_NO   ,KC_NO   ,KC_NO   }, \
+	{ KC_##kD0,KC_##kD1,KC_##kD2,KC_##kD3,KC_##kD4,KC_##kD5,KC_##kD6,KC_NO   }, \
+	{ KC_##kE0,KC_##kE1,KC_##kE2,KC_##kE3,KC_NO   ,KC_NO   ,KC_##kE6,KC_##kE7}, \
+	{ KC_##kF0,KC_##kF1,KC_##kF2,KC_##kF3,KC_##kF4,KC_##kF5,KC_##kF6,KC_NO   }, \
+	{ KC_##kG0,KC_##kG1,KC_##kG2,KC_##kG3,KC_##kG4,KC_NO   ,KC_##kG6,KC_##kG7}, \
+	{ KC_##kH0,KC_##kH1,KC_##kH2,KC_##kH3,KC_##kH4,KC_##kH5,KC_##kG6,KC_NO   }, \
+	{ KC_##kI0,KC_##kI1,KC_##kI2,KC_##kI3,KC_##kI4,KC_##kI5,KC_##kI6,KC_##kI7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kJ4,KC_##kJ5,KC_##kJ6,KC_##kJ7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kK6,KC_##kK7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kL4,KC_##kL5,KC_##kL6,KC_##kL7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   }, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kN4,KC_##kN5,KC_##kN6,KC_##kN7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kO4,KC_##kO5,KC_##kO6,KC_##kO7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kP6,KC_##kP7} \
 }
 /*    4y0   A  4y1   B  4y2      4y3   D  4y4   E  4y5   F  4y6   G  4y7   H  5y0   I  5y1   J  5y2   K  5y3   L  5y4   M  5y5   N  5y6   O  5y7  P  */
 
@@ -74,11 +80,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 2	PD2		23	c3	ESC	f2	f1	g	f	d	s	a	CL								
 3	PD3		24	c4	f9	f11	f10	b	v	c	x	z	LS	UP		DN		[{	]}		
 4	PD4		25	c5  f12	SL	PS	RT		LT	§±	`~		6	7	8		9	0	-_ 	
-5	PD5		26	c6	PB			LA		HM		END		y	u	i		o	p	\	
+5	PD5		26	c6	PB	PGM	KPD	LA		HM		END		y	u	i		o	p	\	
 6	PD6		27	c7  			LC	DEL	BS	RC	ENT	SP	h	j	k		l	;:	'"	
 7	PD7		28	c8					RA		PU		PD	n	m	,<		.>	/?	RS	
-8	PC4		6										PGM								
-9	PC5		5										KPD								
 */
 
 #if defined(KEYMAP_DVORAK)
