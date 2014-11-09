@@ -102,12 +102,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* translates key to keycode */
 uint8_t keymap_key_to_keycode(uint8_t layer, key_t key)
 {
+	uint8_t x;
     if (layer < KEYMAPS_SIZE) {
-        return pgm_read_byte(&keymaps[(layer)][(key.row)][(key.col)]);
+        x = pgm_read_byte(&keymaps[(layer)][(key.row)][(key.col)]);
     } else {
         // fall back to layer 0
-        return pgm_read_byte(&keymaps[0][(key.row)][(key.col)]);
+        x = pgm_read_byte(&keymaps[0][(key.row)][(key.col)]);
     }
+	dprintf("keymap_key_to_keycode: %d,%d,%d,%d\n",layer,key.row,key.col,x);
+	return x;
 }
 
 /* translates Fn keycode to action */
