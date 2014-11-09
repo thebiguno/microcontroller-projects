@@ -10,7 +10,7 @@ COMPILER=avr-g++
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS+=-DPWM_PORTA_UNUSED
+CDEFS+=-DPWM_PORTA_UNUSED -DUSB_VENDOR_ID=0x4200 -DUSB_PRODUCT_ID=0xFF00
 
 
 include build/targets.mk
