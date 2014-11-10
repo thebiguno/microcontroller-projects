@@ -37,7 +37,7 @@ $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "7 nov 2014"
+Date "10 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1011,4 +1011,8 @@ F 3 "" H 4500 5500 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	4500 5500 4600 5500
+Text Label 1950 2900 0    60   ~ 0
+D+
+Text Label 1950 3050 0    60   ~ 0
+D-
 $EndSCHEMATC
