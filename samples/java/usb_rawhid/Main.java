@@ -11,7 +11,7 @@ public class Main {
 	public static void main(String[] args) throws HIDDeviceNotFoundException, IOException {
 		ClassPathLibraryLoader.loadNativeHIDLibrary();
 
-		HIDDevice device = HIDManager.getInstance().openById(0x16c0, 0x0480, null);
+		HIDDevice device = HIDManager.getInstance().openById(0xfeed, 0x1111, null);
 
 		final byte buf[] = new byte[64];
 		byte b0 = 0x00;
