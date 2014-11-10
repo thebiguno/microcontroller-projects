@@ -70,7 +70,7 @@ MCU = atmega32u2
 #     does not *change* the processor frequency - it should merely be updated to
 #     reflect the processor speed set externally so that the code can use accurate
 #     software delays.
-F_CPU = 8000000
+F_CPU = 16000000
 
 # Interrupt driven control endpoint task
 OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
@@ -91,10 +91,11 @@ OPT_DEFS += -DBOOTLOADER_SIZE=4096 -DFLASH_SIZE_BYTES=0x8000
 #BOOTMAGIC_ENABLE = yes		# Virtual DIP switch configuration
 #MOUSEKEY_ENABLE = yes		# Mouse keys
 EXTRAKEY_ENABLE = yes		# Audio control and System control
-CONSOLE_ENABLE = yes		# Console for debug
+#CONSOLE_ENABLE = yes		# Console for debug
 #COMMAND_ENABLE = yes    	# Commands for debug and configuration
 #NKRO_ENABLE = yes			# USB Nkey Rollover
 #KEYMAP_SECTION_ENABLE = yes	# fixed address keymap for keymap editor
+
 
 
 # Search Path
@@ -122,3 +123,9 @@ workman: all
 
 colemak: OPT_DEFS += -DKEYMAP_COLEMAK
 colemak: all
+	
+flash:
+	dfu-programmer atmega32u2 erase
+	dfu-programmer atmega32u2 flash kinesis_pjrc.hex
+
+

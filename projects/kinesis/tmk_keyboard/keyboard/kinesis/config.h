@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT_ID      0x1111
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    t.m.k.
-#define PRODUCT         Kinesis Advantage
+#define PRODUCT         TMK Kinesis Advantage
 #define DESCRIPTION     t.m.k. keyboard firmware for Kinesis Advantage
 
-#define MATRIX_ROWS 10
-#define MATRIX_COLS 16
+#define MATRIX_ROWS 16
+#define MATRIX_COLS 8
 
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
@@ -61,6 +61,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define NO_ACTION_ONESHOT
 //#define NO_ACTION_MACRO
 //#define NO_ACTION_FUNCTION
-//#define DEBUG_MATRIX_FREQ
 
 #endif

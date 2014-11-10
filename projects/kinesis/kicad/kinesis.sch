@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "6 nov 2014"
+Date "8 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -488,8 +488,6 @@ Wire Wire Line
 	5300 3600 5800 3600
 Wire Wire Line
 	5300 3700 5800 3700
-Entry Wire Line
-	5800 4000 5900 4100
 Wire Wire Line
 	5300 3900 5800 3900
 Wire Wire Line
@@ -589,10 +587,6 @@ Text Label 5400 2300 0    60   ~ 0
 C
 Text Label 5400 2400 0    60   ~ 0
 G
-Text Label 5400 4000 0    60   ~ 0
-PGM
-Text Label 5400 4100 0    60   ~ 0
-KP
 $Comp
 L VCC #PWR09
 U 1 1 545A7C1C
@@ -636,6 +630,14 @@ NoConn ~ 10100 4700
 NoConn ~ 10100 4800
 NoConn ~ 10100 4900
 NoConn ~ 10100 5000
-Entry Wire Line
-	5800 4100 5900 4200
+NoConn ~ 5800 4000
+NoConn ~ 5800 4100
+Wire Wire Line
+	9900 3950 9900 3100
+Connection ~ 9900 3100
+Connection ~ 9900 3950
+Wire Wire Line
+	10000 3000 10000 3950
+Connection ~ 10000 3950
+Connection ~ 10000 3000
 $EndSCHEMATC
