@@ -109,7 +109,7 @@ uint8_t keymap_key_to_keycode(uint8_t layer, key_t key)
         // fall back to layer 0
         x = pgm_read_byte(&keymaps[0][(key.row)][(key.col)]);
     }
-	dprintf("keymap_key_to_keycode: %d,%d,%d,%d\n",layer,key.row,key.col,x);
+	dprintf("%d",x); dprintln();
 	return x;
 }
 

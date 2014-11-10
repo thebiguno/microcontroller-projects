@@ -82,7 +82,7 @@ OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 #   Atmel DFU loader 4096	(TMK Alt Controller)
 #   LUFA bootloader  4096
 #   USBaspLoader     2048
-OPT_DEFS += -DBOOTLOADER_SIZE=4096 -DFLASH_SIZE_BYTES=0x8000
+OPT_DEFS += -DBOOTLOADER_SIZE=4096
 
 
 # Build Options
@@ -90,8 +90,8 @@ OPT_DEFS += -DBOOTLOADER_SIZE=4096 -DFLASH_SIZE_BYTES=0x8000
 #
 #BOOTMAGIC_ENABLE = yes		# Virtual DIP switch configuration
 #MOUSEKEY_ENABLE = yes		# Mouse keys
-EXTRAKEY_ENABLE = yes		# Audio control and System control
-#CONSOLE_ENABLE = yes		# Console for debug
+#EXTRAKEY_ENABLE = yes		# Audio control and System control
+CONSOLE_ENABLE = yes		# Console for debug
 #COMMAND_ENABLE = yes    	# Commands for debug and configuration
 #NKRO_ENABLE = yes			# USB Nkey Rollover
 #KEYMAP_SECTION_ENABLE = yes	# fixed address keymap for keymap editor

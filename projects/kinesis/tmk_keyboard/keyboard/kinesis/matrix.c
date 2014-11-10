@@ -59,6 +59,8 @@ uint8_t matrix_cols(void)
 
 void matrix_init(void) {
 	debug_enable = true;
+	
+	dprint("matrix_init"); dprintln();
 	// output (mux & led) low
 	DDRB    = 0xFF;
 	PORTB   = 0x00;
@@ -150,6 +152,8 @@ static matrix_row_t read(uint8_t row)
 		return 0x00;
 	}
 	
+	if (~PIND > 0) PORTB |= _BV(PB4);
+	else PORTB = 0x00;
 	return ~PIND;
 }
 
