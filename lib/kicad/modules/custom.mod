@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Wednesday, November 12, 2014 'amt' 11:44:28 am
+PCBNEW-LibModule-V1  Wednesday, November 12, 2014 'pmt' 03:56:37 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -34,6 +34,7 @@ PIN_ARRAY_7x1
 PIN_ARRAY_8x1
 POWERDI_123
 R1-Mini
+RESONATOR_SMD-3
 SCREW_TERMINAL_2
 SCREW_TERMINAL_3
 SCREW_TERMINAL_4
@@ -4559,6 +4560,38 @@ Ne 0 ""
 Po 0 1.27
 $EndPAD
 $EndMODULE R1-Mini
+$MODULE RESONATOR_SMD-3
+Po 0 0 0 15 5463E544 00000000 ~~
+Li RESONATOR_SMD-3
+Cd See http://www.digikey.ca/product-search/en?FV=ffec59f9
+Kw Resonator
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -2 1 1 0 0.15 N I 21 N "3-SMD_RESONATOR"
+T1 0 2 1 1 0 0.15 N I 21 N "VAL**"
+$PAD
+Sh "1" R 0.4 2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.2 0
+$EndPAD
+$PAD
+Sh "2" R 0.4 2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0 0
+$EndPAD
+$PAD
+Sh "3" R 0.4 2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.2 0
+$EndPAD
+$EndMODULE RESONATOR_SMD-3
 $MODULE SCREW_TERMINAL_2
 Po 0 0 0 15 535DB3FF 00000000 ~~
 Li SCREW_TERMINAL_2

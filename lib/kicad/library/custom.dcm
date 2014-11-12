@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Wednesday, September 24, 2014 'pmt' 02:24:52 pm
+EESchema-DOCLIB  Version 2.0  Date: Wednesday, November 12, 2014 'pmt' 03:46:49 pm
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -31,6 +31,11 @@ $ENDCMP
 #
 $CMP NCP1400A
 D NCP1400A_Boost_Regulator
+$ENDCMP
+#
+$CMP RESONATOR
+D Either a Crystal with external caps, or a resonator with built in caps
+K CRYSTAL RESONATOR
 $ENDCMP
 #
 $CMP RGB_LED_COMMON_ANODE
