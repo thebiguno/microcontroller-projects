@@ -1,0 +1,204 @@
+#!/usr/bin/python
+# Resource monitor - client-side daemon
+#
+# Uses psutil to monitor system resources, and updates the data over USB using raw HID packets
+# to the hardware monitor.
+#
+########################################################
+
+import hid		#https://github.com/apmorton/pyhidapi
+import psutil	#https://github.com/giampaolo/psutil
+import pynvml	#https://pypi.python.org/pypi/nvidia-ml-py/
+import sensors	#https://pypi.python.org/pypi/PySensors/
+
+import os
+import sys
+from time import sleep
+
+buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
+dev = 0
+
+def main():
+	state = {
+		"cpu": [], "memory": [],
+		"gpu": [], "gpu_memory": [], "gpu_count": pynvml.nvmlDeviceGetCount(),
+		"disk_read": [], "disk_write": [], "disk_read_last": psutil.disk_io_counters().read_bytes, "disk_write_last": psutil.disk_io_counters().write_bytes,
+		"net_upload": [], "net_download": [], "net_upload_last": psutil.net_io_counters().bytes_sent, "net_download_last": psutil.net_io_counters().bytes_recv
+	}
+	
+	mp_index = 0
+	mp_timer = 0
+	mountpoints = [
+		{"label": "    / ", "mountpoint": "/"},
+		{"label": "/home ", "mountpoint": "/home"},
+		{"label": "/data ", "mountpoint": "/mnt/data"},
+		{"label": "/bkup ", "mountpoint": "/mnt/backup"}
+	]
+	
+	while True:
+		exception = False
+		
+		#CPU Usage:
+		state["cpu"].append(int(psutil.cpu_percent() / 11));
+		if (len(state["cpu"]) > 300):
+			state["cpu"].pop(0)
+		last10 = state["cpu"][-10:]
+		last60 = state["cpu"][-60:]
+		
+		buf[2] = writeBarGraph(state["cpu"][-1])
+		buf[3] = writeBarGraph(sum(last10) / len(last10))
+		buf[4] = writeBarGraph(sum(last60) / len(last60))
+		buf[5] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
+		
+		#Memory Usage:
+		state["memory"].append(int(psutil.virtual_memory().percent / 11))
+		if (len(state["memory"]) > 10):
+			state["memory"].pop(0)
+		buf[7] = writeBarGraph(state["memory"][-1])
+		buf[8] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
+		
+		#Disk I/O:
+		disk = psutil.disk_io_counters()
+
+		state["disk_read"].append(disk.read_bytes - state["disk_read_last"])
+		state["disk_read_last"] = disk.read_bytes
+		state["disk_write"].append(disk.write_bytes - state["disk_write_last"])
+		state["disk_write_last"] = disk.write_bytes
+
+		if (len(state["disk_read"]) > 10):
+			state["disk_read"].pop(0)
+		if (len(state["disk_write"]) > 10):
+			state["disk_write"].pop(0)
+			
+		buf[10] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
+		buf[12] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
+		
+		
+		#Network I/O:
+		net = psutil.net_io_counters()
+		
+		state["net_download"].append(net.bytes_recv - state["net_download_last"])
+		state["net_download_last"] = net.bytes_recv
+		state["net_upload"].append(net.bytes_sent - state["net_upload_last"])
+		state["net_upload_last"] = net.bytes_sent
+		
+		if (len(state["net_download"]) > 10):
+			state["net_download"].pop(0)
+		if (len(state["net_upload"]) > 10):
+			state["net_upload"].pop(0)
+			
+		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
+		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+
+
+		#CPU Temperature:
+		for chip in sensors.iter_detected_chips():
+			for feature in chip:
+				if (feature.label == "Physical id 0"):
+					cpu_temp = int(feature.get_value())
+					if (cpu_temp > 99):
+						cpu_temp = 99
+					buf[27] = str(cpu_temp / 10)
+					buf[28] = str(cpu_temp % 10)
+		
+		#GPU Temperature:
+		gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
+		gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
+		if (gpu_temp > 99):
+			gpu_temp = 99
+		buf[30] = str(gpu_temp / 10)
+		buf[31] = str(gpu_temp % 10)
+
+		#Rotate through mount points and show percentage
+		mp = mountpoints[mp_index]
+		disk_percent = int(psutil.disk_usage(mp["mountpoint"]).percent)
+		buf[17] = mp["label"][0]
+		buf[18] = mp["label"][1]
+		buf[19] = mp["label"][2]
+		buf[20] = mp["label"][3]
+		buf[21] = mp["label"][4]
+		buf[22] = mp["label"][5]
+		buf[23] = str(disk_percent / 10)
+		buf[24] = str(disk_percent % 10)
+		
+		mp_timer = mp_timer + 1
+		if (mp_timer >= 5):
+			mp_timer = 0;
+			mp_index = mp_index + 1
+			if (mp_index >= len(mountpoints)):
+				mp_index = 0;
+		
+		#Exception report
+		#if (exception):
+		#	buf[17] = '*'
+		#else:
+		#	buf[17] = ' '
+
+		sendData()
+
+		sleep(1)
+
+def sendData():
+	dev.write(''.join(buf))
+
+def scaleNetwork(value):
+	if (value > 0x40000000):
+		return 9
+	elif (value > 0x20000000):
+		return 8
+	elif (value > 0x10000000):
+		return 7
+	elif (value > 0x8000000):
+		return 6
+	elif (value > 0x4000000):
+		return 5
+	elif (value > 0x2000000):
+		return 4
+	elif (value > 0x1000000):
+		return 3
+	elif (value > 0x800000):
+		return 2
+	elif (value > 0x400000):
+		return 1
+	elif (value > 0x200000):
+		return 0
+
+def writeBarGraph(value):
+	if (value <= 0):
+		return ' '
+	elif (value >= 8):
+		return '\xff'
+	else:
+		return chr(value)
+
+########## Main startup hooks here ##########
+if (__name__=="__main__"):
+	pynvml.nvmlInit()
+	sensors.init()
+
+	try:
+		while (True):
+			try:
+				dev = hid.Device(vid=0x4200, pid=0xFF00)
+
+				if (len(sys.argv) == 1):
+					main()
+				elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
+					dev.write("\x02" + chr(int(sys.argv[2])))
+					sys.exit(0)
+				elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
+					dev.write("\x03" + chr(int(sys.argv[2])))
+					sys.exit(0)
+				else:
+					print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
+					sys.exit(-1)
+			except hid.HIDException:
+				sleep(1)
+			finally:
+				if ("close" in dir(dev)):
+					dev.close()
+	except:
+		raise
+	finally:
+		pynvml.nvmlShutdown()
+		sensors.cleanup()

@@ -1,6 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "lib/Hd44780/Hd44780.h"
+#include "lib/Hd44780/Hd44780_Shift.h"
 
 using namespace digitalcave;
 
@@ -8,7 +8,7 @@ int main (void){
 	_delay_ms(100);
 	DDRB |= _BV(PINB4);
 	
-	Hd44780 display(&PORTB, 0, &PORTB, 4, &PORTB, 2, 1, display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
+	Hd44780_Shift display(&PORTB, 0, &PORTB, 4, &PORTB, 2, 1, display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
 
 	uint8_t c1[8] = {31,31,0,0,0,0,31,31};
 	uint8_t c2[8] = {0,0,0,0,0,0,31,31};
