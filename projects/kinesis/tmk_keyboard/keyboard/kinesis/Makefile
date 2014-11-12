@@ -57,7 +57,7 @@ CONFIG_H = config.h
 
 
 # MCU name
-MCU = atmega32u2
+MCU = at90usb162
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the
@@ -91,7 +91,7 @@ OPT_DEFS += -DBOOTLOADER_SIZE=4096
 #BOOTMAGIC_ENABLE = yes		# Virtual DIP switch configuration
 #MOUSEKEY_ENABLE = yes		# Mouse keys
 #EXTRAKEY_ENABLE = yes		# Audio control and System control
-CONSOLE_ENABLE = yes		# Console for debug
+#CONSOLE_ENABLE = yes		# Console for debug
 #COMMAND_ENABLE = yes    	# Commands for debug and configuration
 #NKRO_ENABLE = yes			# USB Nkey Rollover
 #KEYMAP_SECTION_ENABLE = yes	# fixed address keymap for keymap editor

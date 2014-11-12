@@ -47,8 +47,8 @@ J3 left fn
 7	rB		f2,f5,f8
 8	c2		f3,f4,f5
 9	N/C
-10	r3		f1,f4,f7
-11	r2		f2,f5,f8
+10	rC		f1,f4,f7
+11	rB		f2,f5,f8
 12	N/C
 13	N/C
 

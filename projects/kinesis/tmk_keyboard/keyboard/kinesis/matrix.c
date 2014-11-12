@@ -41,10 +41,6 @@ static matrix_row_t read(uint8_t row);
 static void unselect();
 static void select(uint8_t row);
 
-uint8_t _row;
-
-uint8_t test;
-
 inline
 uint8_t matrix_rows(void)
 {
@@ -58,16 +54,20 @@ uint8_t matrix_cols(void)
 }
 
 void matrix_init(void) {
-	debug_enable = true;
+	//debug_enable = true;
 	
-	dprint("matrix_init"); dprintln();
+	//dprint("matrix_init"); dprintln();
 	// output (mux & led) low
 	DDRB    = 0xFF;
 	PORTB   = 0x00;
+	//DDRD      = 0xFF;
+	//PORTD     = 0x00;
 	
 	// input with pullup
 	DDRD    = 0x00;
 	PORTD   = 0xFF;
+	//DDRB      = 0x00;
+	//PORTB     = 0xFF;
 	
     // initialize row and col
     unselect();
@@ -149,23 +149,26 @@ static matrix_row_t read(uint8_t row)
 
 	// only bother with row 13 since HWB mashes entire column
 	if (row != 13) {
-		return 0x00;
+		return KC_NO;
 	}
 	
 	if (~PIND > 0) PORTB |= _BV(PB4);
 	else PORTB = 0x00;
 	return ~PIND;
+
+	//if (~PINB > 0) PORTD |= _BV(PD4);
+	//else PORTD = 0x00;
+	//return ~PINB;
 }
 
 static void unselect(void)
 {
-	PORTB &= 0xF0;	// set lower 4 bits A,B,C,G to 0
+	//PORTB &= 0xF0;	// set lower 4 bits A,B,C,G to 0
 }
 
 static void select(uint8_t row)
 {
 	//PORTB |= row;
-	_row = row;
 }
 
 /* Row pin configuration

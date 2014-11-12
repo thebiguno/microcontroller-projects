@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, November 05, 2014 'pmt' 12:22:17 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, November 11, 2014 'pmt' 11:16:35 pm
 
 BeginCmp
 TimeStamp = /545804FB;
@@ -15,13 +15,6 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /545A58B3;
-Reference = IC1;
-ValeurCmp = ATMEGA32U2;
-IdModule  = TQFP32;
-EndCmp
-
-BeginCmp
 TimeStamp = /545A62EA;
 Reference = IC2;
 ValeurCmp = AT90S8515-P;
@@ -29,9 +22,9 @@ IdModule  = DIP-40__600;
 EndCmp
 
 BeginCmp
-TimeStamp = /545A8E2A;
+TimeStamp = /5462FB05;
 Reference = P1;
-ValeurCmp = CONN_01X02;
+ValeurCmp = CONN_2;
 IdModule  = SIL-2;
 EndCmp
 
@@ -75,6 +68,13 @@ TimeStamp = /5458175B;
 Reference = SW2;
 ValeurCmp = SW_PUSH_SMALL;
 IdModule  = SW_6x3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5462E0B1;
+Reference = U1;
+ValeurCmp = ATMEGA32U4-A;
+IdModule  = TQFP44;
 EndCmp
 
 EndListe
