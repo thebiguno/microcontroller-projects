@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Wednesday, November 12, 2014 'pmt' 03:56:37 pm
+PCBNEW-LibModule-V1  Wednesday, November 12, 2014 'pmt' 04:26:35 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -4561,7 +4561,7 @@ Po 0 1.27
 $EndPAD
 $EndMODULE R1-Mini
 $MODULE RESONATOR_SMD-3
-Po 0 0 0 15 5463E544 00000000 ~~
+Po 0 0 0 15 5463ECA6 00000000 ~~
 Li RESONATOR_SMD-3
 Cd See http://www.digikey.ca/product-search/en?FV=ffec59f9
 Kw Resonator
@@ -4570,6 +4570,10 @@ AR
 Op 0 0 0
 T0 0 -2 1 1 0 0.15 N I 21 N "3-SMD_RESONATOR"
 T1 0 2 1 1 0 0.15 N I 21 N "VAL**"
+DS -2 1.5 2 1.5 0.15 21
+DS 2 1.5 2 -1.5 0.15 21
+DS 2 -1.5 -2 -1.5 0.15 21
+DS -2 -1.5 -2 1.5 0.15 21
 $PAD
 Sh "1" R 0.4 2 0 0 0
 Dr 0 0 0
