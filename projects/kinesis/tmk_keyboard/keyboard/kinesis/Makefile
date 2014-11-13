@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 # Target file name (without extension).
-TARGET = kinesis_pjrc
+TARGET = kinesis
 
 # Directory common source filess exist
 TOP_DIR = ../..
@@ -57,7 +57,8 @@ CONFIG_H = config.h
 
 
 # MCU name
-MCU = at90usb162
+#MCU = at90usb162
+MCU = atmega32u2
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the
@@ -71,6 +72,9 @@ MCU = at90usb162
 #     reflect the processor speed set externally so that the code can use accurate
 #     software delays.
 F_CPU = 16000000
+
+ARCH = AVR8
+F_USB = $(F_CPU)
 
 # Interrupt driven control endpoint task
 OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
@@ -90,19 +94,17 @@ OPT_DEFS += -DBOOTLOADER_SIZE=4096
 #
 #BOOTMAGIC_ENABLE = yes		# Virtual DIP switch configuration
 #MOUSEKEY_ENABLE = yes		# Mouse keys
-#EXTRAKEY_ENABLE = yes		# Audio control and System control
+EXTRAKEY_ENABLE = yes		# Audio control and System control
 #CONSOLE_ENABLE = yes		# Console for debug
 #COMMAND_ENABLE = yes    	# Commands for debug and configuration
 #NKRO_ENABLE = yes			# USB Nkey Rollover
 #KEYMAP_SECTION_ENABLE = yes	# fixed address keymap for keymap editor
 
-
-
 # Search Path
 VPATH += $(TARGET_DIR)
 VPATH += $(TOP_DIR)
 
-include $(TOP_DIR)/protocol/pjrc.mk
+include $(TOP_DIR)/protocol/lufa.mk
 include $(TOP_DIR)/common.mk
 include $(TOP_DIR)/rules.mk
 
@@ -126,6 +128,6 @@ colemak: all
 	
 flash:
 	dfu-programmer atmega32u2 erase
-	dfu-programmer atmega32u2 flash kinesis_pjrc.hex
+	dfu-programmer atmega32u2 flash kinesis.hex
 
 
