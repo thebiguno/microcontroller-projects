@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:ubbb_32u4-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "12 nov 2014"
+Date "13 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -875,17 +874,6 @@ Wire Wire Line
 	5800 650  5800 750 
 Wire Wire Line
 	5500 650  5500 750 
-$Comp
-L RGB_LED_COMMON_ANODE D2
-U 1 1 545BB829
-P 4900 5500
-F 0 "D2" H 4950 5750 50  0000 C CNN
-F 1 "RGB_LED_COMMON_ANODE" H 4900 5150 50  0000 C CNN
-F 2 "~" H 4950 5500 60  0000 C CNN
-F 3 "~" H 4950 5500 60  0000 C CNN
-	1    4900 5500
-	1    0    0    -1  
-$EndComp
 Entry Wire Line
 	6000 5350 6100 5450
 Entry Wire Line
@@ -988,5 +976,16 @@ F 2 "~" H 2500 2500 60  0000 C CNN
 F 3 "~" H 2500 2500 60  0000 C CNN
 	1    2500 2500
 	0    1    1    0   
+$EndComp
+$Comp
+L RGB_LED_COMMON_ANODE_ALT1 D?
+U 1 1 5463FD4C
+P 4900 5500
+F 0 "D?" H 4950 5750 50  0000 C CNN
+F 1 "RGB_LED_COMMON_ANODE_ALT1" H 4900 5150 50  0000 C CNN
+F 2 "~" H 4950 5500 60  0000 C CNN
+F 3 "~" H 4950 5500 60  0000 C CNN
+	1    4900 5500
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
