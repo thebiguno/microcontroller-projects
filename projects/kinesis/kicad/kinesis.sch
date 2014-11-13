@@ -310,9 +310,9 @@ Wire Wire Line
 Wire Wire Line
 	2750 3900 2750 4000
 Wire Bus Line
-	6550 1050 6550 5700
+	6550 2100 6550 6050
 Wire Bus Line
-	10850 1050 10850 5600
+	10850 1600 10850 6050
 Text Label 6050 4350 0    60   ~ 0
 DL1
 Text Label 6050 4250 0    60   ~ 0
@@ -570,7 +570,7 @@ Wire Wire Line
 	3600 3650 3750 3650
 NoConn ~ 1950 4500
 Wire Bus Line
-	1100 1050 1100 7100
+	1100 1900 1100 7100
 NoConn ~ 1200 6600
 NoConn ~ 1200 6700
 NoConn ~ 1200 7200
@@ -605,8 +605,6 @@ Entry Wire Line
 Connection ~ 3600 2000
 Wire Wire Line
 	4800 2000 4800 2200
-Wire Bus Line
-	6550 1050 10850 1050
 Entry Wire Line
 	6450 2000 6550 2100
 Text Label 6050 2000 0    60   ~ 0
@@ -629,6 +627,8 @@ Entry Wire Line
 	10750 2100 10850 2200
 Text Notes 1000 5300 1    60   ~ 0
 Sacrificial USB cable from header to Teensy
-Text Notes 7700 1200 0    60   ~ 0
+Text Notes 7850 5950 0    60   ~ 0
 Ribbon cable between Teensy pins and socket
+Wire Bus Line
+	10850 6050 6550 6050
 $EndSCHEMATC
