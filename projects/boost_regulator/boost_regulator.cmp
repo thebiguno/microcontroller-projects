@@ -1,0 +1,52 @@
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, November 14, 2014 'amt' 09:56:21 am
+
+BeginCmp
+TimeStamp = /546630E2;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /546630D3;
+Reference = C2;
+ValeurCmp = CP1;
+IdModule  = SM1206POL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54663081;
+Reference = D1;
+ValeurCmp = DIODESCH;
+IdModule  = POWERDI_123;
+EndCmp
+
+BeginCmp
+TimeStamp = /54663094;
+Reference = L1;
+ValeurCmp = INDUCTOR_SMALL;
+IdModule  = SM1007;
+EndCmp
+
+BeginCmp
+TimeStamp = /546631AE;
+Reference = P1;
+ValeurCmp = CONN_2;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /546631A1;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54663040;
+Reference = VR1;
+ValeurCmp = NCP1400A;
+IdModule  = SOT23-5;
+EndCmp
+
+EndListe

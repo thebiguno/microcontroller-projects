@@ -1,0 +1,203 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+EELAYER 27 0
+EELAYER END
+$Descr User 6000 4000
+encoding utf-8
+Sheet 1 1
+Title "Boost Regulator"
+Date "14 nov 2014"
+Rev ""
+Comp "Digital Cave"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L NCP1400A VR1
+U 1 1 54663040
+P 3000 1800
+F 0 "VR1" H 3000 1650 60  0000 C CNN
+F 1 "NCP1400A" H 3000 1550 60  0000 C CNN
+F 2 "~" H 3000 1800 60  0000 C CNN
+F 3 "~" H 3000 1800 60  0000 C CNN
+	1    3000 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L DIODESCH D1
+U 1 1 54663081
+P 3000 1250
+F 0 "D1" H 3000 1350 40  0000 C CNN
+F 1 "DFLS130L" H 3000 1150 40  0000 C CNN
+F 2 "~" H 3000 1250 60  0000 C CNN
+F 3 "~" H 3000 1250 60  0000 C CNN
+	1    3000 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L INDUCTOR_SMALL L1
+U 1 1 54663094
+P 2100 1600
+F 0 "L1" H 2100 1700 50  0000 C CNN
+F 1 "22uH" H 2100 1550 50  0000 C CNN
+F 2 "~" H 2100 1600 60  0000 C CNN
+F 3 "~" H 2100 1600 60  0000 C CNN
+	1    2100 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1 C2
+U 1 1 546630D3
+P 3750 2050
+F 0 "C2" H 3800 2150 50  0000 L CNN
+F 1 "47uF" H 3800 1950 50  0000 L CNN
+F 2 "~" H 3750 2050 60  0000 C CNN
+F 3 "~" H 3750 2050 60  0000 C CNN
+	1    3750 2050
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C1
+U 1 1 546630E2
+P 1600 2050
+F 0 "C1" H 1600 2150 40  0000 L CNN
+F 1 "10uF" H 1606 1965 40  0000 L CNN
+F 2 "~" H 1638 1900 30  0000 C CNN
+F 3 "~" H 1600 2050 60  0000 C CNN
+	1    1600 2050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_2 P2
+U 1 1 546631A1
+P 4500 1800
+F 0 "P2" V 4450 1800 40  0000 C CNN
+F 1 "CONN_2" V 4550 1800 40  0000 C CNN
+F 2 "" H 4500 1800 60  0000 C CNN
+F 3 "" H 4500 1800 60  0000 C CNN
+	1    4500 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_2 P1
+U 1 1 546631AE
+P 750 1700
+F 0 "P1" V 700 1700 40  0000 C CNN
+F 1 "CONN_2" V 800 1700 40  0000 C CNN
+F 2 "" H 750 1700 60  0000 C CNN
+F 3 "" H 750 1700 60  0000 C CNN
+	1    750  1700
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	1100 1600 1850 1600
+Wire Wire Line
+	2350 1600 2500 1600
+Wire Wire Line
+	2800 1250 2400 1250
+Wire Wire Line
+	2400 1250 2400 1600
+Connection ~ 2400 1600
+Wire Wire Line
+	3500 1600 3600 1600
+Wire Wire Line
+	3600 1250 3600 1700
+Wire Wire Line
+	3500 1700 4150 1700
+Wire Wire Line
+	3600 1250 3200 1250
+Connection ~ 3600 1600
+Wire Wire Line
+	3750 1700 3750 1850
+Connection ~ 3600 1700
+Wire Wire Line
+	1600 1850 1600 1600
+Connection ~ 1600 1600
+Wire Wire Line
+	1100 1800 1200 1800
+Wire Wire Line
+	1200 1800 1200 2350
+Wire Wire Line
+	1200 2350 4050 2350
+Wire Wire Line
+	3750 2350 3750 2250
+Wire Wire Line
+	1600 2250 1600 2450
+Connection ~ 1600 2350
+Wire Wire Line
+	2500 1850 2400 1850
+Wire Wire Line
+	2400 1850 2400 2350
+Connection ~ 2400 2350
+Wire Wire Line
+	4150 1900 4050 1900
+Wire Wire Line
+	4050 1900 4050 2350
+Connection ~ 3750 2350
+Connection ~ 3750 1700
+$Comp
+L +BATT #PWR01
+U 1 1 546632DD
+P 1150 1600
+F 0 "#PWR01" H 1150 1550 20  0001 C CNN
+F 1 "+BATT" H 1150 1700 30  0000 C CNN
+F 2 "" H 1150 1600 60  0000 C CNN
+F 3 "" H 1150 1600 60  0000 C CNN
+	1    1150 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR02
+U 1 1 546632EC
+P 1600 2450
+F 0 "#PWR02" H 1600 2450 30  0001 C CNN
+F 1 "GND" H 1600 2380 30  0001 C CNN
+F 2 "" H 1600 2450 60  0000 C CNN
+F 3 "" H 1600 2450 60  0000 C CNN
+	1    1600 2450
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR03
+U 1 1 54663317
+P 4050 1700
+F 0 "#PWR03" H 4050 1790 20  0001 C CNN
+F 1 "+5V" H 4050 1790 30  0000 C CNN
+F 2 "" H 4050 1700 60  0000 C CNN
+F 3 "" H 4050 1700 60  0000 C CNN
+	1    4050 1700
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
