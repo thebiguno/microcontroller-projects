@@ -1,4 +1,4 @@
-PCBNEW-BOARD Version 2 date Friday, November 14, 2014 'amt' 11:12:14 am
+PCBNEW-BOARD Version 2 date Friday, November 14, 2014 'pmt' 01:57:02 pm
 
 # Created by Pcbnew(2014-01-10 BZR 4027)-stable
 
@@ -10,7 +10,7 @@ EnabledLayers 1FFF8001
 Links 12
 NoConn 0
 Di 34.228369 26.106001 55.9562 39.68115
-Ndraw 13
+Ndraw 14
 Ntrack 33
 Nzone 0
 BoardThickness 1.6
@@ -34,7 +34,7 @@ $SETUP
 Layers 2
 Layer[0] B.Cu signal
 Layer[15] F.Cu signal
-TrackWidth 0.508
+TrackWidth 0.254
 TrackWidthList 0.508
 TrackWidthList 0.762
 TrackClearence 0.254
@@ -353,6 +353,11 @@ Ne 3 "N-000006"
 Po 1.4 0
 $EndPAD
 $EndMODULE POWERDI_123
+$TEXTPCB
+Te "GND"
+Po 51.054 37.846 0.762 0.762 0.1905 0
+De 20 0 0 Normal
+$EndTEXTPCB
 $DRAWSEGMENT
 Po 2 54.102 38.608 54.61 38.608 0.1
 De 28 0 900 0 0
