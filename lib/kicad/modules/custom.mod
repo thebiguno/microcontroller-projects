@@ -1,8 +1,9 @@
-PCBNEW-LibModule-V1  Wed 12 Nov 2014 06:14:45 PM MST
+PCBNEW-LibModule-V1  Friday, November 14, 2014 'pmt' 09:27:51 pm
 # encoding utf-8
 Units mm
 $INDEX
 4-PLCC
+475710001
 4X_7_SEGMENT
 AMPSEAL_23
 BB8
@@ -107,6 +108,111 @@ Ne 0 ""
 Po 1.5 -0.75
 $EndPAD
 $EndMODULE 4-PLCC
+$MODULE 475710001
+Po 0 0 0 15 5466D63D 00000000 ~~
+Li 475710001
+Sc 0
+AR 
+Op 0 0 0
+T0 0 3 0.762 0.762 0 0.15 N V 21 N "475710001"
+T1 0 4.5 0.762 0.762 0 0.15 N V 21 N "VAL**"
+DS 0 0 -5.5 0 0.15 21
+DS -5.5 0 -5.5 5.5 0.15 21
+DS -5.5 5.5 6 5.5 0.15 21
+DS 6 5.5 6 0 0.15 21
+DS 6 0 -5.5 0 0.15 21
+$PAD
+Sh "4" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.55 1.31
+$EndPAD
+$PAD
+Sh "3" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.65 1.31
+$EndPAD
+$PAD
+Sh "2" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 2.75 1.31
+$EndPAD
+$PAD
+Sh "1" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.85 1.31
+$EndPAD
+$PAD
+Sh "5" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.55 1.31
+$EndPAD
+$PAD
+Sh "6" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.65 1.31
+$EndPAD
+$PAD
+Sh "7" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -2.75 1.31
+$EndPAD
+$PAD
+Sh "8" R 0.7 1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.85 1.31
+$EndPAD
+$PAD
+Sh "9" R 1.15 1.2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -4.925 2.36
+$EndPAD
+$PAD
+Sh "10" R 1.15 1.2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -4.925 4.95
+$EndPAD
+$PAD
+Sh "11" R 1.45 1.2 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 5.475 2.8
+$EndPAD
+$PAD
+Sh "12" R 1 0.7 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 5.7 3.95
+$EndPAD
+$PAD
+Sh "13" R 1.45 0.9 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 5.475 5.1
+$EndPAD
+$EndMODULE 475710001
 $MODULE 4X_7_SEGMENT
 Po 0 0 0 15 538A967F 00000000 ~~
 Li 4X_7_SEGMENT
