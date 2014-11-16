@@ -5,6 +5,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "util/delays.h"
 #include "lib/protocol/protocol.h"
@@ -65,7 +66,7 @@ uint8_t get_controller();
 
 void doAcknowledgeCommand(uint8_t command);
 void doCompleteCommand(uint8_t command);
-void doSendDebug(char* message, uint8_t length);
+void doSendDebug(char* message);
 void doResetLegs();
 
 void mode_select();
