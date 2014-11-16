@@ -84,7 +84,7 @@ public class Protocol {
 				if (data[i] == 0) break;
 				sb.append((char) data[i]);
 			}
-			Logger.getLogger(this.getClass().getName()).info("Debug: " + sb.toString());
+			System.out.println("Debug: " + sb.toString());
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
