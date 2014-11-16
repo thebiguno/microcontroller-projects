@@ -1,0 +1,10 @@
+Power supply voltage V = 5 V
+
+LED forward bias voltage VLED = 3 V
+LED forward bias current ILED = 10 mA
+
+Current limiting resistor R = (V - VLED) / ILED = (5 - 3) / 0.01 = 200 Ohms
+ 
+Maximum forward bias voltage on LED is 4 V, using 180 Ohm resistor the voltage on the LED is:
+
+VLED = 5 - (180 * .01) = 3.2 V
