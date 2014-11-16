@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-PCBNEW-LibModule-V1  Tuesday, November 04, 2014 'pmt' 02:06:42 pm
-=======
 PCBNEW-LibModule-V1  Sat 15 Nov 2014 09:21:24 PM MST
->>>>>>> Stashed changes
 # encoding utf-8
 Units mm
 $INDEX
