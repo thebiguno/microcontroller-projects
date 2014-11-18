@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:microsd-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "15 nov 2014"
+Date "18 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -103,8 +102,6 @@ F 3 "~" H 5000 5050 60  0000 C CNN
 	3    5000 5050
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6150 4750 6850 4750
 $Comp
 L CONN_8 P1
 U 1 1 5466C31A
@@ -117,17 +114,17 @@ F 3 "" H 2500 4000 60  0000 C CNN
 	-1   0    0    1   
 $EndComp
 Text Label 2850 4350 0    60   ~ 0
-MOSI
-Text Label 2850 4150 0    60   ~ 0
-SCLK
-Text Label 2850 4050 0    60   ~ 0
-MISO
-Text Label 2850 3950 0    60   ~ 0
 5V
-Text Label 2850 3850 0    60   ~ 0
-GND
-Text Label 2850 4250 0    60   ~ 0
+Text Label 2850 4150 0    60   ~ 0
+3V3
+Text Label 2850 4050 0    60   ~ 0
+DET
+Text Label 2850 3950 0    60   ~ 0
 SS
+Text Label 2850 3850 0    60   ~ 0
+SCLK
+Text Label 2850 4250 0    60   ~ 0
+GND
 $Comp
 L CONN_13 P2
 U 1 1 5466C419
@@ -160,92 +157,21 @@ F 3 "~" H 5000 3450 60  0000 C CNN
 	1    5000 3450
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4550 4350 4550 5050
-Wire Wire Line
-	4550 4150 4550 3450
-Wire Wire Line
-	5450 4250 6850 4250
-Wire Wire Line
-	5950 5050 5450 5050
-Wire Wire Line
-	2850 4350 4550 4350
-Wire Wire Line
-	4550 4250 2850 4250
-Wire Wire Line
-	4550 4150 2850 4150
-Wire Wire Line
-	5950 4350 6850 4350
-Wire Wire Line
-	5950 4350 5950 5050
-Wire Wire Line
-	5450 3450 6050 3450
-Wire Wire Line
-	6050 3450 6050 4550
-Wire Wire Line
-	6050 4550 6850 4550
-Wire Wire Line
-	6150 4750 6150 3150
-Wire Wire Line
-	6150 3150 4450 3150
-Wire Wire Line
-	4450 3150 4450 4050
-Wire Wire Line
-	4450 4050 2850 4050
-Wire Wire Line
-	4350 3050 6250 3050
-Wire Wire Line
-	4350 3050 4350 3850
-Wire Wire Line
-	4350 3850 2850 3850
-Wire Wire Line
-	2850 3950 4250 3950
-Wire Wire Line
-	6850 4650 6250 4650
-Wire Wire Line
-	6250 3050 6250 5350
-Wire Wire Line
-	6350 4450 6850 4450
-Wire Wire Line
-	6350 2850 6350 5450
-Wire Wire Line
-	6250 5350 5000 5350
-Connection ~ 6250 4650
-Wire Wire Line
-	5000 4550 5000 4850
-Wire Wire Line
-	5000 4850 6250 4850
-Connection ~ 6250 4850
-Wire Wire Line
-	5000 3750 5000 3850
 Text Label 2850 3750 0    60   ~ 0
-SW
+MOSI
 $Comp
 L R R1
 U 1 1 5466CB39
-P 3350 4700
-F 0 "R1" V 3430 4700 40  0000 C CNN
-F 1 "10k" V 3357 4701 40  0000 C CNN
-F 2 "~" V 3280 4700 30  0000 C CNN
-F 3 "~" H 3350 4700 30  0000 C CNN
-	1    3350 4700
-	1    0    0    -1  
+P 3850 3450
+F 0 "R1" V 3930 3450 40  0000 C CNN
+F 1 "10k" V 3857 3451 40  0000 C CNN
+F 2 "~" V 3780 3450 30  0000 C CNN
+F 3 "~" H 3850 3450 30  0000 C CNN
+	1    3850 3450
+	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	3350 4350 3350 4450
-Connection ~ 3350 4350
-Wire Wire Line
-	6350 5450 3250 5450
-Wire Wire Line
-	3350 5450 3350 4950
-Connection ~ 6350 4450
-Wire Wire Line
-	3250 5450 3250 3650
-Wire Wire Line
-	3250 3650 2850 3650
-Connection ~ 3350 5450
 Text Label 2850 3650 0    60   ~ 0
-3V3
+MISO
 $Comp
 L 74LS125 U1
 U 4 1 5466CBF1
@@ -257,6 +183,38 @@ F 3 "~" H 7000 2850 60  0000 C CNN
 	4    7000 2850
 	1    0    0    -1  
 $EndComp
+$Comp
+L MCP1702 VR1
+U 1 1 5466DA0C
+P 5200 1150
+F 0 "VR1" V 4900 1150 60  0000 C CNN
+F 1 "MCP1702" V 5000 1150 60  0000 C CNN
+F 2 "~" H 5200 1150 60  0000 C CNN
+F 3 "~" H 5200 1150 60  0000 C CNN
+	1    5200 1150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3250 3050 6250 3050
+Wire Wire Line
+	2850 3950 4450 3950
+Wire Wire Line
+	6850 4650 6250 4650
+Wire Wire Line
+	6250 3050 6250 5350
+Wire Wire Line
+	6350 4450 6850 4450
+Connection ~ 6250 4650
+Wire Wire Line
+	5000 4550 5000 4850
+Wire Wire Line
+	5000 4850 6250 4850
+Connection ~ 6250 4850
+Wire Wire Line
+	5000 3750 5000 3850
+Connection ~ 6350 4450
+Wire Wire Line
+	2850 3650 4450 3650
 Wire Wire Line
 	6550 2850 6550 3150
 Wire Wire Line
@@ -265,11 +223,7 @@ Wire Wire Line
 	7450 3150 7450 2850
 Connection ~ 7000 3150
 Wire Wire Line
-	6450 5550 3150 5550
-Wire Wire Line
-	3150 5550 3150 3750
-Wire Wire Line
-	3150 3750 2850 3750
+	2850 3750 4550 3750
 Wire Wire Line
 	6450 5350 6850 5350
 Wire Wire Line
@@ -288,17 +242,6 @@ Wire Wire Line
 	5000 3850 6250 3850
 Wire Wire Line
 	6450 5350 6450 5550
-$Comp
-L MCP1702 VR1
-U 1 1 5466DA0C
-P 5200 1150
-F 0 "VR1" V 4900 1150 60  0000 C CNN
-F 1 "MCP1702" V 5000 1150 60  0000 C CNN
-F 2 "~" H 5200 1150 60  0000 C CNN
-F 3 "~" H 5200 1150 60  0000 C CNN
-	1    5200 1150
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	5200 1550 5200 1700
 Wire Wire Line
@@ -312,14 +255,78 @@ Wire Wire Line
 Connection ~ 5450 3050
 Connection ~ 6250 3850
 Wire Wire Line
-	4250 2950 5300 2950
-Wire Wire Line
 	5300 2950 5300 2100
-Wire Wire Line
-	4250 3950 4250 2950
 Wire Wire Line
 	5100 2100 5100 2850
 Wire Wire Line
-	5100 2850 6550 2850
+	3150 2850 6550 2850
+Wire Wire Line
+	2850 4050 4350 4050
+Wire Wire Line
+	4550 3750 4550 3450
+Wire Wire Line
+	2850 3850 4550 3850
+Wire Wire Line
+	4550 3850 4550 4250
+Wire Wire Line
+	4450 3950 4450 5050
+Wire Wire Line
+	4450 5050 4550 5050
+Wire Wire Line
+	6850 4550 5450 4550
+Wire Wire Line
+	5450 4550 5450 4250
+Wire Wire Line
+	5550 4250 5550 5050
+Wire Wire Line
+	5550 5050 5450 5050
+Wire Wire Line
+	5550 4250 6850 4250
+Wire Wire Line
+	6850 4350 5650 4350
+Wire Wire Line
+	5650 4350 5650 3450
+Wire Wire Line
+	5650 3450 5450 3450
+Wire Wire Line
+	6850 4750 5750 4750
+Wire Wire Line
+	5750 4750 5750 3150
+Wire Wire Line
+	4350 4050 4350 5550
+Wire Wire Line
+	4350 5550 6450 5550
+Wire Wire Line
+	5750 3150 4450 3150
+Wire Wire Line
+	4450 3150 4450 3650
+Wire Wire Line
+	3150 2850 3150 4150
+Wire Wire Line
+	3150 4150 2850 4150
+Wire Wire Line
+	3250 3050 3250 4250
+Wire Wire Line
+	3250 4250 2850 4250
+Wire Wire Line
+	3350 4350 2850 4350
+Connection ~ 5100 2850
+Wire Wire Line
+	6350 4450 6350 2850
 Connection ~ 6350 2850
+Connection ~ 5000 5350
+Wire Wire Line
+	6250 5350 5000 5350
+Wire Wire Line
+	3600 3450 3600 3650
+Connection ~ 3600 3650
+Wire Wire Line
+	4100 3450 4100 2850
+Connection ~ 4100 2850
+Text Notes 900  5050 0    60   ~ 0
+P/U to prevent MISO from floating when SD not plugged in.
+Wire Wire Line
+	3350 4350 3350 2950
+Wire Wire Line
+	3350 2950 5300 2950
 $EndSCHEMATC
