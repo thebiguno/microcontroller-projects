@@ -70,8 +70,8 @@ def main():
 		if (len(state["disk_write"]) > 10):
 			state["disk_write"].pop(0)
 			
-		buf[10] = writeBarGraph(scaleNetwork(sum(state["disk_read"]) / len(state["disk_read"])))
-		buf[12] = writeBarGraph(scaleNetwork(sum(state["disk_write"]) / len(state["disk_write"])))
+		buf[10] = writeBarGraph(scaleDisk(sum(state["disk_read"]) / len(state["disk_read"])))
+		buf[12] = writeBarGraph(scaleDisk(sum(state["disk_write"]) / len(state["disk_write"])))
 		
 		
 		#Network I/O:
@@ -87,8 +87,8 @@ def main():
 		if (len(state["net_upload"]) > 10):
 			state["net_upload"].pop(0)
 			
-		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
-		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
 
 
 		#CPU Temperature:
@@ -142,6 +142,28 @@ def sendData():
 	dev.write(''.join(buf))
 
 def scaleNetwork(value):
+	if (value > 0x8000000):
+		return 9
+	elif (value > 0x4000000):
+		return 8
+	elif (value > 0x2000000):
+		return 7
+	elif (value > 0x1000000):
+		return 6
+	elif (value > 0x800000):
+		return 5
+	elif (value > 0x400000):
+		return 4
+	elif (value > 0x200000):
+		return 3
+	elif (value > 0x100000):
+		return 2
+	elif (value > 0x80000):
+		return 1
+	elif (value > 0x40000):
+		return 0
+	
+def scaleDisk(value):
 	if (value > 0x40000000):
 		return 9
 	elif (value > 0x20000000):
