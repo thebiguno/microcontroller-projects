@@ -87,8 +87,8 @@ def main():
 		if (len(state["net_upload"]) > 10):
 			state["net_upload"].pop(0)
 			
-		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
-		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[14] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
+		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
 
 
 		#CPU Temperature:
