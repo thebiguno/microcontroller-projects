@@ -1,0 +1,66 @@
+Cmp-Mod V01 Created by CvPcb (2013-mar-25)-stable date = Thu 20 Nov 2014 09:23:23 PM MST
+
+BeginCmp
+TimeStamp = /54698BB5;
+Reference = BAR1;
+ValeurCmp = DOT-BAR2;
+IdModule  = 10LED_BAR;
+EndCmp
+
+BeginCmp
+TimeStamp = /54698C2B;
+Reference = P1;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /54698C43;
+Reference = P2;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546D66EA;
+Reference = P3;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546D66F0;
+Reference = P4;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546C1AA1;
+Reference = P5;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546C1AAE;
+Reference = P6;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546D60AC;
+Reference = RP1;
+ValeurCmp = 220;
+IdModule  = SIL-10;
+EndCmp
+
+BeginCmp
+TimeStamp = /546D60B9;
+Reference = RP2;
+ValeurCmp = 220;
+IdModule  = SIL-10;
+EndCmp
+
+EndListe

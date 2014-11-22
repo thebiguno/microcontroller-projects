@@ -1,0 +1,339 @@
+EESchema Schematic File Version 2  date Thu 20 Nov 2014 12:45:49 PM MST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+LIBS:led_bar-cache
+EELAYER 27 0
+EELAYER END
+$Descr USLetter 8500 11000 portrait
+encoding utf-8
+Sheet 1 1
+Title "LED Bar Breadboard Breakout Schematic"
+Date "20 nov 2014"
+Rev "A"
+Comp "Hackstyle"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L DOT-BAR2 BAR1
+U 1 1 54698BB5
+P 4100 4600
+F 0 "BAR1" H 4000 6050 60  0000 C CNN
+F 1 "DOT-BAR2" H 4100 5900 60  0000 C CNN
+F 2 "" H 4100 4600 60  0000 C CNN
+F 3 "" H 4100 4600 60  0000 C CNN
+	1    4100 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_5 P1
+U 1 1 54698C2B
+P 2200 3700
+F 0 "P1" V 2150 3700 50  0000 C CNN
+F 1 "CONN_5" V 2250 3700 50  0000 C CNN
+F 2 "" H 2200 3700 60  0000 C CNN
+F 3 "" H 2200 3700 60  0000 C CNN
+	1    2200 3700
+	-1   0    0    -1  
+$EndComp
+$Comp
+L CONN_5 P2
+U 1 1 54698C43
+P 2200 4200
+F 0 "P2" V 2150 4200 50  0000 C CNN
+F 1 "CONN_5" V 2250 4200 50  0000 C CNN
+F 2 "" H 2200 4200 60  0000 C CNN
+F 3 "" H 2200 4200 60  0000 C CNN
+	1    2200 4200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L CONN_5 P5
+U 1 1 546C1AA1
+P 7000 3700
+F 0 "P5" V 6950 3700 50  0000 C CNN
+F 1 "CONN_5" V 7050 3700 50  0000 C CNN
+F 2 "" H 7000 3700 60  0000 C CNN
+F 3 "" H 7000 3700 60  0000 C CNN
+	1    7000 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_5 P6
+U 1 1 546C1AAE
+P 7000 4200
+F 0 "P6" V 6950 4200 50  0000 C CNN
+F 1 "CONN_5" V 7050 4200 50  0000 C CNN
+F 2 "" H 7000 4200 60  0000 C CNN
+F 3 "" H 7000 4200 60  0000 C CNN
+	1    7000 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_PACK5 RP1
+U 1 1 546D60AC
+P 5800 3850
+F 0 "RP1" H 5800 4300 40  0000 C CNN
+F 1 "220" H 5800 3700 40  0000 C CNN
+F 2 "~" H 5800 3850 60  0000 C CNN
+F 3 "~" H 5800 3850 60  0000 C CNN
+	1    5800 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_PACK5 RP2
+U 1 1 546D60B9
+P 5800 4600
+F 0 "RP2" H 5800 5050 40  0000 C CNN
+F 1 "220" H 5800 4450 40  0000 C CNN
+F 2 "~" H 5800 4600 60  0000 C CNN
+F 3 "~" H 5800 4600 60  0000 C CNN
+	1    5800 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5450 4650 5600 4650
+Wire Wire Line
+	5450 5750 5450 4650
+Wire Wire Line
+	5350 4550 5600 4550
+Wire Wire Line
+	5350 4550 5350 5500
+Wire Wire Line
+	5250 4450 5600 4450
+Wire Wire Line
+	5250 4450 5250 5250
+Wire Wire Line
+	4500 5000 5150 5000
+Wire Wire Line
+	5150 4350 5600 4350
+Wire Wire Line
+	5150 5000 5150 4350
+Wire Wire Line
+	5050 4250 5600 4250
+Wire Wire Line
+	5050 4750 5050 4250
+Wire Wire Line
+	4500 4750 5050 4750
+Wire Wire Line
+	4500 5750 5450 5750
+Wire Wire Line
+	5350 5500 4500 5500
+Wire Wire Line
+	5250 5250 4500 5250
+Wire Wire Line
+	4950 3900 5600 3900
+Wire Wire Line
+	4950 4500 4950 3900
+Wire Wire Line
+	4500 4500 4950 4500
+Wire Wire Line
+	4850 3800 5600 3800
+Wire Wire Line
+	4850 4250 4850 3800
+Wire Wire Line
+	4500 4250 4850 4250
+Wire Wire Line
+	4750 3700 5600 3700
+Wire Wire Line
+	4750 4000 4750 3700
+Wire Wire Line
+	4500 4000 4750 4000
+Wire Wire Line
+	4650 3600 5600 3600
+Wire Wire Line
+	4650 3750 4650 3600
+Wire Wire Line
+	4500 3750 4650 3750
+Wire Wire Line
+	4500 3500 5600 3500
+Wire Wire Line
+	3700 3500 2600 3500
+Wire Wire Line
+	3500 3600 2600 3600
+Wire Wire Line
+	3500 3600 3500 3750
+Wire Wire Line
+	3500 3750 3700 3750
+Wire Wire Line
+	3400 3700 2600 3700
+Wire Wire Line
+	3400 4000 3400 3700
+Wire Wire Line
+	3700 4000 3400 4000
+Wire Wire Line
+	3300 3800 2600 3800
+Wire Wire Line
+	3300 4250 3300 3800
+Wire Wire Line
+	3700 4250 3300 4250
+Wire Wire Line
+	3200 3900 2600 3900
+Wire Wire Line
+	3200 4500 3200 3900
+Wire Wire Line
+	3700 4500 3200 4500
+Wire Wire Line
+	3100 4000 2600 4000
+Wire Wire Line
+	3100 4750 3100 4000
+Wire Wire Line
+	3700 4750 3100 4750
+Wire Wire Line
+	3000 4100 2600 4100
+Wire Wire Line
+	3000 5000 3000 4100
+Wire Wire Line
+	3700 5000 3000 5000
+Wire Wire Line
+	2900 4200 2600 4200
+Wire Wire Line
+	2900 5250 2900 4200
+Wire Wire Line
+	3700 5250 2900 5250
+Wire Wire Line
+	2800 4300 2600 4300
+Wire Wire Line
+	2800 5500 2800 4300
+Wire Wire Line
+	3700 5500 2800 5500
+Wire Wire Line
+	2700 4400 2600 4400
+Wire Wire Line
+	2700 5750 2700 4400
+Wire Wire Line
+	3700 5750 2700 5750
+Wire Wire Line
+	6000 3500 6600 3500
+Wire Wire Line
+	6000 3600 6600 3600
+Wire Wire Line
+	6600 3700 6000 3700
+Wire Wire Line
+	6000 3800 6600 3800
+Wire Wire Line
+	6600 3900 6000 3900
+Wire Wire Line
+	6000 4250 6100 4250
+Wire Wire Line
+	6100 4250 6100 4000
+Wire Wire Line
+	6100 4000 6600 4000
+Wire Wire Line
+	6000 4350 6200 4350
+Wire Wire Line
+	6200 4350 6200 4100
+Wire Wire Line
+	6200 4100 6600 4100
+Wire Wire Line
+	6000 4450 6300 4450
+Wire Wire Line
+	6300 4450 6300 4200
+Wire Wire Line
+	6300 4200 6600 4200
+Wire Wire Line
+	6000 4550 6400 4550
+Wire Wire Line
+	6400 4550 6400 4300
+Wire Wire Line
+	6400 4300 6600 4300
+Wire Wire Line
+	6000 4650 6500 4650
+Wire Wire Line
+	6500 4650 6500 4400
+Wire Wire Line
+	6500 4400 6600 4400
+$Comp
+L CONN_5 P3
+U 1 1 546D66EA
+P 5300 2150
+F 0 "P3" V 5250 2150 50  0000 C CNN
+F 1 "CONN_5" V 5350 2150 50  0000 C CNN
+F 2 "" H 5300 2150 60  0000 C CNN
+F 3 "" H 5300 2150 60  0000 C CNN
+	1    5300 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_5 P4
+U 1 1 546D66F0
+P 5300 2650
+F 0 "P4" V 5250 2650 50  0000 C CNN
+F 1 "CONN_5" V 5350 2650 50  0000 C CNN
+F 2 "" H 5300 2650 60  0000 C CNN
+F 3 "" H 5300 2650 60  0000 C CNN
+	1    5300 2650
+	1    0    0    -1  
+$EndComp
+Text Label 4900 1950 0    60   ~ 0
+20
+Text Label 4500 3750 0    60   ~ 0
+19
+Text Label 4500 4000 0    60   ~ 0
+18
+Text Label 4500 4250 0    60   ~ 0
+17
+Text Label 4500 4500 0    60   ~ 0
+16
+Text Label 4500 4750 0    60   ~ 0
+15
+Text Label 4500 5000 0    60   ~ 0
+14
+Text Label 4500 5250 0    60   ~ 0
+13
+Text Label 4500 5500 0    60   ~ 0
+12
+Text Label 4500 5750 0    60   ~ 0
+11
+Text Label 4900 2850 0    60   ~ 0
+11
+Text Label 4900 2750 0    60   ~ 0
+12
+Text Label 4900 2650 0    60   ~ 0
+13
+Text Label 4900 2550 0    60   ~ 0
+14
+Text Label 4900 2450 0    60   ~ 0
+15
+Text Label 4900 2350 0    60   ~ 0
+16
+Text Label 4900 2250 0    60   ~ 0
+17
+Text Label 4900 2150 0    60   ~ 0
+18
+Text Label 4900 2050 0    60   ~ 0
+19
+Text Label 4500 3500 0    60   ~ 0
+20
+$EndSCHEMATC
