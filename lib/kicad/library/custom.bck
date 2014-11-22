@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Wed 12 Nov 2014 05:29:17 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Wed 12 Nov 2014 05:29:57 PM MST
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
