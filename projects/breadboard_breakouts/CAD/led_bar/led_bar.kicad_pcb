@@ -194,6 +194,11 @@
       (layers *.Cu *.Mask B.SilkS)
       (net 18 N-0000017)
     )
+    (model pin_array/pins_array_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (module SIL-5 (layer B.Cu) (tedit 5470FF08) (tstamp 546F30D9)
@@ -231,6 +236,11 @@
     (pad 5 thru_hole circle (at 3.81 0) (size 1.397 1.397) (drill 0.8128)
       (layers *.Cu *.Mask B.SilkS)
       (net 25 N-000004)
+    )
+    (model pin_array/pins_array_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
     )
   )
 
@@ -270,6 +280,11 @@
       (layers *.Cu *.Mask B.SilkS)
       (net 30 N-000009)
     )
+    (model pin_array/pins_array_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (module SIL-5 (layer B.Cu) (tedit 5470FFD0) (tstamp 5470EDD1)
@@ -307,6 +322,11 @@
     (pad 5 thru_hole circle (at 3.81 0) (size 1.397 1.397) (drill 0.8128)
       (layers *.Cu *.Mask B.SilkS)
       (net 23 N-0000022)
+    )
+    (model pin_array/pins_array_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
     )
   )
 
@@ -346,6 +366,11 @@
       (layers *.Cu *.Mask F.SilkS)
       (net 6 /16)
     )
+    (model pin_array/pins_array_female_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (module SIL-5 (layer F.Cu) (tedit 5470FF23) (tstamp 5470EA42)
@@ -383,6 +408,11 @@
     (pad 5 thru_hole circle (at 3.81 0) (size 1.397 1.397) (drill 0.8128)
       (layers *.Cu *.Mask F.SilkS)
       (net 1 /11)
+    )
+    (model pin_array/pins_array_female_5x1.wrl
+      (at (xyz -0.05 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
     )
   )
 
@@ -442,6 +472,11 @@
       (layers *.Cu *.Mask F.SilkS)
       (net 30 N-000009)
     )
+    (model discret/r_pack9.wrl
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (module SIL-10 (layer F.Cu) (tedit 5470FFF5) (tstamp 5470EDC2)
@@ -499,6 +534,11 @@
     (pad 10 thru_hole circle (at 11.43 0) (size 1.397 1.397) (drill 0.8128)
       (layers *.Cu *.Mask F.SilkS)
       (net 23 N-0000022)
+    )
+    (model discret/r_pack9.wrl
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
     )
   )
 
@@ -597,6 +637,11 @@
     (pad 20 thru_hole circle (at -11.43 -3.81) (size 1.397 1.397) (drill 0.8128)
       (layers *.Cu *.Mask F.SilkS)
       (net 10 /20)
+    )
+    (model discret/led_displays/barraled_red.wrl
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
     )
   )
 
