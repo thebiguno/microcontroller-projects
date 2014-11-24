@@ -109,7 +109,7 @@ public class Stubby {
 	/**
 	 * Rotates to the specified angle.  Positive values rotate
 	 * clockwise, negative rotate counter clockwise.
-	 * @param angle In degrees, with 0 being the direction the robot is currently facing.  Negative angles are to the right (clockwise), positive to the right (counter clockwise)
+	 * @param angle In degrees, with 0 being the direction the robot is currently facing.  Negative angles are to the right (clockwise), positive to the left (counter clockwise)
 	 * @param rotationalVelocity Speed to turn, between 0 and 255
 	 */
 	public boolean turn(int angle, int velocity){

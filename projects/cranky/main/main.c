@@ -9,7 +9,7 @@ volatile uint8_t inj_pin;
 //static volatile uint8_t frequency;
 
 /* TODO
- * below a configured RPM (i.e. 300) don't calculate the PWM for the injectors, just use defalt cranking values
+ * below a configured RPM (i.e. 383) don't calculate the PWM for the injectors, just use defalt cranking values
  * implement a rev limiter; either retard  the ignition advance, or cut fuel; configurable rev upper limit and restored limit
  * configure if coolant temperature sensor is in use or not (i.e. air cooled engine)
  * configure injector opening time (ms)
@@ -17,13 +17,7 @@ volatile uint8_t inj_pin;
  *           pwm time threshold (ms)
  *           injector pwm period (µs)
  *           molex minifit connectors
- *           coolant temperature guage pwm
- *           clean tacho guage out
  *           determine both spark and injector configuration
- *           organize tuning values into a register array
- *           organize sensor data and computed values into register array
- *           write serial (or usb) code for reading / writing register
- *           use a union for the register
  */
 
 #define PROTOCOL_START  0x7e
@@ -68,6 +62,7 @@ typedef struct {
 	volatile uint8_t crank_sync;	 	// crank sync has been performed; worst case is 10 rotations; 0 means calibrated
 	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
 										// 1000/(t*51.2*36/1000)/0.0166666666667
+	volatile uint8_t cranking;			// 0 = running normally; 1 = running below 383 rpm
 	volatile uint8_t adc;				// 0 to disable reading values from the adc
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t adc_o2;			// adc reading of the exhaust gas oxygen sensor
@@ -175,7 +170,7 @@ int main(void) {
 			u.s.ign_advance[i][j] = i * 5 - j;
 			u.s.inj_duration[i][j] = i * 10;
 		}
-		u.s.rpm_zones[7-i] = (i*10) + 5;	// rpm = 382>434>501>592>723>930>1302>2170>8138 (not ideal for real life)
+		u.s.rpm_zones[7-i] = (i*8);	// rpm = 500/581/664/794/986/1302/1915/3617 (not ideal for real life)
 		u.s.load_zones[7-i] = 2 ^ i;		
 	}
 	
@@ -272,6 +267,7 @@ ISR(ADC_vect) {
 // each tooth represents 10 degrees
 ISR(INT0_vect) {
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
+	if (t < 255) cranking = 0;
 	if (t > (u.s.crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
@@ -334,8 +330,9 @@ ISR(INT0_vect) {
 
 // timer 0 overflow
 ISR(TIMER0_OVF_vect) {
-	// if time 0 overflows it means that the crank is turning slower than 384 rpm
+	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
 	u.s.crank_ticks = 255;
+	u.s.cranking = 1;
 	TCNT0 = 255;
 }
 

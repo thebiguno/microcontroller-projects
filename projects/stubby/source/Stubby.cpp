@@ -88,9 +88,9 @@ void doCompleteCommand(uint8_t command){
 	pending_complete = command;
 }
 
-void doSendDebug(char* message, uint8_t length){
+void doSendDebug(char* message){
 	if (debug){
-		protocol_send_message(MESSAGE_SEND_DEBUG, (uint8_t*) message, length);
+		protocol_send_message(MESSAGE_SEND_DEBUG, (uint8_t*) message, strlen(message));
 	}
 }
 

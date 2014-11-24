@@ -31,10 +31,10 @@ namespace digitalcave {
 		 * Creates a new Buttons class that can debounce the selected pins of a given port.
 		 * The selected pins are configured for input and pull ups are enabled making this library suitable only for active-low configuration.
 		 * The number of pressed and released samples to consider when changing state can be controlled with pressed and released which take values from 1 to 8.
-		 * For a general purpose button with a press/release period of 100 ms and uniform sampling, set pressed and released to 1 and call sample every 100 ms.
-		 * For a general purpose button with a press/release period of 100 ms and windowed sampling, set pressed and released to 8 and call sample every 12 ms.
-		 * For a toggle buttons with a press period of 100 ms and a release period of 400 ms, set pressed to 2 and released to 8 and call sample every 50 ms.
-		 * For a reset button with a press period of 800 ms and a release period af 100 ms, set pressed to 8 and released to 1 and call sample every 100 ms.
+		 * For general purpose buttons with a press/release period of 100 ms and uniform sampling, set pressed and released to 1 and call sample every 100 ms.
+		 * For general purpose buttons with a press/release period of 100 ms and windowed sampling, set pressed and released to 8 and call sample every 12 ms.
+		 * For toggle buttons with a press period of 100 ms and a release period of 400 ms, set pressed to 2 and released to 8 and call sample every 50 ms.
+		 * For reset buttons with a press period of 800 ms and a release period af 100 ms, set pressed to 8 and released to 1 and call sample every 100 ms.
 		 */
 		Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t released);
 		
