@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:microsd-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "18 nov 2014"
+Date "26 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -162,12 +163,12 @@ MOSI
 $Comp
 L R R1
 U 1 1 5466CB39
-P 3850 3450
-F 0 "R1" V 3930 3450 40  0000 C CNN
-F 1 "10k" V 3857 3451 40  0000 C CNN
-F 2 "~" V 3780 3450 30  0000 C CNN
-F 3 "~" H 3850 3450 30  0000 C CNN
-	1    3850 3450
+P 5700 2450
+F 0 "R1" V 5780 2450 40  0000 C CNN
+F 1 "10k" V 5707 2451 40  0000 C CNN
+F 2 "~" V 5630 2450 30  0000 C CNN
+F 3 "~" H 5700 2450 30  0000 C CNN
+	1    5700 2450
 	0    -1   -1   0   
 $EndComp
 Text Label 2850 3650 0    60   ~ 0
@@ -175,13 +176,13 @@ MISO
 $Comp
 L 74LS125 U1
 U 4 1 5466CBF1
-P 7000 2850
-F 0 "U1" H 7000 2950 50  0000 L BNN
-F 1 "74LS125" H 7050 2700 40  0000 L TNN
-F 2 "~" H 7000 2850 60  0000 C CNN
-F 3 "~" H 7000 2850 60  0000 C CNN
-	4    7000 2850
-	1    0    0    -1  
+P 5000 2600
+F 0 "U1" H 5000 2700 50  0000 L BNN
+F 1 "74LS125" H 5050 2450 40  0000 L TNN
+F 2 "~" H 5000 2600 60  0000 C CNN
+F 3 "~" H 5000 2600 60  0000 C CNN
+	4    5000 2600
+	-1   0    0    -1  
 $EndComp
 $Comp
 L MCP1702 VR1
@@ -194,14 +195,14 @@ F 3 "~" H 5200 1150 60  0000 C CNN
 	1    5200 1150
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	3250 3050 6250 3050
+Text Notes 6100 2500 0    60   ~ 0
+P/U to prevent MISO from floating when SD not plugged in.
 Wire Wire Line
 	2850 3950 4450 3950
 Wire Wire Line
 	6850 4650 6250 4650
 Wire Wire Line
-	6250 3050 6250 5350
+	6250 5350 6250 1550
 Wire Wire Line
 	6350 4450 6850 4450
 Connection ~ 6250 4650
@@ -214,14 +215,7 @@ Wire Wire Line
 	5000 3750 5000 3850
 Connection ~ 6350 4450
 Wire Wire Line
-	2850 3650 4450 3650
-Wire Wire Line
-	6550 2850 6550 3150
-Wire Wire Line
-	6550 3150 7450 3150
-Wire Wire Line
-	7450 3150 7450 2850
-Connection ~ 7000 3150
+	4450 3650 2850 3650
 Wire Wire Line
 	2850 3750 4550 3750
 Wire Wire Line
@@ -249,17 +243,8 @@ Wire Wire Line
 Wire Wire Line
 	5100 1550 5100 1700
 Wire Wire Line
-	5300 1550 5450 1550
-Wire Wire Line
-	5450 1550 5450 3050
-Connection ~ 5450 3050
+	6250 1550 5300 1550
 Connection ~ 6250 3850
-Wire Wire Line
-	5300 2950 5300 2100
-Wire Wire Line
-	5100 2100 5100 2850
-Wire Wire Line
-	3150 2850 6550 2850
 Wire Wire Line
 	2850 4050 4350 4050
 Wire Wire Line
@@ -289,44 +274,74 @@ Wire Wire Line
 Wire Wire Line
 	5650 3450 5450 3450
 Wire Wire Line
-	6850 4750 5750 4750
-Wire Wire Line
-	5750 4750 5750 3150
-Wire Wire Line
 	4350 4050 4350 5550
 Wire Wire Line
 	4350 5550 6450 5550
 Wire Wire Line
-	5750 3150 4450 3150
+	4450 2600 4450 3650
 Wire Wire Line
-	4450 3150 4450 3650
-Wire Wire Line
-	3150 2850 3150 4150
-Wire Wire Line
-	3150 4150 2850 4150
-Wire Wire Line
-	3250 3050 3250 4250
+	2850 4150 3250 4150
 Wire Wire Line
 	3250 4250 2850 4250
 Wire Wire Line
 	3350 4350 2850 4350
-Connection ~ 5100 2850
 Wire Wire Line
-	6350 4450 6350 2850
-Connection ~ 6350 2850
+	6350 2250 6350 4450
 Connection ~ 5000 5350
 Wire Wire Line
-	6250 5350 5000 5350
+	3250 5350 6250 5350
 Wire Wire Line
-	3600 3450 3600 3650
-Connection ~ 3600 3650
+	3350 2350 3350 4350
 Wire Wire Line
-	4100 3450 4100 2850
-Connection ~ 4100 2850
-Text Notes 900  5050 0    60   ~ 0
-P/U to prevent MISO from floating when SD not plugged in.
+	6850 4750 5750 4750
 Wire Wire Line
-	3350 4350 3350 2950
+	5750 4750 5750 2600
 Wire Wire Line
-	3350 2950 5300 2950
+	5750 2600 5450 2600
+Wire Wire Line
+	4450 2600 4550 2600
+Wire Wire Line
+	5000 2900 5850 2900
+Wire Wire Line
+	5850 2900 5850 4250
+Connection ~ 5850 4250
+Wire Wire Line
+	3250 2250 6350 2250
+Wire Wire Line
+	5100 2250 5100 2100
+Wire Wire Line
+	3350 2350 5300 2350
+Wire Wire Line
+	5300 2350 5300 2100
+Wire Wire Line
+	3250 4250 3250 5350
+Wire Wire Line
+	3250 4150 3250 2250
+Connection ~ 5100 2250
+Wire Wire Line
+	5450 2600 5450 2450
+Wire Wire Line
+	5950 2450 5950 2250
+Connection ~ 5950 2250
+$Comp
+L R R2
+U 1 1 5474AAA2
+P 3750 3550
+F 0 "R2" V 3830 3550 40  0000 C CNN
+F 1 "10k" V 3757 3551 40  0000 C CNN
+F 2 "~" V 3680 3550 30  0000 C CNN
+F 3 "~" H 3750 3550 30  0000 C CNN
+	1    3750 3550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4000 3550 4000 3950
+Connection ~ 4000 3950
+Text Notes 1350 3350 0    60   ~ 0
+P/U to prevent SS from floating when not driven by MCU
+Text Notes 6100 2650 0    60   ~ 0
+Buffer to tri-state when /SS
+Wire Wire Line
+	3500 3550 3250 3550
+Connection ~ 3250 3550
 $EndSCHEMATC
