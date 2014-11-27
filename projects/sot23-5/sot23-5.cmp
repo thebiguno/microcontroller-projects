@@ -1,0 +1,24 @@
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, November 17, 2014 'amt' 10:26:28 am
+
+BeginCmp
+TimeStamp = /546A2F71;
+Reference = D1;
+ValeurCmp = RGB_LED_COMMON_ANODE_ALT1;
+IdModule  = LED_RGB_4-PLCC_ALT1;
+EndCmp
+
+BeginCmp
+TimeStamp = /546A2CCC;
+Reference = P1;
+ValeurCmp = CONN_5;
+IdModule  = SIL-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /546A2CBD;
+Reference = VR1;
+ValeurCmp = NCP1400A;
+IdModule  = SOT23-5;
+EndCmp
+
+EndListe
