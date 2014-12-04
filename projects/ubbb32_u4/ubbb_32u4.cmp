@@ -1,4 +1,18 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Wed 12 Nov 2014 06:15:06 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, December 04, 2014 'amt' 09:13:50 am
+
+BeginCmp
+TimeStamp = /54808894;
+Reference = C1;
+ValeurCmp = 8pF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548088A6;
+Reference = C2;
+ValeurCmp = 8pF;
+IdModule  = SM0603_VALUE;
+EndCmp
 
 BeginCmp
 TimeStamp = /54580478;
@@ -29,9 +43,9 @@ IdModule  = USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
-TimeStamp = /545BB829;
-Reference = D2;
-ValeurCmp = RGB_LED_COMMON_ANODE;
+TimeStamp = /5463FD4C;
+Reference = D1;
+ValeurCmp = RGB_LED_COMMON_ANODE_ALT1;
 IdModule  = LED_RGB_4-PLCC_ALT1;
 EndCmp
 
@@ -155,10 +169,10 @@ IdModule  = TQFP44;
 EndCmp
 
 BeginCmp
-TimeStamp = /5463E47C;
+TimeStamp = /5480875F;
 Reference = X1;
-ValeurCmp = RESONATOR;
-IdModule  = RESONATOR_SMD-3;
+ValeurCmp = CRYSTAL_SMD_4PIN;
+IdModule  = crystal_smd_2.5x2;
 EndCmp
 
 EndListe

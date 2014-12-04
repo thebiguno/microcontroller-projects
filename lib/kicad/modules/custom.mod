@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Sat 22 Nov 2014 02:43:35 PM MST
+PCBNEW-LibModule-V1  Thursday, December 04, 2014 'amt' 09:35:25 am
 # encoding utf-8
 Units mm
 $INDEX
@@ -66,6 +66,7 @@ WJ20
 WO10
 XBEE
 XBEE_SPARKFUN_BREAKOUT
+crystal_smd_2.5x2
 i4-PAC-5
 mouse_bites
 skrhaae010
@@ -6731,6 +6732,47 @@ Ne 0 ""
 Po 6.35 -11.43
 $EndPAD
 $EndMODULE XBEE_SPARKFUN_BREAKOUT
+$MODULE crystal_smd_2.5x2
+Po 0 0 0 15 54808D45 00000000 ~~
+Li crystal_smd_2.5x2
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -3.5 1 1 0 0.15 N I 21 N "crystal_smd_2.5x2"
+T1 0 4 1 1 0 0.15 N I 21 N "VAL**"
+DS -2 -1.5 2 -1.5 0.15 21
+DS 2 -1.5 2 1.5 0.15 21
+DS 2 1.5 -2 1.5 0.15 21
+DS -2 1.5 -2 -1.5 0.15 21
+$PAD
+Sh "1" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.85 -0.7
+$EndPAD
+$PAD
+Sh "2" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.85 -0.7
+$EndPAD
+$PAD
+Sh "3" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.85 0.7
+$EndPAD
+$PAD
+Sh "4" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.85 0.7
+$EndPAD
+$EndMODULE crystal_smd_2.5x2
 $MODULE i4-PAC-5
 Po 0 0 0 15 53F64433 00000000 ~~
 Li i4-PAC-5
@@ -6806,7 +6848,7 @@ Po 1.27 0
 $EndPAD
 $EndMODULE mouse_bites
 $MODULE skrhaae010
-Po 0 0 0 15 54700C27 00000000 ~~
+Po 0 0 0 15 54778CE0 00000000 ~~
 Li skrhaae010
 Kw switch
 Sc 0
@@ -6863,14 +6905,14 @@ $EndPAD
 $PAD
 Sh "" R 2 1.8 0 0 0
 Dr 0 0 0
-At HOLE N 00E0FFFF
+At SMD N 00888000
 Ne 0 ""
 Po 0 4.05
 $EndPAD
 $PAD
 Sh "" R 2 1.8 0 0 0
 Dr 0 0 0
-At HOLE N 00E0FFFF
+At SMD N 00888000
 Ne 0 ""
 Po 0 -4.05
 $EndPAD
