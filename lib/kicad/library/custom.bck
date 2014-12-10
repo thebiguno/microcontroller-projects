@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, December 09, 2014 'pmt' 07:21:03 pm
+EESchema-DOCLIB  Version 2.0  Date: Wednesday, December 10, 2014 'amt' 09:03:23 am
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -32,6 +32,11 @@ $ENDCMP
 #
 $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
+$ENDCMP
+#
+$CMP LSMALL
+D Inductor
+K inductor
 $ENDCMP
 #
 $CMP MC34063A
