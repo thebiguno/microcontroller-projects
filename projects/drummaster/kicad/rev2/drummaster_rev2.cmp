@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, December 09, 2014 'pmt' 07:58:37 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, December 10, 2014 'pmt' 12:39:25 pm
 
 BeginCmp
 TimeStamp = /54875BEE;
@@ -141,6 +141,69 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /5488A170;
+Reference = C21;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54889ED5;
+Reference = C22;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A1D4;
+Reference = C23;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A184;
+Reference = C24;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A1AC;
+Reference = C25;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A1EE;
+Reference = C26;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A198;
+Reference = C27;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A1C0;
+Reference = C28;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5488A202;
+Reference = C29;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /548794AE;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
@@ -151,84 +214,98 @@ BeginCmp
 TimeStamp = /54875BC3;
 Reference = D1;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54875BDA;
 Reference = D2;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54875BE0;
 Reference = D3;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54875BE6;
 Reference = D4;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548777BF;
 Reference = D5;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548777C5;
 Reference = D6;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548777CB;
 Reference = D7;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548777D1;
 Reference = D8;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548778CD;
 Reference = D9;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548778D3;
 Reference = D10;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548778D9;
 Reference = D11;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548778DF;
 Reference = D12;
 ValeurCmp = DIODESCH;
-IdModule  = SM0603_DIODE;
+IdModule  = SOD-323_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54888503;
+Reference = L1;
+ValeurCmp = 10uH;
+IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /548884CD;
+Reference = L2;
+ValeurCmp = 10uH;
+IdModule  = SM0805;
 EndCmp
 
 BeginCmp
@@ -456,14 +533,14 @@ IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
-TimeStamp = /5487C159;
+TimeStamp = /5487CBDE;
 Reference = U6;
 ValeurCmp = OPAMP;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
-TimeStamp = /5487C1C5;
+TimeStamp = /5487CDC9;
 Reference = U7;
 ValeurCmp = OPAMP;
 IdModule  = SSOP14;
@@ -477,14 +554,14 @@ IdModule  = SSOP20;
 EndCmp
 
 BeginCmp
-TimeStamp = /5487C173;
+TimeStamp = /5487CBF4;
 Reference = U9;
 ValeurCmp = MCP4451;
 IdModule  = SSOP20;
 EndCmp
 
 BeginCmp
-TimeStamp = /5487C1DF;
+TimeStamp = /5487CDDF;
 Reference = U10;
 ValeurCmp = MCP4451;
 IdModule  = SSOP20;
