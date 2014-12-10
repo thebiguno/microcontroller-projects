@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, December 09, 2014 'pmt' 01:23:28 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, December 09, 2014 'pmt' 07:21:03 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -39,6 +39,11 @@ D Peak Boost Buck Inverting Switching Regulator
 K Buck, Power
 $ENDCMP
 #
+$CMP MCP4451
+D Digital Potentiometer
+K potentiometer
+$ENDCMP
+#
 $CMP NCP1400A
 D NCP1400A_Boost_Regulator
 $ENDCMP
@@ -76,6 +81,11 @@ $ENDCMP
 $CMP RGB_LED_COMMON_CATHODE
 D RGB LED (Common Cathode)
 K RGB_LED_COMMON_CATHODE
+$ENDCMP
+#
+$CMP RSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP STPIC6D595
