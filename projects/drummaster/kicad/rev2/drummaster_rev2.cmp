@@ -1,4 +1,11 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 12 Dec 2014 09:31:40 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 13 Dec 2014 11:34:55 AM MST
+
+BeginCmp
+TimeStamp = /548C8921;
+Reference = A1;
+ValeurCmp = RASPBERRY_PI_MODEL_B_REV2;
+IdModule  = RASPBERRY_PI_MODEL_B_REV2;
+EndCmp
 
 BeginCmp
 TimeStamp = /54875BEE;
@@ -183,6 +190,48 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /548C657C;
+Reference = C27;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C6568;
+Reference = C28;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C6408;
+Reference = C29;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C7665;
+Reference = C30;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C74E7;
+Reference = C31;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C8934;
+Reference = C32;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /548794AE;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
@@ -271,6 +320,48 @@ TimeStamp = /548B7757;
 Reference = D12;
 ValeurCmp = DIODESCH;
 IdModule  = SOD-323_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C7840;
+Reference = K1;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C783A;
+Reference = K2;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C7834;
+Reference = K3;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C72B8;
+Reference = K4;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C72B2;
+Reference = K5;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C7296;
+Reference = K6;
+ValeurCmp = CONN_4;
+IdModule  = PIN_ARRAY_4x1;
 EndCmp
 
 BeginCmp
