@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 13 Dec 2014 11:34:55 AM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 13 Dec 2014 03:14:15 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -232,6 +232,20 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /548CC53B;
+Reference = C33;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /548CC548;
+Reference = C34;
+ValeurCmp = 47uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
 TimeStamp = /548794AE;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
@@ -366,7 +380,7 @@ EndCmp
 
 BeginCmp
 TimeStamp = /548884CD;
-Reference = L2;
+Reference = L1;
 ValeurCmp = 10uH;
 IdModule  = SM0805;
 EndCmp
@@ -375,7 +389,7 @@ BeginCmp
 TimeStamp = /54879226;
 Reference = P7;
 ValeurCmp = ISP;
-IdModule  = ISP_EDGE;
+IdModule  = ISP;
 EndCmp
 
 BeginCmp
@@ -500,42 +514,42 @@ EndCmp
 BeginCmp
 TimeStamp = /548B660C;
 Reference = U2;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B758D;
 Reference = U3;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B760C;
 Reference = U4;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B768B;
 Reference = U5;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B770A;
 Reference = U6;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7789;
 Reference = U7;
-ValeurCmp = OPAMP;
+ValeurCmp = MCP6004T;
 IdModule  = SSOP14;
 EndCmp
 
