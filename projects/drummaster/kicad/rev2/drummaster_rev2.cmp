@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, December 12, 2014 'pmt' 03:15:53 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 12 Dec 2014 09:31:40 PM MST
 
 BeginCmp
 TimeStamp = /54875BEE;
@@ -446,6 +446,27 @@ TimeStamp = /548B7789;
 Reference = U7;
 ValeurCmp = OPAMP;
 IdModule  = SSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548BC948;
+Reference = U8;
+ValeurCmp = MCP4451;
+IdModule  = SSOP20;
+EndCmp
+
+BeginCmp
+TimeStamp = /548BD55B;
+Reference = U9;
+ValeurCmp = MCP4451;
+IdModule  = SSOP20;
+EndCmp
+
+BeginCmp
+TimeStamp = /548BDE82;
+Reference = U10;
+ValeurCmp = MCP4451;
+IdModule  = SSOP20;
 EndCmp
 
 BeginCmp
