@@ -1,4 +1,4 @@
-include ../../build/variables.mk
+include ../../../../build/avr/variables.mk
 
 PROJECT=drummaster
 MMCU=atmega168
@@ -10,7 +10,7 @@ SOURCES=drummaster.c
 
 CDEFS += -DADC_PRESCALER_MASK=6 -DSERIAL_BUFFER_SIZE=255 -DSERIAL_DISABLE_RX -DADC_SLEEP_MODEOFF
 
-include ../../build/targets.mk
+include ../../../../build/avr/targets.mk
 
 dist:
 	mkdir -p drummaster/src

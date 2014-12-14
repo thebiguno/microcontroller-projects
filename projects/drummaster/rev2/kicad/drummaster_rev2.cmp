@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 13 Dec 2014 03:14:15 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 13 Dec 2014 05:38:21 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -389,7 +389,7 @@ BeginCmp
 TimeStamp = /54879226;
 Reference = P7;
 ValeurCmp = ISP;
-IdModule  = ISP;
+IdModule  = ISP_EDGE;
 EndCmp
 
 BeginCmp
@@ -494,6 +494,20 @@ BeginCmp
 TimeStamp = /548799B6;
 Reference = R15;
 ValeurCmp = 22;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548CD313;
+Reference = R16;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548CD320;
+Reference = R17;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
