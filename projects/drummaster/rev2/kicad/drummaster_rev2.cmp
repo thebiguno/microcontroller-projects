@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, December 15, 2014 'pmt' 03:10:39 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, December 16, 2014 'pmt' 01:37:22 pm
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -592,6 +592,118 @@ BeginCmp
 TimeStamp = /548F7122;
 Reference = R22;
 ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490AA08;
+Reference = R23;
+ValeurCmp = 2k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54909D36;
+Reference = R24;
+ValeurCmp = 2k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54909D30;
+Reference = R25;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490A0E8;
+Reference = R26;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B7CA;
+Reference = R27;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B76F;
+Reference = R28;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490AFAA;
+Reference = R29;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B7BD;
+Reference = R30;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B77C;
+Reference = R31;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490AFC5;
+Reference = R32;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B7B0;
+Reference = R33;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B789;
+Reference = R34;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490AFCB;
+Reference = R35;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B7A3;
+Reference = R36;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490B796;
+Reference = R37;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5490AFD1;
+Reference = R38;
+ValeurCmp = 5.1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
