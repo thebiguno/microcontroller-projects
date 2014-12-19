@@ -34,7 +34,9 @@ class Kit:
 		
 		print("Loading Kit " + name)
 		kitPath = os.path.join(samplesFolder, name)
-		for instrument in os.listdir(kitPath):
+		instruments = os.listdir(kitPath)
+		instruments.sort()
+		for instrument in instruments:
 			if os.path.isdir(os.path.join(kitPath, instrument)):
 				print(" Loading Instrument " + instrument)
 				self.instruments[instrument] = Instrument(instrument, kitPath)
