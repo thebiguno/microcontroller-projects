@@ -4124,12 +4124,12 @@ Wire Wire Line
 	18650 5400 16650 5400
 Wire Wire Line
 	18750 4750 18250 4750
-Text Label 14600 12450 2    60   ~ 0
+Text Label 14600 11750 2    60   ~ 0
 DRAIN_MUX0
-Text Label 14600 12550 2    60   ~ 0
+Text Label 14600 11450 2    60   ~ 0
 DRAIN_MUX1
-Text Label 14600 12650 2    60   ~ 0
+Text Label 14600 11350 2    60   ~ 0
 DRAIN_MUX2
-Text Label 14600 12750 2    60   ~ 0
+Text Label 14600 11250 2    60   ~ 0
 DRAIN_MUX3
 $EndSCHEMATC
