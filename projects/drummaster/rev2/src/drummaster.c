@@ -3,21 +3,7 @@
  * Copyright 2014 - 2015 Wyatt Olson <wyatt.olson@gmail.com>
  * 
  * At a very high level, Drum Master will listen to a series of sensors and report the values back to the
- * Raspberry Pi via SPI.	Each signal is sent in a packet, using a binary protocol 
- * consisting of 2 bytes / packet:
- *
- *		|sscccckk|vvvvvvvv|
- *      <start:2><channel:4><checksum:2><velocity:8>
- *
- * Each portion of the packet is described below:
- *		<start> is a 2 bit flag 0x3 to signal the start of a new packet.
- *		<channel> is the 4 bit representation of a channel number between 0x00 and 0x0F (15).  
- *				Analog channels are 0..11, and digital channels are 12..15.
- *		<checksum> is the 2 bit checksum on the rest of the packet, calculated using the 
- *				2 bit parity word algorithm.  Each 2-bit chunk of the packet is XOR'd together. 
- *				The slave software will XOR all 8 2 bit words together; if the result is not 0x0
- *				then we know there was an error in transmission.
- *		<velocity> is the 8 bit representation of the actual analog value between 0x0 and 0xFF.
+ * Raspberry Pi via serial connection.
  *
  * Slave software, running on the computer, must take these data packets and map them to digital
  * audio samples, based on the channel, velocity, and current state of the program.
