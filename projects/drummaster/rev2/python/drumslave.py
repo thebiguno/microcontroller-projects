@@ -1,4 +1,6 @@
-import pygame 
+import pygame
+import serial
+import threading
 import time
 import os
 import re
@@ -27,13 +29,27 @@ import re
 #       02.wav
 ###########################
 
+# A Kit is the entire drum set.  All access to instruments (play, mute, etc) should go through 
+# the kit's API.
 class Kit:
-	def __init__(self, name, samplesFolder):
+	def __init__(self):
+		self.samplesFolder = "samples"
+		self.channels = ["snare", "snare_alt", "bass", "tom1", "tom2", "tom3", "hihat", "hihat_pedal", "crash", "splash", "ride", "ride_alt", "hihat", "crash", "splash", "ride"]
+		
+	def getAvailableKits(self):
+		instruments = os.listdir(kitPath)
+		instruments.sort()
+		return instruments
+	
+	def lookupChannel(self, channel):
+		return self.channels[channel]
+
+	def loadSamples(self, name):
 		self.name = name
 		self.instruments = {}
 		
 		print("Loading Kit " + name)
-		kitPath = os.path.join(samplesFolder, name)
+		kitPath = os.path.join(self.samplesFolder, name)
 		instruments = os.listdir(kitPath)
 		instruments.sort()
 		for instrument in instruments:
@@ -42,10 +58,12 @@ class Kit:
 				self.instruments[instrument] = Instrument(instrument, kitPath)
 			
 	def play(self, instrument, volume=1.0):
-		self.instruments[instrument].play(volume)
+		if instrument in self.instruments:
+			self.instruments[instrument].play(volume)
 		
 	def mute(self, instrument):
-		self.instruments[instrument].mute()
+		if instrument in self.instruments:
+			self.instruments[instrument].mute()
 
 
 # An instrument is a single piece of the drum set; for instance, the snare, 
@@ -80,6 +98,52 @@ class Instrument:
 		for sample in self.samples:
 			sample.fadeout(500)
 
+class SerialMonitor:
+	def __init__(self, callback):
+		def listener():
+			#ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)
+			from random import randint
+			message = [0, 0]
+			while True:
+				#b = ord(ser.read())
+				time.sleep(randint(0,10) / 100.0)
+				b = randint(0,255)
+				if (message[0] == 0x00 and (b & 0xC0 == 0xC0)):
+					message[0] = b
+					print("0 = " + str(b))
+				elif (message[0] & 0xC0 == 0xC0):
+					message[1] = b
+					if self.verifyChecksum(message) == 0:
+						callback(list(message))
+					else:
+						print("Invalid checksum")
+					message[0] = 0
+					message[1] = 0
+				else:
+					print("Invalid packet")
+					message[0] = 0x00
+					message[1] = 0x00
+				
+		
+		self.serialThread = threading.Thread(target=listener)
+		self.serialThread.daemon = True
+		self.serialThread.start()
+	
+	def verifyChecksum(self, message):
+		checksum = 0
+		
+		#TODO Is there a more pythonic way to do this?
+		checksum = checksum ^ ((message[0] >> 6) & 0x03)
+		checksum = checksum ^ ((message[0] >> 4) & 0x03)
+		checksum = checksum ^ ((message[0] >> 2) & 0x03)
+		checksum = checksum ^ ((message[0] >> 0) & 0x03)
+
+		checksum = checksum ^ ((message[1] >> 6) & 0x03)
+		checksum = checksum ^ ((message[1] >> 4) & 0x03)
+		checksum = checksum ^ ((message[1] >> 2) & 0x03)
+		checksum = checksum ^ ((message[1] >> 0) & 0x03)
+		
+		return checksum
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
@@ -87,8 +151,22 @@ if (__name__=="__main__"):
 	pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
 	pygame.mixer.set_num_channels(16)
 
-	kit = Kit("TR-808", "samples")
+	kit = Kit()
+	kit.loadSamples("TR-808")
 
+	def callback(message):
+		print(str(message))
+		channel = ((message[0] >> 2) & 0x0F)
+
+		if (channel < 12):
+			kit.play(kit.lookupChannel(channel), volume = message[1] / 255.0)
+		else:
+			kit.mute(kit.lookupChannel(channel))
+	
+	sm = SerialMonitor(callback)
+
+
+'''
 for x in range(0, 4):
 	kit.play("ride")
 	time.sleep(0.3)
@@ -113,7 +191,11 @@ for x in range(0, 4):
 	kit.play("snare")
 	kit.mute("ride")
 	time.sleep(0.6)
+'''
 
+while(True):
+	time.sleep(10)
+	print("tick")
 
 while pygame.mixer.get_busy():
 	time.sleep(0.1)
