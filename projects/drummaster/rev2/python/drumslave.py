@@ -13,54 +13,42 @@ import re
 # (e.g. "snare", "bass", "crash", etc.
 # Each instrument contains one or more "Samples", which are loaded from .wav files.
 #
-# The samples folder is configured as follows:
-# samples/
-#   kit1/
-#     snare/
-#       01.wav
-#       02.wav
-#     bass/
-#       01.wav
-#   kit2/
-#     snare/
-#       01.wav
-#     crash/
-#       01.wav
-#       02.wav
+# See docs/Kit Sample Organization.txt for information on sample folder structure
 ###########################
 
 # A Kit is the entire drum set.  All access to instruments (play, mute, etc) should go through 
 # the kit's API.
 class Kit:
 	def __init__(self):
-		self.samplesFolder = "samples"
-		self.channels = ["snare", "snare_alt", "bass", "tom1", "tom2", "tom3", "hihat", "hihat_pedal", "crash", "splash", "ride", "ride_alt", "hihat", "crash", "splash", "ride"]
-		
-	def getAvailableKits(self):
-		instruments = os.listdir(kitPath)
-		instruments.sort()
-		return instruments
-	
-	def lookupChannel(self, channel):
-		return self.channels[channel]
+		Kit.samplesFolder = "samples"
 
-	def loadSamples(self, name):
-		self.name = name
+	def lookupInstrument(self, channel):
+		return ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"][channel]
+
+	def loadSamples(self, number):
+		self.number = number
 		self.instruments = {}
 		
-		print("Loading Kit " + name)
-		kitPath = os.path.join(self.samplesFolder, name)
-		instruments = os.listdir(kitPath)
-		instruments.sort()
-		for instrument in instruments:
-			if os.path.isdir(os.path.join(kitPath, instrument)):
-				print(" Loading Instrument " + instrument)
+		number = "{0:0=3d}".format(number)
+		kitPath = os.path.join(Kit.samplesFolder, number)
+		with open(os.path.join(kitPath, 'kit.txt'), 'r') as f:
+			self.kitName = f.readline()
+		
+		print("Loading Samples for Kit " + self.kitName + " (" + number + ")")
+		for instrument in ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]:
+			if instrument == "hihat":
+				self.instruments[instrument] = HiHat(kitPath)
+			else:
 				self.instruments[instrument] = Instrument(instrument, kitPath)
 			
 	def play(self, instrument, volume=1.0):
 		if instrument in self.instruments:
 			self.instruments[instrument].play(volume)
-		
+
+	def pedal(self, instrument, position=0.0):
+		if instrument in self.instruments:
+			self.instruments[instrument].pedal(position)
+
 	def mute(self, instrument):
 		if instrument in self.instruments:
 			self.instruments[instrument].mute()
@@ -76,27 +64,111 @@ class Instrument:
 		self.samples = []
 		
 		instrumentPath = os.path.join(kitPath, name)
-		samples = [sample for sample in os.listdir(instrumentPath) if re.compile("[0-9][0-9]\\.wav").match(sample)]
-		samples.sort()
+		if os.path.isdir(instrumentPath):
+			print(" Loading Samples for Instrument '" + name + "'")
+			samples = [sample for sample in os.listdir(instrumentPath) if re.compile("[0-9][0-9]\\.wav").match(sample)]
+			samples.sort()
 		
-		for sample in samples:
-			print("  Loading Sample " + sample)
-			self.samples.append(pygame.mixer.Sound(os.path.join(instrumentPath, sample)))
-			
-	def play(self, volume):
+			for sample in samples:
+				print("  " + sample)
+				self.samples.append(pygame.mixer.Sound(os.path.join(instrumentPath, sample)))
+		else:
+			print(" No Samples for Instrument '" + name + "'")
+	
+	def getChannel(self, volume):
 		channel = pygame.mixer.find_channel(True)
 		if channel.get_busy():
 			print("Warning: no free channels")
 			channel.stop()
 		channel.set_volume(volume)
-
-		#We use a linear mapping between volume and sample index.
-		sample_index = int((-1 * volume * len(self.samples)) + len(self.samples))
-		channel.play(self.samples[sample_index])
+		return channel
+		
+	def getIndex(self, value, length):
+		index = int((-1 * value * length) + length)
+		if index >= length:
+			return length - 1
+		return index
 	
+	def play(self, volume):
+		channel = self.getChannel(volume)
+		
+		sample_index = self.getIndex(volume, len(self.samples))
+		channel.play(self.samples[sample_index])
+		
 	def mute(self):
 		for sample in self.samples:
 			sample.fadeout(500)
+			
+# A hihat is a special instrument which contains multiple sample mappings for different event types.
+class HiHat(Instrument):
+	def __init__(self, kitPath):
+		HiHat.recent_positions_count = 10
+	
+		self.name = "hihat"
+		self.samples = {}		#A dictionary of name / sample array pairs
+		self.available_types = []		#All hihat types that have at least one sample in them
+		self.recent_positions = [0]		# Here we store the last X positions; used for splash sounds
+		
+		for hihat_type in ["tight", "closed", "loose", "open", "chic", "splash"]:
+			self.samples[hihat_type] = []
+
+			instrumentPath = os.path.join(kitPath, "hihat_" + hihat_type)
+			if os.path.isdir(instrumentPath):
+				print(" Loading Samples for Instrument 'hihat_" + hihat_type + "'")
+				
+				samples = [sample for sample in os.listdir(instrumentPath) if re.compile("[0-9][0-9]\\.wav").match(sample)]
+				samples.sort()
+
+				if len(samples) > 0 and hihat_type != "chic" and hihat_type != "splash":
+					self.available_types.append(hihat_type)
+					
+				for sample in samples:
+					print("  " + sample)
+					self.samples[hihat_type].append(pygame.mixer.Sound(os.path.join(instrumentPath, sample)))
+			else:
+				print(" No Samples for Instrument 'hihat_" + hihat_type + "'")
+
+
+	def play(self, volume):
+		if len(self.available_types) == 0:
+			return
+		
+		channel = self.getChannel(volume)
+
+		sample_type_index = self.getIndex(self.recent_positions[-1], len(self.available_types))
+
+		print(self.available_types)
+		print(sample_type_index)
+		sample_type = self.available_types[sample_type_index]
+
+		sample_index = self.getIndex(volume, len(self.samples[sample_type]))
+		channel.play(self.samples[sample_type][sample_index])
+	
+	def pedal(self, position):
+		if position > 0.8 and min(self.recent_positions) < 0.2:
+			value = position - min(self.recent_positions)
+			print("Playing hihat_chic")
+			if len(self.samples["chic"]) > 0:
+				channel = self.getChannel(value)
+				sample_index = self.getIndex(value, len(self.samples["chic"]))
+				channel.play(self.samples["chic"][sample_index])
+			
+		elif position < 0.2 and min(self.recent_positions) < 0.2 and max(self.recent_positions) > 0.8:
+			value = max(self.recent_positions) - min(self.recent_positions)
+			print("Playing hihat_splash")
+			if len(self.samples["splash"]) > 0:
+				channel = self.getChannel(value)
+				sample_index = self.getIndex(value, len(self.samples["splash"]))
+				channel.play(self.samples["splash"][sample_index])
+
+		self.recent_positions.append(position)
+		if (len(self.recent_positions) > HiHat.recent_positions_count):
+			self.recent_positions.pop(0)
+	
+	def mute(self):
+		for sample_type in self.samples:
+			for sample in self.samples[sample_type]:
+				sample.fadeout(500)
 
 class SerialMonitor:
 	def __init__(self, callback):
@@ -152,25 +224,48 @@ if (__name__=="__main__"):
 	pygame.mixer.set_num_channels(16)
 
 	kit = Kit()
-	kit.loadSamples("TR-808")
-
+	kit.loadSamples(0)
+'''
 	def callback(message):
 		print(str(message))
 		channel = ((message[0] >> 2) & 0x0F)
 
 		if (channel < 12):
-			kit.play(kit.lookupChannel(channel), volume = message[1] / 255.0)
+			kit.play(kit.lookupInstrument(channel), volume = message[1] / 255.0)
 		else:
-			kit.mute(kit.lookupChannel(channel))
+			kit.mute(kit.lookupInstrument(channel))
 	
 	sm = SerialMonitor(callback)
-
-
 '''
+
 for x in range(0, 4):
+
+	kit.pedal("hihat", position = 0.0)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 0.2)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 0.4)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 0.6)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 0.8)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 1.0)
+	kit.play("hihat")
+	time.sleep(0.5)
+	kit.pedal("hihat", position = 0.0)
+	time.sleep(0.1)
+	kit.pedal("hihat", position = 1.0)
+	time.sleep(1.0)
+
 	kit.play("ride")
 	time.sleep(0.3)
-	kit.play("ride", volume=0.5)
+	kit.play("ride", volume=0.0)
 	time.sleep(0.15)
 	kit.play("ride", volume=0.5)
 	time.sleep(0.15)
@@ -191,11 +286,12 @@ for x in range(0, 4):
 	kit.play("snare")
 	kit.mute("ride")
 	time.sleep(0.6)
-'''
 
+'''
 while(True):
 	time.sleep(10)
 	print("tick")
+'''
 
 while pygame.mixer.get_busy():
 	time.sleep(0.1)
