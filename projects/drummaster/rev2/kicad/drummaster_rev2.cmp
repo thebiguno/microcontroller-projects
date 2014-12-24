@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, December 23, 2014 'amt' 10:40:43 am
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 23 Dec 2014 06:46:16 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -407,31 +407,24 @@ IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /548C72B8;
+TimeStamp = /549A215B;
 Reference = K4;
-ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
+ValeurCmp = CONN_5;
+IdModule  = PIN_ARRAY_5x1;
 EndCmp
 
 BeginCmp
-TimeStamp = /548C72B2;
+TimeStamp = /549A21C5;
 Reference = K5;
-ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
+ValeurCmp = CONN_6;
+IdModule  = SIL-6;
 EndCmp
 
 BeginCmp
-TimeStamp = /548C7296;
+TimeStamp = /549A21A4;
 Reference = K6;
-ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
-EndCmp
-
-BeginCmp
-TimeStamp = /548F56E3;
-Reference = K7;
-ValeurCmp = CONN_4;
-IdModule  = PIN_ARRAY_4x1;
+ValeurCmp = CONN_5;
+IdModule  = PIN_ARRAY_5x1;
 EndCmp
 
 BeginCmp
