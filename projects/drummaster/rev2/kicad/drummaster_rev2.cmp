@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 23 Dec 2014 06:46:16 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, December 24, 2014 'pmt' 04:29:45 pm
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -386,45 +386,66 @@ IdModule  = HD44780;
 EndCmp
 
 BeginCmp
-TimeStamp = /548F566E;
+TimeStamp = /549B5E47;
+Reference = F1;
+ValeurCmp = FUSE;
+IdModule  = SM1812;
+EndCmp
+
+BeginCmp
+TimeStamp = /549B1C1B;
 Reference = K1;
-ValeurCmp = CONN_3;
+ValeurCmp = PINS_3;
 IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /548F568A;
+TimeStamp = /549B1C37;
 Reference = K2;
-ValeurCmp = CONN_3;
+ValeurCmp = PINS_3;
 IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /548F5695;
+TimeStamp = /549B1C42;
 Reference = K3;
-ValeurCmp = CONN_3;
+ValeurCmp = PINS_3;
 IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /549A215B;
+TimeStamp = /549B1C4F;
 Reference = K4;
-ValeurCmp = CONN_5;
+ValeurCmp = PINS_5;
 IdModule  = PIN_ARRAY_5x1;
 EndCmp
 
 BeginCmp
-TimeStamp = /549A21C5;
+TimeStamp = /549B1C6D;
 Reference = K5;
-ValeurCmp = CONN_6;
+ValeurCmp = PINS_6;
 IdModule  = SIL-6;
 EndCmp
 
 BeginCmp
-TimeStamp = /549A21A4;
+TimeStamp = /549B1C81;
 Reference = K6;
-ValeurCmp = CONN_5;
+ValeurCmp = PINS_5;
 IdModule  = PIN_ARRAY_5x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /549B5B74;
+Reference = K7;
+ValeurCmp = PINS_14;
+IdModule  = SIL-14;
+EndCmp
+
+BeginCmp
+TimeStamp = /549B5B81;
+Reference = K8;
+ValeurCmp = PINS_14;
+IdModule  = SIL-14;
 EndCmp
 
 BeginCmp
@@ -495,20 +516,6 @@ TimeStamp = /5499EFDE;
 Reference = MP9;
 ValeurCmp = GRAPHIC;
 IdModule  = DIGITALCAVE_URL;
-EndCmp
-
-BeginCmp
-TimeStamp = /54965AA8;
-Reference = P1;
-ValeurCmp = CONN_14;
-IdModule  = SIL-14;
-EndCmp
-
-BeginCmp
-TimeStamp = /5496275B;
-Reference = P2;
-ValeurCmp = CONN_14;
-IdModule  = SIL-14;
 EndCmp
 
 BeginCmp
