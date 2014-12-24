@@ -1,0 +1,30 @@
+This document describes the options and usage of the Drum Master menu system
+
+There are 4 buttons:
+Button 1 is mode
+Button 2 is shift
+Button 3 and 4 are increment / decrement
+
+-On bootup:
+	-Splash Screen (show "Drum Master" and git tag) for 2 seconds
+
+-Navigation
+	-Use mode button to switch view
+
+-Main View
+	-Show kit name on top row, VU meters on bottom row
+-Volume View
+	-Use shift to change between each channel, and inc / dec to change volume
+	-Volume adjustments are saved as soon as you switch to the next channel or view (mode or shift buttons)
+-Calibration View
+	-Use inc / dec to change selected pad
+	-Hit Shift to start calibration
+	-Hit selected pad repeatedly as hard as possible
+	-Master adjusts potentiometers until the signal just barely peaks
+	-Saves state to EEPROM
+	-Should only be required when pad hardware changes
+-Shutdown View
+	-Top row "Shut Down"
+	-Botton row "Hit Shift"
+	-Hit Shift to shut down, executes controlled shutdown (by exiting drum slave program, and next line in rc.local is "shutdown -h now")
+	
