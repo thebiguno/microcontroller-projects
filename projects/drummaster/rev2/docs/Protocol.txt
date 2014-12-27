@@ -25,6 +25,10 @@ Command 0x31:
 	-Send volume state
 	-Message: (8 bytes)
 		|<zero:1><kit_id:7>|<master:8>|<snare:4><drum_x:4>|<bass:4><tom1:4>|<tom2:4><tom3:4>|<hh:4><hh_pedal:4>|<crash:4><splash:4>|<ride:4><cymbal_x:4>|
+		
+Command 0x33:
+	-Send last used kit
+	-Message |<zero:1><kit_id:7>|
 	
 	
 Pi to AVR:
@@ -45,9 +49,17 @@ Command 0x30:
 	-Message: |<zero:1><kit_id:7>|
 	-AVR responds with command 0x31
 	
-Command 0x031:
+Command 0x31:
 	-Send volume state
 	-Message: (8 bytes)
 		|<zero:1><kit_id:7>|<master:8>|<snare:4><drum_x:4>|<bass:4><tom1:4>|<tom2:4><tom3:4>|<hh:4><hh_pedal:4>|<crash:4><splash:4>|<ride:4><cymbal_x:4>|
 
+Command 0x32:
+	-Request load last used kit number from EEPROM
+	-Message: None
+	-AVR responds with command 0x33
+	
+Command 0x33:
+	-Send last used kit
+	-Message |<zero:1><kit_id:7>|
 
