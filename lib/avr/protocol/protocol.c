@@ -5,13 +5,13 @@
 
 #define MAX_SIZE 40
 
-static uint8_t _pos;	   // current position in the frame
-static uint8_t _len;	   // frame length
-static uint8_t _api;	   // frame api code (command)
-static uint8_t _chk;	   // checksum
-static uint8_t _esc;	   // escape byte seen, unescape next byte
-static uint8_t _err;	   // error condition, ignore bytes until next frame start byte
-static uint8_t _buf[MAX_SIZE];
+static uint8_t position;			// current position in the frame
+static uint8_t length;				// frame length
+static uint8_t command;				// frame api code (command)
+static uint8_t checksum;			// checksum
+static uint8_t escape;	 			// escape byte seen, unescape next byte
+static uint8_t error;	 			// error condition, ignore bytes until next frame start byte
+static uint8_t message[MAX_SIZE];
 
 void _protocol_send_byte(uint8_t b, uint8_t escape)
 {
@@ -41,67 +41,67 @@ void protocol_send_message(uint8_t cmd, uint8_t *bytes, uint8_t length)
 	_protocol_send_byte(checksum, 1);
 }
 
-uint8_t protocol_get_error(){
-	return _err;
+uint8_t protocol_geterroror(){
+	return error;
 }
 
 void protocol_receive_byte(uint8_t b){
-	if (_err > 0 && b == START) {
+	if (error > 0 && b == START) {
 		// recover from any previous error condition
-		_err = 0;
-		_pos = 0;
-	} else if (_err > 0) {
+		error = 0;
+		position = 0;
+	} else if (error > 0) {
 		return;
 	}
 	
-	if (_pos > 0 && b == START) {
+	if (position > 0 && b == START) {
 		// unexpected start of frame
-		_err = PROTOCOL_ERROR_UNEXPECTED_START_OF_FRAME;
+		error = PROTOCOL_ERROR_UNEXPECTED_START_OF_FRAME;
 		return;
 	}
-	if (_pos > 0 && b == ESCAPE) {
+	if (position > 0 && b == ESCAPE) {
 		// unescape next byte
-		_esc = 1;
+		escape = 1;
 		return;
 	}
-	if (_esc) {
+	if (escape) {
 		// unescape current byte
 		b = 0x20 ^ b;
-		_esc = 0;
+		escape = 0;
 	}
-	if (_pos > 1) { // start byte and length byte not included in checksum
-		_chk += b;
+	if (position > 1) { // start byte and length byte not included in checksum
+		checksum += b;
 	}
 	
-	switch(_pos) {
+	switch(position) {
 		case 0: // start frame
-			_pos++;
+			position++;
 			return;
 		case 1: // length
 			if (b == 0){
-				_err = PROTOCOL_ERROR_INVALID_LENGTH;
+				error = PROTOCOL_ERROR_INVALID_LENGTH;
 			}
 			else {
-				_len = b;
-				_pos++;
+				length = b;
+				position++;
 			}
 			return;
 		case 2:
-			_api = b;
-			_pos++;
+			command = b;
+			position++;
 			return;
 		default:
-			if (_pos > MAX_SIZE) return;
-			if (_pos == (_len + 2)) {
-				if (_chk == 0xff) {
-					protocol_dispatch_message(_api, _buf, _len - 1);
+			if (position > MAX_SIZE) return;
+			if (position == (length + 2)) {
+				if (checksum == 0xff) {
+					protocol_dispatch_message(command, message, length - 1);
 				} else {
-					_err = PROTOCOL_ERROR_INVALID_CHECKSUM;
+					error = PROTOCOL_ERROR_INVALID_CHECKSUM;
 				}
-				_pos = 0;
-				_chk = 0;
+				position = 0;
+				checksum = 0;
 			} else {
-				_buf[_pos++ - 3] = b;
+				message[position++ - 3] = b;
 			}
 	}
 }

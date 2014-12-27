@@ -1,5 +1,5 @@
 /*
- * Drum Master rev 2 - controller for up to 16 analog sensors.
+ * Drum Master rev 2 - controller for up to 16 analog sensors (12 are peak detecting circuits, 4 are simple ADC readings).
  * Copyright 2014 - 2015 Wyatt Olson <wyatt.olson@gmail.com>
  * 
  * At a very high level, Drum Master will listen to a series of sensors and report the values back to the
@@ -20,6 +20,8 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 
+#include "lib/protocol/protocol.h"
+#include "lib/serial/serial.h"
 
 /*
  * Hardware mappings (breadboard version using Mega328):
@@ -28,62 +30,11 @@
  * -Drain enable switch is PB4
  */
 
-/***** Serial Hardware *****/
-void serial_init_b(uint32_t baud){
-	//Set baud rate
-	uint16_t calculated_baud = (F_CPU / 16 / baud) - 1;
-	UBRR0H = calculated_baud >> 8;
-	UBRR0L = calculated_baud & 0xFF;
-
-	//Make sure 2x and multi processor comm modes are off
-	UCSR0A &= ~(_BV(U2X0) | _BV(MPCM0));
-	
-	//8 Data bits, no parity, one stop bit
-	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
-	
-	//Enable TX
-	UCSR0B |= _BV(TXEN0);
-}
-
-void serial_write_c(char data){
-	//Nop loop to wait until transmit buffer is ready to receive data
-	while (!(UCSR0A & _BV(UDRE0)));
-
-	UDR0 = data;
-
-	//Wait for transmission to complete; this is required when the serial library is used
-	// in conjunction with code that sleeps the CPU, such as synchronous ADC in sleep mode.
-	while (!(UCSR0A & _BV(TXC0)));
-	//Reset transmission complete flag
-	UCSR0A &= _BV(TXC0);
-}
-
-/*
- * Sends data.  Channel is a 4 bit number, between 0 and 11 inclusive.  Velocity is a 8 bit number.
- */
-void send_data(uint8_t channel, uint8_t velocity){
-	if (channel > 12) return;
-	uint8_t packet = 0xC0;	//Start bits
-	uint8_t checksum = 0x3;	//0x03 is the checksum of the start bits
-	
-	//First packet consists of 6 channel bits, and (eventually) 2 checksum bits.
-	packet |= ((channel << 0x02) & 0x3C);
-	
-	//Add channel to checksum
-	checksum ^= (channel >> 0x02) & 0x03;
-	checksum ^= channel & 0x3;
-	
-	//Add velocity to checksum
-	checksum ^= (velocity >> 0x06) & 0x03;
-	checksum ^= (velocity >> 0x04) & 0x03;
-	checksum ^= (velocity >> 0x02) & 0x03;
-	checksum ^= velocity & 0x03;
-	
-	packet |= checksum;
-	serial_write_c(packet);
-
-	//Second packet consists only of 8 bits data.
-	serial_write_c(velocity);
+void protocol_dispatch_message(uint8_t cmd, uint8_t *bytes, uint8_t length){
+//	if (cmd == 0x32){
+		uint8_t kit_id[1] = {0x00};	//TODO Read last used kit ID from EEPROM
+		protocol_send_message(0x33, kit_id, 1);
+//	}
 }
 
 /***** ADC Hardware *****/
@@ -106,14 +57,15 @@ void analog_init(){
  */
 ISR(ADC_vect){
 	static uint8_t channel = 0;
+	static uint8_t velocity[1];
 	
-	uint8_t velocity = ADCH;
+	velocity[0] = ADCH;
 
 	//Enable drain now that we have read the value
 	PORTC |= _BV(PORTB4);
 	
-	if (velocity > 10){
-		send_data(channel, velocity);
+	if (velocity[0] > 10){
+		protocol_send_message(channel, velocity, 1);
 	}
 	else {
 		_delay_us(200);
@@ -134,13 +86,15 @@ ISR(ADC_vect){
 
 int main (void){
 	//Init serial
-	serial_init_b(76800);
+	serial_init_b(38400);
 	
 	//Init analog
-	analog_init();
+	//analog_init();
 	
 	while (1){
-		
+		_delay_ms(1000);
+		uint8_t velocity[1] = {0xC9};
+		protocol_send_message(0, velocity, 1);
 	}
 }
 

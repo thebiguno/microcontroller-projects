@@ -1,14 +1,16 @@
 include ../../../../build/avr/variables.mk
 
 PROJECT=drummaster
-MMCU=atmega168
+MMCU=atmega328p
 F_CPU=16000000
-SOURCES=drummaster.c
+COMPILER=avr-g++
+SOURCES=drummaster.c lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/serial/serial.c lib/serial/serial_sync_tx.c
+AVRDUDE_PROGRAMMER=arduino
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-CDEFS += -DADC_PRESCALER_MASK=6 -DSERIAL_BUFFER_SIZE=255 -DSERIAL_DISABLE_RX -DADC_SLEEP_MODEOFF
+CDEFS += -DADC_PRESCALER_MASK=6 -DSERIAL_BUFFER_SIZE=255 -DADC_SLEEP_MODEOFF
 
 include ../../../../build/avr/targets.mk
 
