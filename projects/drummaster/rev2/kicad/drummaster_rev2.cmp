@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, December 24, 2014 'pmt' 04:29:45 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 26 Dec 2014 06:36:03 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -453,6 +453,13 @@ TimeStamp = /548884CD;
 Reference = L1;
 ValeurCmp = 10uH;
 IdModule  = SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /549E0FA9;
+Reference = L2;
+ValeurCmp = FERRITE_BEAD;
+IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
