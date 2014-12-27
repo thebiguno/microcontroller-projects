@@ -33,8 +33,24 @@ class Display:
 		gpio.setup(self.pin_rs, gpio.OUT)
 		for pin in self.pins_db:
 			gpio.setup(pin, gpio.OUT)
-
+			
 		self.clear()
+		
+		cgram = [
+			0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,			# 0 (Use space)
+			0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f,			# 1
+			0x0,0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,			# 2
+			0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,			# 3
+			0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,		# 4
+			0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,		# 5
+			0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,		# 6
+			0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f		# 7
+														# 8 (Use 0xFF)
+		]
+		self.__cmd(0x40)	#Go to beginning of CGRAM section
+		for b in cgram:
+			self.__cmd(b, True)
+
 
 	def clear(self):
 		""" Blank / Reset LCD """
@@ -94,24 +110,49 @@ class Display:
 # the kit's API.
 class Kit:
 	def __init__(self):
-		Kit.samplesFolder = "samples"
+		Kit.samples_folder = "samples"
+		Kit.named_channels = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"]
+		Kit.named_instruments = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]
 
-	def lookupInstrument(self, channel):
-		return ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"][channel]
+	def get_named_channel(self, channel):
+		return Kit.named_channels[channel]
+	
+	def get_instrument(self, instrument_number):
+		return Kit.named_instruments[instrument_number]
+	
+	def get_instrument_number(self, instrument):
+		try:
+			return Kit.named_instruments.index(instrument)
+		except ValueError:
+			return -1
 
-	def getName(self):
+	def get_name(self):
 		return self.kitName
+	
+	def get_number(self):
+		return self.number
+	
+	def get_next_number(self):
+		dirs = [d for d in os.listdir(Kit.samples_folder) if re.compile("[0-9][0-9][0-9]").match(d)]
+		dirs.sort()
+		index = dirs.index(self.get_number_formatted())
+		index = index + 1
+		if index >= len(dirs):
+			index = 0
+		return index
+	
+	def get_number_formatted(self):
+		return "{0:0=3d}".format(self.number)
 
-	def loadSamples(self, number):
+	def load_samples(self, number):
 		self.number = number
 		self.instruments = {}
 		
-		number = "{0:0=3d}".format(number)
-		kitPath = os.path.join(Kit.samplesFolder, number)
+		kitPath = os.path.join(Kit.samples_folder, self.get_number_formatted())
 		with open(os.path.join(kitPath, 'kit.txt'), 'r') as f:
 			self.kitName = f.readline()
 		
-		print("Loading Samples for Kit " + self.kitName + " (" + number + ")")
+		print("Loading Samples for Kit " + self.kitName + " (" + self.get_number_formatted() + ")")
 		for instrument in ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]:
 			if instrument == "hihat":
 				self.instruments[instrument] = HiHat(kitPath)
@@ -140,19 +181,19 @@ class Instrument:
 		self.name = name
 		self.samples = []
 		
-		instrumentPath = os.path.join(kitPath, name)
-		if os.path.isdir(instrumentPath):
+		instrument_path = os.path.join(kitPath, name)
+		if os.path.isdir(instrument_path):
 			print(" Loading Samples for Instrument '" + name + "'")
-			samples = [sample for sample in os.listdir(instrumentPath) if re.compile("[0-9][0-9]\\.wav").match(sample)]
+			samples = [sample for sample in os.listdir(instrument_path) if re.compile("[0-9][0-9]\\.wav").match(sample)]
 			samples.sort()
 		
 			for sample in samples:
 				print("  " + sample)
-				self.samples.append(pygame.mixer.Sound(os.path.join(instrumentPath, sample)))
+				self.samples.append(pygame.mixer.Sound(os.path.join(instrument_path, sample)))
 		else:
 			print(" No Samples for Instrument '" + name + "'")
 	
-	def getChannel(self, volume):
+	def get_channel(self, volume):
 		channel = pygame.mixer.find_channel(True)
 		if channel.get_busy():
 			print("Warning: no free channels")
@@ -160,16 +201,16 @@ class Instrument:
 		channel.set_volume(volume)
 		return channel
 		
-	def getIndex(self, value, length):
+	def get_index(self, value, length):
 		index = int((-1 * value * length) + length)
 		if index >= length:
 			return length - 1
 		return index
 	
 	def play(self, volume):
-		channel = self.getChannel(volume)
+		channel = self.get_channel(volume)
 		
-		sample_index = self.getIndex(volume, len(self.samples))
+		sample_index = self.get_index(volume, len(self.samples))
 		channel.play(self.samples[sample_index])
 		
 	def mute(self):
@@ -189,11 +230,11 @@ class HiHat(Instrument):
 		for hihat_type in ["tight", "closed", "loose", "open", "chic", "splash"]:
 			self.samples[hihat_type] = []
 
-			instrumentPath = os.path.join(kitPath, "hihat_" + hihat_type)
-			if os.path.isdir(instrumentPath):
+			instrument_path = os.path.join(kitPath, "hihat_" + hihat_type)
+			if os.path.isdir(instrument_path):
 				print(" Loading Samples for Instrument 'hihat_" + hihat_type + "'")
 				
-				samples = [sample for sample in os.listdir(instrumentPath) if re.compile("[0-9][0-9]\\.wav").match(sample)]
+				samples = [sample for sample in os.listdir(instrument_path) if re.compile("[0-9][0-9]\\.wav").match(sample)]
 				samples.sort()
 
 				if len(samples) > 0 and hihat_type != "chic" and hihat_type != "splash":
@@ -201,7 +242,7 @@ class HiHat(Instrument):
 					
 				for sample in samples:
 					print("  " + sample)
-					self.samples[hihat_type].append(pygame.mixer.Sound(os.path.join(instrumentPath, sample)))
+					self.samples[hihat_type].append(pygame.mixer.Sound(os.path.join(instrument_path, sample)))
 			else:
 				print(" No Samples for Instrument 'hihat_" + hihat_type + "'")
 
@@ -210,15 +251,15 @@ class HiHat(Instrument):
 		if len(self.available_types) == 0:
 			return
 		
-		channel = self.getChannel(volume)
+		channel = self.get_channel(volume)
 
-		sample_type_index = self.getIndex(self.recent_positions[-1], len(self.available_types))
+		sample_type_index = self.get_index(self.recent_positions[-1], len(self.available_types))
 
 		print(self.available_types)
 		print(sample_type_index)
 		sample_type = self.available_types[sample_type_index]
 
-		sample_index = self.getIndex(volume, len(self.samples[sample_type]))
+		sample_index = self.get_index(volume, len(self.samples[sample_type]))
 		channel.play(self.samples[sample_type][sample_index])
 	
 	def pedal(self, position):
@@ -226,16 +267,16 @@ class HiHat(Instrument):
 			value = position - min(self.recent_positions)
 			print("Playing hihat_chic")
 			if len(self.samples["chic"]) > 0:
-				channel = self.getChannel(value)
-				sample_index = self.getIndex(value, len(self.samples["chic"]))
+				channel = self.get_channel(value)
+				sample_index = self.get_index(value, len(self.samples["chic"]))
 				channel.play(self.samples["chic"][sample_index])
 			
 		elif position < 0.2 and min(self.recent_positions) < 0.2 and max(self.recent_positions) > 0.8:
 			value = max(self.recent_positions) - min(self.recent_positions)
 			print("Playing hihat_splash")
 			if len(self.samples["splash"]) > 0:
-				channel = self.getChannel(value)
-				sample_index = self.getIndex(value, len(self.samples["splash"]))
+				channel = self.get_channel(value)
+				sample_index = self.get_index(value, len(self.samples["splash"]))
 				channel.play(self.samples["splash"][sample_index])
 
 		self.recent_positions.append(position)
@@ -324,9 +365,9 @@ class SerialMonitor:
 						message[position - 3] = b
 						position = position + 1
 		
-		self.serialThread = threading.Thread(target=listener)
-		self.serialThread.daemon = True
-		self.serialThread.start()
+		self.serial_thread = threading.Thread(target=listener)
+		self.serial_thread.daemon = True
+		self.serial_thread.start()
 
 class ButtonMonitor:
 	def __init__(self, callback):
@@ -346,24 +387,26 @@ class ButtonMonitor:
 						if newState == True:
 							callback(i)
 							
-		self.buttonThread = threading.Thread(target=listener)
-		self.buttonThread.daemon = True
-		self.buttonThread.start()
+		self.button_thread = threading.Thread(target=listener)
+		self.button_thread.daemon = True
+		self.button_thread.start()
 
 ######################################################################################
+
+# Global variables
 
 kit = Kit()
 display = Display()
 
 
-def handleSerialMessage(command, message):
+def handle_serial_message(command, message):
 	if command & 0xF0 == 0x00:
 		channel = command
 		print("Playing channel " + str(channel))
 		if (channel < 12):
-			kit.play(kit.lookupInstrument(channel), volume = message[1] / 255.0)
+			kit.play(kit.get_named_channel(channel), volume = message[1] / 255.0)
 		else:
-			kit.mute(kit.lookupInstrument(channel))
+			kit.mute(kit.get_named_channel(channel))
 			
 	elif command == 0x10:
 		print("Nack for command " + str(message[0]))
@@ -371,17 +414,15 @@ def handleSerialMessage(command, message):
 	elif command == 0x11:
 		print("Ack for command " + str(message[0]))
 		
-def handleButtonPress(button):
-	if not(hasattr(handleButtonPress, 'state')):
-		handleButtonPress.state = {"menuId": 0, "shiftId": 0}
+def handle_button_press(button):
+	if not(hasattr(handle_button_press, 'state')):
+		handle_button_press.state = {"menuId": 0, "shiftId": 0}
 	
-	state = handleButtonPress.state
+	state = handle_button_press.state
 	
 	if button == 0x00:
 		state["menuId"] = state["menuId"] + 1
 		state["shiftId"] = 0
-	elif button == 0x01:
-		state["shiftId"] = state["shiftId"] + 1
 		
 	if state["menuId"] > 3:
 		state["menuId"] = 0
@@ -389,30 +430,49 @@ def handleButtonPress(button):
 	mode = state["menuId"]
 	
 	if mode == 0:
-		showKit()
+		if button == 0x01:
+			kit.load_samples(kit.get_next_number())
+			
+		show_kit()
 		
 	elif mode == 1:
-		showVolume()
+		show_volume()
 		
 	elif mode == 2:
-		showCalibration()
+		show_calibration()
 		
 	elif mode == 3:
-		showShutdown()
+		show_shutdown()
 
-def showSplash():
+def show_splash():
 	display.write("Drum Master\nRev 2.0")
 	
-def showKit():
-	display.write(kit.getName() + "\n")
+def show_kit(refresh=True, volume={}, volume_reduce=False):
+	if not(hasattr(show_kit, 'state')):
+		show_kit.state = {"volume": [0,0,0,0,0,0,0,0,0,0,0]}
 	
-def showVolume():
+	state = show_kit.state
+	
+	if refresh:
+		display.write(kit.get_number_formatted() + " " + kit.get_name())
+	'''
+	if len(volume) > 0:
+		for k in volume:
+			state["volume"][k] = volume[k]
+			
+			display.write(
+	else:
+		for k in state["volume"]:
+	'''
+	
+	
+def show_volume():
 	display.write("Master")
 	
-def showCalibration():
+def show_calibration():
 	display.write("Calibration")
 	
-def showShutdown():
+def show_shutdown():
 	display.write("Shutdown\n(Shift=Off)")
 	
 	
@@ -423,12 +483,12 @@ if (__name__=="__main__"):
 	pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
 	pygame.mixer.set_num_channels(16)
 
-	showSplash()
-	kit.loadSamples(0)
-	showKit()
+	show_splash()
+	kit.load_samples(0)
+	show_kit()
 	
-	sm = SerialMonitor(handleSerialMessage)
-	bm = ButtonMonitor(handleButtonPress)
+	sm = SerialMonitor(handle_serial_message)
+	bm = ButtonMonitor(handle_button_press)
 
 	
 	

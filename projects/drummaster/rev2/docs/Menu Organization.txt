@@ -13,7 +13,10 @@ Button 2 and 3 are increment / decrement respectively
 
 -Main View
 	-Show kit name on top row, VU meters on bottom row
+	-Shift changes kit
+	
 -Volume View
+	-Show channel name on top row, volume as percentage on the bottom row
 	-Use shift to change between each channel, and inc / dec to change volume
 	-Volume adjustments are saved as soon as you switch to the next channel or view (mode or shift buttons)
 -Calibration View
