@@ -4,6 +4,7 @@ import threading
 import time
 import os
 import re
+import RPi.GPIO as gpio
 
 ###########################
 # Drum Slave software, meant to run on the computer (Raspberry Pi in this case).
@@ -16,6 +17,79 @@ import re
 # See docs/Kit Sample Organization.txt for information on sample folder structure
 ###########################
 
+
+# Output data to the LCD.  Call "write(text)" to write data.  Use a newline 
+# character to go to the next line of the display.
+class Display:
+	def __init__(self, pin_rs=19, pin_e=21, pins_db=[22, 23, 24, 26]):
+
+		self.pin_rs=pin_rs
+		self.pin_e=pin_e
+		self.pins_db=pins_db
+
+		gpio.setmode(gpio.BOARD)
+		gpio.setwarnings(False)
+		gpio.setup(self.pin_e, gpio.OUT)
+		gpio.setup(self.pin_rs, gpio.OUT)
+		for pin in self.pins_db:
+			gpio.setup(pin, gpio.OUT)
+
+		self.clear()
+
+	def clear(self):
+		""" Blank / Reset LCD """
+
+		self.__cmd(0x28) # 4 bit mode, 2 lines, 5x8
+		self.__cmd(0x28) # 4 bit mode, 2 lines, 5x8 (the second time)
+		self.__cmd(0x0C) # Display on, cursor off, cursor blink off
+		self.__cmd(0x01) # Clear display
+
+	def __cmd(self, bits, char_mode=False):
+		""" Send command to LCD """
+
+		time.sleep(0.002)
+		bits=bin(bits)[2:].zfill(8)
+
+		gpio.output(self.pin_rs, char_mode)
+
+		for i in range(4):
+			if bits[i] == "1":
+				gpio.output(self.pins_db[::-1][i], True)
+			else:
+				gpio.output(self.pins_db[::-1][i], False)
+
+		gpio.output(self.pin_e, True)
+		gpio.output(self.pin_e, False)
+
+		for i in range(4,8):
+			if bits[i] == "1":
+				gpio.output(self.pins_db[::-1][i-4], True)
+			else:
+				gpio.output(self.pins_db[::-1][i-4], False)
+
+		gpio.output(self.pin_e, True)
+		gpio.output(self.pin_e, False)
+
+	def write(self, text, position=0, clear=True):
+		"""
+		Send string to LCD. Newline wraps to second line, after blanking the remainder of the current line.
+		Use 'position' argument to write to a particular position in DRAM (keeping in mind that the first
+		line starts at position 0x00, and the second line starts at 0x40.
+		"""
+		
+		if clear:
+			self.clear()
+		
+		self.__cmd(0x80 + position)
+		
+		for char in text:
+			if char == '\n':
+				for i in range(16):
+					self.__cmd(ord(' '), True)
+				self.__cmd(0xC0) # next line
+			else:
+				self.__cmd(ord(char),True)
+
 # A Kit is the entire drum set.  All access to instruments (play, mute, etc) should go through 
 # the kit's API.
 class Kit:
@@ -24,6 +98,9 @@ class Kit:
 
 	def lookupInstrument(self, channel):
 		return ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"][channel]
+
+	def getName(self):
+		return self.kitName
 
 	def loadSamples(self, number):
 		self.number = number
@@ -173,49 +250,172 @@ class HiHat(Instrument):
 class SerialMonitor:
 	def __init__(self, callback):
 		def listener():
-			#ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)
-			from random import randint
-			message = [0, 0]
+			START = 0x7e
+			ESCAPE = 0x7d
+			MAX_SIZE = 40
+
+			err = False
+			esc = False
+			position = 0
+			length = 0
+			command = 0
+			checksum = 0x00
+
+			message = {}
+			
+			ser = serial.Serial('/dev/ttyAMA0', 115200)
 			while True:
-				#b = ord(ser.read())
-				time.sleep(randint(0,10) / 100.0)
-				b = randint(0,255)
-				if (message[0] == 0x00 and (b & 0xC0 == 0xC0)):
-					message[0] = b
-					print("0 = " + str(b))
-				elif (message[0] & 0xC0 == 0xC0):
-					message[1] = b
-					if self.verifyChecksum(message) == 0:
-						callback(list(message))
-					else:
-						print("Invalid checksum")
-					message[0] = 0
-					message[1] = 0
-				else:
-					print("Invalid packet")
-					message[0] = 0x00
-					message[1] = 0x00
+				b = ord(ser.read())
+				if (err and b == START):
+					# recover from error condition
+					print("Recover from error condition")
+					err = False
+					position = 0
+				elif (err):
+					continue
+
+				if (position > 0 and b == START):
+					# unexpected start of frame
+					print("Unexpected start of frame")
+					err = True
+					continue
+
+				if (position > 0 and b == ESCAPE):
+					# unescape next byte
+					esc = True
+					continue
 				
+				if (esc):
+					# unescape current byte
+					b = 0x20 ^ b
+					esc = False
+
+				if (position > 1):
+					checksum = (checksum + b) & 0xFF
+				
+				if (position == 0):
+					position = position + 1
+					continue
+				elif (position == 1):
+					length = b
+					position = position + 1
+					continue
+				elif (position == 2):
+					command = b
+					position = position + 1
+					continue
+				else:
+					if (position > MAX_SIZE):
+						# this probably can't happen
+						print("Position > MAX_SIZE")
+						continue
+
+					if (position == (length + 2)):
+						if (checksum == 0xff):
+							#Finished the message; pass it to the callback
+							callback(command, message)
+							
+						else:
+							err = True;
+							print("Invalid checksum")
+						position = 0;
+						checksum = 0;
+					else:
+						message[position - 3] = b
+						position = position + 1
 		
 		self.serialThread = threading.Thread(target=listener)
 		self.serialThread.daemon = True
 		self.serialThread.start()
-	
-	def verifyChecksum(self, message):
-		checksum = 0
-		
-		#TODO Is there a more pythonic way to do this?
-		checksum = checksum ^ ((message[0] >> 6) & 0x03)
-		checksum = checksum ^ ((message[0] >> 4) & 0x03)
-		checksum = checksum ^ ((message[0] >> 2) & 0x03)
-		checksum = checksum ^ ((message[0] >> 0) & 0x03)
 
-		checksum = checksum ^ ((message[1] >> 6) & 0x03)
-		checksum = checksum ^ ((message[1] >> 4) & 0x03)
-		checksum = checksum ^ ((message[1] >> 2) & 0x03)
-		checksum = checksum ^ ((message[1] >> 0) & 0x03)
+class ButtonMonitor:
+	def __init__(self, callback):
+		gpio.setmode(gpio.BOARD)
+		buttons = [11, 12, 13, 15]
+		for button in buttons:
+			gpio.setup(button, gpio.IN)
+
+		def listener():
+			state = [False, False, False, False]
+			while True:
+				time.sleep(0.01)
+				for i in range(len(buttons)):
+					newState = gpio.input(buttons[i])
+					if newState != state[i]:
+						state[i] = newState
+						if newState == True:
+							callback(i)
+							
+		self.buttonThread = threading.Thread(target=listener)
+		self.buttonThread.daemon = True
+		self.buttonThread.start()
+
+######################################################################################
+
+kit = Kit()
+display = Display()
+
+
+def handleSerialMessage(command, message):
+	if command & 0xF0 == 0x00:
+		channel = command
+		print("Playing channel " + str(channel))
+		if (channel < 12):
+			kit.play(kit.lookupInstrument(channel), volume = message[1] / 255.0)
+		else:
+			kit.mute(kit.lookupInstrument(channel))
+			
+	elif command == 0x10:
+		print("Nack for command " + str(message[0]))
+	
+	elif command == 0x11:
+		print("Ack for command " + str(message[0]))
 		
-		return checksum
+def handleButtonPress(button):
+	if not(hasattr(handleButtonPress, 'state')):
+		handleButtonPress.state = {"menuId": 0, "shiftId": 0}
+	
+	state = handleButtonPress.state
+	
+	if button == 0x00:
+		state["menuId"] = state["menuId"] + 1
+		state["shiftId"] = 0
+	elif button == 0x01:
+		state["shiftId"] = state["shiftId"] + 1
+		
+	if state["menuId"] > 3:
+		state["menuId"] = 0
+		
+	mode = state["menuId"]
+	
+	if mode == 0:
+		showKit()
+		
+	elif mode == 1:
+		showVolume()
+		
+	elif mode == 2:
+		showCalibration()
+		
+	elif mode == 3:
+		showShutdown()
+
+def showSplash():
+	display.write("Drum Master\nRev 2.0")
+	
+def showKit():
+	display.write(kit.getName() + "\n")
+	
+def showVolume():
+	display.write("Master")
+	
+def showCalibration():
+	display.write("Calibration")
+	
+def showShutdown():
+	display.write("Shutdown\n(Shift=Off)")
+	
+	
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
@@ -223,75 +423,71 @@ if (__name__=="__main__"):
 	pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
 	pygame.mixer.set_num_channels(16)
 
-	kit = Kit()
+	showSplash()
 	kit.loadSamples(0)
-'''
-	def callback(message):
-		print(str(message))
-		channel = ((message[0] >> 2) & 0x0F)
-
-		if (channel < 12):
-			kit.play(kit.lookupInstrument(channel), volume = message[1] / 255.0)
-		else:
-			kit.mute(kit.lookupInstrument(channel))
+	showKit()
 	
-	sm = SerialMonitor(callback)
-'''
+	sm = SerialMonitor(handleSerialMessage)
+	bm = ButtonMonitor(handleButtonPress)
 
-for x in range(0, 4):
+	
+	
+	'''
+	for x in range(0, 4):
 
-	kit.pedal("hihat", position = 0.0)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 0.2)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 0.4)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 0.6)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 0.8)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 1.0)
-	kit.play("hihat")
-	time.sleep(0.5)
-	kit.pedal("hihat", position = 0.0)
-	time.sleep(0.1)
-	kit.pedal("hihat", position = 1.0)
-	time.sleep(1.0)
+		kit.pedal("hihat", position = 0.0)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 0.2)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 0.4)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 0.6)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 0.8)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 1.0)
+		kit.play("hihat")
+		time.sleep(0.5)
+		kit.pedal("hihat", position = 0.0)
+		time.sleep(0.1)
+		kit.pedal("hihat", position = 1.0)
+		time.sleep(1.0)
 
-	kit.play("ride")
-	time.sleep(0.3)
-	kit.play("ride", volume=0.0)
-	time.sleep(0.15)
-	kit.play("ride", volume=0.5)
-	time.sleep(0.15)
-	kit.play("ride")
-	kit.play("snare", volume=0.48)
-	time.sleep(0.3)
-	kit.play("ride", volume=0.5)
-	time.sleep(0.15)
-	kit.play("ride", volume=0.5)
-	time.sleep(0.15)
-	kit.play("ride")
-	time.sleep(0.3)
-	kit.play("ride", volume=0.5)
-	time.sleep(0.15)
-	kit.play("ride", volume=0.5)
-	time.sleep(0.15)
-	kit.play("ride")
-	kit.play("snare")
-	kit.mute("ride")
-	time.sleep(0.6)
-
-'''
-while(True):
-	time.sleep(10)
-	print("tick")
-'''
-
-while pygame.mixer.get_busy():
-	time.sleep(0.1)
+		kit.play("ride")
+		time.sleep(0.3)
+		kit.play("ride", volume=0.0)
+		time.sleep(0.15)
+		kit.play("ride", volume=0.5)
+		time.sleep(0.15)
+		kit.play("ride")
+		kit.play("snare", volume=0.48)
+		time.sleep(0.3)
+		kit.play("ride", volume=0.5)
+		time.sleep(0.15)
+		kit.play("ride", volume=0.5)
+		time.sleep(0.15)
+		kit.play("ride")
+		time.sleep(0.3)
+		kit.play("ride", volume=0.5)
+		time.sleep(0.15)
+		kit.play("ride", volume=0.5)
+		time.sleep(0.15)
+		kit.play("ride")
+		kit.play("snare")
+		kit.mute("ride")
+		time.sleep(0.6)
+	'''
+	
+	while(True):
+		time.sleep(10)
+		print("tick")
+	
+	'''
+	while pygame.mixer.get_busy():
+		time.sleep(0.1)
+	'''

@@ -1,9 +1,9 @@
 This document describes the options and usage of the Drum Master menu system
 
 There are 4 buttons:
-Button 1 is mode
-Button 2 is shift
-Button 3 and 4 are increment / decrement
+Button 0 is mode
+Button 1 is shift
+Button 2 and 3 are increment / decrement respectively
 
 -On bootup:
 	-Splash Screen (show "Drum Master" and git tag) for 2 seconds
