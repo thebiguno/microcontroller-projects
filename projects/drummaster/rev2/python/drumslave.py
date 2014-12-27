@@ -1,5 +1,6 @@
 import pygame
 import serial
+import Queue as queue
 import threading
 import time
 import os
@@ -113,6 +114,8 @@ class Kit:
 		Kit.samples_folder = "samples"
 		Kit.named_channels = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"]
 		Kit.named_instruments = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]
+		
+		self.instruments = {}
 
 	def get_named_channel(self, channel):
 		return Kit.named_channels[channel]
@@ -121,11 +124,8 @@ class Kit:
 		return Kit.named_instruments[instrument_number]
 	
 	def get_instrument_number(self, instrument):
-		try:
-			return Kit.named_instruments.index(instrument)
-		except ValueError:
-			return -1
-
+		return Kit.named_instruments.index(instrument)
+	
 	def get_name(self):
 		return self.kitName
 	
@@ -290,11 +290,13 @@ class HiHat(Instrument):
 
 class SerialMonitor:
 	def __init__(self, callback):
-		def listener():
-			START = 0x7e
-			ESCAPE = 0x7d
-			MAX_SIZE = 40
+		SerialMonitor.START = 0x7e
+		SerialMonitor.ESCAPE = 0x7d
+		SerialMonitor.MAX_SIZE = 40
+		
+		self.lock = threading.Lock()
 
+		def read_listener():
 			err = False
 			esc = False
 			position = 0
@@ -302,12 +304,13 @@ class SerialMonitor:
 			command = 0
 			checksum = 0x00
 
-			message = {}
+			message = [None] * SerialMonitor.MAX_SIZE
 			
-			ser = serial.Serial('/dev/ttyAMA0', 115200)
+			self.serial = serial.Serial('/dev/ttyAMA0', 38400)
 			while True:
-				b = ord(ser.read())
-				if (err and b == START):
+				b = ord(self.serial.read())
+				print(hex(b))
+				if (err and b == SerialMonitor.START):
 					# recover from error condition
 					print("Recover from error condition")
 					err = False
@@ -315,13 +318,13 @@ class SerialMonitor:
 				elif (err):
 					continue
 
-				if (position > 0 and b == START):
+				if (position > 0 and b == SerialMonitor.START):
 					# unexpected start of frame
 					print("Unexpected start of frame")
 					err = True
 					continue
 
-				if (position > 0 and b == ESCAPE):
+				if (position > 0 and b == SerialMonitor.ESCAPE):
 					# unescape next byte
 					esc = True
 					continue
@@ -339,22 +342,25 @@ class SerialMonitor:
 					continue
 				elif (position == 1):
 					length = b
+					print("Length: " + str(length))
 					position = position + 1
 					continue
 				elif (position == 2):
 					command = b
+					print("Command: " + str(command))
 					position = position + 1
 					continue
 				else:
-					if (position > MAX_SIZE):
+					if (position > SerialMonitor.MAX_SIZE):
 						# this probably can't happen
 						print("Position > MAX_SIZE")
 						continue
 
 					if (position == (length + 2)):
 						if (checksum == 0xff):
+							print("Checksum verified")
 							#Finished the message; pass it to the callback
-							callback(command, message)
+							callback(command, message[:(position - 3)])
 							
 						else:
 							err = True;
@@ -365,9 +371,44 @@ class SerialMonitor:
 						message[position - 3] = b
 						position = position + 1
 		
-		self.serial_thread = threading.Thread(target=listener)
-		self.serial_thread.daemon = True
-		self.serial_thread.start()
+		self.read_thread = threading.Thread(target=read_listener)
+		self.read_thread.daemon = True
+		self.read_thread.start()
+		
+		self.write_queue = queue.Queue()
+		
+		def write_listener():
+			while True:
+				b = self.write_queue.get()
+				print("Writing byte " + hex(b))
+				self.serial.write(str(b))
+				
+		self.write_thread = threading.Thread(target=write_listener)
+		self.write_thread.daemon = True
+		self.write_thread.start()
+	
+	def write(self, command, message):
+		def append_byte(data, b, escape=True):
+			if (escape and (b == SerialMonitor.START || b == SerialMonitor.ESCAPE)):
+				data.append(SerialMonitor.ESCAPE)
+				data.append(b ^ 0x20)
+			else
+				data.append(b)
+
+		data = [SerialMonitor.START]
+		append_byte(data, len(message + 1))
+		append_byte(data, command)
+		
+		checksum = command
+		for b in message:
+			checksum = (checksum + b) & 0xFF
+			data.append(b)
+			
+		append_byte(data, (0xFF - checksum))
+		
+		with self.lock:	#We don't want multiple threads pushing data into the queue at the same time
+			for b in data:
+				self.write_queue.put(b)
 
 class ButtonMonitor:
 	def __init__(self, callback):
@@ -403,8 +444,10 @@ def handle_serial_message(command, message):
 	if command & 0xF0 == 0x00:
 		channel = command
 		print("Playing channel " + str(channel))
+		print(kit.get_named_channel(channel))
+		print(message)
 		if (channel < 12):
-			kit.play(kit.get_named_channel(channel), volume = message[1] / 255.0)
+			kit.play(kit.get_named_channel(channel), volume = message[0] / 255.0)
 		else:
 			kit.mute(kit.get_named_channel(channel))
 			
@@ -413,6 +456,11 @@ def handle_serial_message(command, message):
 	
 	elif command == 0x11:
 		print("Ack for command " + str(message[0]))
+		
+	elif command == 0x33:
+		kit.load_samples(message[0])
+		show_kit()
+
 		
 def handle_button_press(button):
 	if not(hasattr(handle_button_press, 'state')):
@@ -447,24 +495,9 @@ def handle_button_press(button):
 def show_splash():
 	display.write("Drum Master\nRev 2.0")
 	
-def show_kit(refresh=True, volume={}, volume_reduce=False):
-	if not(hasattr(show_kit, 'state')):
-		show_kit.state = {"volume": [0,0,0,0,0,0,0,0,0,0,0]}
-	
-	state = show_kit.state
-	
+def show_kit(refresh=True):
 	if refresh:
 		display.write(kit.get_number_formatted() + " " + kit.get_name())
-	'''
-	if len(volume) > 0:
-		for k in volume:
-			state["volume"][k] = volume[k]
-			
-			display.write(
-	else:
-		for k in state["volume"]:
-	'''
-	
 	
 def show_volume():
 	display.write("Master")
@@ -484,11 +517,11 @@ if (__name__=="__main__"):
 	pygame.mixer.set_num_channels(16)
 
 	show_splash()
-	kit.load_samples(0)
-	show_kit()
 	
-	sm = SerialMonitor(handle_serial_message)
-	bm = ButtonMonitor(handle_button_press)
+	serial_monitor = SerialMonitor(handle_serial_message)
+	button_monitor = ButtonMonitor(handle_button_press)
+
+	serial_monitor.write(0x32, [])
 
 	
 	
