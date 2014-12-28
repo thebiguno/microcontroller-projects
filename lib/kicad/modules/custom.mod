@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Tuesday, December 23, 2014 'amt' 10:29:08 am
+PCBNEW-LibModule-V1  Sun 28 Dec 2014 12:53:16 PM MST
 # encoding utf-8
 Units mm
 $INDEX
@@ -73,6 +73,7 @@ WJ20
 WO10
 XBEE
 XBEE_SPARKFUN_BREAKOUT
+c_elec_18x18
 crystal_smd_2.5x2
 i4-PAC-5
 mouse_bites
@@ -7337,6 +7338,51 @@ Ne 0 ""
 Po 6.35 -11.43
 $EndPAD
 $EndMODULE XBEE_SPARKFUN_BREAKOUT
+$MODULE c_elec_18x18
+Po 0 0 0 15 54A05F98 00000000 ~~
+Li c_elec_18x18
+Cd SMT capacitor, aluminium electrolytic, 10x10
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -5.842 0.50038 0.50038 0 0.11938 N V 21 N "c_elec_18x18"
+T1 0 5.842 0.50038 0.50038 0 0.11938 N I 21 N "C***"
+DS -8.4 -3.2 -8.4 3.2 0.15 21
+DS -8.9 -1 -8.9 1 0.15 21
+DS -8.6 2.6 -8.6 -2.4 0.15 21
+DS -8.5 -2.7 -8.5 2.9 0.15 21
+DS -8.8 -1.7 -8.8 1.7 0.15 21
+DS -8.7 -2.3 -8.7 2.3 0.15 21
+DS -9 10 -9 -10 0.15 21
+DS -9 -10 7 -10 0.15 21
+DS 7 -10 9 -8 0.15 21
+DS 9 -8 9 8 0.15 21
+DS 9 8 7 10 0.15 21
+DS 7 10 -9 10 0.15 21
+DC 0 0 -9 0 0.15 21
+DS 6.572 0 5.81 0 0.127 21
+DS 6.191 -0.381 6.191 0.381 0.127 21
+$PAD
+Sh "1" R 4.0005 2.4003 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 9 0
+$EndPAD
+$PAD
+Sh "2" R 4.0005 2.4003 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -9 0
+$EndPAD
+$SHAPE3D
+Na "smd/capacitors/c_elec_10x10.wrl"
+Sc 1 1 1
+Of 0 0 0
+Ro 0 0 0
+$EndSHAPE3D
+$EndMODULE c_elec_18x18
 $MODULE crystal_smd_2.5x2
 Po 0 0 0 15 54808D45 00000000 ~~
 Li crystal_smd_2.5x2
