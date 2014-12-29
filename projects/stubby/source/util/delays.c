@@ -1,4 +1,4 @@
-#include "util/delays.h"
+#include "delays.h"
 
 extern volatile uint8_t interval_do_magnetometer_reading;	//Defined in magnetometer_HMC5883L.c
 extern volatile uint8_t interval_do_distance_reading;		//Defined in distance_HCSR04.c

@@ -17,7 +17,7 @@ ifndef DISTANCE_SENSOR
 	DISTANCE_SENSOR=1
 endif
 
-ifndef $(F_CPU)
+ifndef F_CPU
 ifeq '2' '$(PCB_REVISION)'
 	F_CPU=20000000
 else
