@@ -389,14 +389,14 @@ class SerialMonitor:
 	
 	def write(self, command, message):
 		def append_byte(data, b, escape=True):
-			if (escape and (b == SerialMonitor.START || b == SerialMonitor.ESCAPE)):
+			if (escape and (b == SerialMonitor.START or b == SerialMonitor.ESCAPE)):
 				data.append(SerialMonitor.ESCAPE)
 				data.append(b ^ 0x20)
-			else
+			else:
 				data.append(b)
 
 		data = [SerialMonitor.START]
-		append_byte(data, len(message + 1))
+		append_byte(data, len(message) + 1)
 		append_byte(data, command)
 		
 		checksum = command
