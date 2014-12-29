@@ -11,6 +11,7 @@
 #include "../hardware/status.h"
 #include "../types/Point.h"
 #include "../util/delays.h"
+#include "protocol.h"
 
 #include "../lib/universal_controller/client.h"
 #include "../lib/pwm/pwm.h"

@@ -6,6 +6,7 @@
 #include <util/delay.h>
 
 #include "../hardware/battery.h"
+#include "../controllers/protocol.h"
 
 void delay_ms(uint16_t ms);
 

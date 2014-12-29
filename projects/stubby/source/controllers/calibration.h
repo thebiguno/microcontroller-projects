@@ -11,6 +11,7 @@
 #include "../hardware/magnetometer.h"
 #include "../types/Point.h"
 #include "../util/delays.h"
+#include "protocol.h"
 
 #include "../lib/pwm/pwm.h"
 
