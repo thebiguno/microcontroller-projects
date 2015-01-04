@@ -4,6 +4,8 @@ import Queue as queue
 import threading
 import time
 import os
+import sys
+import signal
 import re
 import RPi.GPIO as gpio
 
@@ -373,7 +375,7 @@ class SerialMonitor:
 						position = position + 1
 						print("Received message byte " + hex(b))
 		
-		self.read_thread = threading.Thread(target=read_listener)
+		self.read_thread = threading.Thread(name="SerialReadListener", target=read_listener)
 		self.read_thread.daemon = True
 		self.read_thread.start()
 		
@@ -385,7 +387,7 @@ class SerialMonitor:
 				print("Writing byte " + hex(ord(b)))
 				self.serial.write(str(b))
 				
-		self.write_thread = threading.Thread(target=write_listener)
+		self.write_thread = threading.Thread(name="SerialWriteListener", target=write_listener)
 		self.write_thread.daemon = True
 		self.write_thread.start()
 	
@@ -419,7 +421,6 @@ class SerialMonitor:
 
 class ButtonMonitor:
 	def __init__(self, callback):
-		gpio.setmode(gpio.BOARD)
 		buttons = [11, 12, 13, 15]
 		for button in buttons:
 			gpio.setup(button, gpio.IN)
@@ -435,7 +436,7 @@ class ButtonMonitor:
 						if newState == True:
 							callback(i)
 							
-		self.button_thread = threading.Thread(target=listener)
+		self.button_thread = threading.Thread(name="ButtonMonitor", target=listener)
 		self.button_thread.daemon = True
 		self.button_thread.start()
 
@@ -446,6 +447,12 @@ class ButtonMonitor:
 kit = Kit()
 display = Display()
 
+def gpio_init():
+	gpio.setmode(gpio.BOARD)
+	gpio.setwarnings(False)
+
+	gpio.setup(7, gpio.OUT)
+	gpio.output(7, True)
 
 def handle_serial_message(command, message):
 	if command & 0xF0 == 0x00:
@@ -498,7 +505,13 @@ def handle_button_press(button):
 		show_calibration()
 		
 	elif mode == 3:
-		show_shutdown()
+		if button == 0x01:
+			show_shutdown(shutting_down=True)
+			#os.system("shutdown -h now")
+			gpio.output(7, False)
+			os.kill(os.getpid(), signal.SIGINT)	#os.exit kills the local thread only.
+		else:
+			show_shutdown()
 
 def show_splash():
 	display.write("Drum Master\nRev 2.0")
@@ -513,13 +526,17 @@ def show_volume():
 def show_calibration():
 	display.write("Calibration")
 	
-def show_shutdown():
-	display.write("Shutdown\n(Shift=Off)")
-	
+def show_shutdown(shutting_down=False):
+	if shutting_down:
+		display.write("Shutting down...")
+	else:
+		display.write("Shutdown\n(Shift=Off)")
 	
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
+
+	gpio_init()
 
 	pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=1024)
 	pygame.mixer.set_num_channels(16)
@@ -591,7 +608,8 @@ if (__name__=="__main__"):
 	
 	while(True):
 		time.sleep(10)
-		print("tick")
+		for thread in threading.enumerate():
+			print("Thread: " + thread.name + " Daemon: " + str(thread.daemon))
 	
 	'''
 	while pygame.mixer.get_busy():
