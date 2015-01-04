@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 26 Dec 2014 06:36:03 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 04 Jan 2015 03:22:44 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -442,7 +442,7 @@ IdModule  = SIL-14;
 EndCmp
 
 BeginCmp
-TimeStamp = /549B5B81;
+TimeStamp = /54A8D42F;
 Reference = K8;
 ValeurCmp = PINS_14;
 IdModule  = SIL-14;
@@ -458,7 +458,7 @@ EndCmp
 BeginCmp
 TimeStamp = /549E0FA9;
 Reference = L2;
-ValeurCmp = FERRITE_BEAD;
+ValeurCmp = FER_BEAD;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -544,6 +544,13 @@ TimeStamp = /5494C1E6;
 Reference = Q1;
 ValeurCmp = MOSFET_P;
 IdModule  = so-8;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A9774A;
+Reference = Q2;
+ValeurCmp = MOS_N;
+IdModule  = SOT323;
 EndCmp
 
 BeginCmp
@@ -710,7 +717,7 @@ EndCmp
 BeginCmp
 TimeStamp = /548CD313;
 Reference = R24;
-ValeurCmp = 1k;
+ValeurCmp = 4.7k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -731,7 +738,7 @@ EndCmp
 BeginCmp
 TimeStamp = /548CD320;
 Reference = R27;
-ValeurCmp = 1k;
+ValeurCmp = 4.7k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -780,7 +787,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5487809E;
 Reference = R34;
-ValeurCmp = 1k;
+ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -788,6 +795,20 @@ BeginCmp
 TimeStamp = /548799B6;
 Reference = R35;
 ValeurCmp = 22;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A8C2F4;
+Reference = R36;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A9BCB5;
+Reference = R37;
+ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -934,7 +955,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54877B09;
 Reference = X1;
-ValeurCmp = CRYSTAL_SMD_4PIN;
+ValeurCmp = 16MHz;
 IdModule  = crystal_smd_2.5x2;
 EndCmp
 
