@@ -31,10 +31,10 @@
  */
 
 void protocol_dispatch_message(uint8_t cmd, uint8_t *bytes, uint8_t length){
-//	if (cmd == 0x32){
+	if (cmd == 0x32){
 		uint8_t kit_id[1] = {0x00};	//TODO Read last used kit ID from EEPROM
 		protocol_send_message(0x33, kit_id, 1);
-//	}
+	}
 }
 
 /***** ADC Hardware *****/

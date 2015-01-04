@@ -115,6 +115,8 @@ class Kit:
 		Kit.named_channels = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "hihat_pedal", "crash", "splash", "ride", "cymbal_x", "ride", "splash", "crash", "hihat"]
 		Kit.named_instruments = ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]
 		
+		self.number = None
+		self.kit_name = None
 		self.instruments = {}
 
 	def get_named_channel(self, channel):
@@ -127,7 +129,7 @@ class Kit:
 		return Kit.named_instruments.index(instrument)
 	
 	def get_name(self):
-		return self.kitName
+		return self.kit_name
 	
 	def get_number(self):
 		return self.number
@@ -150,9 +152,9 @@ class Kit:
 		
 		kitPath = os.path.join(Kit.samples_folder, self.get_number_formatted())
 		with open(os.path.join(kitPath, 'kit.txt'), 'r') as f:
-			self.kitName = f.readline()
+			self.kit_name = f.readline()
 		
-		print("Loading Samples for Kit " + self.kitName + " (" + self.get_number_formatted() + ")")
+		print("Loading Samples for Kit " + self.kit_name + " (" + self.get_number_formatted() + ")")
 		for instrument in ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]:
 			if instrument == "hihat":
 				self.instruments[instrument] = HiHat(kitPath)
@@ -309,7 +311,6 @@ class SerialMonitor:
 			self.serial = serial.Serial('/dev/ttyAMA0', 38400)
 			while True:
 				b = ord(self.serial.read())
-				print(hex(b))
 				if (err and b == SerialMonitor.START):
 					# recover from error condition
 					print("Recover from error condition")
@@ -342,12 +343,12 @@ class SerialMonitor:
 					continue
 				elif (position == 1):
 					length = b
-					print("Length: " + str(length))
+					print("Received length: " + hex(length))
 					position = position + 1
 					continue
 				elif (position == 2):
 					command = b
-					print("Command: " + str(command))
+					print("Received command: " + hex(command))
 					position = position + 1
 					continue
 				else:
@@ -370,6 +371,7 @@ class SerialMonitor:
 					else:
 						message[position - 3] = b
 						position = position + 1
+						print("Received message byte " + hex(b))
 		
 		self.read_thread = threading.Thread(target=read_listener)
 		self.read_thread.daemon = True
@@ -380,7 +382,7 @@ class SerialMonitor:
 		def write_listener():
 			while True:
 				b = self.write_queue.get()
-				print("Writing byte " + hex(b))
+				print("Writing byte " + hex(ord(b)))
 				self.serial.write(str(b))
 				
 		self.write_thread = threading.Thread(target=write_listener)
@@ -388,21 +390,26 @@ class SerialMonitor:
 		self.write_thread.start()
 	
 	def write(self, command, message):
+		'''
+		Write the given command + message to the serial port (via a blocking queue to handle thread safety).  The command 
+		MUST be a single unsigned byte between 0 and 255.  The message MUST be a list of numbers between 0x00 and 0xFF.
+		'''
 		def append_byte(data, b, escape=True):
 			if (escape and (b == SerialMonitor.START or b == SerialMonitor.ESCAPE)):
-				data.append(SerialMonitor.ESCAPE)
-				data.append(b ^ 0x20)
+				data.append(chr(SerialMonitor.ESCAPE))
+				data.append(chr(b ^ 0x20))
 			else:
-				data.append(b)
+				data.append(chr(b))
 
-		data = [SerialMonitor.START]
+		data = []
+		append_byte(data, SerialMonitor.START, escape=False)
 		append_byte(data, len(message) + 1)
 		append_byte(data, command)
 		
 		checksum = command
 		for b in message:
 			checksum = (checksum + b) & 0xFF
-			data.append(b)
+			append_byte(data, b)
 			
 		append_byte(data, (0xFF - checksum))
 		
@@ -474,7 +481,8 @@ def handle_button_press(button):
 		
 	if state["menuId"] > 3:
 		state["menuId"] = 0
-		
+	
+	print(handle_button_press.state)
 	mode = state["menuId"]
 	
 	if mode == 0:
@@ -519,9 +527,14 @@ if (__name__=="__main__"):
 	show_splash()
 	
 	serial_monitor = SerialMonitor(handle_serial_message)
-	button_monitor = ButtonMonitor(handle_button_press)
 
-	serial_monitor.write(0x32, [])
+	# Request last used kit from AVR repeatedly until it replies.
+	while kit.get_number() == None:
+		serial_monitor.write(0x32, [])
+		time.sleep(1)
+
+	show_kit()
+	button_monitor = ButtonMonitor(handle_button_press)
 
 	
 	
