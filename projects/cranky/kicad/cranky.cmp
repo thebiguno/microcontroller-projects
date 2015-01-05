@@ -1,36 +1,8 @@
-Cmp-Mod V01 Created by CvPcb (2013-jul-07)-stable date = Monday, December 22, 2014 'pmt' 07:26:39 pm
-
-BeginCmp
-TimeStamp = /5484C848;
-Reference = BT1;
-ValeurCmp = BATTERY;
-IdModule  = BAT-HLD-012-THM;
-EndCmp
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Sunday, January 04, 2015 'pmt' 01:41:53 pm
 
 BeginCmp
 TimeStamp = /541DB545;
 Reference = C1;
-ValeurCmp = 1nF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB7C8;
-Reference = C2;
-ValeurCmp = 100nF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB7F8;
-Reference = C3;
-ValeurCmp = 1nF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB82C;
-Reference = C4;
 ValeurCmp = 1nF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -53,34 +25,6 @@ BeginCmp
 TimeStamp = /541DB557;
 Reference = C7;
 ValeurCmp = 220nF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB7CE;
-Reference = C8;
-ValeurCmp = 220nF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB7FE;
-Reference = C9;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB832;
-Reference = C10;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB857;
-Reference = C11;
-ValeurCmp = 220n;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -141,17 +85,17 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5484D33B;
-Reference = C20;
-ValeurCmp = 1u;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /5498AA0E;
 Reference = C21;
 ValeurCmp = 100n;
 IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A97F2C;
+Reference = CON1;
+ValeurCmp = USB-MINI-B;
+IdModule  = USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
@@ -171,22 +115,8 @@ EndCmp
 BeginCmp
 TimeStamp = /542A3EFD;
 Reference = F1;
-ValeurCmp = 2A PPTC;
+ValeurCmp = 2A;
 IdModule  = FUSE_TE5;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849F0E;
-Reference = J1;
-ValeurCmp = USB-MINI-B;
-IdModule  = USB_B;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849ADC;
-Reference = J2;
-ValeurCmp = MICROSD;
-IdModule  = 475710001;
 EndCmp
 
 BeginCmp
@@ -225,17 +155,10 @@ IdModule  = SCREW_TERMINAL_4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54986CD2;
-Reference = P5;
-ValeurCmp = CONN_01X04;
-IdModule  = SCREW_TERMINAL_4;
-EndCmp
-
-BeginCmp
 TimeStamp = /541D9709;
 Reference = P6;
 ValeurCmp = ISP;
-IdModule  = ISP;
+IdModule  = ISP_EDGE;
 EndCmp
 
 BeginCmp
@@ -309,16 +232,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /541DB872;
-Reference = R5;
-ValeurCmp = 1M;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB3C9;
+TimeStamp = /54A9813F;
 Reference = R6;
-ValeurCmp = 50k;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -330,58 +246,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /541DB7C2;
-Reference = R8;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB7F2;
-Reference = R9;
-ValeurCmp = 2k2;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB826;
-Reference = R10;
-ValeurCmp = 2k2;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB84B;
-Reference = R11;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /541DB3E5;
-Reference = R12;
-ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /541EF5AE;
 Reference = R13;
 ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /542192DC;
-Reference = R14;
-ValeurCmp = 2k49;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /542192CC;
-Reference = R15;
-ValeurCmp = 2k49;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -407,27 +274,6 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5484CC88;
-Reference = R19;
-ValeurCmp = 4.7k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /5484CC8E;
-Reference = R20;
-ValeurCmp = 4.7k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849E5C;
-Reference = R21;
-ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /541E24AB;
 Reference = R22;
 ValeurCmp = 1k;
@@ -438,20 +284,6 @@ BeginCmp
 TimeStamp = /541E24B1;
 Reference = R23;
 ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849CC5;
-Reference = R24;
-ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849CA9;
-Reference = R25;
-ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -505,37 +337,9 @@ IdModule  = TQFP44;
 EndCmp
 
 BeginCmp
-TimeStamp = /5484B9CA;
-Reference = U4;
-ValeurCmp = 74LS125;
-IdModule  = SSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /5484C56F;
-Reference = U5;
-ValeurCmp = DS1307;
-IdModule  = SO8E;
-EndCmp
-
-BeginCmp
-TimeStamp = /54849C8E;
-Reference = VR1;
-ValeurCmp = MCP1702;
-IdModule  = SOT23;
-EndCmp
-
-BeginCmp
 TimeStamp = /541D96C0;
 Reference = X1;
 ValeurCmp = 16 MHz;
-IdModule  = crystal_smd_2.5x2;
-EndCmp
-
-BeginCmp
-TimeStamp = /5484C58A;
-Reference = X2;
-ValeurCmp = 32768 kHz;
 IdModule  = crystal_smd_2.5x2;
 EndCmp
 
