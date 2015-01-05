@@ -16,8 +16,8 @@ Master Volume: 8 bits
 Snare / DR_Alt	4+4 bits
 Bass / Tom1	4+4 bits
 Tom2 / Tom3	4+4 bits
-HH / HH Pedal	4+4 bits
+HH / Ride	4+4 bits
 Crash / Splash	4+4 bits
-Ride / CY_Alt	4+4 bits
+CY_Alt / Unused	4+4 bits
 Unused			8 bits
 

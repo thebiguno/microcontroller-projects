@@ -17,6 +17,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 
@@ -31,9 +32,27 @@
  */
 
 void protocol_dispatch_message(uint8_t cmd, uint8_t *bytes, uint8_t length){
-	if (cmd == 0x32){
-		uint8_t kit_id[1] = {0x00};	//TODO Read last used kit ID from EEPROM
+	if (cmd == 0x30){	//Pi is requesting volume state for spefified kit
+		uint8_t volumes[8];
+		volumes[0] = bytes[0];	//Kit ID
+		for (uint8_t i = 0; i < 7; i++){
+			volumes[i] = eeprom_read_byte((uint8_t*) ((bytes[0] * 8) + 8 + i));
+		}
+		protocol_send_message(0x31, volumes, 8);
+	}
+	else if (cmd == 0x31){	//Pi is saving volume state for specified kit
+		uint8_t kit_id = (bytes[0] & 0x7F);
+		for (uint8_t i = 0; i < 7; i++){
+			eeprom_update_byte((uint8_t*) ((kit_id * 8) + 8 + i), bytes[i + 1]);
+		}
+	}
+	else if (cmd == 0x32){	//Pi is requesting current kit id
+		uint8_t kit_id[1];
+		kit_id[0] = eeprom_read_byte((uint8_t*) 0x06);
 		protocol_send_message(0x33, kit_id, 1);
+	}
+	else if (cmd == 0x33){	//Pi is saving current kit id
+		eeprom_update_byte((uint8_t*) 0x06, bytes[0]);
 	}
 }
 

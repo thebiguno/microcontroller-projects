@@ -2,6 +2,7 @@ import pygame
 import serial
 import Queue as queue
 import threading
+import traceback
 import time
 import os
 import sys
@@ -120,6 +121,7 @@ class Kit:
 		self.number = None
 		self.kit_name = None
 		self.instruments = {}
+		self.volume = 1.0
 
 	def get_named_channel(self, channel):
 		return Kit.named_channels[channel]
@@ -133,36 +135,75 @@ class Kit:
 	def get_name(self):
 		return self.kit_name
 	
-	def get_number(self):
-		return self.number
-	
-	def get_next_number(self):
+	@property
+	def next_number(self):
 		dirs = [d for d in os.listdir(Kit.samples_folder) if re.compile("[0-9][0-9][0-9]").match(d)]
 		dirs.sort()
-		index = dirs.index(self.get_number_formatted())
-		index = index + 1
+		try:
+			index = dirs.index(self.number_formatted)
+			index = index + 1
+		except ValueError:
+			index = 0;
 		if index >= len(dirs):
 			index = 0
-		return index
+		return int(dirs[index])
 	
-	def get_number_formatted(self):
+	@property
+	def number_formatted(self):
 		return "{0:0=3d}".format(self.number)
+	
+	@property
+	def volumes(self):
+		volumes = {}
+		for instrument_name in Kit.named_instruments:
+			if instrument_name in self.instruments:
+				volumes[instrument_name] = self.instruments[instrument_name].volume
+			else:
+				volumes[instrument_name] = 1
+		return volumes
+	
+	@volumes.setter
+	def volumes(self, volumes):
+		if "master" in volumes:
+			self.volume = volumes["master"]
+			if self.volume < 0:
+				self.volume = 0
+			elif self.volume > 1:
+				self.volume = 1
+		else:
+			self.volume = 1
+		
+		
+		for instrument in self.instruments:
+			if instrument.name in volumes:
+				instrument.volume = volume
+			else:
+				instrument.volume = 1
+				
+	
+	@property
+	def kit_path(self):
+		return os.path.join(Kit.samples_folder, self.number_formatted)
 
 	def load_samples(self, number):
 		self.number = number
 		self.instruments = {}
 		
-		kitPath = os.path.join(Kit.samples_folder, self.get_number_formatted())
-		with open(os.path.join(kitPath, 'kit.txt'), 'r') as f:
-			self.kit_name = f.readline()
+		kit_path = self.kit_path
+		try:
+			with open(os.path.join(kit_path, 'kit.txt'), 'r') as f:
+				self.kit_name = f.readline()
+		except IOError:
+			self.load_samples(self.next_number)
+			return
 		
-		print("Loading Samples for Kit " + self.kit_name + " (" + self.get_number_formatted() + ")")
-		for instrument in ["snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat", "crash", "splash", "ride", "cymbal_x"]:
+		print("Loading Samples for Kit " + self.kit_name + " (" + self.number_formatted + ")")
+		for instrument in Kit.named_instruments:
 			if instrument == "hihat":
-				self.instruments[instrument] = HiHat(kitPath)
+				self.instruments[instrument] = HiHat(self)
 			else:
-				self.instruments[instrument] = Instrument(instrument, kitPath)
-			
+				self.instruments[instrument] = Instrument(instrument, self)
+	
 	def play(self, instrument, volume=1.0):
 		if instrument in self.instruments:
 			self.instruments[instrument].play(volume)
@@ -181,11 +222,15 @@ class Kit:
 # with a single instrument.  These samples must be named "01.wav", "02.wav", etc.
 # A given sample is chosen from a linear mapping to requested volume.
 class Instrument:
-	def __init__(self, name, kitPath):
+	def __init__(self, name, kit):
 		self.name = name
+		self.kit = kit
 		self.samples = []
+		self._volume = 1.0
 		
-		instrument_path = os.path.join(kitPath, name)
+		kit_path = self.kit.kit_path
+		
+		instrument_path = os.path.join(kit_path, name)
 		if os.path.isdir(instrument_path):
 			print(" Loading Samples for Instrument '" + name + "'")
 			samples = [sample for sample in os.listdir(instrument_path) if re.compile("[0-9][0-9]\\.wav").match(sample)]
@@ -202,15 +247,27 @@ class Instrument:
 		if channel.get_busy():
 			print("Warning: no free channels")
 			channel.stop()
-		channel.set_volume(volume)
+		channel.set_volume(volume * self.volume * self.kit.volume)
 		return channel
-		
+	
 	def get_index(self, value, length):
 		index = int((-1 * value * length) + length)
 		if index >= length:
 			return length - 1
 		return index
 	
+	@property
+	def volume(self):
+		return self._volume
+	
+	@volume.setter
+	def volume(self, volume):
+		if volume < 0:
+			volume = 0
+		elif volume > 1:
+			volume = 1
+		self.volume = volume
+		
 	def play(self, volume):
 		channel = self.get_channel(volume)
 		
@@ -223,18 +280,22 @@ class Instrument:
 			
 # A hihat is a special instrument which contains multiple sample mappings for different event types.
 class HiHat(Instrument):
-	def __init__(self, kitPath):
+	def __init__(self, kit):
 		HiHat.recent_positions_count = 10
 	
 		self.name = "hihat"
+		self.kit = kit
 		self.samples = {}		#A dictionary of name / sample array pairs
 		self.available_types = []		#All hihat types that have at least one sample in them
 		self.recent_positions = [0]		# Here we store the last X positions; used for splash sounds
+		self._volume = 1.0
+		
+		kit_path = self.kit.kit_path
 		
 		for hihat_type in ["tight", "closed", "loose", "open", "chic", "splash"]:
 			self.samples[hihat_type] = []
 
-			instrument_path = os.path.join(kitPath, "hihat_" + hihat_type)
+			instrument_path = os.path.join(kit_path, "hihat_" + hihat_type)
 			if os.path.isdir(instrument_path):
 				print(" Loading Samples for Instrument 'hihat_" + hihat_type + "'")
 				
@@ -312,68 +373,72 @@ class SerialMonitor:
 			
 			self.serial = serial.Serial('/dev/ttyAMA0', 38400)
 			while True:
-				b = ord(self.serial.read())
-				if (err and b == SerialMonitor.START):
-					# recover from error condition
-					print("Recover from error condition")
-					err = False
-					position = 0
-				elif (err):
-					continue
-
-				if (position > 0 and b == SerialMonitor.START):
-					# unexpected start of frame
-					print("Unexpected start of frame")
-					err = True
-					continue
-
-				if (position > 0 and b == SerialMonitor.ESCAPE):
-					# unescape next byte
-					esc = True
-					continue
-				
-				if (esc):
-					# unescape current byte
-					b = 0x20 ^ b
-					esc = False
-
-				if (position > 1):
-					checksum = (checksum + b) & 0xFF
-				
-				if (position == 0):
-					position = position + 1
-					continue
-				elif (position == 1):
-					length = b
-					print("Received length: " + hex(length))
-					position = position + 1
-					continue
-				elif (position == 2):
-					command = b
-					print("Received command: " + hex(command))
-					position = position + 1
-					continue
-				else:
-					if (position > SerialMonitor.MAX_SIZE):
-						# this probably can't happen
-						print("Position > MAX_SIZE")
+				try:
+					b = ord(self.serial.read())
+					if (err and b == SerialMonitor.START):
+						# recover from error condition
+						print("Recover from error condition")
+						err = False
+						position = 0
+					elif (err):
 						continue
 
-					if (position == (length + 2)):
-						if (checksum == 0xff):
-							print("Checksum verified")
-							#Finished the message; pass it to the callback
-							callback(command, message[:(position - 3)])
-							
-						else:
-							err = True;
-							print("Invalid checksum")
-						position = 0;
-						checksum = 0;
-					else:
-						message[position - 3] = b
+					if (position > 0 and b == SerialMonitor.START):
+						# unexpected start of frame
+						print("Unexpected start of frame")
+						err = True
+						continue
+
+					if (position > 0 and b == SerialMonitor.ESCAPE):
+						# unescape next byte
+						esc = True
+						continue
+					
+					if (esc):
+						# unescape current byte
+						b = 0x20 ^ b
+						esc = False
+
+					if (position > 1):
+						checksum = (checksum + b) & 0xFF
+					
+					if (position == 0):
 						position = position + 1
-						print("Received message byte " + hex(b))
+						continue
+					elif (position == 1):
+						length = b
+						print("Received length: " + hex(length))
+						position = position + 1
+						continue
+					elif (position == 2):
+						command = b
+						print("Received command: " + hex(command))
+						position = position + 1
+						continue
+					else:
+						if (position > SerialMonitor.MAX_SIZE):
+							# this probably can't happen
+							print("Position > MAX_SIZE")
+							continue
+
+						if (position == (length + 2)):
+							if (checksum == 0xff):
+								print("Checksum verified")
+								#Finished the message; pass it to the callback
+								callback(command, message[:(position - 3)])
+								
+							else:
+								err = True;
+								print("Invalid checksum")
+							position = 0;
+							checksum = 0;
+						else:
+							message[position - 3] = b
+							position = position + 1
+							print("Received message byte " + hex(b))
+				except Exception:
+					print("Unhandled exception in read_listener; continuing")
+					traceback.print_exc()
 		
 		self.read_thread = threading.Thread(name="SerialReadListener", target=read_listener)
 		self.read_thread.daemon = True
@@ -383,9 +448,13 @@ class SerialMonitor:
 		
 		def write_listener():
 			while True:
-				b = self.write_queue.get()
-				print("Writing byte " + hex(ord(b)))
-				self.serial.write(str(b))
+				try:
+					b = self.write_queue.get()
+					print("Writing byte " + hex(ord(b)))
+					self.serial.write(str(b))
+				except Exception:
+					print("Unhandled exception in write_listener; continuing")
+					traceback.print_exc()
 				
 		self.write_thread = threading.Thread(name="SerialWriteListener", target=write_listener)
 		self.write_thread.daemon = True
@@ -425,18 +494,22 @@ class ButtonMonitor:
 		for button in buttons:
 			gpio.setup(button, gpio.IN)
 
-		def listener():
+		def button_listener():
 			state = [False, False, False, False]
 			while True:
-				time.sleep(0.01)
-				for i in range(len(buttons)):
-					newState = gpio.input(buttons[i])
-					if newState != state[i]:
-						state[i] = newState
-						if newState == True:
-							callback(i)
+				try:
+					time.sleep(0.01)
+					for i in range(len(buttons)):
+						newState = gpio.input(buttons[i])
+						if newState != state[i]:
+							state[i] = newState
+							if newState == True:
+								callback(i)
+				except Exception:
+					print("Unhandled exception in button_listener; continuing")
+					traceback.print_exc()
 							
-		self.button_thread = threading.Thread(name="ButtonMonitor", target=listener)
+		self.button_thread = threading.Thread(name="ButtonMonitor", target=button_listener)
 		self.button_thread.daemon = True
 		self.button_thread.start()
 
@@ -446,6 +519,8 @@ class ButtonMonitor:
 
 kit = Kit()
 display = Display()
+serial_monitor = None
+button_monitor = None
 
 def gpio_init():
 	gpio.setmode(gpio.BOARD)
@@ -470,8 +545,12 @@ def handle_serial_message(command, message):
 	
 	elif command == 0x11:
 		print("Ack for command " + str(message[0]))
-		
+	
+	elif command == 0x31:
+		print("Received 'load volume' command")
+	
 	elif command == 0x33:
+		print("Received 'load kit' command: " + str(message[0]))
 		kit.load_samples(message[0])
 		show_kit()
 
@@ -494,7 +573,25 @@ def handle_button_press(button):
 	
 	if mode == 0:
 		if button == 0x01:
-			kit.load_samples(kit.get_next_number())
+			#Save the current volume state to EEPROM
+			volumes = kit.volumes
+			message = [None] * 8
+			message[0] = kit.number & 0x7F
+			message[1] = int(kit.volume * 255) & 0xFF
+			message[2] = (int(kit.instruments["snare"].volume * 16) & 0x0F) << 4 + (int(kit.instruments["drum_x"].volume * 16) & 0x0F)
+			message[3] = (int(kit.instruments["bass"].volume * 16) & 0x0F) << 4 + (int(kit.instruments["tom1"].volume * 16) & 0x0F)
+			message[4] = (int(kit.instruments["tom2"].volume * 16) & 0x0F) << 4 + (int(kit.instruments["tom3"].volume * 16) & 0x0F)
+			message[5] = (int(kit.instruments["hihat"].volume * 16) & 0x0F) << 4 + (int(kit.instruments["ride"].volume * 16) & 0x0F)
+			message[6] = (int(kit.instruments["crash"].volume * 16) & 0x0F) << 4 + (int(kit.instruments["splash"].volume * 16) & 0x0F)
+			message[7] = (int(kit.instruments["cymbal_x"].volume * 16) & 0x0F) << 4
+			print("Saving volume state: " + str(message))
+			serial_monitor.write(0x31, message)
+
+			#Load the next set of samples
+			kit.load_samples(kit.next_number)
+			
+			#Load the new volume states from EEPROM
+			serial_monitor.write(0x30, [kit.number])
 			
 		show_kit()
 		
@@ -507,7 +604,9 @@ def handle_button_press(button):
 	elif mode == 3:
 		if button == 0x01:
 			show_shutdown(shutting_down=True)
+			serial_monitor.write(0x33, [kit.number])
 			#os.system("shutdown -h now")
+			time.sleep(1) #Wait for serial write to finish
 			gpio.output(7, False)
 			os.kill(os.getpid(), signal.SIGINT)	#os.exit kills the local thread only.
 		else:
@@ -518,8 +617,7 @@ def show_splash():
 	
 def show_kit(refresh=True):
 	if refresh:
-		display.write(kit.get_number_formatted() + " " + kit.get_name())
-	
+		display.write(kit.number_formatted + " " + kit.get_name())
 def show_volume():
 	display.write("Master")
 	
@@ -546,9 +644,9 @@ if (__name__=="__main__"):
 	serial_monitor = SerialMonitor(handle_serial_message)
 
 	# Request last used kit from AVR repeatedly until it replies.
-	while kit.get_number() == None:
+	while kit.number == None:
 		serial_monitor.write(0x32, [])
-		time.sleep(1)
+		time.sleep(5)
 
 	show_kit()
 	button_monitor = ButtonMonitor(handle_button_press)
@@ -607,7 +705,8 @@ if (__name__=="__main__"):
 	'''
 	
 	while(True):
-		time.sleep(10)
+		time.sleep(5)
+		print("***** Threads:")
 		for thread in threading.enumerate():
 			print("Thread: " + thread.name + " Daemon: " + str(thread.daemon))
 	
