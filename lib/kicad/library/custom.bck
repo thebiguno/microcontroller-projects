@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Wednesday, December 24, 2014 'pmt' 04:19:27 pm
+EESchema-DOCLIB  Version 2.0  Date: Monday, January 05, 2015 'pmt' 03:50:30 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -47,6 +47,12 @@ $ENDCMP
 $CMP MCP4451
 D Digital Potentiometer
 K potentiometer
+$ENDCMP
+#
+$CMP MOSFET-SOT-23-3
+D BSS138, 50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23
+K N-Channel MOSFET Logic Level
+F http://www.fairchildsemi.com/ds/BS/BSS138.pdf
 $ENDCMP
 #
 $CMP NCP1400A
