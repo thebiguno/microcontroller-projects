@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, January 06, 2015 'amt' 09:16:32 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, January 06, 2015 'amt' 11:58:11 am
 
 BeginCmp
 TimeStamp = /54808894;
@@ -52,6 +52,13 @@ EndCmp
 BeginCmp
 TimeStamp = /54AC0BC8;
 Reference = C8;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AC31D5;
+Reference = C9;
 ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -121,49 +128,49 @@ EndCmp
 
 BeginCmp
 TimeStamp = /545805FA;
-Reference = R2;
+Reference = R1;
 ValeurCmp = 22;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545805E8;
-Reference = R3;
+Reference = R2;
 ValeurCmp = 22;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54580AFB;
-Reference = R4;
+Reference = R3;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54580CE7;
-Reference = R5;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /5458183C;
-Reference = R6;
+Reference = R4;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545BBA0D;
-Reference = R7;
+Reference = R5;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545BBA13;
-Reference = R8;
+Reference = R6;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5458183C;
+Reference = R7;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
