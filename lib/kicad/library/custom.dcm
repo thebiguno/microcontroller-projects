@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 06, 2015 'pmt' 03:53:55 pm
+=======
+EESchema-DOCLIB  Version 2.0  Date: Monday, January 05, 2015 'pmt' 03:52:05 pm
+>>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
