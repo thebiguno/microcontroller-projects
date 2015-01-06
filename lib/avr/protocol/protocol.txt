@@ -1,0 +1,33 @@
+Protocol Info
+-------------
+
+Message Structure (bi-directional):
+Segment				Length
+---------------------------------
+Frame start			1 byte (0x7e)
+Length				1 byte
+Command				1 byte
+Payload				0 - 254 bytes
+Checksum			1 byte
+
+Commands:
+---------
+Commands have a variable payload.  A description of payloads is below.
+Portions in [square brackets] are optional.
+
+Command						Direction				Payload															Response
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- General commands
+AnnounceControlId			Control -> Device		Controller ID; UC = 0x55 ('U'), Processing = 0x50 ('P'), etc	None
+
+SendAcknowledge				Device -> Control		Command being ack'd (1 byte)									None
+SendComplete				Device -> Control		Command completed (1 byte)										None
+
+RequestEnableDebug			Control -> Device		Null															Ack
+RequestDisableDebug			Control -> Device		Null															Ack
+SendDebug					Device -> Control		Variable depending on message, max 254 bytes					None
+
+RequestBattery				Control -> Device		Null															Battery message
+SendBattery					Device -> Control		1 byte															None
+
+Specific implementations can extend the commands.  All the commands listed above are in the 0x0X range (see protocol.h, MESSAGE_* defines, for specific values)

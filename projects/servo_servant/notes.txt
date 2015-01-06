@@ -1,0 +1,9 @@
+TODO Specify crystal capacitors
+TODO in-circuit serial programming
+
+
+Servo
+Neutral position: 1.5ms
+Min: 1ms?
+Max: 2ms?
+Period: 15-20ms? (rc range 40Hz to 200Hz?)

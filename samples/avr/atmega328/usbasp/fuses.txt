@@ -1,0 +1,8 @@
+atmega8: -U lfuse:w:0x7F:m -U hfuse:w:0xD8:m -U lock:w:0xCF:m
+atmega88: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
+atmega88p: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
+atmega168: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
+atmega168p: -U lfuse:w:0xFF:m -U hfuse:w:0xDF:m -U efuse:w:0xF8:m -U lock:w:0xCF:m
+
+atmega328p (4k bootloader): -U lfuse:w:0xFF:m -U hfuse:w:0xD8:m -U efuse:w:0xFF:m -U lock:w:0xCF:m
+atmega328p (2k bootloader): -U lfuse:w:0xFF:m -U hfuse:w:0xDA:m -U efuse:w:0xFF:m -U lock:w:0xCF:m

@@ -1,0 +1,185 @@
+Cmp-Mod V01 Created by CvPCB (2011-05-25)-stable date = Mon 07 Jan 2013 10:29:16 PM MST
+
+BeginCmp
+TimeStamp = /50E8A0F1;
+Reference = C1;
+ValeurCmp = 2.2uF_3V;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A10F;
+Reference = C2;
+ValeurCmp = 2.2uF_3V;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A135;
+Reference = C3;
+ValeurCmp = 22uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /50EA5F76;
+Reference = C4;
+ValeurCmp = 0.1_uF;
+IdModule  = C2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A0CE;
+Reference = C5;
+ValeurCmp = 120uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A1A0;
+Reference = C6;
+ValeurCmp = 220uF;
+IdModule  = C1V7;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A1BE;
+Reference = C7;
+ValeurCmp = 220uF;
+IdModule  = C1V7;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8927C;
+Reference = C8;
+ValeurCmp = 0.1uF;
+IdModule  = C2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89292;
+Reference = C9;
+ValeurCmp = 0.1uF;
+IdModule  = C2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A166;
+Reference = C10;
+ValeurCmp = 2200uF_16V;
+IdModule  = CP36V;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8A18D;
+Reference = C11;
+ValeurCmp = 2200uF_16V;
+IdModule  = CP36V;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89CCF;
+Reference = F1;
+ValeurCmp = 250V_SB;
+IdModule  = FUSE_TE5;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8985E;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = TB_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89AE1;
+Reference = K2;
+ValeurCmp = CONN_3;
+IdModule  = TB_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E8947C;
+Reference = P1;
+ValeurCmp = CONN_2;
+IdModule  = TB_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89481;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = TB_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E88E7A;
+Reference = R1;
+ValeurCmp = 1.3k;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E88EAC;
+Reference = R2;
+ValeurCmp = 1.3k;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E893E4;
+Reference = R3;
+ValeurCmp = 18;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89310;
+Reference = R4;
+ValeurCmp = 18;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E892D4;
+Reference = R5;
+ValeurCmp = 1;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E892F3;
+Reference = R6;
+ValeurCmp = 1;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E897DA;
+Reference = RV1;
+ValeurCmp = 100k;
+IdModule  = pin_array_3x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89C91;
+Reference = U1;
+ValeurCmp = VSK-S25;
+IdModule  = VSK-S25;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E88E4B;
+Reference = U2;
+ValeurCmp = TDA2009A;
+IdModule  = MULTIWATT11;
+EndCmp
+
+BeginCmp
+TimeStamp = /50E89CED;
+Reference = VR1;
+ValeurCmp = VR;
+IdModule  = R3;
+EndCmp
+
+EndListe

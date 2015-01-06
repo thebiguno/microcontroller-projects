@@ -1,0 +1,65 @@
+We use the standard protocol for all communication.  This allows for arbitrary length messages,
+up to 255 commands, etc.  Each supported message is listed below.
+
+There are a few namespaces for commands:
+-Commands 0x00 - 0x0F are velocity samples
+-Commands 0x10 and 0x11 are ack / nack (bidirectional)
+
+AVR to Pi:
+==========
+Command 0x00 - 0x0F:
+	-Velocity Sample
+	-Command is the channel
+	-Message length 1 bytes
+	-Message: |<velocity>|
+
+Command 0x10:
+	-Nack
+	-Message: |<command:8>| (command which is being nacked)
+
+Command 0x11:
+	-Ack
+	-Message: |<command:8>| (command which is being acked)
+
+Command 0x31:
+	-Send volume state
+	-Message: (8 bytes)
+		|<zero:1><kit_id:7>|<master:8>|<snare:4><drum_x:4>|<bass:4><tom1:4>|<tom2:4><tom3:4>|<hh:4><hh_pedal:4>|<crash:4><splash:4>|<ride:4><cymbal_x:4>|
+		
+Command 0x33:
+	-Send last used kit
+	-Message |<zero:1><kit_id:7>|
+	
+	
+Pi to AVR:
+==========
+Command 0x20 - 0x2F:
+	-Request calibrate channel
+	-Channel is 4 LSB of command
+	-Empty message
+	-When AVR receives this packet, it resets potentiometer to 0, waits for a hit 
+	 (unamplified value greater than 16), and then performs binary search on
+	 potentiometer for channel cccc until the peak voltage registers above 0xF0 but 
+	 below 0xFF
+	-When finished, AVR sends ack message and saves to EEPROM
+	-Times out after X seconds, and sends nack message ?
+
+Command 0x30:
+	-Request load volume data from EEPROM
+	-Message: |<zero:1><kit_id:7>|
+	-AVR responds with command 0x31
+	
+Command 0x31:
+	-Send volume state
+	-Message: (8 bytes)
+		|<zero:1><kit_id:7>|<master:8>|<snare:4><drum_x:4>|<bass:4><tom1:4>|<tom2:4><tom3:4>|<hh:4><hh_pedal:4>|<crash:4><splash:4>|<ride:4><cymbal_x:4>|
+
+Command 0x32:
+	-Request load last used kit number from EEPROM
+	-Message: None
+	-AVR responds with command 0x33
+	
+Command 0x33:
+	-Send last used kit
+	-Message |<zero:1><kit_id:7>|
+

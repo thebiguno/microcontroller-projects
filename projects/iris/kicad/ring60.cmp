@@ -1,0 +1,143 @@
+Cmp-Mod V01 Created by CvPcb (2014-02-26 BZR 4721)-product date = Monday, June 09, 2014 'pmt' 12:09:08 pm
+
+BeginCmp
+TimeStamp = /537ACF90;
+Reference = BT1;
+ValeurCmp = BATTERY;
+IdModule  = ring60:BAT-HLD-012-THM;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACFF9;
+Reference = C1;
+ValeurCmp = 0.1uF;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390C2C8;
+Reference = C2;
+ValeurCmp = 100u;
+IdModule  = c:cnp_3mm_disc;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390C546;
+Reference = C3;
+ValeurCmp = 1u;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390C9EB;
+Reference = C4;
+ValeurCmp = 1u;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /53861FB5;
+Reference = GND1;
+ValeurCmp = CONN_1;
+IdModule  = conn:SIL-1;
+EndCmp
+
+BeginCmp
+TimeStamp = /53861E58;
+Reference = IC1;
+ValeurCmp = ATMEGA328-A;
+IdModule  = cms:TQFP32;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD616;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = conn:SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /538620D1;
+Reference = P1;
+ValeurCmp = ISP;
+IdModule  = custom:ISP_EDGE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5395F94D;
+Reference = P2;
+ValeurCmp = CONN_2;
+IdModule  = conn:SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5395F95F;
+Reference = P3;
+ValeurCmp = CONN_2;
+IdModule  = conn:SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD150;
+Reference = R1;
+ValeurCmp = 4k7;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD162;
+Reference = R2;
+ValeurCmp = 4k7;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537E508D;
+Reference = R3;
+ValeurCmp = 1k;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390C23B;
+Reference = R4;
+ValeurCmp = 100;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5390CC56;
+Reference = R5;
+ValeurCmp = 100;
+IdModule  = cms:SM0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACEC6;
+Reference = U1;
+ValeurCmp = DS1307;
+IdModule  = cms:SO8E;
+EndCmp
+
+BeginCmp
+TimeStamp = /537AD35C;
+Reference = U2;
+ValeurCmp = TSOP39338;
+IdModule  = conn:SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /53861FA3;
+Reference = VCC1;
+ValeurCmp = CONN_1;
+IdModule  = conn:SIL-1;
+EndCmp
+
+BeginCmp
+TimeStamp = /537ACF32;
+Reference = X2;
+ValeurCmp = 32,768 kHz;
+IdModule  = cms:SM1812L;
+EndCmp
+
+EndListe

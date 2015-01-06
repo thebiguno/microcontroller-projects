@@ -1,0 +1,24 @@
+Cmp-Mod V01 Created by CvPcb (2013-mar-25)-stable date = Sun 16 Nov 2014 03:07:30 PM MST
+
+BeginCmp
+TimeStamp = /54680771;
+Reference = J1;
+ValeurCmp = SIL10;
+IdModule  = SIL-10;
+EndCmp
+
+BeginCmp
+TimeStamp = /54680791;
+Reference = J2;
+ValeurCmp = SIL10;
+IdModule  = SIL-10;
+EndCmp
+
+BeginCmp
+TimeStamp = /54680749;
+Reference = P1;
+ValeurCmp = CONN_10X2;
+IdModule  = PIN_ARRAY_10x2;
+EndCmp
+
+EndListe

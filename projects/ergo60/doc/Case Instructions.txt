@@ -1,0 +1,39 @@
+Populate all of the PCBs with their components.
+Don’t connect the boards yet.
+
+Cut the bottom layer out of 1/4” MDF just slightly larger than 20 cm x 35 cm
+Cut the top layer out of 1/2” MDF just slightly larger than 20 cm x 35 cm
+Clamp the top layer and bottom layer together
+Drill 1/8” holes all the way through both top and bottom layers in all locations marked A.
+Drill 1/8” holes 1/2” deep from the bottom layer in all the locations marked B.
+
+Countersink both the top layer and bottom layer according the length of screw and type of screw head being used in all of the locations marked A.
+Countersink the bottom layer 1/16” deep in all the locations marked B.
+
+Temporarily screw together the top layer and bottom layer.
+Use a 1/4” router bit to round the edges.
+Drill a ???” diameter hole in the back for the USB cable.  (Or use the router to cut a notch?)
+Sand and finish the outer edges.
+
+Unscrew the top and bottom.
+Using a router with a 1/4” bit, remove 1/8” of the bottom layer for the bottom cavity area.  This provides a cavity for the solder connections and diodes to fit into.
+Using a router with a 1/4” bit, remove 1/16” of the bottom layer for the bottom lip area.  The depth of the cut must allow the PCBs to fit so that there is no raised edge or the top will not fit correctly.
+Using a router with a 1/4” bit, remove 3/8” of the top layer for the top cavity area.  This provides a cavity for the control board, namely the Teensy, to fit into.
+Using a router with a ???” bit, through cut the top layer for the top opening area.  This allows the key switch stems to extend out of the top and the key caps to descend into the case.
+If desired, drill the LED holes through the top layer according to the size of LED being used.
+
+Paint the bottom layer.
+
+Place all of the PCBs in the correct positions and cut wires to length for interconnecting the boards.
+Solder the wires to the PCBs.
+
+Use 1/4” #4-40 bolts to bolt all PCBs to the bottom layer.
+Fit all key switches with key caps.
+
+Ensure the top opening is large enough for all switches to clear, and if not use sand paper to enlarge the opening as required.
+
+Paint the top layer.
+
+Attach the top to the bottom using 5/8” #4-40 bolts to attach the top to the bottom.
+
+

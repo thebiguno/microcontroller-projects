@@ -1,0 +1,71 @@
+MESSAGE STRUCTURE
+frame start	1 byte	(0x7e)
+length		1 byte
+cmd		1 byte
+payload
+checksum	1 byte
+
+FLIGHT ( ->)
+frame start	1 byte	(0x7e)
+length		1 byte  (0x05 = 5 bytes)
+cmd		1 byte	(A = attitude)
+throttle	1 byte
+roll		1 byte
+pitch		1 byte
+yaw		1 byte
+checksum	1 byte
+
+COMMAND ( ->)
+frame start	1 byte	(0x7e)
+length		1 byte  (0x01 = 1 bytes)
+cmd		1 byte	(M = disarM, R = reset attitude, C = calibrate, t = request tuning, E = telemetry toggle, r = raw data toggle)
+checksum	1 byte
+
+TUNING (<->)
+frame start	1 byte	(0x7e)
+length		1 byte
+cmd		1 byte	(p = pid, c = complementary, k = kalman, m = motor)
+payload		(depends on tuning type)
+checksum	1 byte
+
+payloads are
+PID:		36 bytes: p.x, i.x, d.x, p.y, i.y, d.y, p.z, i.z, d.z
+kalman:		24 bytes: qangle.x, qgyro.x, rangle.x, qangle.y, qgyro.y, rangle.y
+motor:		16 bytes: motor_a, motor_b, motor_c, motor_d
+
+TELEMETRY (<- )
+frame start	1 byte	(0x7e)
+length		1 byte	(0x1e = 30 bytes)
+cmd		1 byte	(T = telemetry)
+pitch (x)	1 byte
+roll (y)	1 byte
+yaw (z)		1 byte
+motor A		1 byte
+motor B		1 byte
+motor C		1 byte
+motor D		1 byte
+flags		1 byte
+checksum	1 byte
+
+DIAG (<- )
+frame start	1 byte	(0x7e)
+length		1 bype (variable)
+cmd		1 byte (D = DIAG)
+string		variable length
+checksum
+
+The framing, checksum, and escape mechanism are inspired by the Xbee API mode.
+
+Length
+The length is just the number of bytes in the command + payload, it does not include the frame start, length, or checksum.
+
+Checksum
+To calculate: Not including frame delimiters and length, add all bytes keeping only the lowest 8 bits of the result and subtract from 0xFF.
+To verify: Add all bytes (include checksum, but not the delimiter and length). If the checksum is correct, the sum will equal 0xFF.
+
+Bytes to be escaped:
+0x7e	frame start
+0x7d	escape
+0x11	xon	(reserved for future flow control)
+0x13	xoff	(reserved for future flow control)
+To escape a character, insert a 0x7d and follow it with the byte to be escaped xor'd with 0x20.

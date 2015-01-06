@@ -1,0 +1,67 @@
+representations:
+MoY: 12 of 60 = 5 segments
+	spring = M,A,M = green, summer = J,J,A = yellow, autumn = S,O,N = orange, winter = D,J,F = light blue
+	normal: xBBBBx____x____x____x____x____x____x____x____x____x____x____
+	invert: _BBBB_bbbb_gggg_gggg_gggg_yyyy_yyyy_yyyy_oooo_oooo_oooo_bbbb
+WoY: 54 of 60 = 1 segment
+DoW: 7 of 60 = 8 segments
+	9 segments for sunday, tuesday, thursday, saturday; 
+	monday to friday = white
+	saturday and sunday = red
+	normal: xRRRRRRRRx_______x________x_______x________x_______x________
+	invert: _RRRRRRRR_wwwwwww_wwwwwwww_wwwwwww_wwwwwwww_wwwwwww_rrrrrrrr
+DoM: 30 of 60 = 2 segments
+	1 to 30 = white, 31 = red
+HoD: 12 of 60 = 5 segments 
+	white for AM, purple for PM; or white for daytime, purple for evening
+	normal: xXXXXx____x____x____x____x____x____x____x____x____x____x____
+	invert: _XXXX_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx
+MoH: 60 of 60 = 1 segment 
+	purple for AM, white for PM, black when overlapping hour
+SoM: 60 of 60 = 1 segment
+	red
+phase of the moon: 8 distinct phase patterns
+	new:	x______________x______________x______________x______________
+	wax c:	x______________x_______WWWWWWWxWWWWWWW_______x______________
+	1st q:	x______________xWWWWWWWWWWWWWWxWWWWWWWWWWWWWWx______________
+	wax g:	x_______WWWWWWWxWWWWWWWWWWWWWWxWWWWWWWWWWWWWWxWWWWWWW_______
+	full:	xWWWWWWWWWWWWWWxWWWWWWWWWWWWWWxWWWWWWWWWWWWWWxWWWWWWWWWWWWWW
+	wan g:	xWWWWWWWWWWWWWWxWWWWWWW_______x_______WWWWWWWxWWWWWWWWWWWWWW
+	3rd q:	xWWWWWWWWWWWWWWx______________x______________xWWWWWWWWWWWWWW
+	wan c:	xWWWWWWW_______x______________x______________x_______WWWWWWW
+	0 = new, 15R = waxing crescent, 30R = first quarter, 45R = waxing gibbous, 
+	60 = full, 45L = waning gibbous, 30L = third quarter, 15L = waning crescent
+	code: http://www.voidware.com/moon_phase.htm
+sunrise and sunset
+	set hour and minute hand colours based on sunrise and sunset instead of AM and PM 
+	a lookup table would be the same for every year accurate to about a minute
+	code: http://forum.arduino.cc/index.php/topic,41851.0.html
+persoixante: 1 segment = 24 minutes
+	displayed every 24 minutes
+	the segments of the ring should coloured according to the sunrise and sunset times
+
+HoD, MoH, SoM at 12:21:25
+	normal: xXXXXx____x____x____xX___R____x____x____x____x____x____x____
+	invert: _XXXX_xxxx_xxxx_xxxx_XxxxRxxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx
+WoY, DoW at January 15
+	normal: xR______xWWWWWWWx_______x_______x_______x_______x_______~~~~
+MoY, DoM at January 15
+	normal: xBBBBx____x___Wx____x____x____x____x____x____x____x____x____
+	normal: _BBBB_bbbb_gggW_gggg_gggg_yyyy_yyyy_yyyy_oooo_oooo_oooo_bbbb
+
+similar projects:
+http://www.bramknaapen.com/?p=549
+http://www.instructables.com/id/Bamboo-digital-clock/
+
+project goals
+- real time clock 
+	- DS1307
+	- battery backup
+- remote control
+- surface mount design
+
+programming by remote control
+	year -> month -> day -> hour -> minute -> second
+	year: 2000 to 2059
+	day: from 1 to 31; 31 = blank or red?
+

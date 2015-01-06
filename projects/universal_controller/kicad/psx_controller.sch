@@ -1,0 +1,277 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+EELAYER 27 0
+EELAYER END
+$Descr User 8000 6000
+encoding utf-8
+Sheet 1 1
+Title "Universal PSX Controller"
+Date "9 apr 2014"
+Rev "1.0"
+Comp "digitalcave.va"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATMEGA48-P IC1
+U 1 1 5345768F
+P 2850 3150
+F 0 "IC1" H 2000 4450 40  0000 L BNN
+F 1 "ATMEGA48-P" H 3200 1800 40  0000 L BNN
+F 2 "DIL28" H 2850 3150 30  0000 C CIN
+F 3 "" H 2850 3150 60  0000 C CNN
+	1    2850 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L XBEE X1
+U 1 1 534579FA
+P 5900 4100
+F 0 "X1" H 5900 4500 60  0000 C CNN
+F 1 "XBEE" H 5900 4000 60  0000 C CNN
+F 2 "~" H 5950 4000 60  0000 C CNN
+F 3 "~" H 5950 4000 60  0000 C CNN
+	1    5900 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_3 K1
+U 1 1 53457A76
+P 1250 1150
+F 0 "K1" V 1200 1150 50  0000 C CNN
+F 1 "LDO REGULATOR" V 1300 1150 40  0000 C CNN
+F 2 "" H 1250 1150 60  0000 C CNN
+F 3 "" H 1250 1150 60  0000 C CNN
+	1    1250 1150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3750 3600 5150 3600
+Wire Wire Line
+	3750 3700 5150 3700
+Wire Wire Line
+	5150 4400 4850 4400
+Wire Wire Line
+	4850 4400 4850 4600
+$Comp
+L GND #PWR5
+U 1 1 53457B22
+P 4850 4600
+F 0 "#PWR5" H 4850 4600 30  0001 C CNN
+F 1 "GND" H 4850 4530 30  0001 C CNN
+F 2 "" H 4850 4600 60  0000 C CNN
+F 3 "" H 4850 4600 60  0000 C CNN
+	1    4850 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR1
+U 1 1 53457B38
+P 1150 1700
+F 0 "#PWR1" H 1150 1700 30  0001 C CNN
+F 1 "GND" H 1150 1630 30  0001 C CNN
+F 2 "" H 1150 1700 60  0000 C CNN
+F 3 "" H 1150 1700 60  0000 C CNN
+	1    1150 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1850 4200 1700 4200
+Wire Wire Line
+	1700 4200 1700 4550
+Wire Wire Line
+	1850 4300 1700 4300
+Connection ~ 1700 4300
+$Comp
+L GND #PWR2
+U 1 1 53457B59
+P 1700 4550
+F 0 "#PWR2" H 1700 4550 30  0001 C CNN
+F 1 "GND" H 1700 4480 30  0001 C CNN
+F 2 "" H 1700 4550 60  0000 C CNN
+F 3 "" H 1700 4550 60  0000 C CNN
+	1    1700 4550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 1500 1150 1700
+Wire Wire Line
+	1350 1500 1350 2300
+Wire Wire Line
+	1350 2000 1850 2000
+Wire Wire Line
+	1350 2300 1850 2300
+Connection ~ 1350 2000
+Connection ~ 1350 1700
+$Comp
+L CONN_2 P1
+U 1 1 53457C0B
+P 2250 700
+F 0 "P1" V 2200 700 40  0000 C CNN
+F 1 "BATTERY" V 2300 700 40  0000 C CNN
+F 2 "" H 2250 700 60  0000 C CNN
+F 3 "" H 2250 700 60  0000 C CNN
+	1    2250 700 
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR3
+U 1 1 53457C19
+P 2350 1250
+F 0 "#PWR3" H 2350 1250 30  0001 C CNN
+F 1 "GND" H 2350 1180 30  0001 C CNN
+F 2 "" H 2350 1250 60  0000 C CNN
+F 3 "" H 2350 1250 60  0000 C CNN
+	1    2350 1250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2350 1050 2350 1250
+Wire Wire Line
+	2150 1050 2150 1600
+Wire Wire Line
+	2150 1600 1250 1600
+Wire Wire Line
+	1250 1600 1250 1500
+Text GLabel 2150 1200 0    60   Input ~ 0
+VBAT
+Text GLabel 1350 2000 0    60   Input ~ 0
+VCC
+Wire Wire Line
+	4850 3500 5150 3500
+Wire Wire Line
+	1350 1700 4850 1700
+Wire Wire Line
+	4850 1700 4850 3500
+$Comp
+L CONN_6 P2
+U 1 1 53457D37
+P 5700 2250
+F 0 "P2" V 5650 2250 60  0000 C CNN
+F 1 "PSX_CONNECTOR" V 5750 2250 60  0000 C CNN
+F 2 "" H 5700 2250 60  0000 C CNN
+F 3 "" H 5700 2250 60  0000 C CNN
+	1    5700 2250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 3150 5250 3150
+Wire Wire Line
+	5250 3150 5250 2500
+Wire Wire Line
+	5250 2500 5350 2500
+Text GLabel 5250 3150 2    60   Input ~ 0
+YELLOW (ATTENTION)
+Wire Wire Line
+	3750 3050 5150 3050
+Wire Wire Line
+	5150 3050 5150 2400
+Wire Wire Line
+	5150 2400 5350 2400
+Wire Wire Line
+	3750 2950 5050 2950
+Wire Wire Line
+	5050 2950 5050 2300
+Wire Wire Line
+	5050 2300 5350 2300
+Wire Wire Line
+	5350 2200 4950 2200
+Wire Wire Line
+	4950 2200 4950 2850
+Wire Wire Line
+	4950 2850 3750 2850
+Wire Wire Line
+	5350 2100 4650 2100
+Wire Wire Line
+	4650 2100 4650 2450
+Wire Wire Line
+	5350 2000 4850 2000
+Connection ~ 4850 2000
+$Comp
+L GND #PWR4
+U 1 1 53457FBD
+P 4650 2450
+F 0 "#PWR4" H 4650 2450 30  0001 C CNN
+F 1 "GND" H 4650 2380 30  0001 C CNN
+F 2 "" H 4650 2450 60  0000 C CNN
+F 3 "" H 4650 2450 60  0000 C CNN
+	1    4650 2450
+	1    0    0    -1  
+$EndComp
+Text GLabel 5150 3000 2    60   Input ~ 0
+ORANGE (COMMAND)
+Text GLabel 5050 2850 2    60   Input ~ 0
+CLOCK (BLUE)
+Text GLabel 4950 2700 2    60   Input ~ 0
+DATA (BROWN)
+$Comp
+L C C1
+U 1 1 53457FCB
+P 1550 1400
+F 0 "C1" H 1550 1500 40  0000 L CNN
+F 1 "1uF" H 1556 1315 40  0000 L CNN
+F 2 "~" H 1588 1250 30  0000 C CNN
+F 3 "~" H 1550 1400 60  0000 C CNN
+	1    1550 1400
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C2
+U 1 1 53457FD8
+P 1700 1500
+F 0 "C2" H 1700 1600 40  0000 L CNN
+F 1 "1uF" H 1706 1415 40  0000 L CNN
+F 2 "~" H 1738 1350 30  0000 C CNN
+F 3 "~" H 1700 1500 60  0000 C CNN
+	1    1700 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1550 900  1550 1200
+Wire Wire Line
+	1700 900  1700 1300
+Wire Wire Line
+	950  900  1700 900 
+Wire Wire Line
+	950  900  950  1600
+Wire Wire Line
+	950  1600 1150 1600
+Connection ~ 1150 1600
+Connection ~ 1550 900 
+Text GLabel 4100 3700 3    60   Input ~ 0
+AVR_TX
+Text GLabel 4250 3600 3    60   Input ~ 0
+AVR_RX
+$EndSCHEMATC

@@ -1,0 +1,12 @@
+$*
+*.bak
+*.kicad_pcb-bak
+*.brd-bak
+*-cache.lib
+.DS_Store
+*~.skp
+~*.dxf
+*~
+.#*
+\#*\#
+.~lock.*#

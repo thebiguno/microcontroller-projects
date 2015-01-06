@@ -1,0 +1,153 @@
+Internal of HHKB pro
+=====================
+HHKB pro has MCU and some chips on separate two PCBs.
+
+Controller PCB
+--------------
+    M38K07M4    Renesas MCU with USB function
+                http://documentation.renesas.com/eng/products/mpumcu/rej03b0192_38k0ds.pdf
+
+    (HHKB_controller.jpg)
+
+Keyswitch PCB
+-------------
+    HC4051      Analog Multiplexer: select a row line.
+                http://www.alldatasheet.com/datasheet-pdf/pdf/203989/KODENSHI/KK74HC4051A.html
+    LS145       BCD Decoder: select a column line.
+                http://www.alldatasheet.com/datasheet-pdf/pdf/27373/TI/SN74LS145D.html
+    BU9831      Non-volatile electronic potentiometer: for calibration?
+                http://www.alldatasheet.com/datasheet-pdf/pdf/36387/ROHM/BU9831.html
+    TP1683/4    Capacitive Sensing controller: no datasheet available.
+
+    (HHKB_keyswitch.jpg)
+
+    Topre original chip?
+    (HHKB_TP1684.jpg)
+
+
+Connector Cable
+---------------
+Two PCBs are connected by 15 lines(13 in case of Pro2).
+Vcc and GND use 3(2) lines each, other 9 lines are for keyboard signaling.
+
+    Keyswitch connector
+    pro  pro2           Description                               Teensy++ pins
+    --------------------------------------------------------------------------------------------
+     1       Vcc(5V)    Not exist on Pro2                         5V
+     2   1   Vcc(5V)                                              5V
+     3   2   Vcc(5V)                                              5V
+     4   3   TP1684     KEY: Low(0) when key pressed              PE6 input(with pullup)
+     5   4   TP1684     KEY_PREV: make threshold                  PE7 output
+     6   5   HC4051     A(bit0)\                                  PB0 output
+     7   6   HC4051     B(bit1) > select row(0 to 7)              PB1 output
+     8   7   HC4051     C(bit2)/                                  PB2 output
+     9   8   LS145      A(bit0)\                                  PB3 output
+    10   9   LS145      B(bit1) > select column(0 to 7)           PB4 output
+    11  10   LS145      C(bit2)/                                  PB5 output
+    12  11   LS145      D(enable) Low(0) enables selected column  PB6 output
+    13  12   GND                                                  GND
+    14  13   GND                                                  GND
+    15       GND        Not exist on Pro2                         GND
+
+    NOTE: guessing pin5(KEY_PREV) may work for hysteresis of capacitive sensing.
+    NOTE: 1KOhm didn't work as pullup resistor on KEY. AVR internal pullup or 10KOhm resistor was OK.
+
+    (HHKB_connector.jpg)
+
+
+Keyswitch matrix
+----------------
+60 keyswitches in 8*8 matrix. It is ghost-free and bounce-free.
+
+      COL 0     1       2       3       4       5       6       7
+    ROW ---------------------------------------------------------------
+      0|  2     q       w       s       a       z       x       c
+      1|  3     4       r       e       d       f       v       b
+      2|  5     6       y       t       g       h       n       _NONE_
+      3|  1     Esc     Tab     Control LShift  LAlt    LMeta   Space
+      4|  7     8       u       i       k       j       m       _NONE_
+      5|  \     `       Delete  Return  Fn      RShift  RAlt    RMeta
+      6|  9     0       o       p       ;       l       ,       _NONE_
+      7|  -     +       ]       [       '       /       .       _NONE_
+
+
+Matrix diagram:
+
+             +-------------------------+-+-+-+-+-+-+-+     Vcc
+             |bias control?            - - - - - - - -     ---
+             |                  3.9K*8 R R R R R R R R      |
+    +--------^+      +--------+        - - - - - - - -      |  
+    |        2|      | HC4051 <0-------|-|-|-|-|-|-|-|--|R|-+
+    |         |capa. |        <1-------|-|-|-|-|-|-|-|--|R|-+
+    | TP1684  |sense |        <2-------|-|-|-|-|-|-|-|--|R|-+
+    |       11<------|        <3-------|-|-|-|-|-|-|-|--|R|-+
+    |         |      |        <4-------|-|-|-|-|-|-|-|--|R|-+
+    |         |      |        <5-------|-|-|-|-|-|-|-|--|R|-+
+    |         <-+    |        <6-------|-|-|-|-|-|-|-|--|R|-+
+    |   1   4 | |    |        <7-------|-|-|-|-|-|-|-|--|R|-+
+    +---V---^-+ |    +-^-^-^--+        0 1 2 3 4 5 6 7  33K*8
+       KEY PREV |      A B C         +-----------------+
+        |   | +-^----+ | | |         |      LS145      |
+    Vcc |   | |BU9831| | | |         +-^--^--^--^------+
+    --- |   | +------+ | | |           A  B  C  D   +------+
+     |  |   |          | | |           |  |  |  |   |      |
+    1-3 4   5          6 7 8           9 10 11 12 13-15    |
+    +--------------------------------------------------+   |
+    |                connector                         |  ---
+    +--------------------------------------------------+  GND
+                    to controller
+                                    
+
+Signals charts
+--------------
+    While pressing space bar, watched HHKB original controller signals by logic analyzer.
+    Row and column is looping between 0-7 each for selecting a key.
+    A key is scaned every about 15ms, so scan rate is 66Hz.
+
+    (HHKB_chart1.jpg)
+
+    Space bar locate at ROW:3 COL:7. A key is selected by HC4051(C,B,A) and LS145(C,B,A).
+    Key state can be read on TP1684(4/KEY) while asserting low on LS145(D). 
+
+    Usage of TP1684(5) is not clear. Controller seemed to output previous key state on this line.
+    However key state can be read without using this signal.
+
+    (HHKB_chart2.jpg)
+
+
+Matrix scan pseudo code
+-----------------------
+    for (row: 0-7) {
+        SELECT_ROW(row);        // set HC4051(A,B,C)
+
+        for (col: 0-7) {
+            SELECT_COL(col);    // set LS145(A,B,C)
+
+            _delay_us(40);
+
+            if (prev_key_state(row, col)) {
+                KEY_PREV_ON;
+            }
+
+            _delay_us(7);
+
+            ENALBLE_COL();      // set LS145(D) to low
+
+            _delay_us(10);
+
+            if (KEY == 0) {     // read TP1684(KEY)
+                // key pressed
+            } else {
+                // not pressed
+            }
+
+            KEY_PREV_OFF;
+            UNALBLE_COL();      // set LS145(D) to high
+
+            _delay_us(150);
+        }
+    }
+
+
+
+EOF

@@ -1,0 +1,35 @@
+All samples are located in the 'samples' folder relative to the current working directory of the program.  
+(On a normal installation this SHOULD be at '/usr/local/share/drumslave/').  They are arranged by kit 
+ID number in a specific order:
+
+samples/
+	kit_id/		(e.g. '000', '042', '127', etc)
+		kit.txt
+		instrument_name/	(e.g. 'snare', 'bass', 'drum_x', etc)
+			00.wav
+			01.wav
+			02.wav
+			03.wav
+			...
+			
+The Kit ID is the number of the drum kit.  The folder name MUST meet the following conditions:
+	-It MUST consist entirely of the digits 0-9
+	-It MUST have a length of exactly 3 digits
+	-It MUST be within the range '000' and '127'.
+The kit folder MUST contain a single text file named "kit.txt"
+	-This file includes a single line (16 chars max) which shows the human-readable name of the sample kit
+The kit SHOULD include multiple folders, one for each named instrument.
+	-Supported instrument names include:
+		"snare", "bass", "tom1", "tom2", "tom3", "drum_x", "hihat_open", "hhat_loose", "hihat_closed", "hihat_tight", "hihat_chic", "crash", "splash", "ride", "cymbal_x"
+	-Any extra folders (e.g. "cowbell") are ignored
+	-Any folders not present will result in no samples being played for that instrument
+Within each named instrument folder, there MUST be one or more sample .wav files.
+	-These files MUST be .wav files saved in the format "Signed 16 bit Little Endian, Rate 44100 Hz, Stereo" (or another format which is supported by pygame)
+	-These files MUST be named using only two digits in the range 0-9, with a suffix of .wav
+	-These files MUST be named in order from highest velocity hit to lowest velocity hit, with file 00 being the 
+	 highest velocity hit.
+	-These files SHOULD be normalized such that the apparent loudness is the same for all velocities of a given instrument.  (Volume
+	 is applied programmatically based on velocity; if the samples also have volume reduction applied for lower velocities, the two 
+	 volume reductions will be combined and result in playback that are too quiet for low velocity playing)
+	-These files SHOULD be named sequentially from 00 (e.g. it is recommended that the names are "00.wav, 01.wav, 02.wav, 03.wav", 
+	 rather than "02.wav, 10.wav, 39.wav, 99.wav"; however, as long as the files are in ascending sort order it will be fine.
