@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-EESchema-LIBRARY Version 2.3  Date: Tuesday, January 06, 2015 'pmt' 03:53:55 pm
-=======
 EESchema-LIBRARY Version 2.3  Date: Monday, January 05, 2015 'pmt' 03:52:05 pm
->>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 #encoding utf-8
 #
 # 74HC164
@@ -817,7 +813,6 @@ X 16 16 300 -750 300 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-<<<<<<< HEAD
 # PINS_18
 #
 DEF PINS_18 K 0 40 Y Y 1 F N
@@ -848,8 +843,6 @@ X 18 18 300 -850 300 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-=======
->>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 # PINS_2
 #
 DEF PINS_2 K 0 40 Y Y 1 F N
@@ -864,7 +857,6 @@ X 2 2 300 -50 300 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-<<<<<<< HEAD
 # PINS_20
 #
 DEF PINS_20 K 0 40 Y Y 1 F N
@@ -1045,8 +1037,6 @@ X 19 19 300 -550 300 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-=======
->>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 # PINS_3
 #
 DEF PINS_3 K 0 40 Y Y 1 F N
