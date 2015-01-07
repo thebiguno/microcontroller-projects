@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 06, 2015 'pmt' 03:53:39 pm
-=======
-EESchema-DOCLIB  Version 2.0  Date: Monday, January 05, 2015 'pmt' 03:50:30 pm
->>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -53,15 +49,8 @@ D Digital Potentiometer
 K potentiometer
 $ENDCMP
 #
-$CMP MOSFET-SOT-23-3
-<<<<<<< HEAD
 D N-Channel MOSFET, SOT-23
 K N-Channel MOSFET Logic Level
-=======
-D BSS138, 50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23
-K N-Channel MOSFET Logic Level
-F http://www.fairchildsemi.com/ds/BS/BSS138.pdf
->>>>>>> 3f0499d570f7b64b3b8d98e1d412284ea0223885
 $ENDCMP
 #
 $CMP NCP1400A
