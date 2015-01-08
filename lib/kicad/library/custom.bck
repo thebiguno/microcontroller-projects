@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 06, 2015 'pmt' 03:53:39 pm
+EESchema-DOCLIB  Version 2.0  Date: Thursday, January 08, 2015 'pmt' 01:11:51 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -49,6 +49,7 @@ D Digital Potentiometer
 K potentiometer
 $ENDCMP
 #
+$CMP MOSFET-SOT-23-3
 D N-Channel MOSFET, SOT-23
 K N-Channel MOSFET Logic Level
 $ENDCMP
