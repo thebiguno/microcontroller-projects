@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 04 Jan 2015 03:22:44 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Wed 07 Jan 2015 06:24:38 PM MST
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -491,20 +491,6 @@ IdModule  = MOUNTING_HOLE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5499C683;
-Reference = MP5;
-ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
-EndCmp
-
-BeginCmp
-TimeStamp = /5499C689;
-Reference = MP6;
-ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
-EndCmp
-
-BeginCmp
 TimeStamp = /5499EFCB;
 Reference = MP7;
 ValeurCmp = GRAPHIC;
@@ -547,9 +533,9 @@ IdModule  = so-8;
 EndCmp
 
 BeginCmp
-TimeStamp = /54A9774A;
+TimeStamp = /54AB62DF;
 Reference = Q2;
-ValeurCmp = MOS_N;
+ValeurCmp = 2N7002P;
 IdModule  = SOT323;
 EndCmp
 
@@ -907,7 +893,7 @@ BeginCmp
 TimeStamp = /5487B048;
 Reference = U7;
 ValeurCmp = 74HC4067;
-IdModule  = SOIC24;
+IdModule  = SSOP24;
 EndCmp
 
 BeginCmp
@@ -935,7 +921,7 @@ BeginCmp
 TimeStamp = /548A02CC;
 Reference = U11;
 ValeurCmp = 74HC4067;
-IdModule  = SOIC24;
+IdModule  = SSOP24;
 EndCmp
 
 BeginCmp

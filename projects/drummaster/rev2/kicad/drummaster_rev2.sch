@@ -37,7 +37,7 @@ $Descr User 20000 16000
 encoding utf-8
 Sheet 1 1
 Title "Drum Master"
-Date "6 jan 2015"
+Date "8 jan 2015"
 Rev "2.0"
 Comp "Digital Cave"
 Comment1 ""
@@ -481,17 +481,6 @@ F 2 "" H 15800 9950 60  0000 C CNN
 F 3 "" H 15800 9950 60  0000 C CNN
 	1    15800 9950
 	1    0    0    -1  
-$EndComp
-$Comp
-L LSMALL L1
-U 1 1 548884CD
-P 15450 10150
-F 0 "L1" H 15450 10100 40  0000 C CNN
-F 1 "10uH" H 15450 10200 40  0000 C CNN
-F 2 "" H 15450 10150 60  0000 C CNN
-F 3 "" H 15450 10150 60  0000 C CNN
-	1    15450 10150
-	0    -1   -1   0   
 $EndComp
 $Comp
 L CSMALL C4
@@ -2607,8 +2596,6 @@ Wire Wire Line
 Connection ~ 16450 10350
 Wire Wire Line
 	15800 9950 15800 10600
-Wire Wire Line
-	15450 10000 16150 10000
 Connection ~ 15800 10000
 Wire Wire Line
 	15900 10600 15900 10000
@@ -2619,8 +2606,6 @@ Connection ~ 15800 10150
 Wire Wire Line
 	16250 10350 15900 10350
 Connection ~ 15900 10350
-Wire Wire Line
-	15450 10000 15450 10050
 Wire Wire Line
 	15150 10350 15150 10650
 Wire Wire Line
@@ -4249,5 +4234,18 @@ F 2 "SOT-23" V 16150 2950 29  0000 C CNN
 F 3 "~" H 15950 3050 60  0000 C CNN
 	1    15950 3050
 	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	15800 10000 16150 10000
+$Comp
+L +5VA #PWR0138
+U 1 1 54ADEA08
+P 15550 10250
+F 0 "#PWR0138" H 15550 10380 20  0001 C CNN
+F 1 "+5VA" H 15550 10350 30  0000 C CNN
+F 2 "" H 15550 10250 60  0000 C CNN
+F 3 "" H 15550 10250 60  0000 C CNN
+	1    15550 10250
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
