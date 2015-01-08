@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Wed 07 Jan 2015 06:24:38 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, January 08, 2015 'pmt' 02:33:55 pm
 
 BeginCmp
 TimeStamp = /548C8921;
@@ -241,7 +241,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5487A7BE;
 Reference = C37;
-ValeurCmp = 0.1uF;
+ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -379,6 +379,90 @@ IdModule  = SOD-323_DIODE;
 EndCmp
 
 BeginCmp
+TimeStamp = /54AF1204;
+Reference = D13;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF040B;
+Reference = D14;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF11E8;
+Reference = D15;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF11EF;
+Reference = D16;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF11F6;
+Reference = D17;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF11FD;
+Reference = D18;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF1217;
+Reference = D19;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF121E;
+Reference = D20;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF04C5;
+Reference = D21;
+ValeurCmp = NUP2105LT1G;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF1115;
+Reference = D22;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF22FB;
+Reference = D23;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AF0723;
+Reference = D24;
+ValeurCmp = TVS;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
 TimeStamp = /5490AE7F;
 Reference = DS1;
 ValeurCmp = HD44780;
@@ -449,13 +533,6 @@ IdModule  = SIL-14;
 EndCmp
 
 BeginCmp
-TimeStamp = /548884CD;
-Reference = L1;
-ValeurCmp = 10uH;
-IdModule  = SM0805;
-EndCmp
-
-BeginCmp
 TimeStamp = /549E0FA9;
 Reference = L2;
 ValeurCmp = FER_BEAD;
@@ -522,7 +599,7 @@ BeginCmp
 TimeStamp = /54879226;
 Reference = P4;
 ValeurCmp = ISP;
-IdModule  = ISP_EDGE;
+IdModule  = ISP;
 EndCmp
 
 BeginCmp
