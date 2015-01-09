@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Tue 06 Jan 2015 07:53:58 PM MST
+PCBNEW-LibModule-V1  Friday, January 09, 2015 'pmt' 02:40:23 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -6354,7 +6354,7 @@ Ro 0 0 0
 $EndSHAPE3D
 $EndMODULE SOD-323_DIODE
 $MODULE SW_6x3
-Po 0 0 0 15 54593FDE 00000000 ~~
+Po 0 0 0 15 54B04AC4 00000000 ~~
 Li SW_6x3
 Cd Switch 6x3mm
 Kw SWITCH
@@ -6363,10 +6363,10 @@ AR
 Op 0 0 0
 T0 0 -1 1 1 0 0.15 N I 21 N "SW_6x3"
 T1 0 1 1 1 0 0.15 N I 21 N "VAL**"
-DS 3.5 1.5 3.5 -1.5 0.15 21
-DS 3.5 -1.5 -3.5 -1.5 0.15 21
-DS -3.5 -1.5 -3.5 1.5 0.15 21
-DS -3.5 1.5 3.5 1.5 0.15 21
+DS 3.75 2 -3.75 2 0.15 21
+DS -3.75 2 -3.75 -2 0.15 21
+DS -3.75 -2 3.75 -2 0.15 21
+DS 3.75 -2 3.75 2 0.15 21
 $PAD
 Sh "1" R 2 1.5 0 0 0
 Dr 0 0 0
