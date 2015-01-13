@@ -1,11 +1,7 @@
 /*
- * Driver for HD44780 in 8 bit mode using SPI and a shift register with or without a latch.
- * If the shift register has a latch it must be connected with SCK and HD44780_LATCH must be defined.
- * This driver uses the SPI hardware and requires MOSI and SCK as well as one other pin connected to E.
- * MOSI and SCK may be shared with other SPI devices.  MOSI drives both the shift register and RS.  E functions as type of chip select.
- * Q1~Q8 on the shift register connect to D1~D8 on the HD44780.
- * MOSI on the AVR connects to DI on the shift register and RS on the HD44780.
- * SCK on the AVR connects to CLK (and RCLK) on the shift register.
+ * Driver for HD44780 in 8 bit mode using direct pin access.
+ * Current hardcoded to use PORTD for data pins, PORTB1 for RS, and 
+ * PORTB2 for E.
  */
 
 #include <avr/io.h>
