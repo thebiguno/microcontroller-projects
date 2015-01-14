@@ -2,9 +2,12 @@
 PROJECT=skeleton
 
 #Source files (.c, .cpp, and .s)
-CSOURCES=main.c lib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+CSOURCES=main.c
 CPPSOURCES=
-SSOURCES=lib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s
+SSOURCES=
+
+CSOURCES+=lib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+SSOURCES+=lib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s
 
 #Utilities
 CC=arm-none-eabi-gcc
@@ -15,7 +18,7 @@ OBJCOPY=arm-none-eabi-objcopy
 OPENOCD_CONFIG=board/st_nucleo_f411re.cfg
 
 #Target objects
-OBJECTS=$(CSOURCES:.c=.c.o) $(CPPSOURCES:.cpp=.cpp.o) $(SSOURCES:.s=.s.o)
+OBJECTS+=$(CSOURCES:.c=.c.o) $(CPPSOURCES:.cpp=.cpp.o) $(SSOURCES:.s=.s.o)
 
 #Compiler config
 MCUFLAGS=-mthumb -mthumb-interwork -mcpu=cortex-m4
