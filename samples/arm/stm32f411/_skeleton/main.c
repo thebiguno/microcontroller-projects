@@ -24,26 +24,26 @@
 #define LED_OFF() GPIOA->BSRRH |= (1 << 5)
 #define LED_TOGGLE() GPIOA->ODR ^= (1 << 5)
 
-//Quick hack, approximately 1ms delay
-void ms_delay(int ms) {
-   while (ms-- > 0) {
-      volatile int x=1971;
-      while (x-- > 0)
-         __asm("nop");
-   }
+void TIM2_IRQHandler(void) {
+	// flash on update event
+	if (TIM2->SR & TIM_SR_UIF) GPIOA->ODR ^= (1 << LED_PIN);
+
+	TIM2->SR = 0x0; // reset the status register
 }
+
 int main() {
-	// Enable GPIOA clock.
-	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	// Configure GPIOA pin 5 as output.
-	GPIOA->MODER |= (1 << (LED_PIN << 1));
-	// Configure GPIOA pin 5 in max speed.
-	GPIOA->OSPEEDR |= (3 << (LED_PIN << 1));
-	// Turn on the LED.
-	LED_ON();
-  // Blink LED.
-  while(1) {
-    ms_delay(1000);
-    LED_TOGGLE();
-  }
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // enable the clock to GPIOA
+	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // enable TIM2 clock
+	
+	GPIOA->MODER = (1 << (LED_PIN << 1)); // set pin 5 to be general purpose output
+	
+	NVIC->ISER[0] |= 1<< (TIM2_IRQn); // enable the TIM2 IRQ
+	
+	TIM2->PSC = 0xFFF; // prescaler
+	TIM2->DIER |= TIM_DIER_UIE; // enable update interrupt
+	TIM2->ARR = 0xFF; // count to 0xFF (autoreload value 0xFF)
+	TIM2->CR1 |= TIM_CR1_ARPE | TIM_CR1_CEN; // autoreload on, counter enabled
+	TIM2->EGR = 1; // trigger update event to reload timer registers
+		
+	while (1);
 }
