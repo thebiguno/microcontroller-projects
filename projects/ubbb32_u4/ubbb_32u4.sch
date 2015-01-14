@@ -36,10 +36,10 @@ EELAYER END
 $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
-Title ""
-Date "6 jan 2015"
-Rev ""
-Comp ""
+Title "UBBB 32u4"
+Date "9 jan 2015"
+Rev "1.1"
+Comp "Digital Cave"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -145,7 +145,7 @@ L C C3
 U 1 1 54580478
 P 2550 4400
 F 0 "C3" H 2550 4500 40  0000 L CNN
-F 1 "1uF" H 2556 4315 40  0000 L CNN
+F 1 "0.1uF" H 2556 4315 40  0000 L CNN
 F 2 "~" H 2588 4250 30  0000 C CNN
 F 3 "~" H 2550 4400 60  0000 C CNN
 	1    2550 4400
@@ -1054,7 +1054,7 @@ L CSMALL C5
 U 1 1 54AC0BBC
 P 3550 1400
 F 0 "C5" H 3575 1450 30  0000 L CNN
-F 1 "1uF" H 3575 1350 30  0000 L CNN
+F 1 "0.1uF" H 3575 1350 30  0000 L CNN
 F 2 "~" H 3550 1400 60  0000 C CNN
 F 3 "~" H 3550 1400 60  0000 C CNN
 	1    3550 1400
@@ -1102,4 +1102,36 @@ F 3 "~" H 4250 1400 60  0000 C CNN
 $EndComp
 Connection ~ 4250 1300
 Connection ~ 3550 1650
+$Comp
+L TVS_BIDIRECTIONAL_2CH D2
+U 1 1 54B02A64
+P 6450 1200
+F 0 "D2" H 6450 925 60  0000 C CNN
+F 1 "TVS" H 6450 1475 60  0000 C CNN
+F 2 "SOT23" H 6100 1400 60  0000 C CNN
+F 3 "http://www.nxp.com/documents/data_sheet/PESD5V0X1BQ_PESD5V0X1BT.pdf" H 6475 1200 60  0001 C CNN
+F 4 "568-4676-1-ND" H 6450 1200 60  0001 C CNN "Digikey Part#"
+F 5 "Look for ~5.5v breakdown voltage.  Low capacitance is a good idea.  Bi-directional nice but not required." H 6450 1200 60  0001 C CNN "Notes"
+	1    6450 1200
+	0    1    -1   0   
+$EndComp
+$Comp
+L GND #PWR018
+U 1 1 54B02A71
+P 6450 700
+F 0 "#PWR018" H 6450 700 30  0001 C CNN
+F 1 "GND" H 6450 630 30  0001 C CNN
+F 2 "" H 6450 700 60  0000 C CNN
+F 3 "" H 6450 700 60  0000 C CNN
+	1    6450 700 
+	-1   0    0    1   
+$EndComp
+Text Label 5450 3300 0    60   ~ 0
+SDA
+Text Label 5450 3200 0    60   ~ 0
+SCL
+Text Label 6550 1700 3    60   ~ 0
+SCL
+Text Label 6350 1700 3    60   ~ 0
+SDA
 $EndSCHEMATC

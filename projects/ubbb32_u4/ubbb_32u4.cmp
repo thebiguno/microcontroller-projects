@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, January 06, 2015 'amt' 11:58:11 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, January 09, 2015 'pmt' 12:23:05 pm
 
 BeginCmp
 TimeStamp = /54808894;
@@ -17,7 +17,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54580478;
 Reference = C3;
-ValeurCmp = 1uF;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -75,6 +75,13 @@ TimeStamp = /5463FD4C;
 Reference = D1;
 ValeurCmp = RGB_LED_COMMON_ANODE_ALT1;
 IdModule  = LED_RGB_4-PLCC_ALT1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54B02A64;
+Reference = D2;
+ValeurCmp = TVS_BIDIRECTIONAL_2CH;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
