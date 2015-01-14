@@ -18,18 +18,22 @@ OPENOCD_CONFIG=board/st_nucleo_f411re.cfg
 OBJECTS=$(CSOURCES:.c=.c.o) $(CPPSOURCES:.cpp=.cpp.o) $(SSOURCES:.s=.s.o)
 
 #Compiler config
+MCUFLAGS=-mthumb -mthumb-interwork -mcpu=cortex-m4
 INCLUDES+=-Ilib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Include -Ilib/stm32f4/Drivers/CMSIS/Include
-CFLAGS+=-Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -DSTM32F411xE -Os -c
-LDFLAGS+=-Wl,--gc-sections -Tlib/stm32f4/Projects/STM32F411RE-Nucleo/Templates/TrueSTUDIO/STM32F4xx-Nucleo/STM32F411RE_FLASH.ld
+CFLAGS+=-Wall $(MCUFLAGS) -mlittle-endian -DSTM32F411xE -Os -c
+LDFLAGS+=-Wl,--gc-sections $(MCUFLAGS) -Tlib/stm32f4/Projects/STM32F411RE-Nucleo/Templates/TrueSTUDIO/STM32F4xx-Nucleo/STM32F411RE_FLASH.ld
 
 #Targets
 all: clean $(PROJECT).hex
 
 flash: all
 	$(OPENOCD) -f $(OPENOCD_CONFIG) -c "program $(PROJECT).hex verify reset"
+
+bin: all
+	$(OBJCOPY) -I ihex $(PROJECT).hex $(PROJECT).bin
 	
 $(PROJECT).hex: $(PROJECT).elf
-	$(OBJCOPY) -Oihex $(PROJECT).elf $(PROJECT).hex
+	$(OBJCOPY) -O ihex $(PROJECT).elf $(PROJECT).hex
 
 $(PROJECT).elf: $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
