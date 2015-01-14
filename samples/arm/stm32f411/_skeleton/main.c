@@ -41,9 +41,11 @@ int main() {
 	
 	TIM2->PSC = 0xFFF; // prescaler
 	TIM2->DIER |= TIM_DIER_UIE; // enable update interrupt
-	TIM2->ARR = 0xFF; // count to 0xFF (autoreload value 0xFF)
+	TIM2->ARR = 0xFF; // count to this value (autoreload)
 	TIM2->CR1 |= TIM_CR1_ARPE | TIM_CR1_CEN; // autoreload on, counter enabled
 	TIM2->EGR = 1; // trigger update event to reload timer registers
 		
-	while (1);
+	while(1){
+		
+	}
 }
