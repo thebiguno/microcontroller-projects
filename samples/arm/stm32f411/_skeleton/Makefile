@@ -23,7 +23,7 @@ OBJECTS+=$(CSOURCES:.c=.c.o) $(CPPSOURCES:.cpp=.cpp.o) $(SSOURCES:.s=.s.o)
 #Compiler config
 MCUFLAGS=-mthumb -mthumb-interwork -mcpu=cortex-m4
 INCLUDES+=-Ilib/stm32f4/Drivers/CMSIS/Device/ST/STM32F4xx/Include -Ilib/stm32f4/Drivers/CMSIS/Include
-CFLAGS+=-Wall $(MCUFLAGS) -mlittle-endian -DSTM32F411xE -Os -c
+CFLAGS+=-Wall $(MCUFLAGS) -mlittle-endian -std=gnu99 -DSTM32F411xE -Os -c
 LDFLAGS+=-Wl,--gc-sections $(MCUFLAGS) -Tlib/stm32f4/Projects/STM32F411RE-Nucleo/Templates/TrueSTUDIO/STM32F4xx-Nucleo/STM32F411RE_FLASH.ld
 
 #Targets
