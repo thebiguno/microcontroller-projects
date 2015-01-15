@@ -22,8 +22,6 @@ namespace digitalcave {
 		uint8_t pins_bv;
 		uint8_t current;
 		uint8_t last;
-		uint8_t pressed_bv;
-		uint8_t released_bv;
 		uint8_t window[8];
 
 	public:

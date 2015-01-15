@@ -7,35 +7,27 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t 
 	this->port = port;
 	this->pin = this->port - 0x2;
 	this->pins_bv = pins;
-	this->pressed_bv = 0xff;
-	for (uint8_t i = 0; i < pressed; i++) {
-		pressed_bv <<= 1;
-	}
-	this->pressed_bv = ~this->pressed_bv;
-	this->released_bv = 0xff;
-	for (uint8_t i = 8; i < released; i++) {
-		released_bv <<= 1;
-	}
-	this->released_bv = ~this->released_bv;
 	this->last = 0x00;
 	this->current = 0x00;
 	for (uint8_t i = 0; i < 8; i++) {
 		this->window[i] = 0xff;
 	}
-	*(port - 0x1) &= ~pins;	// input
-	*this->pin |= pins;		// pull-up
+	*(port - 0x1) &= ~this->pins_bv;		// DDR set to input
+	*this->port |= this->pins_bv;		// Set pull-ups
 }
 
 uint8_t Buttons::sample() {
-	uint8_t x = *this->pin;
+	uint8_t sampled_pins = ~*this->pin;		//We invert the pins since it is active low
+	
 	for (uint8_t i = 0; i < 8; i++) {
-		x >>= 1;
 		if (this->pins_bv & _BV(i)) {										// only check the pins that are of interest
-			uint8_t v = (this->window[i] << 1) | (x & _BV(1));				// shift and put latest reading in least significant bit
-			this->window[i] = v;
-			if ((v & this->pressed_bv) == 0x00) {							// check for change from unpressed (1) to pressed (0)
+			this->window[i] <<= 1;											// Shift the window one left
+			uint8_t sampled_pin_high = sampled_pins & _BV(i);				// See if this particular pin is high
+			if (sampled_pin_high) this->window[i] |= 0x01;					// If so, add it to the LSB of the window
+			if (this->window[i] == 0xFF){									// If it has been presesd for 8 cycles...
 				this->current |= _BV(i);									// mark button as pressed
-			} else if ((v & this->released_bv) == this->released_bv) {		// check for change from pressed (0) to unpressed (1)
+			}
+			else if (this->window[i] == 0x00){								// If it has been released for 8 cycles...
 				this->current &= ~_BV(i);									// mark button released
 			}
 		}
