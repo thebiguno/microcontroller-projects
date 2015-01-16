@@ -3,7 +3,7 @@ include build/variables.mk
 PROJECT=function_generator
 MMCU=atmega328p
 F_CPU=16000000
-SOURCES=main.cpp lib/Button/Buttons.cpp lib/Hd44780/Hd44780.cpp lib/Hd44780/Hd44780_Direct_4bit.cpp
+SOURCES=main.cpp square.S lib/Button/Buttons.cpp lib/Hd44780/Hd44780.cpp lib/Hd44780/Hd44780_Direct_4bit.cpp
 AVRDUDE_PROGRAMMER=arduino
 COMPILER=avr-g++
 

@@ -20,7 +20,7 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t 
 	this->last = 0x00;
 	this->current = 0x00;
 	for (uint8_t i = 0; i < 8; i++) {
-		this->window[i] = 0xff;
+		this->window[i] = 0x00;
 	}
 	*(port - 0x1) &= ~this->pins_bv;		// DDR set to input
 	*this->port |= this->pins_bv;		// Set pull-ups

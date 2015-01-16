@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
+#include <stdio.h>
 #include <util/delay.h>
 
 #include "lib/Hd44780/Hd44780_Direct.h"
@@ -32,7 +33,21 @@ static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x
 static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8);
 
 static uint8_t mode = MODE_SQUARE;
-static uint16_t frequency = 0;
+static uint16_t frequency = 0;	//Indexed (for square) / In Hz (for DDS)
+
+extern "C"{	//This is needed when calling ASM-implemented functions
+	void output_square_wave_1khz();
+	void output_square_wave_5khz();
+	void output_square_wave_10khz();
+	void output_square_wave_25khz();
+	void output_square_wave_50khz();
+	void output_square_wave_100khz();
+	void output_square_wave_250khz();
+	void output_square_wave_500khz();
+	void output_square_wave_1000khz();
+	void output_square_wave_2500khz();
+	void output_dds_wave();
+}
 
 void update_display(){
 	display.clear();
@@ -48,47 +63,85 @@ void update_display(){
 		display.setText((char*) "Triangle", 8);
 	}
 	else if (mode == MODE_SAWTOOTH_UP){
-		display.setText((char*) "Sawtooth (Up)", 13);
+		display.setText((char*) "Sawtooth Up", 11);
 	}
 	else if (mode == MODE_SAWTOOTH_DOWN){
-		display.setText((char*) "Sawtooth (Down)", 15);
+		display.setText((char*) "Sawtooth Dn", 11);
 	}
 	else if (mode == MODE_STAIRCASE_UP){
-		display.setText((char*) "Staircase (Up)", 14);
+		display.setText((char*) "Staircase Up", 12);
 	}
 	else if (mode == MODE_STAIRCASE_DOWN){
-		display.setText((char*) "Staircase (Down)", 16);
+		display.setText((char*) "Staircase Dn", 12);
 	}
 	else {
 		display.setText((char*) "Unknown", 7);
 	}
 		
 	display.setDdramAddress(0x40);
-	display.setText((char*) " digitalcave.ca ", 16);
+	char temp[16];
+	if (mode == MODE_SQUARE){
+		if (frequency == 0) display.setText((char*) "1kHz", 4);
+		else if (frequency == 1) display.setText((char*) "5kHz", 4);
+		else if (frequency == 2) display.setText((char*) "10kHz", 5);
+		else if (frequency == 3) display.setText((char*) "25kHz", 5);
+		else if (frequency == 4) display.setText((char*) "50kHz", 5);
+		else if (frequency == 5) display.setText((char*) "100kHz", 6);
+		else if (frequency == 6) display.setText((char*) "250kHz", 6);
+		else if (frequency == 7) display.setText((char*) "500kHz", 6);
+		else if (frequency == 8) display.setText((char*) "1MHz", 4);
+		else if (frequency == 9) display.setText((char*) "2.5MHz", 6);
+		else display.setText((char*) "Unknown", 7);
+	}
+	else {
+		uint8_t length = snprintf(temp, 16, "%d Hz", frequency);
+		if (length > 16) length = 16;
+		display.setText(temp, length);
+	}
 }
 
 void pick_menu(){
 	update_display();
 	while(1){
-		uint8_t newly_pressed = buttons.pressed() & buttons.changed();	//Find buttons which were pressed and not yet processed
-		if (newly_pressed & BUTTON_MODE){
+		uint8_t changed = buttons.changed();
+		uint8_t pressed = buttons.pressed() & changed;
+		uint8_t held = buttons.pressed() & ~changed;
+		uint8_t released = ~buttons.pressed() & changed;
+
+		if (released & BUTTON_MODE){
 			mode++;
 			if (mode > MODE_LAST){
 				mode = MODE_SQUARE;
+				frequency = 1;
 			}
-			frequency = 0;
+			else {
+				frequency = 1000;
+			}
 			update_display();
 		}
-		else if (newly_pressed & BUTTON_UP){
-			update_display();
-		}
-		else if (newly_pressed & BUTTON_DOWN){
-			update_display();
-		}
-		else if (newly_pressed & BUTTON_OK){
+		else if ((held & BUTTON_MODE) && ((pressed & BUTTON_UP) || (pressed & BUTTON_DOWN))){
 			update_display();
 			return;
 		}
+		else if (pressed & BUTTON_UP){
+			if (mode == MODE_SQUARE){
+				frequency++;
+				if (frequency > 9) frequency = 0;
+			}
+			else {
+				frequency += 10;
+			}
+			update_display();
+		}
+		else if (pressed & BUTTON_DOWN){
+			if (mode == MODE_SQUARE){
+				frequency--;
+				if (frequency > 9) frequency = 9;
+			}
+			else {
+				frequency -= 10;
+			}
+			update_display();		}
 		
 		_delay_ms(12);
 		buttons.sample();
@@ -102,7 +155,16 @@ void output_waveform(){
 	display.setText((char*) "Running...", 10);
 	
 	if (mode == MODE_SQUARE){
-		//TODO Do something special here!
+		if (frequency == 0) output_square_wave_1khz();
+		else if (frequency == 1) output_square_wave_5khz();
+		else if (frequency == 2) output_square_wave_10khz();
+		else if (frequency == 3) output_square_wave_25khz();
+		else if (frequency == 4) output_square_wave_50khz();
+		else if (frequency == 5) output_square_wave_100khz();
+		else if (frequency == 6) output_square_wave_250khz();
+		else if (frequency == 7) output_square_wave_500khz();
+		else if (frequency == 8) output_square_wave_1000khz();
+		else if (frequency == 9) output_square_wave_2500khz();
 	}
 	else {
 		const uint8_t* progmem_pointer;
@@ -123,7 +185,7 @@ void output_waveform(){
 	
 		//Start generating the waveform
 		uint8_t i = 0;
-		while(1){
+		while((PINB & BUTTON_OK) != 0x00){
 			PORTD = data[i++];
 		}
 	}
