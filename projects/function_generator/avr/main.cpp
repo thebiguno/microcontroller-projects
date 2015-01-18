@@ -96,15 +96,15 @@ void update_display(){
 		else display.setText((char*) "Unknown", 7);
 	}
 	else {
-		if (frequency == 0) display.setText((char*) "1Hz", 4);
+		if (frequency == 0) display.setText((char*) "1Hz", 3);
 		else if (frequency == 1) display.setText((char*) "2.5Hz", 4);
-		else if (frequency == 2) display.setText((char*) "5Hz", 4);
+		else if (frequency == 2) display.setText((char*) "5Hz", 3);
 		else if (frequency == 3) display.setText((char*) "10Hz", 4);
 		else if (frequency == 4) display.setText((char*) "25Hz", 4);
 		else if (frequency == 5) display.setText((char*) "50Hz", 4);
-		else if (frequency == 6) display.setText((char*) "100Hz", 4);
-		else if (frequency == 7) display.setText((char*) "250Hz", 4);
-		else if (frequency == 8) display.setText((char*) "500Hz", 4);
+		else if (frequency == 6) display.setText((char*) "100Hz", 5);
+		else if (frequency == 7) display.setText((char*) "250Hz", 5);
+		else if (frequency == 8) display.setText((char*) "500Hz", 5);
 		else if (frequency == 9) display.setText((char*) "1kHz", 4);
 	}
 }
