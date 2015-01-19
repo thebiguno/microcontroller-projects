@@ -1,5 +1,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "lib/usb/rawhid.h"
+
+#define STR_MANUFACTURER	L"Warren Janssens"
+#define STR_PRODUCT		L"Cranky Simulator"
+#define VENDOR_ID		0x574a
+#define PRODUCT_ID		0x6372
+#define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
+#define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
+#define RAWHID_TX_SIZE		64	// transmit packet size
+#define RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
+#define RAWHID_RX_SIZE		64	// receive packet size
+#define RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
 
 static volatile uint8_t ign_pins[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
 static volatile uint8_t inj_pins[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
@@ -19,9 +31,6 @@ volatile uint8_t inj_pin;
  *           molex minifit connectors
  *           determine both spark and injector configuration
  */
-
-#define PROTOCOL_START  0x7e
-#define PROTOCOL_ESCAPE 0x7d
 
 typedef struct {
 	volatile uint8_t position;
@@ -63,13 +72,7 @@ typedef struct {
 	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
 										// 1000/(t*51.2*36/1000)/0.0166666666667
 	volatile uint8_t cranking;			// 0 = running normally; 1 = running below 383 rpm
-	volatile uint8_t adc;				// 0 to disable reading values from the adc
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
-	volatile uint8_t adc_o2;			// adc reading of the exhaust gas oxygen sensor
-	volatile uint8_t adc_batt;			// adc reading of the battery voltage
-	volatile uint8_t adc_map;			// adc reading of the manifold absolute pressure sensor
-	volatile uint8_t adc_mat;			// adc reading of the manifold air temperature
-	volatile uint8_t adc_clt;			// adc reading of the coolant temperature
 	
 	volatile uint8_t read_addr;			// the address to start reading from
 	volatile uint8_t read_len;			// the number of bytes to read
@@ -113,10 +116,6 @@ float decel_fuel_pct = 20;
 
 // the crank position is used to determine injection and spark timing.
 // the cam position may be used to determine injection and spark timing for sequential operation
-// the battery voltage is used to adjust injector duty cycle and ignition dwell time in a low voltage situation
-// the coolant temperature is used to determine the if the fast idle solenoid should be open or closed
-// the coolant temperature is also used to adjust the spark advance
-// the manifold pressure is used to adjust the spark advance
 // the rpm (crank) is used to determine the spark advance
 // the throttle possition is used to determine the load
 
@@ -141,20 +140,15 @@ float decel_fuel_pct = 20;
 //                1                 3                 2                 4               60 deg before TDC
 
 // hardware map
-// C6	/rst								c5	adc			exaust o2 input
-// d0	rxd		serial						c4	adc			coolant temperature input
-// d1	txd		serial						c3	adc			manifold temperature input
-// d2	int0	crank hall effect input		c2	adc			manifold pressure input
-// d3	int1	cam hall effect input		c1	dout		fast idle solenoid output
-// d4			spare dout					c0	dout		fuel pump relay output
-// b6	xtal								
-// b7	xtal								b5	sck			spare dout
-// d5	dout	injector #1 output			b4	miso		ignition #4 output
-// d6	dout	ignition #1 output			b3	mosi		injector #4 output
-// d7	dout	injector #2 output			b2	dout		ignition #3 output
-// b0	dout	ignition #2 output			b1	dout		injector #3 output
-
-// c6	adc		battery voltage input		c7	adc			throttle position input
+// PD2 (int2) crank hall
+// PD3 (int3) cam hall
+// PF0 (adc0) throttle possition
+// PC6 fuel pump relay
+// PC7 fast idle relay
+// PB4 ignition A
+// PB5 ignition B
+// PD4 injector A
+// PD5 injector B
 
 // The ECM identifies cylinders at TDC and determines ignition timing as follows:
 // * There is a crank input signal every 10 deg rotation of the crankshaft
@@ -163,6 +157,7 @@ float decel_fuel_pct = 20;
 // * TDC #1, #2 is the zero reference point for the teeth on the timing wheel
 // * 
 int main(void) {
+	usb_init();
 	
 	// TODO load these tuning values from EEPROM
 	for (uint8_t i = 0; i < 8; i++) {
@@ -179,6 +174,8 @@ int main(void) {
 	u.s.crank_ticks = 0;
 	u.s.crank_sync = 0;
 	cam_teeth = 0;
+	
+	// TODO, redo all this math for 16MHz
 	
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
@@ -201,10 +198,10 @@ int main(void) {
 	// timer 2 (8-bit) is used to drive the injector solenoids (high-z)
 	// 20MHz clock = 0.05 us per clock cycle
 	// 256 * 8 = 2048 * 0.05 us = 102 us frequency > 66
-//	TCCR2A = 0x00;						// OC2A / OC2B disconnected
-//	TCCR2B = _BV(CS21);					// clock precale select = CLK / 8
-//	TIMSK2 = _BV(OCIE2A) | _BV(OCIE2B); // interrupt on timer 2 compare A and B
-//	OCR2A = 165; // 165 * 8 clock cycles = 66 us
+	TCCR2A = 0x00;						// OC2A / OC2B disconnected
+	TCCR2B = _BV(CS21);					// clock precale select = CLK / 8
+	TIMSK2 = _BV(OCIE2A) | _BV(OCIE2B); // interrupt on timer 2 compare A and B
+	OCR2A = 165; // 165 * 8 clock cycles = 66 us
 	
 	// set up analog
 	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
@@ -222,7 +219,7 @@ int main(void) {
 	
 	sei();						// enable interrupts
 
-	ADCSRA |= _BV(ADSC);	// start an analog conversion for throttle position
+	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
 
 	while(1) {
 		// nothing in the main loop is time sensative
@@ -241,25 +238,27 @@ int main(void) {
 		}
 		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 		
-		// continually poll ADC2 ~ ADC7
+		// continually poll ADC0
 		if ((ADCSRA & ADSC) == 0x00) {
-			if (ADMUX > 0x7) ADMUX = 0x02;
-			else ADMUX++;
 			ADCSRA |= _BV(ADSC);
+		}
+		
+		if (usb_configured()) {
+			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+				OCR0A = rx_buffer[0];
+
+				// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
+				// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
+				OCR1AH = rx_buffer[1];
+				OCR1AL = rx_buffer[2];
+			}
 		}
 	}
 }
 
 // analog ISR
 ISR(ADC_vect) {
-	switch(ADMUX) {
-		case 0x02: u.s.adc_map = ADCH; break;
-		case 0x03: u.s.adc_mat = ADCH; break;
-		case 0x04: u.s.adc_clt = ADCH; break;
-		case 0x05: u.s.adc_o2 = ADCH; break;
-		case 0x06: u.s.adc_batt = ADCH; break;
-		case 0x07: u.s.adc_tp = ADCH; break;
-	}
+	u.s.adc_tp = ADCH;
 }
 
 // crank ISR
@@ -379,95 +378,5 @@ ISR(TIMER2_COMPA_vect) {
 // injector pwm phase
 ISR(TIMER2_COMPB_vect) {
 	PORTD = 0;
-}
-
-void write_pump() {
-	if (!(UCSR0A & _BV(UDRE0))) {
-		// hardware not ready
-		return;
-	}
-	
-	if (output.position == output.length) {
-		// nothing to do
-		return;
-	}
-	
-	if (output.state == 0x01) {
-		UDR0 = 0x20 ^ u.a[output.address++];
-		output.state = 0x00;
-		return;
-	}
-	
-	uint8_t b = u.a[output.address];
-	switch (output.position) {
-		case 0:
-		UDR0 = PROTOCOL_START;
-		break;
-		case 1:
-		UDR0 = output.length;
-		break;
-		case 2:
-		UDR0 = output.address;
-		break;
-		default:
-		if (b == PROTOCOL_START || b == PROTOCOL_ESCAPE) {
-			UDR0 = PROTOCOL_ESCAPE;
-			output.state = 0x01;
-		} else {
-			UDR0 = b;
-			output.address++;
-		}
-		break;
-	}
-}
-
-ISR(USART_RX_vect) {
-	uint8_t b = UDR0;
-	
-	if (input.state == 0x02 && b == PROTOCOL_START) {
-		// recover from any previous error condition
-		input.state = 0x00;
-		input.position = 0;
-	} else {
-		return;
-	}
-	
-	if (input.position > 0 && b == PROTOCOL_START) {
-		// unexpected start of frame
-		input.state = 0x02;
-		return;
-	}
-	
-	if (input.position > 0 && b == PROTOCOL_ESCAPE) {
-		// unescape the next byte
-		input.state = 0x01;
-		return;
-	}
-	
-	if (input.state == 0x01) {
-		// unescape current byte
-		b = 0x20 ^ b;
-		input.state = 0x00;
-	}
-	
-	switch (input.position) {
-		input.position++;
-		case 0:
-		break;
-		case 1:
-		input.length = b;
-		break;
-		case 2:
-		input.address = b;
-		break;
-		default:
-		// TODO add bounds checking once register size is known
-		u.a[input.address++ - 3] = b;
-		
-		if (input.position == input.length) {
-			input.position = 0;
-		}
-		break;
-	}
 }
 
