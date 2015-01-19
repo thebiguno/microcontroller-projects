@@ -20,23 +20,66 @@ namespace digitalcave {
 		volatile uint8_t *port;
 		volatile uint8_t *pin;
 		uint8_t pins_bv;
+		
 		uint8_t current;
 		uint8_t last;
+		uint8_t hold;
+		uint8_t repeat;
+		
 		uint8_t pressed_bv;
 		uint8_t released_bv;
+		uint8_t hold_time;
+		uint8_t repeat_time;
+		uint8_t hold_timer[8];
+		uint8_t repeat_timer[8];
 		uint8_t window[8];
 
 	public:
 		/*
 		 * Creates a new Buttons class that can debounce the selected pins of a given port.
-		 * The selected pins are configured for input and pull ups are enabled making this library suitable only for active-low configuration.
-		 * The number of pressed and released samples to consider when changing state can be controlled with pressed and released which take values from 1 to 8.
-		 * For general purpose buttons with a press/release period of 100 ms and uniform sampling, set pressed and released to 1 and call sample every 100 ms.
-		 * For general purpose buttons with a press/release period of 100 ms and windowed sampling, set pressed and released to 8 and call sample every 12 ms.
-		 * For toggle buttons with a press period of 100 ms and a release period of 400 ms, set pressed to 2 and released to 8 and call sample every 50 ms.
-		 * For reset buttons with a press period of 800 ms and a release period af 100 ms, set pressed to 8 and released to 1 and call sample every 100 ms.
+		 * The selected pins are configured for input and pull ups are enabled making this library suitable only 
+		 * for active-low configuration.
+		 *
+		 * The extra arguments (press_time, release_time, hold_time, and repeat_interval) indicate the count of 
+		 * how many sample iterations must go by before each of these states is met, and are defined as below:
+		 * press_time:   The number of iterations of sample() which must see the button as pressed before it is reported 
+		 *               as being pressed.  This merges the concerns of debouncing with the UI concern of how 'hard' a 
+		 *               button must be pressed (see below for UI guidelines).  This must be a number between 1 and 8.
+		 *               When calling pressed() function, a button that is pressed will only appear once (the first time
+		 *               its state changes from non-pressed to pressed.
+		 * release_time: The same as press time, but the number of iterations before the button is considered to be released.
+		 *               As with press time, this must be a number between 1 and 8.
+		 * hold_time:    The number of sample() calls which must pass before the button is considered to be held.  The held
+		 *               flag will appear for the pin in question when the held() function is called.  hold_time is an 8 bit
+		 *               number between 0 and 255.  Set hold_time to 0 to disable hold functionality.
+		 * repeat_time:  The number of sample() calls which must pass after hold_time and after the last repeat event before
+		 *               another repeat flag is set.  This is an 8 bit number between 0 and 255.  Set repeat_time to 0 to 
+		 *               disable repeat functionality.
+		 *
+		 * You MUST call sample() repeatedly at the specified period (12ms is a good place to start).  You also MUST
+		 * call pressed(), released(), held(), and repeat() (or at least the subset that you are interested in) 
+		 * once for every time that you call sample(), or else events may be missed.
+		 * 
+		 * User Interface Considerations:
+		 * For general purpose buttons with a press/release period of 100 ms and windowed sampling, set pressed and 
+		 *  released to 8 and call sample every 12 ms.
+		 * For toggle buttons with a press period of 100 ms and a release period of 400 ms, set pressed to 2 and 
+		 *  released to 8 and call sample every 50 ms.
+		 * For reset buttons with a press period of 800 ms and a release period af 100 ms, set pressed to 8 and released
+		 *  to 1 and call sample every 100 ms.
+		 *
+		 * For case #1 (GP button, 100ms press / release), if you wanted a hold period of 3 seconds set hold_time to 250 
+		 *  (since 3000 ms divided by 12 ms sample period is 250).  If you wanted the repeat to trigger every 250ms after
+		 *  the initial hold was registered, set the repeat_time to 21.
 		 */
-		Buttons(volatile uint8_t *port, uint8_t pins, uint8_t pressed, uint8_t released);
+		Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, uint8_t release_time, uint8_t hold_time, uint8_t repeat_time);
+
+		/*
+		 * Convenience method.  This assumes a sample period of 12ms, with press_time and release_time both set to 8 
+		 * for a 100ms press / release period, suitable for general purpose buttons.  Hold and repeat are set to 0, 
+		 * disabling this functionality.
+		 */
+		Buttons(volatile uint8_t *port, uint8_t pin_mask);
 		
 		/*
 		 * Samples the pins once.
@@ -47,15 +90,24 @@ namespace digitalcave {
 		uint8_t sample();
 		
 		/*
- 		 * Returns the mask of buttons that are pressed, as it was the last time the samples were integrated.
+ 		 * Returns the mask of buttons that are newly pressed.
 		 */
 		uint8_t pressed();
 		
 		/*
-		 * Returns the mask of buttons that have changed state since the last time this method was called.
-		 * Any pin that has changed since the last call to this method will have its bit set.
+		 * Returns the mask of buttons that are newly pressed and held.
 		 */
-		uint8_t changed();
+		uint8_t held();
+		
+		/*
+		 * Returns the mask of buttons that are firing 'repeat' during this sample iteration.
+		 */
+		uint8_t repeat();
+		
+		/*
+		 * Returns the mask of buttons that are newly released.
+		 */
+		uint8_t released();
 	};
 }
 
