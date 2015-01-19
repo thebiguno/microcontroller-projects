@@ -38,8 +38,8 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask) : Buttons::Buttons(po
 uint8_t Buttons::sample() {
 	uint8_t sampled_pins = ~*this->pin;		//We invert the pins since it is active low
 	
-	hold = 0x00;
-	repeat = 0x00;
+	this->hold = 0x00;
+	this->repeat = 0x00;
 	
 	for (uint8_t i = 0; i < 8; i++) {
 		if (this->pins_bv & _BV(i)) {										// only check the pins that are of interest
@@ -52,7 +52,7 @@ uint8_t Buttons::sample() {
 			else if ((this->window[i] & this->released_bv) == 0x00){		// If it has been released for <released> cycles...
 				this->current &= ~_BV(i);									// mark button released
 			}
-			//We only look at held options if the button is currently pressed.
+			//We only increment held timer if the button is currently pressed.
 			if (this->current & _BV(i)){
 				if (this->hold_timer[i] == 0xFF){
 					//Do nothing here; we are already in 'held' state.
@@ -60,6 +60,7 @@ uint8_t Buttons::sample() {
 				else if (this->hold_timer[i] >= this->hold_time){
 					//If the button has been held for the required time, mark it as fully held (0xFF)
 					this->hold_timer[i] = 0xFF;
+					this->hold |= _BV(i);
 				}
 				else {
 					//Increment timer
@@ -73,6 +74,7 @@ uint8_t Buttons::sample() {
 			
 			//We only lok at repeat options if the button is currently held (hold_timer == 0xFF)
 			if (this->hold_timer[i] == 0xFF){
+				this->repeat_timer[i]++;
 				
 			}
 		}
