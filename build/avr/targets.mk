@@ -4,6 +4,9 @@ endif
 ifeq 'avr-gcc' '$(COMPILER)'
 	CFLAGS += -std=gnu99
 endif
+ifeq 'avr-g++' '$(COMPILER)'
+	CFLAGS += -std=gnu++11
+endif
 
 ifeq 'stk500v1' '$(AVRDUDE_PROGRAMMER)'
 	ifeq ($(OS),Linux)
