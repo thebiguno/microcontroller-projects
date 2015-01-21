@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h> 
+#include <math.h>
 #include <stdio.h>
 #include <util/delay.h>
 
@@ -33,23 +34,38 @@ const uint8_t data_staircase_down[] PROGMEM	=	{0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe
 uint8_t data[256];	//Copy PROGMEM DDS signals into this buffer
 
 static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
-static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8);
+static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8, 150, 10);
 
 static uint8_t mode = MODE_SQUARE;
-static uint16_t frequency = 0;	//Indexed frequencies, different from square vs DDS waveforms
+static uint8_t ui_freq = 0;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
+
 
 extern "C"{	//This is needed when calling ASM-implemented functions
-	void output_square_wave_1khz();
-	void output_square_wave_5khz();
-	void output_square_wave_10khz();
-	void output_square_wave_25khz();
-	void output_square_wave_50khz();
-	void output_square_wave_100khz();
-	void output_square_wave_250khz();
 	void output_square_wave_500khz();
+	void output_square_wave_769khz();
 	void output_square_wave_1000khz();
+	void output_square_wave_1250khz();
+	void output_square_wave_1429khz();
+	void output_square_wave_1666khz();
+	void output_square_wave_2000khz();
 	void output_square_wave_2500khz();
 	void output_dds_wave();
+}
+
+uint32_t get_square_frequency(){
+	if (ui_freq == 0xFF) return 2500000;
+	else if (ui_freq == 0xFE) return 2000000;
+	else if (ui_freq == 0xFD) return 1666000;
+	else if (ui_freq == 0xFC) return 1429000;
+	else if (ui_freq == 0xFB) return 1250000;
+	else if (ui_freq == 0xFA) return 1000000;
+	else if (ui_freq == 0xF9) return 769000;
+	else if (ui_freq == 0xF8) return 500000;
+	else return pow(ui_freq + 1, 2.305);
+}
+
+uint16_t get_dds_frequency(){
+	return pow(ui_freq + 1, 2.305);
 }
 
 void update_display(){
@@ -83,64 +99,68 @@ void update_display(){
 		
 	display.setDdramAddress(0x40);
 	if (mode == MODE_SQUARE){
-		if (frequency == 0) display.setText((char*) "1kHz", 4);
-		else if (frequency == 1) display.setText((char*) "5kHz", 4);
-		else if (frequency == 2) display.setText((char*) "10kHz", 5);
-		else if (frequency == 3) display.setText((char*) "25kHz", 5);
-		else if (frequency == 4) display.setText((char*) "50kHz", 5);
-		else if (frequency == 5) display.setText((char*) "100kHz", 6);
-		else if (frequency == 6) display.setText((char*) "250kHz", 6);
-		else if (frequency == 7) display.setText((char*) "500kHz", 6);
-		else if (frequency == 8) display.setText((char*) "1MHz", 4);
-		else if (frequency == 9) display.setText((char*) "2.5MHz", 6);
-		else display.setText((char*) "Unknown", 7);
+		uint32_t frequency = get_square_frequency();
+		char temp[16];
+		uint8_t l;
+		if (frequency >= 1000000){
+			l = snprintf(temp, 16, "%d.%3d MHz", (uint8_t) (frequency / 1000000), (uint16_t) ((frequency / 1000) - ((frequency / 1000000) * 1000)));
+		}
+		else if (frequency >= 1000){
+			l = snprintf(temp, 16, "  %3d kHz", (uint16_t) (frequency / 1000));
+		}
+		else {
+			l = snprintf(temp, 16, "  %3d  Hz", (uint16_t) frequency);
+		}
+		display.setText(temp, l - 1);		//The length from sprintf includes null; we don't want to print that.
 	}
 	else {
-		if (frequency == 0) display.setText((char*) "1Hz", 3);
-		else if (frequency == 1) display.setText((char*) "2.5Hz", 4);
-		else if (frequency == 2) display.setText((char*) "5Hz", 3);
-		else if (frequency == 3) display.setText((char*) "10Hz", 4);
-		else if (frequency == 4) display.setText((char*) "25Hz", 4);
-		else if (frequency == 5) display.setText((char*) "50Hz", 4);
-		else if (frequency == 6) display.setText((char*) "100Hz", 5);
-		else if (frequency == 7) display.setText((char*) "250Hz", 5);
-		else if (frequency == 8) display.setText((char*) "500Hz", 5);
-		else if (frequency == 9) display.setText((char*) "1kHz", 4);
+		if (ui_freq == 0) display.setText((char*) "1Hz", 3);
+		else if (ui_freq == 1) display.setText((char*) "2.5Hz", 4);
+		else if (ui_freq == 2) display.setText((char*) "5Hz", 3);
+		else if (ui_freq == 3) display.setText((char*) "10Hz", 4);
+		else if (ui_freq == 4) display.setText((char*) "25Hz", 4);
+		else if (ui_freq == 5) display.setText((char*) "50Hz", 4);
+		else if (ui_freq == 6) display.setText((char*) "100Hz", 5);
+		else if (ui_freq == 7) display.setText((char*) "250Hz", 5);
+		else if (ui_freq == 8) display.setText((char*) "500Hz", 5);
+		else if (ui_freq == 9) display.setText((char*) "1kHz", 4);
 	}
 }
 
 void pick_menu(){
 	update_display();
 	while(1){
-		uint8_t changed = buttons.changed();
-		uint8_t pressed = buttons.pressed() & changed;
-		uint8_t held = buttons.pressed() & ~changed;
-		uint8_t released = ~buttons.pressed() & changed;
+		uint8_t pressed = buttons.pressed();
+		uint8_t released = buttons.released();
+		uint8_t held = buttons.held();
+		uint8_t repeat = buttons.repeat();
 
 		if (released & BUTTON_MODE){
 			mode++;
 			if (mode > MODE_LAST){
 				mode = MODE_SQUARE;
-				frequency = 1;
-			}
-			else {
-				frequency = 1000;
 			}
 			update_display();
 		}
-		else if ((held & BUTTON_MODE) && ((pressed & BUTTON_UP) || (pressed & BUTTON_DOWN))){
+		else if (held & BUTTON_MODE){
 			update_display();
 			return;
 		}
 		else if (pressed & BUTTON_UP){
-			frequency++;
-			if (frequency > 9) frequency = 0;
+			ui_freq++;
 			update_display();
 		}
 		else if (pressed & BUTTON_DOWN){
-			frequency--;
-			if (frequency > 9) frequency = 9;
-			update_display();			
+			ui_freq--;
+			update_display();
+		}
+		else if (repeat & BUTTON_UP){
+			ui_freq+=8;
+			update_display();
+		}
+		else if (repeat & BUTTON_DOWN){
+			ui_freq-=8;
+			update_display();
 		}
 		
 		_delay_ms(12);
@@ -155,26 +175,35 @@ void output_waveform(){
 	display.setText(temp, 1);
 	
 	if (mode == MODE_SQUARE){
-		if (frequency < 7){
+		if (ui_freq == 0xFF) output_square_wave_2500khz();
+		else if (ui_freq == 0xFE) output_square_wave_2000khz();
+		else if (ui_freq == 0xFD) output_square_wave_1666khz();
+		else if (ui_freq == 0xFC) output_square_wave_1429khz();
+		else if (ui_freq == 0xFB) output_square_wave_1250khz();
+		else if (ui_freq == 0xFA) output_square_wave_1000khz();
+		else if (ui_freq == 0xF9) output_square_wave_769khz();
+		else if (ui_freq == 0xF8) output_square_wave_500khz();
+		else {
+			uint32_t frequency = get_square_frequency();
+
 			TCCR1A = 0x0;	//Normal mode
-			TCCR1B = _BV(CS10);	//No prescaler
-			//Set up the frequency.  We multiply by 2 because each time through the interrupt is half a waveform.
-			// The negative offset is because the ISR takes that many instructions.
-			if (frequency == 0) OCR1A = F_CPU / 2000 - 16;			//1kHz
-			else if (frequency == 1) OCR1A = F_CPU / 10000 - 16;	//5kHz
-			else if (frequency == 2) OCR1A = F_CPU / 20000 - 16;	//10kHz
-			else if (frequency == 3) OCR1A = F_CPU / 50000 - 16;	//25kHz
-			else if (frequency == 4) OCR1A = F_CPU / 100000 - 16;	//50kHz
-			else if (frequency == 5) OCR1A = F_CPU / 200000 - 16;	//100kHz
-			else if (frequency == 6) OCR1A = F_CPU / 500000 - 16;	//250kHz
+			if (frequency < 1000){
+				TCCR1B = _BV(CS12) | _BV(CS10);		//F_CPU / 1024 prescaler
+				OCR1A = F_CPU / 1024 / (2 * frequency) - 16;
+			}
+			else if (frequency < 10000){
+				TCCR1B = _BV(CS12);		//F_CPU / 256 prescaler
+				OCR1A = F_CPU / 256 / (2 * frequency) - 16;
+			}
+			else {
+				TCCR1B = _BV(CS10);		//F_CPU / 256 prescaler
+				OCR1A = F_CPU / 256 / (2 * frequency) - 16;
+			}
 			TIMSK1 = _BV(OCIE1A);	//Enable OCR1A interrupts
 			TCNT1 = 0;
 			sei();
 			while(1);	//Timers do everything now...
 		}
-		else if (frequency == 7) output_square_wave_500khz();
-		else if (frequency == 8) output_square_wave_1000khz();
-		else if (frequency == 9) output_square_wave_2500khz();
 	}
 	else {
 		const uint8_t* progmem_pointer;
