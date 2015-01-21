@@ -241,12 +241,6 @@ void output_waveform(){
 			sei();
 			while(1);	//Timers do everything now...
 		}
-		
-		//Start generating the waveform
-		uint8_t i = 0;
-		while(1){
-			PORTD = _data[i++];
-		}
 	}
 }
 
