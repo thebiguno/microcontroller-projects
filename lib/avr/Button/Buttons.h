@@ -21,16 +21,16 @@ namespace digitalcave {
 		volatile uint8_t *pin;
 		uint8_t pins_bv;
 		
-		uint8_t current;
-		uint8_t last;
-		uint8_t hold;
-		uint8_t repeat;
+		uint8_t _current;
+		uint8_t _last;
+		uint8_t _held;
+		uint8_t _repeat;
 		
 		uint8_t pressed_bv;
 		uint8_t released_bv;
-		uint8_t hold_time;
+		uint8_t held_time;
 		uint8_t repeat_time;
-		uint8_t hold_timer[8];
+		uint8_t held_timer[8];
 		uint8_t repeat_timer[8];
 		uint8_t window[8];
 
@@ -56,7 +56,8 @@ namespace digitalcave {
 		 *               another repeat flag is set.  This is an 8 bit number between 0 and 255.  Set repeat_time to 0 to 
 		 *               disable repeat functionality.
 		 *
-		 * You MUST call sample() repeatedly at the specified period (12ms is a good place to start).  You also MUST
+		 * You MUST call sample() repeatedly at the specified period (12ms is a good place to start).  The return of sample()
+		 * will show the currently pressed buttons.  If you want more state information, you then also MUST
 		 * call pressed(), released(), held(), and repeat() (or at least the subset that you are interested in) 
 		 * once for every time that you call sample(), or else events may be missed.
 		 * 
@@ -86,6 +87,9 @@ namespace digitalcave {
 		 * This method should be called as frequently as 3 milliseconds for a stabilization period of 20 ms,
 		 * or as infrequently as 60 ms for a stabilization period of 480 ms.
 		 * Typically this method should be called every 10 to 12 ms for a stabilization period of 80 to 96 ms.
+		 *
+		 * This function returns the currently pressed buttons (*not* the newly pressed buttons; it will mark
+		 * a button as being pressed even if it is being held down).
 		 */
 		uint8_t sample();
 		
@@ -93,6 +97,11 @@ namespace digitalcave {
  		 * Returns the mask of buttons that are newly pressed.
 		 */
 		uint8_t pressed();
+		
+		/*
+		 * Returns the mask of buttons that are newly released.
+		 */
+		uint8_t released();
 		
 		/*
 		 * Returns the mask of buttons that are newly pressed and held.
@@ -103,11 +112,6 @@ namespace digitalcave {
 		 * Returns the mask of buttons that are firing 'repeat' during this sample iteration.
 		 */
 		uint8_t repeat();
-		
-		/*
-		 * Returns the mask of buttons that are newly released.
-		 */
-		uint8_t released();
 	};
 }
 

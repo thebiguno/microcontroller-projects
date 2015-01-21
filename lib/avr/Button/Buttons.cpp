@@ -3,10 +3,10 @@
 
 using namespace digitalcave;
 
-Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, uint8_t release_time, uint8_t hold_time, uint8_t repeat_time){
+Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, uint8_t release_time, uint8_t held_time, uint8_t repeat_time){
 	this->port = port;
 	this->pin = this->port - 0x2;
-	this->pins_bv = pins;
+	this->pins_bv = pin_mask;
 	this->pressed_bv = 0xff;
 	for (uint8_t i = 0; i < press_time; i++) {
 		pressed_bv >>= 1;
@@ -18,14 +18,14 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, u
 	}
 	this->released_bv = ~this->released_bv;
 	
-	this->hold_time = hold_time;
+	this->held_time = held_time;
 	this->repeat_time = repeat_time;
 	//0xFF is reserved state.
-	if (this->hold_time == 0xFF) this->hold_time = 0xFE;
+	if (this->held_time == 0xFF) this->held_time = 0xFE;
 	if (this->repeat_time == 0xFF) this->repeat_time = 0xFE;
 	
-	this->last = 0x00;
-	this->current = 0x00;
+	this->_last = 0x00;
+	this->_current = 0x00;
 	for (uint8_t i = 0; i < 8; i++) {
 		this->window[i] = 0x00;
 	}
@@ -36,10 +36,11 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, u
 Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask) : Buttons::Buttons(port, pin_mask, 8, 8, 0, 0) {}
 
 uint8_t Buttons::sample() {
+	this->_last = this->_current;				//Save last state before messing with things.
 	uint8_t sampled_pins = ~*this->pin;		//We invert the pins since it is active low
 	
-	this->hold = 0x00;
-	this->repeat = 0x00;
+	this->_held = 0x00;
+	this->_repeat = 0x00;
 	
 	for (uint8_t i = 0; i < 8; i++) {
 		if (this->pins_bv & _BV(i)) {										// only check the pins that are of interest
@@ -47,51 +48,56 @@ uint8_t Buttons::sample() {
 			uint8_t sampled_pin_high = sampled_pins & _BV(i);				// See if this particular pin is high
 			if (sampled_pin_high) this->window[i] |= 0x01;					// If so, add it to the LSB of the window
 			if ((this->window[i] & this->pressed_bv) == this->pressed_bv){	// If it has been pressed for <pressed> cycles...
-				this->current |= _BV(i);									// mark button as pressed
+				this->_current |= _BV(i);									// mark button as pressed
 			}
 			else if ((this->window[i] & this->released_bv) == 0x00){		// If it has been released for <released> cycles...
-				this->current &= ~_BV(i);									// mark button released
+				this->_current &= ~_BV(i);									// mark button released
 			}
 			//We only increment held timer if the button is currently pressed.
-			if (this->current & _BV(i)){
-				if (this->hold_timer[i] == 0xFF){
+			if (this->_current & _BV(i)){
+				if (this->held_timer[i] == 0xFF){
 					//Do nothing here; we are already in 'held' state.
 				}
-				else if (this->hold_timer[i] >= this->hold_time){
+				else if (this->held_timer[i] >= this->held_time){
 					//If the button has been held for the required time, mark it as fully held (0xFF)
-					this->hold_timer[i] = 0xFF;
-					this->hold |= _BV(i);
+					this->held_timer[i] = 0xFF;
+					this->_held |= _BV(i);
 				}
 				else {
 					//Increment timer
-					this->hold_timer[i]++;
+					this->held_timer[i]++;
 				}
 			}
 			else {
 				//If the button is not currently pressed, then reset the timer
-				this->hold_timer[i] = 0x00;
+				this->held_timer[i] = 0x00;
 			}
 			
-			//We only lok at repeat options if the button is currently held (hold_timer == 0xFF)
-			if (this->hold_timer[i] == 0xFF){
+			//We only lok at repeat options if the button is currently held (held_timer == 0xFF)
+			if (this->held_timer[i] == 0xFF){
 				this->repeat_timer[i]++;
-				
+				if (this->repeat_timer[i] >= this->repeat_time){
+					this->repeat_timer[i] = 0;
+					this->_repeat |= _BV(i);
+				}
 			}
 		}
 	}
-	return this->current;
-}
-
-uint8_t Buttons::changed() {
-	if (this->current != this->last) {
-		uint8_t result = this->current ^ this->last;
-		this->last = this->current;
-		return result;
-	} else {
-		return 0;
-	}
+	return this->_current;
 }
 
 uint8_t Buttons::pressed() {
-	return this->current;
+	return this->_current & (this->_current ^ this->_last);
+}
+
+uint8_t Buttons::released() {
+	return ~this->_current & (this->_current ^ this->_last);
+}
+
+uint8_t Buttons::held() {
+	return this->_held;
+}
+
+uint8_t Buttons::repeat() {
+	return this->_repeat;
 }
