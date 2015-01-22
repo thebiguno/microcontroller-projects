@@ -3,15 +3,15 @@
 #include "lib/usb/rawhid.h"
 
 #define STR_MANUFACTURER	L"Warren Janssens"
-#define STR_PRODUCT		L"Cranky Simulator"
+#define STR_PRODUCT		L"Cranky"
 #define VENDOR_ID		0x574a
 #define PRODUCT_ID		0x6372
 #define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
 #define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
 #define RAWHID_TX_SIZE		64	// transmit packet size
-#define RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
+#define RAWHID_TX_INTERVAL	4	// max # of ms between transmit packets
 #define RAWHID_RX_SIZE		64	// receive packet size
-#define RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
+#define RAWHID_RX_INTERVAL	4	// max # of ms between receive packets
 
 static volatile uint8_t ign_pins[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
 static volatile uint8_t inj_pins[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
@@ -32,12 +32,7 @@ volatile uint8_t inj_pin;
  *           determine both spark and injector configuration
  */
 
-typedef struct {
-	volatile uint8_t position;
-	volatile uint8_t length;
-	volatile uint8_t address;
-	volatile uint8_t state;		// bit 0 = escape; bit 1 = framing error;
-} protocol_t;
+#define REG_LEN 159
 
 typedef struct {
 	// tuning values
@@ -73,14 +68,11 @@ typedef struct {
 										// 1000/(t*51.2*36/1000)/0.0166666666667
 	volatile uint8_t cranking;			// 0 = running normally; 1 = running below 383 rpm
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
-	
-	volatile uint8_t read_addr;			// the address to start reading from
-	volatile uint8_t read_len;			// the number of bytes to read
 } reg_t;
 
 static union reg_u {
 	reg_t s;
-	uint8_t a[512]; // TODO make this the right size
+	uint8_t a[REG_LEN];
 } u;
 
 static protocol_t input;
@@ -245,12 +237,25 @@ int main(void) {
 		
 		if (usb_configured()) {
 			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
-				OCR0A = rx_buffer[0];
-
-				// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
-				// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
-				OCR1AH = rx_buffer[1];
-				OCR1AL = rx_buffer[2];
+				uint8_t addr = rx_buffer[0];
+				uint8_t len = rx_buffer[0];
+				if (len & 0x80) {
+					// read request
+					len &= 0x7f; // clear the read/write bit
+					if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+					tx_buffer[0] = addr;
+					tx_buffer[1] = len;
+					for (uint8_t i = addr; i < len; i++) {
+						tx_buffer[i+2] = u.a[i];
+					}
+					usb_rawhid_send(tx_buffer, 0);
+				} else {
+					// write request
+					if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+					for (uint8_t i = addr; i < len; i++) {
+						u.a[i] = rx_buffer[i+2];
+					}
+				}
 			}
 		}
 	}
