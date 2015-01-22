@@ -37,7 +37,7 @@ $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title "AVR Function Generator"
-Date "13 jan 2015"
+Date "22 jan 2015"
 Rev "1.0"
 Comp "Digital Cave"
 Comment1 ""
@@ -476,69 +476,8 @@ Wire Wire Line
 	4900 4300 6200 4300
 Wire Wire Line
 	6200 4300 6200 4150
-$Comp
-L RSMALL R21
-U 1 1 54B3FF16
-P 6350 4150
-F 0 "R21" V 6300 4100 40  0000 C CNN
-F 1 "4.7k" V 6300 4200 40  0000 C CNN
-F 2 "~" V 6280 4150 30  0000 C CNN
-F 3 "~" H 6350 4200 30  0000 C CNN
-	1    6350 4150
-	0    1    1    0   
-$EndComp
 Wire Wire Line
-	6200 4150 6250 4150
-$Comp
-L POT RV2
-U 1 1 54B3FF5E
-P 6800 4150
-F 0 "RV2" H 6800 4050 50  0000 C CNN
-F 1 "10k" H 6800 4150 50  0000 C CNN
-F 2 "~" H 6800 4150 60  0000 C CNN
-F 3 "~" H 6800 4150 60  0000 C CNN
-	1    6800 4150
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	6450 4150 6550 4150
-Wire Wire Line
-	6800 4300 6800 4600
-Wire Wire Line
-	6800 4600 4950 4600
-Wire Wire Line
-	4950 4600 4950 4500
-Wire Wire Line
-	4950 4500 5050 4500
-$Comp
-L GND #PWR22
-U 1 1 54B3FFDA
-P 5050 4400
-F 0 "#PWR22" H 5050 4400 30  0001 C CNN
-F 1 "GND" H 5050 4330 30  0001 C CNN
-F 2 "" H 5050 4400 60  0000 C CNN
-F 3 "" H 5050 4400 60  0000 C CNN
-	1    5050 4400
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	6200 4450 7400 4450
-Wire Wire Line
-	7150 4450 7150 4150
-Wire Wire Line
-	7150 4150 7050 4150
-Connection ~ 7150 4450
-$Comp
-L PINS_2 K2
-U 1 1 54B400B1
-P 7300 1150
-F 0 "K2" H 7300 1000 60  0000 C CNN
-F 1 "SIGNAL_OUT" H 7300 1300 60  0000 C CNN
-F 2 "~" H 7300 1200 60  0000 C CNN
-F 3 "~" H 7300 1200 60  0000 C CNN
-	1    7300 1150
-	-1   0    0    -1  
-$EndComp
+	6200 4150 6800 4150
 $Comp
 L GND #PWR27
 U 1 1 54B400BE
@@ -637,16 +576,10 @@ F 3 "" H 5600 3750 60  0000 C CNN
 	1    5600 3750
 	1    0    0    -1  
 $EndComp
-NoConn ~ 5050 4700
-NoConn ~ 5050 4800
-NoConn ~ 5050 5000
-NoConn ~ 5050 5100
-NoConn ~ 6200 4750
-NoConn ~ 6200 5050
-Text GLabel 7400 4450 2    60   Input ~ 0
-SIGNAL_OUT
+Text GLabel 7350 4250 2    60   Input ~ 0
+DDS_SIGNAL_OUT
 Text GLabel 7000 1100 0    60   Input ~ 0
-SIGNAL_OUT
+DDS_SIGNAL_OUT
 Text Notes 6200 1600 0    60   ~ 0
 Panel mount banana jacks for signal
 $Comp
@@ -1012,11 +945,10 @@ F 3 "" H 3500 4850 60  0000 C CNN
 $EndComp
 Connection ~ 3250 4850
 NoConn ~ 3000 4650
-NoConn ~ 3000 4750
-Text Notes 4400 3900 0    40   ~ 0
-The first opamp centers\nthe signal around GND
-Text Notes 6350 4700 0    40   ~ 0
-The second opamp\namplifies the signal\nup to +/- 10V
+Text Notes 5800 4250 0    40   ~ 0
+This opamp centers\nthe signal around GND
+Text Notes 5800 4550 0    40   ~ 0
+This opamp buffers the signal\nwithout changing the range
 $Comp
 L SW_PUSH_SMALL SW4
 U 1 1 54B59234
@@ -1035,4 +967,153 @@ Wire Wire Line
 Connection ~ 3000 2350
 Text Label 3000 4550 0    60   ~ 0
 BTN_OK
+$Comp
+L PINS_3 K2
+U 1 1 54C13AFA
+P 7300 1200
+F 0 "K2" H 7300 1000 60  0000 C CNN
+F 1 "SIGNAL_OUT" H 7300 1400 60  0000 C CNN
+F 2 "~" H 7300 1300 60  0000 C CNN
+F 3 "~" H 7300 1300 60  0000 C CNN
+	1    7300 1200
+	-1   0    0    -1  
+$EndComp
+Text Label 3100 6200 0    60   ~ 0
+FAST_PWM
+Text Label 4700 5000 2    60   ~ 0
+FAST_PWM
+Wire Wire Line
+	5050 5100 4950 5100
+Wire Wire Line
+	4950 5100 4950 5200
+Wire Wire Line
+	4950 5200 6300 5200
+Wire Wire Line
+	6300 5200 6300 5050
+Connection ~ 6300 5050
+Text GLabel 7200 5150 2    60   Input ~ 0
+FAST_SQUARE_SIGNAL_OUT
+Text GLabel 7000 1300 0    60   Input ~ 0
+FAST_SQUARE_SIGNAL_OUT
+$Comp
+L PINS_3 K?
+U 1 1 54C14C3D
+P 7300 2200
+F 0 "K?" H 7300 2000 60  0000 C CNN
+F 1 "SERVO_OUT" H 7300 2400 60  0000 C CNN
+F 2 "~" H 7300 2300 60  0000 C CNN
+F 3 "~" H 7300 2300 60  0000 C CNN
+	1    7300 2200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 54C14C47
+P 7000 2200
+F 0 "#PWR?" H 7000 2290 20  0001 C CNN
+F 1 "+5V" H 7000 2290 30  0000 C CNN
+F 2 "" H 7000 2200 60  0000 C CNN
+F 3 "" H 7000 2200 60  0000 C CNN
+	1    7000 2200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54C14C4D
+P 7000 2300
+F 0 "#PWR?" H 7000 2300 30  0001 C CNN
+F 1 "GND" H 7000 2230 30  0001 C CNN
+F 2 "" H 7000 2300 60  0000 C CNN
+F 3 "" H 7000 2300 60  0000 C CNN
+	1    7000 2300
+	0    1    1    0   
+$EndComp
+Text GLabel 7000 2100 0    60   Input ~ 0
+SERVO_SIGNAL_OUT
+Text GLabel 7200 4750 2    60   Input ~ 0
+SERVO_SIGNAL_OUT
+Text Notes 6200 2550 0    60   ~ 0
+Male Headers for servo testing
+Wire Wire Line
+	7350 4250 7250 4250
+Wire Wire Line
+	6800 4350 6550 4350
+Wire Wire Line
+	6550 4350 6550 4450
+Wire Wire Line
+	6550 4450 6200 4450
+Wire Wire Line
+	5050 4400 4200 4400
+Connection ~ 4200 4400
+Wire Wire Line
+	5050 4500 4950 4500
+Wire Wire Line
+	4950 4500 4950 4600
+Wire Wire Line
+	4950 4600 6300 4600
+Wire Wire Line
+	6300 4600 6300 4450
+Connection ~ 6300 4450
+$Comp
+L SPDT SW?
+U 1 1 54C167A9
+P 7050 4250
+F 0 "SW?" V 7200 4200 60  0000 C CNN
+F 1 "SPDT" V 6800 4250 60  0000 C CNN
+F 2 "~" H 6950 4000 60  0000 C CNN
+F 3 "~" H 6950 4000 60  0000 C CNN
+	1    7050 4250
+	0    1    1    0   
+$EndComp
+Text Notes 6750 3800 0    40   ~ 0
+The switch controls the\noutput range of the DDS\nsignal (0 to 5 or -5 to 5)
+$Comp
+L SPDT SW?
+U 1 1 54C167C7
+P 6900 5150
+F 0 "SW?" V 7050 5100 60  0000 C CNN
+F 1 "SPDT" V 6650 5150 60  0000 C CNN
+F 2 "~" H 6800 4900 60  0000 C CNN
+F 3 "~" H 6800 4900 60  0000 C CNN
+	1    6900 5150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7100 5150 7200 5150
+Wire Wire Line
+	6200 5050 6650 5050
+Wire Wire Line
+	4700 5000 5050 5000
+Wire Wire Line
+	4750 5000 4750 5650
+Wire Wire Line
+	4750 5650 6500 5650
+Wire Wire Line
+	6500 5650 6500 5250
+Wire Wire Line
+	6500 5250 6650 5250
+Connection ~ 4750 5000
+Text Notes 6650 5450 0    40   ~ 0
+This switch controls whether or not the fast\nsquare wave signal is buffered by an op amp\n(may cause slew on higher frequencies)
+Text Notes 5750 5150 0    40   ~ 0
+This opamp buffers the fast\nsquare wave signal
+Wire Wire Line
+	7200 4750 6200 4750
+Wire Wire Line
+	5050 4800 4950 4800
+Wire Wire Line
+	4950 4800 4950 4900
+Wire Wire Line
+	4950 4900 6300 4900
+Wire Wire Line
+	6300 4900 6300 4750
+Connection ~ 6300 4750
+Text Notes 5750 4850 0    40   ~ 0
+This opamp buffers the \nservo signal
+Text Label 3000 4750 0    60   ~ 0
+SERVO
+Text Label 4700 4700 2    60   ~ 0
+SERVO
+Wire Wire Line
+	4700 4700 5050 4700
 $EndSCHEMATC
