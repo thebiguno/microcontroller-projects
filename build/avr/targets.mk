@@ -96,3 +96,4 @@ endif
 clean:
 	rm -f *.o
 	rm -f $(PROJECT).hex
+	rm -f $(PROJECT).elf
