@@ -45,8 +45,8 @@ NOP
 	OUT			_SFR_IO_ADDR(PORTD),	r24			;1 cycle
 .endm
 
-	.global TIMER1_COMPB_vect
-TIMER1_COMPB_vect:
+	.global TIMER1_COMPB_vect1
+TIMER1_COMPB_vect1:
 	NEXT_DDS_CYCLE									;12 cycles
 	STS			TCNT1H,	r1							;2 cycle
 	STS			TCNT1L,	r1							;2 cycle
