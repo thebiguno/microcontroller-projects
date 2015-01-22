@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Thursday, January 08, 2015 'pmt' 01:12:16 pm
+EESchema-DOCLIB  Version 2.0  Date: Thursday, January 22, 2015 'pmt' 01:36:16 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -96,6 +96,11 @@ $ENDCMP
 $CMP RSMALL
 D RSMALL
 K R DEV
+$ENDCMP
+#
+$CMP SPDT
+D SPDT Switch
+K SPDT
 $ENDCMP
 #
 $CMP STPIC6D595
