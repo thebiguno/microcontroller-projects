@@ -6,10 +6,11 @@
 
 #include "lib/Hd44780/Hd44780_Direct.h"
 #include "lib/Button/Buttons.h"
+#include "lib/pwm/pwm.h"
 
 using namespace digitalcave;
 
-#define MODE_SQUARE_FAST	0x00
+#define MODE_FAST_SQUARE	0x00
 #define MODE_SQUARE			0x01
 #define MODE_SINE			0x02
 #define MODE_TRIANGLE		0x03
@@ -17,7 +18,8 @@ using namespace digitalcave;
 #define MODE_SAWTOOTH_DOWN	0x05
 #define MODE_STAIRCASE_UP	0x06
 #define MODE_STAIRCASE_DOWN	0x07
-#define MODE_LAST 			MODE_STAIRCASE_DOWN
+#define MODE_SERVO			0x08
+#define MODE_LAST 			MODE_SERVO
 
 #define BUTTON_MODE			_BV(PORTC0)
 #define BUTTON_UP			_BV(PORTC1)
@@ -39,14 +41,9 @@ static uint8_t mode = MODE_SQUARE;
 static uint8_t ui_freq = 0;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
 
 uint8_t _data_ptr;	//Pointer into _data
-uint8_t _data[256];	//Copy PROGMEM DDS signals into this buffer.  By aligning to 256, we can reduce the instructions needed in the interrupt, at the expense of more RAM usage.
+uint8_t _data[256];	//Copy PROGMEM DDS signals into this buffer.
 
-
-extern "C"{	//This is needed when calling ASM-implemented functions
-	void output_square_wave_div8();
-}
-
-uint32_t get_square_fast_frequency(){
+uint32_t get_fast_square_frequency(){
 	//From the datasheet, in output frequency of CTC mode PWM
 	return F_CPU / (2 * 1 + (uint32_t) (255 - ui_freq));
 }
@@ -56,11 +53,16 @@ uint16_t get_dds_frequency(){
 	return ((uint32_t) ui_freq + 1) * 100;
 }
 
+uint32_t get_servo_phase(){
+	//Return a value between 500us and 2540us.
+	return ((ui_freq * 8) + 500);
+}
+
 void update_display(){
 	display.clear();
 
 	display.setDdramAddress(0x00);
-	if (mode == MODE_SQUARE_FAST){
+	if (mode == MODE_FAST_SQUARE){
 		display.setText((char*) "Square (Fast)", 13);
 	}
 	else if (mode == MODE_SQUARE){
@@ -84,27 +86,47 @@ void update_display(){
 	else if (mode == MODE_STAIRCASE_DOWN){
 		display.setText((char*) "Staircase Dn", 12);
 	}
+	else if (mode == MODE_SERVO){
+		display.setText((char*) "Servo", 12);
+	}
 	else {
 		display.setText((char*) "Unknown", 7);
 	}
-		
-	uint32_t frequency;
-	if (mode == MODE_SQUARE_FAST) frequency = get_square_fast_frequency();
-	else frequency = get_dds_frequency();
 	
-	char temp[16];
-	uint8_t l;
-	if (frequency >= 1000000){
-		l = snprintf(temp, 16, "%6.3f MHz", (frequency / 1000000.0));
+	if (mode == MODE_SERVO){
+		//For servo testing we care about phase, not frequency.  The period is fixed
+		// at 20ms (20000us); the phase of the high section will determine the servo's 
+		// output angle.  By spec, servos are supposed to listen for values between
+		// 1ms and 2ms; however, most servos have some wiggle room and let you set a value
+		// from about 0.5ms to 2.5ms.  For this servo test mode, we support output phases 
+		// in this expanded range, in 8us increments.  See get_servo_phase() for exact 
+		// implementation details.
+		uint32_t phase = get_servo_phase();
+		char temp[16];
+		uint8_t l;
+		l = snprintf(temp, 16, "%6.3f ms", (phase / 1000.0));
+		display.setDdramAddress(0x40);
+		display.setText(temp, l);
 	}
-	else if (frequency >= 1000){
-		l = snprintf(temp, 16, " %5.1f kHz", (frequency / 1000.0));
+	else{
+		uint32_t frequency;
+		if (mode == MODE_FAST_SQUARE) frequency = get_fast_square_frequency();
+		else frequency = get_dds_frequency();
+	
+		char temp[16];
+		uint8_t l;
+		if (frequency >= 1000000){
+			l = snprintf(temp, 16, "%6.3f MHz", (frequency / 1000000.0));
+		}
+		else if (frequency >= 1000){
+			l = snprintf(temp, 16, " %5.1f kHz", (frequency / 1000.0));
+		}
+		else {
+			l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
+		}
+		display.setDdramAddress(0x40);
+		display.setText(temp, l);
 	}
-	else {
-		l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
-	}
-	display.setDdramAddress(0x40);
-	display.setText(temp, l);
 	
 	if (TCCR0B != 0x00 || TCCR1B != 0x00){
 		display.setDdramAddress(0x0F);
@@ -155,8 +177,12 @@ void pick_menu(){
 	}
 }
 
-void update_square_fast_frequency(){
+void update_fast_square_frequency(){
 	OCR0A = (255 - ui_freq);					//Comparator
+}
+
+void update_servo_phase(){
+	pwm_set_phase(0, get_servo_phase());
 }
 
 void update_dds_frequency(){
@@ -165,12 +191,13 @@ void update_dds_frequency(){
 }
 
 void output_waveform(){
-	if (mode == MODE_SQUARE_FAST){
+	if (mode == MODE_FAST_SQUARE){
 		TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
 		TCCR0B = _BV(CS00);							//No prescaler
-		update_square_fast_frequency();
+		update_fast_square_frequency();
 		TCNT0 = 0;
 		sei();
+		update_display();
 		while(1){	//Timers do everything now.
 			_delay_ms(12);
 			buttons.sample();
@@ -187,12 +214,48 @@ void output_waveform(){
 			else if (pressed & BUTTON_UP){
 				ui_freq++;
 				update_display();
-				update_square_fast_frequency();
+				update_fast_square_frequency();
 			}
 			else if (pressed & BUTTON_DOWN){
 				ui_freq--;
 				update_display();
-				update_square_fast_frequency();
+				update_fast_square_frequency();
+			}
+		}
+	}
+	else if (mode == MODE_SERVO){
+		volatile uint8_t *ports[1];
+		uint8_t pins[1];
+		
+		ports[0] = &PORTC;
+		pins[0] = PORTC5;
+		pwm_init(ports, pins, 1, 20000);
+		update_servo_phase();
+		
+		update_display();
+		
+		while(1){
+			_delay_ms(12);
+			buttons.sample();
+			
+			uint8_t pressed = buttons.pressed();
+			uint8_t held = buttons.held();
+
+			if (held & BUTTON_MODE){
+				pwm_stop();
+				_delay_ms(100);	//Wait for signal to stop
+				update_display();
+				return;
+			}
+			else if (pressed & BUTTON_UP){
+				ui_freq++;
+				update_display();
+				update_servo_phase();
+			}
+			else if (pressed & BUTTON_DOWN){
+				ui_freq--;
+				update_display();
+				update_servo_phase();
 			}
 		}
 	}
@@ -220,6 +283,7 @@ void output_waveform(){
 		TIMSK1 = _BV(OCIE1A);						//Enable OCR1A interrupts
 		TCNT1 = 0;
 		sei();
+		update_display();
 		while(1){	//Timers do everything now.
 			_delay_ms(12);
 			buttons.sample();
@@ -248,10 +312,11 @@ void output_waveform(){
 }
 
 int main (void){
-
 	//Init port D in output mode (used to send data to DAC)
 	DDRD = 0xFF;
 
+	//Infinite loop of picking menu options, then outputting waveform.
+	// Hold the mode button to stop / start signal generation.
 	while (1) {
 		//Pick mode / options
 		pick_menu();
@@ -259,16 +324,4 @@ int main (void){
 		//Output waveform
 		output_waveform();
 	}
-}
-
-EMPTY_INTERRUPT(TIMER1_OVF_vect)
-EMPTY_INTERRUPT(TIMER1_COMPB_vect)
-
-/*
- * DDS Waveform Generation
- */
-ISR(TIMER1_COMPA_vect){
-	static uint8_t i = 0;
-	PORTD = _data[i++];
-	TCNT1 = 0;
 }
