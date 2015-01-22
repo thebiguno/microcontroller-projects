@@ -44,7 +44,7 @@ uint8_t _data_ptr;	//Pointer into _data
 uint8_t _data[256];	//Copy PROGMEM DDS signals into this buffer.
 
 uint32_t get_fast_square_frequency(){
-	//From the datasheet, in output frequency of CTC mode PWM
+	//From the datasheet, in the section detailing the output frequency of CTC mode PWM
 	return F_CPU / (2 * 1 + (uint32_t) (255 - ui_freq));
 }
 
@@ -100,7 +100,7 @@ void update_display(){
 		// 1ms and 2ms; however, most servos have some wiggle room and let you set a value
 		// from about 0.5ms to 2.5ms.  For this servo test mode, we support output phases 
 		// in this expanded range, in 8us increments.  See get_servo_phase() for exact 
-		// implementation details.
+		// implementation details and range.
 		uint32_t phase = get_servo_phase();
 		char temp[16];
 		uint8_t l;
@@ -136,7 +136,20 @@ void update_display(){
 	}
 }
 
-void pick_menu(){
+void update_fast_square_frequency(){
+	OCR0A = (255 - ui_freq);					//Comparator
+}
+
+void update_servo_phase(){
+	pwm_set_phase(0, get_servo_phase());
+}
+
+void update_dds_frequency(){
+	uint32_t frequency = get_dds_frequency();
+	OCR1A = (F_CPU / 256 / frequency) - 8;		//Comparison value
+}
+
+void main_menu(){
 	update_display();
 	while(1){
 		uint8_t pressed = buttons.pressed();
@@ -177,17 +190,91 @@ void pick_menu(){
 	}
 }
 
-void update_fast_square_frequency(){
-	OCR0A = (255 - ui_freq);					//Comparator
+void fast_square_menu(){
+	update_display();
+
+	while(1){	//Timers do everything now.
+		_delay_ms(12);
+		buttons.sample();
+		
+		uint8_t pressed = buttons.pressed();
+		uint8_t held = buttons.held();
+
+		if (held & BUTTON_MODE){
+			TCCR0B = 0x00;
+			TIMSK0 = 0x00;
+			update_display();
+			return;
+		}
+		else if (pressed & BUTTON_UP){
+			ui_freq++;
+			update_display();
+			update_fast_square_frequency();
+		}
+		else if (pressed & BUTTON_DOWN){
+			ui_freq--;
+			update_display();
+			update_fast_square_frequency();
+		}
+	}
 }
 
-void update_servo_phase(){
-	pwm_set_phase(0, get_servo_phase());
+void dds_menu(){
+	update_display();
+
+	while(1){	//Timers do everything now.
+		_delay_ms(12);
+		buttons.sample();
+		
+		uint8_t pressed = buttons.pressed();
+		uint8_t held = buttons.held();
+
+		if (held & BUTTON_MODE){
+			TCCR1B = 0x00;
+			TIMSK1 = 0x00;
+			update_display();
+			return;
+		}
+		else if (pressed & BUTTON_UP){
+			ui_freq++;
+			update_display();
+			update_dds_frequency();
+		}
+		else if (pressed & BUTTON_DOWN){
+			ui_freq--;
+			update_display();
+			update_dds_frequency();
+		}
+	}
 }
 
-void update_dds_frequency(){
-	uint32_t frequency = get_dds_frequency();
-	OCR1A = (F_CPU / 256 / frequency) - 8;		//Comparison value
+void servo_menu(){
+	update_display();
+
+	while(1){
+		_delay_ms(12);
+		buttons.sample();
+		
+		uint8_t pressed = buttons.pressed();
+		uint8_t held = buttons.held();
+
+		if (held & BUTTON_MODE){
+			pwm_stop();
+			_delay_ms(100);	//Wait for signal to stop
+			update_display();
+			return;
+		}
+		else if (pressed & BUTTON_UP){
+			ui_freq++;
+			update_display();
+			update_servo_phase();
+		}
+		else if (pressed & BUTTON_DOWN){
+			ui_freq--;
+			update_display();
+			update_servo_phase();
+		}
+	}
 }
 
 void output_waveform(){
@@ -197,31 +284,8 @@ void output_waveform(){
 		update_fast_square_frequency();
 		TCNT0 = 0;
 		sei();
-		update_display();
-		while(1){	//Timers do everything now.
-			_delay_ms(12);
-			buttons.sample();
-			
-			uint8_t pressed = buttons.pressed();
-			uint8_t held = buttons.held();
-
-			if (held & BUTTON_MODE){
-				TCCR0B = 0x00;
-				TIMSK0 = 0x00;
-				update_display();
-				return;
-			}
-			else if (pressed & BUTTON_UP){
-				ui_freq++;
-				update_display();
-				update_fast_square_frequency();
-			}
-			else if (pressed & BUTTON_DOWN){
-				ui_freq--;
-				update_display();
-				update_fast_square_frequency();
-			}
-		}
+		
+		fast_square_menu();
 	}
 	else if (mode == MODE_SERVO){
 		volatile uint8_t *ports[1];
@@ -232,32 +296,7 @@ void output_waveform(){
 		pwm_init(ports, pins, 1, 20000);
 		update_servo_phase();
 		
-		update_display();
-		
-		while(1){
-			_delay_ms(12);
-			buttons.sample();
-			
-			uint8_t pressed = buttons.pressed();
-			uint8_t held = buttons.held();
-
-			if (held & BUTTON_MODE){
-				pwm_stop();
-				_delay_ms(100);	//Wait for signal to stop
-				update_display();
-				return;
-			}
-			else if (pressed & BUTTON_UP){
-				ui_freq++;
-				update_display();
-				update_servo_phase();
-			}
-			else if (pressed & BUTTON_DOWN){
-				ui_freq--;
-				update_display();
-				update_servo_phase();
-			}
-		}
+		servo_menu();
 	}
 	else {
 		const uint8_t* progmem_pointer;
@@ -283,31 +322,8 @@ void output_waveform(){
 		TIMSK1 = _BV(OCIE1A);						//Enable OCR1A interrupts
 		TCNT1 = 0;
 		sei();
-		update_display();
-		while(1){	//Timers do everything now.
-			_delay_ms(12);
-			buttons.sample();
-			
-			uint8_t pressed = buttons.pressed();
-			uint8_t held = buttons.held();
 
-			if (held & BUTTON_MODE){
-				TCCR1B = 0x00;
-				TIMSK1 = 0x00;
-				update_display();
-				return;
-			}
-			else if (pressed & BUTTON_UP){
-				ui_freq++;
-				update_display();
-				update_dds_frequency();
-			}
-			else if (pressed & BUTTON_DOWN){
-				ui_freq--;
-				update_display();
-				update_dds_frequency();
-			}
-		}
+		dds_menu();
 	}
 }
 
@@ -319,7 +335,7 @@ int main (void){
 	// Hold the mode button to stop / start signal generation.
 	while (1) {
 		//Pick mode / options
-		pick_menu();
+		main_menu();
 
 		//Output waveform
 		output_waveform();
