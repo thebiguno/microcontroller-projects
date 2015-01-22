@@ -75,11 +75,11 @@ static union reg_u {
 	uint8_t a[REG_LEN];
 } u;
 
-static protocol_t input;
-static protocol_t output;
-
 // these things are not in the struct since they are never read/write over serial
 volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
+
+uint8_t rx_buffer[64];
+uint8_t tx_buffer[64];
 
 /* 
 // additional parameters that may become tuning parameters or constants
@@ -172,28 +172,28 @@ int main(void) {
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
 	// prescaler configured so that the timer won't overflow at 500 rpm @ 36 teeth
-	// 20MHz clock = 0.05 us per clock cycle
+	// 16MHz clock = 62.5 ns per clock cycle
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (9.999 ms for missing teeth)
-	// 10000 us / 51.2 = 195 < 256 [ / 1024 prescale ]
-	// 382 rpm absolute minimum rpm at 1024 prescale
+	// 10000 us / 64 us = 156 < 256 [ / 1024 prescale ]
+	// ??? rpm absolute minimum rpm at 1024 prescale
 	TCCR0A = 0x00;						// OC0A / OC0B disconnected
 	TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
 
 	// timer 1 (16-bit) is used to time the spark advance
-	// 20MHz clock = 0.05 us per clock cycle
+	// 16MHz clock = 62.5 ns per clock cycle
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (20 ms covers 60 degrees maximum spark advance)
-	// 20000 us / 0.4 =  50,000 < 65,535 [ / 8 prescale ]
+	// 20000 us / 0.5 us = 40,000 < 65,535 [ / 8 prescale ]
 	TCCR1A = 0x00;						// OC1A / OC1B disconnected
 	TCCR1B = _BV(CS11);					// clock prescale select = CLK /8
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	// interrupt on timer 1 compare A and B
 	
-	// timer 2 (8-bit) is used to drive the injector solenoids (high-z)
-	// 20MHz clock = 0.05 us per clock cycle
-	// 256 * 8 = 2048 * 0.05 us = 102 us frequency > 66
-	TCCR2A = 0x00;						// OC2A / OC2B disconnected
-	TCCR2B = _BV(CS21);					// clock precale select = CLK / 8
-	TIMSK2 = _BV(OCIE2A) | _BV(OCIE2B); // interrupt on timer 2 compare A and B
-	OCR2A = 165; // 165 * 8 clock cycles = 66 us
+	// timer 4 (10-bit) is used to drive the injector solenoids (high-z)
+	// 16MHz clock = 62.5 ns per clock cycle
+	// 256 * 8 = 2048 * 0.0625 us = 128 us > 66 us
+	TCCR4A = 0x00;						// OC2A / OC2B disconnected
+	TCCR4B = _BV(CS42);					// clock precale select = CLK / 8
+	TIMSK4 = _BV(OCIE4A) | _BV(OCIE4B); // interrupt on timer 4 compare A and B
+	OCR4A = 132; // 132 * 8 clock cycles = 66 us
 	
 	// set up analog
 	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
@@ -207,8 +207,6 @@ int main(void) {
 	DDRB = _BV(PINB0) | _BV(PINB1) | _BV(PINB2) | _BV(PINB3);	// spark plugs
 	DDRD = _BV(PIND4) | _BV(PIND5) | _BV(PIND6) | _BV(PIND7);	// injectors
 
-	UCSR0B |= _BV(RXCIE0);		// enable serial rx interrupts
-	
 	sei();						// enable interrupts
 
 	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
@@ -271,7 +269,7 @@ ISR(ADC_vect) {
 // each tooth represents 10 degrees
 ISR(INT0_vect) {
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
-	if (t < 255) cranking = 0;
+	if (t < 255) u.s.cranking = 0;
 	if (t > (u.s.crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
@@ -371,17 +369,17 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 // injector pwm frequency
-ISR(TIMER2_COMPA_vect) {
+ISR(TIMER4_COMPA_vect) {
 	// -30 to +70 degrees around TDC
 	if ((u.s.crank > 14 && u.s.crank < 26) || u.s.crank > 33 || u.s.crank < 8) {
 		PORTD |= inj_pin;
 	}
-	TCNT2 = 0;
-	OCR2B = (uint16_t) u.s.inj_dc * 165 / 255;	// 165 * 8 clock cycles = 66 us
+	TCNT4 = 0;
+	OCR4B = (uint16_t) u.s.inj_dc * 132 / 255;	// 132 * 8 clock cycles = 66 us
 }
 
 // injector pwm phase
-ISR(TIMER2_COMPB_vect) {
+ISR(TIMER4_COMPB_vect) {
 	PORTD = 0;
 }
 
