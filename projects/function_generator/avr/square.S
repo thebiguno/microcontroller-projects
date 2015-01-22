@@ -23,11 +23,11 @@ NOP
 
 	.global TIMER1_COMPA_vect
 TIMER1_COMPA_vect:
+	STS			TCNT1H,	r1							;2 cycle
+	STS			TCNT1L,	r1							;2 cycle
 	IN			r24,	_SFR_IO_ADDR(PORTD)			;1 cycle
 	COM			r24									;1 cycle
 	OUT			_SFR_IO_ADDR(PORTD),	r24			;1 cycle
-	STS			TCNT1H,	r1							;2 cycle
-	STS			TCNT1L,	r1							;2 cycle
 	RETI											;4 cycles
  
 	; For 500kHz we want a total of 20 cycles per half waveform
@@ -116,12 +116,12 @@ output_square_wave_2000khz:
 	RJMP		loop_2000khz						;2 cycles
 
 
-	; For 2.5MHz wave we are running as close to the wire as possible (at 20MHz).
+	; Here we are running as close to the wire as possible.
 	; The entire waveform takes 8 cycles (4 cycles for half)
-	.global output_square_wave_2500khz
-output_square_wave_2500khz:
+	.global output_square_wave_div8
+output_square_wave_div8:
 	LDI			r24, 0xFF
-	loop_2500khz:
+	loop_div8:
 	OUT			_SFR_IO_ADDR(PORTD),	r24			;1 cycle
 	COM			r24									;1 cycle
-	RJMP		loop_2500khz						;2 cycles
+	RJMP		loop_div8						;2 cycles

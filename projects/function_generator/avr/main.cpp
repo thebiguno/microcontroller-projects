@@ -32,7 +32,7 @@ const uint8_t data_staircase_up[] PROGMEM	=	{0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 const uint8_t data_staircase_down[] PROGMEM	=	{0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0xa0,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
 static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
-static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8, 100, 5);
+static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8, 70, 5);
 
 static uint8_t mode = MODE_SQUARE;
 static uint8_t ui_freq = 0;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
@@ -42,37 +42,18 @@ uint8_t _data[256] __attribute__ ((aligned(256)));	//Copy PROGMEM DDS signals in
 
 
 extern "C"{	//This is needed when calling ASM-implemented functions
-	void output_square_wave_2500khz();
-	void output_square_wave_2000khz();
-	void output_square_wave_1666khz();
-	void output_square_wave_1429khz();
-	void output_square_wave_1250khz();
-	void output_square_wave_1000khz();
-	void output_square_wave_769khz();
-	void output_square_wave_500khz();
-
-	void output_dds_wave_5208hz();
-	void output_dds_wave_4882hz();
-	void output_dds_wave_3906hz();
-	void output_dds_wave_3125hz();
-	void output_dds_wave_2520hz();
-	void output_dds_wave_2003hz();
+	void output_square_wave_div8();
 }
 
 uint32_t get_square_frequency(){
-	if (ui_freq == 0xFF) return 2500000;
-	else if (ui_freq == 0xFE) return 2000000;
-	else if (ui_freq == 0xFD) return 1666000;
-	else if (ui_freq == 0xFC) return 1429000;
-	else if (ui_freq == 0xFB) return 1250000;
-	else if (ui_freq == 0xFA) return 1000000;
-	else if (ui_freq == 0xF9) return 769000;
-	else if (ui_freq == 0xF8) return 500000;
-	else return pow(ui_freq + 1, 2.305);
+	if (ui_freq == 0xFF) return F_CPU / 8;	//It takes 8 cycles to do one full waveform
+	//else return pow(ui_freq + 1, 2.3681177);
+	else return ((uint32_t) ui_freq + 1) * 1000;
 }
 
 uint16_t get_dds_frequency(){
-	return pow(ui_freq + 1, 1.335);
+	//return pow(ui_freq + 1, 1.335);
+	return ((uint32_t) ui_freq + 1) * 25;
 }
 
 void update_display(){
@@ -113,13 +94,13 @@ void update_display(){
 	char temp[16];
 	uint8_t l;
 	if (frequency >= 1000000){
-		l = snprintf(temp, 16, "%.3f MHz", (frequency / 1000000.0));
+		l = snprintf(temp, 16, "%1.3f MHz", (frequency / 1000000.0));
 	}
 	else if (frequency >= 1000){
-		l = snprintf(temp, 16, " %.3f kHz", (frequency / 1000.0));
+		l = snprintf(temp, 16, "%5.1f kHz", (frequency / 1000.0));
 	}
 	else {
-		l = snprintf(temp, 16, "  %3d Hz", (uint16_t) frequency);
+		l = snprintf(temp, 16, "   %3d Hz", (uint16_t) frequency);
 	}
 	display.setText(temp, l);
 }
@@ -172,31 +153,17 @@ void output_waveform(){
 	display.setText(temp, 1);
 	
 	if (mode == MODE_SQUARE){
-		if (ui_freq == 0xFF) output_square_wave_2500khz();
-		else if (ui_freq == 0xFE) output_square_wave_2000khz();
-		else if (ui_freq == 0xFD) output_square_wave_1666khz();
-		else if (ui_freq == 0xFC) output_square_wave_1429khz();
-		else if (ui_freq == 0xFB) output_square_wave_1250khz();
-		else if (ui_freq == 0xFA) output_square_wave_1000khz();
-		else if (ui_freq == 0xF9) output_square_wave_769khz();
-		else if (ui_freq == 0xF8) output_square_wave_500khz();
-		else {
-			uint32_t frequency = get_square_frequency();
+		if (ui_freq == 0xFF) output_square_wave_div8();
+		
+		uint32_t frequency = get_square_frequency();
 
-			TCCR1A = 0x0;	//Normal mode
-			if (frequency <= 256){
-				TCCR1B = _BV(CS12);		//F_CPU / 256 prescaler
-				OCR1A = (F_CPU / 256 / 2 / frequency) - 16;
-			}
-			else {
-				TCCR1B = _BV(CS10);		//No prescaler
-				OCR1A = (F_CPU / 2 / frequency) - 16;
-			}
-			TIMSK1 = _BV(OCIE1A);	//Enable OCR1A interrupts
-			TCNT1 = 0;
-			sei();
-			while(1);	//Timers do everything now...
-		}
+		TCCR1A = 0x0;								//Normal mode
+		TCCR1B = _BV(CS10);							//No prescaler
+		OCR1A = (F_CPU / 2 / frequency) - 12;		//Comparator
+		TIMSK1 = _BV(OCIE1A);						//Enable OCR1A interrupts
+		TCNT1 = 0;
+		sei();
+		while(1);	//Timers do everything now...
 	}
 	else {
 		const uint8_t* progmem_pointer;
@@ -224,16 +191,10 @@ void output_waveform(){
 // 		else {
 			uint32_t frequency = get_dds_frequency();
 
-			TCCR1A = 0x0;	//Normal mode
-			if (frequency <= 8){
-				TCCR1B = _BV(CS11);		//F_CPU / 8 prescaler
-				OCR1B = (F_CPU / 8 / 256 / frequency) - 26;
-			}
-			else {
-				TCCR1B = _BV(CS10);		//No prescaler
-				OCR1B = (F_CPU / 256 / frequency) - 26;
-			}
-			TIMSK1 = _BV(OCIE1B);	//Enable OCR1B interrupts
+			TCCR1A = 0x0;								//Normal mode
+			TCCR1B = _BV(CS10);							//No prescaler
+			OCR1B = (F_CPU / 256 / frequency) - 8;		//Comparison value
+			TIMSK1 = _BV(OCIE1B);						//Enable OCR1B interrupts
 			TCNT1 = 0;
 			sei();
 			while(1);	//Timers do everything now...
