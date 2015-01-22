@@ -75,11 +75,11 @@ static union reg_u {
 	uint8_t a[REG_LEN];
 } u;
 
-static protocol_t input;
-static protocol_t output;
-
 // these things are not in the struct since they are never read/write over serial
 volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
+
+uint8_t rx_buffer[64];
+uint8_t tx_buffer[64];
 
 /* 
 // additional parameters that may become tuning parameters or constants
@@ -207,8 +207,6 @@ int main(void) {
 	DDRB = _BV(PINB0) | _BV(PINB1) | _BV(PINB2) | _BV(PINB3);	// spark plugs
 	DDRD = _BV(PIND4) | _BV(PIND5) | _BV(PIND6) | _BV(PIND7);	// injectors
 
-	UCSR0B |= _BV(RXCIE0);		// enable serial rx interrupts
-	
 	sei();						// enable interrupts
 
 	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
@@ -271,7 +269,7 @@ ISR(ADC_vect) {
 // each tooth represents 10 degrees
 ISR(INT0_vect) {
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
-	if (t < 255) cranking = 0;
+	if (t < 255) u.s.cranking = 0;
 	if (t > (u.s.crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
@@ -371,17 +369,17 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 // injector pwm frequency
-ISR(TIMER2_COMPA_vect) {
+ISR(TIMER4_COMPA_vect) {
 	// -30 to +70 degrees around TDC
 	if ((u.s.crank > 14 && u.s.crank < 26) || u.s.crank > 33 || u.s.crank < 8) {
 		PORTD |= inj_pin;
 	}
-	TCNT2 = 0;
-	OCR2B = (uint16_t) u.s.inj_dc * 165 / 255;	// 165 * 8 clock cycles = 66 us
+	TCNT4 = 0;
+	OCR4B = (uint16_t) u.s.inj_dc * 165 / 255;	// 165 * 8 clock cycles = 66 us
 }
 
 // injector pwm phase
-ISR(TIMER2_COMPB_vect) {
+ISR(TIMER4_COMPB_vect) {
 	PORTD = 0;
 }
 
