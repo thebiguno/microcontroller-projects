@@ -19,6 +19,7 @@ using namespace digitalcave;
 #define MODE_STAIRCASE_UP	0x06
 #define MODE_STAIRCASE_DOWN	0x07
 #define MODE_SERVO			0x08
+#define MODE_FIRST			MODE_FAST_SQUARE
 #define MODE_LAST 			MODE_SERVO
 
 #define BUTTON_MODE			_BV(PORTC0)
@@ -37,20 +38,20 @@ const uint8_t data_staircase_down[] PROGMEM	=	{0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe
 static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
 static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN | BUTTON_OK, 3, 8, 70, 5);
 
-static uint8_t mode = MODE_SQUARE;
-static uint8_t ui_freq = 0;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
+static uint8_t mode = MODE_FIRST;
+static uint8_t ui_freq = 0xFF;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
 
 uint8_t _data_ptr;	//Pointer into _data
 uint8_t _data[256];	//Copy PROGMEM DDS signals into this buffer.
 
 uint32_t get_fast_square_frequency(){
 	//From the datasheet, in the section detailing the output frequency of CTC mode PWM
-	return F_CPU / (2 * 1 + (uint32_t) (255 - ui_freq));
+	return F_CPU / (2 * (1 + (uint32_t) (255 - ui_freq)));
 }
 
 uint16_t get_dds_frequency(){
-	//Increment from 100Hz to 25.60kHz in 100Hz increments
-	return ((uint32_t) ui_freq + 1) * 100;
+	//Increment from 100Hz to 2.560kHz in 10Hz increments
+	return ((uint32_t) ui_freq + 1) * 10;
 }
 
 uint32_t get_servo_phase(){
@@ -87,7 +88,7 @@ void update_display(){
 		display.setText((char*) "Staircase Dn", 12);
 	}
 	else if (mode == MODE_SERVO){
-		display.setText((char*) "Servo", 12);
+		display.setText((char*) "Servo", 5);
 	}
 	else {
 		display.setText((char*) "Unknown", 7);
@@ -146,12 +147,17 @@ void update_servo_phase(){
 
 void update_dds_frequency(){
 	uint32_t frequency = get_dds_frequency();
+	//The 256 here is from the 256 sample waveform size.
 	OCR1A = (F_CPU / 256 / frequency) - 8;		//Comparison value
 }
 
 void main_menu(){
 	update_display();
+	
 	while(1){
+		_delay_ms(12);
+		buttons.sample();
+
 		uint8_t pressed = buttons.pressed();
 		uint8_t released = buttons.released();
 		uint8_t held = buttons.held();
@@ -160,7 +166,7 @@ void main_menu(){
 		if (released & BUTTON_MODE){
 			mode++;
 			if (mode > MODE_LAST){
-				mode = MODE_SQUARE;
+				mode = MODE_FIRST;
 			}
 			update_display();
 		}
@@ -184,9 +190,6 @@ void main_menu(){
 			ui_freq-=4;
 			update_display();
 		}
-		
-		_delay_ms(12);
-		buttons.sample();
 	}
 }
 
