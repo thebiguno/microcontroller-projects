@@ -117,10 +117,10 @@ void update_display(){
 		char temp[16];
 		uint8_t l;
 		if (frequency >= 1000000){
-			l = snprintf(temp, 16, "%6.3f MHz", (frequency / 1000000.0));
+			l = snprintf(temp, 16, "%6.4f MHz", (frequency / 1000000.0));
 		}
 		else if (frequency >= 1000){
-			l = snprintf(temp, 16, " %5.1f kHz", (frequency / 1000.0));
+			l = snprintf(temp, 16, " %5.2f kHz", (frequency / 1000.0));
 		}
 		else {
 			l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
