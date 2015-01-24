@@ -17,19 +17,24 @@ namespace digitalcave {
 	class Buttons {
 
 	private:
+		//Config variables
 		volatile uint8_t *port;
 		volatile uint8_t *pin;
 		uint8_t pins_bv;
-		
-		uint8_t _current;
-		uint8_t _last;
-		uint8_t _held;
-		uint8_t _repeat;
 		
 		uint8_t pressed_bv;
 		uint8_t released_bv;
 		uint8_t held_time;
 		uint8_t repeat_time;
+
+		//State variables
+		uint8_t _pressed;			//Buttons which are currently pressed
+		uint8_t _pressed_history;	//Buttons which have been pressed but are not currently held; used to suppress release events after buttons are held
+		uint8_t _last;				//Buttons which were pressed last iteration
+		uint8_t _held;				//Buttons which are currently held (pressed for longer than held_time)
+		uint8_t _repeat;			//Buttons which are currently repeating (marked for held buttons once every repeat_time iterations)
+		
+		//Transient state variables
 		uint8_t held_timer[8];
 		uint8_t repeat_timer[8];
 		uint8_t window[8];
@@ -99,7 +104,7 @@ namespace digitalcave {
 		uint8_t pressed();
 		
 		/*
-		 * Returns the mask of buttons that are newly released.
+		 * Returns the mask of buttons that are newly released.  After hold state, released does not fire.
 		 */
 		uint8_t released();
 		
