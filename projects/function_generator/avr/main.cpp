@@ -315,7 +315,7 @@ void output_waveform(){
 		else return;
 	
 		//Copy from PROGMEM to RAM buffer
-		for (uint16_t i = 0; i < 0xFF; i++){
+		for (uint16_t i = 0; i <= 0xFF; i++){
 			_data[i] = pgm_read_byte_near(progmem_pointer + i);
 		}
 		
