@@ -6,7 +6,7 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 	PUSH		r30														;[2]
 	PUSH		r31														;[2]
 	IN			r30,						_SFR_IO_ADDR(SREG)			;[1]
-	PUSH		r30
+	PUSH		r30														;[2]
 	
 	LDI			ZH,							hi8(_data)					;[2] -- load the MSB of _data pointer
 	LDS			ZL,							_data_ptr					;[2] -- load the current index into _data
@@ -27,6 +27,6 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 
 
 	.global TIMER1_COMPB_vect
-TIMER1_COMPB_vect:
-	CBI			_SFR_IO_ADDR(PORTC),		5							;[2]
+TIMER1_COMPB_vect:														;[5] (service interrupt)
+	CBI			_SFR_IO_ADDR(PORTB),		3							;[2] turn off bit 3 in PORTB
 	RETI																;[4]

@@ -417,7 +417,7 @@ ISR(TIMER1_OVF_vect){
 ISR(TIMER1_COMPA_vect){	
 	//Servo mode
 	TCNT1 = 0;
-	PORTC |= _BV(PORTC5);	
+	PORTC |= _BV(PORTB3);	
 }
 /*
 ISR(TIMER1_COMPB_vect){

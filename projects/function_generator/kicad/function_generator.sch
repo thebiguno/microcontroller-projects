@@ -37,7 +37,7 @@ $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title "AVR Function Generator"
-Date "22 jan 2015"
+Date "26 jan 2015"
 Rev "1.0"
 Comp "Digital Cave"
 Comment1 ""
@@ -823,11 +823,11 @@ Text Label 3000 3500 0    60   ~ 0
 EN
 Text Label 3000 3600 0    60   ~ 0
 D4
-Text Label 3000 3700 0    60   ~ 0
-D5
 Text Label 3000 3800 0    60   ~ 0
-D6
+D5
 Text Label 3000 3900 0    60   ~ 0
+D6
+Text Label 3000 4250 0    60   ~ 0
 D7
 $Comp
 L SW_PUSH_SMALL SW1
@@ -883,15 +883,15 @@ F 3 "" H 2300 2350 60  0000 C CNN
 	1    2300 2350
 	0    1    1    0   
 $EndComp
-Text Label 3000 4250 0    60   ~ 0
+Text Label 3000 4350 0    60   ~ 0
 BTN_MODE
 Text Label 2900 2650 3    60   ~ 0
 BTN_UP
 Text Label 3200 2650 3    60   ~ 0
 BTN_DOWN
-Text Label 3000 4350 0    60   ~ 0
-BTN_UP
 Text Label 3000 4450 0    60   ~ 0
+BTN_UP
+Text Label 3000 4550 0    60   ~ 0
 BTN_DOWN
 Text Label 2600 2650 3    60   ~ 0
 BTN_MODE
@@ -944,7 +944,6 @@ F 3 "" H 3500 4850 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 Connection ~ 3250 4850
-NoConn ~ 3000 4650
 Text Notes 5800 4250 0    40   ~ 0
 This opamp centers\nthe signal around GND
 Text Notes 5800 4550 0    40   ~ 0
@@ -965,7 +964,7 @@ BTN_OK
 Wire Wire Line
 	3250 2350 3250 2450
 Connection ~ 3000 2350
-Text Label 3000 4550 0    60   ~ 0
+Text Label 3000 4650 0    60   ~ 0
 BTN_OK
 $Comp
 L PINS_3 K2
@@ -1110,7 +1109,7 @@ Wire Wire Line
 Connection ~ 6300 4750
 Text Notes 5750 4850 0    40   ~ 0
 This opamp buffers the \nservo signal
-Text Label 3000 4750 0    60   ~ 0
+Text Label 3000 3700 0    60   ~ 0
 SERVO
 Text Label 4700 4700 2    60   ~ 0
 SERVO
