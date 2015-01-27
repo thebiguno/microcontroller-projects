@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Thursday, January 08, 2015 'pmt' 01:11:51 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 02:55:16 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -20,6 +20,21 @@ D DPDT Switch (e.g. GW22LCP)
 K GW22LCP, DPDT
 $ENDCMP
 #
+$CMP DSCHSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP DSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP DZSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
 $CMP ISP
 D ISP Header
 K ISP HEADER
@@ -32,6 +47,11 @@ $ENDCMP
 #
 $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
+$ENDCMP
+#
+$CMP LEDSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP LSMALL
