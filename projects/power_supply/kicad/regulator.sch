@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 8000 8000
 encoding utf-8
-Sheet 4 7
+Sheet 3 6
 Title "Power Regulator"
-Date "24 jan 2015"
+Date "27 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -279,6 +280,17 @@ F 1 "OPA548" H 2825 3025 60  0000 C CNN
 F 2 "" H 2200 2750 60  0000 C CNN
 F 3 "http://www.ti.com/lit/ds/sbos070b/sbos070b.pdf_(http://www.ti.com/lit/ds/sbos056f/sbos056f.pdf_for_OP547)" H 2200 2750 60  0001 C CNN
 	1    2400 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L ATXMEGA32A4-A IC?
+U 1 1 54C80174
+P 350 2850
+F 0 "IC?" H -400 4050 40  0000 L BNN
+F 1 "ATXMEGA32A4-A" H 700 1600 40  0000 L BNN
+F 2 "TQFP44" H 350 2850 35  0000 C CIN
+F 3 "" H 350 2850 60  0000 C CNN
+	1    350  2850
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC

@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
-Sheet 7 7
+Sheet 7 6
 Title "Temperature Controlled Fan Controller"
-Date "24 jan 2015"
+Date "27 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""

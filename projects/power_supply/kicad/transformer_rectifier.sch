@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
-$Descr A4 11693 8268
+$Descr User 6000 4000
 encoding utf-8
-Sheet 2 7
-Title ""
-Date "24 jan 2015"
+Sheet 5 6
+Title "Rectifier"
+Date "27 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -44,14 +45,12 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text HLabel 8300 2150 0    60   Output ~ 0
+Text HLabel 1650 1250 0    60   Input ~ 0
 AC1
-Text HLabel 8300 2300 0    60   Output ~ 0
+Text HLabel 1650 1400 0    60   Input ~ 0
 AC2
-Text HLabel 6350 2100 0    60   Input ~ 0
-MAINS1
-Text HLabel 6350 2200 0    60   Input ~ 0
-MAINS2
-Text HLabel 6350 2300 0    60   Input ~ 0
-EARTH
+Text HLabel 4400 1300 0    60   Output ~ 0
+V+
+Text HLabel 4350 1500 0    60   Output ~ 0
+V-
 $EndSCHEMATC
