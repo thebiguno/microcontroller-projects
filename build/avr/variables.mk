@@ -22,6 +22,7 @@ AVRDUDE_PROGRAMMER=stk500v1
 
 OBJCOPY=avr-objcopy
 OBJDUMP=avr-objdump
+READELF=avr-readelf
 AVRSIZE=avr-size
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall
 CDEFS=-DF_CPU=$(F_CPU)

@@ -25,7 +25,7 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, u
 	if (this->repeat_time == 0xFF) this->repeat_time = 0xFE;
 	
 	this->_last = 0x00;
-	this->_current = 0x00;
+	this->_pressed = 0x00;
 	for (uint8_t i = 0; i < 8; i++) {
 		this->window[i] = 0x00;
 	}
@@ -36,7 +36,7 @@ Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask, uint8_t press_time, u
 Buttons::Buttons(volatile uint8_t *port, uint8_t pin_mask) : Buttons::Buttons(port, pin_mask, 8, 8, 0, 0) {}
 
 uint8_t Buttons::sample() {
-	this->_last = this->_current;				//Save last state before messing with things.
+	this->_last = this->_pressed;				//Save last state before messing with things.
 	uint8_t sampled_pins = ~*this->pin;		//We invert the pins since it is active low
 	
 	this->_held = 0x00;
@@ -48,27 +48,28 @@ uint8_t Buttons::sample() {
 			uint8_t sampled_pin_high = sampled_pins & _BV(i);				// See if this particular pin is high
 			if (sampled_pin_high) this->window[i] |= 0x01;					// If so, add it to the LSB of the window
 			if ((this->window[i] & this->pressed_bv) == this->pressed_bv){	// If it has been pressed for <pressed> cycles...
-				this->_current |= _BV(i);									// mark button as pressed
-			}
-			else if ((this->window[i] & this->released_bv) == 0x00){		// If it has been released for <released> cycles...
-				this->_current &= ~_BV(i);									// mark button released
-			}
-			//We only increment held timer if the button is currently pressed.
-			if (this->_current & _BV(i)){
+				this->_pressed |= _BV(i);									// mark button as pressed
+				
+				//Hold logic
 				if (this->held_timer[i] == 0xFF){
-					//Do nothing here; we are already in 'held' state.
+					//We are already in the held state
+					this->_pressed_history &= ~_BV(i);
 				}
 				else if (this->held_timer[i] >= this->held_time){
 					//If the button has been held for the required time, mark it as fully held (0xFF)
 					this->held_timer[i] = 0xFF;
 					this->_held |= _BV(i);
+					this->_pressed_history &= ~_BV(i);
 				}
 				else {
 					//Increment timer
 					this->held_timer[i]++;
+					this->_pressed_history |= _BV(i);
 				}
 			}
-			else {
+			else if ((this->window[i] & this->released_bv) == 0x00){		// If it has been released for <released> cycles...
+				this->_pressed &= ~_BV(i);									// mark button released
+				
 				//If the button is not currently pressed, then reset the timer
 				this->held_timer[i] = 0x00;
 			}
@@ -83,15 +84,15 @@ uint8_t Buttons::sample() {
 			}
 		}
 	}
-	return this->_current;
+	return this->_pressed;
 }
 
 uint8_t Buttons::pressed() {
-	return this->_current & (this->_current ^ this->_last);
+	return this->_pressed & (this->_pressed ^ this->_last);
 }
 
 uint8_t Buttons::released() {
-	return ~this->_current & (this->_current ^ this->_last);
+	return ~this->_pressed & _pressed_history & (this->_pressed ^ this->_last);
 }
 
 uint8_t Buttons::held() {

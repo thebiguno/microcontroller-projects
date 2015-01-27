@@ -1,0 +1,4 @@
+-Box was generated with laser cutter box generator plugin to Inkscape
+-Edge dimensions are golden ratio
+-Kerf width 0.3mm
+-Material thickness 3.5mm

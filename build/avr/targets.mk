@@ -41,16 +41,18 @@ build: $(PROJECT).hex
 
 assembly: $(PROJECT).asm
 
-$(PROJECT).hex: $(PROJECT).out
-	$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).out $(PROJECT).hex
-	$(AVRSIZE) -d -C --mcu=$(MMCU) $(PROJECT).out
-	@rm -f $(PROJECT).out
+readelf: $(PROJECT).elf
+	$(READELF) -a $(PROJECT).elf
 
-$(PROJECT).asm: $(PROJECT).out
-	$(OBJDUMP) -C -d $(PROJECT).out
+$(PROJECT).hex: $(PROJECT).elf
+	$(OBJCOPY) -j .text -j .data -O ihex $(PROJECT).elf $(PROJECT).hex
+	$(AVRSIZE) -d -C --mcu=$(MMCU) $(PROJECT).elf
 
-$(PROJECT).out: $(SOURCES) 
-	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).out $(SOURCES) $(CLIBS)
+$(PROJECT).asm: $(PROJECT).elf
+	$(OBJDUMP) -C -d $(PROJECT).elf
+
+$(PROJECT).elf: $(SOURCES) 
+	$(COMPILER) $(CDEFS) $(CFLAGS) -I./ -o $(PROJECT).elf $(SOURCES) $(CLIBS)
 
 
 program: all
@@ -94,3 +96,4 @@ endif
 clean:
 	rm -f *.o
 	rm -f $(PROJECT).hex
+	rm -f $(PROJECT).elf
