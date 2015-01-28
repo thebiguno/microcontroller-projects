@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Friday, January 23, 2015 'pmt' 05:09:45 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 04:26:59 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -83,7 +83,12 @@ D High Current / High Voltage Op Amp OPA548 / OPA547
 K OPAMP, OPA547, OPA548
 $ENDCMP
 #
-$CMP OPAMP
+$CMP OPAMP-2
+D Generic OP-AMP
+K opamp, amp, operational, amplifier
+$ENDCMP
+#
+$CMP OPAMP-4
 D Generic OP-AMP
 K opamp, amp, operational, amplifier
 $ENDCMP

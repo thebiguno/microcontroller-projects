@@ -37,7 +37,7 @@ $Descr User 8000 6000
 encoding utf-8
 Sheet 1 6
 Title "Adjustable Modular Power Supply"
-Date "27 jan 2015"
+Date "28 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -54,18 +54,6 @@ F2 "SDA" B R 3950 2500 60
 F3 "SCL" B R 3950 2600 60 
 $EndSheet
 $Sheet
-S 4250 1550 1050 1300
-U 54C2B0D8
-F0 "Regulator" 50
-F1 "regulator.sch" 50
-F2 "V+" I L 4250 1650 60 
-F3 "V-" I L 4250 1750 60 
-F4 "REGULATED_V" O R 5300 1650 60 
-F5 "SDA" B L 4250 2500 60 
-F6 "SCL" B L 4250 2600 60 
-F7 "TEMP_OUT" O R 5300 2750 60 
-$EndSheet
-$Sheet
 S 2650 1550 1300 400 
 U 54C2A519
 F0 "Transformer / Rectifier" 50
@@ -79,10 +67,6 @@ Wire Wire Line
 	4250 1650 3950 1650
 Wire Wire Line
 	3950 1750 4250 1750
-Wire Wire Line
-	3950 2500 4250 2500
-Wire Wire Line
-	4250 2600 3950 2600
 $Sheet
 S 4250 3250 700  1150
 U 54C2F9D6
@@ -99,13 +83,29 @@ F9 "ENC_1" I L 4250 4100 60
 F10 "ENC_2" I L 4250 4200 60 
 F11 "ENC_3" I L 4250 4300 60 
 $EndSheet
+Wire Wire Line
+	5300 2750 5600 2750
 $Sheet
-S 5600 2650 800  200 
+S 4250 1550 1050 1300
+U 54C2B0D8
+F0 "Regulator" 50
+F1 "regulator.sch" 50
+F2 "V+" I L 4250 1650 60 
+F3 "V-" I L 4250 1750 60 
+F4 "REGULATED_V" O R 5300 1650 60 
+F5 "TEMP_OUT" O R 5300 2750 60 
+F6 "+5v" O R 5300 1750 60 
+F7 "-5v" O R 5300 1850 60 
+F8 "+12v" O R 5300 2650 60 
+$EndSheet
+$Sheet
+S 5600 2550 850  300 
 U 54C32205
 F0 "Fan Controller" 50
 F1 "fan.sch" 50
 F2 "TEMP_IN" I L 5600 2750 60 
+F3 "12V" I L 5600 2650 60 
 $EndSheet
 Wire Wire Line
-	5300 2750 5600 2750
+	5600 2650 5300 2650
 $EndSCHEMATC

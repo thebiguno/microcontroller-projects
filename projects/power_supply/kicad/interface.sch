@@ -37,7 +37,7 @@ $Descr User 6000 4000
 encoding utf-8
 Sheet 6 6
 Title "User Interface (Display + Encoder)"
-Date "27 jan 2015"
+Date "28 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
