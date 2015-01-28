@@ -1,4 +1,4 @@
-EESchema-LIBRARY Version 2.3  Date: Tuesday, January 27, 2015 'pmt' 04:54:40 pm
+EESchema-LIBRARY Version 2.3  Date: Wednesday, January 28, 2015 'amt' 09:24:23 am
 #encoding utf-8
 #
 # 74HC164
@@ -720,7 +720,7 @@ DEF OPA548 U 0 40 Y Y 1 F N
 F0 "U" 350 150 60 H V C CNN
 F1 "OPA548" 425 275 60 H V C CNN
 F2 "~" -200 0 60 H V C CNN
-F3 "http://www.ti.com/lit/ds/sbos070b/sbos070b.pdf_(http://www.ti.com/lit/ds/sbos056f/sbos056f.pdf_for_OP547)" -200 0 60 H I C CNN
+F3 "http://www.ti.com/lit/ds/symlink/opa548.pdf" 0 600 60 H I C CNN
 DRAW
 P 4 0 1 0  350 0  -200 -400  -200 400  350 0 N
 X + 1 -500 100 300 R 50 50 1 1 I
@@ -730,6 +730,29 @@ X V- 4 -150 -550 200 U 50 50 1 1 O
 X V+ 5 -150 550 200 D 50 50 1 1 O
 X VOUT 6 650 0 300 L 50 50 1 1 O
 X E/S 7 50 400 200 D 50 50 1 1 O
+ENDDRAW
+ENDDEF
+#
+# OPA549
+#
+DEF OPA549 U 0 40 Y Y 1 F N
+F0 "U" 350 150 60 H V C CNN
+F1 "OPA549" 425 275 60 H V C CNN
+F2 "~" -200 0 60 H V C CNN
+F3 "http://www.ti.com/lit/ds/symlink/opa549.pdf" 0 550 60 H I C CNN
+DRAW
+P 4 0 1 0  350 0  -300 350  -300 -350  350 0 N
+X VO1 1 550 50 300 L 50 50 1 1 O
+X VO2 2 550 -50 300 L 50 50 1 1 O
+X - 3 -600 -50 300 R 50 50 1 1 I
+X + 4 -600 50 300 R 50 50 1 1 I
+X V-1 5 -200 -500 200 U 50 50 1 1 O
+X REF 6 -100 -450 200 U 50 50 1 1 I
+X V-2 7 -300 -550 200 U 50 50 1 1 O
+X ILM 8 0 -400 200 U 50 50 1 1 I
+X E/S 9 -100 450 200 D 50 50 1 1 O
+X V+1 10 -200 500 200 D 50 50 1 1 O
+X V+2 11 -300 550 200 D 50 50 1 1 O
 ENDDRAW
 ENDDEF
 #
