@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 04:26:59 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 10:21:54 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -8,6 +8,11 @@ $ENDCMP
 $CMP 74HC4852
 D 2x4 Channel Analog Multiplexer / Demultiplexer
 K multiplexer, demultiplexer
+$ENDCMP
+#
+$CMP CP1SMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP CRYSTAL_RESONATOR
@@ -78,17 +83,7 @@ $CMP NCP1400A
 D NCP1400A_Boost_Regulator
 $ENDCMP
 #
-$CMP OPA548
-D High Current / High Voltage Op Amp OPA548 / OPA547
-K OPAMP, OPA547, OPA548
-$ENDCMP
-#
-$CMP OPAMP-2
-D Generic OP-AMP
-K opamp, amp, operational, amplifier
-$ENDCMP
-#
-$CMP OPAMP-4
+$CMP OPAMP
 D Generic OP-AMP
 K opamp, amp, operational, amplifier
 $ENDCMP
@@ -128,11 +123,6 @@ D RSMALL
 K R DEV
 $ENDCMP
 #
-$CMP SPDT
-D SPDT Switch
-K SPDT
-$ENDCMP
-#
 $CMP STPIC6D595
 D Shift Register / Open Drain
 K shift
@@ -141,6 +131,11 @@ $ENDCMP
 $CMP TB6552FNG
 D Motor Controller, Full H-Bridge x2
 K Motor, Bridge, H-Bridge
+$ENDCMP
+#
+$CMP XTALSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 #End Doc Library
