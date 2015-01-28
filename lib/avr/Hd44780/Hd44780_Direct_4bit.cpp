@@ -1,21 +1,37 @@
-/*
- * Driver for HD44780 in 4 bit mode using direct pin access.
- * Current hardcoded to use PORTB2..5 for data pins, PORTB0 for RS, and 
- * PORTB1 for E.
- */
-
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "Hd44780_Direct.h"
+#include "Hd44780_Direct_4bit.h"
 
 using namespace digitalcave;
 
-static void write_nibble(uint8_t b, uint8_t mode);
+Hd44780_Direct_4bit::Hd44780_Direct_4bit(uint8_t function, 
+								volatile uint8_t *port_rs, uint8_t pin_rs,
+								volatile uint8_t *port_e, uint8_t pin_e,
+								volatile uint8_t *port_d4, uint8_t pin_d4,
+								volatile uint8_t *port_d5, uint8_t pin_d5,
+								volatile uint8_t *port_d6, uint8_t pin_d6,
+								volatile uint8_t *port_d7, uint8_t pin_d7) {
 
-Hd44780_Direct::Hd44780_Direct(uint8_t function) {
-	DDRD = 0xFF;
-	DDRB |= _BV(PORTB0) | _BV(PORTB1) | _BV(PORTB2) | _BV(PORTB3) | _BV(PORTB4) | _BV(PORTB5);
+	this->port_rs = port_rs;
+	this->pin_rs = pin_rs;
+	this->port_e = port_e;
+	this->pin_e = pin_e;
+	this->port_d4 = port_d4;
+	this->pin_d4 = pin_d4;
+	this->port_d5 = port_d5;
+	this->pin_d5 = pin_d5;
+	this->port_d6 = port_d6;
+	this->pin_d6 = pin_d6;
+	this->port_d7 = port_d7;
+	this->pin_d7 = pin_d7;
+	
+	*(this->port_rs - 0x1) |= _BV(this->pin_rs);
+	*(this->port_e - 0x1) |= _BV(this->pin_e);
+	*(this->port_d4 - 0x1) |= _BV(this->pin_d4);
+	*(this->port_d5 - 0x1) |= _BV(this->pin_d5);
+	*(this->port_d6 - 0x1) |= _BV(this->pin_d6);
+	*(this->port_d7 - 0x1) |= _BV(this->pin_d7);
 	
 	_delay_ms(100);
 	write_nibble(0x03, 0);
@@ -40,24 +56,30 @@ Hd44780_Direct::Hd44780_Direct(uint8_t function) {
 	this->clear();		//Clear display
 }
 
+Hd44780_Direct_4bit::Hd44780_Direct_4bit(uint8_t function) : Hd44780_Direct_4bit::Hd44780_Direct_4bit(function, &PORTB, 0, &PORTB, 1, &PORTB, 2, &PORTB, 3, &PORTB, 4, &PORTB, 5){}
+
 /*
  * Writes the nibble.  Only the bottom 4 bits of b are used.
  */
-static void write_nibble(uint8_t b, uint8_t mode){
-	if (mode)
-		PORTB |= _BV(PORTB0);	//Set RS high for data
-	else 
-		PORTB &= ~_BV(PORTB0);	//Set RS low for command
+void Hd44780_Direct_4bit::write_nibble(uint8_t b, uint8_t mode){
+	if (mode) *this->port_rs |= _BV(this->pin_rs);	//Set RS high for data
+	else *this->port_rs &= ~_BV(this->pin_rs);	//Set RS low for command
 	
-	//Set data lines
-	PORTB &= 0xC3;		//Set bits 2..5 low
-	PORTB |= ((b & 0x0F) << 2);	//Set bits 2..5 to specified nibble
+	//Set data lines low
+	*this->port_d4 &= ~_BV(this->pin_d4);
+	*this->port_d5 &= ~_BV(this->pin_d5);
+	*this->port_d6 &= ~_BV(this->pin_d6);
+	*this->port_d7 &= ~_BV(this->pin_d7);
+	if (b & 0x01) *this->port_d4 |= _BV(this->pin_d4);
+	if (b & 0x02) *this->port_d5 |= _BV(this->pin_d5);
+	if (b & 0x04) *this->port_d6 |= _BV(this->pin_d6);
+	if (b & 0x08) *this->port_d7 |= _BV(this->pin_d7);
 
 	//Toggle E
 	_delay_us(64);
-	PORTB |= _BV(PORTB1);	//Set E high to clock in data
+	*this->port_e |= _BV(this->pin_e);	//Set E high to clock in data
 	_delay_us(450);
-	PORTB &= ~_BV(PORTB1);	//Re-set E back low
+	*this->port_e &= ~_BV(this->pin_e);	//Re-set E back low
 	_delay_us(40);
 	
 
@@ -66,16 +88,16 @@ static void write_nibble(uint8_t b, uint8_t mode){
 /*
  * Writes the entire byte, MSB nibble first, then LSB nibble
  */
-static void write_byte(uint8_t b, uint8_t mode){
+void Hd44780_Direct_4bit::write_byte(uint8_t b, uint8_t mode){
 	//Write the MSB nibble of the byte first...
 	write_nibble(((b & 0xF0) >> 4), mode);
 	//... then LSB nibble
 	write_nibble((b & 0x0F), mode);
 }
 
-void Hd44780_Direct::setByte(uint8_t b) {
+void Hd44780_Direct_4bit::setByte(uint8_t b) {
 	write_byte(b, 1);
 }
-void Hd44780_Direct::cmd(uint8_t b) {
+void Hd44780_Direct_4bit::cmd(uint8_t b) {
 	write_byte(b, 0);
 }
