@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:function_generator-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title "AVR Function Generator"
-Date "26 jan 2015"
+Date "28 jan 2015"
 Rev "1.0"
 Comp "Digital Cave"
 Comment1 ""
@@ -414,17 +413,6 @@ F 2 "~" V 3830 4900 30  0000 C CNN
 F 3 "~" H 3900 4950 30  0000 C CNN
 	1    3900 4900
 	-1   0    0    1   
-$EndComp
-$Comp
-L OPAMP U1
-U 1 1 54B3FE17
-P 5600 4600
-F 0 "U1" H 5800 3950 60  0000 C CNN
-F 1 "OPAMP" H 5850 4050 60  0000 C CNN
-F 2 "~" H 5550 4800 60  0000 C CNN
-F 3 "~" H 5550 4800 60  0000 C CNN
-	1    5600 4600
-	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	5050 4100 4200 4100
@@ -865,8 +853,6 @@ $EndComp
 Wire Wire Line
 	2400 2450 2400 2350
 Wire Wire Line
-	2300 2350 3250 2350
-Wire Wire Line
 	2700 2350 2700 2450
 Wire Wire Line
 	3000 2350 3000 2450
@@ -948,24 +934,6 @@ Text Notes 5800 4250 0    40   ~ 0
 This opamp centers\nthe signal around GND
 Text Notes 5800 4550 0    40   ~ 0
 This opamp buffers the signal\nwithout changing the range
-$Comp
-L SW_PUSH_SMALL SW4
-U 1 1 54B59234
-P 3350 2550
-F 0 "SW4" H 3500 2660 30  0000 C CNN
-F 1 "DOWN" H 3350 2471 30  0000 C CNN
-F 2 "~" H 3350 2550 60  0000 C CNN
-F 3 "~" H 3350 2550 60  0000 C CNN
-	1    3350 2550
-	1    0    0    -1  
-$EndComp
-Text Label 3450 2650 3    60   ~ 0
-BTN_OK
-Wire Wire Line
-	3250 2350 3250 2450
-Connection ~ 3000 2350
-Text Label 3000 4650 0    60   ~ 0
-BTN_OK
 $Comp
 L PINS_3 K2
 U 1 1 54C13AFA
@@ -1115,4 +1083,19 @@ Text Label 4700 4700 2    60   ~ 0
 SERVO
 Wire Wire Line
 	4700 4700 5050 4700
+NoConn ~ 3000 4750
+NoConn ~ 3000 4650
+$Comp
+L OPAMP-4 U?
+U 1 1 54C86B4E
+P 5600 4600
+F 0 "U?" H 5900 3950 60  0000 C CNN
+F 1 "OPAMP-4" H 5900 3800 60  0000 C CNN
+F 2 "~" H 5550 4800 60  0000 C CNN
+F 3 "~" H 5550 4800 60  0000 C CNN
+	1    5600 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 2350 2300 2350
 $EndSCHEMATC
