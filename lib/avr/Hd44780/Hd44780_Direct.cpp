@@ -12,6 +12,7 @@
 using namespace digitalcave;
 
 Hd44780_Direct::Hd44780_Direct(uint8_t function) {
+	//TODO do proper setup procedure
 	DDRD = 0xFF;
 	DDRB |= _BV(PORTB1) | _BV(PORTB2);
 	
