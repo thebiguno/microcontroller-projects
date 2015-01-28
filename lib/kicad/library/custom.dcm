@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 09:43:50 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 10:23:17 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -8,6 +8,11 @@ $ENDCMP
 $CMP 74HC4852
 D 2x4 Channel Analog Multiplexer / Demultiplexer
 K multiplexer, demultiplexer
+$ENDCMP
+#
+$CMP CP1SMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP CRYSTAL_RESONATOR

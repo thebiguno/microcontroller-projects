@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 09:37:27 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 10:21:54 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -8,6 +8,11 @@ $ENDCMP
 $CMP 74HC4852
 D 2x4 Channel Analog Multiplexer / Demultiplexer
 K multiplexer, demultiplexer
+$ENDCMP
+#
+$CMP CP1SMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP CRYSTAL_RESONATOR
@@ -126,6 +131,11 @@ $ENDCMP
 $CMP TB6552FNG
 D Motor Controller, Full H-Bridge x2
 K Motor, Bridge, H-Bridge
+$ENDCMP
+#
+$CMP XTALSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 #End Doc Library
