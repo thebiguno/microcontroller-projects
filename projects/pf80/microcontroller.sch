@@ -34,9 +34,9 @@ EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 2
+Sheet 2 3
 Title ""
-Date "27 jan 2015"
+Date "28 jan 2015"
 Rev ""
 Comp ""
 Comment1 ""
@@ -64,9 +64,17 @@ S2
 Text HLabel 5550 3600 2    60   Output ~ 0
 A0
 Text HLabel 5550 3700 2    60   Output ~ 0
-A0
+A1
 Text HLabel 5550 3800 2    60   Output ~ 0
 A2
 Text HLabel 5550 3900 2    60   Output ~ 0
 A3
+Text HLabel 4800 3800 2    60   Output ~ 0
+TXD
+Text HLabel 4800 3700 2    60   Input ~ 0
+RXD
+Wire Wire Line
+	4700 3700 4800 3700
+Wire Wire Line
+	4700 3800 4800 3800
 $EndSCHEMATC
