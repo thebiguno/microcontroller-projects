@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 10:23:17 pm
+EESchema-DOCLIB  Version 2.0  Date: Tuesday, January 27, 2015 'pmt' 04:54:40 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -83,7 +83,17 @@ $CMP NCP1400A
 D NCP1400A_Boost_Regulator
 $ENDCMP
 #
-$CMP OPAMP
+$CMP OPA548
+D High Current / High Voltage Op Amp OPA548 / OPA547
+K OPAMP, OPA547, OPA548
+$ENDCMP
+#
+$CMP OPAMP-2
+D Generic OP-AMP
+K opamp, amp, operational, amplifier
+$ENDCMP
+#
+$CMP OPAMP-4
 D Generic OP-AMP
 K opamp, amp, operational, amplifier
 $ENDCMP
@@ -121,6 +131,11 @@ $ENDCMP
 $CMP RSMALL
 D RSMALL
 K R DEV
+$ENDCMP
+#
+$CMP SPDT
+D SPDT Switch
+K SPDT
 $ENDCMP
 #
 $CMP STPIC6D595
