@@ -35,9 +35,9 @@ EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
-Sheet 7 6
+Sheet 6 6
 Title "Temperature Controlled Fan Controller"
-Date "27 jan 2015"
+Date "28 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -47,4 +47,6 @@ Comment4 ""
 $EndDescr
 Text HLabel 2050 1700 0    60   Input ~ 0
 TEMP_IN
+Text HLabel 2050 1550 0    60   Input ~ 0
+12V
 $EndSCHEMATC
