@@ -37,7 +37,7 @@ $Descr User 9000 6000
 encoding utf-8
 Sheet 5 6
 Title "Power Regulator"
-Date "28 jan 2015"
+Date "29 jan 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -784,7 +784,7 @@ Connection ~ 6000 4450
 Wire Wire Line
 	2900 3250 3000 3250
 Wire Wire Line
-	3000 4550 3000 3100
+	3000 3100 3000 4600
 Wire Wire Line
 	5200 2450 3300 2450
 $Comp
