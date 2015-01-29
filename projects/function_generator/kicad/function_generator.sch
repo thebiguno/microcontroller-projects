@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:function_generator-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title "AVR Function Generator"
-Date "28 jan 2015"
+Date "29 jan 2015"
 Rev "1.0"
 Comp "Digital Cave"
 Comment1 ""
@@ -807,13 +808,13 @@ Text Label 5100 2150 1    60   ~ 0
 D7
 Text Label 3000 3400 0    60   ~ 0
 RS
-Text Label 3000 3500 0    60   ~ 0
-EN
-Text Label 3000 3600 0    60   ~ 0
-D4
 Text Label 3000 3800 0    60   ~ 0
-D5
+EN
 Text Label 3000 3900 0    60   ~ 0
+D4
+Text Label 3000 4650 0    60   ~ 0
+D5
+Text Label 3000 4750 0    60   ~ 0
 D6
 Text Label 3000 4250 0    60   ~ 0
 D7
@@ -1077,14 +1078,12 @@ Wire Wire Line
 Connection ~ 6300 4750
 Text Notes 5750 4850 0    40   ~ 0
 This opamp buffers the \nservo signal
-Text Label 3000 3700 0    60   ~ 0
+Text Label 3200 6000 0    60   ~ 0
 SERVO
 Text Label 4700 4700 2    60   ~ 0
 SERVO
 Wire Wire Line
 	4700 4700 5050 4700
-NoConn ~ 3000 4750
-NoConn ~ 3000 4650
 $Comp
 L OPAMP-4 U?
 U 1 1 54C86B4E
@@ -1098,4 +1097,71 @@ F 3 "~" H 5550 4800 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	3000 2350 2300 2350
+$Comp
+L ISP P?
+U 1 1 54C87AF1
+P 3450 1150
+F 0 "P?" H 3450 900 60  0000 C CNN
+F 1 "ISP" H 3450 1400 60  0000 C CNN
+F 2 "~" H 3450 1150 60  0000 C CNN
+F 3 "~" H 3450 1150 60  0000 C CNN
+	1    3450 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 54C87AFE
+P 3100 1000
+F 0 "#PWR?" H 3100 1090 20  0001 C CNN
+F 1 "+5V" H 3100 1090 30  0000 C CNN
+F 2 "" H 3100 1000 60  0000 C CNN
+F 3 "" H 3100 1000 60  0000 C CNN
+	1    3100 1000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54C87B04
+P 3100 1300
+F 0 "#PWR?" H 3100 1300 30  0001 C CNN
+F 1 "GND" H 3100 1230 30  0001 C CNN
+F 2 "" H 3100 1300 60  0000 C CNN
+F 3 "" H 3100 1300 60  0000 C CNN
+	1    3100 1300
+	0    1    1    0   
+$EndComp
+Text Label 3800 1000 0    60   ~ 0
+MOSI
+Text Label 3800 1100 0    60   ~ 0
+MISO
+Text Label 3800 1200 0    60   ~ 0
+SCK
+Text Label 3000 4850 0    60   ~ 0
+RESET
+Text Label 3800 1300 0    60   ~ 0
+RESET
+Text Label 3550 3450 0    60   ~ 0
+MOSI
+Wire Wire Line
+	3150 3550 3550 3550
+Text Label 3550 3550 0    60   ~ 0
+MISO
+Wire Wire Line
+	3100 3450 3550 3450
+Wire Wire Line
+	3100 3450 3100 3700
+Wire Wire Line
+	3100 3700 3000 3700
+Wire Wire Line
+	3150 3550 3150 3800
+Wire Wire Line
+	3150 3800 3000 3800
+Wire Wire Line
+	3000 3900 3200 3900
+Wire Wire Line
+	3200 3900 3200 3650
+Wire Wire Line
+	3200 3650 3550 3650
+Text Label 3550 3650 0    60   ~ 0
+SCK
 $EndSCHEMATC

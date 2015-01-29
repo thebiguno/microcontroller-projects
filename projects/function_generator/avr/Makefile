@@ -12,4 +12,8 @@ COMPILER=avr-g++
 
 CDEFS+= -Wl,--gc-sections,-u,vfprintf -lprintf_flt -lc
 
+LFUSE=0xFF
+HFUSE=0xDF
+EFUSE=0x01
+
 include build/targets.mk

@@ -28,5 +28,5 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 
 	.global TIMER1_COMPB_vect
 TIMER1_COMPB_vect:														;[5] (service interrupt)
-	CBI			_SFR_IO_ADDR(PORTB),		3							;[2] turn off bit 3 in PORTB
+	CBI			_SFR_IO_ADDR(PORTD),		5							;[2] turn off bit 5 in PORTD
 	RETI																;[4]
