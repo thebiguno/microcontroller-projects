@@ -65,16 +65,18 @@ void Hd44780_Direct_4bit::write_nibble(uint8_t b, uint8_t mode){
 	if (mode) *this->port_rs |= _BV(this->pin_rs);	//Set RS high for data
 	else *this->port_rs &= ~_BV(this->pin_rs);	//Set RS low for command
 	
-	//Set data lines low...
-	*this->port_d4 &= ~_BV(this->pin_d4);
-	*this->port_d5 &= ~_BV(this->pin_d5);
-	*this->port_d6 &= ~_BV(this->pin_d6);
-	*this->port_d7 &= ~_BV(this->pin_d7);
-	//... and bring them high if needed
+	//Set data lines to specified nibble
 	if (b & 0x01) *this->port_d4 |= _BV(this->pin_d4);
+	else *this->port_d4 &= ~_BV(this->pin_d4);
+	
 	if (b & 0x02) *this->port_d5 |= _BV(this->pin_d5);
+	else *this->port_d5 &= ~_BV(this->pin_d5);
+	
 	if (b & 0x04) *this->port_d6 |= _BV(this->pin_d6);
+	else *this->port_d6 &= ~_BV(this->pin_d6);
+	
 	if (b & 0x08) *this->port_d7 |= _BV(this->pin_d7);
+	else *this->port_d7 &= ~_BV(this->pin_d7);
 
 	//Toggle E
 	_delay_us(64);
