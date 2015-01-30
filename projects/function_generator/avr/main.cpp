@@ -9,14 +9,15 @@
 #include "lib/pwm/pwm.h"
 
 #define MODE_FAST_SQUARE	0x00
-#define MODE_SQUARE			0x01
-#define MODE_SINE			0x02
-#define MODE_TRIANGLE		0x03
-#define MODE_SAWTOOTH_UP	0x04
-#define MODE_SAWTOOTH_DOWN	0x05
-#define MODE_STAIRCASE_UP	0x06
-#define MODE_STAIRCASE_DOWN	0x07
-#define MODE_SERVO			0x08
+#define MODE_SLOW_SQUARE	0x01
+#define MODE_SQUARE			0x02
+#define MODE_SINE			0x03
+#define MODE_TRIANGLE		0x04
+#define MODE_SAWTOOTH_UP	0x05
+#define MODE_SAWTOOTH_DOWN	0x06
+#define MODE_STAIRCASE_UP	0x07
+#define MODE_STAIRCASE_DOWN	0x08
+#define MODE_SERVO			0x09
 #define MODE_FIRST			MODE_FAST_SQUARE
 #define MODE_LAST 			MODE_SERVO
 
@@ -40,7 +41,7 @@ const uint8_t data_staircase_down[] PROGMEM	=	{0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe
 static Hd44780_Direct_4bit display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTB, 0, &PORTB, 4, &PORTB, 5, &PORTC, 4, &PORTC, 5, &PORTC, 0);
 static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN, 3, 8, 70, 8);
 
-static uint8_t ui_freq_fast = 0xFF;
+static uint8_t ui_freq_square = 0xFF;
 static uint16_t ui_freq_dds = DDS_MAX;
 static uint16_t ui_freq_servo = SERVO_MAX / 2;
 
@@ -50,7 +51,12 @@ uint8_t _data[256] __attribute__ ((aligned (256)));	//Copy PROGMEM DDS signals i
 
 uint32_t get_fast_square_frequency(){
 	//From the datasheet, in the section detailing the output frequency of CTC _mode PWM
-	return F_CPU / (2 * (1 + (uint32_t) (255 - ui_freq_fast)));
+	return F_CPU / (2 * (1 + (uint32_t) (255 - ui_freq_square)));
+}
+
+uint32_t get_slow_square_frequency(){
+	//From the datasheet, in the section detailing the output frequency of CTC _mode PWM
+	return F_CPU / (2 * 256 * (1 + (uint32_t) (255 - ui_freq_square)));
 }
 
 uint16_t get_dds_frequency(){
@@ -74,8 +80,11 @@ void update_display(){
 	if (_mode == MODE_FAST_SQUARE){
 		display.setText((char*) "Square (Fast)", 13);
 	}
+	else if (_mode == MODE_SLOW_SQUARE){
+		display.setText((char*) "Square (Slow)", 13);
+	}
 	else if (_mode == MODE_SQUARE){
-		display.setText((char*) "Square", 6);
+		display.setText((char*) "Square (Analog)", 15);
 	}
 	else if (_mode == MODE_SINE){
 		display.setText((char*) "Sine", 4);
@@ -121,6 +130,7 @@ void update_display(){
 	else{
 		uint32_t frequency;
 		if (_mode == MODE_FAST_SQUARE) frequency = get_fast_square_frequency();
+		else if (_mode == MODE_SLOW_SQUARE) frequency = get_slow_square_frequency();
 		else frequency = get_dds_frequency();
 	
 		char temp[16];
@@ -149,8 +159,8 @@ void update_display(){
 	_delay_ms(1);
 }
 
-void update_fast_square_frequency(){
-	OCR0A = (255 - ui_freq_fast);					//Comparator
+void update_square_frequency(){
+	OCR0A = (255 - ui_freq_square);					//Comparator
 }
 
 void update_servo_phase(){
@@ -186,72 +196,72 @@ void main_menu(){
 			return;
 		}
 		
-		if (_mode == MODE_FAST_SQUARE){
+		if (_mode == MODE_FAST_SQUARE || _mode == MODE_SLOW_SQUARE){
 			if (pressed & BUTTON_UP){
-				ui_freq_fast++;
+				ui_freq_square++;
 				update_display();
 			}
 			else if (pressed & BUTTON_DOWN){
-				ui_freq_fast--;
+				ui_freq_square--;
 				update_display();
 			}
 			else if (repeat & BUTTON_UP){
-				ui_freq_fast += 4;
+				ui_freq_square += 4;
 				update_display();
 			}
 			else if (repeat & BUTTON_DOWN){
-				ui_freq_fast -= 4;
+				ui_freq_square -= 4;
 				update_display();
 			}
 		}
 		else if (_mode == MODE_SERVO){
 			if (pressed & BUTTON_UP){
 				ui_freq_servo++;
-				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = 0;
+				if (ui_freq_servo > SERVO_MAX) ui_freq_servo = 0;
 				update_display();
 			}
 			else if (pressed & BUTTON_DOWN){
 				ui_freq_servo--;
-				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = SERVO_MAX;
+				if (ui_freq_servo > SERVO_MAX) ui_freq_servo = SERVO_MAX;
 				update_display();
 			}
 			else if (repeat & BUTTON_UP){
-				ui_freq_servo += 10;
-				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = 0;
+				ui_freq_servo += 4;
+				if (ui_freq_servo > SERVO_MAX) ui_freq_servo = 0;
 				update_display();
 			}
 			else if (repeat & BUTTON_DOWN){
-				ui_freq_servo -= 10;
-				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = SERVO_MAX;
+				ui_freq_servo -= 4;
+				if (ui_freq_servo > SERVO_MAX) ui_freq_servo = SERVO_MAX;
 				update_display();
 			}
 		}
 		else {
 			if (pressed & BUTTON_UP){
 				ui_freq_dds++;
-				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+				if (ui_freq_dds > DDS_MAX) ui_freq_dds = 0;
 				update_display();
 			}
 			else if (pressed & BUTTON_DOWN){
 				ui_freq_dds--;
-				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
+				if (ui_freq_dds > DDS_MAX) ui_freq_dds = DDS_MAX;
 				update_display();
 			}
 			else if (repeat & BUTTON_UP){
 				ui_freq_dds += 10;
-				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+				if (ui_freq_dds > DDS_MAX) ui_freq_dds = 0;
 				update_display();
 			}
 			else if (repeat & BUTTON_DOWN){
 				ui_freq_dds -= 10;
-				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
+				if (ui_freq_dds > DDS_MAX) ui_freq_dds = DDS_MAX;
 				update_display();
 			}
 		}
 	}
 }
 
-void fast_square_menu(){
+void square_menu(){
 	update_display();
 
 	while(1){	//Timers do everything now.
@@ -269,24 +279,24 @@ void fast_square_menu(){
 			return;
 		}
 		else if (pressed & BUTTON_UP){
-			ui_freq_fast++;
+			ui_freq_square++;
 			update_display();
-			update_fast_square_frequency();
+			update_square_frequency();
 		}
 		else if (pressed & BUTTON_DOWN){
-			ui_freq_fast--;
+			ui_freq_square--;
 			update_display();
-			update_fast_square_frequency();
+			update_square_frequency();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq_fast += 4;
+			ui_freq_square += 4;
 			update_display();
-			update_fast_square_frequency();
+			update_square_frequency();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq_fast -= 4;
+			ui_freq_square -= 4;
 			update_display();
-			update_fast_square_frequency();
+			update_square_frequency();
 		}
 	}
 }
@@ -310,25 +320,25 @@ void dds_menu(){
 		}
 		else if (pressed & BUTTON_UP){
 			ui_freq_dds++;
-			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+			if (ui_freq_dds > DDS_MAX) ui_freq_dds = 0;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (pressed & BUTTON_DOWN){
 			ui_freq_dds--;
-			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
+			if (ui_freq_dds > DDS_MAX) ui_freq_dds = DDS_MAX;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_UP){
 			ui_freq_dds += 10;
-			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+			if (ui_freq_dds > DDS_MAX) ui_freq_dds = 0;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_DOWN){
 			ui_freq_dds -= 10;
-			if (ui_freq_dds >= DDS_MAX) ui_freq_dds =DDS_MAX;
+			if (ui_freq_dds > DDS_MAX) ui_freq_dds =DDS_MAX;
 			update_display();
 			update_dds_frequency();
 		}
@@ -354,21 +364,25 @@ void servo_menu(){
 		}
 		else if (pressed & BUTTON_UP){
 			ui_freq_servo++;
+			if (ui_freq_servo > SERVO_MAX) ui_freq_servo = 0;
 			update_display();
 			update_servo_phase();
 		}
 		else if (pressed & BUTTON_DOWN){
 			ui_freq_servo--;
+			if (ui_freq_servo > SERVO_MAX) ui_freq_servo = SERVO_MAX;
 			update_display();
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq_servo += 10;
+			ui_freq_servo += 4;
+			if (ui_freq_servo > SERVO_MAX) ui_freq_servo = 0;
 			update_display();
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq_servo -= 10;
+			ui_freq_servo -= 4;
+			if (ui_freq_servo > SERVO_MAX) ui_freq_servo = SERVO_MAX;
 			update_display();
 			update_servo_phase();
 		}
@@ -376,14 +390,16 @@ void servo_menu(){
 }
 
 void output_waveform(){
-	if (_mode == MODE_FAST_SQUARE){
+	if (_mode == MODE_FAST_SQUARE || _mode == MODE_SLOW_SQUARE){
 		TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
-		TCCR0B = _BV(CS00);							//No prescaler
-		update_fast_square_frequency();
+		
+		if (_mode == MODE_FAST_SQUARE) TCCR0B = _BV(CS00);					//No prescaler
+		else TCCR0B = _BV(CS02);											//Div 256 prescaler
+		update_square_frequency();
 		TCNT0 = 0;
 		sei();
 		
-		fast_square_menu();
+		square_menu();
 	}
 	else if (_mode == MODE_SERVO){
 		OCR1A = _pwm_micros_to_clicks(20000); //OCR1A controls the PWM period
@@ -448,18 +464,17 @@ int main (void){
  * The frequency comparison.  When it overflows, we reset the timer to 0.
  */
 /*
+All of these are now implemented in assembly.  See timer1.S for details.
 ISR(TIMER1_OVF_vect){
 	PORTD = _data[_data_ptr];
 	_data_ptr += _dds_increment;
 }
-*/
 ISR(TIMER1_COMPA_vect){	
 	//Servo mode
 	TCNT1 = 0;
-	PORTC |= _BV(PORTD5);	
+	PORTD |= _BV(PORTD5);	
 }
-/*
 ISR(TIMER1_COMPB_vect){
-	PORTC &= ~_BV(PORTC5);
+	PORTD &= ~_BV(PORTD5);
 }
 */
