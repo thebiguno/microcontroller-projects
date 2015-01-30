@@ -9,14 +9,12 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 	PUSH		r30														;[2]
 	
 	LDI			ZH,							hi8(_data)					;[2] -- load the MSB of _data pointer
-	LDS			ZL,							_data_ptr					;[2] -- load the current index into _data
+	IN			ZL,							_SFR_IO_ADDR(GPIOR0)		;[1] -- load the current index into _data
 	LD			r31,						Z							;[2]
 	OUT			_SFR_IO_ADDR(PORTD),		r31							;[1]
 	
-	LDS			r31,						_dds_increment				;[2] -- increment and update the data index
-	ADD			r30,						r31							;[1]
-	STS			_data_ptr,					r30							;[1]
-	
+	INC			r30														;[1] -- increment address as ZL already is loaded
+	OUT			_SFR_IO_ADDR(GPIOR0),		r30							;[1] -- store address
 
 	POP			r30														;[2]
 	OUT			_SFR_IO_ADDR(SREG),			r30							;[1]
@@ -24,7 +22,10 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 	POP			r30														;[2]
 	RETI																;[4]
 
-
+	.global TIMER1_COMPA_vect
+TIMER1_COMPA_vect:														;[5] (service interrupt)
+	SBI			_SFR_IO_ADDR(PORTD),		5							;[2] turn on bit 5 in PORTD
+	RETI																;[4]
 
 	.global TIMER1_COMPB_vect
 TIMER1_COMPB_vect:														;[5] (service interrupt)
