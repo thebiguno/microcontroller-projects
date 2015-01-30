@@ -20,7 +20,7 @@
 #define MODE_FIRST			MODE_FAST_SQUARE
 #define MODE_LAST 			MODE_SERVO
 
-#define DDS_MAX				745
+#define DDS_MAX				495
 #define SERVO_MAX			1100
 
 #define BUTTON_MODE			_BV(PORTC1)
@@ -321,13 +321,13 @@ void dds_menu(){
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq_dds += 4;
+			ui_freq_dds += 10;
 			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq_dds -= 4;
+			ui_freq_dds -= 10;
 			if (ui_freq_dds >= DDS_MAX) ui_freq_dds =DDS_MAX;
 			update_display();
 			update_dds_frequency();
@@ -363,12 +363,12 @@ void servo_menu(){
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq_servo += 4;
+			ui_freq_servo += 10;
 			update_display();
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq_servo -= 4;
+			ui_freq_servo -= 10;
 			update_display();
 			update_servo_phase();
 		}
@@ -458,7 +458,6 @@ ISR(TIMER1_COMPA_vect){
 	TCNT1 = 0;
 	PORTC |= _BV(PORTD5);	
 }
-
 /*
 ISR(TIMER1_COMPB_vect){
 	PORTC &= ~_BV(PORTC5);

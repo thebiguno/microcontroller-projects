@@ -22,10 +22,12 @@ TIMER1_OVF_vect:														;[5] (service interrupt)
 	POP			r30														;[2]
 	RETI																;[4]
 
-	.global TIMER1_COMPA_vect
-TIMER1_COMPA_vect:														;[5] (service interrupt)
-	SBI			_SFR_IO_ADDR(PORTD),		5							;[2] turn on bit 5 in PORTD
-	RETI																;[4]
+;	.global TIMER1_COMPA_vect
+;TIMER1_COMPA_vect:														;[5] (service interrupt)
+;	STS			TCNT1H,						r1							;[2] set TCNT1 to 0
+;	STS			TCNT1L,						r1							;[2]
+;	SBI			_SFR_IO_ADDR(PORTD),		5							;[2] turn on bit 5 in PORTD
+;	RETI																;[4]
 
 	.global TIMER1_COMPB_vect
 TIMER1_COMPB_vect:														;[5] (service interrupt)
