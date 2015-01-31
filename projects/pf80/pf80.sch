@@ -415,7 +415,7 @@ Wire Wire Line
 Wire Wire Line
 	9450 650  9450 1050
 Text Notes 7800 3700 0    60   ~ 0
-There will be 8 of these modules wired together\nOne primary selector, one for buttons and pedels, and six for keys\nOnly the key ones require the diodes, the others will just bridge
+There will be 8 of these modules wired together\nOne primary selector, one for buttons and pedels, and six for keys\nOnly the key ones require the diodes, the others will just bridge\nK1-K88, 0-9, Tremolo, Chorus, F1, F2, Sustain tip, Sustain ring, Keyhold, Soft, Speaker on/off = 107 inputs and 5 spares
 $Comp
 L ATMEGA32U4-A U?
 U 1 1 54C89F9F
@@ -758,17 +758,6 @@ Wire Wire Line
 	5950 6250 6400 6250
 Wire Wire Line
 	5950 6050 6400 6050
-$Comp
-L +3.3V #PWR?
-U 1 1 54C8DC32
-P 6050 6350
-F 0 "#PWR?" H 6050 6310 30  0001 C CNN
-F 1 "+3.3V" H 6050 6460 30  0000 C CNN
-F 2 "" H 6050 6350 60  0000 C CNN
-F 3 "" H 6050 6350 60  0000 C CNN
-	1    6050 6350
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	6050 6350 5950 6350
 $Comp
@@ -786,8 +775,6 @@ Wire Wire Line
 	6200 6450 5950 6450
 Text Label 3750 4850 2    60   ~ 0
 RST_3V
-Text Label 5950 6950 0    60   ~ 0
-RX_3V
 Text Label 5950 5550 0    60   ~ 0
 RIGHT
 Text Label 5950 4850 0    60   ~ 0
@@ -825,17 +812,9 @@ Connection ~ 6400 5750
 Text Label 5950 5750 0    60   ~ 0
 AGND
 Wire Wire Line
-	5950 6150 6050 6150
+	5950 6150 6600 6150
 Wire Wire Line
 	6050 6150 6050 6350
-Text Label 5950 6550 0    60   ~ 0
-MISO
-Text Label 5950 6650 0    60   ~ 0
-MOSI_3V
-Text Label 5950 6750 0    60   ~ 0
-SCLK_3V
-Text Label 3750 6950 2    60   ~ 0
-CS_3V
 NoConn ~ 5950 6850
 NoConn ~ 5950 7050
 NoConn ~ 5950 5950
@@ -960,4 +939,79 @@ Text Label 8900 5350 0    60   ~ 0
 L_OUT
 Text Notes 7150 4950 0    60   ~ 0
 Headphone Out
+$Comp
+L AGND #PWR?
+U 1 1 54C8F57C
+P 7700 6000
+F 0 "#PWR?" H 7700 6000 40  0001 C CNN
+F 1 "AGND" H 7700 5930 50  0000 C CNN
+F 2 "" H 7700 6000 60  0000 C CNN
+F 3 "" H 7700 6000 60  0000 C CNN
+	1    7700 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7600 5950 7850 5950
+Wire Wire Line
+	7700 5950 7700 6000
+Connection ~ 7700 5950
+$Comp
+L DSCHSMALL D?
+U 1 1 54C8F917
+P 6700 6950
+F 0 "D?" V 6790 6945 40  0000 C CNN
+F 1 "DSCHSMALL" V 6615 6950 40  0000 C CNN
+F 2 "~" V 6630 6950 30  0000 C CNN
+F 3 "~" H 6700 7000 30  0000 C CNN
+	1    6700 6950
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 54C8F966
+P 6600 4700
+F 0 "#PWR?" H 6600 4660 30  0001 C CNN
+F 1 "+3.3V" H 6600 4810 30  0000 C CNN
+F 2 "" H 6600 4700 60  0000 C CNN
+F 3 "" H 6600 4700 60  0000 C CNN
+	1    6600 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 6750 6600 6950
+Text Label 6800 6950 0    60   ~ 0
+TXD
+Wire Wire Line
+	6600 6950 5950 6950
+$Comp
+L RSMALL R?
+U 1 1 54C8FC75
+P 6600 6650
+F 0 "R?" V 6690 6645 40  0000 C CNN
+F 1 "100k" V 6515 6650 40  0000 C CNN
+F 2 "~" V 6530 6650 30  0000 C CNN
+F 3 "~" H 6600 6700 30  0000 C CNN
+	1    6600 6650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 4700 6600 6550
+Connection ~ 6050 6150
+NoConn ~ 5950 6550
+NoConn ~ 5950 6650
+NoConn ~ 5950 6750
+NoConn ~ 3750 6950
+Wire Wire Line
+	5950 5150 6600 5150
+Wire Wire Line
+	5950 4950 6600 4950
+Wire Wire Line
+	6600 4950 6600 5000
+Connection ~ 6600 5000
+Wire Wire Line
+	6600 5650 5950 5650
+Connection ~ 6600 5150
+Connection ~ 6600 6150
+Connection ~ 6600 5650
+NoConn ~ 5950 5250
 $EndSCHEMATC
