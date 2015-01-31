@@ -20,10 +20,12 @@
 #define MODE_FIRST			MODE_FAST_SQUARE
 #define MODE_LAST 			MODE_SERVO
 
+#define DDS_MAX				745
+#define SERVO_MAX			1100
+
 #define BUTTON_MODE			_BV(PORTC1)
 #define BUTTON_UP			_BV(PORTC2)
 #define BUTTON_DOWN			_BV(PORTC3)
-#define BUTTON_OK			_BV(PORTC4)
 
 using namespace digitalcave;
 
@@ -38,27 +40,27 @@ const uint8_t data_staircase_down[] PROGMEM	=	{0xe0,0xe0,0xe0,0xe0,0xe0,0xe0,0xe
 static Hd44780_Direct_4bit display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTB, 0, &PORTB, 4, &PORTB, 5, &PORTC, 4, &PORTC, 5, &PORTC, 0);
 static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN, 3, 8, 70, 8);
 
-static uint8_t ui_freq = 0xFF;	//Counter for UI, mapping to Indexed frequencies, different from square vs DDS waveforms
-static uint8_t ui_freq_servo = 125;		//Counter for servo UI.  Separate from ui_freq so that we can remember different positions.
-volatile uint8_t _dds_increment;
+static uint8_t ui_freq_fast = 0xFF;
+static uint16_t ui_freq_dds = DDS_MAX;
+static uint16_t ui_freq_servo = SERVO_MAX / 2;
+
 volatile uint8_t _mode = MODE_FIRST;
 
-uint8_t _data_ptr;	//Pointer into _data
 uint8_t _data[256] __attribute__ ((aligned (256)));	//Copy PROGMEM DDS signals into this buffer.
 
 uint32_t get_fast_square_frequency(){
 	//From the datasheet, in the section detailing the output frequency of CTC _mode PWM
-	return F_CPU / (2 * (1 + (uint32_t) (255 - ui_freq)));
+	return F_CPU / (2 * (1 + (uint32_t) (255 - ui_freq_fast)));
 }
 
 uint16_t get_dds_frequency(){
-	//Increment from 100Hz to 2.560kHz in 10Hz increments
-	return ((uint16_t) ui_freq + 1) * 10;
+	//Increment from 10Hz to 1.000kHz in 2Hz increments
+	return (double) ((uint16_t) ui_freq_dds * 2) + 10;
 }
 
 uint32_t get_servo_phase(){
-	//Return a value between 500us and 2540us.
-	return ((ui_freq_servo * 8) + 500);
+	//Return a value between 400us and 2600us with an increment of 1us.
+	return ((ui_freq_servo * 2) + 400);
 }
 
 uint16_t _pwm_micros_to_clicks(uint32_t micros){
@@ -111,7 +113,7 @@ void update_display(){
 		uint32_t phase = get_servo_phase();
 		char temp[16];
 		uint8_t l;
-		l = snprintf(temp, 16, "%6.3f ms", (phase / 1000.0));
+		l = snprintf(temp, 16, "%6d us", (uint16_t) phase);
 		display.setDdramAddress(0x40);
 		_delay_ms(1);
 		display.setText(temp, l);
@@ -127,7 +129,7 @@ void update_display(){
 			l = snprintf(temp, 16, "%6.4f MHz", (frequency / 1000000.0));
 		}
 		else if (frequency >= 1000){
-			l = snprintf(temp, 16, " %5.2f kHz", (frequency / 1000.0));
+			l = snprintf(temp, 16, " %5.3f kHz", (frequency / 1000.0));
 		}
 		else {
 			l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
@@ -148,7 +150,7 @@ void update_display(){
 }
 
 void update_fast_square_frequency(){
-	OCR0A = (255 - ui_freq);					//Comparator
+	OCR0A = (255 - ui_freq_fast);					//Comparator
 }
 
 void update_servo_phase(){
@@ -157,21 +159,7 @@ void update_servo_phase(){
 
 void update_dds_frequency(){
 	uint32_t frequency = get_dds_frequency();
-	if (ui_freq >= 0x80){
-		//The 64 here is from the 256 / 4 sample waveform size.
-		OCR1A = (F_CPU / 64 / frequency) - 1;			//Comparison value
-		_dds_increment = 4;
-	}
-	else if (ui_freq >= 0x40){
-		//The 128 here is from the 256 / 2 sample waveform size.
-		OCR1A = (F_CPU / 128 / frequency) - 1;			//Comparison value
-		_dds_increment = 2;
-	}
-	else {
-		//The 256 here is from the 256 sample waveform size.
-		OCR1A = (F_CPU / 256 / frequency) - 1;			//Comparison value
-		_dds_increment = 1;
-	}
+	OCR1A = (F_CPU / 256 / frequency) - 1;			//Comparison value
 }
 
 void main_menu(){
@@ -197,21 +185,68 @@ void main_menu(){
 			update_display();
 			return;
 		}
-		else if (pressed & BUTTON_UP){
-			ui_freq++;
-			update_display();
+		
+		if (_mode == MODE_FAST_SQUARE){
+			if (pressed & BUTTON_UP){
+				ui_freq_fast++;
+				update_display();
+			}
+			else if (pressed & BUTTON_DOWN){
+				ui_freq_fast--;
+				update_display();
+			}
+			else if (repeat & BUTTON_UP){
+				ui_freq_fast += 4;
+				update_display();
+			}
+			else if (repeat & BUTTON_DOWN){
+				ui_freq_fast -= 4;
+				update_display();
+			}
 		}
-		else if (pressed & BUTTON_DOWN){
-			ui_freq--;
-			update_display();
+		else if (_mode == MODE_SERVO){
+			if (pressed & BUTTON_UP){
+				ui_freq_servo++;
+				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = 0;
+				update_display();
+			}
+			else if (pressed & BUTTON_DOWN){
+				ui_freq_servo--;
+				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = SERVO_MAX;
+				update_display();
+			}
+			else if (repeat & BUTTON_UP){
+				ui_freq_servo += 10;
+				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = 0;
+				update_display();
+			}
+			else if (repeat & BUTTON_DOWN){
+				ui_freq_servo -= 10;
+				if (ui_freq_servo >= SERVO_MAX) ui_freq_servo = SERVO_MAX;
+				update_display();
+			}
 		}
-		else if (repeat & BUTTON_UP){
-			ui_freq+=4;
-			update_display();
-		}
-		else if (repeat & BUTTON_DOWN){
-			ui_freq-=4;
-			update_display();
+		else {
+			if (pressed & BUTTON_UP){
+				ui_freq_dds++;
+				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+				update_display();
+			}
+			else if (pressed & BUTTON_DOWN){
+				ui_freq_dds--;
+				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
+				update_display();
+			}
+			else if (repeat & BUTTON_UP){
+				ui_freq_dds += 10;
+				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
+				update_display();
+			}
+			else if (repeat & BUTTON_DOWN){
+				ui_freq_dds -= 10;
+				if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
+				update_display();
+			}
 		}
 	}
 }
@@ -234,22 +269,22 @@ void fast_square_menu(){
 			return;
 		}
 		else if (pressed & BUTTON_UP){
-			ui_freq++;
+			ui_freq_fast++;
 			update_display();
 			update_fast_square_frequency();
 		}
 		else if (pressed & BUTTON_DOWN){
-			ui_freq--;
+			ui_freq_fast--;
 			update_display();
 			update_fast_square_frequency();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq+=4;
+			ui_freq_fast += 4;
 			update_display();
 			update_fast_square_frequency();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq-=4;
+			ui_freq_fast -= 4;
 			update_display();
 			update_fast_square_frequency();
 		}
@@ -274,22 +309,26 @@ void dds_menu(){
 			return;
 		}
 		else if (pressed & BUTTON_UP){
-			ui_freq++;
+			ui_freq_dds++;
+			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (pressed & BUTTON_DOWN){
-			ui_freq--;
+			ui_freq_dds--;
+			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = DDS_MAX;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq+=4;
+			ui_freq_dds += 4;
+			if (ui_freq_dds >= DDS_MAX) ui_freq_dds = 0;
 			update_display();
 			update_dds_frequency();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq-=4;
+			ui_freq_dds -= 4;
+			if (ui_freq_dds >= DDS_MAX) ui_freq_dds =DDS_MAX;
 			update_display();
 			update_dds_frequency();
 		}
@@ -324,12 +363,12 @@ void servo_menu(){
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_UP){
-			ui_freq_servo+=4;
+			ui_freq_servo += 4;
 			update_display();
 			update_servo_phase();
 		}
 		else if (repeat & BUTTON_DOWN){
-			ui_freq_servo-=4;
+			ui_freq_servo -= 4;
 			update_display();
 			update_servo_phase();
 		}
@@ -419,6 +458,7 @@ ISR(TIMER1_COMPA_vect){
 	TCNT1 = 0;
 	PORTC |= _BV(PORTD5);	
 }
+
 /*
 ISR(TIMER1_COMPB_vect){
 	PORTC &= ~_BV(PORTC5);
