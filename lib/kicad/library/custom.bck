@@ -1,4 +1,8 @@
-EESchema-DOCLIB  Version 2.0  Date: Wed 12 Nov 2014 05:29:57 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Sun 30 Nov 2014 08:56:47 PM MST
+#
+$CMP BRIGE_RECTIFIER
+D Bridge Rectifier
+$ENDCMP
 #
 $CMP CRYSTAL_RESONATOR
 D Either a Crystal with external caps, or a resonator with built in caps
@@ -31,6 +35,26 @@ $ENDCMP
 #
 $CMP NCP1400A
 D NCP1400A_Boost_Regulator
+$ENDCMP
+#
+$CMP POT
+D Potentiometer
+K R DEV
+$ENDCMP
+#
+$CMP POTENTIOMETER
+D Potentiometer
+K R DEV
+$ENDCMP
+#
+$CMP R_PACK5
+D 5 resistors Pack
+K R DEV
+$ENDCMP
+#
+$CMP RESISTOR
+D Resistance
+K R DEV
 $ENDCMP
 #
 $CMP RESONATOR
