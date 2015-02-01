@@ -1,59 +1,61 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "lib/usb/rawhid.h"
+
+#define STR_MANUFACTURER	L"Warren Janssens"
+#define STR_PRODUCT		L"Cranky Simulator"
+#define VENDOR_ID		0x574a
+#define PRODUCT_ID		0x6373
+#define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
+#define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
+#define RAWHID_TX_SIZE		0	// transmit packet size
+#define RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
+#define RAWHID_RX_SIZE		3	// receive packet size
+#define RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
+
 
 static volatile uint8_t ct; // a value from 0 to 143, odd numbers are rising edges
 static volatile uint8_t tooth; // a value from 0 to 35
 
-// hardware map
-// C6	/rst								c5	nc
-// d0	rxd									c4	nc
-// d1	txd									c3	nc
-// d2	int0								c2	nc
-// d3	int1								c1	nc
-// d4										c0	nc
-// b6	xtal								
-// b7	xtal								b5	sck
-// d5	dout								b4	miso
-// d6	dout								b3	mosi/dout	
-// d7	dout								b2	dout		
-// b0	dout	crank output				b1	dout		cam output
+uint8_t rx_buffer[3];
 
 int main(void) {
+	usb_init();
 	
-	// set B0 and B1 as output
-	DDRB = _BV(DDB1) | _BV(DDB0) | _BV(DDB2);
+	// set B0 as output for crank simulation
+	// set B1 as output for cam samulation
+	// set B2 as output for start of revolution
+	// set B3 as output for change trigger
+	// set B7 as output for throttle position simulation fast pwm (OCR0A)
+	DDRB = _BV(DDB0) | _BV(DDB1) | _BV(DDB2) | _BV(DDB3) | _BV(DDB7);
 	
-	// set up timers
+	// set up timer0 for throttle position fast pwm, clk/8
+	TCCR0A = _BV(COM0A1) | _BV(WGM01) | _BV(WGM00);
+	TCCR0B = _BV(CS01);
+	
+	// set up timer1 for crank and cam square output
 	TCCR1A = 0x00;			// OC1A / OC1B disconnected
 	TCCR1B = _BV(WGM12) | _BV(CS11);	// CLK / 8 (prescaler), clear timer on compare match
 	TIMSK1 = _BV(OCIE1A);	// interrupt on compare A
 	OCR1A = 255;//512;		// this is about 1800 rpm, but it will be changed on the first analog read
 	
-	// set up analog
-	ADCSRA = _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
-	ADMUX = _BV(ADLAR);	// use AREF, left adjust result, read ADC0/PC0
-
 	sei();
 	
-	ADCSRA |= _BV(ADSC);
-	
 	while(1) {
-		; // do nothing, all code in ISRs
+		if (usb_configured()) {
+			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+				OCR0A = rx_buffer[0];
+
+				// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
+				// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
+				OCR1AH = rx_buffer[1];
+				OCR1AL = rx_buffer[2];
+			}
+		}
 	}
 }
 
 // 16MHz = 0.0625 us per clock cycle, 0.5 us per timer1 interrupt
-
-// analog ISR
-ISR(ADC_vect){
-	// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
-	// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
-	
-	// read ADC value
-	uint8_t analog = ADCH;
- 	OCR1A = ((uint32_t) ADCH * 3332 / 255) + 166;
-}
-
 ISR(TIMER1_COMPA_vect) {
 	if (ct % 2 == 0) {
 		tooth++;
@@ -80,8 +82,5 @@ ISR(TIMER1_COMPA_vect) {
 	if (tooth > 35) {
 		tooth = 0;
 		PORTB |= _BV(PB2);
-		
-		// start ADC again -- read analong once per revolution
-		ADCSRA |= _BV(ADSC);
 	}
 }

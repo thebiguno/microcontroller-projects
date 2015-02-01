@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:microsd-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "26 nov 2014"
+Date "10 jan 2015"
 Rev ""
 Comp ""
 Comment1 ""
@@ -60,24 +59,24 @@ DO
 $Comp
 L C C2
 U 1 1 5466C04B
-P 5300 1900
-F 0 "C2" H 5300 2000 40  0000 L CNN
-F 1 "1u" H 5306 1815 40  0000 L CNN
-F 2 "~" H 5338 1750 30  0000 C CNN
-F 3 "~" H 5300 1900 60  0000 C CNN
-	1    5300 1900
-	1    0    0    -1  
+P 4750 1950
+F 0 "C2" H 4750 2050 40  0000 L CNN
+F 1 "1u" H 4756 1865 40  0000 L CNN
+F 2 "~" H 4788 1800 30  0000 C CNN
+F 3 "~" H 4750 1950 60  0000 C CNN
+	1    4750 1950
+	0    -1   -1   0   
 $EndComp
 $Comp
 L C C1
 U 1 1 5466C058
-P 5100 1900
-F 0 "C1" H 5100 2000 40  0000 L CNN
-F 1 "1u" H 5106 1815 40  0000 L CNN
-F 2 "~" H 5138 1750 30  0000 C CNN
-F 3 "~" H 5100 1900 60  0000 C CNN
-	1    5100 1900
-	1    0    0    -1  
+P 4750 1700
+F 0 "C1" H 4750 1800 40  0000 L CNN
+F 1 "1u" H 4756 1615 40  0000 L CNN
+F 2 "~" H 4788 1550 30  0000 C CNN
+F 3 "~" H 4750 1700 60  0000 C CNN
+	1    4750 1700
+	0    -1   -1   0   
 $EndComp
 NoConn ~ 6850 4850
 NoConn ~ 6850 4150
@@ -241,7 +240,7 @@ Wire Wire Line
 Wire Wire Line
 	5200 1700 5300 1700
 Wire Wire Line
-	5100 1550 5100 1700
+	5100 1550 5100 2250
 Wire Wire Line
 	6250 1550 5300 1550
 Connection ~ 6250 3850
@@ -308,13 +307,11 @@ Connection ~ 5850 4250
 Wire Wire Line
 	3250 2250 6350 2250
 Wire Wire Line
-	5100 2250 5100 2100
+	5300 2350 3350 2350
 Wire Wire Line
-	3350 2350 5300 2350
+	5300 1700 5300 2350
 Wire Wire Line
-	5300 2350 5300 2100
-Wire Wire Line
-	3250 4250 3250 5350
+	3250 4250 3250 5450
 Wire Wire Line
 	3250 4150 3250 2250
 Connection ~ 5100 2250
@@ -344,4 +341,40 @@ Buffer to tri-state when /SS
 Wire Wire Line
 	3500 3550 3250 3550
 Connection ~ 3250 3550
+Wire Wire Line
+	4950 1700 5100 1700
+Connection ~ 5100 1700
+Wire Wire Line
+	4950 1950 5300 1950
+Connection ~ 5300 1950
+Wire Wire Line
+	4550 1700 4450 1700
+Wire Wire Line
+	4450 1700 4450 2050
+Wire Wire Line
+	4450 1950 4550 1950
+Connection ~ 4450 1950
+$Comp
+L GND #PWR?
+U 1 1 54B1B2AA
+P 4450 2050
+F 0 "#PWR?" H 4450 2050 30  0001 C CNN
+F 1 "GND" H 4450 1980 30  0001 C CNN
+F 2 "" H 4450 2050 60  0000 C CNN
+F 3 "" H 4450 2050 60  0000 C CNN
+	1    4450 2050
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54B1B2B7
+P 3250 5450
+F 0 "#PWR?" H 3250 5450 30  0001 C CNN
+F 1 "GND" H 3250 5380 30  0001 C CNN
+F 2 "" H 3250 5450 60  0000 C CNN
+F 3 "" H 3250 5450 60  0000 C CNN
+	1    3250 5450
+	1    0    0    -1  
+$EndComp
+Connection ~ 3250 5350
 $EndSCHEMATC

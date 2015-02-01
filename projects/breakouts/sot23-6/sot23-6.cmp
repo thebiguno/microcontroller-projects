@@ -1,0 +1,24 @@
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Sunday, January 11, 2015 'amt' 08:26:40 am
+
+BeginCmp
+TimeStamp = /54B29519;
+Reference = K1;
+ValeurCmp = PINS_6;
+IdModule  = SOT23_6;
+EndCmp
+
+BeginCmp
+TimeStamp = /54B29528;
+Reference = K2;
+ValeurCmp = PINS_3;
+IdModule  = SIL-3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54B2954E;
+Reference = K3;
+ValeurCmp = PINS_3;
+IdModule  = SIL-3;
+EndCmp
+
+EndListe

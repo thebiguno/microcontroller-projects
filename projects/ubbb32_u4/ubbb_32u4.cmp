@@ -1,9 +1,23 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Wed 12 Nov 2014 06:15:06 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, January 09, 2015 'pmt' 12:23:05 pm
+
+BeginCmp
+TimeStamp = /54808894;
+Reference = C1;
+ValeurCmp = 8pF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /548088A6;
+Reference = C2;
+ValeurCmp = 8pF;
+IdModule  = SM0603_VALUE;
+EndCmp
 
 BeginCmp
 TimeStamp = /54580478;
 Reference = C3;
-ValeurCmp = 1uF;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -15,9 +29,37 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5459532C;
+TimeStamp = /54AC0BBC;
 Reference = C5;
-ValeurCmp = 1uF;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AC0BAA;
+Reference = C6;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AC0BC2;
+Reference = C7;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AC0BC8;
+Reference = C8;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54AC31D5;
+Reference = C9;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -29,10 +71,17 @@ IdModule  = USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
-TimeStamp = /545BB829;
-Reference = D2;
-ValeurCmp = RGB_LED_COMMON_ANODE;
+TimeStamp = /5463FD4C;
+Reference = D1;
+ValeurCmp = RGB_LED_COMMON_ANODE_ALT1;
 IdModule  = LED_RGB_4-PLCC_ALT1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54B02A64;
+Reference = D2;
+ValeurCmp = TVS_BIDIRECTIONAL_2CH;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
@@ -86,49 +135,49 @@ EndCmp
 
 BeginCmp
 TimeStamp = /545805FA;
-Reference = R2;
+Reference = R1;
 ValeurCmp = 22;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545805E8;
-Reference = R3;
+Reference = R2;
 ValeurCmp = 22;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54580AFB;
-Reference = R4;
+Reference = R3;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54580CE7;
-Reference = R5;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /5458183C;
-Reference = R6;
+Reference = R4;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545BBA0D;
-Reference = R7;
+Reference = R5;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /545BBA13;
-Reference = R8;
+Reference = R6;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5458183C;
+Reference = R7;
 ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -155,10 +204,10 @@ IdModule  = TQFP44;
 EndCmp
 
 BeginCmp
-TimeStamp = /5463E47C;
+TimeStamp = /5480875F;
 Reference = X1;
-ValeurCmp = RESONATOR;
-IdModule  = RESONATOR_SMD-3;
+ValeurCmp = CRYSTAL_SMD_4PIN;
+IdModule  = crystal_smd_2.5x2;
 EndCmp
 
 EndListe

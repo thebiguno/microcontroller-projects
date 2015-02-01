@@ -57,7 +57,7 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            EQL, 1   ,2   ,3   ,4   ,5   ,
            TAB, QUOT,COMM,DOT ,P   ,Y   ,
            ESC, A   ,O   ,E   ,U   ,I   ,
-           LSFT,FN11,Q   ,J   ,K   ,X   ,
+           LSFT,SCLN,Q   ,J   ,K   ,X   ,
                 FN1 ,FN2 ,FN3 ,FN4 ,
                                SLSH,BSLS,
                                     FN5 ,
@@ -66,7 +66,7 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            6   ,7   ,8   ,9   ,0   ,MINS,
            F   ,G   ,C   ,R   ,L   ,SLSH,
            D   ,H   ,T   ,N   ,S   ,BSLS,
-           B   ,M   ,W   ,V   ,FN12,RSFT,
+           B   ,M   ,W   ,V   ,Z   ,RSFT,
                 FN7 ,FN8 ,FN9 ,FN10,
            GRV ,NUBS,
            FN6 ,
@@ -107,9 +107,7 @@ static const uint16_t PROGMEM fn_actions[] = {
 		[7] = ACTION_MODS_TAP_KEY(MOD_RGUI, KC_UP),
 		[8] = ACTION_MODS_TAP_KEY(MOD_RALT, KC_DOWN),
 		[9] = ACTION_MODS_TAP_KEY(MOD_RCTL, KC_LBRC),
-		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC),
-		[11] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_SCLN),
-		[12] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_Z)
+		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC)
 };
 void action_function(keyrecord_t *event, uint8_t id, uint8_t opt) {
     if (id == BOOTLOAD_KEY) {

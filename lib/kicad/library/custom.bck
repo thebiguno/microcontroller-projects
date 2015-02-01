@@ -1,7 +1,21 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 30 Nov 2014 08:56:47 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Wednesday, January 28, 2015 'amt' 09:19:50 am
 #
 $CMP BRIGE_RECTIFIER
 D Bridge Rectifier
+#
+$CMP 74HC4067
+D 16 Channel Analog Multiplexer / Demultiplexer
+K multiplexer, demultiplexer, analog
+$ENDCMP
+#
+$CMP 74HC4852
+D 2x4 Channel Analog Multiplexer / Demultiplexer
+K multiplexer, demultiplexer
+$ENDCMP
+#
+$CMP CP1SMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP CRYSTAL_RESONATOR
@@ -12,6 +26,21 @@ $ENDCMP
 $CMP DPDT
 D DPDT Switch (e.g. GW22LCP)
 K GW22LCP, DPDT
+$ENDCMP
+#
+$CMP DSCHSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP DSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP DZSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 $CMP ISP
@@ -28,9 +57,29 @@ $CMP LE-MM103
 D 8x8 LED Matrix Bi-Color Red Green
 $ENDCMP
 #
+$CMP LEDSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP LSMALL
+D Inductor
+K inductor
+$ENDCMP
+#
 $CMP MC34063A
 D Peak Boost Buck Inverting Switching Regulator
 K Buck, Power
+$ENDCMP
+#
+$CMP MCP4451
+D Digital Potentiometer
+K potentiometer
+$ENDCMP
+#
+$CMP MOSFET-SOT-23-3
+D N-Channel MOSFET, SOT-23
+K N-Channel MOSFET Logic Level
 $ENDCMP
 #
 $CMP NCP1400A
@@ -45,6 +94,24 @@ $ENDCMP
 $CMP POTENTIOMETER
 D Potentiometer
 K R DEV
+$CMP OPA548
+D High Current / High Voltage Op Amp OPA548 / OPA547
+K OPAMP, OPA547, OPA548
+$ENDCMP
+#
+$CMP OPA549
+D High Current / High Voltage Op Amp OPA548 / OPA547
+K OPAMP, OPA547, OPA548
+$ENDCMP
+#
+$CMP OPAMP-2
+D Generic OP-AMP
+K opamp, amp, operational, amplifier
+$ENDCMP
+#
+$CMP OPAMP-4
+D Generic OP-AMP
+K opamp, amp, operational, amplifier
 $ENDCMP
 #
 $CMP R_PACK5
@@ -77,6 +144,16 @@ D RGB LED (Common Cathode)
 K RGB_LED_COMMON_CATHODE
 $ENDCMP
 #
+$CMP RSMALL
+D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP SPDT
+D SPDT Switch
+K SPDT
+$ENDCMP
+#
 $CMP STPIC6D595
 D Shift Register / Open Drain
 K shift
@@ -85,6 +162,11 @@ $ENDCMP
 $CMP TB6552FNG
 D Motor Controller, Full H-Bridge x2
 K Motor, Bridge, H-Bridge
+$ENDCMP
+#
+$CMP XTALSMALL
+D RSMALL
+K R DEV
 $ENDCMP
 #
 #End Doc Library

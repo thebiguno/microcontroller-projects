@@ -57,17 +57,21 @@ void matrix_init(void) {
 	//debug_enable = true;
 	
 	//dprint("matrix_init"); dprintln();
-	// output (mux & led) low
-	DDRB    = 0xFF;
-	PORTB   = 0x00;
-	//DDRD      = 0xFF;
-	//PORTD     = 0x00;
-	
-	// input with pullup
-	DDRD    = 0x00;
+	// output high (leds)
+	DDRD    = 0xFF;
 	PORTD   = 0xFF;
-	//DDRB      = 0x00;
-	//PORTB     = 0xFF;
+	
+	// output low (multiplexers)
+	DDRF    = 0xFF;
+	PORTF   = 0x00;
+	
+	// input with pullup (matrix)
+	DDRB    = 0x00;
+	PORTB   = 0xFF;
+	
+	// input with pullup (program and keypad buttons)
+	DDRC    = 0x00;
+	PORTC   = 0xFF;
 	
     // initialize row and col
     unselect();
@@ -146,47 +150,38 @@ uint8_t matrix_key_count(void)
 static matrix_row_t read(uint8_t row)
 {
 	_delay_us(30);  // without this wait read unstable value.
+	return ~PINB;
 
-	// only bother with row 13 since HWB mashes entire column
-	if (row != 13) {
-		return KC_NO;
-	}
-	
-	if (~PIND > 0) PORTB |= _BV(PB4);
-	else PORTB = 0x00;
-	return ~PIND;
-
-	//if (~PINB > 0) PORTD |= _BV(PD4);
-	//else PORTD = 0x00;
-	//return ~PINB;
 }
 
 static void unselect(void)
 {
-	//PORTB &= 0xF0;	// set lower 4 bits A,B,C,G to 0
+	// set A,B,C,G to 0 (F4 - F7)
+	PORTF &= 0x0F;
 }
 
 static void select(uint8_t row)
 {
-	//PORTB |= row;
+	// set A,B,C,G to row value
+	PORTF |= row << 4;
 }
 
 /* Row pin configuration
-PB0		A
-PB1		B
-PB2		C
-PB3		G	0 = U4, 1 = U5
+PF0		A
+PF1		B
+PF2		C
+PF3		G	0 = U4, 1 = U5
 
 				4y0	4y1	4y2	4y3	4y4	4y5	4y6	4y7	5y0	5y1	5y2	5y3	5y4	5y5	5y6	5y7	
 				r1	r2	 r3 r4	r5	r6	r7	r8	r9	r10	r11	r12	r13	r14	r15	r16	
-PD0		21	c1	f6	f8	f7	5	4	3	2	1	=+								
-PD1		22	c2	f3	f5	f4	t	r	e	w	q	TAB								
-PD2		23	c3	ESC	f2	f1	g	f	d	s	a	CL								
-PD3		24	c4	f9	f11	f10	b	v	c	x	z	LS	UP		DN		[{	]}		
-PD4		25	c5  f12	SL	PS	RT		LT	§±	`~		6	7	8		9	0	-_ 	
-PD5		26	c6	PB	PGM	KPD							y	u	i		o	p	\	
-PD6		27	c7  			LC	DL	BS	RC	EN	SP	h	j	k		l	;:	'"	
-PD7		28	c8					RA		PU		PD	n	m	,<		.>	/?	RS	
+PB0		21	c1	f6	f8	f7	5	4	3	2	1	=+								
+PB1		22	c2	f3	f5	f4	t	r	e	w	q	TAB									',.py
+PB2		23	c3	ESC	f2	f1	g	f	d	s	a	CL									aoeui
+PB3		24	c4	f9	f11	f10	b	v	c	x	z	LS	UP		DN		[{	]}			;qjkx
+PB4		25	c5  f12	SL	PS	RT		LT	§±	`~		6	7	8		9	0	-_ 		-=6890
+PB5		26	c6	PB	PGM	KPD							y	u	i		o	p	\	
+PB6		27	c7  			LC	DL	BS	RC	EN	SP	h	j	k		l	;:	'"	
+PB7		28	c8					RA		PU		PD	n	m	,<		.>	/?	RS	
  */
 
 

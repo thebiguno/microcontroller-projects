@@ -4,7 +4,7 @@ microcontroller-projects
 A home for my microcontroller projects, including Stubby the Hexapod and others.  It includes libraries for avr-gcc along with sample programs on how to use them, some KiCad modules, and the source code for a number of projects.
 
 Some major projects include:
- * Stubby the Hexapod (http://stubby.digitalcave.ca/stubby/)
+ * Stubby the Hexapod (http://stubby.digitalcave.ca/stubby/) (Now extracted into its own repo at https://github.com/thebiguno/stubby)
  * DrumMaster (http://drummaster.digitalcave.ca/drummaster/)
 
 Some of the AVR libraries included here are:

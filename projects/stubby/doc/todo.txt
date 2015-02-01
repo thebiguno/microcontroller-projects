@@ -1,5 +1,0 @@
-Outstanding TODO Items:
--Rotate via Processing API
--Move individual feet to specified position via Processing API
--Rev 2 board assembly and testing
--Distance sensor via Processing API

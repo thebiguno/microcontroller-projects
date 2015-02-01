@@ -1,0 +1,482 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+LIBS:power_supply-cache
+EELAYER 27 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 6 6
+Title ""
+Date "28 jan 2015"
+Rev "1"
+Comp "Digital Cave"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATXMEGA32A4-A IC?
+U 1 1 54C9413F
+P 3150 2850
+F 0 "IC?" H 2400 4050 40  0000 L BNN
+F 1 "ATXMEGA32A4-A" H 3500 1600 40  0000 L BNN
+F 2 "TQFP44" H 3150 2850 35  0000 C CIN
+F 3 "" H 3150 2850 60  0000 C CNN
+	1    3150 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L OPAMP-2 U?
+U 1 1 54C94145
+P 5350 2950
+F 0 "U?" H 5650 2600 60  0000 C CNN
+F 1 "OPAMP-2" H 5650 2400 60  0000 C CNN
+F 2 "~" H 5350 2850 60  0000 C CNN
+F 3 "~" H 5350 2850 60  0000 C CNN
+	1    5350 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 54C9414B
+P 5400 2400
+F 0 "#PWR?" H 5400 2490 20  0001 C CNN
+F 1 "+5V" H 5400 2490 30  0000 C CNN
+F 2 "" H 5400 2400 60  0000 C CNN
+F 3 "" H 5400 2400 60  0000 C CNN
+	1    5400 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L -5V #PWR?
+U 1 1 54C94151
+P 5400 3500
+F 0 "#PWR?" H 5400 3640 20  0001 C CNN
+F 1 "-5V" H 5400 3610 30  0000 C CNN
+F 2 "" H 5400 3500 60  0000 C CNN
+F 3 "" H 5400 3500 60  0000 C CNN
+	1    5400 3500
+	-1   0    0    1   
+$EndComp
+$Comp
+L RSMALL R?
+U 1 1 54C94157
+P 4650 2950
+F 0 "R?" V 4740 2945 40  0000 C CNN
+F 1 "1k" V 4600 2900 40  0000 C CNN
+F 2 "~" V 4580 2950 30  0000 C CNN
+F 3 "~" H 4650 3000 30  0000 C CNN
+	1    4650 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R?
+U 1 1 54C9415D
+P 4550 2850
+F 0 "R?" V 4640 2845 40  0000 C CNN
+F 1 "1k" V 4500 2900 40  0000 C CNN
+F 2 "~" V 4480 2850 30  0000 C CNN
+F 3 "~" H 4550 2900 30  0000 C CNN
+	1    4550 2850
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4650 2850 4850 2850
+Wire Wire Line
+	4650 3050 4700 3050
+Wire Wire Line
+	4700 3050 4700 2950
+$Comp
+L +3.3V #PWR?
+U 1 1 54C94166
+P 4450 2850
+F 0 "#PWR?" H 4450 2810 30  0001 C CNN
+F 1 "+3.3V" H 4450 2960 30  0000 C CNN
+F 2 "" H 4450 2850 60  0000 C CNN
+F 3 "" H 4450 2850 60  0000 C CNN
+	1    4450 2850
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4050 2900 4150 2900
+Wire Wire Line
+	4150 2900 4150 2750
+Wire Wire Line
+	4150 2750 4850 2750
+Wire Wire Line
+	4850 3150 4850 3250
+Wire Wire Line
+	4850 3050 4750 3050
+Wire Wire Line
+	4750 3050 4750 3100
+Wire Wire Line
+	4750 3100 4150 3100
+Wire Wire Line
+	4150 3100 4150 3000
+Wire Wire Line
+	4150 3000 4050 3000
+Wire Wire Line
+	3000 4150 3000 4250
+Wire Wire Line
+	3000 4250 3300 4250
+Wire Wire Line
+	3300 4150 3300 4350
+Wire Wire Line
+	3200 4150 3200 4250
+Connection ~ 3200 4250
+Wire Wire Line
+	3100 4150 3100 4250
+Connection ~ 3100 4250
+Connection ~ 3300 4250
+$Comp
+L GND #PWR?
+U 1 1 54C9417D
+P 3300 4350
+F 0 "#PWR?" H 3300 4350 30  0001 C CNN
+F 1 "GND" H 3300 4280 30  0001 C CNN
+F 2 "" H 3300 4350 60  0000 C CNN
+F 3 "" H 3300 4350 60  0000 C CNN
+	1    3300 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 54C94183
+P 3700 1350
+F 0 "#PWR?" H 3700 1310 30  0001 C CNN
+F 1 "+3.3V" H 3700 1460 30  0000 C CNN
+F 2 "" H 3700 1350 60  0000 C CNN
+F 3 "" H 3700 1350 60  0000 C CNN
+	1    3700 1350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 1350 3050 1550
+Wire Wire Line
+	3050 1450 3700 1450
+Connection ~ 3450 1450
+Wire Wire Line
+	3150 1350 3150 1550
+Connection ~ 3150 1450
+Wire Wire Line
+	3250 1350 3250 1550
+Connection ~ 3250 1450
+Wire Wire Line
+	3450 1350 3450 1550
+Wire Wire Line
+	3700 1450 3700 1350
+$Comp
+L CSMALL C?
+U 1 1 54C94192
+P 3450 1250
+F 0 "C?" H 3475 1300 30  0000 L CNN
+F 1 "0.1uF" H 3475 1200 30  0000 L CNN
+F 2 "~" H 3450 1250 60  0000 C CNN
+F 3 "~" H 3450 1250 60  0000 C CNN
+	1    3450 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L CSMALL C?
+U 1 1 54C94198
+P 3250 1250
+F 0 "C?" H 3275 1300 30  0000 L CNN
+F 1 "0.1uF" H 3275 1200 30  0000 L CNN
+F 2 "~" H 3250 1250 60  0000 C CNN
+F 3 "~" H 3250 1250 60  0000 C CNN
+	1    3250 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L CSMALL C?
+U 1 1 54C9419E
+P 3150 1250
+F 0 "C?" H 3175 1300 30  0000 L CNN
+F 1 "0.1uF" H 3175 1200 30  0000 L CNN
+F 2 "~" H 3150 1250 60  0000 C CNN
+F 3 "~" H 3150 1250 60  0000 C CNN
+	1    3150 1250
+	1    0    0    -1  
+$EndComp
+$Comp
+L CSMALL C?
+U 1 1 54C941A4
+P 3050 1250
+F 0 "C?" H 3075 1300 30  0000 L CNN
+F 1 "0.1uF" H 3075 1200 30  0000 L CNN
+F 2 "~" H 3050 1250 60  0000 C CNN
+F 3 "~" H 3050 1250 60  0000 C CNN
+	1    3050 1250
+	1    0    0    -1  
+$EndComp
+Connection ~ 3050 1450
+Wire Wire Line
+	3050 1150 3050 1050
+Wire Wire Line
+	3050 1050 3550 1050
+Wire Wire Line
+	3150 1050 3150 1150
+Wire Wire Line
+	3250 1050 3250 1150
+Connection ~ 3150 1050
+Wire Wire Line
+	3450 1050 3450 1150
+Connection ~ 3250 1050
+$Comp
+L GND #PWR?
+U 1 1 54C941B2
+P 3550 1050
+F 0 "#PWR?" H 3550 1050 30  0001 C CNN
+F 1 "GND" H 3550 980 30  0001 C CNN
+F 2 "" H 3550 1050 60  0000 C CNN
+F 3 "" H 3550 1050 60  0000 C CNN
+	1    3550 1050
+	0    -1   -1   0   
+$EndComp
+Connection ~ 3450 1050
+$Comp
+L RSMALL R?
+U 1 1 54C941B9
+P 2150 1750
+F 0 "R?" V 2240 1745 40  0000 C CNN
+F 1 "10k" V 2065 1750 40  0000 C CNN
+F 2 "~" V 2080 1750 30  0000 C CNN
+F 3 "~" H 2150 1800 30  0000 C CNN
+	1    2150 1750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 1850 2250 1850
+$Comp
+L +3.3V #PWR?
+U 1 1 54C941C0
+P 2150 1550
+F 0 "#PWR?" H 2150 1510 30  0001 C CNN
+F 1 "+3.3V" H 2150 1660 30  0000 C CNN
+F 2 "" H 2150 1550 60  0000 C CNN
+F 3 "" H 2150 1550 60  0000 C CNN
+	1    2150 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 1550 2150 1650
+$Comp
+L RSMALL R?
+U 1 1 54C941C7
+P 4250 1850
+F 0 "R?" V 4300 1900 40  0000 C CNN
+F 1 "A0" V 4300 1700 40  0000 C CNN
+F 2 "~" V 4180 1850 30  0000 C CNN
+F 3 "~" H 4250 1900 30  0000 C CNN
+	1    4250 1850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54C941CD
+P 4550 1850
+F 0 "#PWR?" H 4550 1850 30  0001 C CNN
+F 1 "GND" H 4550 1780 30  0001 C CNN
+F 2 "" H 4550 1850 60  0000 C CNN
+F 3 "" H 4550 1850 60  0000 C CNN
+	1    4550 1850
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4350 1850 4550 1850
+Wire Wire Line
+	4050 1850 4150 1850
+$Comp
+L RSMALL R?
+U 1 1 54C941D5
+P 4250 1950
+F 0 "R?" V 4300 2000 40  0000 C CNN
+F 1 "A1" V 4300 1800 40  0000 C CNN
+F 2 "~" V 4180 1950 30  0000 C CNN
+F 3 "~" H 4250 2000 30  0000 C CNN
+	1    4250 1950
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54C941DB
+P 4550 1950
+F 0 "#PWR?" H 4550 1950 30  0001 C CNN
+F 1 "GND" H 4550 1880 30  0001 C CNN
+F 2 "" H 4550 1950 60  0000 C CNN
+F 3 "" H 4550 1950 60  0000 C CNN
+	1    4550 1950
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4350 1950 4550 1950
+Wire Wire Line
+	4050 1950 4150 1950
+$Comp
+L RSMALL R?
+U 1 1 54C941E3
+P 4250 2050
+F 0 "R?" V 4300 2100 40  0000 C CNN
+F 1 "A2" V 4300 1900 40  0000 C CNN
+F 2 "~" V 4180 2050 30  0000 C CNN
+F 3 "~" H 4250 2100 30  0000 C CNN
+	1    4250 2050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54C941E9
+P 4550 2050
+F 0 "#PWR?" H 4550 2050 30  0001 C CNN
+F 1 "GND" H 4550 1980 30  0001 C CNN
+F 2 "" H 4550 2050 60  0000 C CNN
+F 3 "" H 4550 2050 60  0000 C CNN
+	1    4550 2050
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4350 2050 4550 2050
+Wire Wire Line
+	4050 2050 4150 2050
+Text Notes 4650 1900 0    40   ~ 0
+These are solder bridges to select\nXMega I2C address.  Bridge all \nthree (A=7) for master mode.\nMaster drives display and contacts\nother XMegas
+Wire Wire Line
+	4850 3250 6100 3250
+Wire Wire Line
+	6100 3250 6100 3100
+Wire Wire Line
+	4700 2950 6100 2950
+Wire Wire Line
+	6100 2950 6100 2800
+Text HLabel 1300 2800 0    60   BiDi ~ 0
+SCL
+Text HLabel 1300 2700 0    60   BiDi ~ 0
+SDA
+Connection ~ 6100 3100
+Connection ~ 6100 2800
+Text Notes 5850 2350 0    40   ~ 0
+The voltage and current output\nis an analog signal varying from \n-3.3v to 3.3v.  This is boosted\nby the power op amp according\nto the gain settings.
+Wire Wire Line
+	1300 2700 2250 2700
+Wire Wire Line
+	1300 2800 2250 2800
+$Comp
+L RSMALL R?
+U 1 1 54C941FF
+P 1500 2350
+F 0 "R?" V 1590 2345 40  0000 C CNN
+F 1 "4.7k" V 1415 2350 40  0000 C CNN
+F 2 "~" V 1430 2350 30  0000 C CNN
+F 3 "~" H 1500 2400 30  0000 C CNN
+	1    1500 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R?
+U 1 1 54C94205
+P 1750 2350
+F 0 "R?" V 1840 2345 40  0000 C CNN
+F 1 "4.7k" V 1665 2350 40  0000 C CNN
+F 2 "~" V 1680 2350 30  0000 C CNN
+F 3 "~" H 1750 2400 30  0000 C CNN
+	1    1750 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1500 2450 1500 2700
+Connection ~ 1500 2700
+Wire Wire Line
+	1750 2450 1750 2800
+Connection ~ 1750 2800
+Wire Wire Line
+	1500 2050 1500 2250
+Wire Wire Line
+	1500 2150 1750 2150
+Wire Wire Line
+	1750 2150 1750 2250
+$Comp
+L +3.3V #PWR?
+U 1 1 54C94212
+P 1500 2050
+F 0 "#PWR?" H 1500 2010 30  0001 C CNN
+F 1 "+3.3V" H 1500 2160 30  0000 C CNN
+F 2 "" H 1500 2050 60  0000 C CNN
+F 3 "" H 1500 2050 60  0000 C CNN
+	1    1500 2050
+	1    0    0    -1  
+$EndComp
+Connection ~ 1500 2150
+Text Notes 900  2000 0    40   ~ 0
+Only populate \nthe I2C pullups \non one of the \nmicrocontroller \nboards
+Text HLabel 6400 3100 2    60   Output ~ 0
+I_ADJUST
+Wire Wire Line
+	6400 3100 6000 3100
+Text HLabel 6400 2800 2    60   Output ~ 0
+V_ADJUST
+Wire Wire Line
+	6400 2800 6000 2800
+Text HLabel 4050 2350 2    60   Input ~ 0
+V_IN
+Text HLabel 4050 2450 2    60   Input ~ 0
+I_IN+
+Text HLabel 4050 2550 2    60   Input ~ 0
+I_IN-
+Text HLabel 4050 3350 2    60   Output ~ 0
+DS_E
+Text HLabel 4050 3250 2    60   Output ~ 0
+DS_RS
+Text HLabel 4050 3450 2    60   Output ~ 0
+DS_D4
+Text HLabel 4050 3550 2    60   Output ~ 0
+DS_D5
+Text HLabel 4050 3650 2    60   Output ~ 0
+DS_D6
+Text HLabel 4050 3750 2    60   Output ~ 0
+DS_D7
+Text HLabel 4050 3150 2    60   Output ~ 0
+DS_VE
+Text HLabel 2250 3150 0    60   Input ~ 0
+ENC1A
+Text HLabel 2250 3250 0    60   Input ~ 0
+ENC1B
+Text HLabel 2250 3350 0    60   Input ~ 0
+ENC1C
+Text HLabel 2250 3450 0    60   Input ~ 0
+ENC2A
+Text HLabel 2250 3550 0    60   Input ~ 0
+ENC2B
+Text HLabel 2250 3650 0    60   Input ~ 0
+ENC2C
+$EndSCHEMATC

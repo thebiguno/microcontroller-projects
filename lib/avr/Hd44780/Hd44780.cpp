@@ -10,13 +10,6 @@
 using namespace digitalcave;
 
 void Hd44780::init_display(uint8_t function) {
-	// _delay_ms(0x7f);
-	// this->cmd(0x30);	// function set: 8-bit interface
-	// _delay_ms(0x08);
-	// this->cmd(0x30);	// function set: 8-bit interface
-	// _delay_us(0x7f);
-	// this->cmd(0x30);	// function set: 8-bit interface
-	// _delay_us(0x7f);
 	this->cmd((function & 0x0c) | 0x30);
 	_delay_us(0x3f);
 	this->cmd(0x08);

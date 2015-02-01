@@ -20,21 +20,22 @@ import eu.hansolo.steelseries.tools.Section;
 public class Frame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private static final Color RED = new Color(220,49,47);
-	private static final Color YELLOW = new Color(181,137,24);
-	private static final Color BLUE = new Color(38,139,210);
+	private static final Color BLACK = new Color(41,41,41);
+	private static final Color RED = new Color(204,41,41);
+	private static final Color ORANGE = new Color(204,122,41);
+	private static final Color AZURE = new Color(41,122,204);
 
 	public Frame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Cranky");
 		setSize(1000, 500);
-		setBackground(Color.BLACK);
+		setBackground(BLACK);
 		
 		final Radial rpm = new Radial();
 		rpm.setTitle("Engine Speed");
 		rpm.setUnitString("RPM x 1000");
-		rpm.setMaxValue(10);
-		rpm.setSections(new Section(5,7,YELLOW),new Section(7,10,RED));
+		rpm.setMaxValue(8);
+		rpm.setSections(new Section(6,7,ORANGE),new Section(7,8,RED));
 		rpm.setSectionsVisible(true);
 		customize(rpm);
 		
@@ -42,7 +43,7 @@ public class Frame extends JFrame {
 		tp.setTitle("Throttle Position");
 		tp.setUnitString("%");
 		tp.setMaxValue(100);
-		tp.setSections(new Section(80,100,YELLOW));
+		tp.setSections(new Section(80,100,ORANGE));
 		tp.setSectionsVisible(true);
 		customize(tp);
 		
@@ -50,7 +51,7 @@ public class Frame extends JFrame {
 		map.setTitle("MAP");
 		map.setUnitString("kPa");
 		map.setMaxValue(300);
-		map.setSections(new Section(200,250,YELLOW), new Section(250,300,RED));
+		map.setSections(new Section(200,250,ORANGE), new Section(250,300,RED));
 		map.setSectionsVisible(true);
 		customize(map);
 		
@@ -68,7 +69,7 @@ public class Frame extends JFrame {
 		mat.setUnitString("\u2103");
 		mat.setMinValue(50);
 		mat.setMaxValue(130);
-		mat.setSections(new Section(100,120,YELLOW), new Section(120,130,RED));
+		mat.setSections(new Section(100,120,ORANGE), new Section(120,130,RED));
 		mat.setSectionsVisible(true);
 		customize(mat);
 
@@ -77,7 +78,7 @@ public class Frame extends JFrame {
 		clt.setUnitString("\u2103");
 		clt.setMinValue(50);
 		clt.setMaxValue(130);
-		clt.setSections(new Section(100,120,YELLOW), new Section(120,130,RED));
+		clt.setSections(new Section(100,120,ORANGE), new Section(120,130,RED));
 		clt.setSectionsVisible(true);
 		customize(clt);
 		
@@ -86,7 +87,7 @@ public class Frame extends JFrame {
 		afr.setUnitString("1:1");
 		afr.setMinValue(10);
 		afr.setMaxValue(18);
-		afr.setSections(new Section(10,13,YELLOW), new Section(15,18,YELLOW));
+		afr.setSections(new Section(10,13,ORANGE), new Section(15,18,ORANGE));
 		afr.setSectionsVisible(true);
 		customize(afr);
 		
@@ -94,7 +95,7 @@ public class Frame extends JFrame {
 		dwell.setTitle("Dwell");
 		dwell.setUnitString("ms");
 		dwell.setMaxValue(10);
-		dwell.setSections(new Section(6,8,YELLOW), new Section(8,10,RED));
+		dwell.setSections(new Section(6,8,ORANGE), new Section(8,10,RED));
 		dwell.setSectionsVisible(true);
 		customize(dwell);
 		
@@ -106,7 +107,7 @@ public class Frame extends JFrame {
 		customize(adv);
 		
 		final JPanel guages = new JPanel(new GridLayout(2, 4, 5, 5));
-		guages.setBackground(Color.BLACK);
+		guages.setBackground(BLACK);
 		guages.add(rpm);
 		guages.add(tp);
 		guages.add(batt);
@@ -137,10 +138,11 @@ public class Frame extends JFrame {
 	
 	private static void customize(Radial r) {
 		r.setDigitalFont(true);
-		r.setBackgroundColor(BackgroundColor.BLACK);
+		r.setBackgroundColor(BackgroundColor.BEIGE);
 		r.setFrameDesign(FrameDesign.GLOSSY_METAL);
 		r.setPointerType(PointerType.TYPE2);
 		r.setKnobType(KnobType.BIG_STD_KNOB);
 		r.setKnobStyle(KnobStyle.BLACK);
+		r.setFrameVisible(false);
 	}
 }

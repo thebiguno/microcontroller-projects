@@ -59,15 +59,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	{ KC_##kE0,KC_##kE1,KC_##kE2,KC_##kE3,KC_NO   ,KC_NO   ,KC_##kE6,KC_##kE7}, \
 	{ KC_##kF0,KC_##kF1,KC_##kF2,KC_##kF3,KC_##kF4,KC_##kF5,KC_##kF6,KC_NO   }, \
 	{ KC_##kG0,KC_##kG1,KC_##kG2,KC_##kG3,KC_##kG4,KC_NO   ,KC_##kG6,KC_##kG7}, \
-	{ KC_##kH0,KC_##kH1,KC_##kH2,KC_##kH3,KC_##kH4,KC_##kH5,KC_##kG6,KC_NO   }, \
+	{ KC_##kH0,KC_##kH1,KC_##kH2,KC_##kH3,KC_##kH4,KC_##kH5,KC_##kH6,KC_NO   }, \
 	{ KC_##kI0,KC_##kI1,KC_##kI2,KC_##kI3,KC_##kI4,KC_##kI5,KC_##kI6,KC_##kI7}, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kJ4,KC_##kJ5,KC_##kJ6,KC_##kJ7}, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kK6,KC_##kK7}, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kL4,KC_##kL5,KC_##kL6,KC_##kL7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_##kJ3,KC_##kJ4,KC_##kJ5,KC_##kJ6,KC_##kJ7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kK4,KC_##kK5,KC_##kK6,KC_##kK7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_##kL3,KC_##kL4,KC_##kL5,KC_##kL6,KC_##kL7}, \
 	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   }, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kN4,KC_##kN5,KC_##kN6,KC_##kN7}, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kO4,KC_##kO5,KC_##kO6,KC_##kO7}, \
-	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kP6,KC_##kP7} \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_##kN3,KC_##kN4,KC_##kN5,KC_##kN6,KC_##kN7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_##kO3,KC_##kO4,KC_##kO5,KC_##kO6,KC_##kO7}, \
+	{ KC_NO   ,KC_NO   ,KC_NO   ,KC_NO   ,KC_##kP4,KC_##kP5,KC_##kP6,KC_##kP7} \
 }
 /*    4y0   A  4y1   B  4y2      4y3   D  4y4   E  4y5   F  4y6   G  4y7   H  5y0   I  5y1   J  5y2   K  5y3   L  5y4   M  5y5   N  5y6   O  5y7  P  */
 
@@ -75,14 +75,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					A	B	C	D	E	F	G	H	I	J	K	L	M	N	O	P
 					4y0	4y1	4y2	4y3	4y4	4y5	4y6	4y7	5y0	5y1	5y2	5y3	5y4	5y5	5y6	5y7	
 					r1	r2	 r3 r4	r5	r6	r7	r8	r9	r10	r11	r12	r13	r14	r15	r16	
-0	PD0		21	c1	f6	f8	f7	5	4	3	2	1	=+								
-1	PD1		22	c2	f3	f5	f4	t	r	e	w	q	TAB								
-2	PD2		23	c3	ESC	f2	f1	g	f	d	s	a	CL								
-3	PD3		24	c4	f9	f11	f10	b	v	c	x	z	LS	UP		DN		[{	]}		
-4	PD4		25	c5  f12	SL	PS	RT		LT	§±	`~		6	7	8		9	0	-_ 	
-5	PD5		26	c6	PB	PGM	KPD	LA		HM		END		y	u	i		o	p	\	
-6	PD6		27	c7  			LC	DEL	BS	RC	ENT	SP	h	j	k		l	;:	'"	
-7	PD7		28	c8					RA		PU		PD	n	m	,<		.>	/?	RS	
+0	PB0		21	c1	f6	f8	f7	5	4	3	2	1	=+								
+1	PB1		22	c2	f3	f5	f4	t	r	e	w	q	TAB								
+2	PB2		23	c3	ESC	f2	f1	g	f	d	s	a	CL								
+3	PB3		24	c4	f9	f11	f10	b	v	c	x	z	LS	UP		DN		[{	]}		
+4	PB4		25	c5  f12	SL	PS	RT		LT	§±	`~		6	7	8		9	0	-_ 	
+5	PB5		26	c6	PB	PGM	KPD	LA		HM		END		y	u	i		o	p	\	
+6	PB6		27	c7  			LC	DEL	BS	RC	ENT	SP	h	j	k		l	;:	'"	
+7	PB7		28	c8					RA		PU		PD	n	m	,<		.>	/?	RS	
 */
 
 #if defined(KEYMAP_DVORAK)
@@ -102,16 +102,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* translates key to keycode */
 uint8_t keymap_key_to_keycode(uint8_t layer, key_t key)
 {
-	return KC_DOT;
-	// uint8_t x;
-	//     if (layer < KEYMAPS_SIZE) {
-	//         x = pgm_read_byte(&keymaps[(layer)][(key.row)][(key.col)]);
-	//     } else {
-	//         // fall back to layer 0
-	//         x = pgm_read_byte(&keymaps[0][(key.row)][(key.col)]);
-	//     }
-	// dprintf("%d",x); dprintln();
-	// return x;
+	uint8_t x;
+	if (layer < KEYMAPS_SIZE) {
+		x = pgm_read_byte(&keymaps[(layer)][(key.row)][(key.col)]);
+	} else {
+	// fall back to layer 0
+		x = pgm_read_byte(&keymaps[0][(key.row)][(key.col)]);
+	}
+	dprintf("%d",x); dprintln();
+	return x;
 }
 
 /* translates Fn keycode to action */
