@@ -1,0 +1,2 @@
+ 
+WPDLXFMR-2, 45 Watt Pedal and effects power supply transformer, Eight 11 volt, 300mA windings and one 9 volt, 2 amp winding. 120-220-240 VAC input. This is a transformer, NOT a power supply. The output is AC, not DC. You must build a power supply that converts AC to DC in order to use this transformer.
