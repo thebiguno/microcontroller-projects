@@ -1,0 +1,393 @@
+EESchema Schematic File Version 2  date Mon 24 Nov 2014 06:39:47 PM MST
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+LIBS:led-cache
+EELAYER 27 0
+EELAYER END
+$Descr USLetter 8500 11000 portrait
+encoding utf-8
+Sheet 1 1
+Title "LED Breadboard Breakout Schematic"
+Date "25 nov 2014"
+Rev "A"
+Comp "Hackstyle"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Wire Line
+	3400 3500 1950 3500
+Wire Wire Line
+	2900 3600 1950 3600
+Wire Wire Line
+	2900 3600 2900 3750
+Wire Wire Line
+	2900 3750 3400 3750
+Wire Wire Line
+	2800 3700 1950 3700
+Wire Wire Line
+	2800 4000 2800 3700
+Wire Wire Line
+	3400 4000 2800 4000
+Wire Wire Line
+	2700 3800 1950 3800
+Wire Wire Line
+	2700 4250 2700 3800
+Wire Wire Line
+	3400 4250 2700 4250
+Wire Wire Line
+	2600 3900 1950 3900
+Wire Wire Line
+	2600 4500 2600 3900
+Wire Wire Line
+	3400 4500 2600 4500
+Wire Wire Line
+	2500 4000 1950 4000
+Wire Wire Line
+	2500 4750 2500 4000
+Wire Wire Line
+	3400 4750 2500 4750
+Wire Wire Line
+	2400 4100 1950 4100
+Wire Wire Line
+	2400 5000 2400 4100
+Wire Wire Line
+	3400 5000 2400 5000
+Wire Wire Line
+	2300 4200 1950 4200
+Wire Wire Line
+	2300 5250 2300 4200
+Wire Wire Line
+	3400 5250 2300 5250
+Text Label 3800 3750 0    60   ~ 0
+2
+Text Label 3800 4000 0    60   ~ 0
+3
+Text Label 3800 4250 0    60   ~ 0
+4
+Text Label 3800 4500 0    60   ~ 0
+5
+Text Label 3800 4750 0    60   ~ 0
+6
+Text Label 3800 5000 0    60   ~ 0
+7
+Text Label 3800 5250 0    60   ~ 0
+8
+Text Label 3800 3500 0    60   ~ 0
+1
+Text Label 4000 2300 0    60   ~ 0
+1
+Text Label 4000 2400 0    60   ~ 0
+2
+Text Label 4000 2500 0    60   ~ 0
+3
+Text Label 4000 2600 0    60   ~ 0
+4
+Text Label 4000 2700 0    60   ~ 0
+5
+Text Label 4000 2800 0    60   ~ 0
+6
+Text Label 4000 2900 0    60   ~ 0
+7
+Text Label 4000 3000 0    60   ~ 0
+8
+$Comp
+L RESISTOR R1
+U 1 1 5473D452
+P 4750 3500
+F 0 "R1" V 4850 3600 40  0000 C CNN
+F 1 "220" V 4850 3450 40  0000 C CNN
+F 2 "~" V 4680 3500 30  0000 C CNN
+F 3 "~" H 4750 3500 30  0000 C CNN
+	1    4750 3500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3800 3500 4500 3500
+Wire Wire Line
+	3800 3750 4500 3750
+Wire Wire Line
+	3800 4000 4500 4000
+Wire Wire Line
+	3800 4250 4500 4250
+Wire Wire Line
+	3800 4500 4500 4500
+Wire Wire Line
+	3800 4750 4500 4750
+Wire Wire Line
+	3800 5000 4500 5000
+Wire Wire Line
+	3800 5250 4500 5250
+$Comp
+L LED D1
+U 1 1 5473CF8F
+P 3600 3500
+F 0 "D1" H 3600 3600 50  0000 C CNN
+F 1 "LED" H 3500 3600 50  0001 C CNN
+F 2 "~" H 3600 3500 60  0000 C CNN
+F 3 "~" H 3600 3500 60  0000 C CNN
+	1    3600 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D2
+U 1 1 5473D589
+P 3600 3750
+F 0 "D2" H 3600 3850 50  0000 C CNN
+F 1 "LED" H 3500 3850 50  0001 C CNN
+F 2 "~" H 3600 3750 60  0000 C CNN
+F 3 "~" H 3600 3750 60  0000 C CNN
+	1    3600 3750
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D3
+U 1 1 5473D58F
+P 3600 4000
+F 0 "D3" H 3600 4100 50  0000 C CNN
+F 1 "LED" H 3500 4100 50  0001 C CNN
+F 2 "~" H 3600 4000 60  0000 C CNN
+F 3 "~" H 3600 4000 60  0000 C CNN
+	1    3600 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D4
+U 1 1 5473D595
+P 3600 4250
+F 0 "D4" H 3600 4350 50  0000 C CNN
+F 1 "LED" H 3500 4350 50  0001 C CNN
+F 2 "~" H 3600 4250 60  0000 C CNN
+F 3 "~" H 3600 4250 60  0000 C CNN
+	1    3600 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D5
+U 1 1 5473D59B
+P 3600 4500
+F 0 "D5" H 3600 4600 50  0000 C CNN
+F 1 "LED" H 3500 4600 50  0001 C CNN
+F 2 "~" H 3600 4500 60  0000 C CNN
+F 3 "~" H 3600 4500 60  0000 C CNN
+	1    3600 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D6
+U 1 1 5473D5A1
+P 3600 4750
+F 0 "D6" H 3600 4850 50  0000 C CNN
+F 1 "LED" H 3500 4850 50  0001 C CNN
+F 2 "~" H 3600 4750 60  0000 C CNN
+F 3 "~" H 3600 4750 60  0000 C CNN
+	1    3600 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D7
+U 1 1 5473D5A7
+P 3600 5000
+F 0 "D7" H 3600 5100 50  0000 C CNN
+F 1 "LED" H 3500 5100 50  0001 C CNN
+F 2 "~" H 3600 5000 60  0000 C CNN
+F 3 "~" H 3600 5000 60  0000 C CNN
+	1    3600 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED D8
+U 1 1 5473D5AD
+P 3600 5250
+F 0 "D8" H 3600 5350 50  0000 C CNN
+F 1 "LED" H 3500 5350 50  0001 C CNN
+F 2 "~" H 3600 5250 60  0000 C CNN
+F 3 "~" H 3600 5250 60  0000 C CNN
+	1    3600 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L RESISTOR R2
+U 1 1 5473D683
+P 4750 3750
+F 0 "R2" V 4850 3850 40  0000 C CNN
+F 1 "220" V 4850 3700 40  0000 C CNN
+F 2 "~" V 4680 3750 30  0000 C CNN
+F 3 "~" H 4750 3750 30  0000 C CNN
+	1    4750 3750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R3
+U 1 1 5473D689
+P 4750 4000
+F 0 "R3" V 4850 4100 40  0000 C CNN
+F 1 "220" V 4850 3950 40  0000 C CNN
+F 2 "~" V 4680 4000 30  0000 C CNN
+F 3 "~" H 4750 4000 30  0000 C CNN
+	1    4750 4000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R4
+U 1 1 5473D68F
+P 4750 4250
+F 0 "R4" V 4850 4350 40  0000 C CNN
+F 1 "220" V 4850 4200 40  0000 C CNN
+F 2 "~" V 4680 4250 30  0000 C CNN
+F 3 "~" H 4750 4250 30  0000 C CNN
+	1    4750 4250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R5
+U 1 1 5473D695
+P 4750 4500
+F 0 "R5" V 4850 4600 40  0000 C CNN
+F 1 "220" V 4850 4450 40  0000 C CNN
+F 2 "~" V 4680 4500 30  0000 C CNN
+F 3 "~" H 4750 4500 30  0000 C CNN
+	1    4750 4500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R6
+U 1 1 5473D69B
+P 4750 4750
+F 0 "R6" V 4850 4850 40  0000 C CNN
+F 1 "220" V 4850 4700 40  0000 C CNN
+F 2 "~" V 4680 4750 30  0000 C CNN
+F 3 "~" H 4750 4750 30  0000 C CNN
+	1    4750 4750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R7
+U 1 1 5473D6A1
+P 4750 5000
+F 0 "R7" V 4850 5100 40  0000 C CNN
+F 1 "220" V 4850 4950 40  0000 C CNN
+F 2 "~" V 4680 5000 30  0000 C CNN
+F 3 "~" H 4750 5000 30  0000 C CNN
+	1    4750 5000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R8
+U 1 1 5473D6A7
+P 4750 5250
+F 0 "R8" V 4850 5350 40  0000 C CNN
+F 1 "220" V 4850 5200 40  0000 C CNN
+F 2 "~" V 4680 5250 30  0000 C CNN
+F 3 "~" H 4750 5250 30  0000 C CNN
+	1    4750 5250
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5000 3500 6500 3500
+Wire Wire Line
+	5000 3750 5400 3750
+Wire Wire Line
+	5400 3750 5400 3600
+Wire Wire Line
+	5400 3600 6500 3600
+Wire Wire Line
+	5000 4000 5500 4000
+Wire Wire Line
+	5500 4000 5500 3700
+Wire Wire Line
+	5500 3700 6500 3700
+Wire Wire Line
+	5000 4250 5600 4250
+Wire Wire Line
+	5600 4250 5600 3800
+Wire Wire Line
+	5600 3800 6500 3800
+Wire Wire Line
+	5000 4500 5700 4500
+Wire Wire Line
+	5700 4500 5700 3900
+Wire Wire Line
+	5700 3900 6500 3900
+Wire Wire Line
+	5000 4750 5800 4750
+Wire Wire Line
+	5800 4750 5800 4000
+Wire Wire Line
+	5800 4000 6500 4000
+Wire Wire Line
+	5000 5000 5900 5000
+Wire Wire Line
+	5900 5000 5900 4100
+Wire Wire Line
+	5900 4100 6500 4100
+Wire Wire Line
+	5000 5250 6000 5250
+Wire Wire Line
+	6000 5250 6000 4200
+Wire Wire Line
+	6000 4200 6500 4200
+$Comp
+L CONN_8 P1
+U 1 1 5473DD7C
+P 1600 3850
+F 0 "P1" V 1550 3850 60  0000 C CNN
+F 1 "CONN_8" V 1650 3850 60  0000 C CNN
+F 2 "" H 1600 3850 60  0000 C CNN
+F 3 "" H 1600 3850 60  0000 C CNN
+	1    1600 3850
+	-1   0    0    -1  
+$EndComp
+$Comp
+L CONN_8 P2
+U 1 1 5473DDA8
+P 4350 2650
+F 0 "P2" V 4300 2650 60  0000 C CNN
+F 1 "CONN_8" V 4400 2650 60  0000 C CNN
+F 2 "" H 4350 2650 60  0000 C CNN
+F 3 "" H 4350 2650 60  0000 C CNN
+	1    4350 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_8 P3
+U 1 1 5473DDCD
+P 6850 3850
+F 0 "P3" V 6800 3850 60  0000 C CNN
+F 1 "CONN_8" V 6900 3850 60  0000 C CNN
+F 2 "" H 6850 3850 60  0000 C CNN
+F 3 "" H 6850 3850 60  0000 C CNN
+	1    6850 3850
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

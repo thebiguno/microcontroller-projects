@@ -1,8 +1,3 @@
-
-* LED bar graph breakout
-Design for 5v, optional connection point before resistor for custom
-* Pin header breakout 
-
 * Pushbutton breakout
 Builtin pull up/ pull down, use jumpers to configure?
 
@@ -20,6 +15,7 @@ DC barrel input with 5VDC regulator, pin headers, LED indicator, diode protectio
 
 * Jumpers
 For bussing together multiple pins, 8 pole, 4 pole, 10 pole...
+Investigate smaller diameter pins
 
 * 8P8C breakout
 Can also be used for telephone
