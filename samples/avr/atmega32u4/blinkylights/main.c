@@ -12,7 +12,7 @@ int main (void){
 	//Main program loop
 	while (1){
 		PORTB ^= _BV(PORTB5);
-		_delay_ms(2000);
+		_delay_ms(500);
 	}
 }
 
