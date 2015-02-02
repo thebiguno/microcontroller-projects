@@ -35,7 +35,7 @@ EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
-Sheet 6 6
+Sheet 6 5
 Title "Temperature Controlled Fan Controller"
 Date "2 feb 2015"
 Rev "1"

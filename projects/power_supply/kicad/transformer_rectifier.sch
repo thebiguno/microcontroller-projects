@@ -35,7 +35,7 @@ EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
-Sheet 2 6
+Sheet 2 5
 Title "Rectifier"
 Date "2 feb 2015"
 Rev "1"
