@@ -6,8 +6,6 @@ F_CPU=16000000
 SOURCES=main.c lib/shiftcpp/shift.cpp lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c
 COMPILER=avr-g++
 
-# You can also define anything here and it will override 
-# the definitions in variables.mk
 
 CFLAGS+=-D=NO_INTERRUPT_ENABLE
 

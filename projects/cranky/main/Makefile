@@ -12,6 +12,6 @@ COMPILER=avr-g++
 HFUSE=0xDF
 LFUSE=0xDF
 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 include ../../../build/avr/targets.mk

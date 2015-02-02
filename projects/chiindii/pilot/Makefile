@@ -4,7 +4,7 @@ PROJECT=pilot
 MMCU=atmega644p
 F_CPU=20000000
 SOURCES=main.c ../../../lib/timer/timer_0.c 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 COMPILER=avr-g++
 
 HFUSE=0x91

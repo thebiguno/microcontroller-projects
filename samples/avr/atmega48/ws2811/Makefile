@@ -8,9 +8,7 @@ SOURCES=main.c
 HFUSE = 0xD9
 LFUSE = 0xE2
 
-# You can also define anything here and it will override 
-# the definitions in variables.mk
 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 include ../../build/targets.mk

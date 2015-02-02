@@ -6,10 +6,8 @@ F_CPU=16000000
 SOURCES=main.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c
 COMPILER=avr-g++
 
-# You can also define anything here and it will override 
-# the definitions in variables.mk
 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 CFLAGS+=-DTWI_BUFFER_LENGTH=385 -DTWI_NO_SLAVE -DTWI_CUSTOM_BUFFERS -DTWI_MASTER_TX_WRITER -DMATRIX_NO_SHIFT 
 
