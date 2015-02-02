@@ -55,14 +55,18 @@ public class Frame extends JFrame {
 	private final JSpinner[][] spinners = new JSpinner[8][8];
 	private final SpinnerNumberModel[] loadZones = new SpinnerNumberModel[8];
 	private final SpinnerNumberModel[] rpmZones = new SpinnerNumberModel[8];
-	private final ValueHolder rpmZone = new ValueHolder();
-	private final ValueHolder loadZone = new ValueHolder();
 	private final HIDDevice[] device = new HIDDevice[2];
-
-	// simulator
-	final SpinnerNumberModel rpmModel = new SpinnerNumberModel(300, 300, 10000, 10);
-	final SpinnerNumberModel tpModel = new SpinnerNumberModel(0, 0, 100, 10);
-
+	private final ValueHolder rpmModel = new ValueHolder();
+	private final ValueHolder tpModel = new ValueHolder();
+	private final ValueHolder dwellModel = new ValueHolder();
+	private final ValueHolder advModel = new ValueHolder();
+	private final ValueHolder rpmZoneModel = new ValueHolder();
+	private final ValueHolder loadZoneModel = new ValueHolder();
+	private final SpinnerNumberModel simulatorRpmModel = new SpinnerNumberModel(300, 300, 10000, 10);
+	private final SpinnerNumberModel simulatorTpModel = new SpinnerNumberModel(0, 0, 100, 10);
+	
+	private byte[] rxBuffer = new byte[64];
+	private byte[] txBuffer = new byte[64];
 
 	public Frame() {
 		LayoutMap.getRoot().columnPut("label", "l:m");
@@ -71,7 +75,7 @@ public class Frame extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Cranky");
-		setSize(640, 800);
+		setSize(1024, 768);
 		setBackground(BLACK);
 		
 		final JToolBar toolbar = new JToolBar();
@@ -83,7 +87,6 @@ public class Frame extends JFrame {
 		panel.add(toolbar, BorderLayout.PAGE_START);
 		panel.add(layoutTuning(), BorderLayout.PAGE_END);
 		panel.add(layoutGuages(), BorderLayout.CENTER);
-		panel.add(layoutSimulator(), BorderLayout.LINE_END);
 
 		getContentPane().add(panel);
 		setLocationByPlatform(true);
@@ -98,6 +101,13 @@ public class Frame extends JFrame {
 		rpm.setSectionsVisible(true);
 		customize(rpm);
 		
+		rpmModel.addValueChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				rpm.setValue((Integer) rpmModel.getValue());
+			}
+		});
+		
 		final Radial tp = new Radial();
 		tp.setTitle("Throttle Position");
 		tp.setUnitString("%");
@@ -106,6 +116,13 @@ public class Frame extends JFrame {
 		tp.setSectionsVisible(true);
 		customize(tp);
 		
+		tpModel.addValueChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				tp.setValue((Integer) tpModel.getValue());
+			}
+		});
+
 		final Radial dwell = new Radial();
 		dwell.setTitle("Dwell");
 		dwell.setUnitString("ms");
@@ -114,6 +131,13 @@ public class Frame extends JFrame {
 		dwell.setSectionsVisible(true);
 		customize(dwell);
 		
+		dwellModel.addValueChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				dwell.setValue((Integer) dwellModel.getValue());
+			}
+		});
+
 		final Radial adv = new Radial();
 		adv.setDigitalFont(true);
 		adv.setTitle("Ignition Advance");
@@ -121,7 +145,14 @@ public class Frame extends JFrame {
 		adv.setMaxValue(50);
 		customize(adv);
 		
-		final JPanel result = new JPanel(new GridLayout(2, 4, 5, 5));
+		advModel.addValueChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				adv.setValue((Integer) advModel.getValue());
+			}
+		});
+
+		final JPanel result = new JPanel(new GridLayout(1, 4, 5, 5));
 		result.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 //		result.setBackground(BLACK);
 		result.add(rpm);
@@ -132,54 +163,10 @@ public class Frame extends JFrame {
 		return result;
 	}
 	
-	private JPanel layoutSimulator() {
-		final byte[] bytes = new byte[3];
-		
-		final ChangeListener listener = new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent evt) {
-				if (device[1] != null) {
-					try {
-						final int rpm = (Integer) rpmModel.getValue();
-						final int tp = (Integer) tpModel.getValue();
-						
-						// first byte is OCR0A; throttle position
-						final byte ocr0a = (byte) (2.55f * tp);
-						
-						// second and third bytes are OCR1AH and OCR1AL; RPM
-						// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
-						// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
-						final double hz = (double) rpm / 60.0d;
-						final double ms = 1.0d / hz;
-						final double s = ms * 1000000;
-						final int ocr1a = (int) s / 36;
-						final byte ocr1al = (byte) ocr1a;
-						final byte ocr1ah = (byte) (ocr1a >> 8);
-						
-						bytes[0] = ocr0a;
-						bytes[1] = ocr1ah;
-						bytes[2] = ocr1al;
-						device[1].write(bytes);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(getContentPane(), e.getMessage());
-					}
-				}
-			}
-		};
-		
-		rpmModel.addChangeListener(listener);
-		tpModel.addChangeListener(listener);
-		
-		final DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("$label, $lcg, f:p:g"));
-		builder.append("RPM", new JSpinner(rpmModel));
-		builder.append("Throttle", new JSpinner(tpModel));
-		
-		return builder.getPanel();
-	}
-	
 	private JPanel layoutTuning() {
 		final JPanel grid = new JPanel(new GridLayout(9,9,5,5));
-		
+		grid.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
 		grid.add(new JLabel("TP%\\RPM"));
 		
 		for (int i = 0; i < 8; i++) {
@@ -212,13 +199,13 @@ public class Frame extends JFrame {
 						spinners[i][j].setBackground(Color.WHITE);
 					}
 				}
-				int i = (Integer) rpmZone.getValue();
-				int j = (Integer) loadZone.getValue();
+				int i = (Integer) rpmZoneModel.getValue();
+				int j = (Integer) loadZoneModel.getValue();
 				spinners[i][j].setBackground(ORANGE);
 			}
 		};
-		rpmZone.addValueChangeListener(l);
-		loadZone.addValueChangeListener(l);
+		rpmZoneModel.addValueChangeListener(l);
+		loadZoneModel.addValueChangeListener(l);
 		
 		final JComboBox<String> display = new JComboBox<String>(new String[] { "advance", "duration" });
 		display.setRenderer(new DefaultListCellRenderer() {
@@ -235,10 +222,56 @@ public class Frame extends JFrame {
 				return result;
 			}
 		});
+		
+		
+		// simulator
+		
+		final byte[] simulatorBytes = new byte[3];
+		
+		final ChangeListener listener = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent evt) {
+				if (device[1] != null) {
+					try {
+						final int rpm = (Integer) simulatorRpmModel.getValue();
+						final int tp = (Integer) simulatorTpModel.getValue();
+						
+						// first byte is OCR0A; throttle position
+						final byte ocr0a = (byte) (2.55f * tp);
+						
+						// second and third bytes are OCR1AH and OCR1AL; RPM
+						// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
+						// 10000 rpm / 60 = 166.6 Hz = 6 ms / 72 = 83 us/event = timer1 value of 166 (6 ms period)
+						final double hz = (double) rpm / 60.0d;
+						final double ms = 1.0d / hz;
+						final double s = ms * 1000000;
+						final int ocr1a = (int) s / 36;
+						final byte ocr1al = (byte) ocr1a;
+						final byte ocr1ah = (byte) (ocr1a >> 8);
+						
+						simulatorBytes[0] = ocr0a;
+						simulatorBytes[1] = ocr1ah;
+						simulatorBytes[2] = ocr1al;
+						device[1].write(simulatorBytes);
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(getContentPane(), e.getMessage());
+					}
+				}
+			}
+		};
+		
+		simulatorRpmModel.addChangeListener(listener);
+		simulatorTpModel.addChangeListener(listener);
+		
+		final DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("$label, $lcg, f:p:g"));
+		builder.append("Tune", display);
+		builder.append("RPM", new JSpinner(simulatorRpmModel));
+		builder.append("Throttle", new JSpinner(simulatorTpModel));
+		builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		final JPanel result = new JPanel(new BorderLayout());
 		result.add(grid, BorderLayout.CENTER);
-		result.add(display, BorderLayout.PAGE_END);
+		result.add(builder.getPanel(), BorderLayout.PAGE_END);
 		return result;
 	}
 	
@@ -263,6 +296,7 @@ public class Frame extends JFrame {
 	
 	private AbstractAction connectEcmAction = new AbstractAction() {
 		private static final long serialVersionUID = 1L;
+		private Thread thread;
 		{
 			putValue(NAME, "Connect ECM");
 		}
@@ -271,10 +305,62 @@ public class Frame extends JFrame {
 			try {
 				if (device[0] == null) {
 					device[0] = HIDManager.getInstance().openById(0x574a, 0x6372, null);
+					device[0].disableBlocking();
+					thread = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							final Thread thisThread = Thread.currentThread();
+							while (thread == thisThread) {
+								try {
+									device[0].read(rxBuffer);
+									byte addr = rxBuffer[0];
+									byte len = rxBuffer[0];
+									if ((len & 0x80) == 0x80) {
+										// read request
+										// the ECM doesn't send read requests
+									} else {
+										// write request
+										for (int i = addr; i < len; i++) {
+											int b = rxBuffer[i+2];
+											// tuning values
+											if (addr >= 0 && addr < 64) {
+												// spark advance
+											} else if (addr >= 64 && addr < 128) {
+												// injector duration
+											} else if (addr >= 128 && addr < 136) {
+												// throttle position to load zone
+											} else if (addr >= 136 && addr < 144) {
+												// frequency to rpm zone 
+											}
+											switch (i) {
+											case 144: 
+												
+											// running values
+											case 146: tpModel.setValue((int) b); // TODO convert ADC to %
+											case 147: loadZoneModel.setValue((int) b);
+											case 148: rpmZoneModel.setValue((int) b);
+											case 149: advModel.setValue((int) b);
+											case 150: dwellModel.setValue((int) b); // TODO convert timer0 ticks to ms
+											case 151: rpmModel.setValue((int) b); // TODO convert timer0 ticks to rpm
+											
+											// TODO add the other running values to the UI?
+											}
+										}
+									}
+								} catch (IOException e) {
+									thread = null;
+									putValue(NAME, "Connect ECM");
+									try { device[0].close(); } catch (Throwable t) {}
+								}
+							}
+						}
+					});
+					thread.start();
 					putValue(NAME, "Disconnect ECM");
 				} else {
-					device[0].close();
+					thread = null;
 					putValue(NAME, "Connect ECM");
+					try { device[0].close(); } catch (Throwable t) {}
 				}
 			} catch (HIDDeviceNotFoundException e) {
 				JOptionPane.showMessageDialog(getContentPane(), "ECM not found");
@@ -295,8 +381,8 @@ public class Frame extends JFrame {
 			try {
 				if (device[1] == null) {
 					device[1] = HIDManager.getInstance().openById(0x574a, 0x6373, null);
-					rpmModel.setValue(300);
-					tpModel.setValue(0);
+					simulatorRpmModel.setValue(300);
+					simulatorTpModel.setValue(0);
 					putValue(NAME, "Disconnect Simulator");
 				} else {
 					device[1].close();
