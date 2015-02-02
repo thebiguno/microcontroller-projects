@@ -4,7 +4,7 @@ PROJECT=servo_servant
 MMCU=atmega32u2
 F_CPU=16000000
 SOURCES=main.c
-AVRDUDE_PROGRAMMER=dfu
+PROGRAMMER=dfu
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk

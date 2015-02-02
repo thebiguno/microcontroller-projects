@@ -5,7 +5,7 @@ MMCU=atmega328p
 F_CPU=16000000
 COMPILER=avr-g++
 SOURCES=drummaster.c lib/protocol/protocol.c lib/protocol/protocol_serial.c lib/serial/serial.c lib/serial/serial_sync_tx.c
-AVRDUDE_PROGRAMMER=arduino
+PROGRAMMER=arduino
 
 # You can also define anything here and it will override 
 # the definitions in variables.mk

@@ -9,7 +9,7 @@ SOURCES=main.c qwerty.c lib/serial/serial.c lib/serial/serial_sync_rx.c lib/seri
 # the definitions in variables.mk
 
 #CDEFS+=-DSERIAL_BUFFER_SIZE=256 -DBAUD=$(BAUD)
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 LFUSE=0xF7
 HFUSE=0xD1

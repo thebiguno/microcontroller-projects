@@ -4,7 +4,7 @@ PROJECT=crankysim
 MMCU=atmega32u2
 F_CPU=16000000
 SOURCES=main.c lib/usb/rawhid.c
-AVRDUDE_PROGRAMMER=dfu
+PROGRAMMER=dfu
 COMPILER=avr-g++
 
 
