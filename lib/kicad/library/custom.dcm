@@ -1,9 +1,5 @@
-EESchema-DOCLIB  Version 2.0  Date: Wednesday, January 28, 2015 'amt' 09:24:23 am
+EESchema-DOCLIB  Version 2.0  Date: Sun 01 Feb 2015 08:21:12 PM MST
 #
-$CMP BRIGE_RECTIFIER
-D Bridge Rectifier
-#
-$ENDCMP
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
 K multiplexer, demultiplexer, analog
@@ -12,6 +8,10 @@ $ENDCMP
 $CMP 74HC4852
 D 2x4 Channel Analog Multiplexer / Demultiplexer
 K multiplexer, demultiplexer
+$ENDCMP
+#
+$CMP BRIGE_RECTIFIER
+D Bridge Rectifier
 $ENDCMP
 #
 $CMP CP1SMALL
@@ -87,10 +87,6 @@ $CMP NCP1400A
 D NCP1400A_Boost_Regulator
 $ENDCMP
 #
-$CMP POTENTIOMETER
-D Potentiometer
-K R DEV
-$ENDCMP
 $CMP OPA548
 D High Current / High Voltage Op Amp OPA548 / OPA547
 K OPAMP, OPA547, OPA548
@@ -109,6 +105,16 @@ $ENDCMP
 $CMP OPAMP-4
 D Generic OP-AMP
 K opamp, amp, operational, amplifier
+$ENDCMP
+#
+$CMP PDI
+D PDI Header
+K PDI HEADER
+$ENDCMP
+#
+$CMP POTENTIOMETER
+D Potentiometer
+K R DEV
 $ENDCMP
 #
 $CMP R_PACK5
