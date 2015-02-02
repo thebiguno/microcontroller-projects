@@ -1,0 +1,308 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+EELAYER 27 0
+EELAYER END
+$Descr User 8000 6000
+encoding utf-8
+Sheet 1 1
+Title "AVR ISP MkII Programmer Schematic"
+Date "2 feb 2015"
+Rev "1"
+Comp "Digital Cave"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATMEGA32U4-A U1
+U 1 1 54CEDE5B
+P 2100 3150
+F 0 "U1" H 1150 4850 40  0000 C CNN
+F 1 "ATMEGA32U4-A" H 2800 1650 40  0000 C CNN
+F 2 "TQFP44" H 2100 3150 35  0000 C CIN
+F 3 "" H 3200 4250 60  0000 C CNN
+	1    2100 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L ISP P1
+U 1 1 54CEE986
+P 4900 1150
+F 0 "P1" H 4900 900 60  0000 C CNN
+F 1 "ISP" H 4900 1400 60  0000 C CNN
+F 2 "~" H 4900 1150 60  0000 C CNN
+F 3 "~" H 4900 1150 60  0000 C CNN
+	1    4900 1150
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	3200 1800 3700 1800
+Wire Wire Line
+	3700 1800 3700 1000
+Wire Wire Line
+	3700 1000 4550 1000
+Wire Wire Line
+	3200 1900 3800 1900
+Wire Wire Line
+	3800 1900 3800 1100
+Wire Wire Line
+	3800 1100 4550 1100
+Wire Wire Line
+	3200 1700 3600 1700
+Wire Wire Line
+	3600 1700 3600 1200
+Wire Wire Line
+	3600 1200 4550 1200
+Wire Wire Line
+	3200 2000 3900 2000
+Wire Wire Line
+	3900 2000 3900 1300
+Wire Wire Line
+	3900 1300 4550 1300
+Text Notes 3950 1700 0    40   ~ 0
+RESET pin is specified in config; for\nthis build we have it set to B4.
+$Comp
+L +5V #PWR3
+U 1 1 54CEE9FE
+P 5350 1000
+F 0 "#PWR3" H 5350 1090 20  0001 C CNN
+F 1 "+5V" H 5350 1090 30  0000 C CNN
+F 2 "" H 5350 1000 60  0000 C CNN
+F 3 "" H 5350 1000 60  0000 C CNN
+	1    5350 1000
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR1
+U 1 1 54CEEA0D
+P 5250 1300
+F 0 "#PWR1" H 5250 1300 30  0001 C CNN
+F 1 "GND" H 5250 1230 30  0001 C CNN
+F 2 "" H 5250 1300 60  0000 C CNN
+F 3 "" H 5250 1300 60  0000 C CNN
+	1    5250 1300
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5250 1000 5350 1000
+Wire Wire Line
+	3500 4000 3200 4000
+Wire Wire Line
+	3500 800  3500 4000
+Wire Wire Line
+	5300 800  5300 1000
+Connection ~ 5300 1000
+Wire Wire Line
+	3500 800  5300 800 
+$Comp
+L +3.3V #PWR4
+U 1 1 54CEEFF2
+P 5400 2450
+F 0 "#PWR4" H 5400 2410 30  0001 C CNN
+F 1 "+3.3V" H 5400 2560 30  0000 C CNN
+F 2 "" H 5400 2450 60  0000 C CNN
+F 3 "" H 5400 2450 60  0000 C CNN
+	1    5400 2450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5300 2450 5400 2450
+Wire Wire Line
+	5350 2250 5350 2450
+Connection ~ 5350 2450
+$Comp
+L GND #PWR2
+U 1 1 54CEF026
+P 5300 2550
+F 0 "#PWR2" H 5300 2550 30  0001 C CNN
+F 1 "GND" H 5300 2480 30  0001 C CNN
+F 2 "" H 5300 2550 60  0000 C CNN
+F 3 "" H 5300 2550 60  0000 C CNN
+	1    5300 2550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3600 2550 4600 2550
+$Comp
+L RSMALL R1
+U 1 1 54CEF047
+P 3800 3000
+F 0 "R1" V 3850 3100 40  0000 C CNN
+F 1 "200" V 3850 2900 40  0000 C CNN
+F 2 "~" V 3730 3000 30  0000 C CNN
+F 3 "~" H 3800 3050 30  0000 C CNN
+	1    3800 3000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RSMALL R2
+U 1 1 54CEF09F
+P 3800 3100
+F 0 "R2" V 3850 3200 40  0000 C CNN
+F 1 "200" V 3850 3000 40  0000 C CNN
+F 2 "~" V 3730 3100 30  0000 C CNN
+F 3 "~" H 3800 3150 30  0000 C CNN
+	1    3800 3100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3200 3000 3700 3000
+Wire Wire Line
+	3200 3100 3700 3100
+Wire Wire Line
+	3600 2550 3600 3300
+Wire Wire Line
+	3600 3300 3200 3300
+Wire Wire Line
+	3900 3000 4000 3000
+Wire Wire Line
+	4000 2450 4000 3100
+Wire Wire Line
+	4000 3100 3900 3100
+Wire Wire Line
+	4000 2450 4600 2450
+Connection ~ 4000 3000
+$Comp
+L MCP1702 VR1
+U 1 1 54CEF139
+P 5950 3750
+F 0 "VR1" V 5650 3750 60  0000 C CNN
+F 1 "MCP1702" V 5750 3750 60  0000 C CNN
+F 2 "~" H 5950 3750 60  0000 C CNN
+F 3 "~" H 5950 3750 60  0000 C CNN
+	1    5950 3750
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR7
+U 1 1 54CEF150
+P 6600 3750
+F 0 "#PWR7" H 6600 3840 20  0001 C CNN
+F 1 "+5V" H 6600 3840 30  0000 C CNN
+F 2 "" H 6600 3750 60  0000 C CNN
+F 3 "" H 6600 3750 60  0000 C CNN
+	1    6600 3750
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR8
+U 1 1 54CEF158
+P 6600 3850
+F 0 "#PWR8" H 6600 3810 30  0001 C CNN
+F 1 "+3.3V" H 6600 3960 30  0000 C CNN
+F 2 "" H 6600 3850 60  0000 C CNN
+F 3 "" H 6600 3850 60  0000 C CNN
+	1    6600 3850
+	0    1    1    0   
+$EndComp
+$Comp
+L CSMALL C1
+U 1 1 54CEF167
+P 6400 4050
+F 0 "C1" H 6425 4100 30  0000 L CNN
+F 1 "1uF" H 6425 4000 30  0000 L CNN
+F 2 "~" H 6400 4050 60  0000 C CNN
+F 3 "~" H 6400 4050 60  0000 C CNN
+	1    6400 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CSMALL C2
+U 1 1 54CEF179
+P 6550 4050
+F 0 "C2" H 6575 4100 30  0000 L CNN
+F 1 "1uF" H 6575 4000 30  0000 L CNN
+F 2 "~" H 6550 4050 60  0000 C CNN
+F 3 "~" H 6550 4050 60  0000 C CNN
+	1    6550 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 4150 6400 4250
+Wire Wire Line
+	6400 4250 6550 4250
+Wire Wire Line
+	6550 4150 6550 4350
+Wire Wire Line
+	6350 3850 6600 3850
+Wire Wire Line
+	6350 3750 6600 3750
+Wire Wire Line
+	6400 3950 6400 3850
+Connection ~ 6400 3850
+Wire Wire Line
+	6550 3950 6550 3750
+Connection ~ 6550 3750
+$Comp
+L GND #PWR5
+U 1 1 54CEF268
+P 6350 3650
+F 0 "#PWR5" H 6350 3650 30  0001 C CNN
+F 1 "GND" H 6350 3580 30  0001 C CNN
+F 2 "" H 6350 3650 60  0000 C CNN
+F 3 "" H 6350 3650 60  0000 C CNN
+	1    6350 3650
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR6
+U 1 1 54CEF275
+P 6550 4350
+F 0 "#PWR6" H 6550 4350 30  0001 C CNN
+F 1 "GND" H 6550 4280 30  0001 C CNN
+F 2 "" H 6550 4350 60  0000 C CNN
+F 3 "" H 6550 4350 60  0000 C CNN
+	1    6550 4350
+	1    0    0    -1  
+$EndComp
+Connection ~ 6550 4250
+Text Notes 700  3750 1    40   ~ 0
+You of course need all the supporting hardware, such as\ndecoupling caps, USB hardware, etc.  Or just use a UBBB_32u4\nand it Just Works!
+Text Notes 5150 2750 0    40   ~ 0
+PDI programming headers are the \nsame 6 pin style as ISP.
+$Comp
+L PDI P2
+U 1 1 54CEF5A3
+P 4950 2500
+F 0 "P2" H 4950 2350 60  0000 C CNN
+F 1 "PDI" H 4950 2650 60  0000 C CNN
+F 2 "~" H 4950 2600 60  0000 C CNN
+F 3 "~" H 4950 2600 60  0000 C CNN
+	1    4950 2500
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 2250 3500 2250
+Connection ~ 3500 2250
+$EndSCHEMATC
