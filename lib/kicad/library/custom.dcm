@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 01 Feb 2015 08:21:12 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Sun 01 Feb 2015 03:56:37 PM MST
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -120,6 +120,16 @@ $ENDCMP
 $CMP R_PACK5
 D 5 resistors Pack
 K R DEV
+$ENDCMP
+#
+$CMP RELAY_DPDT
+D RELAY_DPST
+K Relay, DPST
+$ENDCMP
+#
+$CMP RELAY_SPDT
+D RELAY_SPST
+K Relay, SPST
 $ENDCMP
 #
 $CMP RESISTOR
