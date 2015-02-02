@@ -30,6 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 6000 7000
