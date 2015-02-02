@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Sun 01 Feb 2015 05:14:17 PM MST
+EESchema Schematic File Version 2  date Sun 01 Feb 2015 10:06:44 PM MST
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -79,17 +79,6 @@ F 3 "~" H 5600 2200 60  0000 C CNN
 	0    1    -1   0   
 $EndComp
 $Comp
-L POTENTIOMETER RV1
-U 1 1 54CE6D03
-P 3850 3450
-F 0 "RV1" H 3800 3575 40  0000 R CNN
-F 1 "22k" V 3950 3450 40  0000 C CNN
-F 2 "~" V 3780 3450 30  0000 C CNN
-F 3 "~" H 3850 3450 30  0000 C CNN
-	1    3850 3450
-	-1   0    0    -1  
-$EndComp
-$Comp
 L CONN_1 P1
 U 1 1 54CE6D30
 P 2900 3350
@@ -116,7 +105,7 @@ L RESISTOR R1
 U 1 1 54CE6D6B
 P 2550 1650
 F 0 "R1" V 2640 1645 40  0000 C CNN
-F 1 "480" V 2465 1650 40  0000 C CNN
+F 1 "470" V 2465 1650 40  0000 C CNN
 F 2 "~" V 2480 1650 30  0000 C CNN
 F 3 "~" H 2550 1650 30  0000 C CNN
 	1    2550 1650
@@ -160,7 +149,7 @@ L RESISTOR R3
 U 1 1 54CE6E88
 P 5150 2250
 F 0 "R3" V 5240 2245 40  0000 C CNN
-F 1 "480" V 5065 2250 40  0000 C CNN
+F 1 "470" V 5065 2250 40  0000 C CNN
 F 2 "~" V 5080 2250 30  0000 C CNN
 F 3 "~" H 5150 2250 30  0000 C CNN
 	1    5150 2250
@@ -193,7 +182,7 @@ $EndComp
 Text Notes 2750 3500 0    60   ~ 0
 Note 1
 Text Notes 600  9900 0    60   ~ 0
-Notes:\n\n1. Two-wire probe. Approximate resistance when\nimmersed in water is 200kohm.
+Notes:\n\n1. Two-wire probe. Approximate resistance when\nimmersed in water is 200kohm or less.
 $Comp
 L CONN_2 P1
 U 1 1 54CEB88C
@@ -204,17 +193,6 @@ F 2 "" H 1800 1400 60  0000 C CNN
 F 3 "" H 1800 1400 60  0000 C CNN
 	1    1800 1400
 	-1   0    0    -1  
-$EndComp
-$Comp
-L RESISTOR R7
-U 1 1 54CEB99D
-P 3850 2750
-F 0 "R7" V 3940 2745 40  0000 C CNN
-F 1 "200k" V 3765 2750 40  0000 C CNN
-F 2 "~" V 3780 2750 30  0000 C CNN
-F 3 "~" H 3850 2750 30  0000 C CNN
-	1    3850 2750
-	1    0    0    -1  
 $EndComp
 $Comp
 L RESISTOR R4
@@ -265,7 +243,7 @@ L RESISTOR R6
 U 1 1 54CEBA60
 P 3050 2750
 F 0 "R6" V 3140 2745 40  0000 C CNN
-F 1 "22k" V 2965 2750 40  0000 C CNN
+F 1 "1k" V 2965 2750 40  0000 C CNN
 F 2 "~" V 2980 2750 30  0000 C CNN
 F 3 "~" H 3050 2750 30  0000 C CNN
 	1    3050 2750
@@ -299,13 +277,9 @@ Connection ~ 5150 1300
 Wire Wire Line
 	2550 1900 2550 2000
 Wire Wire Line
-	3850 3000 3850 3100
+	3850 2400 3850 3100
 Wire Wire Line
 	3850 3100 3850 3200
-Wire Wire Line
-	4050 3450 4050 3700
-Wire Wire Line
-	4050 3700 3850 3700
 Wire Wire Line
 	4550 2900 4550 2500
 Wire Wire Line
@@ -353,8 +327,6 @@ Wire Wire Line
 	4250 3100 3850 3100
 Connection ~ 3850 3100
 Wire Wire Line
-	3850 2500 3850 2400
-Wire Wire Line
 	3050 1400 3050 1300
 Connection ~ 3050 1300
 Wire Wire Line
@@ -388,4 +360,15 @@ Wire Wire Line
 Wire Wire Line
 	5600 3300 5150 3300
 Connection ~ 5150 3300
+$Comp
+L RESISTOR R7
+U 1 1 54CF044D
+P 3850 3450
+F 0 "R7" V 3940 3445 40  0000 C CNN
+F 1 "1k" V 3765 3450 40  0000 C CNN
+F 2 "~" V 3780 3450 30  0000 C CNN
+F 3 "~" H 3850 3450 30  0000 C CNN
+	1    3850 3450
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
