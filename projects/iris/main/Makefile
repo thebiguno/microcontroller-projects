@@ -14,6 +14,6 @@ CDEFS += -DREMOTE_TIMER2 -DREMOTE_INT1
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 include ../../../build/avr/targets.mk

@@ -4,7 +4,7 @@ PROJECT=PSXController
 MMCU=atmega48
 F_CPU=8000000
 SOURCES=main.c lib/psx/psx.c lib/serial/serial.c lib/protocol/protocol.c lib/serial/serial_sync_tx.c
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 HFUSE=0xDF
 LFUSE=0xE2

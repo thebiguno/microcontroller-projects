@@ -27,7 +27,7 @@ volatile uint8_t inj_pin;
  * configure injector opening time (ms)
  *           injector battery voltage correction (ms/V)
  *           pwm time threshold (ms)
- *           injector pwm period (µs)
+ *           injector pwm period (us)
  *           molex minifit connectors
  *           determine both spark and injector configuration
  */
@@ -53,21 +53,22 @@ typedef struct {
 	volatile uint8_t max_ign_dwell;		// the maximum dwell in timer0 ticks
 	
 	// running values
+	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
 	volatile uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
+	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
+	volatile uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
+	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
+										// 1000/(t*51.2*36/1000)/0.0166666666667
+
+	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
 	volatile uint8_t cam;				// the current cam tooth; a value between 0 and 3
 	volatile uint8_t crank;				// the current crank tooth; a value between 0 and 35
 	volatile uint8_t ign;				// the current spark plug; a value between 0 and 3
-	volatile uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
-	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
-	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
 	volatile uint8_t inj_dc;			// the injector duty cycle in timer2 ticks
 
 	volatile uint8_t crank_sync;	 	// crank sync has been performed; worst case is 10 rotations; 0 means calibrated
-	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
-										// 1000/(t*51.2*36/1000)/0.0166666666667
 	volatile uint8_t cranking;			// 0 = running normally; 1 = running below 383 rpm
-	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 } reg_t;
 
 static union reg_u {

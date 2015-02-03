@@ -17,7 +17,7 @@ else
 	AVRDUDE=avrdude
 	AVRDUDE_PORT=/dev/tty.usbserial*
 endif
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 
 #Fuses
@@ -68,17 +68,17 @@ cpp:
 	
 program: all
 	$(AVRDUDE_PREP_COMMANDS)
-	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+	$(AVRDUDE) -V -F -p $(MMCU) -c $(PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U flash:w:main.hex 
 
 fuse:
-	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+	$(AVRDUDE) -V -F -p $(MMCU) -c $(PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
 
 readfuse: 
-	$(AVRDUDE) -V -F -p $(MMCU) -c $(AVRDUDE_PROGRAMMER) \
+	$(AVRDUDE) -V -F -p $(MMCU) -c $(PROGRAMMER) \
 		$(AVRDUDE_ARGS) \
 		-U lfuse:r:-:h -U hfuse:r:-:h
 
