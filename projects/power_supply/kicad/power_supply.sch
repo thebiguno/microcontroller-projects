@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
 Sheet 1 5
 Title "Adjustable Modular Power Supply"
-Date "2 feb 2015"
+Date "3 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -87,10 +86,10 @@ $EndComp
 Wire Wire Line
 	4600 1300 4250 1300
 $Comp
-L GND #PWR2
+L GND #PWR01
 U 1 1 54C97614
 P 4600 1400
-F 0 "#PWR2" H 4600 1400 30  0001 C CNN
+F 0 "#PWR01" H 4600 1400 30  0001 C CNN
 F 1 "GND" H 4600 1330 30  0001 C CNN
 F 2 "" H 4600 1400 60  0000 C CNN
 F 3 "" H 4600 1400 60  0000 C CNN
@@ -109,10 +108,10 @@ F 3 "~" H 1000 1500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR1
+L GND #PWR02
 U 1 1 54C97A9B
 P 1300 1400
-F 0 "#PWR1" H 1300 1400 30  0001 C CNN
+F 0 "#PWR02" H 1300 1400 30  0001 C CNN
 F 1 "GND" H 1300 1330 30  0001 C CNN
 F 2 "" H 1300 1400 60  0000 C CNN
 F 3 "" H 1300 1400 60  0000 C CNN

@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 6000 4000
 encoding utf-8
 Sheet 2 5
 Title "Rectifier"
-Date "2 feb 2015"
+Date "3 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -83,10 +82,10 @@ Wire Wire Line
 	1950 1700 2100 1700
 Connection ~ 1950 1700
 $Comp
-L GND #PWR3
+L GND #PWR03
 U 1 1 54C7EE84
 P 2100 1700
-F 0 "#PWR3" H 2100 1700 30  0001 C CNN
+F 0 "#PWR03" H 2100 1700 30  0001 C CNN
 F 1 "GND" H 2100 1630 30  0001 C CNN
 F 2 "" H 2100 1700 60  0000 C CNN
 F 3 "" H 2100 1700 60  0000 C CNN
@@ -187,10 +186,10 @@ Connection ~ 4500 2350
 Wire Wire Line
 	4050 2350 2250 2350
 $Comp
-L GND #PWR4
+L GND #PWR04
 U 1 1 54C9856B
 P 5000 2450
-F 0 "#PWR4" H 5000 2450 30  0001 C CNN
+F 0 "#PWR04" H 5000 2450 30  0001 C CNN
 F 1 "GND" H 5000 2380 30  0001 C CNN
 F 2 "" H 5000 2450 60  0000 C CNN
 F 3 "" H 5000 2450 60  0000 C CNN
