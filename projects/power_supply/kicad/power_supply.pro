@@ -1,6 +1,6 @@
-update=Monday, February 02, 2015 'amt' 10:49:35 am
+update=Mon 02 Feb 2015 07:25:53 PM MST
 version=1
-last_client=kicad
+last_client=pcbnew
 [cvpcb]
 version=1
 NetIExt=net
@@ -46,14 +46,16 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=custom
+[general]
+version=1
 [pcbnew]
 version=1
 LastNetListRead=
 UseCmpFile=1
-PadDrill=1.143000000000
-PadDrillOvalY=1.143000000000
-PadSizeH=2.540000000000
-PadSizeV=2.540000000000
+PadDrill=2.540000000000
+PadDrillOvalY=2.540000000000
+PadSizeH=3.556000000000
+PadSizeV=3.556000000000
 PcbTextSizeV=1.500000000000
 PcbTextSizeH=1.500000000000
 PcbTextThickness=0.300000000000
@@ -74,15 +76,11 @@ LibName4=pin_array
 LibName5=divers
 LibName6=smd_capacitors
 LibName7=smd_resistors
-LibName8=smd_crystal&oscillator
-LibName9=smd_dil
-LibName10=smd_transistors
-LibName11=libcms
-LibName12=display
-LibName13=led
-LibName14=dip_sockets
-LibName15=pga_sockets
-LibName16=valves
-LibName17=custom
-[general]
-version=1
+LibName8=smd_transistors
+LibName9=libcms
+LibName10=display
+LibName11=led
+LibName12=dip_sockets
+LibName13=pga_sockets
+LibName14=valves
+LibName15=custom
