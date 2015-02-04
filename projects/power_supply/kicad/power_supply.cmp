@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, February 03, 2015 'pmt' 04:34:41 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 03 Feb 2015 09:30:47 PM MST
 
 BeginCmp
 TimeStamp = /54D12AF6;
@@ -81,14 +81,14 @@ BeginCmp
 TimeStamp = /54D12D26;
 Reference = C12;
 ValeurCmp = 18000uF;
-IdModule  = ;
+IdModule  = C2V10;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D12D2C;
 Reference = C13;
 ValeurCmp = 18000uF;
-IdModule  = ;
+IdModule  = C2V10;
 EndCmp
 
 BeginCmp
@@ -120,29 +120,8 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12691;
-Reference = C18;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D12666;
 Reference = C19;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D1267E;
-Reference = C20;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12685;
-Reference = C21;
 ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -155,9 +134,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12672;
-Reference = C23;
-ValeurCmp = 1uF;
+TimeStamp = /54D183D3;
+Reference = C24;
+ValeurCmp = 0.01uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -185,22 +164,22 @@ EndCmp
 BeginCmp
 TimeStamp = /54D12D17;
 Reference = D1;
-ValeurCmp = BRIDGE;
-IdModule  = ;
+ValeurCmp = BRIDGE_RECTIFIER;
+IdModule  = BRIDGE_RECTIFIER_SQUARE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D1642C;
 Reference = D2;
 ValeurCmp = SS10PH45HM3/87A;
-IdModule  = ;
+IdModule  = TO-277A;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D15D83;
 Reference = D3;
 ValeurCmp = SS10PH45HM3/87A;
-IdModule  = ;
+IdModule  = TO-277A;
 EndCmp
 
 BeginCmp
@@ -228,7 +207,7 @@ BeginCmp
 TimeStamp = /54C979E0;
 Reference = K1;
 ValeurCmp = AC_INPUT;
-IdModule  = SIL-3;
+IdModule  = ;
 EndCmp
 
 BeginCmp
@@ -288,10 +267,10 @@ IdModule  = SCREW_TERMINAL_3;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12A78;
+TimeStamp = /54D19B50;
 Reference = K10;
 ValeurCmp = DISPLAY;
-IdModule  = SIL-6;
+IdModule  = SIL-8;
 EndCmp
 
 BeginCmp
@@ -320,6 +299,13 @@ TimeStamp = /54D1854E;
 Reference = K14;
 ValeurCmp = VS;
 IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D19BD4;
+Reference = K15;
+ValeurCmp = PINS_3;
+IdModule  = SIL-3;
 EndCmp
 
 BeginCmp
@@ -424,7 +410,7 @@ BeginCmp
 TimeStamp = /54D12634;
 Reference = R15;
 ValeurCmp = 0.1;
-IdModule  = ;
+IdModule  = RESISTOR_POWER;
 EndCmp
 
 BeginCmp
@@ -507,7 +493,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54D126BC;
 Reference = U3;
-ValeurCmp = OPA548/547;
+ValeurCmp = OPA548;
 IdModule  = TO220_7LEAD_STAGGERED;
 EndCmp
 
@@ -522,7 +508,7 @@ BeginCmp
 TimeStamp = /54D12B64;
 Reference = U5;
 ValeurCmp = 74LS595;
-IdModule  = ;
+IdModule  = TSSOP16;
 EndCmp
 
 BeginCmp
@@ -540,24 +526,10 @@ IdModule  = SOT23-5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12697;
-Reference = U8;
-ValeurCmp = LM7812;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D12659;
 Reference = U9;
 ValeurCmp = LM7805;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D1266C;
-Reference = U10;
-ValeurCmp = LM7905;
-IdModule  = ;
+IdModule  = LM78XXV;
 EndCmp
 
 BeginCmp
