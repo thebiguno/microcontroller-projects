@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-mar-25)-stable date = Mon 02 Feb 2015 08:05:53 PM MST
+Cmp-Mod V01 Created by CvPcb (2013-mar-25)-stable date = Mon 02 Feb 2015 10:38:47 PM MST
 
 BeginCmp
 TimeStamp = /54CE6B92;
@@ -22,10 +22,10 @@ IdModule  = D4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54CEE512;
+TimeStamp = /54D05A0D;
 Reference = K1;
-ValeurCmp = RELAY_SPDT;
-IdModule  = ;
+ValeurCmp = RELAY_OMRON_G5V-1;
+IdModule  = RELAY_G5V-1;
 EndCmp
 
 BeginCmp
@@ -53,21 +53,21 @@ BeginCmp
 TimeStamp = /54CEBA48;
 Reference = Q1;
 ValeurCmp = 2N3906;
-IdModule  = TO92-CBE;
+IdModule  = TO92-123;
 EndCmp
 
 BeginCmp
 TimeStamp = /54CEBA55;
 Reference = Q2;
 ValeurCmp = 2N3906;
-IdModule  = TO92-CBE;
+IdModule  = TO92-123;
 EndCmp
 
 BeginCmp
 TimeStamp = /54CE6D96;
 Reference = Q3;
 ValeurCmp = 2N3904;
-IdModule  = TO92-CBE;
+IdModule  = TO92-123;
 EndCmp
 
 BeginCmp
