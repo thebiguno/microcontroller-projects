@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Mon 02 Feb 2015 10:07:06 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Wednesday, February 04, 2015 'pmt' 03:05:53 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -76,6 +76,11 @@ $ENDCMP
 $CMP MCP4451
 D Digital Potentiometer
 K potentiometer
+$ENDCMP
+#
+$CMP MCP4728
+D Quad I2C DAC (http://ww1.microchip.com/downloads/en/DeviceDoc/22187a.pdf)
+K DAC
 $ENDCMP
 #
 $CMP MOSFET-SOT-23-3
