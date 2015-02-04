@@ -1,5 +1,3 @@
-include ../../build/variables.mk
-
 PROJECT=pwm
 MMCU=atmega328p
 F_CPU=16000000
