@@ -119,7 +119,7 @@ public class Frame extends JFrame {
 		tpModel.addValueChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				tp.setValue((Integer) tpModel.getValue());
+				tp.setValue((Double) tpModel.getValue());
 			}
 		});
 
@@ -217,7 +217,7 @@ public class Frame extends JFrame {
 				if ("advance".equals(value)) {
 					result.setText("Spark Advance (degrees)");
 				} else if ("duration".equals(value)) {
-					result.setText("Ignition Duration (ms)");
+					result.setText("Injection Duration (ms)");
 				}
 				return result;
 			}
@@ -331,19 +331,20 @@ public class Frame extends JFrame {
 												// throttle position to load zone
 											} else if (addr >= 136 && addr < 144) {
 												// frequency to rpm zone 
-											}
-											switch (i) {
-											case 144: 
+											} else {
+												switch (i) {
+												case 144: 
+													
+												// running values
+												case 146: loadZoneModel.setValue((int) b); break;		// 0-7
+												case 147: rpmZoneModel.setValue((int) b); break;		// 0-7
+												case 148: tpModel.setValue((double) b / 2.55d); break;	// %
+												case 149: advModel.setValue((double) b); break;			// degrees
+												case 150: dwellModel.setValue((double) b); break; 		// TODO convert timer1 ticks to ms
+												case 151: rpmModel.setValue(26041d / b); break; 		// 60000000 / (t * 64 * 36)
 												
-											// running values
-											case 146: tpModel.setValue((int) b); // TODO convert ADC to %
-											case 147: loadZoneModel.setValue((int) b);
-											case 148: rpmZoneModel.setValue((int) b);
-											case 149: advModel.setValue((int) b);
-											case 150: dwellModel.setValue((int) b); // TODO convert timer0 ticks to ms
-											case 151: rpmModel.setValue((int) b); // TODO convert timer0 ticks to rpm
-											
-											// TODO add the other running values to the UI?
+												// TODO add the other running values to the UI?
+												}
 											}
 										}
 									}
@@ -386,6 +387,7 @@ public class Frame extends JFrame {
 					putValue(NAME, "Disconnect Simulator");
 				} else {
 					device[1].close();
+					device[1] = null;
 					putValue(NAME, "Connect Simulator");
 				}
 			} catch (HIDDeviceNotFoundException e) {
