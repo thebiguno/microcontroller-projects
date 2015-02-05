@@ -1,5 +1,3 @@
-include build/variables.mk
-
 PROJECT=resource_monitor
 MMCU=atmega32u2
 F_CPU=16000000

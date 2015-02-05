@@ -1,0 +1,12 @@
+Things to Test:
+-V_ADJUST to REGULATED_OUTPUT
+	-The regulated output should follow V_ADJUST according to the formula REGULATED_OUTPUT = ((V_ADJUST * 2) - 5) * GAIN
+	-GAIN is calculated from the formula GAIN = 1 + R2 / R1 (where R2 is the resistor in series between REGULATED_OUTPUT and the negative terminal, and R1 is the resistor in series between the negative terminal and GND).
+	-For R2 = 4.7k and R1 = 1k, we thus get a GAIN of 5.7; following through, for V_ADJUST = 5v we should see an output of XXXXTODO
+	
+
+Things Successfully Tested:
+-I_ADJUST to ILM conversion
+	-The ILM voltage should be equal to V- + I_ADJUST.
+	-Verified on breadboard using LM324 on Feb 4 2015; this op amp is not rail-to-rail, so it can't get down to exactly -12.3V, but once the voltage is high enough it tracks perfectly.
+	

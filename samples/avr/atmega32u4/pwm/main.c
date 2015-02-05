@@ -8,16 +8,15 @@ int main (void){
 	ports[0] = &PORTC;
 	
 	uint8_t pins[4];
-	pins[0] = PORTC5;
+	pins[0] = PORTC6;
 
 	pwm_init(ports, pins, 1, 512);
-	pwm_set_phase(0, 5);
 
+	uint8_t x = 0;
 	//Main program loop
 	while (1){
-		pwm_set_phase(0, 1);
-		_delay_ms(1000);
-		pwm_set_phase(0, 0);
-		_delay_ms(1000);
+		pwm_set_phase(0, x * 2);
+		x+= 8;
+		_delay_ms(100);
 	}
 }

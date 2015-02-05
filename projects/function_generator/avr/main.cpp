@@ -18,8 +18,9 @@
 #define MODE_STAIRCASE_UP	0x07
 #define MODE_STAIRCASE_DOWN	0x08
 #define MODE_SERVO			0x09
+#define MODE_VOLTAGE		0x0A
 #define MODE_FIRST			MODE_FAST_SQUARE
-#define MODE_LAST 			MODE_SERVO
+#define MODE_LAST 			MODE_VOLTAGE
 
 #define DDS_MAX				495
 #define SERVO_MAX			1100
@@ -44,6 +45,8 @@ static Buttons buttons(&PORTC, BUTTON_MODE | BUTTON_UP | BUTTON_DOWN, 3, 8, 70, 
 static uint8_t ui_freq_square = 0xFF;
 static uint16_t ui_freq_dds = DDS_MAX;
 static uint16_t ui_freq_servo = SERVO_MAX / 2;
+static uint8_t ui_voltage = 0x00;
+static uint8_t ui_voltage_running = 0x00;
 
 volatile uint8_t _mode = MODE_FIRST;
 
@@ -67,6 +70,26 @@ uint16_t get_dds_frequency(){
 uint32_t get_servo_phase(){
 	//Return a value between 400us and 2600us with an increment of 1us.
 	return ((ui_freq_servo * 2) + 400);
+}
+
+double get_voltage_full_range(){
+	//We need to calibrate this to our specific hardware by adjusting the
+	// multiplier and the offset.  The multiplier is nominally 10; this
+	// should be set to the actual voltage range from your DAC between 
+	// 0x00 and 0xFF.  The offset is the negative voltage.  Measure the
+	// actual output voltage at value 0x00 and 0xFF and recompile for
+	// these values.
+	return 10.28 * (ui_voltage / 255.0) - 5.19;
+}
+
+double get_voltage_half_range(){
+	//We need to calibrate this to our specific hardware by adjusting the
+	// multiplier and the offset.  The multiplier is nominally 10; this
+	// should be set to the actual voltage range from your DAC between 
+	// 0x00 and 0xFF.  The offset is the negative voltage.  Measure the
+	// actual output voltage at value 0x00 and 0xFF and recompile for
+	// these values.
+	return 5.15 * (ui_voltage / 255.0) - 0.048;
 }
 
 uint16_t _pwm_micros_to_clicks(uint32_t micros){
@@ -107,6 +130,9 @@ void update_display(){
 	else if (_mode == MODE_SERVO){
 		display.setText((char*) "Servo", 5);
 	}
+	else if (_mode == MODE_VOLTAGE){
+		display.setText((char*) "Voltage Output", 14);
+	}
 	else {
 		display.setText((char*) "Unknown", 7);
 	}
@@ -124,7 +150,17 @@ void update_display(){
 		uint8_t l;
 		l = snprintf(temp, 16, "%6d us", (uint16_t) phase);
 		display.setDdramAddress(0x40);
-		_delay_ms(1);
+		_delay_us(100);
+		display.setText(temp, l);
+	}
+	else if (_mode == MODE_VOLTAGE){
+		double voltage_full = get_voltage_full_range();
+		double voltage_half = get_voltage_half_range();
+		char temp[16];
+		uint8_t l;
+		l = snprintf(temp, 16, "%+4.2fV / %+4.2fV", voltage_full, voltage_half);
+		display.setDdramAddress(0x40);
+		_delay_us(100);
 		display.setText(temp, l);
 	}
 	else{
@@ -145,14 +181,15 @@ void update_display(){
 			l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
 		}
 		display.setDdramAddress(0x40);
+		_delay_us(100);
 		display.setText(temp, l);
 	}
 	
-	if (TCCR0B != 0x00 || TCCR1B != 0x00){
+	if (TCCR0B != 0x00 || TCCR1B != 0x00 || ui_voltage_running != 0x00){
 		display.setDdramAddress(0x0F);
+		_delay_us(100);
 		char temp[1];
 		temp[0] = '#';
-		_delay_ms(1);
 		display.setText(temp, 1);
 	}
 	
@@ -170,6 +207,10 @@ void update_servo_phase(){
 void update_dds_frequency(){
 	uint32_t frequency = get_dds_frequency();
 	OCR1A = (F_CPU / 256 / frequency) - 1;			//Comparison value
+}
+
+void update_voltage(){
+	PORTD = ui_voltage;
 }
 
 void main_menu(){
@@ -233,6 +274,24 @@ void main_menu(){
 			else if (repeat & BUTTON_DOWN){
 				ui_freq_servo -= 4;
 				if (ui_freq_servo > SERVO_MAX) ui_freq_servo = SERVO_MAX;
+				update_display();
+			}
+		}
+		else if (_mode == MODE_VOLTAGE){
+			if (pressed & BUTTON_UP){
+				ui_voltage++;
+				update_display();
+			}
+			else if (pressed & BUTTON_DOWN){
+				ui_voltage--;
+				update_display();
+			}
+			else if (repeat & BUTTON_UP){
+				ui_voltage += 4;
+				update_display();
+			}
+			else if (repeat & BUTTON_DOWN){
+				ui_voltage -= 4;
 				update_display();
 			}
 		}
@@ -389,6 +448,47 @@ void servo_menu(){
 	}
 }
 
+void voltage_menu(){
+	ui_voltage_running = 0x01;
+	update_display();
+
+	while(1){
+		_delay_ms(12);
+		buttons.sample();
+		
+		uint8_t pressed = buttons.pressed();
+		uint8_t held = buttons.held();
+		uint8_t repeat = buttons.repeat();
+
+		if (held & BUTTON_MODE){
+			PORTD = 0x00;
+			ui_voltage_running = 0x00;
+			update_display();
+			return;
+		}
+		else if (pressed & BUTTON_UP){
+			ui_voltage++;
+			update_voltage();
+			update_display();
+		}
+		else if (pressed & BUTTON_DOWN){
+			ui_voltage--;
+			update_voltage();
+			update_display();
+		}
+		else if (repeat & BUTTON_UP){
+			ui_voltage += 4;
+			update_voltage();
+			update_display();
+		}
+		else if (repeat & BUTTON_DOWN){
+			ui_voltage -= 4;
+			update_voltage();
+			update_display();
+		}
+	}
+}
+
 void output_waveform(){
 	if (_mode == MODE_FAST_SQUARE || _mode == MODE_SLOW_SQUARE){
 		TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
@@ -414,6 +514,10 @@ void output_waveform(){
 		sei();
 		
 		servo_menu();
+	}
+	else if (_mode == MODE_VOLTAGE){
+		update_voltage();
+		voltage_menu();
 	}
 	else {
 		const uint8_t* progmem_pointer;

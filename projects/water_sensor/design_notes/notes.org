@@ -1,0 +1,12 @@
+
+
+* Current limiting
+ Current mirror version accounts for any ground leakage current without
+ affecting sensitivity. Non-current mirror version, if used without an
+ isolating transformer will not alarm if current leaks through ground.
+
+* Resistance Of Tap Water
+Approx. 5556 ohm @ 5VDC
+Approx. 4285 ohm @ 12VDC
+* TODO Fix relay pins to match omron G5V.
+* TODO Create relay footprint.

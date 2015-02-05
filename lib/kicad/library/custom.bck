@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 01 Feb 2015 08:12:13 PM MST
+EESchema-DOCLIB  Version 2.0  Date: Wednesday, February 04, 2015 'pmt' 12:36:35 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -78,6 +78,11 @@ D Digital Potentiometer
 K potentiometer
 $ENDCMP
 #
+$CMP MCP4728
+D Quad I2C DAC (http://ww1.microchip.com/downloads/en/DeviceDoc/22187a.pdf)
+K DAC
+$ENDCMP
+#
 $CMP MOSFET-SOT-23-3
 D N-Channel MOSFET, SOT-23
 K N-Channel MOSFET Logic Level
@@ -123,8 +128,13 @@ K R DEV
 $ENDCMP
 #
 $CMP RELAY_DPDT
-D RELAY_DPDT
-K Relay, DPDT
+D RELAY_DPST
+K Relay, DPST
+$ENDCMP
+#
+$CMP RELAY_OMRON_G5V-1
+D RELAY_OMRON_G5V-1
+K Relay, SPST
 $ENDCMP
 #
 $CMP RELAY_SPDT
