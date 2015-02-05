@@ -2,17 +2,6 @@
 #include <avr/interrupt.h>
 #include "lib/usb/rawhid.h"
 
-#define STR_MANUFACTURER	L"Warren Janssens"
-#define STR_PRODUCT		L"Cranky"
-#define VENDOR_ID		0x574a
-#define PRODUCT_ID		0x6372
-#define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
-#define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
-#define RAWHID_TX_SIZE		64	// transmit packet size
-#define RAWHID_TX_INTERVAL	4	// max # of ms between transmit packets
-#define RAWHID_RX_SIZE		64	// receive packet size
-#define RAWHID_RX_INTERVAL	4	// max # of ms between receive packets
-
 static volatile uint8_t ign_pins[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
 static volatile uint8_t inj_pins[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
 volatile uint8_t ign_pin;
@@ -53,13 +42,13 @@ typedef struct {
 	volatile uint8_t max_ign_dwell;		// the maximum dwell in timer0 ticks
 	
 	// running values
-	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
 	volatile uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
+	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
 	volatile uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
 	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
-										// 1000/(t*51.2*36/1000)/0.0166666666667
+										// 60/(t*36)
 
 	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
 	volatile uint8_t cam;				// the current cam tooth; a value between 0 and 3
@@ -81,6 +70,8 @@ volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
 
 uint8_t rx_buffer[64];
 uint8_t tx_buffer[64];
+uint8_t tp_ring[8];
+uint8_t tp_ring_ptr;
 
 /* 
 // additional parameters that may become tuning parameters or constants
@@ -170,12 +161,17 @@ int main(void) {
 	
 	// TODO, redo all this math for 16MHz
 	
+	// 52 tick/tooth * 64 us/tick = 3328 us/tooth * 36 teeth = 119.808 ms/rotation = 8.34 Hz * 60 = 500 RPM
+	// 6000000 / (t * 64 * 36)
+
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
 	// prescaler configured so that the timer won't overflow at 500 rpm @ 36 teeth
-	// 16MHz clock = 62.5 ns per clock cycle
+	// 16MHz clock = 62.5 ns per clock cycle (64 ms / timer tick @ 1024 prescale --- 15.624 kHz)
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (9.999 ms for missing teeth)
-	// 10000 us / 64 us = 156 < 256 [ / 1024 prescale ]
+	// 10000 us / 64 us = 156 < 256
+	// 10000 rpm = 166.6 Hz = 6 ms / 36 = 0.166 ms/tooth (0.5 ms for missing teeth)
+	// 500 us / 64 us = 7.8 > 0
 	// ??? rpm absolute minimum rpm at 1024 prescale
 	TCCR0A = 0x00;						// OC0A / OC0B disconnected
 	TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
