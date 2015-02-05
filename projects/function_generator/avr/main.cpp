@@ -72,7 +72,7 @@ uint32_t get_servo_phase(){
 	return ((ui_freq_servo * 2) + 400);
 }
 
-double get_voltage(){
+double get_voltage_full_range(){
 	//We need to calibrate this to our specific hardware by adjusting the
 	// multiplier and the offset.  The multiplier is nominally 10; this
 	// should be set to the actual voltage range from your DAC between 
@@ -80,6 +80,16 @@ double get_voltage(){
 	// actual output voltage at value 0x00 and 0xFF and recompile for
 	// these values.
 	return 10.28 * (ui_voltage / 255.0) - 5.19;
+}
+
+double get_voltage_half_range(){
+	//We need to calibrate this to our specific hardware by adjusting the
+	// multiplier and the offset.  The multiplier is nominally 10; this
+	// should be set to the actual voltage range from your DAC between 
+	// 0x00 and 0xFF.  The offset is the negative voltage.  Measure the
+	// actual output voltage at value 0x00 and 0xFF and recompile for
+	// these values.
+	return 5.15 * (ui_voltage / 255.0) - 0.048;
 }
 
 uint16_t _pwm_micros_to_clicks(uint32_t micros){
@@ -140,14 +150,17 @@ void update_display(){
 		uint8_t l;
 		l = snprintf(temp, 16, "%6d us", (uint16_t) phase);
 		display.setDdramAddress(0x40);
+		_delay_us(100);
 		display.setText(temp, l);
 	}
 	else if (_mode == MODE_VOLTAGE){
-		double voltage = get_voltage();
+		double voltage_full = get_voltage_full_range();
+		double voltage_half = get_voltage_half_range();
 		char temp[16];
 		uint8_t l;
-		l = snprintf(temp, 16, "%+4.2fV (Buffer)", voltage);
+		l = snprintf(temp, 16, "%+4.2fV / %+4.2fV", voltage_full, voltage_half);
 		display.setDdramAddress(0x40);
+		_delay_us(100);
 		display.setText(temp, l);
 	}
 	else{
@@ -168,11 +181,13 @@ void update_display(){
 			l = snprintf(temp, 16, "    %3d Hz", (uint16_t) frequency);
 		}
 		display.setDdramAddress(0x40);
+		_delay_us(100);
 		display.setText(temp, l);
 	}
 	
 	if (TCCR0B != 0x00 || TCCR1B != 0x00 || ui_voltage_running != 0x00){
 		display.setDdramAddress(0x0F);
+		_delay_us(100);
 		char temp[1];
 		temp[0] = '#';
 		display.setText(temp, 1);
@@ -453,23 +468,23 @@ void voltage_menu(){
 		}
 		else if (pressed & BUTTON_UP){
 			ui_voltage++;
-			update_display();
 			update_voltage();
+			update_display();
 		}
 		else if (pressed & BUTTON_DOWN){
 			ui_voltage--;
-			update_display();
 			update_voltage();
+			update_display();
 		}
 		else if (repeat & BUTTON_UP){
 			ui_voltage += 4;
-			update_display();
 			update_voltage();
+			update_display();
 		}
 		else if (repeat & BUTTON_DOWN){
 			ui_voltage -= 4;
-			update_display();
 			update_voltage();
+			update_display();
 		}
 	}
 }
@@ -501,7 +516,7 @@ void output_waveform(){
 		servo_menu();
 	}
 	else if (_mode == MODE_VOLTAGE){
-		PORTD = ui_voltage;
+		update_voltage();
 		voltage_menu();
 	}
 	else {
