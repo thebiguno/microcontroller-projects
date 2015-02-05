@@ -2,18 +2,6 @@
 #include <avr/interrupt.h>
 #include "lib/usb/rawhid.h"
 
-#define STR_MANUFACTURER	L"Warren Janssens"
-#define STR_PRODUCT		L"Cranky Simulator"
-#define VENDOR_ID		0x574a
-#define PRODUCT_ID		0x6373
-#define RAWHID_USAGE_PAGE	0xFFAB	// recommended: 0xFF00 to 0xFFFF
-#define RAWHID_USAGE		0x0200	// recommended: 0x0100 to 0xFFFF
-#define RAWHID_TX_SIZE		0	// transmit packet size
-#define RAWHID_TX_INTERVAL	2	// max # of ms between transmit packets
-#define RAWHID_RX_SIZE		3	// receive packet size
-#define RAWHID_RX_INTERVAL	8	// max # of ms between receive packets
-
-
 static volatile uint8_t ct; // a value from 0 to 143, odd numbers are rising edges
 static volatile uint8_t tooth; // a value from 0 to 35
 
