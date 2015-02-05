@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, February 05, 2015 'amt' 10:47:19 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, February 05, 2015 'pmt' 02:07:58 pm
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -71,17 +71,17 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D126C8;
-Reference = CP1;
+TimeStamp = /54D3E2B7;
+Reference = C11;
 ValeurCmp = 10uF;
-IdModule  = SM0805;
+IdModule  = SM1206;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D126DC;
-Reference = CP2;
+TimeStamp = /54D3E2BD;
+Reference = C12;
 ValeurCmp = 10uF;
-IdModule  = SM0805;
+IdModule  = SM1206;
 EndCmp
 
 BeginCmp
