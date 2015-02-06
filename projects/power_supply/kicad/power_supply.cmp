@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Thu 05 Feb 2015 10:24:51 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, February 06, 2015 'pmt' 02:23:17 pm
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -120,6 +120,13 @@ IdModule  = SOT23-SPECIAL;
 EndCmp
 
 BeginCmp
+TimeStamp = /54D52EDB;
+Reference = D7;
+ValeurCmp = ZD5;
+IdModule  = SOT23-SPECIAL;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D19B50;
 Reference = DS1;
 ValeurCmp = DISPLAY;
@@ -162,10 +169,10 @@ IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D2879A;
+TimeStamp = /54D5309F;
 Reference = K5;
-ValeurCmp = LDAC_PROGRAM_JUMPER;
-IdModule  = SIL-2;
+ValeurCmp = I2C_PROG;
+IdModule  = SIL-1;
 EndCmp
 
 BeginCmp
@@ -444,7 +451,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54D126FF;
 Reference = R17;
-ValeurCmp = 10k;
+ValeurCmp = 5.1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -465,7 +472,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54D12711;
 Reference = R20;
-ValeurCmp = 1k;
+ValeurCmp = 5.1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
