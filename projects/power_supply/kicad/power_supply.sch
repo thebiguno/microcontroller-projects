@@ -30,6 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:power_supply
 LIBS:power_supply-cache
 EELAYER 27 0
 EELAYER END
@@ -37,7 +38,7 @@ $Descr User 13000 12000
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "5 feb 2015"
+Date "6 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -440,7 +441,7 @@ L RSMALL R12
 U 1 1 54D127B8
 P 8250 6100
 F 0 "R12" V 8340 6095 40  0000 C CNN
-F 1 "100k" V 8165 6100 40  0000 C CNN
+F 1 "10k" V 8165 6100 40  0000 C CNN
 F 2 "~" V 8180 6100 30  0000 C CNN
 F 3 "~" H 8250 6150 30  0000 C CNN
 	1    8250 6100
@@ -939,8 +940,8 @@ $Comp
 L CP_DOUBLE C5
 U 1 1 54D26A10
 P 8100 1800
-F 0 "C5" H 8100 1550 60  0000 C CNN
-F 1 "22000uF" H 8100 1650 60  0000 C CNN
+F 0 "C5" H 8300 1550 60  0000 C CNN
+F 1 "22000uF" H 7850 1550 60  0000 C CNN
 F 2 "" H 8100 1800 60  0000 C CNN
 F 3 "" H 8100 1800 60  0000 C CNN
 	1    8100 1800
@@ -2032,12 +2033,6 @@ Wire Notes Line
 Wire Notes Line
 	3950 2800 800  2800
 Wire Wire Line
-	7750 1700 7750 1350
-Connection ~ 7750 1350
-Wire Wire Line
-	8450 1700 8450 1550
-Connection ~ 8450 1550
-Wire Wire Line
 	1500 6350 2250 6350
 Wire Wire Line
 	2250 6450 1500 6450
@@ -2121,4 +2116,35 @@ Wire Wire Line
 	8400 3350 8650 3350
 Wire Wire Line
 	9750 4200 9750 4000
+$Comp
+L DZSMALL D6
+U 1 1 54D4451E
+P 8550 6100
+F 0 "D6" V 8640 6095 40  0000 C CNN
+F 1 "ZD5" V 8465 6100 40  0000 C CNN
+F 2 "~" V 8480 6100 30  0000 C CNN
+F 3 "~" H 8550 6150 30  0000 C CNN
+	1    8550 6100
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR056
+U 1 1 54D4452B
+P 8550 6200
+F 0 "#PWR056" H 8550 6200 30  0001 C CNN
+F 1 "GND" H 8550 6130 30  0001 C CNN
+F 2 "" H 8550 6200 60  0000 C CNN
+F 3 "" H 8550 6200 60  0000 C CNN
+	1    8550 6200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8550 6000 8550 5950
+Connection ~ 8550 5950
+Wire Wire Line
+	7750 1700 7750 1550
+Connection ~ 7750 1550
+Wire Wire Line
+	8450 1700 8450 1350
+Connection ~ 8450 1350
 $EndSCHEMATC

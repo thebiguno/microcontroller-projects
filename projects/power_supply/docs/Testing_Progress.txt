@@ -1,12 +1,17 @@
 Things to Test:
--V_ADJUST to REGULATED_OUTPUT
-	-The regulated output should follow V_ADJUST according to the formula REGULATED_OUTPUT = ((V_ADJUST * 2) - 5) * GAIN
-	-GAIN is calculated from the formula GAIN = 1 + R2 / R1 (where R2 is the resistor in series between REGULATED_OUTPUT and the negative terminal, and R1 is the resistor in series between the negative terminal and GND).
-	-For R2 = 4.7k and R1 = 1k, we thus get a GAIN of 5.7; following through, for V_ADJUST = 5v we should see an output of XXXXTODO
+-Current Sense
+	-Using a 0.1 shunt resistor and a 10k load resistor, we would expect a current of 1000mA per volt output.
+	-Verify bipolar configuration
 	
+-Voltage Sense
 
 Things Successfully Tested:
 -I_ADJUST to ILM conversion
 	-The ILM voltage should be equal to V- + I_ADJUST.
 	-Verified on breadboard using LM324 on Feb 4 2015; this op amp is not rail-to-rail, so it can't get down to exactly -12.3V, but once the voltage is high enough it tracks perfectly.
 	
+-V_ADJUST to REGULATED_OUTPUT
+	-The regulated output should follow V_ADJUST according to the formula REGULATED_OUTPUT = ((V_ADJUST * 2) - 5) * GAIN
+	-GAIN is calculated from the formula GAIN = 1 + R2 / R1 (where R2 is the resistor in series between REGULATED_OUTPUT and the negative terminal, and R1 is the resistor in series between the negative terminal and GND).
+	-For R2 = 51k and R1 = 20k, we thus get a GAIN of 3.55; following through, for V_ADJUST = 1v we should see an output of -10.65, and for V_ADJUST=3.2v we should see an output of 4.97v.
+	-Verified on breadboard using LM324 on Feb 5 2015.  For measured input of 1.001v we saw an output of -10.65 and for input of 3.191v we saw an output of 4.90v
