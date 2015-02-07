@@ -360,8 +360,9 @@ public class Frame extends JFrame {
 					putValue(NAME, "Disconnect ECM");
 				} else {
 					thread = null;
-					putValue(NAME, "Connect ECM");
 					try { device[0].close(); } catch (Throwable t) {}
+					device[0] = null;
+					putValue(NAME, "Connect ECM");
 				}
 			} catch (HIDDeviceNotFoundException e) {
 				JOptionPane.showMessageDialog(getContentPane(), "ECM not found");
@@ -386,7 +387,7 @@ public class Frame extends JFrame {
 					simulatorTpModel.setValue(0);
 					putValue(NAME, "Disconnect Simulator");
 				} else {
-					device[1].close();
+					try { device[1].close(); } catch (Throwable t) {}
 					device[1] = null;
 					putValue(NAME, "Connect Simulator");
 				}
