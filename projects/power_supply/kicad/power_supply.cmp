@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 07 Feb 2015 06:01:34 PM MST
+Cmp-Mod V01 Created by PcbNew date = Sun 08 Feb 2015 03:29:26 PM MST
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -29,9 +29,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D26A10;
+TimeStamp = /54D7C753;
 Reference = C5;
-ValeurCmp = 22000uF;
+ValeurCmp = CP1;
 IdModule  = C2V10;
 EndCmp
 
@@ -295,24 +295,31 @@ IdModule  = SIL-2;
 EndCmp
 
 BeginCmp
+TimeStamp = /54D7C958;
+Reference = K21;
+ValeurCmp = PINS_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D2A19E;
 Reference = MP1;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A17A;
 Reference = MP2;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A18C;
 Reference = MP3;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
@@ -340,14 +347,21 @@ BeginCmp
 TimeStamp = /54D2A6C1;
 Reference = MP7;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A6B5;
 Reference = MP8;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D7CBCE;
+Reference = MP9;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
