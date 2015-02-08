@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/wyatt/Documents/Electronics/projects/projects/power_supply/kicad/power_supply.sch)
-    (date "Sat 07 Feb 2015 05:59:02 PM MST")
+    (date "Sat 07 Feb 2015 06:01:27 PM MST")
     (tool "eeschema (22-Jun-2014 BZR 4027)-stable"))
   (components
     (comp (ref K18)
