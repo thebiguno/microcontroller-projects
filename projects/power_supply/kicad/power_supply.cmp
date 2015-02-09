@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Sun 08 Feb 2015 03:29:26 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 08 Feb 2015 08:39:19 PM MST
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -31,7 +31,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54D7C753;
 Reference = C5;
-ValeurCmp = CP1;
+ValeurCmp = 22000uF;
 IdModule  = C2V10;
 EndCmp
 
@@ -95,7 +95,7 @@ BeginCmp
 TimeStamp = /54D12D17;
 Reference = D1;
 ValeurCmp = BRIDGE_RECTIFIER;
-IdModule  = BRIDGE_RECTIFIER_SQUARE;
+IdModule  = GBPC-W;
 EndCmp
 
 BeginCmp
@@ -267,13 +267,6 @@ IdModule  = SCREW_TERMINAL_3;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D1854E;
-Reference = K17;
-ValeurCmp = VS;
-IdModule  = SCREW_TERMINAL_3;
-EndCmp
-
-BeginCmp
 TimeStamp = /54C9744A;
 Reference = K18;
 ValeurCmp = REGULATED_OUTPUT;
@@ -379,6 +372,13 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /54D82BBC;
+Reference = R3;
+ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D196CA;
 Reference = R4;
 ValeurCmp = 1k;
@@ -428,7 +428,7 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12798;
+TimeStamp = /54D82BD2;
 Reference = R11;
 ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
@@ -460,13 +460,6 @@ TimeStamp = /54D12634;
 Reference = R15;
 ValeurCmp = 0.1;
 IdModule  = RESISTOR_POWER;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12792;
-Reference = R16;
-ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
@@ -584,14 +577,14 @@ EndCmp
 BeginCmp
 TimeStamp = /54D69AAA;
 Reference = U10;
-ValeurCmp = LM7815;
+ValeurCmp = LM7818;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D6B415;
 Reference = U11;
-ValeurCmp = LM7915;
+ValeurCmp = LM7918;
 IdModule  = ;
 EndCmp
 
