@@ -20,8 +20,7 @@ Things Successfully Tested:
 		-Use a fan as load: measured at ~460mA (12V) using multimeter
 		-Using high side current detection
 		-Output 0.56 - 0.60V in one direction
-		-Output about the same in the other direction (slight differences, perhaps accounted for by differences in the diodes?)
-		-Found that the extra set of resistors as shown in the bipolar diagram in the manual do not seem to be needed.
+		-Output about the same in the other direction (slight differences, perhaps accounted for by differences in the diodes or resistors?)
 
 		-Measurement tests (bipolar configuration with a single resistor, only testing current in one direction)
 		-1k resistor load (theoretical 12mA current, 12.63 measured via DMM):
