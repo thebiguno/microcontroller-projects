@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 10 Feb 2015 09:11:51 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, February 11, 2015 'pmt' 02:17:54 pm
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -467,6 +467,13 @@ TimeStamp = /54D12634;
 Reference = R15;
 ValeurCmp = 0.1;
 IdModule  = RESISTOR_POWER;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DBCDB3;
+Reference = R16;
+ValeurCmp = 100k;
+IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
