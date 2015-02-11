@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 08 Feb 2015 08:39:19 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 10 Feb 2015 09:11:51 PM MST
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -101,14 +101,14 @@ EndCmp
 BeginCmp
 TimeStamp = /54D1642C;
 Reference = D2;
-ValeurCmp = SS10PH45;
+ValeurCmp = SS10PH45HM3;
 IdModule  = TO-277A;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D15D83;
 Reference = D3;
-ValeurCmp = SS10PH45;
+ValeurCmp = SS10PH45HM3;
 IdModule  = TO-277A;
 EndCmp
 
@@ -262,6 +262,13 @@ EndCmp
 BeginCmp
 TimeStamp = /54D18548;
 Reference = K16;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DAD4FB;
+Reference = K17;
 ValeurCmp = VS;
 IdModule  = SCREW_TERMINAL_3;
 EndCmp
@@ -537,13 +544,6 @@ TimeStamp = /54D126BC;
 Reference = U4;
 ValeurCmp = OPA548;
 IdModule  = TO220_7LEAD_STAGGERED;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D126C2;
-Reference = U5;
-ValeurCmp = OPA549;
-IdModule  = TO220_11LEAD_STAGGERED;
 EndCmp
 
 BeginCmp

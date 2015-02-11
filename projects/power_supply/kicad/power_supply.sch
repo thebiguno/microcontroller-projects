@@ -38,7 +38,7 @@ $Descr User 13000 12000
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "9 feb 2015"
+Date "11 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -51,17 +51,17 @@ L PINS_2 K18
 U 1 1 54C9744A
 P 11550 4050
 F 0 "K18" H 11550 3900 60  0000 C CNN
-F 1 "REGULATED_OUTPUT" H 11500 3800 60  0000 C CNN
+F 1 "REGULATED_OUTPUT" H 11500 4250 60  0000 C CNN
 F 2 "~" H 11550 4100 60  0000 C CNN
 F 3 "~" H 11550 4100 60  0000 C CNN
 	1    11550 4050
-	-1   0    0    1   
+	-1   0    0    -1  
 $EndComp
 $Comp
-L GND #PWR55
+L GND #PWR56
 U 1 1 54C97614
 P 11250 4100
-F 0 "#PWR55" H 11250 4100 30  0001 C CNN
+F 0 "#PWR56" H 11250 4100 30  0001 C CNN
 F 1 "GND" H 11250 4030 30  0001 C CNN
 F 2 "" H 11250 4100 60  0000 C CNN
 F 3 "" H 11250 4100 60  0000 C CNN
@@ -240,24 +240,13 @@ Text Notes 8250 8800 0    40   ~ 0
 $Comp
 L OPA548 U4
 U 1 1 54D126BC
-P 6750 5500
-F 0 "U4" H 7100 5650 60  0000 C CNN
-F 1 "OPA548" H 7175 5775 60  0000 C CNN
-F 2 "" H 6550 5500 60  0000 C CNN
-F 3 "http://www.ti.com/lit/ds/sbos070b/sbos070b.pdf_(http://www.ti.com/lit/ds/sbos056f/sbos056f.pdf_for_OP547)" H 6550 5500 60  0001 C CNN
-	1    6750 5500
+P 6800 4950
+F 0 "U4" H 7150 5100 60  0000 C CNN
+F 1 "OPA548" H 7225 5225 60  0000 C CNN
+F 2 "" H 6600 4950 60  0000 C CNN
+F 3 "http://www.ti.com/lit/ds/sbos070b/sbos070b.pdf_(http://www.ti.com/lit/ds/sbos056f/sbos056f.pdf_for_OP547)" H 6600 4950 60  0001 C CNN
+	1    6800 4950
 	1    0    0    -1  
-$EndComp
-$Comp
-L OPA549 U5
-U 1 1 54D126C2
-P 6900 4200
-F 0 "U5" H 7250 4350 60  0000 C CNN
-F 1 "OPA549" H 7325 4475 60  0000 C CNN
-F 2 "~" H 6700 4200 60  0000 C CNN
-F 3 "http://www.ti.com/lit/ds/symlink/opa549.pdf" H 6900 4750 60  0001 C CNN
-	1    6900 4200
-	1    0    0    1   
 $EndComp
 Text Label 6100 6600 0    60   ~ 0
 V+
@@ -285,46 +274,44 @@ F 3 "" H 5900 7450 60  0000 C CNN
 $EndComp
 Text Label 6100 7250 0    60   ~ 0
 V-
-Text Notes 6850 4600 0    40   ~ 0
-Pick one of OPA547, \nOPA548, or OPA549 \nfor each module. \nThere are different \ncurrent abilities and\ninput control \nconsiderations for \neach of these.
 $Comp
 L RSMALL R10
 U 1 1 54D126EA
-P 6100 5800
-F 0 "R10" V 6190 5795 40  0000 C CNN
-F 1 "2k" V 6015 5800 40  0000 C CNN
-F 2 "~" V 6030 5800 30  0000 C CNN
-F 3 "~" H 6100 5850 30  0000 C CNN
-	1    6100 5800
+P 6200 5250
+F 0 "R10" V 6290 5245 40  0000 C CNN
+F 1 "2k" V 6115 5250 40  0000 C CNN
+F 2 "~" V 6130 5250 30  0000 C CNN
+F 3 "~" H 6200 5300 30  0000 C CNN
+	1    6200 5250
 	-1   0    0    -1  
 $EndComp
 $Comp
-L GND #PWR23
+L GND #PWR24
 U 1 1 54D126F0
-P 6100 6000
-F 0 "#PWR23" H 6100 6000 30  0001 C CNN
-F 1 "GND" H 6100 5930 30  0001 C CNN
-F 2 "" H 6100 6000 60  0000 C CNN
-F 3 "" H 6100 6000 60  0000 C CNN
-	1    6100 6000
+P 6200 5450
+F 0 "#PWR24" H 6200 5450 30  0001 C CNN
+F 1 "GND" H 6200 5380 30  0001 C CNN
+F 2 "" H 6200 5450 60  0000 C CNN
+F 3 "" H 6200 5450 60  0000 C CNN
+	1    6200 5450
 	1    0    0    -1  
 $EndComp
 $Comp
 L RSMALL R13
 U 1 1 54D126F6
-P 7750 3350
-F 0 "R13" V 7840 3345 40  0000 C CNN
-F 1 "5.1k" V 7665 3350 40  0000 C CNN
-F 2 "~" V 7680 3350 30  0000 C CNN
-F 3 "~" H 7750 3400 30  0000 C CNN
-	1    7750 3350
-	0    -1   -1   0   
+P 6200 4500
+F 0 "R13" V 6290 4495 40  0000 C CNN
+F 1 "5.1k" V 6115 4500 40  0000 C CNN
+F 2 "~" V 6130 4500 30  0000 C CNN
+F 3 "~" H 6200 4550 30  0000 C CNN
+	1    6200 4500
+	-1   0    0    1   
 $EndComp
 Text Notes 4200 7400 0    60   ~ 0
 Input supply filtering
-Text Label 6600 4800 3    60   ~ 0
+Text Label 6650 4400 1    60   ~ 0
 V+
-Text Label 6000 5100 1    60   ~ 0
+Text Label 6650 5500 3    60   ~ 0
 V-
 $Comp
 L RSMALL R17
@@ -623,7 +610,7 @@ L DSMALL D3
 U 1 1 54D15D83
 P 9850 3800
 F 0 "D3" V 9940 3795 40  0000 C CNN
-F 1 "SS10PH45" V 9765 3800 40  0000 C CNN
+F 1 "SS10PH45HM3" V 9765 3800 40  0000 C CNN
 F 2 "~" V 9780 3800 30  0000 C CNN
 F 3 "~" H 9850 3850 30  0000 C CNN
 	1    9850 3800
@@ -634,7 +621,7 @@ L DSMALL D2
 U 1 1 54D1642C
 P 9850 4200
 F 0 "D2" V 9940 4195 40  0000 C CNN
-F 1 "SS10PH45" V 9765 4200 40  0000 C CNN
+F 1 "SS10PH45HM3" V 9765 4200 40  0000 C CNN
 F 2 "~" V 9780 4200 30  0000 C CNN
 F 3 "~" H 9850 4250 30  0000 C CNN
 	1    9850 4200
@@ -682,23 +669,23 @@ V_SENSE
 $Comp
 L PINS_3 K13
 U 1 1 54D17571
-P 4500 6800
-F 0 "K13" H 4500 6600 60  0000 C CNN
-F 1 "VS" H 4500 7000 60  0000 C CNN
-F 2 "~" H 4500 6900 60  0000 C CNN
-F 3 "~" H 4500 6900 60  0000 C CNN
-	1    4500 6800
+P 4500 6900
+F 0 "K13" H 4500 6700 60  0000 C CNN
+F 1 "VS" H 4500 7100 60  0000 C CNN
+F 2 "~" H 4500 7000 60  0000 C CNN
+F 3 "~" H 4500 7000 60  0000 C CNN
+	1    4500 6900
 	1    0    0    1   
 $EndComp
 $Comp
 L GND #PWR14
 U 1 1 54D176DA
-P 4800 6700
-F 0 "#PWR14" H 4800 6700 30  0001 C CNN
-F 1 "GND" H 4800 6630 30  0001 C CNN
-F 2 "" H 4800 6700 60  0000 C CNN
-F 3 "" H 4800 6700 60  0000 C CNN
-	1    4800 6700
+P 4800 7000
+F 0 "#PWR14" H 4800 7000 30  0001 C CNN
+F 1 "GND" H 4800 6930 30  0001 C CNN
+F 2 "" H 4800 7000 60  0000 C CNN
+F 3 "" H 4800 7000 60  0000 C CNN
+	1    4800 7000
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -804,11 +791,11 @@ F 3 "" H 4050 4300 60  0000 C CNN
 $EndComp
 Text Label 7650 4000 3    60   ~ 0
 V_OUT_PRE_CURRENT_SENSE
-Text Label 6800 6200 1    60   ~ 0
+Text Label 6850 5350 3    60   ~ 0
 ILM
-Text Label 6200 4250 1    60   ~ 0
+Text Label 6300 4850 1    60   ~ 0
 +
-Text Label 6100 4150 1    60   ~ 0
+Text Label 6300 5050 2    60   ~ 0
 -
 NoConn ~ 5200 3300
 Text Notes 4500 3500 0    40   ~ 0
@@ -858,10 +845,10 @@ F 3 "~" H 5850 2550 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR24
+L GND #PWR23
 U 1 1 54D19E72
 P 6150 2450
-F 0 "#PWR24" H 6150 2450 30  0001 C CNN
+F 0 "#PWR23" H 6150 2450 30  0001 C CNN
 F 1 "GND" H 6150 2380 30  0001 C CNN
 F 2 "" H 6150 2450 60  0000 C CNN
 F 3 "" H 6150 2450 60  0000 C CNN
@@ -1252,8 +1239,7 @@ Text Notes 5400 1050 0    40   ~ 0
 Use two rectifier boards, wired together,\nto rectify both V+ and V-.  Only one of the\nboards needs the rectifier, but both need\na capacitor (one for V+, the other for V-).\n\nFor a positive-only supply (e.g. from a wall wart\ninstead of a transformer), you can use a single\nrectifier board with the capacitor in the V+\nposition, and connect V- to GND.
 Text Label 8850 4800 1    60   ~ 0
 V+
-NoConn ~ 6800 5100
-NoConn ~ 6800 4650
+NoConn ~ 6850 4550
 $Comp
 L MOUNTING_HOLE MP2
 U 1 1 54D2A17A
@@ -1365,10 +1351,10 @@ F 3 "~" H 12050 900 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR57
+L GND #PWR58
 U 1 1 54D2A6BB
 P 12050 1000
-F 0 "#PWR57" H 12050 1000 30  0001 C CNN
+F 0 "#PWR58" H 12050 1000 30  0001 C CNN
 F 1 "GND" H 12050 930 30  0001 C CNN
 F 2 "" H 12050 1000 60  0000 C CNN
 F 3 "" H 12050 1000 60  0000 C CNN
@@ -1387,10 +1373,10 @@ F 3 "~" H 11800 900 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR56
+L GND #PWR57
 U 1 1 54D2A6C7
 P 11800 1000
-F 0 "#PWR56" H 11800 1000 30  0001 C CNN
+F 0 "#PWR57" H 11800 1000 30  0001 C CNN
 F 1 "GND" H 11800 930 30  0001 C CNN
 F 2 "" H 11800 1000 60  0000 C CNN
 F 3 "" H 11800 1000 60  0000 C CNN
@@ -1399,8 +1385,6 @@ F 3 "" H 11800 1000 60  0000 C CNN
 $EndComp
 Text Notes 8500 8250 0    60   ~ 0
 Internal Regulation
-Text Notes 5600 3200 0    40   ~ 0
-If you plan on using OPA549 and plan on using more than about\n6A of current, you need to solder jumper wires between pins 5/7 \nand V- terminal, and pins 10/11 and V+ terminal.
 Text Notes 2700 8800 0    40   ~ 0
 The MCU sits on a UBBB 32u4 - a breakout board for the\nATMega32u4.  This board is included in the panelized\ndesign of the power supply; as a bonus, any extra boards\ncan be used as a standalone dev board.
 $Comp
@@ -1608,61 +1592,11 @@ Wire Wire Line
 Wire Wire Line
 	10200 4300 10200 4400
 Wire Wire Line
-	7450 4150 7550 4150
-Wire Wire Line
 	10000 5400 10000 5350
 Wire Wire Line
 	7700 5400 7700 5350
 Wire Wire Line
-	7550 5500 7400 5500
-Connection ~ 7550 4150
-Connection ~ 6100 4150
-Wire Wire Line
-	6100 3350 7650 3350
-Wire Wire Line
-	6100 5900 6100 6000
-Connection ~ 6100 5600
-Wire Wire Line
-	6100 3350 6100 5700
-Wire Wire Line
-	6100 4150 6300 4150
-Wire Wire Line
-	6800 6250 6800 5900
-Wire Wire Line
-	5900 6250 6800 6250
-Wire Wire Line
-	5900 3450 5900 6250
-Wire Wire Line
-	6900 3450 5900 3450
-Wire Wire Line
-	6900 3450 6900 3800
-Connection ~ 6600 3550
-Wire Wire Line
-	6000 3550 6000 6150
-Wire Wire Line
-	6700 3550 6700 3700
-Wire Wire Line
-	6000 3550 6800 3550
-Wire Wire Line
-	6600 3650 6600 3550
-Connection ~ 7550 4250
-Wire Wire Line
-	7550 4250 7450 4250
-Wire Wire Line
-	6100 5600 6250 5600
-Wire Wire Line
-	6200 5400 6250 5400
-Wire Wire Line
-	6200 4250 6200 5400
-Wire Wire Line
-	6300 4250 6200 4250
-Connection ~ 6600 4850
-Wire Wire Line
-	6700 4850 6700 4700
-Wire Wire Line
-	6600 4850 6700 4850
-Wire Wire Line
-	6600 4750 6600 4950
+	6200 5350 6200 5450
 Connection ~ 5850 7250
 Wire Wire Line
 	5850 7250 5850 7050
@@ -1754,10 +1688,8 @@ Wire Wire Line
 	3600 4800 4050 4800
 Wire Wire Line
 	5200 4550 5900 4550
-Connection ~ 5900 4550
 Wire Wire Line
-	5200 4850 6200 4850
-Connection ~ 6200 4850
+	5200 4850 6300 4850
 Connection ~ 4000 4900
 Wire Wire Line
 	5300 5000 5300 4850
@@ -1777,8 +1709,6 @@ Wire Wire Line
 Wire Wire Line
 	1350 2250 3100 2250
 Wire Wire Line
-	7550 4000 8600 4000
-Wire Wire Line
 	3800 4500 4050 4500
 Wire Notes Line
 	800  2800 800  900 
@@ -1797,9 +1727,6 @@ Wire Notes Line
 Wire Notes Line
 	12200 3000 12200 9850
 Wire Wire Line
-	6800 3550 6800 3750
-Connection ~ 6700 3550
-Wire Wire Line
 	3600 4650 3600 4800
 Wire Wire Line
 	3950 4600 4050 4600
@@ -1811,14 +1738,11 @@ Connection ~ 4000 4600
 Wire Wire Line
 	5300 4550 5300 4700
 Wire Wire Line
-	6000 6150 6600 6150
-Wire Wire Line
 	9850 3600 9850 3700
 Wire Wire Line
 	9850 4400 9850 4300
 Wire Wire Line
 	10300 3650 10200 3650
-Connection ~ 7750 4000
 Wire Wire Line
 	10600 3650 10500 3650
 Wire Wire Line
@@ -1862,8 +1786,6 @@ Wire Wire Line
 	4900 6600 4900 6800
 Wire Wire Line
 	4900 6800 4800 6800
-Wire Wire Line
-	6600 6150 6600 6050
 Wire Wire Line
 	8550 8400 8750 8400
 Wire Wire Line
@@ -1969,12 +1891,6 @@ Wire Wire Line
 Wire Wire Line
 	9850 3900 9850 4100
 Connection ~ 9850 4000
-Wire Wire Line
-	7550 4000 7550 5500
-Wire Wire Line
-	7850 3350 9200 3350
-Wire Wire Line
-	9200 3350 9200 4200
 $Comp
 L DZSMALL D6
 U 1 1 54D4451E
@@ -2197,9 +2113,9 @@ REGCAP_NEG
 Text Label 10550 2000 2    30   ~ 0
 REGCAP_POS
 Wire Wire Line
-	11150 2150 11150 1450
+	11150 1450 11150 2500
 Wire Wire Line
-	11100 1950 11100 1250
+	11100 1250 11100 2300
 $Comp
 L +12V #PWR25
 U 1 1 54D7F1EF
@@ -2249,4 +2165,55 @@ Wire Wire Line
 	7700 5900 7700 6000
 Wire Wire Line
 	7700 5700 7700 5600
+Wire Wire Line
+	6200 5050 6300 5050
+Connection ~ 6200 5050
+Wire Wire Line
+	5900 4550 5900 5700
+Wire Wire Line
+	5900 5700 6850 5700
+Wire Wire Line
+	6850 5700 6850 5350
+Wire Wire Line
+	6200 4600 6200 5150
+Wire Wire Line
+	6200 4400 6200 3850
+Wire Wire Line
+	6200 3850 9200 3850
+Wire Wire Line
+	9200 3850 9200 4200
+Wire Wire Line
+	8600 4000 7550 4000
+Wire Wire Line
+	7550 4000 7550 4950
+Wire Wire Line
+	7550 4950 7450 4950
+$Comp
+L PINS_3 K17
+U 1 1 54DAD4FB
+P 11550 2400
+F 0 "K17" H 11550 2200 60  0000 C CNN
+F 1 "VS" H 11550 2600 60  0000 C CNN
+F 2 "~" H 11550 2500 60  0000 C CNN
+F 3 "~" H 11550 2500 60  0000 C CNN
+	1    11550 2400
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR55
+U 1 1 54DAD501
+P 11250 2400
+F 0 "#PWR55" H 11250 2400 30  0001 C CNN
+F 1 "GND" H 11250 2330 30  0001 C CNN
+F 2 "" H 11250 2400 60  0000 C CNN
+F 3 "" H 11250 2400 60  0000 C CNN
+	1    11250 2400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	11150 2500 11250 2500
+Connection ~ 11150 2150
+Wire Wire Line
+	11100 2300 11250 2300
+Connection ~ 11100 1950
 $EndSCHEMATC
