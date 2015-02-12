@@ -30,14 +30,13 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:ubbb_32u4-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 9000 7000
 encoding utf-8
 Sheet 1 1
 Title "UBBB 32u4"
-Date "9 jan 2015"
+Date "10 feb 2015"
 Rev "1.1"
 Comp "Digital Cave"
 Comment1 ""
@@ -1023,11 +1022,11 @@ Wire Wire Line
 	2150 2500 2250 2500
 Connection ~ 2150 2500
 Text Label 5150 5350 0    60   ~ 0
-L1
+LR
 Text Label 5150 5500 0    60   ~ 0
-L2
+LB
 Text Label 5150 5650 0    60   ~ 0
-L3
+LG
 Wire Wire Line
 	5500 1550 5050 1550
 Wire Wire Line

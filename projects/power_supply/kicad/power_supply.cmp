@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Thu 05 Feb 2015 10:24:51 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, February 11, 2015 'pmt' 02:17:54 pm
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -22,7 +22,14 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D26A10;
+TimeStamp = /54D68AF6;
+Reference = C4;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D7C753;
 Reference = C5;
 ValeurCmp = 22000uF;
 IdModule  = C2V10;
@@ -78,23 +85,30 @@ IdModule  = SM1206;
 EndCmp
 
 BeginCmp
+TimeStamp = /54D68B03;
+Reference = C13;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D12D17;
 Reference = D1;
 ValeurCmp = BRIDGE_RECTIFIER;
-IdModule  = BRIDGE_RECTIFIER_SQUARE;
+IdModule  = GBPC-W;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D1642C;
 Reference = D2;
-ValeurCmp = SS10PH45;
+ValeurCmp = SS10PH45HM3;
 IdModule  = TO-277A;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D15D83;
 Reference = D3;
-ValeurCmp = SS10PH45;
+ValeurCmp = SS10PH45HM3;
 IdModule  = TO-277A;
 EndCmp
 
@@ -115,7 +129,14 @@ EndCmp
 BeginCmp
 TimeStamp = /54D4451E;
 Reference = D6;
-ValeurCmp = ZD5;
+ValeurCmp = ZD5v1;
+IdModule  = SOT23-SPECIAL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D52EDB;
+Reference = D7;
+ValeurCmp = ZD5v1;
 IdModule  = SOT23-SPECIAL;
 EndCmp
 
@@ -129,7 +150,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54D12D42;
 Reference = F1;
-ValeurCmp = FUSE;
+ValeurCmp = 2A;
 IdModule  = ;
 EndCmp
 
@@ -162,10 +183,10 @@ IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D2879A;
+TimeStamp = /54D5309F;
 Reference = K5;
-ValeurCmp = LDAC_PROGRAM_JUMPER;
-IdModule  = SIL-2;
+ValeurCmp = I2C_PROG;
+IdModule  = SIL-1;
 EndCmp
 
 BeginCmp
@@ -246,7 +267,7 @@ IdModule  = SCREW_TERMINAL_3;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D1854E;
+TimeStamp = /54DAD4FB;
 Reference = K17;
 ValeurCmp = VS;
 IdModule  = SCREW_TERMINAL_3;
@@ -274,24 +295,31 @@ IdModule  = SIL-2;
 EndCmp
 
 BeginCmp
+TimeStamp = /54D7C958;
+Reference = K21;
+ValeurCmp = PINS_2;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D2A19E;
 Reference = MP1;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A17A;
 Reference = MP2;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A18C;
 Reference = MP3;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
@@ -319,14 +347,21 @@ BeginCmp
 TimeStamp = /54D2A6C1;
 Reference = MP7;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2A6B5;
 Reference = MP8;
 ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D7CBCE;
+Reference = MP9;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#6;
 EndCmp
 
 BeginCmp
@@ -344,9 +379,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D28693;
+TimeStamp = /54D82BBC;
 Reference = R3;
-ValeurCmp = 1k;
+ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -400,7 +435,7 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12798;
+TimeStamp = /54D82BD2;
 Reference = R11;
 ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
@@ -435,16 +470,16 @@ IdModule  = RESISTOR_POWER;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12792;
+TimeStamp = /54DBCDB3;
 Reference = R16;
-ValeurCmp = 10k;
+ValeurCmp = 100k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D126FF;
 Reference = R17;
-ValeurCmp = 10k;
+ValeurCmp = 5.1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -465,8 +500,15 @@ EndCmp
 BeginCmp
 TimeStamp = /54D12711;
 Reference = R20;
-ValeurCmp = 1k;
+ValeurCmp = 5.1k;
 IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D6876B;
+Reference = SW1;
+ValeurCmp = SPST;
+IdModule  = ;
 EndCmp
 
 BeginCmp
@@ -512,13 +554,6 @@ IdModule  = TO220_7LEAD_STAGGERED;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D126C2;
-Reference = U5;
-ValeurCmp = OPA549;
-IdModule  = TO220_11LEAD_STAGGERED;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D1263A;
 Reference = U6;
 ValeurCmp = INA169;
@@ -544,6 +579,20 @@ TimeStamp = /54D3AAE9;
 Reference = U9;
 ValeurCmp = LM7812;
 IdModule  = LM78XXV;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D69AAA;
+Reference = U10;
+ValeurCmp = LM7818;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D6B415;
+Reference = U11;
+ValeurCmp = LM7918;
+IdModule  = ;
 EndCmp
 
 EndListe
