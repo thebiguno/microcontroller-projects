@@ -50,14 +50,14 @@ static const uint8_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
            FN11,Q   ,J   ,K   ,X   ,
            FN1 ,FN2 ,FN3 ,FN4 ,FN5  ,
                           SLSH,BSLS,
-                     BSPC,DEL ,ESC ,
+                     FN13,DEL ,ESC ,
            6   ,7   ,8   ,9   ,0   ,
            F   ,G   ,C   ,R   ,L   ,
            D   ,H   ,T   ,N   ,S   ,
            B   ,M   ,W   ,V   ,FN12,
            FN6 ,FN7 ,FN8 ,FN9 ,FN10,
            GRV ,NUBS,
-           TAB ,ENT ,SPC
+           TAB ,ENT ,FN14
     ),
     /* Layer 1: Symbols */
     KEYMAP(
@@ -92,7 +92,9 @@ static const uint16_t PROGMEM fn_actions[] = {
 		[9] = ACTION_MODS_TAP_KEY(MOD_RCTL, KC_LBRC),
 		[10] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_RBRC),
 		[11] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_SCLN),
-		[12] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_Z)
+		[12] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_Z),
+		[13] = ACTION_MODS_TAP_KEY(MOD_LSFT, KC_BSPC),
+		[14] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_SPC)
 };
 void action_function(keyrecord_t *event, uint8_t id, uint8_t opt) {
     if (id == TEENSY_KEY) {
