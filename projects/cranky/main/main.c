@@ -1,9 +1,10 @@
 #include <avr/io.h>
+#include <util/delay.h> // TODO remove
 #include <avr/interrupt.h>
 #include "lib/usb/rawhid.h"
 
-static volatile uint8_t ign_pins[] = { _BV(PINB2), _BV(PINB3), _BV(PINB1), _BV(PINB0) };
-static volatile uint8_t inj_pins[] = { _BV(PIND5), _BV(PIND4), _BV(PIND6), _BV(PIND7) };
+static uint8_t ign_pins[] = { _BV(PB4), _BV(PB5), _BV(PB4), _BV(PB5) };
+static uint8_t inj_pins[] = { _BV(PD4), _BV(PD5), _BV(PD4), _BV(PD5) };
 volatile uint8_t ign_pin;
 volatile uint8_t inj_pin;
 
@@ -12,12 +13,9 @@ volatile uint8_t inj_pin;
 /* TODO
  * below a configured RPM (i.e. 383) don't calculate the PWM for the injectors, just use defalt cranking values
  * implement a rev limiter; either retard  the ignition advance, or cut fuel; configurable rev upper limit and restored limit
- * configure if coolant temperature sensor is in use or not (i.e. air cooled engine)
  * configure injector opening time (ms)
- *           injector battery voltage correction (ms/V)
  *           pwm time threshold (ms)
  *           injector pwm period (us)
- *           molex minifit connectors
  *           determine both spark and injector configuration
  */
 
@@ -103,14 +101,6 @@ float decel_fuel_pct = 20;
 // the rpm (crank) is used to determine the spark advance
 // the throttle possition is used to determine the load
 
-
-// Low MAP (low engine load) = more spark advance
-// High MAP (high engine load) = less spark advance
-// Low CLT (cold engine) = more spark advance
-// High CLT (warm engine) = less spark advance
-// Low RPM = less spark advance
-// High RPM = more spark advance
-
 // reading material:
 // http://www.vems.hu/wiki/index.php?page=InputTrigger%2FSubaruThirtySixMinusTwoMinusTwoMinusTwo
 
@@ -123,17 +113,6 @@ float decel_fuel_pct = 20;
 // 56789012345678901234501234567890123456789012345678901234501234567890123456789        crank tooth number
 //                1                 3                 2                 4               60 deg before TDC
 
-// hardware map
-// PD2 (int2) crank hall
-// PD3 (int3) cam hall
-// PF0 (adc0) throttle possition
-// PC6 fuel pump relay
-// PC7 fast idle relay
-// PB4 ignition A
-// PB5 ignition B
-// PD4 injector A
-// PD5 injector B
-
 // The ECM identifies cylinders at TDC and determines ignition timing as follows:
 // * There is a crank input signal every 10 deg rotation of the crankshaft
 // * The cylinder group (#4,#1 ; #3,#2) is determined by gaps in the input signal
@@ -141,26 +120,25 @@ float decel_fuel_pct = 20;
 // * TDC #1, #2 is the zero reference point for the teeth on the timing wheel
 // * 
 int main(void) {
+	// set up pin outputs
+	DDRB = _BV(PB4) | _BV(PB5) | _BV(PB6); 		// 4 & 5 are ignition igbts output; 6 is led output
+	DDRC = _BV(PC6) | _BV(PB7);					// 6 & 7 are relay transistors output
+	DDRD = _BV(PD4) | _BV(PD5);					// 2 & 3 are hall effect input; 4 & 5 are injector mosfets output
+	DDRF = 0x00;								// 0 is throttle position ADC input
+
+	PORTB = _BV(PB4) | _BV(PB5); // red is b6
+	// set up analog
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
+	ADMUX |= _BV(ADLAR); // use AREF, left adjust result, read ADC0/PC0
+
+	// set up pin interrupts
+	//EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT2 and INT3 interrupt on rising edge
+	//EIMSK = _BV(INT2) | _BV(INT3); // enable interrupts on INT2 (crank) and INT3 (cam sync)
+
 	usb_init();
 	
-	// TODO load these tuning values from EEPROM
-	for (uint8_t i = 0; i < 8; i++) {
-		for (uint8_t j = 0; j < 8; i++) {
-			u.s.ign_advance[i][j] = i * 5 - j;
-			u.s.inj_duration[i][j] = i * 10;
-		}
-		u.s.rpm_zones[7-i] = (i*8);	// rpm = 500/581/664/794/986/1302/1915/3617 (not ideal for real life)
-		u.s.load_zones[7-i] = 2 ^ i;		
-	}
-	
-	u.s.crank = 0;
-	u.s.cam = 0;
-	u.s.crank_ticks = 0;
-	u.s.crank_sync = 0;
-	cam_teeth = 0;
-	
-	// TODO, redo all this math for 16MHz
-	
+	PORTB = _BV(PB4) | _BV(PB6); // green is b5
+	// set up timers
 	// 52 tick/tooth * 64 us/tick = 3328 us/tooth * 36 teeth = 119.808 ms/rotation = 8.34 Hz * 60 = 500 RPM
 	// 6000000 / (t * 64 * 36)
 
@@ -173,85 +151,122 @@ int main(void) {
 	// 10000 rpm = 166.6 Hz = 6 ms / 36 = 0.166 ms/tooth (0.5 ms for missing teeth)
 	// 500 us / 64 us = 7.8 > 0
 	// ??? rpm absolute minimum rpm at 1024 prescale
-	TCCR0A = 0x00;						// OC0A / OC0B disconnected
-	TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
+//	TCCR0A = 0x00;						// OC0A / OC0B disconnected
+//	TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
 
 	// timer 1 (16-bit) is used to time the spark advance
 	// 16MHz clock = 62.5 ns per clock cycle
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (20 ms covers 60 degrees maximum spark advance)
 	// 20000 us / 0.5 us = 40,000 < 65,535 [ / 8 prescale ]
-	TCCR1A = 0x00;						// OC1A / OC1B disconnected
-	TCCR1B = _BV(CS11);					// clock prescale select = CLK /8
-	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	// interrupt on timer 1 compare A and B
+//	TCCR1A = 0x00;						// OC1A / OC1B disconnected
+//	TCCR1B = _BV(CS11);					// clock prescale select = CLK /8
+//	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	// interrupt on timer 1 compare A and B
 	
 	// timer 4 (10-bit) is used to drive the injector solenoids (high-z)
 	// 16MHz clock = 62.5 ns per clock cycle
 	// 256 * 8 = 2048 * 0.0625 us = 128 us > 66 us
-	TCCR4A = 0x00;						// OC2A / OC2B disconnected
-	TCCR4B = _BV(CS42);					// clock precale select = CLK / 8
-	TIMSK4 = _BV(OCIE4A) | _BV(OCIE4B); // interrupt on timer 4 compare A and B
-	OCR4A = 132; // 132 * 8 clock cycles = 66 us
+//	TCCR4A = 0x00;						// OC2A / OC2B disconnected
+//	TCCR4B = _BV(CS42);					// clock precale select = CLK / 8
+//	TIMSK4 = _BV(OCIE4A) | _BV(OCIE4B); // interrupt on timer 4 compare A and B
+//	OCR4A = 132; // 132 * 8 clock cycles = 66 us
 	
-	// set up analog
-	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
-	ADMUX |= _BV(ADLAR); // use AREF, left adjust result, read ADC0/PC0
-
-	// set up pin interrupts
-	EICRA = _BV(ISC00) | _BV(ISC01) | _BV(ISC10) | _BV(ISC11); // INT0 and INT1 interrupt on rising edge
-	EIMSK = _BV(INT0) | _BV(INT1); // enable interrupts on INT0 (crank) and INT1 (cam sync)
-	
-	// set up pin outputs // TODO, this is now wrong
-	DDRB = _BV(PINB0) | _BV(PINB1) | _BV(PINB2) | _BV(PINB3);	// spark plugs
-	DDRD = _BV(PIND4) | _BV(PIND5) | _BV(PIND6) | _BV(PIND7);	// injectors
+	// load tuning values
+	// TODO load these tuning values from EEPROM
+//	for (uint8_t i = 0; i < 8; i++) {
+//		for (uint8_t j = 0; j < 8; i++) {
+//			u.s.ign_advance[i][j] = i * 5 - j;
+//			u.s.inj_duration[i][j] = i * 10;
+//		}
+//		u.s.rpm_zones[7-i] = (i*8);	// rpm = 500/581/664/794/986/1302/1915/3617 (not ideal for real life)
+//		u.s.load_zones[7-i] = 2 ^ i;
+//	}
+	// initialize running state
+	u.s.crank = 0;
+	u.s.cam = 0;
+	u.s.crank_ticks = 0;
+	u.s.crank_sync = 0;
+	cam_teeth = 0;
 
 	sei();						// enable interrupts
 
-	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
+	PORTB = _BV(PB5) | _BV(PB6); // blue is b4
+
+	//	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
 
 	while(1) {
-		// nothing in the main loop is time sensative
+		PORTB = _BV(PB4) | _BV(PB5); // red is b6
+
+
+		// nothing in the main loop is time sensitive
 		
-		for (uint8_t i = 0; i < 8; i++) {
-			if (u.s.crank_ticks > u.s.rpm_zones[i]) {
-				u.s.rpm_zone = i;
-				break;
-			}
-		}
-		for (uint8_t i = 0; i < 8; i++) {
-			if (u.s.adc_tp < u.s.load_zones[i]) {
-				u.s.load_zone = i;
-				break;
-			}
-		}
-		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
+//		for (uint8_t i = 0; i < 8; i++) {
+//			if (u.s.crank_ticks > u.s.rpm_zones[i]) {
+//				u.s.rpm_zone = i;
+//				break;
+//			}
+//		}
+//		for (uint8_t i = 0; i < 8; i++) {
+//			if (u.s.adc_tp < u.s.load_zones[i]) {
+//				u.s.load_zone = i;
+//				break;
+//			}
+//		}
+//		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 		
 		// continually poll ADC0
-		if ((ADCSRA & ADSC) == 0x00) {
-			ADCSRA |= _BV(ADSC);
-		}
+//		if ((ADCSRA & ADSC) == 0x00) {
+//			ADCSRA |= _BV(ADSC);
+//		}
 		
 		if (usb_configured()) {
-			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+			PORTB = _BV(PB4) | _BV(PB6); // green is b5
+			if (usb_rawhid_recv(rx_buffer, 10) > 0) {
+				PORTB = _BV(PB5) | _BV(PB6); // blue is b4
 				uint8_t addr = rx_buffer[0];
 				uint8_t len = rx_buffer[0];
 				if (len & 0x80) {
 					// read request
-					len &= 0x7f; // clear the read/write bit
-					if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-					tx_buffer[0] = addr;
-					tx_buffer[1] = len;
-					for (uint8_t i = addr; i < len; i++) {
-						tx_buffer[i+2] = u.a[i];
+					if (addr == 0xff) {
+						// read from eeprom
+						for (uint8_t i = 0; i < 18; i++) {
+							tx_buffer[0] = i * 8;
+							tx_buffer[1] = 8;
+							for (uint8_t j = 0; j < 8; j++) {
+								tx_buffer[j+2] = u.a[(i*8) + j];
+							}
+							usb_rawhid_send(tx_buffer, 10);
+						}
+					} else {
+						len &= 0x7f; // clear the read bit
+						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+						tx_buffer[0] = addr;
+						tx_buffer[1] = len;
+						for (uint8_t i = 0; i < len; i++) {
+							tx_buffer[i + 2] = u.a[i + addr];
+						}
+						usb_rawhid_send(tx_buffer, len + 2);
 					}
-					usb_rawhid_send(tx_buffer, 0);
 				} else {
 					// write request
-					if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-					for (uint8_t i = addr; i < len; i++) {
-						u.a[i] = rx_buffer[i+2];
+					if (addr == 0xff) {
+						// write to eeprom
+					} else {
+						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+						for (uint8_t i = 0; i < len; i++) {
+							u.a[i + addr] = rx_buffer[i + 2];
+						}
 					}
 				}
+			} else {
+				// send the six running values
+				tx_buffer[0] = 0x92;
+				tx_buffer[1] = 0x06;
+				for (uint8_t i = 0; i < 6; i++) {
+					tx_buffer[i + 2] = u.a[i + 0x92];
+				}
+				usb_rawhid_send(tx_buffer, 8);
 			}
+			PORTB = _BV(PB4) | _BV(PB6); // red is b6
 		}
 	}
 }
@@ -353,13 +368,13 @@ ISR(INT1_vect) {
 ISR(TIMER1_COMPA_vect) {
 	if ((u.s.crank > 12 && u.s.crank < 19) || u.s.crank >= 30 || u.s.crank < 1) {
 //		if ((u.s.crank > 11 && u.s.crank < 19) || (u.s.crank > 29 && u.s.crank < 26) || (u.s.crank == 0)) {
-		PORTB = ign_pin;
+		//PORTB = ign_pin;
 	}
 }
 
 // ignition spark off
 ISR(TIMER1_COMPB_vect) {
-	PORTB = 0x0;
+	//PORTB = 0x0;
 	
 	OCR1A = 0xFFFF;
 	TCNT1 = 0;
@@ -369,7 +384,7 @@ ISR(TIMER1_COMPB_vect) {
 ISR(TIMER4_COMPA_vect) {
 	// -30 to +70 degrees around TDC
 	if ((u.s.crank > 14 && u.s.crank < 26) || u.s.crank > 33 || u.s.crank < 8) {
-		PORTD |= inj_pin;
+		//PORTD |= inj_pin;
 	}
 	TCNT4 = 0;
 	OCR4B = (uint16_t) u.s.inj_dc * 132 / 255;	// 132 * 8 clock cycles = 66 us
@@ -377,6 +392,5 @@ ISR(TIMER4_COMPA_vect) {
 
 // injector pwm phase
 ISR(TIMER4_COMPB_vect) {
-	PORTD = 0;
+	//PORTD = 0;
 }
-

@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 10 Feb 2015 09:11:51 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Thu 12 Feb 2015 08:37:49 PM MST
 
 BeginCmp
 TimeStamp = /54D12628;
@@ -302,6 +302,13 @@ IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
+TimeStamp = /54DD1CDC;
+Reference = K22;
+ValeurCmp = E/S_TEST;
+IdModule  = SIL-1;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D2A19E;
 Reference = MP1;
 ValeurCmp = MOUNTING_HOLE;
@@ -362,6 +369,27 @@ TimeStamp = /54D7CBCE;
 Reference = MP9;
 ValeurCmp = MOUNTING_HOLE;
 IdModule  = MOUNTING_HOLE_#6;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DD18B9;
+Reference = MP10;
+ValeurCmp = MOUSE_BITES;
+IdModule  = mouse_bites;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DD18B3;
+Reference = MP11;
+ValeurCmp = MOUSE_BITES;
+IdModule  = mouse_bites;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DD18A1;
+Reference = MP12;
+ValeurCmp = MOUSE_BITES;
+IdModule  = mouse_bites;
 EndCmp
 
 BeginCmp
@@ -470,6 +498,13 @@ IdModule  = RESISTOR_POWER;
 EndCmp
 
 BeginCmp
+TimeStamp = /54DBCDB3;
+Reference = R16;
+ValeurCmp = 100k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D126FF;
 Reference = R17;
 ValeurCmp = 5.1k;
@@ -494,6 +529,20 @@ BeginCmp
 TimeStamp = /54D12711;
 Reference = R20;
 ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DCF20F;
+Reference = R21;
+ValeurCmp = 5.1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DCF121;
+Reference = R22;
+ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
