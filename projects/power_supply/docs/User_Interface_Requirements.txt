@@ -1,0 +1,46 @@
+-Built-in GUI
+	-Interface uses 20x4 char HD44780 display + 2x encoders with push buttons
+	-Each line on the display is one channel:
+		 12345678901234567890
+		1  +12.04V   +5.000A
+		2  + 3.31V   -0.020A
+		3  + 1.80V   +0.000A
+		4  + 5.00V   +2.357A
+
+	-In normal operation, the display will show the actual measurements for voltage / current
+	-To get into 'set' mode, push and hold encoder 1 for 2+ seconds
+		-In set mode, a cursor will appear beside an item in a channel:
+			12345678901234567890
+			1#+12.040V   +5.000A
+			2 + 3.310V   -0.020A
+			3 + 1.800V   +0.000A
+			4 + 5.000V   +2.357A
+		-The cursor will show the channel / item which is to be modified
+		-Encoder 1 modifies in increments of 1 decimal place (0.1)
+		-Encoder 2 modifies in increments of 3 decimal places (0.001)
+		-Press encoder 1 to switch between items in a L->R, T->B configuration
+			-E.g. Initially channel 1 voltage will be selected.  Press encoder 1 to switch to channel 1 current.  Press again to switch to channel 2 voltage, then channel 2 amperage, etc.
+		-Press encoder 2 to navigate backwards (opposite direction of channel 1)
+		-Settings immediately take effect
+		-To lock the settings and go back to measurement / normal mode, press and hold encoder 1 for 2+ seconds.  The cursor will disappear.
+	-To get into 'menu' mode, press and hold encoder 2 for 2+ seconds
+		-In menu mode, you see different options, with a cursor beside the selected one:
+			 12345678901234567890
+			1#Menu option 1
+			2 Menu option 2
+			3 Menu option 3
+			4 Menu option 4
+		-Tap encoder 1 to navigate (incrementing only)
+		-Turn encoder 1 to change options
+		-Tap encoder 2 to apply (enter)
+		-Some menu options include:
+			-Save current values as default (power on default)
+			-Save current values to (named?) bank
+			-Load current values from bank
+			-??????
+-USB Operation
+	-If a USB cable is plugged in, the program automatically enumerates as a raw HID device
+	-Measured values are logged on a repeating basis (1Hz?  10Hz?  What is a reasonable frequency here?  Make it configurable?)
+	-Set values can be sent from program
+	-Python program used for logging + setting values
+	-All menu operations should be supported from USB, allowing for complete computer operation with no external UI.
