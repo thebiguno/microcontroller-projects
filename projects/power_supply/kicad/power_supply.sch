@@ -2292,4 +2292,16 @@ Wire Wire Line
 Connection ~ 5600 5800
 Wire Wire Line
 	5700 5800 5700 6000
+Text Label 3900 9450 0    60   ~ 0
+RS
+Text Label 3900 10150 0    60   ~ 0
+E
+Text Label 3900 10250 0    60   ~ 0
+D7
+Text Label 3900 10350 0    60   ~ 0
+D6
+Text Label 2900 10250 2    60   ~ 0
+D5
+Text Label 2900 9550 2    60   ~ 0
+D4
 $EndSCHEMATC
