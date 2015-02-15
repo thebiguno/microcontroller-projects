@@ -11,14 +11,7 @@ int main (void){
 	PORTB |= _BV(PORTB0) | _BV(PORTB1);
 	sei();
 
-	volatile uint8_t *ports[1];
-	ports[0] = &PORTB;
-	
-	uint8_t pins[1];
-	pins[0] = PORTB6;
-
-	pwm_init(ports, pins, 1, 2048);
-
+	DDRB |= _BV(PORTB5) | _BV(PORTB6);
 	
 	//Main program loop
 	while (1){
@@ -26,7 +19,6 @@ int main (void){
 }
 
 ISR(PCINT0_vect){
-	static uint8_t red = 0x00;
 	static uint8_t last_enc1 = 0x00;
 	uint8_t enc1 = PINB & 0x03;
 	
@@ -34,15 +26,17 @@ ISR(PCINT0_vect){
 	
 	switch(last_enc1){
 		case 0x02:
-		case 0x08:
+		case 0x04:
 		case 0x0B:
 		case 0x0D:
-			red--;
-			pwm_set_phase(0, (uint16_t) red * 8);
+			PORTB ^= _BV(PORTB6);
 			break;
-			
-		default:
-			red++;
-			pwm_set_phase(0, (uint16_t) red * 8);
+		case 0x01:
+		case 0x07:
+		case 0x08:
+		case 0x0E:
+			PORTB ^= _BV(PORTB5);
+			break;
 	}
+
 }
