@@ -38,7 +38,7 @@ $Descr User 13000 12000
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "13 feb 2015"
+Date "15 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -1185,15 +1185,15 @@ F 3 "" H 4900 10450 60  0000 C CNN
 	1    4900 10450
 	0    1    1    0   
 $EndComp
-Text Label 3900 10250 0    60   ~ 0
+Text Label 2900 9150 2    60   ~ 0
 ENC1_A
-Text Label 3900 10350 0    60   ~ 0
+Text Label 2900 9250 2    60   ~ 0
 ENC1_B
 Text Label 2900 9950 2    60   ~ 0
 ENC1_SW
-Text Label 3900 9450 0    60   ~ 0
+Text Label 2900 9350 2    60   ~ 0
 ENC2_A
-Text Label 3900 10150 0    60   ~ 0
+Text Label 2900 9450 2    60   ~ 0
 ENC2_B
 Text Label 2900 10050 2    60   ~ 0
 ENC2_SW
