@@ -31,11 +31,15 @@ Display::Display(Hd44780* hd44780, uint8_t rows, uint8_t cols, int8_t* row_offse
 	this->clear();
 }
 
+void Display::write_text(uint8_t row, uint8_t col, const char* text, uint8_t length){
+	this->write_text(row, col, (char*) text, length);
+}
+
 void Display::write_text(uint8_t row, uint8_t col, char* text, uint8_t length){
 	if (row >= 4 || col >= 20) return;
 	uint8_t i = 0;
 	for (uint8_t c = col; c < 20 && i < length; c++){
-		this->write_text(row, c, text[i]);
+		this->write_text(row, c, text[i++]);
 	}
 }
 

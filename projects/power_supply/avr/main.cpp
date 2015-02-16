@@ -21,8 +21,7 @@ using namespace digitalcave;
 #define ENCODER2_CLOCKWISE				_BV(3)
 #define ENCODER2_COUNTER_CLOCKWISE		_BV(4)
 
-#define STATE_REFRESH					_BV(1)
-#define STATE_LOCKED					_BV(2)
+#define STATE_LOCKED					_BV(1)
 
 static volatile uint8_t encoder_movement;
 
@@ -50,7 +49,6 @@ void handle_interface(){
 
 	if (pressed & BUTTON_1){
 		menu_state ^= STATE_LOCKED;
-		menu_state |= STATE_REFRESH;
 	}
 	
 	if (encoder_movement){
@@ -61,14 +59,12 @@ void handle_interface(){
 }
 
 void update_display(){
-	if (menu_state & STATE_REFRESH){
-		menu_state &= ~STATE_REFRESH;
-		if (menu_state & STATE_LOCKED){
-			display.write_text(0, 2, (char*) "Locked  ", 8);
-		}
-		else {
-			display.write_text(0, 2, (char*) "Unlocked", 8);
-		}
+	display.write_text(1, 0, "                    ", 20);
+	if (menu_state & STATE_LOCKED){
+		display.write_text(0, 2, "Locked  ", 8);
+	}
+	else {
+		display.write_text(0, 2, "Unlocked", 8);
 	}
 	
 	display.refresh();

@@ -38,6 +38,7 @@ namespace digitalcave {
 			 * You must call refresh() to copy data to the display.
 			 */
 			void write_text(uint8_t row, uint8_t col, char* text, uint8_t length);
+			void write_text(uint8_t row, uint8_t col, const char* text, uint8_t length);
 			
 			/*
 			 * Sets the specified character at the given location, respecting
