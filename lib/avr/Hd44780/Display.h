@@ -18,6 +18,8 @@ namespace digitalcave {
 			uint32_t dirty[4];		//Dirty flags for each line.  Only the first 20 bits are used for each line.
 			uint8_t rows;
 			uint8_t cols;
+			uint8_t cursor_row;
+			uint8_t cursor_col;
 			int8_t row_offsets[4]; //The start address of each row
 			
 		public:
@@ -47,6 +49,17 @@ namespace digitalcave {
 			 * You must call refresh() to copy data to the display.
 			 */
 			void write_text(uint8_t row, uint8_t col, char text);
+			
+			/*
+			 * Positions the cursor to the given location.  Only matters if the display
+			 * is set to show the cursor.
+			 */
+			void set_cursor_position(uint8_t row, uint8_t col);
+			
+			/*
+			 * Returns the cursor position
+			 */
+			void get_cursor_position(uint8_t* row, uint8_t* col);
 			
 			/*
 			 * Clears all data from display, blanks buffer to all spaces, and 

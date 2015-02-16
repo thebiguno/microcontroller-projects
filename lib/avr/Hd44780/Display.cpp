@@ -52,6 +52,18 @@ void Display::write_text(uint8_t row, uint8_t col, char text){
 	}
 }
 
+void Display::set_cursor_position(uint8_t row, uint8_t col){
+	if (row >= 4 || col >= 20) return;
+	this->cursor_row = row;
+	this->cursor_col = col;
+	this->hd44780->set_ddram_address(this->row_offsets[row] + col);
+}
+
+void Display::get_cursor_position(uint8_t* row, uint8_t* col){
+	*row = this->cursor_row;
+	*col = this->cursor_col;
+}
+
 void Display::clear(){
 	this->hd44780->clear();
 	for(uint8_t i = 0; i < 80; i++){
@@ -63,14 +75,21 @@ void Display::clear(){
 }
 
 void Display::refresh(){
+	uint8_t changed = 0;
 	for(uint8_t r = 0; r < this->rows; r++){
 		if (this->dirty[r] != 0x00){
 			for (uint8_t c = 0; c < this->cols; c++){
 				if (this->dirty[r] & _BV(c)){
 					this->hd44780->set_ddram_address(this->row_offsets[r] + c);
 					this->hd44780->write_byte(this->buffer[(r * 20) + c]);
+					changed = 1;
 				}
 			}
+			this->dirty[r] = 0;
 		}
+	}
+	
+	if (changed){
+		this->set_cursor_position(this->cursor_row, this->cursor_col);
 	}
 }
