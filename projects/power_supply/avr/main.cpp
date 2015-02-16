@@ -20,9 +20,12 @@ using namespace digitalcave;
 #define ENCODER2_CLOCKWISE				_BV(3)
 #define ENCODER2_COUNTER_CLOCKWISE		_BV(4)
 
+#define STATE_REFRESH					_BV(1)
+#define STATE_LOCKED					_BV(2)
+
 static volatile uint8_t encoder_movement;
 
-static Hd44780_Direct_4bit display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTB, 0, &PORTB, 4, &PORTB, 5, &PORTC, 4, &PORTC, 5, &PORTC, 0);
+static Hd44780_Direct_4bit display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7);
 static Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 3, 8, 70, 8);
 static uint8_t voltage_readings[CHANNEL_COUNT];
 static uint8_t current_readings[CHANNEL_COUNT];
@@ -37,6 +40,17 @@ void read_values(){
 }
 
 void handle_interface(){
+	_delay_ms(12);
+	buttons.sample();
+	
+	uint8_t pressed = buttons.pressed();
+	uint8_t held = buttons.held();
+
+	if (pressed & BUTTON_1){
+		menu_state ^= STATE_LOCKED;
+		menu_state |= STATE_REFRESH;
+	}
+	
 	if (encoder_movement){
 		uint8_t encoder_temp = encoder_movement;
 		encoder_movement = 0;
@@ -45,7 +59,17 @@ void handle_interface(){
 }
 
 void update_display(){
-	
+	if (menu_state & STATE_REFRESH){
+		menu_state &= ~STATE_REFRESH;
+		display.clear();
+		display.setDdramAddress(0x00);
+		if (menu_state & STATE_LOCKED){
+			display.setText((char*) "Locked", 6);
+		}
+		else {
+			display.setText((char*) "Unlocked", 8);
+		}
+	}
 }
 
 int main (void){
@@ -81,10 +105,20 @@ int main (void){
 	analog_pins[10] = 12;
 	analog_pins[11] = 13;
 #endif
-	analog_init(analog_pins, CHANNEL_COUNT * 2, ANALOG_AVCC);
+	//analog_init(analog_pins, CHANNEL_COUNT * 2, ANALOG_AVCC);
 
 	//Debugging lights
-	DDRB |= _BV(PORTB5) | _BV(PORTB6);
+	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
+	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
+	
+	_delay_ms(100);
+	
+	//Display init
+	display.clear();
+	display.setDdramAddress(0x00);
+	display.setText((char*) "Testing 1, 2, 3", 15);
+	menu_state |= STATE_REFRESH;
+	_delay_ms(1000);
 	
 	//Main program loop
 	while (1){
@@ -92,7 +126,6 @@ int main (void){
 		//if (usb_configured()){
 		//	
 		//}
-		
 		read_values();
 		handle_interface();
 		update_display();
