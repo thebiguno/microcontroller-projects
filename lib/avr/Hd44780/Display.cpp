@@ -27,22 +27,34 @@ Display::Display(Hd44780* hd44780, uint8_t rows, uint8_t cols, int8_t* row_offse
 		this->row_offsets[2] = row_offsets[2];
 		this->row_offsets[3] = row_offsets[3];
 	}
+	
+	this->clear();
 }
 
-void Display::set_text(uint8_t row, uint8_t col, char* text, uint8_t length){
+void Display::write_text(uint8_t row, uint8_t col, char* text, uint8_t length){
 	if (row >= 4 || col >= 20) return;
 	uint8_t i = 0;
-	for (uint8_t c = col; c < 20 && i < lenth; c++){
-		this->set_text(row, c, text[i]);
+	for (uint8_t c = col; c < 20 && i < length; c++){
+		this->write_text(row, c, text[i]);
 	}
 }
 
-void Display::set_text(uint8_t row, uint8_t col, char text){
+void Display::write_text(uint8_t row, uint8_t col, char text){
 	if (row >= 4 || col >= 20) return;
 	
 	if (this->buffer[(row * 20) + col] != text) {
 		this->buffer[(row * 20) + col] = text;
-		this->dirty[row] |= _BV(c);
+		this->dirty[row] |= _BV(col);
+	}
+}
+
+void Display::clear(){
+	this->hd44780->clear();
+	for(uint8_t i = 0; i < 80; i++){
+		this->buffer[i] = ' ';
+	}
+	for(uint8_t r = 0; r < 4; r++){
+		this->dirty[r] = 0;
 	}
 }
 
@@ -51,8 +63,8 @@ void Display::refresh(){
 		if (this->dirty[r] != 0x00){
 			for (uint8_t c = 0; c < this->cols; c++){
 				if (this->dirty[r] & _BV(c)){
-					this->hd44780->setDdramAddress(this->row_offsets[r] + c);
-					this->hd44780->setText(this->buffer[(r * 20) + c])
+					this->hd44780->set_ddram_address(this->row_offsets[r] + c);
+					this->hd44780->write_byte(this->buffer[(r * 20) + c]);
 				}
 			}
 		}

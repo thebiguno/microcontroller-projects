@@ -4,7 +4,8 @@
 
 #include "lib/analog/analog.h"
 #include "lib/Button/Buttons.h"
-#include "lib/Hd44780/Hd44780_Direct_4bit.h"
+#include "lib/Hd44780/Display.h"
+#include "lib/Hd44780/Hd44780_Direct.h"
 
 using namespace digitalcave;
 
@@ -25,7 +26,8 @@ using namespace digitalcave;
 
 static volatile uint8_t encoder_movement;
 
-static Hd44780_Direct_4bit display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7);
+static Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7);
+static Display display(&hd44780, 4, 20);
 static Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 3, 8, 70, 8);
 static uint8_t voltage_readings[CHANNEL_COUNT];
 static uint8_t current_readings[CHANNEL_COUNT];
@@ -61,15 +63,15 @@ void handle_interface(){
 void update_display(){
 	if (menu_state & STATE_REFRESH){
 		menu_state &= ~STATE_REFRESH;
-		display.clear();
-		display.setDdramAddress(0x00);
 		if (menu_state & STATE_LOCKED){
-			display.setText((char*) "Locked", 6);
+			display.write_text(0, 2, (char*) "Locked  ", 8);
 		}
 		else {
-			display.setText((char*) "Unlocked", 8);
+			display.write_text(0, 2, (char*) "Unlocked", 8);
 		}
 	}
+	
+	display.refresh();
 }
 
 int main (void){
@@ -115,9 +117,8 @@ int main (void){
 	
 	//Display init
 	display.clear();
-	display.setDdramAddress(0x00);
-	display.setText((char*) "Testing 1, 2, 3", 15);
-	menu_state |= STATE_REFRESH;
+	display.write_text(1, 2, (char*) "Testing 1,2,3", 13);
+	display.refresh();
 	_delay_ms(1000);
 	
 	//Main program loop

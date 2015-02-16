@@ -30,9 +30,8 @@ namespace digitalcave {
 			volatile uint8_t *port_d7; 
 			uint8_t pin_d7;
 			
-			void cmd(uint8_t cmd);
-			void write_byte(uint8_t b, uint8_t mode);
 			void write_nibble(uint8_t b, uint8_t mode);
+
 			
 		public:
 			Hd44780_Direct(uint8_t function);
@@ -45,7 +44,9 @@ namespace digitalcave {
 								volatile uint8_t *port_d6, uint8_t pin_d6,
 								volatile uint8_t *port_d7, uint8_t pin_d7);
 
-			virtual void setByte(uint8_t b);
+			// Implementation of virtual functions declared in superclass
+			virtual void write_byte(uint8_t b);
+			virtual void write_command(uint8_t c);
 	};
 }
 

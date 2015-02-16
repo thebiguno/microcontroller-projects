@@ -37,7 +37,7 @@ namespace digitalcave {
 			 * Note that this function only writes to the buffer, not to the display.
 			 * You must call refresh() to copy data to the display.
 			 */
-			void set_text(uint8_t row, uint8_t col, char* text, uint8_t length);
+			void write_text(uint8_t row, uint8_t col, char* text, uint8_t length);
 			
 			/*
 			 * Sets the specified character at the given location, respecting
@@ -45,7 +45,13 @@ namespace digitalcave {
 			 * Note that this function only writes to the buffer, not to the display.
 			 * You must call refresh() to copy data to the display.
 			 */
-			void set_text(uint8_t row, uint8_t col, char text);
+			void write_text(uint8_t row, uint8_t col, char text);
+			
+			/*
+			 * Clears all data from display, blanks buffer to all spaces, and 
+			 * clears the dirty flags.
+			 */
+			void clear();
 			
 			/*
 			 * Writes all dirty characters from the buffer to the display, and marks

@@ -43,16 +43,16 @@ Hd44780_Direct::Hd44780_Direct(uint8_t function,
 	write_nibble(0x02, 0);
 	_delay_ms(1);
 	
-	this->cmd((function & 0x0c) | 0x20);	//Function set (char size + lines)
+	this->write_command((function & 0x0c) | 0x20);	//Function set (char size + lines)
 	_delay_us(60);
 
-	this->cmd(0x08);	//Display off
+	this->write_command(0x08);	//Display off
 	_delay_us(60);
-	this->cmd(0x01);	//Clear display
+	this->write_command(0x01);	//Clear display
 	_delay_ms(5);
-	this->cmd(0x04);	//Entry mode set
+	this->write_command(0x04);	//Entry mode set
 	_delay_ms(60);
-	this->cmd(0x0C);	//Display on, cursor off, cursor blink off
+	this->write_command(0x0C);	//Display on, cursor off, cursor blink off
 	this->clear();		//Clear display
 }
 
@@ -88,19 +88,12 @@ void Hd44780_Direct::write_nibble(uint8_t b, uint8_t mode){
 
 }
 
-/*
- * Writes the entire byte, MSB nibble first, then LSB nibble
- */
-void Hd44780_Direct::write_byte(uint8_t b, uint8_t mode){
-	//Write the MSB nibble of the byte first...
-	write_nibble(((b & 0xF0) >> 4), mode);
-	//... then LSB nibble
-	write_nibble((b & 0x0F), mode);
+void Hd44780_Direct::write_byte(uint8_t b) {
+	write_nibble(((b & 0xF0) >> 4), 1);
+	write_nibble((b & 0x0F), 1);
 }
 
-void Hd44780_Direct::setByte(uint8_t b) {
-	write_byte(b, 1);
-}
-void Hd44780_Direct::cmd(uint8_t b) {
-	write_byte(b, 0);
+void Hd44780_Direct::write_command(uint8_t b) {
+	write_nibble(((b & 0xF0) >> 4), 0);
+	write_nibble((b & 0x0F), 0);
 }

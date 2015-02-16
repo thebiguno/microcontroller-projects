@@ -9,8 +9,6 @@ namespace digitalcave {
 	class Hd44780 {
 	
 		protected:
-			virtual void cmd(uint8_t cmd);
-			
 			/*
 			 * Perform the needed display initialization.  This should only be called
 			 * from the child object constructors.
@@ -65,7 +63,7 @@ namespace digitalcave {
 			 * Bit 1 (I/D) is the increment/decrement control; 0 = left/decrement, 1 = right/increment.
 			 * The device will remain busy for 37 us.
 			 */
-			void setMode(uint8_t mode);
+			void set_mode(uint8_t mode);
 
 			/* 
 			 * Set the moving direction of cursor and display.
@@ -74,7 +72,7 @@ namespace digitalcave {
 			 * Bit 2 (D) is display on/off control; 0 = off, 1 = on.
 			 * The device will remain busy for 37 us.
 			 */
-			void setDisplay(uint8_t display);
+			void set_display(uint8_t display);
 
 			/* 
 			 * Shifts the cursor or screen the left or right.
@@ -82,37 +80,43 @@ namespace digitalcave {
 			 * Bit 3 (S/C) is screen/cursor control; 0 = cursor, 1 = screen.
 			 * The device will remain busy for 37 us.
 			 */
-			void setShift(uint8_t shift);
+			void set_shift(uint8_t shift);
 
 			/*
 			 * Sets the address pointer for CGRAM, allowing read or write of a byte of CGRAM data.
 			 * Depending on the module, CGRAM is either 0x00 to 0x07 or 0x00 to 0x0f.
 			 * The device will remain busy for 37 us.
 			 */
-			void setCgramAddress(uint8_t address);
+			void set_cgram_address(uint8_t address);
 
 			/*
 			 * Sets the address pointer for DDRAM, allowing read or write of a byte of DDRAM data.
 			 * The device will remain busy for 37 us.
 			 */
-			void setDdramAddress(uint8_t address);
+			void set_ddram_address(uint8_t address);
 
 			/*
-			 * Writes a byte of data to either DDRAM or CGRAM.
-			 * The address may be automatically incremented/decremented according to the entry mode.
-			 * The device will remain busy for 37 us.
+			 * Writes length bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
 			 */
-			virtual void setByte(uint8_t b);
+			void write_bytes(uint8_t bytes[], uint8_t length);
+			void write_bytes(char* bytes, uint8_t length);
 
 			/*
-			 * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
+			 * This function MUST be implemented by subclasses
+			 * 
+			 * Writes a byte of data to either DDRAM or CGRAM.  The address MAY be automatically 
+			 * incremented/decremented according to the entry mode. The device will remain 
+			 * busy (and the implementing function MUST block) for 37 us.
 			 */
-			void setText(char* text, uint8_t sz);
-
+			virtual void write_byte(uint8_t b);
+			
 			/*
-			 * Writes sz bytes to either CGRAM or DDRAM.  The starting address must be set in advance and no bounds checking is done.
+			 * This function MUST be implemented by subclasses
+			 * 
+			 * Writes a command.  The device will remain busy (and the implementing function MUST block)
+			 * for 37 us.
 			 */
-			void setBytes(uint8_t bytes[], uint8_t sz);
+			virtual void write_command(uint8_t c);
 	};
 }
 
