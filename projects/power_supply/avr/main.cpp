@@ -18,6 +18,8 @@ using namespace digitalcave;
 #error The software does not currently support more than 4 channels.
 #endif
 
+#define MENU_COUNT						3
+
 #define BUTTON_1						_BV(PORTD2)
 #define BUTTON_2						_BV(PORTD3)
 
@@ -26,7 +28,7 @@ using namespace digitalcave;
 #define ENCODER2_CLOCKWISE				_BV(3)
 #define ENCODER2_COUNTER_CLOCKWISE		_BV(4)
 
-#define STATE_CURSOR					(_BV(0) | _BV(1) | _BV(2))
+#define STATE_MENU_ITEM					_BV(5)
 #define STATE_MENU						_BV(6)
 #define STATE_LOCKED					_BV(7)
 
@@ -41,7 +43,9 @@ static double current_readings[CHANNEL_COUNT];
 static double voltage_setpoints[CHANNEL_COUNT];
 static double current_setpoints[CHANNEL_COUNT];
 
-static uint8_t menu_state;
+static uint8_t state;
+static uint8_t state_cursor_index;
+static uint8_t state_menu_index;
 
 void read_power_supply(){
 	//for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
@@ -74,9 +78,10 @@ void read_user_input(){
 	uint8_t released = buttons.released();
 	uint8_t held = buttons.held();
 
-	if (held & BUTTON_1){
-		menu_state ^= STATE_LOCKED;
-		if (menu_state & STATE_LOCKED){
+	//If we are not in menu mode, we can swap between locked and unlocked
+	if (!(state & STATE_MENU) && held & BUTTON_1){
+		state ^= STATE_LOCKED;
+		if (state & STATE_LOCKED){
 			hd44780.set_display(hd44780.DISPLAY_BLINK_OFF | hd44780.DISPLAY_CURSOR_OFF | hd44780.DISPLAY_ON);
 		}
 		else {
@@ -84,26 +89,39 @@ void read_user_input(){
 			display.set_cursor_position(0, 0);
 		}
 	}
-	
+	//If we are not locked, we can swap between menu mode and normal mode
+	else if ((state & STATE_LOCKED) && held & BUTTON_2){
+		state ^= STATE_MENU;
+		if (state & STATE_MENU){
+			hd44780.set_display(hd44780.DISPLAY_BLINK_ON | hd44780.DISPLAY_CURSOR_ON | hd44780.DISPLAY_ON);
+			display.set_cursor_position(0, 0);
+		}
+		else {
+			hd44780.set_display(hd44780.DISPLAY_BLINK_OFF | hd44780.DISPLAY_CURSOR_OFF | hd44780.DISPLAY_ON);
+		}
+	}
+
 	else if (released & BUTTON_1 || released & BUTTON_2){
-		if (!(menu_state & STATE_LOCKED)){
-			if (!(menu_state & STATE_MENU)){
-				uint8_t cursor_index = menu_state & STATE_CURSOR;
+		if (!(state & STATE_LOCKED)){		//We don't do anything when in lock mode
+			if (!(state & STATE_MENU)){		//Setpoint modification mode
 				if (released & BUTTON_1){
-					cursor_index++;
-					if ((cursor_index >> 1) >= CHANNEL_COUNT) cursor_index = 0;
+					state_cursor_index++;
+					if ((state_cursor_index >> 1) >= CHANNEL_COUNT) state_cursor_index = 0;
 				}
 				else if (released & BUTTON_2){
-					cursor_index--;
-					if (cursor_index >= (CHANNEL_COUNT * 2) + 1) cursor_index = (CHANNEL_COUNT * 2) - 1;
+					state_cursor_index--;
+					if (state_cursor_index >= (CHANNEL_COUNT * 2) + 1) state_cursor_index = (CHANNEL_COUNT * 2) - 1;
 				}
-
-				cursor_index &= STATE_CURSOR;	//Chop overflow
-				menu_state &= ~STATE_CURSOR;	//Clear state
-				menu_state |= cursor_index;		//Set state
 			}
-			else {
-				//TODO Move menus?
+			else { //Menu mode
+				if (released & BUTTON_1){
+					state_menu_index++;
+					if (state_menu_index >= MENU_COUNT) state_menu_index = 0;
+				}
+				else if (released & BUTTON_2){
+					state_menu_index--;
+					if (state_menu_index >= MENU_COUNT) state_menu_index = MENU_COUNT - 1;
+				}
 			}
 		}
 		
@@ -113,14 +131,19 @@ void read_user_input(){
 		uint8_t encoder_temp = encoder_movement;
 		encoder_movement = 0;
 
-		if (!(menu_state & STATE_LOCKED)){
-			uint8_t cursor_index = menu_state & STATE_CURSOR;
-			
-			if (!(menu_state & STATE_MENU)){
+		if (!(state & STATE_LOCKED)){		//We don't do anything when in lock mode
+			if (state & STATE_MENU){		//Menu mode
+				if (state & STATE_MENU_ITEM){
+					
+				}
+				else {
+					
+				}
+			else {							//Setpoint modification mode
 				//What value are we modifying?
 				double* value;
-				if (cursor_index & 1) value = &current_setpoints[cursor_index >> 1];
-				else value = &voltage_setpoints[cursor_index >> 1];
+				if (state_cursor_index & 1) value = &current_setpoints[state_cursor_index >> 1];
+				else value = &voltage_setpoints[state_cursor_index >> 1];
 				
 				//Modify the value
 				if (encoder_temp & ENCODER1_CLOCKWISE) *value += 1;
@@ -129,7 +152,7 @@ void read_user_input(){
 				else if (encoder_temp & ENCODER2_COUNTER_CLOCKWISE) *value -= 0.01;
 				
 				//Bounds checking
-				if (cursor_index & 1){
+				if (state_cursor_index & 1){
 					if (*value >= 10) *value = 10;
 					else if (*value <= 0) *value = 0;
 				}
@@ -143,20 +166,19 @@ void read_user_input(){
 }
 
 void update_display(){
-	if (!(menu_state & STATE_MENU)){
+	if (state & STATE_MENU){
+		//TODO Show menu
+	}
+	else {		//Not menu mode
 		char temp[20];
 		for(uint8_t row = 0; row < CHANNEL_COUNT; row++){
-			double voltage = menu_state & STATE_LOCKED ? voltage_readings[row] : voltage_setpoints[row];
-			double current = menu_state & STATE_LOCKED ? current_readings[row] : current_setpoints[row];
+			double voltage = state & STATE_LOCKED ? voltage_readings[row] : voltage_setpoints[row];
+			double current = state & STATE_LOCKED ? current_readings[row] : current_setpoints[row];
 			uint8_t l = snprintf(temp, 20, " %+6.2fV %5.3fA      ", voltage, current);
 			display.write_text(row, 0, temp, l);
 		}
 
-		uint8_t cursor_index = menu_state & STATE_CURSOR;
-		display.set_cursor_position(cursor_index >> 1, cursor_index & 0x01 ? 8 : 0);
-	}
-	else {
-		//TODO Show menu
+		display.set_cursor_position(state_cursor_index >> 1, state_cursor_index & 0x01 ? 8 : 0);
 	}
 	
 	display.refresh();
@@ -200,7 +222,7 @@ int main (void){
 	display.clear();
 	display.write_text(1, 2, "Testing 1,2,3", 13);
 	display.refresh();
-	menu_state |= STATE_LOCKED;
+	state |= STATE_LOCKED;
 	_delay_ms(1000);
 	
 	//Main program loop
