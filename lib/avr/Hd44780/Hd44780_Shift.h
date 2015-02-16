@@ -11,6 +11,14 @@ namespace digitalcave {
 	class Hd44780_Shift : public Hd44780 {
 	
 		private:
+			volatile uint8_t *e_port;
+			uint8_t e_bv;
+			volatile uint8_t *rs_port;
+			uint8_t rs_bv;
+			volatile uint8_t *spi_port;
+			uint8_t mosi_bv;
+			uint8_t sclk_bv;
+
 			void latch();
 		
 		protected:
