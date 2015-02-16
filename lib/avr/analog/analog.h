@@ -29,6 +29,10 @@
 	#define ANALOG_AVCC			1
 	#define ANALOG_INTERNAL		2
 	#define ANALOG_INTERNAL_256	3
+#elif defined(__AVR_ATmega32U4__)
+	#define ANALOG_AREF			0
+	#define ANALOG_AVCC			1
+	#define ANALOG_INTERNAL_256	3
 #endif
 
 
