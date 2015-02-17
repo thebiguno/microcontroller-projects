@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "lib/analog/analog.h"
@@ -8,6 +7,7 @@
 #include "lib/Hd44780/Hd44780_Direct.h"
 
 #include "Channel.h"
+#include "Encoders.h"
 
 using namespace digitalcave;
 
@@ -29,24 +29,16 @@ using namespace digitalcave;
 
 #define MENU_COUNT						3
 
-#define BUTTON_1						_BV(PORTD2)
-#define BUTTON_2						_BV(PORTD3)
-
-#define ENCODER1_CLOCKWISE				_BV(1)
-#define ENCODER1_COUNTER_CLOCKWISE		_BV(2)
-#define ENCODER2_CLOCKWISE				_BV(3)
-#define ENCODER2_COUNTER_CLOCKWISE		_BV(4)
-
 #define STATE_MENU_ITEM					_BV(5)
 #define STATE_MENU						_BV(6)
 #define STATE_LOCKED					_BV(7)
 
 
-static volatile uint8_t encoder_movement;
 
 static Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7);
 static Display display(&hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 static Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 8, 8, 255, 0);
+static Encoders encoders;
 
 static Channel channels[CHANNEL_COUNT] = {
 #if CHANNEL_COUNT > 0
@@ -84,6 +76,7 @@ void read_user_input(){
 //	_delay_ms(1);
 	buttons.sample();
 	
+	uint8_t encoder_movement = encoders.get_encoder_movement();
 	uint8_t released = buttons.released();
 	uint8_t held = buttons.held();
 	
@@ -140,15 +133,12 @@ void read_user_input(){
 	}
 	
 	else if (encoder_movement){
-		uint8_t encoder_temp = encoder_movement;
-		encoder_movement = 0;
-
 		if ((state & STATE_LOCKED)){		//Locked mode
-			if (encoder_temp & ENCODER1_CLOCKWISE){
+			if (encoder_movement & ENCODER1_CLOCKWISE){
 				state_selected_channel += 2;
 				if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = CHANNEL_COUNT * 2 - 1;
 			}
-			else if (encoder_temp & ENCODER1_COUNTER_CLOCKWISE){
+			else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
 				state_selected_channel -= 2;
 				if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = 0;
 			}
@@ -167,10 +157,10 @@ void read_user_input(){
 				Channel* channel = &channels[state_selected_channel >> 1];
 				uint8_t selector = state_selected_channel & 0x01;
 				//Modify the value
-				if (encoder_temp & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1);
-				else if (encoder_temp & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1);
-				else if (encoder_temp & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 0.01);
-				else if (encoder_temp & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -0.01);
+				if (encoder_movement & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1);
+				else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1);
+				else if (encoder_movement & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 0.01);
+				else if (encoder_movement & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -0.01);
 			}
 		}
 	}
@@ -201,11 +191,6 @@ void update_display(){
 }
 
 int main (void){
-	//Enable pin change interrupts for encoders
-	PCICR |= _BV(PCIE0);
-	PCMSK0 |= 0x0F;	//Enable bits 0..3 for pin change interrupts
-	PORTB |= _BV(PORTB0) | _BV(PORTB1) | _BV(PORTB2) | _BV(PORTB3);
-	sei();
 	
 // 	//Start ADC
 // 	uint8_t analog_pins[CHANNEL_COUNT * 2];
@@ -253,42 +238,3 @@ int main (void){
 	}
 }
 
-ISR(PCINT0_vect){
-	static uint8_t encoder1 = 0x00;
-	static uint8_t encoder2 = 0x00;
-	
-	encoder1 = ((encoder1 << 2) | (PINB & 0x03)) & 0x0F;
-	encoder2 = ((encoder2 << 2) | ((PINB >> 2) & 0x03)) & 0x0F;
-	
-	//The encoders I am using now output a full sequence for one step, so we only look for one
-	// of the sub-sequences to avoid 4x faster movement than we want.  Change this as needed.
-	switch(encoder1){
-		case 0x01:
-		//case 0x07:
-		//case 0x08:
-		//case 0x0E:
-			encoder_movement |= ENCODER1_CLOCKWISE;
-			break;
-		case 0x02:
-		//case 0x04:
-		//case 0x0B:
-		//case 0x0D:
-			encoder_movement |= ENCODER1_COUNTER_CLOCKWISE;
-			break;
-	}
-	
-	switch(encoder2){
-		case 0x01:
-		//case 0x07:
-		//case 0x08:
-		//case 0x0E:
-			encoder_movement |= ENCODER2_CLOCKWISE;
-			break;
-		case 0x02:
-		//case 0x04:
-		//case 0x0B:
-		//case 0x0D:
-			encoder_movement |= ENCODER2_COUNTER_CLOCKWISE;
-			break;
-	}
-}

@@ -2,6 +2,8 @@
  * A single power supply channel.  Includes all variables needed for setting DAC, ADC readings, 
  * formatting display, setting values, etc.
  */
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
 #include <avr/io.h>
 #include <stdint.h>
@@ -58,3 +60,5 @@ namespace digitalcave {
 			void adjust_setpoint(uint8_t selector, double amount);
 	};
 }
+
+#endif
