@@ -5,7 +5,7 @@
 static volatile uint8_t ct; // a value from 0 to 143, odd numbers are rising edges
 static volatile uint8_t tooth; // a value from 0 to 35
 
-uint8_t rx_buffer[3];
+uint8_t rx_buffer[64];
 
 int main(void) {
 	usb_init();
