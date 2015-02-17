@@ -21,6 +21,13 @@ volatile uint8_t inj_pin;
 
 #define REG_LEN 159
 
+#define RED     _BV(PB4) | _BV(PB5)
+#define YELLOW  _BV(PB4)
+#define GREEN   _BV(PB4) | _BV(PB6)
+#define CYAN    _BV(PB6)
+#define BLUE    _BV(PB5) | _BV(PB6)
+#define MAGENTA _BV(PB5)
+
 typedef struct {
 	// tuning values
 	
@@ -68,8 +75,6 @@ volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
 
 uint8_t rx_buffer[64];
 uint8_t tx_buffer[64];
-uint8_t tp_ring[8];
-uint8_t tp_ring_ptr;
 
 /* 
 // additional parameters that may become tuning parameters or constants
@@ -125,11 +130,14 @@ int main(void) {
 	DDRC = _BV(PC6) | _BV(PB7);					// 6 & 7 are relay transistors output
 	DDRD = _BV(PD4) | _BV(PD5);					// 2 & 3 are hall effect input; 4 & 5 are injector mosfets output
 	DDRF = 0x00;								// 0 is throttle position ADC input
+	PORTF = 0x00;
 
-	PORTB = _BV(PB4) | _BV(PB5); // red is b6
+	PORTB = RED;
+
 	// set up analog
-	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, enable interrupt, prescale /128
-	ADMUX |= _BV(ADLAR); // use AREF, left adjust result, read ADC0/PC0
+	ADCSRA = _BV(ADEN) | _BV(ADATE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, auto-trigger, prescale /128
+	ADCSRB = 0x00;		// low speed, free running
+	ADMUX = _BV(REFS0) | _BV(ADLAR); // use AVCC, left adjust result, read ADC0/PC0
 
 	// set up pin interrupts
 	//EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT2 and INT3 interrupt on rising edge
@@ -137,7 +145,6 @@ int main(void) {
 
 	usb_init();
 	
-	PORTB = _BV(PB4) | _BV(PB6); // green is b5
 	// set up timers
 	// 52 tick/tooth * 64 us/tick = 3328 us/tooth * 36 teeth = 119.808 ms/rotation = 8.34 Hz * 60 = 500 RPM
 	// 6000000 / (t * 64 * 36)
@@ -187,18 +194,16 @@ int main(void) {
 	u.s.crank_sync = 0;
 	cam_teeth = 0;
 
-	sei();						// enable interrupts
+	//sei();						// enable interrupts
 
-	PORTB = _BV(PB5) | _BV(PB6); // blue is b4
-
-	//	ADCSRA |= _BV(ADSC);		// start an analog conversion for throttle position
+	ADCSRA |= _BV(ADSC);		// start the first analog conversion
 
 	while(1) {
-		PORTB = _BV(PB4) | _BV(PB5); // red is b6
-
+		PORTB = GREEN;
 
 		// nothing in the main loop is time sensitive
 		
+		u.s.adc_tp = ADCH;
 //		for (uint8_t i = 0; i < 8; i++) {
 //			if (u.s.crank_ticks > u.s.rpm_zones[i]) {
 //				u.s.rpm_zone = i;
@@ -213,60 +218,56 @@ int main(void) {
 //		}
 //		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 		
-		// continually poll ADC0
-//		if ((ADCSRA & ADSC) == 0x00) {
-//			ADCSRA |= _BV(ADSC);
-//		}
-		
 		if (usb_configured()) {
-			PORTB = _BV(PB4) | _BV(PB6); // green is b5
-			if (usb_rawhid_recv(rx_buffer, 10) > 0) {
-				PORTB = _BV(PB5) | _BV(PB6); // blue is b4
-				uint8_t addr = rx_buffer[0];
-				uint8_t len = rx_buffer[0];
-				if (len & 0x80) {
-					// read request
-					if (addr == 0xff) {
-						// read from eeprom
-						for (uint8_t i = 0; i < 18; i++) {
-							tx_buffer[0] = i * 8;
-							tx_buffer[1] = 8;
-							for (uint8_t j = 0; j < 8; j++) {
-								tx_buffer[j+2] = u.a[(i*8) + j];
-							}
-							usb_rawhid_send(tx_buffer, 10);
-						}
-					} else {
-						len &= 0x7f; // clear the read bit
-						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-						tx_buffer[0] = addr;
-						tx_buffer[1] = len;
-						for (uint8_t i = 0; i < len; i++) {
-							tx_buffer[i + 2] = u.a[i + addr];
-						}
-						usb_rawhid_send(tx_buffer, len + 2);
-					}
-				} else {
-					// write request
-					if (addr == 0xff) {
-						// write to eeprom
-					} else {
-						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-						for (uint8_t i = 0; i < len; i++) {
-							u.a[i + addr] = rx_buffer[i + 2];
-						}
-					}
-				}
-			} else {
-				// send the six running values
-				tx_buffer[0] = 0x92;
-				tx_buffer[1] = 0x06;
-				for (uint8_t i = 0; i < 6; i++) {
-					tx_buffer[i + 2] = u.a[i + 0x92];
-				}
-				usb_rawhid_send(tx_buffer, 8);
+//			PORTB = CYAN;
+//			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+//				PORTB = GREEN;
+//				uint8_t addr = rx_buffer[0];
+//				uint8_t len = rx_buffer[1];
+//				if (len & 0x80) {
+//					PORTB = YELLOW;
+//					// read request
+//					if (addr == 0xff) {
+//						// read from eeprom
+//						for (uint8_t i = 0; i < 18; i++) {
+//							tx_buffer[0] = i * 8;
+//							tx_buffer[1] = 8;
+//							for (uint8_t j = 0; j < 8; j++) {
+//								tx_buffer[j+2] = u.a[(i*8) + j];
+//							}
+//							usb_rawhid_send(tx_buffer, 10);
+//						}
+//					} else {
+//						len &= 0x7f; // clear the read bit
+//						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+//						tx_buffer[0] = addr;
+//						tx_buffer[1] = len;
+//						for (uint8_t i = 0; i < len; i++) {
+//							tx_buffer[i + 2] = u.a[i + addr];
+//						}
+//						usb_rawhid_send(tx_buffer, len + 2);
+//					}
+//				} else {
+//					PORTB = MAGENTA;
+//					// write request
+//					if (addr == 0xff) {
+//						// write to eeprom
+//					} else {
+//						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+//						for (uint8_t i = 0; i < len; i++) {
+//							u.a[i + addr] = rx_buffer[i + 2];
+//						}
+//					}
+//				}
+			//}
+			PORTB = MAGENTA;
+			// send the six running values
+			tx_buffer[0] = 0x92;
+			tx_buffer[1] = 0x06;
+			for (uint8_t i = 0; i < 6; i++) {
+				tx_buffer[i + 2] = u.a[i + 0x92];
 			}
-			PORTB = _BV(PB4) | _BV(PB6); // red is b6
+			usb_rawhid_send(tx_buffer, 8);
 		}
 	}
 }
@@ -274,6 +275,7 @@ int main(void) {
 // analog ISR
 ISR(ADC_vect) {
 	u.s.adc_tp = ADCH;
+	PORTB = RED;
 }
 
 // crank ISR
