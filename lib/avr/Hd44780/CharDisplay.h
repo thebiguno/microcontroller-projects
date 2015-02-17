@@ -11,7 +11,7 @@
 
 namespace digitalcave {
 
-	class Display {
+	class CharDisplay {
 		private:
 			Hd44780* hd44780; 
 			char buffer[80];
@@ -26,12 +26,12 @@ namespace digitalcave {
 			/*
 			 * Initializes the display with guesses for row offsets.
 			 */
-			Display(Hd44780* hd44780, uint8_t rows, uint8_t cols);
+			CharDisplay(Hd44780* hd44780, uint8_t rows, uint8_t cols);
 
 			/*
 			 * Initializes the display with specific row offsets.
 			 */
-			Display(Hd44780* hd44780, uint8_t rows, uint8_t cols, int8_t* row_offsets);
+			CharDisplay(Hd44780* hd44780, uint8_t rows, uint8_t cols, int8_t* row_offsets);
 			/*
 			 * Set a string at the given location in the buffer.  Will write (at most) 
 			 * <length> chars at the proper offset.  Will cut off the text if it 
