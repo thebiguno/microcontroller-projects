@@ -1,13 +1,10 @@
-#include <avr/io.h>
-#include <util/delay.h>
-
 #include "PowerSupply.h"
 
 using namespace digitalcave;
 
 static Display display;
-static State state;
 
+State state;
 Channel channels[CHANNEL_COUNT] = {
 #if CHANNEL_COUNT > 0
 	Channel(0, 15.0, 0.0, 0, 1.0, 0.0, 1),
@@ -30,21 +27,22 @@ Channel channels[CHANNEL_COUNT] = {
 //You can add more channels if desired... just make sure there are enough ADCs.
 };
 
-int main (void){
+int main(){
 	//Debugging lights
 	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	
 	//Main program loop
 	while (1){
-		//TODO
-		//if (usb_configured()){
-		//	
-		//}
-
 		//Read the current, actual values
 		for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
 			channels[i].sample_actual();
+		}
+		
+		//Check if we are connected via USB
+		if (usb_configured()){
+			usb_send_actual_values();
+			usb_check_for_updates();
 		}
 		
 		//Check for state updates
