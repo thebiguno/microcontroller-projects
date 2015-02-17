@@ -1,12 +1,13 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <stdio.h>
 
 #include "lib/analog/analog.h"
 #include "lib/Button/Buttons.h"
 #include "lib/Hd44780/Display.h"
 #include "lib/Hd44780/Hd44780_Direct.h"
+
+#include "Channel.h"
 
 using namespace digitalcave;
 
@@ -14,8 +15,16 @@ using namespace digitalcave;
 #define CHANNEL_COUNT					4
 #endif
 
-#if CHANNEL_COUNT > 4
+#if CHANNEL_COUNT > 6
 #error The software does not currently support more than 4 channels.
+#endif
+
+#ifndef DISPLAY_ROWS
+#define DISPLAY_ROWS					2
+#endif
+
+#ifndef DISPLAY_COLS
+#define DISPLAY_COLS					16
 #endif
 
 #define MENU_COUNT						3
@@ -36,48 +45,48 @@ using namespace digitalcave;
 static volatile uint8_t encoder_movement;
 
 static Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7);
-static Display display(&hd44780, 4, 20);
+static Display display(&hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 static Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 8, 8, 255, 0);
-static double voltage_readings[CHANNEL_COUNT];
-static double current_readings[CHANNEL_COUNT];
-static double voltage_setpoints[CHANNEL_COUNT];
-static double current_setpoints[CHANNEL_COUNT];
+
+static Channel channels[CHANNEL_COUNT] = {
+#if CHANNEL_COUNT > 0
+	Channel(0, 15.0, 0.0, 0, 1.0, 0.0, 1),
+#endif
+#if CHANNEL_COUNT > 1
+	Channel(1, 6.0, 2.0, 4, 0.5, 0.0, 5),
+#endif
+#if CHANNEL_COUNT > 2
+	Channel(2, 12.0, 0.0, 6, 5.0, 0.0, 7),
+#endif
+#if CHANNEL_COUNT > 3
+	Channel(3, 0.0, -12.5, 8, 1.0, 0.0, 9),
+#endif
+#if CHANNEL_COUNT > 4
+	Channel(4, 0.0, -5.0, 10, 2.0, 0.0, 11),
+#endif
+#if CHANNEL_COUNT > 5
+	Channel(5, 0.0, -3.5, 12, 0.0, -10.0, 13),
+#endif
+//You can add more channels if desired...
+};
 
 static uint8_t state;
-static uint8_t state_cursor_index;
+static uint8_t state_selected_channel;	//Selects channel (bits 1..3) and voltage / current (bit 0)
 static uint8_t state_menu_index;
 
 void read_power_supply(){
-	//for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
-	//	voltage_readings[i] = analog_read_p(i * 2) * (15.0 / 1024);
-	//	current_readings[i] = analog_read_p(((i * 2) + 1) * (10.0 / 1024));
-	//}
-	
-#if CHANNEL_COUNT > 0
-	voltage_readings[0] = 15.01;
-	current_readings[0] = 5.012;
-#endif
-#if CHANNEL_COUNT > 1
-	voltage_readings[1] = 3.32;
-	current_readings[1] = 0.021;
-#endif
-#if CHANNEL_COUNT > 2
-	voltage_readings[2] = 5.0;
-	current_readings[2] = 2.901;
-#endif
-#if CHANNEL_COUNT > 3
-	voltage_readings[3] = 4.97;
-	current_readings[3] = 0.598;
-#endif
+	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		channels[i].sample_actual();
+	}
 }
 
 void read_user_input(){
-	//_delay_ms(8);
+//	_delay_ms(1);
 	buttons.sample();
 	
 	uint8_t released = buttons.released();
 	uint8_t held = buttons.held();
-
+	
 	//If we are not in menu mode, we can swap between locked and unlocked
 	if (!(state & STATE_MENU) && held & BUTTON_1){
 		state ^= STATE_LOCKED;
@@ -102,18 +111,11 @@ void read_user_input(){
 	}
 
 	else if (released & BUTTON_1 || released & BUTTON_2){
-		if (!(state & STATE_LOCKED)){		//We don't do anything when in lock mode
-			if (!(state & STATE_MENU)){		//Setpoint modification mode
-				if (released & BUTTON_1){
-					state_cursor_index++;
-					if ((state_cursor_index >> 1) >= CHANNEL_COUNT) state_cursor_index = 0;
-				}
-				else if (released & BUTTON_2){
-					state_cursor_index--;
-					if (state_cursor_index >= (CHANNEL_COUNT * 2) + 1) state_cursor_index = (CHANNEL_COUNT * 2) - 1;
-				}
-			}
-			else { //Menu mode
+		if ((state & STATE_LOCKED)){		//Locked mode
+			
+		}
+		else {								//Unlocked mode
+			if ((state & STATE_MENU)){		//Menu mode
 				if (released & BUTTON_1){
 					state_menu_index++;
 					if (state_menu_index >= MENU_COUNT) state_menu_index = 0;
@@ -121,6 +123,16 @@ void read_user_input(){
 				else if (released & BUTTON_2){
 					state_menu_index--;
 					if (state_menu_index >= MENU_COUNT) state_menu_index = MENU_COUNT - 1;
+				}
+			}
+			else {							//Setpoint modification mode
+				if (released & BUTTON_1){
+					state_selected_channel++;
+					if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = 0;
+				}
+				else if (released & BUTTON_2){
+					state_selected_channel--;
+					if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = (CHANNEL_COUNT * 2) - 1;
 				}
 			}
 		}
@@ -131,7 +143,18 @@ void read_user_input(){
 		uint8_t encoder_temp = encoder_movement;
 		encoder_movement = 0;
 
-		if (!(state & STATE_LOCKED)){		//We don't do anything when in lock mode
+		if ((state & STATE_LOCKED)){		//Locked mode
+			if (encoder_temp & ENCODER1_CLOCKWISE){
+				state_selected_channel += 2;
+				if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = CHANNEL_COUNT * 2 - 1;
+			}
+			else if (encoder_temp & ENCODER1_COUNTER_CLOCKWISE){
+				state_selected_channel -= 2;
+				if (state_selected_channel >= CHANNEL_COUNT * 2) state_selected_channel = 0;
+			}
+			
+		}
+		else {								//Unlocked mode
 			if (state & STATE_MENU){		//Menu mode
 				if (state & STATE_MENU_ITEM){
 					
@@ -139,27 +162,15 @@ void read_user_input(){
 				else {
 					
 				}
+			}
 			else {							//Setpoint modification mode
-				//What value are we modifying?
-				double* value;
-				if (state_cursor_index & 1) value = &current_setpoints[state_cursor_index >> 1];
-				else value = &voltage_setpoints[state_cursor_index >> 1];
-				
+				Channel* channel = &channels[state_selected_channel >> 1];
+				uint8_t selector = state_selected_channel & 0x01;
 				//Modify the value
-				if (encoder_temp & ENCODER1_CLOCKWISE) *value += 1;
-				else if (encoder_temp & ENCODER1_COUNTER_CLOCKWISE) *value -= 1;
-				else if (encoder_temp & ENCODER2_CLOCKWISE) *value += 0.01;
-				else if (encoder_temp & ENCODER2_COUNTER_CLOCKWISE) *value -= 0.01;
-				
-				//Bounds checking
-				if (state_cursor_index & 1){
-					if (*value >= 10) *value = 10;
-					else if (*value <= 0) *value = 0;
-				}
-				else {
-					if (*value >= 15) *value = 15;
-					else if (*value <= -15) *value = -15;
-				}
+				if (encoder_temp & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1);
+				else if (encoder_temp & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1);
+				else if (encoder_temp & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 0.01);
+				else if (encoder_temp & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -0.01);
 			}
 		}
 	}
@@ -171,14 +182,19 @@ void update_display(){
 	}
 	else {		//Not menu mode
 		char temp[20];
-		for(uint8_t row = 0; row < CHANNEL_COUNT; row++){
-			double voltage = state & STATE_LOCKED ? voltage_readings[row] : voltage_setpoints[row];
-			double current = state & STATE_LOCKED ? current_readings[row] : current_setpoints[row];
-			uint8_t l = snprintf(temp, 20, " %+6.2fV %5.3fA      ", voltage, current);
-			display.write_text(row, 0, temp, l);
+		uint8_t channel = state_selected_channel >> 1;
+		if (channel > (CHANNEL_COUNT - DISPLAY_ROWS)){
+			channel = (CHANNEL_COUNT - DISPLAY_ROWS);
 		}
 
-		display.set_cursor_position(state_cursor_index >> 1, state_cursor_index & 0x01 ? 8 : 0);
+		for(uint8_t row = 0; row < DISPLAY_ROWS; row++){
+			channels[channel].to_string((state & STATE_LOCKED), temp, DISPLAY_COLS + 1);
+			display.write_text(row, 0, temp, DISPLAY_COLS);
+			if ((channel == (state_selected_channel >> 1)) && !(state & STATE_LOCKED)){
+				display.set_cursor_position(row, state_selected_channel & 0x01 ? 9 : 1);
+			}
+			channel++;
+		}
 	}
 	
 	display.refresh();
@@ -191,24 +207,24 @@ int main (void){
 	PORTB |= _BV(PORTB0) | _BV(PORTB1) | _BV(PORTB2) | _BV(PORTB3);
 	sei();
 	
-	//Start ADC
-	uint8_t analog_pins[CHANNEL_COUNT * 2];
-#if CHANNEL_COUNT > 0
-	analog_pins[0] = 0;
-	analog_pins[1] = 1;
-#endif
-#if CHANNEL_COUNT > 1
-	analog_pins[2] = 4;
-	analog_pins[3] = 5;
-#endif
-#if CHANNEL_COUNT > 2
-	analog_pins[4] = 6;
-	analog_pins[5] = 7;
-#endif
-#if CHANNEL_COUNT > 3
-	analog_pins[6] = 8;
-	analog_pins[7] = 9;
-#endif
+// 	//Start ADC
+// 	uint8_t analog_pins[CHANNEL_COUNT * 2];
+// #if CHANNEL_COUNT > 0
+// 	analog_pins[0] = 0;
+// 	analog_pins[1] = 1;
+// #endif
+// #if CHANNEL_COUNT > 1
+// 	analog_pins[2] = 4;
+// 	analog_pins[3] = 5;
+// #endif
+// #if CHANNEL_COUNT > 2
+// 	analog_pins[4] = 6;
+// 	analog_pins[5] = 7;
+// #endif
+// #if CHANNEL_COUNT > 3
+// 	analog_pins[6] = 8;
+// 	analog_pins[7] = 9;
+// #endif
 
 	//analog_init(analog_pins, CHANNEL_COUNT * 2, ANALOG_AVCC);
 
