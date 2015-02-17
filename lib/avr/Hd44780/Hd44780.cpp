@@ -10,58 +10,50 @@
 using namespace digitalcave;
 
 void Hd44780::init_display(uint8_t function) {
-	this->cmd((function & 0x0c) | 0x30);
-	_delay_us(0x3f);
-	this->cmd(0x08);
-	_delay_us(0x3f);
+	this->write_command((function & 0x0c) | 0x30);
+	this->write_command(0x08);
 	this->clear();
-	_delay_ms(0x04);
-	this->cmd(0x06);
-	_delay_us(0x3f);
-	this->cmd(0x0c);
-	_delay_us(0x3f);
+	this->write_command(0x06);
+	this->write_command(0x0c);
 	
 	
 }
 
 void Hd44780::clear() {
-	this->cmd(0x01);
+	this->write_command(0x01);
+	_delay_ms(0x04);
 }
 
 void Hd44780::home() {
-	this->cmd(0x02);
+	this->write_command(0x02);
 }
 
-void Hd44780::setMode(uint8_t b) {
-	this->cmd((b & 0x03) | 0x04);
+void Hd44780::set_mode(uint8_t b) {
+	this->write_command((b & 0x03) | 0x04);
 }
 
-void Hd44780::setDisplay(uint8_t b) {
-	this->cmd((b & 0x07) | 0x08);
+void Hd44780::set_display(uint8_t b) {
+	this->write_command((b & 0x07) | 0x08);
 }
 
-void Hd44780::setShift(uint8_t b) {
-	this->cmd((b & 0x0f) | 0x10);
+void Hd44780::set_shift(uint8_t b) {
+	this->write_command((b & 0x0f) | 0x10);
 }
 
-void Hd44780::setCgramAddress(uint8_t b) {
-	this->cmd((b & 0x3f) | 0x40);
+void Hd44780::set_cgram_address(uint8_t b) {
+	this->write_command((b & 0x3f) | 0x40);
 }
 
-void Hd44780::setDdramAddress(uint8_t b) {
-	this->cmd((b & 0x7f) | 0x80);
+void Hd44780::set_ddram_address(uint8_t b) {
+	this->write_command((b & 0x7f) | 0x80);
 }
 
-void Hd44780::setText(char* text, uint8_t sz) {
-	for (uint8_t i = 0; i < sz; i++) {
-		this->setByte(text[i]);
-		_delay_us(64);
-	}
-}
-void Hd44780::setBytes(uint8_t bytes[], uint8_t sz) {
-	for (uint8_t i = 0; i < sz; i++) {
-		this->setByte(bytes[i]);
-		_delay_us(64);
+void Hd44780::write_bytes(uint8_t bytes[], uint8_t length) {
+	for (uint8_t i = 0; i < length; i++) {
+		this->write_byte(bytes[i]);
 	}
 }
 
+void Hd44780::write_bytes(char* bytes, uint8_t length) {
+	this->write_bytes((uint8_t*) bytes, length);
+}

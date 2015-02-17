@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "lib/Hd44780/Hd44780_Direct.h"
+#include "locallib/Hd44780/Hd44780_Direct.h"
 #include "lib/pwm/pwm.h"
 #include "lib/usb/rawhid.h"
 

@@ -38,7 +38,7 @@ $Descr User 13000 12000
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "13 feb 2015"
+Date "15 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -1185,15 +1185,15 @@ F 3 "" H 4900 10450 60  0000 C CNN
 	1    4900 10450
 	0    1    1    0   
 $EndComp
-Text Label 3900 10250 0    60   ~ 0
+Text Label 2900 9150 2    60   ~ 0
 ENC1_A
-Text Label 3900 10350 0    60   ~ 0
+Text Label 2900 9250 2    60   ~ 0
 ENC1_B
 Text Label 2900 9950 2    60   ~ 0
 ENC1_SW
-Text Label 3900 9450 0    60   ~ 0
+Text Label 2900 9350 2    60   ~ 0
 ENC2_A
-Text Label 3900 10150 0    60   ~ 0
+Text Label 2900 9450 2    60   ~ 0
 ENC2_B
 Text Label 2900 10050 2    60   ~ 0
 ENC2_SW
@@ -1625,9 +1625,7 @@ Connection ~ 10000 5950
 Wire Wire Line
 	5200 5450 5500 5450
 Wire Wire Line
-	5300 5150 5300 5300
-Wire Wire Line
-	3950 5200 4050 5200
+	5300 5300 5300 5150
 Connection ~ 5300 5150
 Wire Wire Line
 	5300 5450 5300 5600
@@ -1788,8 +1786,6 @@ Wire Wire Line
 Wire Wire Line
 	5500 5450 5500 5850
 Wire Wire Line
-	5600 5150 5600 5850
-Wire Wire Line
 	2950 4550 2950 4300
 Wire Wire Line
 	2850 4550 2950 4550
@@ -1855,12 +1851,12 @@ Connection ~ 9850 4000
 $Comp
 L DZSMALL D6
 U 1 1 54D4451E
-P 5700 5750
-F 0 "D6" V 5790 5745 40  0000 C CNN
-F 1 "ZD5v1" V 5615 5750 40  0000 C CNN
-F 2 "~" V 5630 5750 30  0000 C CNN
-F 3 "~" H 5700 5800 30  0000 C CNN
-	1    5700 5750
+P 5800 6000
+F 0 "D6" V 5890 5995 40  0000 C CNN
+F 1 "ZD5v1" V 5715 6000 40  0000 C CNN
+F 2 "~" V 5730 6000 30  0000 C CNN
+F 3 "~" H 5800 6050 30  0000 C CNN
+	1    5800 6000
 	0    -1   -1   0   
 $EndComp
 Connection ~ 10200 1450
@@ -2192,30 +2188,27 @@ V-
 $Comp
 L RSMALL R22
 U 1 1 54DCF121
-P 5200 5300
-F 0 "R22" V 5290 5295 40  0000 C CNN
-F 1 "1k" V 5115 5300 40  0000 C CNN
-F 2 "~" V 5130 5300 30  0000 C CNN
-F 3 "~" H 5200 5350 30  0000 C CNN
-	1    5200 5300
+P 5800 5800
+F 0 "R22" V 5890 5795 40  0000 C CNN
+F 1 "1k" V 5715 5800 40  0000 C CNN
+F 2 "~" V 5730 5800 30  0000 C CNN
+F 3 "~" H 5800 5850 30  0000 C CNN
+	1    5800 5800
 	0    -1   -1   0   
 $EndComp
 $Comp
 L RSMALL R21
 U 1 1 54DCF20F
-P 3850 5200
-F 0 "R21" V 3940 5195 40  0000 C CNN
-F 1 "1k" V 3765 5200 40  0000 C CNN
-F 2 "~" V 3780 5200 30  0000 C CNN
-F 3 "~" H 3850 5250 30  0000 C CNN
-	1    3850 5200
-	0    -1   -1   0   
+P 5600 5650
+F 0 "R21" V 5690 5645 40  0000 C CNN
+F 1 "1k" V 5515 5650 40  0000 C CNN
+F 2 "~" V 5530 5650 30  0000 C CNN
+F 3 "~" H 5600 5700 30  0000 C CNN
+	1    5600 5650
+	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	5100 5300 4000 5300
-Wire Wire Line
-	4000 5300 4000 5200
-Connection ~ 4000 5200
+	3950 5300 5300 5300
 Wire Wire Line
 	8350 5700 9350 5700
 Wire Wire Line
@@ -2239,21 +2232,20 @@ Wire Wire Line
 $Comp
 L GND #PWR056
 U 1 1 54DD7123
-P 5800 5750
-F 0 "#PWR056" H 5800 5750 30  0001 C CNN
-F 1 "GND" H 5800 5680 30  0001 C CNN
-F 2 "" H 5800 5750 60  0000 C CNN
-F 3 "" H 5800 5750 60  0000 C CNN
-	1    5800 5750
+P 5900 6000
+F 0 "#PWR056" H 5900 6000 30  0001 C CNN
+F 1 "GND" H 5900 5930 30  0001 C CNN
+F 2 "" H 5900 6000 60  0000 C CNN
+F 3 "" H 5900 6000 60  0000 C CNN
+	1    5900 6000
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
 	8350 6300 7700 6300
 Wire Wire Line
 	7700 6300 7700 6200
-Text Label 3750 5200 2    60   ~ 0
+Text Label 5900 5800 0    60   ~ 0
 V+
-Connection ~ 5600 5750
 $Comp
 L GRAPHIC MP10
 U 1 1 54DD771A
@@ -2287,4 +2279,29 @@ F 3 "~" H 3100 7450 60  0000 C CNN
 	1    3100 7450
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	4050 5200 3950 5200
+Wire Wire Line
+	3950 5200 3950 5300
+Wire Wire Line
+	5600 5150 5600 5550
+Wire Wire Line
+	5600 5750 5600 5850
+Wire Wire Line
+	5600 5800 5700 5800
+Connection ~ 5600 5800
+Wire Wire Line
+	5700 5800 5700 6000
+Text Label 3900 9450 0    60   ~ 0
+RS
+Text Label 3900 10150 0    60   ~ 0
+E
+Text Label 3900 10250 0    60   ~ 0
+D7
+Text Label 3900 10350 0    60   ~ 0
+D6
+Text Label 2900 10250 2    60   ~ 0
+D5
+Text Label 2900 9550 2    60   ~ 0
+D4
 $EndSCHEMATC
