@@ -22,11 +22,15 @@ void State::poll(){
 		}
 		else if (encoder_movement & ENCODER1_CLOCKWISE){
 			this->scroll_channel++;
-			if (this->scroll_channel >= CHANNEL_COUNT) this->scroll_channel = CHANNEL_COUNT - 1;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = CHANNEL_COUNT - 1;
+			}
 		}
 		else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
 			this->scroll_channel--;
-			if (this->scroll_channel >= CHANNEL_COUNT) this->scroll_channel = 0;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = 0;
+			}
 		}
 	}
 	else if (this->state == STATE_EDIT){
@@ -35,11 +39,25 @@ void State::poll(){
 		}
 		else if (encoder_movement & ENCODER1_CLOCKWISE){
 			this->scroll_value++;
-			if (this->scroll_value >= (CHANNEL_COUNT * 2)) this->scroll_value = (CHANNEL_COUNT * 2) - 1;
+			if (this->scroll_value > 1){
+				this->scroll_value = 0;
+				this->scroll_channel++;
+				if (this->scroll_channel >= CHANNEL_COUNT){
+					this->scroll_channel = CHANNEL_COUNT - 1;
+					this->scroll_value = 1;
+				}
+			}
 		}
 		else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
 			this->scroll_value--;
-			if (this->scroll_value >= (CHANNEL_COUNT * 2)) this->scroll_value = 0;
+			if (this->scroll_value > 1){
+				this->scroll_value = 1;
+				this->scroll_channel--;
+				if (this->scroll_channel >= CHANNEL_COUNT){
+					this->scroll_channel = 0;
+					this->scroll_value = 0;
+				}
+			}
 		}
 	}
 	else if (this->state == STATE_EDIT_ITEM){

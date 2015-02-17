@@ -40,7 +40,7 @@ namespace digitalcave {
 			
 			uint8_t state;
 			uint8_t scroll_channel;	//From 0 to CHANNEL_COUNT - 1.  The currently selected channel.
-			uint8_t scroll_value;	//From 0 to (CHANNEL_COUNT*2) - 1.  The currently selected value within a channel (voltage or current)
+			uint8_t scroll_value;	//0 == Voltage or 1 == Current.  The currently selected value.  Used in conjunction with scroll_channel.
 			uint8_t scroll_menu;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
 			
 		public:
