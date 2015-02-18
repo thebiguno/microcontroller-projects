@@ -1,0 +1,324 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:custom
+EELAYER 27 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "18 feb 2015"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATMEGA328-P IC?
+U 1 1 54E4014C
+P 3750 3200
+F 0 "IC?" H 3000 4450 40  0000 L BNN
+F 1 "ATMEGA328-P" H 4150 1800 40  0000 L BNN
+F 2 "DIL28" H 3750 3200 30  0000 C CIN
+F 3 "" H 3750 3200 60  0000 C CNN
+	1    3750 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS595 U?
+U 1 1 54E40168
+P 7200 2400
+F 0 "U?" H 7350 3000 70  0000 C CNN
+F 1 "74LS595" H 7200 1800 70  0000 C CNN
+F 2 "~" H 7200 2400 60  0000 C CNN
+F 3 "~" H 7200 2400 60  0000 C CNN
+	1    7200 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L 4X_7SEGMENT_COMMON_ANODE D?
+U 1 1 54E40A1E
+P 8750 2300
+F 0 "D?" H 9050 2500 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8250 2300 60  0000 C CNN
+F 2 "" H 8750 2300 60  0000 C CNN
+F 3 "" H 8750 2300 60  0000 C CNN
+	1    8750 2300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7900 1950 8400 1950
+Wire Wire Line
+	8400 2050 7900 2050
+Wire Wire Line
+	7900 2150 8400 2150
+Wire Wire Line
+	8400 2250 7900 2250
+Wire Wire Line
+	7900 2350 8400 2350
+Wire Wire Line
+	8400 2450 7900 2450
+Wire Wire Line
+	7900 2550 8400 2550
+Wire Wire Line
+	8400 2650 7900 2650
+$Comp
+L 74LS595 U?
+U 1 1 54E40A4F
+P 7200 3900
+F 0 "U?" H 7350 4500 70  0000 C CNN
+F 1 "74LS595" H 7200 3300 70  0000 C CNN
+F 2 "~" H 7200 3900 60  0000 C CNN
+F 3 "~" H 7200 3900 60  0000 C CNN
+	1    7200 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L 4X_7SEGMENT_COMMON_ANODE D?
+U 1 1 54E40A55
+P 8750 3800
+F 0 "D?" H 9050 4000 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8250 3800 60  0000 C CNN
+F 2 "" H 8750 3800 60  0000 C CNN
+F 3 "" H 8750 3800 60  0000 C CNN
+	1    8750 3800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7900 3450 8400 3450
+Wire Wire Line
+	8400 3550 7900 3550
+Wire Wire Line
+	7900 3650 8400 3650
+Wire Wire Line
+	8400 3750 7900 3750
+Wire Wire Line
+	7900 3850 8400 3850
+Wire Wire Line
+	8400 3950 7900 3950
+Wire Wire Line
+	7900 4050 8400 4050
+Wire Wire Line
+	8400 4150 7900 4150
+$Comp
+L 74LS595 U?
+U 1 1 54E40A63
+P 7200 5400
+F 0 "U?" H 7350 6000 70  0000 C CNN
+F 1 "74LS595" H 7200 4800 70  0000 C CNN
+F 2 "~" H 7200 5400 60  0000 C CNN
+F 3 "~" H 7200 5400 60  0000 C CNN
+	1    7200 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L 4X_7SEGMENT_COMMON_ANODE D?
+U 1 1 54E40A69
+P 8750 5300
+F 0 "D?" H 9050 5500 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8250 5300 60  0000 C CNN
+F 2 "" H 8750 5300 60  0000 C CNN
+F 3 "" H 8750 5300 60  0000 C CNN
+	1    8750 5300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7900 4950 8400 4950
+Wire Wire Line
+	8400 5050 7900 5050
+Wire Wire Line
+	7900 5150 8400 5150
+Wire Wire Line
+	8400 5250 7900 5250
+Wire Wire Line
+	7900 5350 8400 5350
+Wire Wire Line
+	8400 5450 7900 5450
+Wire Wire Line
+	7900 5550 8400 5550
+Wire Wire Line
+	8400 5650 7900 5650
+Wire Wire Line
+	7900 2850 8000 2850
+Wire Wire Line
+	8000 2850 8000 3100
+Wire Wire Line
+	8000 3100 6400 3100
+Wire Wire Line
+	6400 3100 6400 3450
+Wire Wire Line
+	6400 3450 6500 3450
+Wire Wire Line
+	7900 4350 8000 4350
+Wire Wire Line
+	8000 4350 8000 4650
+Wire Wire Line
+	8000 4650 6400 4650
+Wire Wire Line
+	6400 4650 6400 4950
+Wire Wire Line
+	6400 4950 6500 4950
+Wire Wire Line
+	4750 2400 5550 2400
+Wire Wire Line
+	5550 2400 5550 1950
+Wire Wire Line
+	5550 1950 6500 1950
+Wire Wire Line
+	4750 2600 5650 2600
+Wire Wire Line
+	5650 2600 5650 2150
+Wire Wire Line
+	5650 2150 6500 2150
+Wire Wire Line
+	4750 2300 5750 2300
+Wire Wire Line
+	5750 2300 5750 2450
+Wire Wire Line
+	5750 2450 6500 2450
+$Comp
+L GND #PWR?
+U 1 1 54E40B2B
+P 6500 2550
+F 0 "#PWR?" H 6500 2550 30  0001 C CNN
+F 1 "GND" H 6500 2480 30  0001 C CNN
+F 2 "" H 6500 2550 60  0000 C CNN
+F 3 "" H 6500 2550 60  0000 C CNN
+	1    6500 2550
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54E40B38
+P 6500 4050
+F 0 "#PWR?" H 6500 4050 30  0001 C CNN
+F 1 "GND" H 6500 3980 30  0001 C CNN
+F 2 "" H 6500 4050 60  0000 C CNN
+F 3 "" H 6500 4050 60  0000 C CNN
+	1    6500 4050
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 54E40B3E
+P 6500 5550
+F 0 "#PWR?" H 6500 5550 30  0001 C CNN
+F 1 "GND" H 6500 5480 30  0001 C CNN
+F 2 "" H 6500 5550 60  0000 C CNN
+F 3 "" H 6500 5550 60  0000 C CNN
+	1    6500 5550
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6300 2150 6300 5150
+Wire Wire Line
+	6300 3650 6500 3650
+Connection ~ 6300 2150
+Wire Wire Line
+	6300 5150 6500 5150
+Connection ~ 6300 3650
+$Comp
+L VCC #PWR?
+U 1 1 54E40BCD
+P 6500 2250
+F 0 "#PWR?" H 6500 2350 30  0001 C CNN
+F 1 "VCC" H 6500 2350 30  0000 C CNN
+F 2 "" H 6500 2250 60  0000 C CNN
+F 3 "" H 6500 2250 60  0000 C CNN
+	1    6500 2250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L VCC #PWR?
+U 1 1 54E40BDA
+P 6500 3750
+F 0 "#PWR?" H 6500 3850 30  0001 C CNN
+F 1 "VCC" H 6500 3850 30  0000 C CNN
+F 2 "" H 6500 3750 60  0000 C CNN
+F 3 "" H 6500 3750 60  0000 C CNN
+	1    6500 3750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L VCC #PWR?
+U 1 1 54E40BE0
+P 6500 5250
+F 0 "#PWR?" H 6500 5350 30  0001 C CNN
+F 1 "VCC" H 6500 5350 30  0000 C CNN
+F 2 "" H 6500 5250 60  0000 C CNN
+F 3 "" H 6500 5250 60  0000 C CNN
+	1    6500 5250
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6200 2450 6200 5450
+Wire Wire Line
+	6200 3950 6500 3950
+Connection ~ 6200 2450
+Wire Wire Line
+	6200 5450 6500 5450
+Connection ~ 6200 3950
+Text Label 9200 2150 0    60   ~ 0
+D1
+Text Label 9200 2250 0    60   ~ 0
+D2
+Text Label 9200 2350 0    60   ~ 0
+D3
+Text Label 9200 2450 0    60   ~ 0
+D4
+Text Label 9200 3650 0    60   ~ 0
+D1
+Text Label 9200 3750 0    60   ~ 0
+D2
+Text Label 9200 3850 0    60   ~ 0
+D3
+Text Label 9200 3950 0    60   ~ 0
+D4
+Text Label 9200 5150 0    60   ~ 0
+D1
+Text Label 9200 5250 0    60   ~ 0
+D2
+Text Label 9200 5350 0    60   ~ 0
+D3
+Text Label 9200 5450 0    60   ~ 0
+D4
+Text Label 4750 3700 0    60   ~ 0
+D1
+Text Label 4750 3800 0    60   ~ 0
+D2
+Text Label 4750 3900 0    60   ~ 0
+D3
+Text Label 4750 4000 0    60   ~ 0
+D4
+$EndSCHEMATC
