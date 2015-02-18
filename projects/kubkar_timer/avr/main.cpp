@@ -1,8 +1,6 @@
 #include <avr/delay.h>
 
-#include "lib/ShiftRegister/ShiftRegister.h"
 #include "lib/Button/Buttons.h"
-#include "lib/pwm/pwm.h"
 
 using namespace digitalcave;
 
