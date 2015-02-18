@@ -24,10 +24,11 @@ void Display::update(State state){
 			channels[channel].to_string((state.get_state() == STATE_LOCKED), temp, DISPLAY_COLS + 1);
 			char_display.write_text(row, 0, temp, DISPLAY_COLS);
 
-			if (channel == (state.get_scroll_value())){
-				char_display.set_cursor_position(row, state.get_scroll_value() ? 9 : 1);
-
-				if (state.get_state() == STATE_EDIT_ITEM){
+			if (channel == (state.get_scroll_channel())){
+				if (state.get_state() == STATE_EDIT){
+					char_display.write_text(row, state.get_scroll_value() ? 9 : 1, (char) 0xFF);
+				}
+				else if (state.get_state() == STATE_EDIT_ITEM){
 					if (state.get_scroll_value()){
 						char_display.write_text(row, 9, '[');
 						char_display.write_text(row, 16, ']');

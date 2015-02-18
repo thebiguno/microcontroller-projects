@@ -37,6 +37,9 @@ void State::poll(){
 		if (released & BUTTON_1){
 			this->state = STATE_EDIT_ITEM;
 		}
+		else if (held & BUTTON_1){
+			this->state = STATE_LOCKED;
+		}
 		else if (encoder_movement & ENCODER1_CLOCKWISE){
 			this->scroll_value++;
 			if (this->scroll_value > 1){
@@ -65,8 +68,8 @@ void State::poll(){
 			this->state = STATE_EDIT;
 		}
 		else if (encoder_movement){
-			Channel* channel = &channels[this->scroll_value >> 1];
-			uint8_t selector = this->scroll_value & 0x01;
+			Channel* channel = &channels[this->scroll_channel];
+			uint8_t selector = this->scroll_value;
 
 			//Modify the value
 			if (encoder_movement & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1);

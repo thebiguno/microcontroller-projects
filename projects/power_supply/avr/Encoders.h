@@ -25,7 +25,7 @@ namespace digitalcave {
 			// the intersection of ISRs and C++ classes, they have to be
 			// class variables.
 			//TODO Try to make this private, using 'friend' keyword
-			volatile uint8_t encoder_movement = 0;
+			//static volatile uint8_t encoder_movement = 0;
 			
 			Encoders();
 			
