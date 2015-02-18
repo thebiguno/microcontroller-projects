@@ -64,6 +64,7 @@ void ShiftRegister::initClear(volatile uint8_t *port, uint8_t pin) {
 
 void ShiftRegister::shift(uint8_t b[], uint8_t sz) {
 	if (_cts) {
+		_size = sz;
 		_bytes = b;
 		_i = 1;
 		SPDR = b[0];
