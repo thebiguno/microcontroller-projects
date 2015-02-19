@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:kubkar_timer-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "18 feb 2015"
+Date "19 feb 2015"
 Rev ""
 Comp ""
 Comment1 ""
@@ -69,30 +70,14 @@ $EndComp
 $Comp
 L 4X_7SEGMENT_COMMON_ANODE D?
 U 1 1 54E40A1E
-P 8400 3100
-F 0 "D?" H 8700 3300 60  0000 C CNN
-F 1 "4X_7SEGMENT_COMMON_ANODE" V 7900 3100 60  0000 C CNN
-F 2 "" H 8400 3100 60  0000 C CNN
-F 3 "" H 8400 3100 60  0000 C CNN
-	1    8400 3100
+P 9050 3100
+F 0 "D?" H 9350 3300 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8550 3100 60  0000 C CNN
+F 2 "" H 9050 3100 60  0000 C CNN
+F 3 "" H 9050 3100 60  0000 C CNN
+	1    9050 3100
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	7550 2750 8050 2750
-Wire Wire Line
-	8050 2850 7550 2850
-Wire Wire Line
-	7550 2950 8050 2950
-Wire Wire Line
-	8050 3050 7550 3050
-Wire Wire Line
-	7550 3150 8050 3150
-Wire Wire Line
-	8050 3250 7550 3250
-Wire Wire Line
-	7550 3350 8050 3350
-Wire Wire Line
-	8050 3450 7550 3450
 $Comp
 L 74LS595 U?
 U 1 1 54E40A4F
@@ -105,33 +90,6 @@ F 3 "~" H 6850 4700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 4X_7SEGMENT_COMMON_ANODE D?
-U 1 1 54E40A55
-P 8400 4600
-F 0 "D?" H 8700 4800 60  0000 C CNN
-F 1 "4X_7SEGMENT_COMMON_ANODE" V 7900 4600 60  0000 C CNN
-F 2 "" H 8400 4600 60  0000 C CNN
-F 3 "" H 8400 4600 60  0000 C CNN
-	1    8400 4600
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7550 4250 8050 4250
-Wire Wire Line
-	8050 4350 7550 4350
-Wire Wire Line
-	7550 4450 8050 4450
-Wire Wire Line
-	8050 4550 7550 4550
-Wire Wire Line
-	7550 4650 8050 4650
-Wire Wire Line
-	8050 4750 7550 4750
-Wire Wire Line
-	7550 4850 8050 4850
-Wire Wire Line
-	8050 4950 7550 4950
-$Comp
 L 74LS595 U?
 U 1 1 54E40A63
 P 6850 6200
@@ -142,33 +100,6 @@ F 3 "~" H 6850 6200 60  0000 C CNN
 	1    6850 6200
 	1    0    0    -1  
 $EndComp
-$Comp
-L 4X_7SEGMENT_COMMON_ANODE D?
-U 1 1 54E40A69
-P 8400 6100
-F 0 "D?" H 8700 6300 60  0000 C CNN
-F 1 "4X_7SEGMENT_COMMON_ANODE" V 7900 6100 60  0000 C CNN
-F 2 "" H 8400 6100 60  0000 C CNN
-F 3 "" H 8400 6100 60  0000 C CNN
-	1    8400 6100
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7550 5750 8050 5750
-Wire Wire Line
-	8050 5850 7550 5850
-Wire Wire Line
-	7550 5950 8050 5950
-Wire Wire Line
-	8050 6050 7550 6050
-Wire Wire Line
-	7550 6150 8050 6150
-Wire Wire Line
-	8050 6250 7550 6250
-Wire Wire Line
-	7550 6350 8050 6350
-Wire Wire Line
-	8050 6450 7550 6450
 Wire Wire Line
 	7550 3650 7650 3650
 Wire Wire Line
@@ -289,29 +220,13 @@ Connection ~ 5850 3250
 Wire Wire Line
 	5850 6250 6150 6250
 Connection ~ 5850 4750
-Text Label 8850 2950 0    60   ~ 0
+Text Label 9500 2950 0    60   ~ 0
 D1
-Text Label 8850 3050 0    60   ~ 0
+Text Label 9500 3050 0    60   ~ 0
 D2
-Text Label 8850 3150 0    60   ~ 0
+Text Label 9500 3150 0    60   ~ 0
 D3
-Text Label 8850 3250 0    60   ~ 0
-D4
-Text Label 8850 4450 0    60   ~ 0
-D1
-Text Label 8850 4550 0    60   ~ 0
-D2
-Text Label 8850 4650 0    60   ~ 0
-D3
-Text Label 8850 4750 0    60   ~ 0
-D4
-Text Label 8850 5950 0    60   ~ 0
-D1
-Text Label 8850 6050 0    60   ~ 0
-D2
-Text Label 8850 6150 0    60   ~ 0
-D3
-Text Label 8850 6250 0    60   ~ 0
+Text Label 9500 3250 0    60   ~ 0
 D4
 Text Label 4400 4500 0    60   ~ 0
 D1
@@ -330,17 +245,6 @@ F 1 "START_BUTTON" H 4450 1521 30  0000 C CNN
 F 2 "~" H 4450 1600 60  0000 C CNN
 F 3 "~" H 4450 1600 60  0000 C CNN
 	1    4450 1600
-	1    0    0    -1  
-$EndComp
-$Comp
-L SW_PUSH_SMALL SW?
-U 1 1 54E519F1
-P 4450 2500
-F 0 "SW?" H 4600 2610 30  0000 C CNN
-F 1 "RESET_BUTTON" H 4450 2421 30  0000 C CNN
-F 2 "~" H 4450 2500 60  0000 C CNN
-F 3 "~" H 4450 2500 60  0000 C CNN
-	1    4450 2500
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -368,19 +272,10 @@ $EndComp
 Wire Wire Line
 	4100 1500 4100 2550
 Wire Wire Line
-	4100 2400 4350 2400
-Wire Wire Line
 	4100 2050 4350 2050
-Connection ~ 4100 2400
 Wire Wire Line
 	4100 1500 4350 1500
 Connection ~ 4100 2050
-Wire Wire Line
-	4400 3300 4650 3300
-Wire Wire Line
-	4650 3300 4650 2600
-Wire Wire Line
-	4650 2600 4550 2600
 Wire Wire Line
 	4400 3000 4750 3000
 Wire Wire Line
@@ -393,4 +288,186 @@ Wire Wire Line
 	4850 1700 4850 2900
 Wire Wire Line
 	4850 1700 4550 1700
+Wire Wire Line
+	8600 3350 8700 3350
+Wire Wire Line
+	7550 2950 8700 2950
+Wire Wire Line
+	8200 3450 8700 3450
+Wire Wire Line
+	8300 3050 8700 3050
+Wire Wire Line
+	8400 3150 8700 3150
+Wire Wire Line
+	8200 3450 8200 3050
+Wire Wire Line
+	8200 3050 7550 3050
+Wire Wire Line
+	8300 3050 8300 3150
+Wire Wire Line
+	8300 3150 7550 3150
+Wire Wire Line
+	8400 3150 8400 3250
+Wire Wire Line
+	8400 3250 7550 3250
+Wire Wire Line
+	8700 3250 8500 3250
+Wire Wire Line
+	8500 3250 8500 3350
+Wire Wire Line
+	8500 3350 7550 3350
+Wire Wire Line
+	8600 3350 8600 3550
+Wire Wire Line
+	8600 3550 8100 3550
+Wire Wire Line
+	8100 3550 8100 2850
+Wire Wire Line
+	8100 2850 7550 2850
+Wire Wire Line
+	7550 2750 8700 2750
+Wire Wire Line
+	7550 3450 8000 3450
+Wire Wire Line
+	8000 3450 8000 2650
+Wire Wire Line
+	8000 2650 8200 2650
+Wire Wire Line
+	8200 2650 8200 2850
+Wire Wire Line
+	8200 2850 8700 2850
+$Comp
+L 4X_7SEGMENT_COMMON_ANODE D?
+U 1 1 54E55524
+P 9050 4600
+F 0 "D?" H 9350 4800 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8550 4600 60  0000 C CNN
+F 2 "" H 9050 4600 60  0000 C CNN
+F 3 "" H 9050 4600 60  0000 C CNN
+	1    9050 4600
+	0    1    1    0   
+$EndComp
+Text Label 9500 4450 0    60   ~ 0
+D1
+Text Label 9500 4550 0    60   ~ 0
+D2
+Text Label 9500 4650 0    60   ~ 0
+D3
+Text Label 9500 4750 0    60   ~ 0
+D4
+Wire Wire Line
+	8600 4850 8700 4850
+Wire Wire Line
+	7550 4450 8700 4450
+Wire Wire Line
+	8200 4950 8700 4950
+Wire Wire Line
+	8300 4550 8700 4550
+Wire Wire Line
+	8400 4650 8700 4650
+Wire Wire Line
+	8200 4950 8200 4550
+Wire Wire Line
+	8200 4550 7550 4550
+Wire Wire Line
+	8300 4550 8300 4650
+Wire Wire Line
+	8300 4650 7550 4650
+Wire Wire Line
+	8400 4650 8400 4750
+Wire Wire Line
+	8400 4750 7550 4750
+Wire Wire Line
+	8700 4750 8500 4750
+Wire Wire Line
+	8500 4750 8500 4850
+Wire Wire Line
+	8500 4850 7550 4850
+Wire Wire Line
+	8600 4850 8600 5050
+Wire Wire Line
+	8600 5050 8100 5050
+Wire Wire Line
+	8100 5050 8100 4350
+Wire Wire Line
+	8100 4350 7550 4350
+Wire Wire Line
+	7550 4250 8700 4250
+Wire Wire Line
+	7550 4950 8000 4950
+Wire Wire Line
+	8000 4950 8000 4150
+Wire Wire Line
+	8000 4150 8200 4150
+Wire Wire Line
+	8200 4150 8200 4350
+Wire Wire Line
+	8200 4350 8700 4350
+$Comp
+L 4X_7SEGMENT_COMMON_ANODE D?
+U 1 1 54E55546
+P 9050 6100
+F 0 "D?" H 9350 6300 60  0000 C CNN
+F 1 "4X_7SEGMENT_COMMON_ANODE" V 8550 6100 60  0000 C CNN
+F 2 "" H 9050 6100 60  0000 C CNN
+F 3 "" H 9050 6100 60  0000 C CNN
+	1    9050 6100
+	0    1    1    0   
+$EndComp
+Text Label 9500 5950 0    60   ~ 0
+D1
+Text Label 9500 6050 0    60   ~ 0
+D2
+Text Label 9500 6150 0    60   ~ 0
+D3
+Text Label 9500 6250 0    60   ~ 0
+D4
+Wire Wire Line
+	8600 6350 8700 6350
+Wire Wire Line
+	7550 5950 8700 5950
+Wire Wire Line
+	8200 6450 8700 6450
+Wire Wire Line
+	8300 6050 8700 6050
+Wire Wire Line
+	8400 6150 8700 6150
+Wire Wire Line
+	8200 6450 8200 6050
+Wire Wire Line
+	8200 6050 7550 6050
+Wire Wire Line
+	8300 6050 8300 6150
+Wire Wire Line
+	8300 6150 7550 6150
+Wire Wire Line
+	8400 6150 8400 6250
+Wire Wire Line
+	8400 6250 7550 6250
+Wire Wire Line
+	8700 6250 8500 6250
+Wire Wire Line
+	8500 6250 8500 6350
+Wire Wire Line
+	8500 6350 7550 6350
+Wire Wire Line
+	8600 6350 8600 6550
+Wire Wire Line
+	8600 6550 8100 6550
+Wire Wire Line
+	8100 6550 8100 5850
+Wire Wire Line
+	8100 5850 7550 5850
+Wire Wire Line
+	7550 5750 8700 5750
+Wire Wire Line
+	7550 6450 8000 6450
+Wire Wire Line
+	8000 6450 8000 5650
+Wire Wire Line
+	8000 5650 8200 5650
+Wire Wire Line
+	8200 5650 8200 5850
+Wire Wire Line
+	8200 5850 8700 5850
 $EndSCHEMATC
