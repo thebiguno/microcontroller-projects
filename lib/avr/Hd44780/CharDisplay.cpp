@@ -48,7 +48,7 @@ void CharDisplay::write_text(uint8_t row, uint8_t col, char text){
 	
 	if (this->buffer[(row * 20) + col] != text) {
 		this->buffer[(row * 20) + col] = text;
-		this->dirty[row] |= _BV(col);
+		this->dirty[row] |= (uint32_t) 1 << col;
 	}
 }
 
@@ -79,7 +79,7 @@ void CharDisplay::refresh(){
 	for(uint8_t r = 0; r < this->rows; r++){
 		if (this->dirty[r] != 0x00){
 			for (uint8_t c = 0; c < this->cols; c++){
-				if (this->dirty[r] & _BV(c)){
+				if (this->dirty[r] & (uint32_t) 1 << c){
 					this->hd44780->set_ddram_address(this->row_offsets[r] + c);
 					this->hd44780->write_byte(this->buffer[(r * 20) + c]);
 					changed = 1;
