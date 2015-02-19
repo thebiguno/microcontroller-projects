@@ -14,7 +14,7 @@ Display::Display() :
 
 void Display::update(State state){
 	if (state.get_state() == STATE_LOCKED || state.get_state() == STATE_EDIT || state.get_state() == STATE_EDIT_ITEM){
-		char temp[20];
+		char temp[DISPLAY_COLS + 1];
 		uint8_t channel = state.get_scroll_channel();
 		if (channel > (CHANNEL_COUNT - DISPLAY_ROWS)){
 			channel = (CHANNEL_COUNT - DISPLAY_ROWS);
@@ -30,12 +30,12 @@ void Display::update(State state){
 				}
 				else if (state.get_state() == STATE_EDIT_ITEM){
 					if (state.get_scroll_value()){
-						char_display.write_text(row, 9, '[');
-						char_display.write_text(row, 16, ']');
+						char_display.write_text(row, 9, 0x7e);
+						char_display.write_text(row, 16, 0x7f);
 					}
 					else {
-						char_display.write_text(row, 1, '[');
-						char_display.write_text(row, 9, ']');
+						char_display.write_text(row, 1, 0x7e);
+						char_display.write_text(row, 9, 0x7f);
 					}
 				}
 			}

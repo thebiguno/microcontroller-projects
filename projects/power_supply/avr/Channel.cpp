@@ -35,10 +35,10 @@ void Channel::sample_actual(){
 	this->current_actual = 4.321 + this->i2c_address;
 }
 
-void Channel::to_string(uint8_t actual, char* buffer, uint8_t length){
+void Channel::to_string(uint8_t actual, char* buffer, uint8_t max_length){
 	double voltage = actual ? this->voltage_actual : this->voltage_setpoint;
 	double current = actual ? this->current_actual : this->current_setpoint;
-	snprintf(buffer, length, "%d %+6.2fV %5.3fA     ", this->i2c_address + 1, voltage, current);
+	snprintf(buffer, max_length, "%d %+6.2fV %5.3fA     ", this->i2c_address + 1, voltage, current);
 }
 
 void Channel::adjust_setpoint(uint8_t selector, double amount){

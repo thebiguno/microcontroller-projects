@@ -7,11 +7,11 @@
 #include "State.h"
 
 #ifndef DISPLAY_ROWS
-#define DISPLAY_ROWS					2
+#define DISPLAY_ROWS					4
 #endif
 
 #ifndef DISPLAY_COLS
-#define DISPLAY_COLS					16
+#define DISPLAY_COLS					20
 #endif
 
 namespace digitalcave {
