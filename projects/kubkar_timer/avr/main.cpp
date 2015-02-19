@@ -3,13 +3,10 @@
 #include <util/delay.h>
 
 #include "lib/Button/Buttons.h"
-#include "lib/analog/analog.h"
 
 using namespace digitalcave;
 
 #define LANE_COUNT			3
-
-#define SENSOR_THRESHOLD	20
 
 #define START_BUTTON		_BV(PORTB0)
 #define STOP_BUTTON			_BV(PORTB1)
@@ -23,7 +20,6 @@ uint8_t number_to_segmented_digit(uint8_t digit){
 	// We always keep pin LED pin 3 (the colon) enabled.
 	switch(digit){
 		case '0':
-		case ' ':
 			return 0x02;
 		case '1':
 			return 0x73;
@@ -58,7 +54,7 @@ void display_times(volatile uint16_t* times, volatile uint16_t default_value){
 	char temp[6];
 	
 	for (uint8_t b = 0; b < LANE_COUNT; b++){
-		snprintf(temp, 6, "%4d", times[b] == 0 ? default_value : times[b]);
+		snprintf(temp, 6, "%04d", times[b] == 0 ? default_value : times[b]);
 		SPDR = number_to_segmented_digit(temp[digit]);
 		while (!(SPSR & _BV(SPIF)));
 	}
@@ -92,13 +88,6 @@ int main (void){
 	SPCR |= _BV(SPI2X);
 	SPCR = _BV(SPE) | _BV(MSTR);
 	
-	//Set up analog system
-	uint8_t adc[LANE_COUNT];
-	for (uint8_t i = 0; i < LANE_COUNT; i++){
-		adc[i] = i;
-	}
-	analog_init(adc, LANE_COUNT, ANALOG_AVCC);
-
 	Buttons b(&PORTB, START_BUTTON | STOP_BUTTON, 8, 8, 0, 0);
 
 	//We drive the anodes of the LED modules via MOSFETs activated by PORTD0..PORTD3
@@ -106,17 +95,9 @@ int main (void){
 
 	while (1) {
 		uint8_t pressed = 0x00;
-		int16_t adc_average_values[LANE_COUNT];
 		
 		for(uint8_t i = 0; i < LANE_COUNT; i++){
 			finish_times[i] = 0;
-			
-			//Get an average reading on the ADC for each pin
-			uint32_t avg_total = 0;
-			for (uint8_t avg = 0; avg < 16; avg++){
-				avg_total += analog_read_p(i);
-			}
-			adc_average_values[i] = (avg_total >> 4);	//Divide by 16 for an average
 		}
 		
 		//Wait until race starts, showing 00:00
@@ -141,7 +122,7 @@ int main (void){
 			pressed = b.pressed();
 			
 			for(uint8_t i = 0; i < LANE_COUNT; i++){
-				if ((int16_t) analog_read_p(i) < (adc_average_values[i] - SENSOR_THRESHOLD)){
+				if (PINC & _BV(i)){
 					finish_times[i] = time;
 				}
 			}
@@ -163,6 +144,8 @@ int main (void){
 				break;
 			}
 		}
+		
+		_delay_ms(100);
 		
 		//Wait for a reset (hit stop button again)
 		while(1){
