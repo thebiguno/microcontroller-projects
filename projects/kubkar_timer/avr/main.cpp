@@ -122,7 +122,7 @@ int main (void){
 			pressed = b.pressed();
 			
 			for(uint8_t i = 0; i < LANE_COUNT; i++){
-				if (PINC & _BV(i)){
+				if (finish_times[i] == 0 && PINC & _BV(i)){
 					finish_times[i] = time;
 				}
 			}
@@ -144,8 +144,6 @@ int main (void){
 				break;
 			}
 		}
-		
-		_delay_ms(100);
 		
 		//Wait for a reset (hit stop button again)
 		while(1){
