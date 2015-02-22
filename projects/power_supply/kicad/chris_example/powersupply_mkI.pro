@@ -1,8 +1,8 @@
-update=Sat 14 Feb 2015 07:02:13 PM MST
+update=Sat 21 Feb 2015 10:28:19 AM MST
 last_client=eeschema
 [eeschema]
 version=1
-LibDir=
+LibDir=../../../../lib/kicad/library
 NetFmtName=
 RptD_X=0
 RptD_Y=100
