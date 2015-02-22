@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Feb 2015 12:17:51 AM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Feb 2015 09:24:56 AM MST
 
 BeginCmp
 TimeStamp = /54D12666;
@@ -68,6 +68,13 @@ TimeStamp = /54E95208;
 Reference = C10;
 ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EA05A1;
+Reference = C11;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
 EndCmp
 
 BeginCmp
@@ -267,128 +274,128 @@ IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54C979E0;
-Reference = NA1;
-ValeurCmp = AC_INPUT;
+TimeStamp = /54D7CBCE;
+Reference = NAMP1;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D7C753;
+Reference = NA_C1;
+ValeurCmp = 22000uF;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D12D17;
+Reference = NA_D1;
+ValeurCmp = BRIDGE_RECTIFIER;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D12D42;
-Reference = NA2;
+Reference = NA_F1;
 ValeurCmp = 2A;
 IdModule  = ;
 EndCmp
 
 BeginCmp
+TimeStamp = /54C979E0;
+Reference = NA_K1;
+ValeurCmp = AC_INPUT;
+IdModule  = ;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D276B3;
-Reference = NA3;
-ValeurCmp = PINS_4;
+Reference = NA_K2;
+ValeurCmp = I2C_HEADER;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D29642;
-Reference = NA4;
+Reference = NA_K3;
 ValeurCmp = ADC_INPUT;
 IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D6876B;
-Reference = NA5;
-ValeurCmp = SPST;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D27698;
-Reference = NA6;
-ValeurCmp = UBBB32U4;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12D01;
-Reference = NA7;
-ValeurCmp = TRANSFORMER;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12D07;
-Reference = NA8;
-ValeurCmp = TRANSFORMER;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D26037;
-Reference = NA9;
+Reference = NA_K4;
 ValeurCmp = TRANSFORMED_AC_OUTPUT;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D29688;
-Reference = NA10;
+Reference = NA_K5;
 ValeurCmp = ENC1;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D2969A;
-Reference = NA11;
+Reference = NA_K6;
 ValeurCmp = ENC2;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D19BD4;
-Reference = NA12;
+Reference = NA_K7;
 ValeurCmp = TRANSFORMED_AC_IN;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D19B50;
-Reference = NA13;
+Reference = NA_K8;
 ValeurCmp = DISPLAY;
 IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D12D17;
-Reference = NA14;
-ValeurCmp = BRIDGE_RECTIFIER;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54E97E8B;
-Reference = NA15;
+Reference = NA_K9;
 ValeurCmp = RECTIFIED_DC_OUT;
 IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /54D7C958;
-Reference = NA16;
+Reference = NA_K10;
 ValeurCmp = PINS_2;
 IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D7C753;
-Reference = NA17;
-ValeurCmp = 22000uF;
+TimeStamp = /54D6876B;
+Reference = NA_SW1;
+ValeurCmp = SPST;
 IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D7CBCE;
-Reference = NAMP1;
-ValeurCmp = MOUNTING_HOLE;
+TimeStamp = /54D12D01;
+Reference = NA_T1;
+ValeurCmp = TRANSFORMER;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D12D07;
+Reference = NA_T2;
+ValeurCmp = TRANSFORMER;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D27698;
+Reference = NA_U1;
+ValeurCmp = UBBB32U4;
 IdModule  = ;
 EndCmp
 
