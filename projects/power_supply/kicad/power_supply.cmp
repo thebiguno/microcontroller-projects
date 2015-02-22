@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 21 Feb 2015 08:02:57 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Feb 2015 12:17:51 AM MST
 
 BeginCmp
 TimeStamp = /54D12666;
@@ -148,6 +148,48 @@ IdModule  = SIL-4;
 EndCmp
 
 BeginCmp
+TimeStamp = /54E98373;
+Reference = K10;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E98367;
+Reference = K11;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D17CAE;
+Reference = K12;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D1853C;
+Reference = K13;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D18548;
+Reference = K14;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54DAD4FB;
+Reference = K15;
+ValeurCmp = VS;
+IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
 TimeStamp = /54DD771A;
 Reference = MP1;
 ValeurCmp = MOUSE_BITES;
@@ -208,6 +250,20 @@ TimeStamp = /54D2A648;
 Reference = MP9;
 ValeurCmp = GRAPHIC;
 IdModule  = DIGITALCAVE_URL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D2A6B5;
+Reference = MP10;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D2A6C1;
+Reference = MP11;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
@@ -309,9 +365,9 @@ IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D68AF6;
+TimeStamp = /54E97E8B;
 Reference = NA15;
-ValeurCmp = 0.1uF;
+ValeurCmp = RECTIFIED_DC_OUT;
 IdModule  = ;
 EndCmp
 
@@ -330,57 +386,8 @@ IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D68B03;
-Reference = NA18;
-ValeurCmp = 0.1uF;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D17CAE;
-Reference = NA19;
-ValeurCmp = VS;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D1853C;
-Reference = NA20;
-ValeurCmp = VS;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D18548;
-Reference = NA21;
-ValeurCmp = VS;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54DAD4FB;
-Reference = NA22;
-ValeurCmp = VS;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D7CBCE;
 Reference = NAMP1;
-ValeurCmp = MOUNTING_HOLE;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D2A6C1;
-Reference = NAMP2;
-ValeurCmp = MOUNTING_HOLE;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D2A6B5;
-Reference = NAMP3;
 ValeurCmp = MOUNTING_HOLE;
 IdModule  = ;
 EndCmp
