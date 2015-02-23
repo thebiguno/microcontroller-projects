@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Feb 2015 09:24:56 AM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Feb 2015 06:43:41 PM MST
 
 BeginCmp
 TimeStamp = /54D12666;
@@ -150,7 +150,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54E90D3F;
 Reference = K9;
-ValeurCmp = PINS_4;
+ValeurCmp = MCU_FEEDBACK;
 IdModule  = SIL-4;
 EndCmp
 
@@ -194,6 +194,20 @@ TimeStamp = /54DAD4FB;
 Reference = K15;
 ValeurCmp = VS;
 IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EA89CA;
+Reference = K16;
+ValeurCmp = V_SET;
+IdModule  = SIL-1;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EA8AA9;
+Reference = K17;
+ValeurCmp = I_SET;
+IdModule  = SIL-1;
 EndCmp
 
 BeginCmp

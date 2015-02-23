@@ -38,7 +38,7 @@ $Descr User 13000 12000
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "22 feb 2015"
+Date "23 feb 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -205,7 +205,7 @@ F 3 "~" H 1600 2050 60  0000 C CNN
 $EndComp
 Text Notes 1250 10450 1    40   ~ 0
 The V_SENSE and I_SENSE\noutputs from each channel\nare wired into the ADC ports\n(6 channels max)
-Text Notes 2200 1050 0    60   ~ 0
+Text Notes 1400 1100 0    60   ~ 0
 Transformer
 Text Notes 1950 3200 0    60   ~ 0
 Adjustable Regulator
@@ -350,7 +350,7 @@ F 3 "~" H 4750 1950 60  0000 C CNN
 	1    4750 1850
 	-1   0    0    -1  
 $EndComp
-Text Notes 2100 1150 0    40   ~ 0
+Text Notes 1200 1250 0    40   ~ 0
 Everything here is panel mount; there is \nno PCB printed for it.  The output\npins are connected to the \nRectifier board.
 Text Notes 9500 1050 0    40   ~ 0
 Filtering cap on separate\nsmall board.  Use two of these\nfor filtering (+ and - rails)
@@ -1045,8 +1045,6 @@ F 3 "~" H 2350 2050 60  0000 C CNN
 	1    2350 2050
 	1    0    0    -1  
 $EndComp
-Text Notes 1400 1550 0    60   ~ 0
-TODO: MOV/line filter
 $Comp
 L CP1 NA_C1
 U 1 1 54D7C753
@@ -1726,7 +1724,7 @@ L PINS_4 K9
 U 1 1 54E90D3F
 P 2500 7200
 F 0 "K9" H 2500 6950 60  0000 C CNN
-F 1 "PINS_4" H 2500 7450 60  0000 C CNN
+F 1 "MCU_FEEDBACK" H 2500 7450 60  0000 C CNN
 F 2 "~" H 2500 7350 60  0000 C CNN
 F 3 "~" H 2500 7350 60  0000 C CNN
 	1    2500 7200
@@ -2040,7 +2038,7 @@ F 3 "~" H 4500 5650 30  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	4300 5600 4400 5600
+	4050 5600 4400 5600
 Wire Wire Line
 	4600 5600 4700 5600
 $Comp
@@ -2068,8 +2066,8 @@ Text Label 5000 5400 1    60   ~ 0
 V-
 Wire Wire Line
 	4950 5200 5450 5200
-Text Notes 3900 5000 0    40   ~ 0
-For NPN mode this op amp is not populated, and\nthe 10k resistors should be populated with 0's
+Text Notes 4750 4750 0    40   ~ 0
+For NPN mode this op \namp is not populated, \nand the 10k resistors\nshould be populated\nwith 0's
 $Comp
 L CSMALL C5
 U 1 1 54E9501E
@@ -2378,4 +2376,38 @@ Text Notes 9500 5350 0    40   ~ 0
 For PNP mode reverse \nthe capacitor polarity
 Text Notes 5600 4050 0    40   ~ 0
 Decoupling caps on OP AMP rails
+Text Notes 2100 5950 0    40   ~ 0
+The high current supply line (whether that \nbe + for NPN or - for PNP) is connected to\nV_SUPPLY.  The low current supply line (to\nsupply the other rail for the op amps) is\nconnected to V_SUPPLY_OTHER.  Bridge\nthe appropriate resistors depending on\nwhether the channel is NPN or PNP.
+Text Notes 7250 6000 0    40   ~ 0
+Choose either TIP102\n(NPN) or TIP107 (PNP)\nor any functional\nequivalent as the \npower transistor.
+Text Notes 9100 5650 0    40   ~ 0
+Bridge two of these resistors\nto pick NPN or PNP modes.
+$Comp
+L PINS_1 K16
+U 1 1 54EA89CA
+P 3750 5600
+F 0 "K16" H 3750 5500 60  0000 C CNN
+F 1 "V_SET" H 3750 5700 60  0000 C CNN
+F 2 "~" H 3750 5600 60  0000 C CNN
+F 3 "~" H 3750 5600 60  0000 C CNN
+	1    3750 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L PINS_1 K17
+U 1 1 54EA8AA9
+P 5200 6400
+F 0 "K17" H 5200 6300 60  0000 C CNN
+F 1 "I_SET" H 5200 6500 60  0000 C CNN
+F 2 "~" H 5200 6400 60  0000 C CNN
+F 3 "~" H 5200 6400 60  0000 C CNN
+	1    5200 6400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5500 6400 5750 6400
+Text Notes 4200 6650 0    40   ~ 0
+The I_SET input accepts a voltage from\n0 to 5V.  This sets the maximum amperage\nto a corresponding 0 to 5A.  Adjust the \nresistor dividers on the current sense\nop amp to adjust the multiplier (for instance,\nset the 10k resistors to 5k to change the\namperage range from 0 to 10A).
+Text Notes 3250 4900 0    40   ~ 0
+The V_SET input accepts a voltage from\n0 to 5V.  This sets the output voltage.\nThe default resistors provide a 3x multiplier\n(so an input of 4v to V_SET will provide\nan output of 12V at V_OUT).  Adjust the\nvoltage divider resistors coming from\nV_OUT to adjust the multiplier value\n(for instance, changing the 20k to a\n10k will make a 2x voltage multiplier).
 $EndSCHEMATC
