@@ -2986,4 +2986,10 @@ F 3 "" H 11250 11850 60  0000 C CNN
 	1    11250 11850
 	0    1    1    0   
 $EndComp
+Text Label 2250 10100 0    60   ~ 0
+VBUS
+Text Label 2800 10500 0    60   ~ 0
+UCAP
+Text Label 2800 11300 0    60   ~ 0
+AREF
 $EndSCHEMATC
