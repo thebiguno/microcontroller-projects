@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Mon 23 Feb 2015 08:29:45 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Mon 23 Feb 2015 10:05:05 PM MST
 
 BeginCmp
 TimeStamp = /54E9501E;
@@ -197,10 +197,10 @@ IdModule  = SIL-1;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EBB485;
+TimeStamp = /54EBFE87;
 Reference = K3;
-ValeurCmp = MCU_FEEDBACK;
-IdModule  = SIL-6;
+ValeurCmp = CONTROL_FEEDBACK;
+IdModule  = SIL-4;
 EndCmp
 
 BeginCmp
@@ -249,6 +249,13 @@ BeginCmp
 TimeStamp = /54E90FEA;
 Reference = K10;
 ValeurCmp = VOUT;
+IdModule  = SCREW_TERMINAL_2;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EC0337;
+Reference = K11;
+ValeurCmp = POWER;
 IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
@@ -428,8 +435,22 @@ IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
+TimeStamp = /54EC04C8;
+Reference = MP12;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EC04CE;
+Reference = MP13;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D7CBCE;
-Reference = NAMP1;
+Reference = MP14;
 ValeurCmp = MOUNTING_HOLE;
 IdModule  = MOUNTING_HOLE_#4;
 EndCmp
