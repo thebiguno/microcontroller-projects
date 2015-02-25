@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 24 Feb 2015 08:16:23 PM MST
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, February 25, 2015 'amt' 11:40:42 am
 
 BeginCmp
 TimeStamp = /54E9501E;
@@ -477,20 +477,6 @@ IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D7C753;
-Reference = NA_C1;
-ValeurCmp = 22000uF;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12D17;
-Reference = NA_D1;
-ValeurCmp = BRIDGE_RECTIFIER;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D12D42;
 Reference = NA_F1;
 ValeurCmp = 2A;
@@ -505,30 +491,23 @@ IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D26037;
-Reference = NA_K2;
-ValeurCmp = TRANSFORMED_AC_OUTPUT;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D19BD4;
-Reference = NA_K3;
-ValeurCmp = TRANSFORMED_AC_IN;
-IdModule  = ;
-EndCmp
-
-BeginCmp
 TimeStamp = /54E97E8B;
 Reference = NA_K4;
-ValeurCmp = RECTIFIED_DC_OUT;
+ValeurCmp = DUAL_RAIL_OUTPUT;
 IdModule  = ;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D7C958;
-Reference = NA_K5;
-ValeurCmp = PINS_2;
+TimeStamp = /54EE0D59;
+Reference = NA_PS1;
+ValeurCmp = SWITCHING_POWER_SUPPLY;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EE0D66;
+Reference = NA_PS2;
+ValeurCmp = SWITCHING_POWER_SUPPLY;
 IdModule  = ;
 EndCmp
 
@@ -536,20 +515,6 @@ BeginCmp
 TimeStamp = /54D6876B;
 Reference = NA_SW1;
 ValeurCmp = SPST;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12D01;
-Reference = NA_T1;
-ValeurCmp = TRANSFORMER;
-IdModule  = ;
-EndCmp
-
-BeginCmp
-TimeStamp = /54D12D07;
-Reference = NA_T2;
-ValeurCmp = TRANSFORMER;
 IdModule  = ;
 EndCmp
 
@@ -792,6 +757,13 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /54EE1F8B;
+Reference = R33;
+ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54EC0B0A;
 Reference = RV1;
 ValeurCmp = POTENTIOMETER;
@@ -802,6 +774,13 @@ BeginCmp
 TimeStamp = /54EBE673;
 Reference = SW1;
 ValeurCmp = RESET;
+IdModule  = SW_6x3;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EE1F85;
+Reference = SW2;
+ValeurCmp = HWB;
 IdModule  = SW_6x3;
 EndCmp
 
