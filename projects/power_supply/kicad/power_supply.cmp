@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Mon 23 Feb 2015 10:05:05 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 24 Feb 2015 08:02:38 PM MST
 
 BeginCmp
 TimeStamp = /54E9501E;
@@ -435,10 +435,10 @@ IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EC04C8;
+TimeStamp = /54ED1A00;
 Reference = MP12;
-ValeurCmp = MOUNTING_HOLE;
-IdModule  = MOUNTING_HOLE_#4;
+ValeurCmp = GRAPHIC;
+IdModule  = DIGITALCAVE_AUTHOR;
 EndCmp
 
 BeginCmp
@@ -449,8 +449,29 @@ IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D7CBCE;
+TimeStamp = /54ED1A06;
 Reference = MP14;
+ValeurCmp = GRAPHIC;
+IdModule  = DIGITALCAVE_LOGO;
+EndCmp
+
+BeginCmp
+TimeStamp = /54ED1A0C;
+Reference = MP15;
+ValeurCmp = GRAPHIC;
+IdModule  = DIGITALCAVE_URL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54ED3B2C;
+Reference = MP16;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54ED3B39;
+Reference = MP17;
 ValeurCmp = MOUNTING_HOLE;
 IdModule  = MOUNTING_HOLE_#4;
 EndCmp
@@ -766,7 +787,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54EC0D38;
 Reference = R32;
-ValeurCmp = 100k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -774,7 +795,7 @@ BeginCmp
 TimeStamp = /54EC0B0A;
 Reference = RV1;
 ValeurCmp = POTENTIOMETER;
-IdModule  = POTENTIOMETER;
+IdModule  = POTENTIOMETER_SMD;
 EndCmp
 
 BeginCmp
