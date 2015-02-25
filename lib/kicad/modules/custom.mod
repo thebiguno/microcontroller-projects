@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Tue 24 Feb 2015 07:45:39 PM MST
+PCBNEW-LibModule-V1  Wednesday, February 25, 2015 'pmt' 04:37:13 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -70,6 +70,8 @@ SMD_ARRAY_20_25M
 SOD-123_DIODE
 SOD-323_DIODE
 SOD-80
+SOP-32_05
+SOP-32_065
 SW_6x3
 TB_2
 TB_3
@@ -6908,6 +6910,474 @@ Ne 0 ""
 Po 0 -2
 $EndPAD
 $EndMODULE SOD-80
+$MODULE SOP-32_05
+Po 0 0 0 15 54EE5BFC 00000000 ~~
+Li SOP-32_05
+Cd SOP-32 in 0.5mm pitch.  Suitable for breakout boards.
+Sc 0
+AR /54EE53DB
+Op 0 0 0
+T0 0 0 1 1 0 0.15 N I 21 N "K1"
+T1 0 0 1 1 0 0.15 N I 21 N "PINS_32"
+$PAD
+Sh "1" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 15 "N-0000022"
+Po -3 -4
+$EndPAD
+$PAD
+Sh "2" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 11 "N-0000019"
+Po -3 -3.5
+$EndPAD
+$PAD
+Sh "3" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 8 "N-0000016"
+Po -3 -3
+$EndPAD
+$PAD
+Sh "4" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 4 "N-0000012"
+Po -3 -2.5
+$EndPAD
+$PAD
+Sh "5" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 2 "N-0000010"
+Po -3 -2
+$EndPAD
+$PAD
+Sh "6" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 26 "N-0000032"
+Po -3 -1.5
+$EndPAD
+$PAD
+Sh "7" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 24 "N-0000030"
+Po -3 -1
+$EndPAD
+$PAD
+Sh "8" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 21 "N-0000028"
+Po -3 -0.5
+$EndPAD
+$PAD
+Sh "9" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 19 "N-0000026"
+Po -3 0
+$EndPAD
+$PAD
+Sh "10" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 17 "N-0000024"
+Po -3 0.5
+$EndPAD
+$PAD
+Sh "11" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 14 "N-0000021"
+Po -3 1
+$EndPAD
+$PAD
+Sh "12" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 10 "N-0000018"
+Po -3 1.5
+$EndPAD
+$PAD
+Sh "13" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 7 "N-0000015"
+Po -3 2
+$EndPAD
+$PAD
+Sh "14" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 3 "N-0000011"
+Po -3 2.5
+$EndPAD
+$PAD
+Sh "15" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 32 "N-000009"
+Po -3 3
+$EndPAD
+$PAD
+Sh "16" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 25 "N-0000031"
+Po -3 3.5
+$EndPAD
+$PAD
+Sh "17" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 22 "N-0000029"
+Po 3 3.5
+$EndPAD
+$PAD
+Sh "18" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 20 "N-0000027"
+Po 3 3
+$EndPAD
+$PAD
+Sh "19" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 18 "N-0000025"
+Po 3 2.5
+$EndPAD
+$PAD
+Sh "20" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 16 "N-0000023"
+Po 3 2
+$EndPAD
+$PAD
+Sh "21" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 13 "N-0000020"
+Po 3 1.5
+$EndPAD
+$PAD
+Sh "22" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 9 "N-0000017"
+Po 3 1
+$EndPAD
+$PAD
+Sh "23" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 6 "N-0000014"
+Po 3 0.5
+$EndPAD
+$PAD
+Sh "24" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 5 "N-0000013"
+Po 3 0
+$EndPAD
+$PAD
+Sh "25" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 31 "N-000008"
+Po 3 -0.5
+$EndPAD
+$PAD
+Sh "26" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 30 "N-000007"
+Po 3 -1
+$EndPAD
+$PAD
+Sh "27" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 29 "N-000006"
+Po 3 -1.5
+$EndPAD
+$PAD
+Sh "28" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 28 "N-000005"
+Po 3 -2
+$EndPAD
+$PAD
+Sh "29" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 27 "N-000004"
+Po 3 -2.5
+$EndPAD
+$PAD
+Sh "30" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 23 "N-000003"
+Po 3 -3
+$EndPAD
+$PAD
+Sh "31" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 12 "N-000002"
+Po 3 -3.5
+$EndPAD
+$PAD
+Sh "32" R 3 0.3 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 1 "N-000001"
+Po 3 -4
+$EndPAD
+$EndMODULE SOP-32_05
+$MODULE SOP-32_065
+Po 0 0 0 15 54EE5A72 00000000 ~~
+Li SOP-32_065
+Cd SOP-32 in 0.65mm pitch.  Suitable for breakout boards.
+Sc 0
+AR 
+Op 0 0 0
+T0 0 0 1 1 0 0.15 N V 21 N "SOP-32_065"
+T1 0 0 1 1 0 0.15 N V 21 N "VAL**"
+$PAD
+Sh "1" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -5.2
+$EndPAD
+$PAD
+Sh "2" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -4.55
+$EndPAD
+$PAD
+Sh "3" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -3.9
+$EndPAD
+$PAD
+Sh "4" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -3.25
+$EndPAD
+$PAD
+Sh "5" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -2.6
+$EndPAD
+$PAD
+Sh "6" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -1.95
+$EndPAD
+$PAD
+Sh "7" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -1.3
+$EndPAD
+$PAD
+Sh "8" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 -0.65
+$EndPAD
+$PAD
+Sh "9" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 0
+$EndPAD
+$PAD
+Sh "10" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 0.65
+$EndPAD
+$PAD
+Sh "11" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 1.3
+$EndPAD
+$PAD
+Sh "12" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 1.95
+$EndPAD
+$PAD
+Sh "13" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 2.6
+$EndPAD
+$PAD
+Sh "14" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 3.25
+$EndPAD
+$PAD
+Sh "15" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 3.9
+$EndPAD
+$PAD
+Sh "16" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.25 4.55
+$EndPAD
+$PAD
+Sh "17" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 4.55
+$EndPAD
+$PAD
+Sh "18" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 3.9
+$EndPAD
+$PAD
+Sh "19" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 3.25
+$EndPAD
+$PAD
+Sh "20" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 2.6
+$EndPAD
+$PAD
+Sh "21" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 1.95
+$EndPAD
+$PAD
+Sh "22" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 1.3
+$EndPAD
+$PAD
+Sh "23" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 0.65
+$EndPAD
+$PAD
+Sh "24" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 0
+$EndPAD
+$PAD
+Sh "25" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -0.65
+$EndPAD
+$PAD
+Sh "26" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -1.3
+$EndPAD
+$PAD
+Sh "27" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -1.95
+$EndPAD
+$PAD
+Sh "28" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -2.6
+$EndPAD
+$PAD
+Sh "29" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -3.25
+$EndPAD
+$PAD
+Sh "30" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -3.9
+$EndPAD
+$PAD
+Sh "31" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -4.55
+$EndPAD
+$PAD
+Sh "32" R 4 0.455 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.25 -5.2
+$EndPAD
+$EndMODULE SOP-32_065
 $MODULE SW_6x3
 Po 0 0 0 15 54B04AC4 00000000 ~~
 Li SW_6x3
