@@ -29,10 +29,7 @@ def main():
 	mp_index = 0
 	mp_timer = 0
 	mountpoints = [
-		{"label": "    / ", "mountpoint": "/"},
-		{"label": "/home ", "mountpoint": "/home"},
-		{"label": "/data ", "mountpoint": "/mnt/data"},
-		{"label": "/bkup ", "mountpoint": "/mnt/backup"}
+		{"label": "    / ", "mountpoint": "/"}
 	]
 	
 	while True:
@@ -202,18 +199,6 @@ if (__name__=="__main__"):
 		while (True):
 			try:
 				dev = hid.Device(vid=0x4200, pid=0xFF00)
-
-				if (len(sys.argv) == 1):
-					main()
-				elif (len(sys.argv) == 3 and sys.argv[1] == "C"):
-					dev.write("\x02" + chr(int(sys.argv[2])))
-					sys.exit(0)
-				elif (len(sys.argv) == 3 and sys.argv[1] == "B"):
-					dev.write("\x03" + chr(int(sys.argv[2])))
-					sys.exit(0)
-				else:
-					print("Usage: " + sys.argv[0] + " [C NUM | B NUM]")
-					sys.exit(-1)
 			except hid.HIDException:
 				sleep(1)
 			finally:

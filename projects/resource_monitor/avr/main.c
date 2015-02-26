@@ -4,21 +4,13 @@
 #include <util/delay.h>
 
 #include "lib/Hd44780/Hd44780_Direct.h"
-#include "lib/pwm/pwm.h"
 #include "lib/usb/rawhid.h"
 
 using namespace digitalcave;
 
-#define BRIGHTNESS_PORT					PORTB
-#define BRIGHTNESS_PIN					PORTB0
-#define CONTRAST_PORT					PORTC
-#define CONTRAST_PIN					PORTC2
-
-#define PWM_PHASE						0xFF
-#define PWM_CONTRAST_PIN				0
-#define PWM_BRIGHTNESS_PIN				1
-#define EEPROM_CONTRAST_ADDRESS			((uint8_t*) 0x00)
-#define EEPROM_BRIGHTNESS_ADDRESS		((uint8_t*) 0x01)
+#define BACKLIGHT_PORT					PORTB
+#define BACKLIGHT_DDR					DDRB
+#define BACKLIGHT_PIN					0
 #define TIMEOUT_MILLIS					2000
 
 #define STATE_SPLASH					0
@@ -70,18 +62,6 @@ void initTimer(){
 	sei();
 }
 
-void initPwm(){
-	volatile uint8_t *ports[2];
-	uint8_t pins[2];
-	ports[PWM_CONTRAST_PIN] = &CONTRAST_PORT;
-	ports[PWM_BRIGHTNESS_PIN] = &BRIGHTNESS_PORT;
-	pins[PWM_CONTRAST_PIN] = CONTRAST_PIN;
-	pins[PWM_BRIGHTNESS_PIN] = BRIGHTNESS_PIN;
-	pwm_init(ports, pins, 2, PWM_PHASE);
-	pwm_set_phase(PWM_CONTRAST_PIN, eeprom_read_byte(EEPROM_CONTRAST_ADDRESS));
-	pwm_set_phase(PWM_BRIGHTNESS_PIN, eeprom_read_byte(EEPROM_BRIGHTNESS_ADDRESS));
-}
-
 void doSplash(){
 	state = STATE_SPLASH;
 	timeout_millis = 0;
@@ -93,7 +73,7 @@ void doSplash(){
 }
 
 void doDisplay(){
-	pwm_start();
+	BACKLIGHT_PORT |= _BV(BACKLIGHT_PIN);
 	
 	state = STATE_DISPLAY;
 	timeout_millis = 0;
@@ -105,7 +85,7 @@ void doDisplay(){
 }
 
 void doSleep(){
-	pwm_stop();
+	BACKLIGHT_PORT &= ~_BV(BACKLIGHT_PIN);
 	
 	display.set_ddram_address(0x00);
 	display.write_bytes((char*) "                ", 16);
@@ -117,7 +97,7 @@ int main (void){
 	initUsb();
 	initDisplay();
 	initTimer();
-	initPwm();
+	BACKLIGHT_DDR |= _BV(BACKLIGHT_PIN);
 	
 	doSplash();
 	
@@ -126,16 +106,6 @@ int main (void){
 		uint8_t count = usb_rawhid_recv(rx_buffer, 0);
 		if (count >= 33 && rx_buffer[0] == 0x01) {
 			doDisplay();
-		}
-		else if (count >= 2 && rx_buffer[0] == 0x02){
-			if (state == STATE_SLEEP) doSplash();
-			pwm_set_phase(0, rx_buffer[1]);
-			eeprom_update_byte(EEPROM_CONTRAST_ADDRESS, rx_buffer[1]);
-		}
-		else if (count >= 2 && rx_buffer[0] == 0x03){
-			if (state == STATE_SLEEP) doSplash();
-			pwm_set_phase(1, rx_buffer[1]);
-			eeprom_update_byte(EEPROM_BRIGHTNESS_ADDRESS, rx_buffer[1]);
 		}
 		
 		if (state != STATE_SLEEP && timeout_millis > TIMEOUT_MILLIS){
