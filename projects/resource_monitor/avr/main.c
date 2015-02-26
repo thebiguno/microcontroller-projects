@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "locallib/Hd44780/Hd44780_Direct.h"
+#include "lib/Hd44780/Hd44780_Direct.h"
 #include "lib/pwm/pwm.h"
 #include "lib/usb/rawhid.h"
 
@@ -32,7 +32,7 @@ using namespace digitalcave;
 static uint8_t rx_buffer[64];
 static volatile uint16_t timeout_millis = 0;
 static volatile uint8_t state;
-static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8);
+static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTB, 1, &PORTB, 2, &PORTD, 4, &PORTD, 5, &PORTD, 6, &PORTD, 7);
 
 void initUsb(){
 	// Initialize the USB, and then wait for the host to set configuration.
@@ -58,10 +58,9 @@ void initDisplay(){
 		0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f		// 7
 													// 8 (Use 0xFF)
 	};
-	display.setCgramAddress(0x00);
+	display.set_cgram_address(0x00);
 	_delay_ms(64);
-	display.setBytes(custom, 64);
-}
+	display.write_bytes(custom, 64); }
 
 void initTimer(){
 	TCCR0A = 0x0;
@@ -87,10 +86,10 @@ void doSplash(){
 	state = STATE_SPLASH;
 	timeout_millis = 0;
 	
-	display.setDdramAddress(0x00);
-	display.setText((char*) "  Wyatt  Olson  ", 16);
-	display.setDdramAddress(0x40);
-	display.setText((char*) " digitalcave.ca ", 16);
+	display.set_ddram_address(0x00);
+	display.write_bytes((char*) "  Wyatt  Olson  ", 16);
+	display.set_ddram_address(0x40);
+	display.write_bytes((char*) " digitalcave.ca ", 16);
 }
 
 void doDisplay(){
@@ -99,19 +98,19 @@ void doDisplay(){
 	state = STATE_DISPLAY;
 	timeout_millis = 0;
 	
-	display.setDdramAddress(0x00);
-	display.setText((char*) &rx_buffer[1], 16);
-	display.setDdramAddress(0x40);
-	display.setText((char*) &rx_buffer[17], 16);
+	display.set_ddram_address(0x00);
+	display.write_bytes((char*) &rx_buffer[1], 16);
+	display.set_ddram_address(0x40);
+	display.write_bytes((char*) &rx_buffer[17], 16);
 }
 
 void doSleep(){
 	pwm_stop();
 	
-	display.setDdramAddress(0x00);
-	display.setText((char*) "                ", 16);
-	display.setDdramAddress(0x40);
-	display.setText((char*) "                ", 16);
+	display.set_ddram_address(0x00);
+	display.write_bytes((char*) "                ", 16);
+	display.set_ddram_address(0x40);
+	display.write_bytes((char*) "                ", 16);
 }
 
 int main (void){
