@@ -30,13 +30,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:sop-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "25 feb 2015"
+Date "26 feb 2015"
 Rev ""
 Comp ""
 Comment1 ""
@@ -45,10 +46,10 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L PINS_32 K1
+L PINS_32 K_SOP32_05mm_1
 U 1 1 54EE53DB
 P 1350 2600
-F 0 "K1" H 1300 950 60  0000 C CNN
+F 0 "K_SOP32_05mm_1" H 1300 950 60  0000 C CNN
 F 1 "PINS_32" H 1350 4250 60  0000 C CNN
 F 2 "~" H 1350 4150 60  0000 C CNN
 F 3 "~" H 1350 4150 60  0000 C CNN
@@ -56,10 +57,10 @@ F 3 "~" H 1350 4150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L PINS_32 K2
+L PINS_32 K_SOP32_065mm_2
 U 1 1 54EE53E8
 P 1950 2600
-F 0 "K2" H 1900 950 60  0000 C CNN
+F 0 "K_SOP32_065mm_2" H 1900 950 60  0000 C CNN
 F 1 "PINS_32" H 1950 4250 60  0000 C CNN
 F 2 "~" H 1950 4150 60  0000 C CNN
 F 3 "~" H 1950 4150 60  0000 C CNN
