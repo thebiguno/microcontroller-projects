@@ -95,9 +95,9 @@ int main (void){
 	//SPSR = _BV(SPI2X);
 	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR1) | _BV(SPR0);
 	
-	
+	//Start / stop buttons
 	Buttons b(&PORTB, START_BUTTON | STOP_BUTTON, 8, 8, 0, 0);
-
+	
 	//We drive the anodes of the LED modules via MOSFETs activated by PORTD0..PORTD3
 	DDRD |= 0xFF;
 
@@ -132,7 +132,7 @@ int main (void){
 			pressed = b.pressed();
 			
 			for(uint8_t i = 0; i < LANE_COUNT; i++){
-				if (finish_times[i] == 0 && PINC & _BV(i)){
+				if (finish_times[i] == 0 && PINC & _BV(i)){	//The sensors go high when finishing
 					finish_times[i] = time;
 				}
 			}
