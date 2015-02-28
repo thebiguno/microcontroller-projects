@@ -51,17 +51,24 @@ uint8_t number_to_segmented_digit(uint8_t digit){
 void display_times(volatile uint16_t* times, volatile uint16_t default_value){
 	static uint8_t digit = 0;
 
-	char temp[6];
+	char temp[10];
 	
+	snprintf(temp, 6, "%04d", times[0] == 0 ? default_value : times[0]);
 	for (uint8_t b = 0; b < LANE_COUNT; b++){
-		snprintf(temp, 6, "%04d", times[b] == 0 ? default_value : times[b]);
 		SPDR = number_to_segmented_digit(temp[digit]);
+		if ((b + 1) < LANE_COUNT){
+			snprintf(temp, 6, "%04d", times[b + 1] == 0 ? default_value : times[b + 1]);
+		}
+
 		while (!(SPSR & _BV(SPIF)));
 	}
-	PORTD = 0x00;
+	_delay_us(5);
+	PORTD = 0x0F;
 	PORTB &= ~_BV(PORTB2);
+	_delay_us(100);
 	PORTB |= _BV(PORTB2);
-	PORTD = ~_BV(digit);
+	_delay_us(100);
+	PORTD = ~_BV(digit) & 0x0F;
 	_delay_ms(2);
 
 	digit++;
@@ -85,13 +92,14 @@ void timer_init(){
 int main (void){
 	//Set up SPI.  We need to set SS (B2) as an output before enabling master mode
 	DDRB |= _BV(PORTB2) | _BV(PORTB3) | _BV(PORTB5);
-	SPCR |= _BV(SPI2X);
-	SPCR = _BV(SPE) | _BV(MSTR);
+	//SPSR = _BV(SPI2X);
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR1) | _BV(SPR0);
+	
 	
 	Buttons b(&PORTB, START_BUTTON | STOP_BUTTON, 8, 8, 0, 0);
 
 	//We drive the anodes of the LED modules via MOSFETs activated by PORTD0..PORTD3
-	DDRD = 0x0F;
+	DDRD |= 0xFF;
 
 	while (1) {
 		uint8_t pressed = 0x00;
@@ -102,9 +110,11 @@ int main (void){
 		
 		//Wait until race starts, showing 00:00
 		while(1){
+
 			b.sample();
 			pressed = b.pressed();
 			
+	
 			display_times(finish_times, 0);
 			
 			if (pressed & START_BUTTON) break;
@@ -158,6 +168,8 @@ int main (void){
 	}
 }
 
+EMPTY_INTERRUPT(TIMER1_COMPB_vect)
+EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
 	time++;
 }
