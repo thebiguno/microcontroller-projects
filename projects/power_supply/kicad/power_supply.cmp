@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Wednesday, February 25, 2015 'amt' 11:40:42 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, February 26, 2015 'pmt' 02:45:41 pm
 
 BeginCmp
 TimeStamp = /54E9501E;
@@ -155,6 +155,34 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /54EF9C6F;
+Reference = C23;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EFB62F;
+Reference = C24;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EF9C69;
+Reference = C25;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EFB629;
+Reference = C26;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54EBFA68;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
@@ -173,6 +201,27 @@ TimeStamp = /54E90916;
 Reference = D2;
 ValeurCmp = 5.1V;
 IdModule  = SOT23-SPECIAL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EFB653;
+Reference = D3;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EFACFA;
+Reference = D4;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
+TimeStamp = /54EFB643;
+Reference = D5;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
 EndCmp
 
 BeginCmp
