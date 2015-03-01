@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sat 28 Feb 2015 11:48:44 PM MST
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 01 Mar 2015 09:37:55 AM MST
 
 BeginCmp
 TimeStamp = /54E9501E;
@@ -225,6 +225,13 @@ IdModule  = SOT23;
 EndCmp
 
 BeginCmp
+TimeStamp = /54F3425B;
+Reference = D6;
+ValeurCmp = PESD5V0X1BT;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
 TimeStamp = /54EC0AEF;
 Reference = DS1;
 ValeurCmp = HD44780;
@@ -409,14 +416,14 @@ EndCmp
 BeginCmp
 TimeStamp = /54F2BB8B;
 Reference = K26;
-ValeurCmp = PINS_4;
+ValeurCmp = USB;
 IdModule  = SIL-4;
 EndCmp
 
 BeginCmp
 TimeStamp = /54F2C297;
 Reference = K27;
-ValeurCmp = PINS_4;
+ValeurCmp = USB;
 IdModule  = SIL-4;
 EndCmp
 
@@ -537,6 +544,27 @@ TimeStamp = /54D2A6C1;
 Reference = MP17;
 ValeurCmp = MOUNTING_HOLE;
 IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54F3415F;
+Reference = MP18;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54F3416B;
+Reference = MP19;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /54F341E6;
+Reference = MP20;
+ValeurCmp = MOUSE_BITES;
+IdModule  = mouse_bites;
 EndCmp
 
 BeginCmp
