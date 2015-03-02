@@ -51,3 +51,8 @@
 	-Set values can be sent from program
 	-Python program used for logging + setting values
 	-All menu operations should be supported from USB, allowing for complete computer operation with no external UI.
+
+-Physical connections
+	-Each channel has a voltage (either + (red connector) or - (blue connector) depending on the channel type) and a GND (black)
+	-In addition, include a +/- 15V connection (+ gnd) directly connected to the internal rails (no current detection)
+	-Each channel should have a Load toggle switch to disconnect the supply
