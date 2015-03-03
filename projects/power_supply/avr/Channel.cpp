@@ -2,10 +2,12 @@
 
 using namespace digitalcave;
 
-Channel::Channel(uint8_t i2c_address, 
+Channel::Channel(uint8_t i2c_address,
+					uint8_t bank,
 					double voltage_max, double voltage_min, uint8_t voltage_adc_channel, 
 					double current_max, double current_min, uint8_t current_adc_channel){
 	this->i2c_address = i2c_address;
+	this->bank = bank;
 	this->voltage_max = voltage_max;
 	this->voltage_min = voltage_min;
 	this->voltage_adc_channel = voltage_adc_channel;
@@ -13,6 +15,19 @@ Channel::Channel(uint8_t i2c_address,
 	this->current_max = current_max;
 	this->current_min = current_min;
 	this->current_adc_channel = current_adc_channel;
+	
+	twi_init();
+	
+	
+	//Analog setup
+	//Disable digital inputs
+	DIDR0 = 0xFF;
+	DIDR2 = 0xFF;
+	
+	ADCSRA = 0x87; //ADC Enable, prescaler = /128
+	
+	this->set_voltage_setpoint(0);
+	this->set_current_setpoint(0);
 }
 
 double Channel::get_voltage_setpoint(){
@@ -20,19 +35,56 @@ double Channel::get_voltage_setpoint(){
 }
 void Channel::set_voltage_setpoint(double setpoint){
 	this->voltage_setpoint = setpoint;
+
+	uint16_t dac_setpoint = ((uint16_t) (((setpoint / VOLTAGE_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	uint8_t message[3];
+	message[0] = 0x58 | (this->bank << 2);		//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[1] = ((dac_setpoint >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[2] = (dac_setpoint & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
 double Channel::get_current_setpoint(){
 	return this->current_setpoint;
 }
 void Channel::set_current_setpoint(double setpoint){
-	this->voltage_setpoint = setpoint;
+	this->current_setpoint = setpoint;
+	
+	uint16_t dac_setpoint = ((uint16_t) (((setpoint / CURRENT_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	uint8_t message[3];
+	message[0] = 0x58 | (this->bank << 2) | (1 << 1);	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[1] = ((dac_setpoint >> 8) & 0x0F);			//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[2] = (dac_setpoint & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
 void Channel::sample_actual(){
-	//TODO
-	this->voltage_actual = 1.234 + this->i2c_address;
-	this->current_actual = 4.321 + this->i2c_address;
+	//Set up which pin to read for voltage
+	ADMUX &= ~0x1F;
+	if (this->voltage_adc_channel <= 0x07){
+		ADMUX |= this->voltage_adc_channel;
+	}
+	else {
+		ADMUX |= this->voltage_adc_channel + 0x18;
+	}
+	ADCSRA |= _BV(ADSC);			//Start conversion
+	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
+
+	this->voltage_actual = ADC;
+	
+	
+	//Set up which pin to read for current
+	ADMUX &= ~0x1F;
+	if (this->voltage_adc_channel <= 0x07){
+		ADMUX |= this->voltage_adc_channel;
+	}
+	else {
+		ADMUX |= this->voltage_adc_channel + 0x18;
+	}
+	ADCSRA |= _BV(ADSC);			//Start conversion
+	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
+
+	this->current_actual = ADC;
 }
 
 void Channel::to_string(uint8_t actual, char* buffer, uint8_t max_length){

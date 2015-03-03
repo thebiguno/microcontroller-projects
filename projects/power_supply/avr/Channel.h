@@ -9,12 +9,18 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "lib/twi/twi.h"
+
+//TODO Change these to be instance variables set depending on the voltage divider resistor values
+#define VOLTAGE_MULTIPLIER		3
+#define CURRENT_MULTIPLIER		1
+
 namespace digitalcave {
 
 	class Channel {
 		private:
 			uint8_t i2c_address;
-			
+			uint8_t bank;
 			
 			double voltage_max;
 			double voltage_min;
@@ -35,8 +41,9 @@ namespace digitalcave {
 			 * Initializes the channel
 			 */
 			Channel(uint8_t i2c_address, 
-					double voltage_max, double voltage_min, uint8_t voltage_adc_channel, 
-					double current_max, double current_min, uint8_t current_adc_channel);
+					uint8_t bank,
+					double voltage_min, double voltage_max, uint8_t voltage_adc_channel, 
+					double current_min, double current_max, uint8_t current_adc_channel);
 
 			double get_voltage_setpoint();
 			void set_voltage_setpoint(double setpoint);
