@@ -15,6 +15,8 @@
 #define VOLTAGE_MULTIPLIER		3
 #define CURRENT_MULTIPLIER		1
 
+#define RUNNING_AVERAGE_COUNT	10
+
 namespace digitalcave {
 
 	class Channel {

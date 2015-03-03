@@ -18,7 +18,6 @@ Channel::Channel(uint8_t i2c_address,
 	
 	twi_init();
 	
-	
 	//Analog setup
 	//Disable digital inputs
 	DIDR0 = 0xFF;
@@ -71,21 +70,27 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	this->voltage_actual = ((double) ADC / 1024) * 5 * VOLTAGE_MULTIPLIER;
+	double sample;
+	sample = ADC;
+	sample = (sample / 1024) * 5 * VOLTAGE_MULTIPLIER;
+	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->voltage_actual)) / RUNNING_AVERAGE_COUNT;
 	
 	
 	//Set up which pin to read for current
 	ADMUX &= ~0x1F;
 	if (this->voltage_adc_channel <= 0x07){
-		ADMUX |= this->voltage_adc_channel;
+		ADMUX |= this->current_adc_channel;
 	}
 	else {
-		ADMUX |= this->voltage_adc_channel + 0x18;
+		ADMUX |= this->current_adc_channel + 0x18;
 	}
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	this->current_actual = ((double) ADC / 1024) * 5 * CURRENT_MULTIPLIER;;
+	sample = ADC;
+	sample = (sample / 1024) * 5 * CURRENT_MULTIPLIER;
+	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->current_actual)) / RUNNING_AVERAGE_COUNT;
+
 }
 
 void Channel::to_string(uint8_t index, uint8_t actual, char* buffer, uint8_t max_length){
