@@ -4,8 +4,8 @@ using namespace digitalcave;
 
 Channel::Channel(uint8_t i2c_address,
 					uint8_t bank,
-					double voltage_max, double voltage_min, uint8_t voltage_adc_channel, 
-					double current_max, double current_min, uint8_t current_adc_channel){
+					double voltage_min, double voltage_max, uint8_t voltage_adc_channel, 
+					double current_min, double current_max, uint8_t current_adc_channel){
 	this->i2c_address = i2c_address;
 	this->bank = bank;
 	this->voltage_max = voltage_max;
@@ -24,7 +24,8 @@ Channel::Channel(uint8_t i2c_address,
 	DIDR0 = 0xFF;
 	DIDR2 = 0xFF;
 	
-	ADCSRA = 0x87; //ADC Enable, prescaler = /128
+	ADMUX = _BV(REFS0);		//Reference AVCC with cap at AREF pin
+	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); 	//ADC Enable, prescaler = /128
 	
 	this->set_voltage_setpoint(0);
 	this->set_current_setpoint(0);
@@ -70,7 +71,7 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	this->voltage_actual = ADC;
+	this->voltage_actual = ((double) ADC / 1024) * 5 * VOLTAGE_MULTIPLIER;
 	
 	
 	//Set up which pin to read for current
@@ -84,13 +85,13 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	this->current_actual = ADC;
+	this->current_actual = ((double) ADC / 1024) * 5 * CURRENT_MULTIPLIER;;
 }
 
-void Channel::to_string(uint8_t actual, char* buffer, uint8_t max_length){
+void Channel::to_string(uint8_t index, uint8_t actual, char* buffer, uint8_t max_length){
 	double voltage = actual ? this->voltage_actual : this->voltage_setpoint;
 	double current = actual ? this->current_actual : this->current_setpoint;
-	snprintf(buffer, max_length, "%d %+6.2fV %5.3fA     ", this->i2c_address + 1, voltage, current);
+	snprintf(buffer, max_length, "%d %+6.2fV %5.3fA     ", index + 1, voltage, current);
 }
 
 void Channel::adjust_setpoint(uint8_t selector, double amount){
