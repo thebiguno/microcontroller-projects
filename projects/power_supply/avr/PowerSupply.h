@@ -10,7 +10,7 @@
 #include "usb.h"
 
 #ifndef CHANNEL_COUNT
-#define CHANNEL_COUNT					4
+#define CHANNEL_COUNT					2
 #endif
 
 #if CHANNEL_COUNT > 6

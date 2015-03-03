@@ -21,7 +21,7 @@ void Display::update(State state){
 		}
 
 		for(uint8_t row = 0; row < DISPLAY_ROWS; row++){
-			channels[channel].to_string((state.get_state() == STATE_LOCKED), temp, DISPLAY_COLS + 1);
+			channels[channel].to_string(row, (state.get_state() == STATE_LOCKED), temp, DISPLAY_COLS + 1);
 			char_display.write_text(row, 0, temp, DISPLAY_COLS);
 
 			if (channel == (state.get_scroll_channel())){
