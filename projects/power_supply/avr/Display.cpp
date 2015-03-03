@@ -20,7 +20,7 @@ void Display::update(State state){
 			channel = (CHANNEL_COUNT - DISPLAY_ROWS);
 		}
 
-		for(uint8_t row = 0; row < DISPLAY_ROWS; row++){
+		for(uint8_t row = 0; row < DISPLAY_ROWS && row < CHANNEL_COUNT; row++){
 			channels[channel].to_string(row, (state.get_state() == STATE_LOCKED), temp, DISPLAY_COLS + 1);
 			char_display.write_text(row, 0, temp, DISPLAY_COLS);
 
