@@ -3049,7 +3049,7 @@ Text Notes 9250 3000 0    40   ~ 0
 V_GET outputs a voltage from 0 to 5V, representing the actual voltage output.  This is applied\nthrough the same multiplier that is applied to V_SET (by default 3x).  So, a V_GET reading of \n4V would mean the actual V_OUT value is 12V; likewise a V_GET reading of 1.1V would show\na V_OUT reading of 3.3V.\n\nIn normal (non-current limted) operation this should be the same as V_SET.  If current is being\nlimited, then the voltage will drop accordingly.
 Text Notes 9800 5250 0    40   ~ 0
 I_GET outputs a voltage from 0 to 5V, representing the actual current output.\nThis is applied through the same multiplier that is applied to I_SET (by default\n1x).  So, an I_GET reading of 4V would show a current output of 4A.\n\nThis value should never exceed the I_SET value.
-Text Label 7750 4350 0    60   ~ 0
+Text Label 8200 4350 2    60   ~ 0
 V_OUT_PRESENSE
 $Comp
 L CSMALL C25
