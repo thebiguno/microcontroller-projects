@@ -2,18 +2,15 @@
 
 using namespace digitalcave;
 
-Channel::Channel(uint8_t i2c_address,
-					uint8_t bank,
-					double voltage_min, double voltage_max, uint8_t voltage_adc_channel, 
-					double current_min, double current_max, uint8_t current_adc_channel){
+Channel::Channel(uint8_t i2c_address, uint8_t dac_bank,
+					int16_t voltage_max, int16_t current_max,
+					uint8_t voltage_adc_channel, uint8_t current_adc_channel){
 	this->i2c_address = i2c_address;
-	this->bank = bank;
+	this->dac_bank = dac_bank;
 	this->voltage_max = voltage_max;
-	this->voltage_min = voltage_min;
 	this->voltage_adc_channel = voltage_adc_channel;
 	
 	this->current_max = current_max;
-	this->current_min = current_min;
 	this->current_adc_channel = current_adc_channel;
 	
 	twi_init();
@@ -30,29 +27,37 @@ Channel::Channel(uint8_t i2c_address,
 	this->set_current_setpoint(0);
 }
 
-double Channel::get_voltage_setpoint(){
+int16_t Channel::get_voltage_actual(){
+	return this->voltage_actual;
+}
+
+int16_t Channel::get_voltage_setpoint(){
 	return this->voltage_setpoint;
 }
-void Channel::set_voltage_setpoint(double setpoint){
+void Channel::set_voltage_setpoint(int16_t setpoint){
 	this->voltage_setpoint = setpoint;
 
-	uint16_t dac_setpoint = ((uint16_t) (((setpoint / VOLTAGE_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / VOLTAGE_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
-	message[0] = 0x58 | (this->bank << 2);		//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[0] = 0x58 | (this->dac_bank << 2);		//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
 	message[1] = ((dac_setpoint >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
 	message[2] = (dac_setpoint & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
-double Channel::get_current_setpoint(){
+int16_t Channel::get_current_actual(){
+	return this->current_actual;
+}
+
+int16_t Channel::get_current_setpoint(){
 	return this->current_setpoint;
 }
-void Channel::set_current_setpoint(double setpoint){
+void Channel::set_current_setpoint(int16_t setpoint){
 	this->current_setpoint = setpoint;
 	
-	uint16_t dac_setpoint = ((uint16_t) (((setpoint / CURRENT_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
-	message[0] = 0x58 | (this->bank << 2) | (1 << 1);	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[0] = 0x58 | (this->dac_bank << 2) | (1 << 1);	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
 	message[1] = ((dac_setpoint >> 8) & 0x0F);			//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
 	message[2] = (dac_setpoint & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
@@ -72,7 +77,7 @@ void Channel::sample_actual(){
 
 	double sample;
 	sample = ADC;
-	sample = (sample / 1024) * 5 * VOLTAGE_MULTIPLIER;
+	sample = (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
 	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->voltage_actual)) / RUNNING_AVERAGE_COUNT;
 	
 	
@@ -88,26 +93,38 @@ void Channel::sample_actual(){
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
 	sample = ADC;
-	sample = (sample / 1024) * 5 * CURRENT_MULTIPLIER;
+	sample = (sample / 1024.0) * 5000 * CURRENT_MULTIPLIER;
 	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->current_actual)) / RUNNING_AVERAGE_COUNT;
 
 }
 
 void Channel::to_string(uint8_t index, uint8_t actual, char* buffer, uint8_t max_length){
-	double voltage = actual ? this->voltage_actual : this->voltage_setpoint;
-	double current = actual ? this->current_actual : this->current_setpoint;
+	double voltage = actual ? this->voltage_actual / 1000.0 : this->voltage_setpoint / 1000.0;
+	double current = actual ? this->current_actual / 1000.0 : this->current_setpoint / 1000.0;
 	snprintf(buffer, max_length, "%d %+6.2fV %5.3fA     ", index + 1, voltage, current);
 }
 
-void Channel::adjust_setpoint(uint8_t selector, double amount){
+void Channel::adjust_setpoint(uint8_t selector, int16_t amount){
 	if (selector == 0){
 		this->voltage_setpoint += amount;
-		if (this->voltage_setpoint >= this->voltage_max) this->voltage_setpoint = this->voltage_max;
-		else if (this->voltage_setpoint <= this->voltage_min) this->voltage_setpoint = this->voltage_min;
+		if (this->voltage_setpoint >= 0){
+			if (this->voltage_setpoint >= this->voltage_max) this->voltage_setpoint = this->voltage_max;
+			else if (this->voltage_setpoint <= 0) this->voltage_setpoint = 0;
+		}
+		else {
+			if (this->voltage_setpoint < 0 && this->voltage_setpoint <= this->voltage_max) this->voltage_setpoint = this->voltage_max;
+			else if (this->voltage_setpoint <= 0) this->voltage_setpoint = 0;
+		}
 	}
 	else {
 		this->current_setpoint += amount;
-		if (this->current_setpoint >= this->current_max) this->current_setpoint = this->current_max;
-		else if (this->current_setpoint <= this->current_min) this->current_setpoint = this->current_min;
+		if (this->current_setpoint >= 0){
+			if (this->current_setpoint >= this->current_max) this->current_setpoint = this->current_max;
+			else if (this->current_setpoint <= 0) this->current_setpoint = 0;
+		}
+		else {
+			if (this->current_setpoint < 0 && this->current_setpoint <= this->current_max) this->current_setpoint = this->current_max;
+			else if (this->current_setpoint <= 0) this->current_setpoint = 0;
+		}
 	}
 }

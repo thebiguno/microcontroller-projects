@@ -22,18 +22,18 @@ namespace digitalcave {
 	class Channel {
 		private:
 			uint8_t i2c_address;
-			uint8_t bank;
+			uint8_t dac_bank;		//Bit 2 of the DAC channel.  i.e. 0 for DAC output A and B, 1 for DAC output C and D.
 			
-			double voltage_max;
-			double voltage_min;
-			double voltage_setpoint = 0;
-			double voltage_actual = 0;
+			//All voltage values are in millivolts
+			int16_t voltage_max;
+			int16_t voltage_setpoint = 0;
+			int16_t voltage_actual = 0;
 			uint8_t voltage_adc_channel;
 			
-			double current_max;
-			double current_min;
-			double current_setpoint = 0;
-			double current_actual = 0;
+			//All current values are in milliamps
+			int16_t current_max;
+			int16_t current_setpoint = 0;
+			int16_t current_actual = 0;
 			uint8_t current_adc_channel;
 			
 			static uint8_t selected_i2c_address_and_reading;	//Used to show menu cursor
@@ -42,16 +42,18 @@ namespace digitalcave {
 			/*
 			 * Initializes the channel
 			 */
-			Channel(uint8_t i2c_address,
-					uint8_t bank,
-					double voltage_min, double voltage_max, uint8_t voltage_adc_channel, 
-					double current_min, double current_max, uint8_t current_adc_channel);
+			Channel(uint8_t i2c_address, uint8_t dac_bank,
+				int16_t voltage_max, int16_t current_max,
+				uint8_t voltage_adc_channel, uint8_t current_adc_channel);
 
-			double get_voltage_setpoint();
-			void set_voltage_setpoint(double setpoint);
+
+			int16_t get_voltage_actual();
+			int16_t get_voltage_setpoint();
+			void set_voltage_setpoint(int16_t setpoint);
 			
-			double get_current_setpoint();
-			void set_current_setpoint(double setpoint);
+			int16_t get_current_actual();
+			int16_t get_current_setpoint();
+			void set_current_setpoint(int16_t setpoint);
 			
 			void sample_actual();
 			
@@ -66,7 +68,7 @@ namespace digitalcave {
 			 * Adjust the voltage / current setpoint by the given amount (positive or negative).
 			 * The selector will be one of 0 (voltage) or 1 (current).
 			 */
-			void adjust_setpoint(uint8_t selector, double amount);
+			void adjust_setpoint(uint8_t selector, int16_t amount);
 	};
 }
 
