@@ -19,31 +19,27 @@ void Display::update(State state){
 		if (CHANNEL_COUNT > DISPLAY_ROWS && channel > (CHANNEL_COUNT - DISPLAY_ROWS)){
 			channel = (CHANNEL_COUNT - DISPLAY_ROWS);
 		}
+		else if (CHANNEL_COUNT < DISPLAY_ROWS){
+			channel = 0;	
+		}
 
 		for(uint8_t row = 0; row < DISPLAY_ROWS && row < CHANNEL_COUNT; row++){
 			double voltage = state.get_state() == STATE_LOCKED ? channels[channel].get_voltage_actual() / 1000.0 : channels[channel].get_voltage_setpoint() / 1000.0;
 			double current = state.get_state() == STATE_LOCKED ? channels[channel].get_current_actual() / 1000.0 : channels[channel].get_current_setpoint() / 1000.0;
 
-			snprintf(buffer, DISPLAY_COLS + 1, "%d %+6.2fV %5.3fA     ", channel + 1, voltage, current);
+			snprintf(buffer, DISPLAY_COLS + 1, "Ch %d %+6.2fV %5.2fA   ", channel + 1, voltage, current);
 			char_display.write_text(row, 0, buffer, DISPLAY_COLS);
 
-			if (channel == (state.get_scroll_channel())){
-				if (state.get_state() == STATE_EDIT){
-					char_display.write_text(row, state.get_scroll_value() ? 9 : 1, (char) 0xFF);
-				}
-				else if (state.get_state() == STATE_EDIT_ITEM){
-					if (state.get_scroll_value()){
-						char_display.write_text(row, 9, 0x7e);
-						char_display.write_text(row, 16, 0x7f);
-					}
-					else {
-						char_display.write_text(row, 1, 0x7e);
-						char_display.write_text(row, 9, 0x7f);
-					}
-				}
+			if (channel == (state.get_scroll_channel()) && state.get_state() == STATE_EDIT){
+				char_display.write_text(row, 4, 0x7e);
+				char_display.write_text(row, 19, 0x7f);
 			}
 			
 			channel++;
+		}
+		
+		for (uint8_t row = CHANNEL_COUNT; row < DISPLAY_ROWS; row++){
+			char_display.write_text(row, 0, "                    ", DISPLAY_COLS);
 		}
 	}
 	else if (state.get_state() == STATE_EDIT_ITEM){
@@ -53,20 +49,20 @@ void Display::update(State state){
 		snprintf(buffer, DISPLAY_COLS + 1, "   Channel %d         ", channel + 1);
 		char_display.write_text(0, 0, buffer, DISPLAY_COLS);
 		
-		snprintf(buffer, DISPLAY_COLS + 1, "Set  %+6.2fV %5.3fA     ", channels[channel].get_voltage_setpoint() / 1000.0, channels[channel].get_current_setpoint() / 1000.0);
+		snprintf(buffer, DISPLAY_COLS + 1, "Set  %+6.2fV %5.2fA     ", channels[channel].get_voltage_setpoint() / 1000.0, channels[channel].get_current_setpoint() / 1000.0);
 		char_display.write_text(1, 0, buffer, DISPLAY_COLS);
 
-		snprintf(buffer, DISPLAY_COLS + 1, "Meas.%+6.2fV %5.3fA     ", channels[channel].get_voltage_actual() / 1000.0, channels[channel].get_current_actual() / 1000.0);
+		snprintf(buffer, DISPLAY_COLS + 1, "Actl.%+6.2fV %5.2fA     ", channels[channel].get_voltage_actual() / 1000.0, channels[channel].get_current_actual() / 1000.0);
 		char_display.write_text(2, 0, buffer, DISPLAY_COLS);
 
 		char_display.write_text(3, 0, "                    ", DISPLAY_COLS);
 		
 		if (state.get_scroll_value()){
-			char_display.write_text(1, 12, 0x7e);
+			char_display.write_text(1, 13, 0x7e);
 			char_display.write_text(1, 19, 0x7f);
 		}
 		else {
-			char_display.write_text(1, 5, 0x7e);
+			char_display.write_text(1, 4, 0x7e);
 			char_display.write_text(1, 12, 0x7f);
 		}
 

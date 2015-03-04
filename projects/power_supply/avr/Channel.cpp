@@ -114,8 +114,8 @@ void Channel::adjust_setpoint(uint8_t selector, int16_t amount){
 			else if (this->voltage_setpoint <= 0) this->voltage_setpoint = 0;
 		}
 		else {
-			if (this->voltage_setpoint < 0 && this->voltage_setpoint <= this->voltage_limit) this->voltage_setpoint = this->voltage_limit;
-			else if (this->voltage_setpoint <= 0) this->voltage_setpoint = 0;
+			if (this->voltage_setpoint <= this->voltage_limit) this->voltage_setpoint = this->voltage_limit;
+			else if (this->voltage_setpoint >= 0) this->voltage_setpoint = 0;
 		}
 		
 		this->set_voltage_setpoint(this->voltage_setpoint);

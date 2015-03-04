@@ -41,25 +41,15 @@ void State::poll(){
 			this->state = STATE_LOCKED;
 		}
 		else if (encoder_movement & ENCODER1_CLOCKWISE){
-			this->scroll_value++;
-			if (this->scroll_value > 1){
-				this->scroll_value = 0;
-				this->scroll_channel++;
-				if (this->scroll_channel >= CHANNEL_COUNT){
-					this->scroll_channel = CHANNEL_COUNT - 1;
-					this->scroll_value = 1;
-				}
+			this->scroll_channel++;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = CHANNEL_COUNT - 1;
 			}
 		}
 		else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
-			this->scroll_value--;
-			if (this->scroll_value > 1){
-				this->scroll_value = 1;
-				this->scroll_channel--;
-				if (this->scroll_channel >= CHANNEL_COUNT){
-					this->scroll_channel = 0;
-					this->scroll_value = 0;
-				}
+			this->scroll_channel--;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = 0;
 			}
 		}
 	}
@@ -67,8 +57,17 @@ void State::poll(){
 		if (released & BUTTON_1){
 			this->state = STATE_EDIT;
 		}
+		else if (held & BUTTON_1){
+			this->state = STATE_LOCKED;
+		}
 		else if (released & BUTTON_2){
 			this->scroll_value ^= 0x01;
+		}
+		else if (held & BUTTON_2){
+			this->scroll_channel++;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = 0;
+			}
 		}
 		else if (encoder_movement){
 			Channel* channel = &channels[this->scroll_channel];
