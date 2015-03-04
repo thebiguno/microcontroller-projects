@@ -15,10 +15,10 @@ void usb_send_actual_values(){
 		for(uint8_t c = 0; c < CHANNEL_COUNT; c++){
 			tx_buffer[0] = MESSAGE_SEND_ACTUAL;		//Message type
 			tx_buffer[1] = c;						//Channel number
-			uint16_t mv = channels[c].get_voltage_actual() * 1000;	//Sent value is in millivolts
+			uint16_t mv = channels[c].get_voltage_actual();	//Sent value is in millivolts
 			tx_buffer[2] = (mv >> 8) & 0xFF;
 			tx_buffer[3] = mv & 0xFF;
-			uint16_t ma = channels[c].get_current_actual() * 1000;	//Sent value is in milliamps
+			uint16_t ma = channels[c].get_current_actual();	//Sent value is in milliamps
 			tx_buffer[4] = (ma >> 8) & 0xFF;
 			tx_buffer[5] = ma & 0xFF;
 		
@@ -38,10 +38,10 @@ void usb_check_for_updates(){
 				for(uint8_t c = 0; c < CHANNEL_COUNT; c++){
 					tx_buffer[0] = MESSAGE_SEND_SETPOINT;		//Message type
 					tx_buffer[1] = c;						//Channel number
-					uint16_t mv = channels[c].get_voltage_setpoint() * 1000;	//Sent value is in millivolts
+					uint16_t mv = channels[c].get_voltage_setpoint();	//Sent value is in millivolts
 					tx_buffer[2] = (mv >> 8) & 0xFF;
 					tx_buffer[3] = mv & 0xFF;
-					uint16_t ma = channels[c].get_current_setpoint() * 1000;	//Sent value is in milliamps
+					uint16_t ma = channels[c].get_current_setpoint();	//Sent value is in milliamps
 					tx_buffer[4] = (ma >> 8) & 0xFF;
 					tx_buffer[5] = ma & 0xFF;
 	

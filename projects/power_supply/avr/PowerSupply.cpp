@@ -32,6 +32,8 @@ int main(){
 	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	
+	usb_init();
+	
 	//Main program loop
 	while (1){
 		//Read the current, actual values
@@ -42,7 +44,7 @@ int main(){
 		//Check if we are connected via USB
 		if (usb_configured()){
 			usb_send_actual_values();
-			usb_check_for_updates();
+			//usb_check_for_updates();
 		}
 		
 		//Check for state updates

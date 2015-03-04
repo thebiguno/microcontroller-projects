@@ -75,10 +75,11 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	double sample;
-	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
-	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->voltage_actual)) / RUNNING_AVERAGE_COUNT;
+	//double sample;
+	//sample = ADC;
+	//sample = (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
+	//this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->voltage_actual)) / RUNNING_AVERAGE_COUNT;
+	this->voltage_actual = ADC;
 	
 	
 	//Set up which pin to read for current
@@ -92,10 +93,12 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);			//Start conversion
 	while (ADCSRA & _BV(ADSC));		//Wait until conversion is complete
 
-	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * CURRENT_MULTIPLIER;
-	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->current_actual)) / RUNNING_AVERAGE_COUNT;
-
+// 	sample = ADC;
+// 	sample = (sample / 1024.0) * 5000 * CURRENT_MULTIPLIER;
+// 	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT - 1) * this->current_actual)) / RUNNING_AVERAGE_COUNT;
+	this->current_actual = ADC;
+	
+	PORTB ^= _BV(PORTB6);
 }
 
 void Channel::to_string(uint8_t index, uint8_t actual, char* buffer, uint8_t max_length){
