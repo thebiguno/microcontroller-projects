@@ -7,11 +7,9 @@ extern State state;
 
 void usb_send_actual_values(){
 	static uint8_t timer = 0;
-	timer++;
-	
-	uint8_t tx_buffer[6];
 
-	if (timer == 0){
+	if (timer++ == 0){
+		uint8_t tx_buffer[6];
 		for(uint8_t c = 0; c < CHANNEL_COUNT; c++){
 			tx_buffer[0] = MESSAGE_SEND_ACTUAL;		//Message type
 			tx_buffer[1] = c;						//Channel number
@@ -28,7 +26,7 @@ void usb_send_actual_values(){
 }
 
 void usb_check_for_updates(){
-	uint8_t rx_buffer[64];
+	uint8_t rx_buffer[16];
 	uint8_t length = usb_rawhid_recv(rx_buffer, 0);
 	
 	if (length > 0){

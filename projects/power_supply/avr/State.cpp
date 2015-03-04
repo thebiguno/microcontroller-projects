@@ -67,15 +67,18 @@ void State::poll(){
 		if (released & BUTTON_1){
 			this->state = STATE_EDIT;
 		}
+		else if (released & BUTTON_2){
+			this->scroll_value ^= 0x01;
+		}
 		else if (encoder_movement){
 			Channel* channel = &channels[this->scroll_channel];
 			uint8_t selector = this->scroll_value;
 
 			//Modify the value
-			if (encoder_movement & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1);
-			else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1);
-			else if (encoder_movement & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 0.01);
-			else if (encoder_movement & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -0.01);
+			if (encoder_movement & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1000);
+			else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1000);
+			else if (encoder_movement & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 10);
+			else if (encoder_movement & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -10);
 		}
 	}
 	else if (this->state == STATE_MENU){

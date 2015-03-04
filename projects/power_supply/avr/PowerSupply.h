@@ -4,13 +4,15 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "lib/twi/twi.h"
+
 #include "Channel.h"
 #include "Display.h"
 #include "State.h"
 #include "usb.h"
 
 #ifndef CHANNEL_COUNT
-#define CHANNEL_COUNT					2
+#define CHANNEL_COUNT					4
 #endif
 
 #if CHANNEL_COUNT > 6
