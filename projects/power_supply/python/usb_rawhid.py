@@ -21,7 +21,6 @@ try:
 		voltage = (ord(arr[2]) << 8) + ord(arr[3]);
 		current = (ord(arr[4]) << 8) + ord(arr[5]);
 		print("Read channel " + str(ord(arr[1])) + ", voltage=" + str(voltage) + ", current=" + str(current) + "\n")
-		time.sleep(1)
 except Exception, e:
 	traceback.print_exc()
 dev.close()
