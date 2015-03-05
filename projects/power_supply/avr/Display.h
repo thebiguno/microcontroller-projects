@@ -20,12 +20,15 @@ namespace digitalcave {
 		private:
 			Hd44780_Direct hd44780;
 			CharDisplay char_display;
-
 			
 		public:
 			Display();
 			
 			void update(State state);
+			
+			void force_refresh();
+			
+			void force_reset();
 	};
 }
 

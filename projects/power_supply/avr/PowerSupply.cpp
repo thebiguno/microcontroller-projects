@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-static Display display;
+Display display;
 
 State state;
 Channel channels[CHANNEL_COUNT] = {
@@ -27,27 +27,12 @@ Channel channels[CHANNEL_COUNT] = {
 //You can add more channels if desired... just make sure there are enough ADCs.
 };
 
-void timer_init(){
-	//Set up the timer to run at F_CPU/1024 in CTC mode
-	TCCR1A = 0x0;
-	TCCR1B |= _BV(CS12) | _BV(CS10) | _BV(WGM12);
-	
-	//Set compare value to be F_CPU (with a 1024 prescaler) -- fire interrupt every second
-	OCR1A = F_CPU / 1024;
-	
-	//Enable compare interrupt
-	TIMSK1 = _BV(OCIE1A);
-
-	sei();
-}
-
 int main(){
 	//Debugging lights
 	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	
 	twi_init();
-	timer_init();
 	usb_init();
 	
 	//Main program loop
@@ -69,10 +54,4 @@ int main(){
 		//Refresh the display
 		display.update(state);
 	}
-}
-
-EMPTY_INTERRUPT(TIMER1_COMPB_vect)
-EMPTY_INTERRUPT(TIMER1_OVF_vect)
-ISR(TIMER1_COMPA_vect){
-	PORTB ^= _BV(PORTB6);
 }
