@@ -2,11 +2,12 @@
 
 using namespace digitalcave;
 
-Channel::Channel(uint8_t i2c_address, uint8_t dac_bank,
+Channel::Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
 					int16_t voltage_limit, int16_t current_limit,
 					uint8_t voltage_adc_channel, uint8_t current_adc_channel){
 	this->i2c_address = i2c_address;
-	this->dac_bank = dac_bank;
+	this->dac_channel_voltage = dac_channel_voltage;
+	this->dac_channel_current = dac_channel_current;
 	this->voltage_limit = voltage_limit;
 	this->voltage_adc_channel = voltage_adc_channel;
 	
@@ -38,7 +39,7 @@ void Channel::set_voltage_setpoint(int16_t setpoint){
 
 	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / VOLTAGE_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
-	message[0] = 0x58 | (this->dac_bank << 2);		//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
 	message[1] = ((dac_setpoint >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
 	message[2] = (dac_setpoint & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
@@ -55,7 +56,7 @@ void Channel::set_current_setpoint(int16_t setpoint){
 	
 	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
-	message[0] = 0x58 | (this->dac_bank << 2) | (0x02);	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
+	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
 	message[1] = ((dac_setpoint >> 8) & 0x0F);			//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
 	message[2] = (dac_setpoint & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
