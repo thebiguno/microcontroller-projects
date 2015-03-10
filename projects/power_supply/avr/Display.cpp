@@ -79,15 +79,8 @@ void Display::update(State state){
 
 		char_display.write_text(3, 0, "                    ", DISPLAY_COLS);
 		
-		if (state.get_scroll_value()){
-			char_display.write_text(1, 13, 0x7e);
-			char_display.write_text(1, 19, 0x7f);
-		}
-		else {
-			char_display.write_text(1, 4, 0x7e);
-			char_display.write_text(1, 12, 0x7f);
-		}
-
+		char_display.write_text(1, 4, 0x7e);
+		char_display.write_text(1, 19, 0x7f);
 	}
 	//TODO Add menu support here...
 	

@@ -11,7 +11,8 @@ State::State(){
 }
 
 void State::poll(){
-	uint8_t encoder_movement = encoders.get_encoder_movement();
+	int8_t encoder1_movement = encoders.get_encoder1_movement();
+	int8_t encoder2_movement = encoders.get_encoder2_movement();
 	uint8_t released = encoders.get_released();
 	uint8_t held = encoders.get_held();
 	
@@ -24,14 +25,14 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_MENU;
 		}
-		else if (encoder_movement & ENCODER1_CLOCKWISE){
+		else if (encoder1_movement > 0){
 			display.force_refresh();
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = CHANNEL_COUNT - 1;
 			}
 		}
-		else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
+		else if (encoder1_movement < 0){
 			display.force_refresh();
 			this->scroll_channel--;
 			if (this->scroll_channel >= CHANNEL_COUNT){
@@ -48,14 +49,14 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
-		else if (encoder_movement & ENCODER1_CLOCKWISE){
+		else if (encoder1_movement > 0){
 			display.force_refresh();
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = CHANNEL_COUNT - 1;
 			}
 		}
-		else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE){
+		else if (encoder1_movement < 0){
 			display.force_refresh();
 			this->scroll_channel--;
 			if (this->scroll_channel >= CHANNEL_COUNT){
@@ -72,10 +73,6 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
-		else if (released & BUTTON_2){
-			display.force_refresh();
-			this->scroll_value ^= 0x01;
-		}
 		else if (held & BUTTON_2){
 			display.force_refresh();
 			this->scroll_channel++;
@@ -83,16 +80,13 @@ void State::poll(){
 				this->scroll_channel = 0;
 			}
 		}
-		else if (encoder_movement){
+		else if (encoder1_movement || encoder2_movement){
 			display.force_refresh();
 			Channel* channel = &channels[this->scroll_channel];
-			uint8_t selector = this->scroll_value;
 
 			//Modify the value
-			if (encoder_movement & ENCODER1_CLOCKWISE) channel->adjust_setpoint(selector, 1000);
-			else if (encoder_movement & ENCODER1_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -1000);
-			else if (encoder_movement & ENCODER2_CLOCKWISE) channel->adjust_setpoint(selector, 10);
-			else if (encoder_movement & ENCODER2_COUNTER_CLOCKWISE) channel->adjust_setpoint(selector, -10);
+			if (encoder1_movement) channel->adjust_setpoint(SELECTOR_VOLTAGE, 100 * encoder1_movement);
+			else if (encoder2_movement) channel->adjust_setpoint(SELECTOR_CURRENT, 10 * encoder2_movement);
 		}
 	}
 	else if (this->state == STATE_MENU){
@@ -106,10 +100,6 @@ uint8_t State::get_state(){
 
 uint8_t State::get_scroll_channel(){
 	return this->scroll_channel;
-}
-
-uint8_t State::get_scroll_value(){
-	return this->scroll_value;
 }
 
 uint8_t State::get_scroll_menu(){
