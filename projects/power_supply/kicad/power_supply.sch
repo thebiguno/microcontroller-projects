@@ -38,7 +38,7 @@ $Descr User 13000 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "10 mar 2015"
+Date "11 mar 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -722,30 +722,6 @@ D5
 Text Label 5100 9250 0    60   ~ 0
 D4
 $Comp
-L TRANSISTOR_DARLINGTON_NPN Q2
-U 1 1 54E8BC44
-P 7550 4800
-F 0 "Q2" H 7350 4650 60  0000 C CNN
-F 1 "TIP102/107" H 7400 5050 60  0000 C CNN
-F 2 "" H 7700 4700 60  0000 C CNN
-F 3 "" H 7700 4700 60  0000 C CNN
-	1    7550 4800
-	1    0    0    1   
-$EndComp
-Text Label 7700 5150 3    60   ~ 0
-VA
-$Comp
-L RESISTOR R26
-U 1 1 54E8BC63
-P 8450 4350
-F 0 "R26" V 8540 4345 40  0000 C CNN
-F 1 "0.1" V 8365 4350 40  0000 C CNN
-F 2 "~" V 8380 4350 30  0000 C CNN
-F 3 "~" H 8450 4350 30  0000 C CNN
-	1    8450 4350
-	0    -1   -1   0   
-$EndComp
-$Comp
 L RSMALL R22
 U 1 1 54E8BC77
 P 8200 5000
@@ -815,67 +791,8 @@ F 3 "" H 8200 5950 60  0000 C CNN
 	1    8200 5950
 	1    0    0    -1  
 $EndComp
-$Comp
-L OPAMP-4-SPLIT U3
-U 4 1 54E8C97B
-P 5700 4800
-F 0 "U3" H 5850 5000 60  0000 C CNN
-F 1 "MC3303PT" H 5950 4650 50  0000 C CNN
-F 2 "" H 5700 4800 60  0000 C CNN
-F 3 "" H 5700 4800 60  0000 C CNN
-	4    5700 4800
-	1    0    0    1   
-$EndComp
-Text Label 2600 4800 2    60   ~ 0
+Text Label 2600 5000 2    60   ~ 0
 V_SET
-$Comp
-L RSMALL R13
-U 1 1 54E8E027
-P 6250 4300
-F 0 "R13" V 6340 4295 40  0000 C CNN
-F 1 "10k" V 6165 4300 40  0000 C CNN
-F 2 "~" V 6180 4300 30  0000 C CNN
-F 3 "~" H 6250 4350 30  0000 C CNN
-	1    6250 4300
-	-1   0    0    1   
-$EndComp
-Text Label 5700 5100 3    60   ~ 0
-V+
-Text Label 5700 4500 1    60   ~ 0
-V-
-$Comp
-L RSMALL R16
-U 1 1 54E8E139
-P 6450 4100
-F 0 "R16" V 6540 4095 40  0000 C CNN
-F 1 "20k" V 6365 4100 40  0000 C CNN
-F 2 "~" V 6380 4100 30  0000 C CNN
-F 3 "~" H 6450 4150 30  0000 C CNN
-	1    6450 4100
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR025
-U 1 1 54E8E2D2
-P 6250 4400
-F 0 "#PWR025" H 6250 4400 30  0001 C CNN
-F 1 "GND" H 6250 4330 30  0001 C CNN
-F 2 "" H 6250 4400 60  0000 C CNN
-F 3 "" H 6250 4400 60  0000 C CNN
-	1    6250 4400
-	1    0    0    -1  
-$EndComp
-$Comp
-L RSMALL R14
-U 1 1 54E8E2E4
-P 6300 4800
-F 0 "R14" V 6390 4795 40  0000 C CNN
-F 1 "1k" V 6215 4800 40  0000 C CNN
-F 2 "~" V 6230 4800 30  0000 C CNN
-F 3 "~" H 6300 4850 30  0000 C CNN
-	1    6300 4800
-	0    1    1    0   
-$EndComp
 $Comp
 L OPAMP-4-SPLIT U3
 U 3 1 54E8E372
@@ -926,34 +843,8 @@ F 3 "" H 6800 5900 60  0000 C CNN
 	1    6800 5900
 	1    0    0    -1  
 $EndComp
-$Comp
-L OPAMP-4-SPLIT U3
-U 1 1 54E8FADF
-P 6800 3550
-F 0 "U3" H 6950 3750 60  0000 C CNN
-F 1 "MC3303PT" H 7050 3400 50  0000 C CNN
-F 2 "" H 6800 3550 60  0000 C CNN
-F 3 "" H 6800 3550 60  0000 C CNN
-	1    6800 3550
-	1    0    0    1   
-$EndComp
-Text Label 6800 3850 3    60   ~ 0
-V+
-Text Label 6800 3250 1    60   ~ 0
-V-
 Text Label 9550 4350 0    60   ~ 0
 V_OUT
-$Comp
-L RSMALL R32
-U 1 1 54E90909
-P 8900 3450
-F 0 "R32" V 8990 3445 40  0000 C CNN
-F 1 "1k" V 8815 3450 40  0000 C CNN
-F 2 "~" V 8830 3450 30  0000 C CNN
-F 3 "~" H 8900 3500 30  0000 C CNN
-	1    8900 3450
-	0    -1   -1   0   
-$EndComp
 $Comp
 L DZSMALL D6
 U 1 1 54E90916
@@ -1032,50 +923,6 @@ Text Label 1800 3700 0    60   ~ 0
 I_GET
 Text Label 1800 3600 0    60   ~ 0
 V_GET
-$Comp
-L RSMALL R21
-U 1 1 54E933D1
-P 8200 4650
-F 0 "R21" V 8290 4645 40  0000 C CNN
-F 1 "0" V 8115 4650 40  0000 C CNN
-F 2 "~" V 8130 4650 30  0000 C CNN
-F 3 "~" H 8200 4700 30  0000 C CNN
-	1    8200 4650
-	1    0    0    -1  
-$EndComp
-$Comp
-L RSMALL R29
-U 1 1 54E933DC
-P 8700 4650
-F 0 "R29" V 8790 4645 40  0000 C CNN
-F 1 "0" V 8615 4650 40  0000 C CNN
-F 2 "~" V 8630 4650 30  0000 C CNN
-F 3 "~" H 8700 4700 30  0000 C CNN
-	1    8700 4650
-	1    0    0    -1  
-$EndComp
-$Comp
-L RSMALL R28
-U 1 1 54E933E2
-P 8550 4700
-F 0 "R28" V 8640 4695 40  0000 C CNN
-F 1 "0" V 8465 4700 40  0000 C CNN
-F 2 "~" V 8480 4700 30  0000 C CNN
-F 3 "~" H 8550 4750 30  0000 C CNN
-	1    8550 4700
-	1    0    0    -1  
-$EndComp
-$Comp
-L RSMALL R25
-U 1 1 54E933E8
-P 8350 4750
-F 0 "R25" V 8440 4745 40  0000 C CNN
-F 1 "0" V 8265 4750 40  0000 C CNN
-F 2 "~" V 8280 4750 30  0000 C CNN
-F 3 "~" H 8350 4800 30  0000 C CNN
-	1    8350 4750
-	1    0    0    -1  
-$EndComp
 Text Label 1600 6300 1    60   ~ 0
 V+
 Text Label 1900 6300 1    60   ~ 0
@@ -1136,78 +983,6 @@ F 3 "~" H 9800 5700 30  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L DZSMALL D5
-U 1 1 54E9440B
-P 9100 3650
-F 0 "D5" V 9190 3645 40  0000 C CNN
-F 1 "5.1V" V 9015 3650 40  0000 C CNN
-F 2 "~" V 9030 3650 30  0000 C CNN
-F 3 "~" H 9100 3700 30  0000 C CNN
-	1    9100 3650
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR030
-U 1 1 54E94411
-P 9100 3850
-F 0 "#PWR030" H 9100 3850 30  0001 C CNN
-F 1 "GND" H 9100 3780 30  0001 C CNN
-F 2 "" H 9100 3850 60  0000 C CNN
-F 3 "" H 9100 3850 60  0000 C CNN
-	1    9100 3850
-	1    0    0    -1  
-$EndComp
-$Comp
-L OPAMP-4-SPLIT U2
-U 2 1 54E94521
-P 8100 3450
-F 0 "U2" H 8250 3650 60  0000 C CNN
-F 1 "MC3303PT" H 8350 3300 50  0000 C CNN
-F 2 "" H 8100 3450 60  0000 C CNN
-F 3 "" H 8100 3450 60  0000 C CNN
-	2    8100 3450
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR031
-U 1 1 54E9452D
-P 7800 3350
-F 0 "#PWR031" H 7800 3350 30  0001 C CNN
-F 1 "GND" H 7800 3280 30  0001 C CNN
-F 2 "" H 7800 3350 60  0000 C CNN
-F 3 "" H 7800 3350 60  0000 C CNN
-	1    7800 3350
-	0    1    1    0   
-$EndComp
-Text Label 8100 3750 3    60   ~ 0
-V-
-Text Label 8100 3150 1    60   ~ 0
-V+
-$Comp
-L RSMALL R20
-U 1 1 54E945EE
-P 7600 3550
-F 0 "R20" V 7690 3545 40  0000 C CNN
-F 1 "10k" V 7515 3550 40  0000 C CNN
-F 2 "~" V 7530 3550 30  0000 C CNN
-F 3 "~" H 7600 3600 30  0000 C CNN
-	1    7600 3550
-	0    -1   -1   0   
-$EndComp
-$Comp
-L RSMALL R24
-U 1 1 54E9475E
-P 8350 3900
-F 0 "R24" V 8440 3895 40  0000 C CNN
-F 1 "10k" V 8265 3900 40  0000 C CNN
-F 2 "~" V 8280 3900 30  0000 C CNN
-F 3 "~" H 8350 3950 30  0000 C CNN
-	1    8350 3900
-	0    -1   -1   0   
-$EndComp
-Text Notes 7500 2950 0    40   ~ 0
-For NPN mode this op amp is not populated, and\nthe 10k resistors should be populated with 0’s
-$Comp
 L OPAMP-4-SPLIT U2
 U 1 1 54E948D4
 P 4650 4900
@@ -1219,22 +994,11 @@ F 3 "" H 4650 4900 60  0000 C CNN
 	1    0    0    1   
 $EndComp
 $Comp
-L GND #PWR032
-U 1 1 54E94994
-P 4250 5000
-F 0 "#PWR032" H 4250 5000 30  0001 C CNN
-F 1 "GND" H 4250 4930 30  0001 C CNN
-F 2 "" H 4250 5000 60  0000 C CNN
-F 3 "" H 4250 5000 60  0000 C CNN
-	1    4250 5000
-	0    1    1    0   
-$EndComp
-$Comp
 L RSMALL R8
 U 1 1 54E94A57
 P 4150 4800
 F 0 "R8" V 4240 4795 40  0000 C CNN
-F 1 "10k" V 4065 4800 40  0000 C CNN
+F 1 "1k" V 4065 4800 40  0000 C CNN
 F 2 "~" V 4080 4800 30  0000 C CNN
 F 3 "~" H 4150 4850 30  0000 C CNN
 	1    4150 4800
@@ -1243,20 +1007,18 @@ $EndComp
 $Comp
 L RSMALL R9
 U 1 1 54E94BDD
-P 4500 4400
-F 0 "R9" V 4590 4395 40  0000 C CNN
-F 1 "10k" V 4415 4400 40  0000 C CNN
-F 2 "~" V 4430 4400 30  0000 C CNN
-F 3 "~" H 4500 4450 30  0000 C CNN
-	1    4500 4400
+P 4700 4400
+F 0 "R9" V 4790 4395 40  0000 C CNN
+F 1 "2k" V 4615 4400 40  0000 C CNN
+F 2 "~" V 4630 4400 30  0000 C CNN
+F 3 "~" H 4700 4450 30  0000 C CNN
+	1    4700 4400
 	0    -1   -1   0   
 $EndComp
 Text Label 4650 5200 3    60   ~ 0
 V+
 Text Label 4650 4600 1    60   ~ 0
 V-
-Text Notes 4400 3950 0    40   ~ 0
-For NPN mode this op \namp is not populated, \nand the 10k resistors\nshould be populated\nwith 0's
 $Comp
 L CSMALL C16
 U 1 1 54E9501E
@@ -1487,19 +1249,15 @@ F 3 "" H 9950 4850 60  0000 C CNN
 	1    9950 4850
 	1    0    0    -1  
 $EndComp
-Text Notes 9150 4550 0    40   ~ 0
-For PNP mode reverse \nthe capacitor polarity
 Text Notes 3200 7100 0    40   ~ 0
 Decoupling caps on op amp rails.  Keep these\nlocated as close to the op amps as possible.
 Text Notes 850  5700 0    40   ~ 0
 The high current supply line (whether that \nbe + for NPN or - for PNP) is connected to\nVA.  The low current supply line (to\nsupply the other rail for the op amps) is\nconnected to VB.  Bridge the appropriate \nresistors depending on whether the\nchannel is NPN or PNP.
-Text Notes 6900 5200 0    40   ~ 0
-Choose either TIP102\n(NPN) or TIP107 (PNP)\nor any functional\nequivalent as the \npower transistor.
 Text Notes 8750 4850 0    40   ~ 0
 Bridge two of these resistors\nto pick NPN or PNP modes.
 Text Notes 2450 5100 0    40   ~ 0
 The I_SET input accepts a voltage from\n0 to 5V.  This sets the maximum amperage\nto a corresponding 0 to 5A.  Adjust the \nresistor dividers on the current sense\nop amp to adjust the multiplier (for instance,\nset the 10k resistors to 5k to change the\namperage range from 0 to 10A).
-Text Notes 2450 4200 0    40   ~ 0
+Text Notes 2450 4400 0    40   ~ 0
 The V_SET input accepts a voltage from\n0 to 5V.  This sets the output voltage.\nThe default resistors provide a 3x multiplier\n(so an input of 4v to V_SET will provide\nan output of 12V at V_OUT).  Adjust the\nvoltage divider resistors coming from\nV_OUT to adjust the multiplier value\n(for instance, changing the 20k to a\n10k will make a 2x voltage multiplier).
 Text Label 1800 3400 0    60   ~ 0
 V_SET
@@ -2560,23 +2318,12 @@ Wire Wire Line
 	8200 5750 8800 5750
 Connection ~ 8200 5750
 Wire Wire Line
-	5300 4100 5300 4700
-Wire Wire Line
-	5300 4700 5400 4700
-Wire Wire Line
-	6100 4800 6200 4800
-Wire Wire Line
 	6100 5700 6200 5700
 Wire Wire Line
 	5300 5800 5400 5800
 Connection ~ 9600 5650
 Wire Wire Line
-	6400 4800 7200 4800
-Wire Wire Line
 	6400 5700 6500 5700
-Connection ~ 6800 4800
-Wire Wire Line
-	8700 4350 10650 4350
 Connection ~ 9400 4350
 Wire Wire Line
 	9600 5100 9600 6350
@@ -2589,26 +2336,7 @@ Wire Wire Line
 Wire Wire Line
 	8700 5100 8700 5550
 Wire Wire Line
-	7700 4350 8200 4350
-Wire Wire Line
 	9400 4100 9400 4350
-Wire Wire Line
-	6800 5500 6800 4800
-Wire Wire Line
-	6550 4100 9400 4100
-Connection ~ 6250 4100
-Wire Wire Line
-	6250 3650 6250 4200
-Wire Wire Line
-	5300 4100 6350 4100
-Wire Wire Line
-	6250 3650 6500 3650
-Wire Wire Line
-	6500 3450 6500 3050
-Wire Wire Line
-	6500 3050 7200 3050
-Wire Wire Line
-	7200 3050 7200 3550
 Wire Wire Line
 	10000 6050 10000 5950
 Wire Wire Line
@@ -2618,26 +2346,8 @@ Wire Wire Line
 Wire Wire Line
 	1450 6850 2150 6850
 Wire Wire Line
-	8200 4350 8200 4550
-Wire Wire Line
-	8700 4350 8700 4550
-Wire Wire Line
-	8700 4750 8700 4900
-Wire Wire Line
-	8200 4900 8200 4750
-Wire Wire Line
-	8700 4550 8550 4550
-Wire Wire Line
-	8200 4550 8350 4550
-Wire Wire Line
-	8350 4550 8350 4650
-Wire Wire Line
-	8550 4550 8550 4600
-Wire Wire Line
 	8350 4850 8700 4850
 Connection ~ 8700 4850
-Wire Wire Line
-	8550 4800 8550 4900
 Wire Wire Line
 	8550 4900 8200 4900
 Wire Wire Line
@@ -2667,37 +2377,13 @@ Wire Wire Line
 Wire Wire Line
 	9900 5650 10800 5650
 Wire Wire Line
-	9100 3850 9100 3750
-Wire Wire Line
-	9100 3450 9100 3550
-Wire Wire Line
-	7700 3550 7800 3550
-Wire Wire Line
-	8600 3450 8600 3900
-Wire Wire Line
-	8600 3900 8450 3900
-Connection ~ 8600 3450
-Wire Wire Line
-	8250 3900 7750 3900
-Wire Wire Line
-	7750 3900 7750 3550
-Connection ~ 7750 3550
-Wire Wire Line
-	5050 4900 5400 4900
-Wire Wire Line
-	4250 5000 4350 5000
-Wire Wire Line
 	4250 4800 4350 4800
 Wire Wire Line
-	4300 4400 4300 4800
-Wire Wire Line
-	4300 4400 4400 4400
+	4300 4300 4300 4800
 Connection ~ 4300 4800
 Wire Wire Line
 	5100 4400 5100 4900
 Connection ~ 5100 4900
-Wire Wire Line
-	4600 4400 5100 4400
 Wire Wire Line
 	7550 11050 7650 11050
 Wire Wire Line
@@ -2706,8 +2392,6 @@ Connection ~ 7650 11050
 Wire Wire Line
 	10500 4450 10500 4350
 Connection ~ 10500 4350
-Wire Wire Line
-	7200 3550 7500 3550
 Wire Notes Line
 	7400 700  12300 700 
 Wire Notes Line
@@ -2957,21 +2641,14 @@ Voltage / Current Setpoint DACs
 Text Notes 8900 12350 0    60   ~ 0
 Fan Header
 Wire Wire Line
-	2600 4800 4050 4800
+	2600 5000 4350 5000
 Wire Wire Line
 	5400 5600 2550 5600
-Connection ~ 9100 3450
-Wire Wire Line
-	8500 3450 8800 3450
-Wire Wire Line
-	9000 3450 10800 3450
 Connection ~ 10000 5650
 Text Notes 9250 3000 0    40   ~ 0
 V_GET outputs a voltage from 0 to 5V, representing the actual voltage output.  This is applied\nthrough the same multiplier that is applied to V_SET (by default 3x).  So, a V_GET reading of \n4V would mean the actual V_OUT value is 12V; likewise a V_GET reading of 1.1V would show\na V_OUT reading of 3.3V.\n\nIn normal (non-current limted) operation this should be the same as V_SET.  If current is being\nlimited, then the voltage will drop accordingly.
 Text Notes 9800 5250 0    40   ~ 0
 I_GET outputs a voltage from 0 to 5V, representing the actual current output.\nThis is applied through the same multiplier that is applied to I_SET (by default\n1x).  So, an I_GET reading of 4V would show a current output of 4A.\n\nThis value should never exceed the I_SET value.
-Text Label 8200 4350 2    60   ~ 0
-V_OUT_PRESENSE
 $Comp
 L CSMALL C20
 U 1 1 54EF9C69
@@ -3430,8 +3107,6 @@ Wire Wire Line
 	12000 8950 12000 9050
 Connection ~ 12000 8950
 Connection ~ 11750 9250
-Text Label 5950 4100 2    60   ~ 0
-V_FEEDBACK
 $Comp
 L CP1 C30
 U 1 1 54F76631
@@ -3563,4 +3238,278 @@ F 3 "~" H 9850 10100 60  0000 C CNN
 	1    9850 9950
 	-1   0    0    -1  
 $EndComp
+$Comp
+L GND #PWR?
+U 1 1 54FFB512
+P 4050 4800
+F 0 "#PWR?" H 4050 4800 30  0001 C CNN
+F 1 "GND" H 4050 4730 30  0001 C CNN
+F 2 "" H 4050 4800 60  0000 C CNN
+F 3 "" H 4050 4800 60  0000 C CNN
+	1    4050 4800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4800 4400 5100 4400
+Wire Wire Line
+	4600 4400 4300 4400
+$Comp
+L RSMALL R?
+U 1 1 54FFB7C7
+P 4300 4200
+F 0 "R?" V 4390 4195 40  0000 C CNN
+F 1 "2k" V 4215 4200 40  0000 C CNN
+F 2 "~" V 4230 4200 30  0000 C CNN
+F 3 "~" H 4300 4250 30  0000 C CNN
+	1    4300 4200
+	-1   0    0    1   
+$EndComp
+Connection ~ 4300 4400
+$Comp
+L +5V #PWR?
+U 1 1 54FFB917
+P 4300 4000
+F 0 "#PWR?" H 4300 4090 20  0001 C CNN
+F 1 "+5V" H 4300 4090 30  0000 C CNN
+F 2 "" H 4300 4000 60  0000 C CNN
+F 3 "" H 4300 4000 60  0000 C CNN
+	1    4300 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4300 4000 4300 4100
+Text Label 8200 4350 2    60   ~ 0
+V_OUT_PRESENSE
+Wire Wire Line
+	9000 3450 10800 3450
+Wire Wire Line
+	8500 3450 8800 3450
+Connection ~ 9100 3450
+Connection ~ 7750 3550
+Wire Wire Line
+	7750 3900 7750 3550
+Wire Wire Line
+	8250 3900 7750 3900
+Connection ~ 8600 3450
+Wire Wire Line
+	8600 3900 8450 3900
+Wire Wire Line
+	8600 3450 8600 3900
+Wire Wire Line
+	7700 3550 7800 3550
+Wire Wire Line
+	9100 3450 9100 3550
+Wire Wire Line
+	9100 3850 9100 3750
+Wire Wire Line
+	8550 4800 8550 4900
+Wire Wire Line
+	8550 4550 8550 4600
+Wire Wire Line
+	8350 4550 8350 4650
+Wire Wire Line
+	8200 4550 8350 4550
+Wire Wire Line
+	8700 4550 8550 4550
+Wire Wire Line
+	8200 4900 8200 4750
+Wire Wire Line
+	8700 4750 8700 4900
+Wire Wire Line
+	8700 4350 8700 4550
+Wire Wire Line
+	8200 4350 8200 4550
+Wire Wire Line
+	7200 4350 8200 4350
+Wire Wire Line
+	8700 4350 10650 4350
+Text Notes 9150 4550 0    40   ~ 0
+For PNP mode reverse \nthe capacitor polarity
+Text Notes 7500 2950 0    40   ~ 0
+For NPN mode this op amp is not populated, and\nthe 10k resistors should be populated with 0’s
+$Comp
+L RSMALL R24
+U 1 1 54E9475E
+P 8350 3900
+F 0 "R24" V 8440 3895 40  0000 C CNN
+F 1 "10k" V 8265 3900 40  0000 C CNN
+F 2 "~" V 8280 3900 30  0000 C CNN
+F 3 "~" H 8350 3950 30  0000 C CNN
+	1    8350 3900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RSMALL R20
+U 1 1 54E945EE
+P 7600 3550
+F 0 "R20" V 7690 3545 40  0000 C CNN
+F 1 "10k" V 7515 3550 40  0000 C CNN
+F 2 "~" V 7530 3550 30  0000 C CNN
+F 3 "~" H 7600 3600 30  0000 C CNN
+	1    7600 3550
+	0    -1   -1   0   
+$EndComp
+Text Label 8100 3150 1    60   ~ 0
+V+
+Text Label 8100 3750 3    60   ~ 0
+V-
+$Comp
+L GND #PWR031
+U 1 1 54E9452D
+P 7800 3350
+F 0 "#PWR031" H 7800 3350 30  0001 C CNN
+F 1 "GND" H 7800 3280 30  0001 C CNN
+F 2 "" H 7800 3350 60  0000 C CNN
+F 3 "" H 7800 3350 60  0000 C CNN
+	1    7800 3350
+	0    1    1    0   
+$EndComp
+$Comp
+L OPAMP-4-SPLIT U2
+U 2 1 54E94521
+P 8100 3450
+F 0 "U2" H 8250 3650 60  0000 C CNN
+F 1 "MC3303PT" H 8350 3300 50  0000 C CNN
+F 2 "" H 8100 3450 60  0000 C CNN
+F 3 "" H 8100 3450 60  0000 C CNN
+	2    8100 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR030
+U 1 1 54E94411
+P 9100 3850
+F 0 "#PWR030" H 9100 3850 30  0001 C CNN
+F 1 "GND" H 9100 3780 30  0001 C CNN
+F 2 "" H 9100 3850 60  0000 C CNN
+F 3 "" H 9100 3850 60  0000 C CNN
+	1    9100 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L DZSMALL D5
+U 1 1 54E9440B
+P 9100 3650
+F 0 "D5" V 9190 3645 40  0000 C CNN
+F 1 "5.1V" V 9015 3650 40  0000 C CNN
+F 2 "~" V 9030 3650 30  0000 C CNN
+F 3 "~" H 9100 3700 30  0000 C CNN
+	1    9100 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R25
+U 1 1 54E933E8
+P 8350 4750
+F 0 "R25" V 8440 4745 40  0000 C CNN
+F 1 "0" V 8265 4750 40  0000 C CNN
+F 2 "~" V 8280 4750 30  0000 C CNN
+F 3 "~" H 8350 4800 30  0000 C CNN
+	1    8350 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R28
+U 1 1 54E933E2
+P 8550 4700
+F 0 "R28" V 8640 4695 40  0000 C CNN
+F 1 "0" V 8465 4700 40  0000 C CNN
+F 2 "~" V 8480 4700 30  0000 C CNN
+F 3 "~" H 8550 4750 30  0000 C CNN
+	1    8550 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R29
+U 1 1 54E933DC
+P 8700 4650
+F 0 "R29" V 8790 4645 40  0000 C CNN
+F 1 "0" V 8615 4650 40  0000 C CNN
+F 2 "~" V 8630 4650 30  0000 C CNN
+F 3 "~" H 8700 4700 30  0000 C CNN
+	1    8700 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R21
+U 1 1 54E933D1
+P 8200 4650
+F 0 "R21" V 8290 4645 40  0000 C CNN
+F 1 "0" V 8115 4650 40  0000 C CNN
+F 2 "~" V 8130 4650 30  0000 C CNN
+F 3 "~" H 8200 4700 30  0000 C CNN
+	1    8200 4650
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R32
+U 1 1 54E90909
+P 8900 3450
+F 0 "R32" V 8990 3445 40  0000 C CNN
+F 1 "1k" V 8815 3450 40  0000 C CNN
+F 2 "~" V 8830 3450 30  0000 C CNN
+F 3 "~" H 8900 3500 30  0000 C CNN
+	1    8900 3450
+	0    -1   -1   0   
+$EndComp
+$Comp
+L RESISTOR R26
+U 1 1 54E8BC63
+P 8450 4350
+F 0 "R26" V 8540 4345 40  0000 C CNN
+F 1 "0.1" V 8365 4350 40  0000 C CNN
+F 2 "~" V 8380 4350 30  0000 C CNN
+F 3 "~" H 8450 4350 30  0000 C CNN
+	1    8450 4350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LM317T U?
+U 1 1 54FFBA6A
+P 6800 4400
+F 0 "U?" H 6600 4600 40  0000 C CNN
+F 1 "LM317T" H 6800 4600 40  0000 L CNN
+F 2 "TO-220" H 6800 4500 30  0000 C CIN
+F 3 "" H 6800 4400 60  0000 C CNN
+	1    6800 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L RSMALL R?
+U 1 1 54FFBA86
+P 7300 4550
+F 0 "R?" V 7390 4545 40  0000 C CNN
+F 1 "1k" V 7215 4550 40  0000 C CNN
+F 2 "~" V 7230 4550 30  0000 C CNN
+F 3 "~" H 7300 4600 30  0000 C CNN
+	1    7300 4550
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	7300 4450 7300 4350
+Connection ~ 7300 4350
+Wire Wire Line
+	7300 4900 7300 4650
+$Comp
+L RSMALL R?
+U 1 1 54FFC0C9
+P 6600 4900
+F 0 "R?" V 6690 4895 40  0000 C CNN
+F 1 "1k" V 6515 4900 40  0000 C CNN
+F 2 "~" V 6530 4900 30  0000 C CNN
+F 3 "~" H 6600 4950 30  0000 C CNN
+	1    6600 4900
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6700 4900 7300 4900
+Wire Wire Line
+	6500 4900 5050 4900
+Text Label 6250 4350 2    60   ~ 0
+VA
+Wire Wire Line
+	6250 4350 6400 4350
+Wire Wire Line
+	6800 4900 6800 4650
+Connection ~ 6800 4900
 $EndSCHEMATC
