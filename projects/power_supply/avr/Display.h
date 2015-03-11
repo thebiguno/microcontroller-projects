@@ -26,8 +26,6 @@ namespace digitalcave {
 			
 			void update(State state);
 			
-			void force_refresh();
-			
 			void force_reset();
 	};
 }

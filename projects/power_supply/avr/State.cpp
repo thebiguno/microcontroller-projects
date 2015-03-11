@@ -10,6 +10,34 @@ State::State(){
 
 }
 
+int16_t State::calculate_delta(int8_t encoder_movement){
+	int16_t delta = 0;
+	switch(encoder_movement){
+		case 1:
+		case -1:
+			delta = 10 * encoder_movement;
+			break;
+		case 2:
+			delta = 50;
+			break;
+		case -2:
+			delta = -50;
+			break;
+		case 3:
+			delta = 200;
+			break;
+		case -3:
+			delta = -200;
+			break;
+		default:
+			if (encoder_movement > 0) delta = 1000;
+			else if (encoder_movement < 0) delta = -1000;
+			break;
+	}
+	
+	return delta;
+}
+
 void State::poll(){
 	int8_t encoder1_movement = encoders.get_encoder1_movement();
 	int8_t encoder2_movement = encoders.get_encoder2_movement();
@@ -19,45 +47,19 @@ void State::poll(){
 	if (this->state == STATE_LOCKED){
 		if (held & BUTTON_1){
 			display.force_reset();
-			this->state = STATE_EDIT;
+			this->state = STATE_EDIT_ITEM;
 		}
 		else if (held & BUTTON_2){
 			display.force_reset();
 			this->state = STATE_MENU;
 		}
 		else if (encoder1_movement > 0){
-			display.force_refresh();
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = CHANNEL_COUNT - 1;
 			}
 		}
 		else if (encoder1_movement < 0){
-			display.force_refresh();
-			this->scroll_channel--;
-			if (this->scroll_channel >= CHANNEL_COUNT){
-				this->scroll_channel = 0;
-			}
-		}
-	}
-	else if (this->state == STATE_EDIT){
-		if (released & BUTTON_1){
-			display.force_reset();
-			this->state = STATE_EDIT_ITEM;
-		}
-		else if (held & BUTTON_1){
-			display.force_reset();
-			this->state = STATE_LOCKED;
-		}
-		else if (encoder1_movement > 0){
-			display.force_refresh();
-			this->scroll_channel++;
-			if (this->scroll_channel >= CHANNEL_COUNT){
-				this->scroll_channel = CHANNEL_COUNT - 1;
-			}
-		}
-		else if (encoder1_movement < 0){
-			display.force_refresh();
 			this->scroll_channel--;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = 0;
@@ -65,28 +67,22 @@ void State::poll(){
 		}
 	}
 	else if (this->state == STATE_EDIT_ITEM){
-		if (released & BUTTON_1){
-			display.force_reset();
-			this->state = STATE_EDIT;
-		}
-		else if (held & BUTTON_1){
+		if (held & BUTTON_1){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
-		else if (held & BUTTON_2){
-			display.force_refresh();
+		else if (released & BUTTON_2){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = 0;
 			}
 		}
 		else if (encoder1_movement || encoder2_movement){
-			display.force_refresh();
 			Channel* channel = &channels[this->scroll_channel];
 
 			//Modify the value
-			if (encoder1_movement) channel->adjust_setpoint(SELECTOR_VOLTAGE, 100 * encoder1_movement);
-			else if (encoder2_movement) channel->adjust_setpoint(SELECTOR_CURRENT, 10 * encoder2_movement);
+			if (encoder1_movement) channel->adjust_setpoint(SELECTOR_VOLTAGE, this->calculate_delta(encoder1_movement));
+			else if (encoder2_movement) channel->adjust_setpoint(SELECTOR_CURRENT, this->calculate_delta(encoder2_movement));
 		}
 	}
 	else if (this->state == STATE_MENU){

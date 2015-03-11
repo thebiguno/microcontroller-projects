@@ -1,7 +1,7 @@
 PROJECT=powersupply
 MMCU=atmega32u4
 F_CPU=16000000
-SOURCES=PowerSupply.cpp Channel.cpp Display.cpp Encoders.cpp State.cpp usb.c lib/analog/analog_asynchronous.c lib/Button/Buttons.cpp lib/Hd44780/CharDisplay.cpp lib/Hd44780/Hd44780.cpp lib/Hd44780/Hd44780_Direct.cpp lib/usb/rawhid.c lib/twi/twi.c 
+SOURCES=PowerSupply.cpp Channel.cpp Display.cpp Encoders.cpp State.cpp timer1.c usb.c lib/analog/analog_asynchronous.c lib/Button/Buttons.cpp lib/Hd44780/CharDisplay.cpp lib/Hd44780/Hd44780.cpp lib/Hd44780/Hd44780_Direct.cpp lib/usb/rawhid.c lib/twi/twi.c 
 PROGRAMMER=dfu
 COMPILER=avr-g++
 CDEFS+=-DADC_PRESCALER_MASK=0x07 -DCHANNEL_COUNT=2 -DUSB_VENDOR_ID=0x4200 -DUSB_PRODUCT_ID=0xFF01 -Wl,-u,vfprintf -lprintf_flt -lc

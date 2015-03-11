@@ -3,8 +3,6 @@
 using namespace digitalcave;
 
 extern Channel channels[CHANNEL_COUNT];
-static volatile uint8_t refresh_display = 0;
-static volatile uint8_t reset_display = 0;
 
 Display::Display() :
 	hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7),
@@ -12,30 +10,10 @@ Display::Display() :
 
 	char_display.clear();
 	char_display.refresh();
-	
-	//Set up the timer to run at F_CPU/1024 in CTC mode
-	TCCR1A = 0x0;
-	TCCR1B |= _BV(CS12) | _BV(CS10) | _BV(WGM12);
-	
-	//Set compare value to be F_CPU (with a 1024 prescaler) -- fire interrupt every half second
-	OCR1A = F_CPU / 1024 / 2;
-	
-	//Enable compare interrupt
-	TIMSK1 = _BV(OCIE1A);
-
-	sei();
 }
 
 void Display::update(State state){
-	if (!refresh_display) return;
-	
-	if (reset_display){
-		char_display.clear();
-	}
-	
-	reset_display = 0;
-	refresh_display = 0;
-	if (state.get_state() == STATE_LOCKED || state.get_state() == STATE_EDIT){
+	if (state.get_state() == STATE_LOCKED){
 		char buffer[DISPLAY_COLS + 1];
 		uint8_t channel = state.get_scroll_channel();
 		if (CHANNEL_COUNT > DISPLAY_ROWS && channel > (CHANNEL_COUNT - DISPLAY_ROWS)){
@@ -52,11 +30,6 @@ void Display::update(State state){
 			snprintf(buffer, DISPLAY_COLS + 1, "Ch %d %+6.2fV %5.2fA   ", channel + 1, voltage, current);
 			char_display.write_text(row, 0, buffer, DISPLAY_COLS);
 
-			if (channel == (state.get_scroll_channel()) && state.get_state() == STATE_EDIT){
-				char_display.write_text(row, 4, 0x7e);
-				char_display.write_text(row, 19, 0x7f);
-			}
-			
 			channel++;
 		}
 		
@@ -87,17 +60,6 @@ void Display::update(State state){
 	char_display.refresh();
 }
 
-void Display::force_refresh(){
-	refresh_display = 1;
-}
-
 void Display::force_reset(){
-	reset_display = 1;
-	refresh_display = 1;
-}
-
-EMPTY_INTERRUPT(TIMER1_COMPB_vect)
-EMPTY_INTERRUPT(TIMER1_OVF_vect)
-ISR(TIMER1_COMPA_vect){
-	refresh_display = 1;
+	char_display.clear();
 }

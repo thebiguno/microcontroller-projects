@@ -32,25 +32,28 @@ int main(){
 	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	
+	timer1_init();
 	twi_init();
 	usb_init();
 	
 	//Main program loop
 	while (1){
+		timer1_wait_for_tick();
+		
 		//Read the current, actual values
 		for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
 			channels[i].sample_actual();
 		}
-		
+	
 		//Check if we are connected via USB
 		if (usb_configured()){
 			usb_send_actual_values();
 			usb_check_for_updates();
 		}
-		
+	
 		//Check for state updates
 		state.poll();
-		
+	
 		//Refresh the display
 		display.update(state);
 	}

@@ -9,6 +9,7 @@
 #include "Channel.h"
 #include "Display.h"
 #include "State.h"
+#include "timer1.h"
 #include "usb.h"
 
 #ifndef CHANNEL_COUNT
