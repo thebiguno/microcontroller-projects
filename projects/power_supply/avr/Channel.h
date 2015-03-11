@@ -45,8 +45,8 @@
 #define DAC_CHANNEL_3						0x06
 
 //TODO Change these to be instance variables set depending on the voltage divider resistor values
-#define VOLTAGE_MULTIPLIER		3
-#define CURRENT_MULTIPLIER		1
+#define VOLTAGE_MULTIPLIER		3.8
+#define CURRENT_MULTIPLIER		0.1
 
 //
 #define SELECTOR_VOLTAGE		0
