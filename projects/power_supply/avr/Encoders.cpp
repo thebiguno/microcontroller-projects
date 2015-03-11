@@ -3,7 +3,8 @@
 using namespace digitalcave;
 
 static Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 8, 8, 128, 0);
-static volatile uint8_t encoder_movement = 0;
+static volatile int8_t encoder1_movement = 0;
+static volatile int8_t encoder2_movement = 0;
 static volatile uint8_t held;
 static volatile uint8_t released;
 
@@ -21,9 +22,15 @@ Encoders::Encoders(){
 	sei();
 }
 
-uint8_t Encoders::get_encoder_movement(){
-	uint8_t result = encoder_movement;
-	encoder_movement = 0;
+int8_t Encoders::get_encoder1_movement(){
+	uint8_t result = encoder1_movement;
+	encoder1_movement = 0;
+	return result;
+}
+
+int8_t Encoders::get_encoder2_movement(){
+	uint8_t result = encoder2_movement;
+	encoder2_movement = 0;
 	return result;
 }
 
@@ -59,13 +66,13 @@ ISR(PCINT0_vect){
 		//case 0x07:
 		//case 0x08:
 		//case 0x0E:
-			encoder_movement = ENCODER1_CLOCKWISE;
+			encoder1_movement++;	//Clockwise
 			break;
 		case 0x02:
 		//case 0x04:
 		//case 0x0B:
 		//case 0x0D:
-			encoder_movement = ENCODER1_COUNTER_CLOCKWISE;
+			encoder1_movement--;	//Counter Clockwise
 			break;
 	}
 	
@@ -74,13 +81,13 @@ ISR(PCINT0_vect){
 		//case 0x07:
 		//case 0x08:
 		//case 0x0E:
-			encoder_movement = ENCODER2_CLOCKWISE;
+			encoder2_movement++;	//Clockwise
 			break;
 		case 0x02:
 		//case 0x04:
 		//case 0x0B:
 		//case 0x0D:
-			encoder_movement = ENCODER2_COUNTER_CLOCKWISE;
+			encoder2_movement--;	//Counter Clockwise
 			break;
 	}
 }

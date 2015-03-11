@@ -8,11 +8,6 @@
 #define BUTTON_1						_BV(PORTD2)
 #define BUTTON_2						_BV(PORTD3)
 
-#define ENCODER1_CLOCKWISE				_BV(1)
-#define ENCODER1_COUNTER_CLOCKWISE		_BV(2)
-#define ENCODER2_CLOCKWISE				_BV(3)
-#define ENCODER2_COUNTER_CLOCKWISE		_BV(4)
-
 extern "C" void PCINT0_vect()		__attribute__ ((signal));
 
 namespace digitalcave {
@@ -29,7 +24,8 @@ namespace digitalcave {
 			
 			Encoders();
 			
-			uint8_t get_encoder_movement();
+			int8_t get_encoder1_movement();
+			int8_t get_encoder2_movement();
 			
 			uint8_t get_held();
 			
