@@ -47,9 +47,9 @@
 //TODO Change these to be instance variables set depending on the voltage divider resistor values
 #define VOLTAGE_SLOPE			2.5397
 #define VOLTAGE_OFFSET			-0.399
-#define CURRENT_MULTIPLIER		1
+#define VOLTAGE_GET_MULTIPLIER	3
+#define CURRENT_GET_MULTIPLIER	1
 
-//
 #define SELECTOR_VOLTAGE		0
 #define SELECTOR_CURRENT		1
 

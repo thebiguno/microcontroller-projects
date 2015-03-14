@@ -58,7 +58,8 @@ int16_t Channel::get_current_setpoint(){
 void Channel::set_current_setpoint(int16_t setpoint){
 	this->current_setpoint = setpoint;
 	
-	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	//TODO 
+	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_GET_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
 	message[1] = ((dac_setpoint >> 8) & 0x0F);			//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
@@ -83,7 +84,7 @@ void Channel::sample_actual(){
 
 	double sample;
 	sample = ADC;
-	sample = 0; //TODO (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
+	sample = (sample / 1024.0) * 5000 * VOLTAGE_GET_MULTIPLIER;
 	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT_VOLTAGE - 1) * (double) this->voltage_actual)) / RUNNING_AVERAGE_COUNT_VOLTAGE;
 	
 	_delay_us(1);
@@ -104,7 +105,7 @@ void Channel::sample_actual(){
 	while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
 	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * CURRENT_MULTIPLIER;
+	sample = (sample / 1024.0) * 5000 * CURRENT_GET_MULTIPLIER;
 	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT_CURRENT - 1) * (double) this->current_actual)) / RUNNING_AVERAGE_COUNT_CURRENT;
 	
 	_delay_us(1);
