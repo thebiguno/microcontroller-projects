@@ -1,0 +1,55 @@
+Things to Test:	
+	-Reading encoder with MCU
+	-Start programming entire system
+
+
+Things Successfully Tested:
+-I_ADJUST to ILM conversion
+	-The ILM voltage should be equal to V- + I_ADJUST.
+	-Verified on breadboard using LM324 on Feb 4 2015; this op amp is not rail-to-rail, so it can't get down to exactly -12.3V, but once the voltage is high enough it tracks perfectly.
+	
+-V_ADJUST to REGULATED_OUTPUT
+	-The regulated output should follow V_ADJUST according to the formula REGULATED_OUTPUT = ((V_ADJUST * 2) - 5) * GAIN
+	-GAIN is calculated from the formula GAIN = 1 + R2 / R1 (where R2 is the resistor in series between REGULATED_OUTPUT and the negative terminal, and R1 is the resistor in series between the negative terminal and GND).
+	-For R2 = 51k and R1 = 20k, we thus get a GAIN of 3.55; following through, for V_ADJUST = 1v we should see an output of -10.65, and for V_ADJUST=3.2v we should see an output of 4.97v.
+	-Verified on breadboard using LM324 on Feb 5 2015.  For measured input of 1.001v we saw an output of -10.65 and for input of 3.191v we saw an output of 4.90v
+
+-Current Sense
+	-Using a 0.1 shunt resistor and a 10k load resistor, we would expect a current of 1000mA per volt output.
+	-Verifying bipolar configuration (Feb 7 2015):
+		-Use a fan as load: measured at ~460mA (12V) using multimeter
+		-Using high side current detection
+		-Output 0.56 - 0.60V in one direction
+		-Output about the same in the other direction (slight differences, perhaps accounted for by differences in the diodes or resistors?)
+
+		-Measurement tests (bipolar configuration with a single resistor, only testing current in one direction)
+		-1k resistor load (theoretical 12mA current, 12.63 measured via DMM):
+			-4.7k: 0.008V	== 0.633 V/A
+			-10k: 0.018V	== 1.43 V/A
+			-20k: 0.036V	== 2.85 V/A
+			-51k: 0.093V	== 7.36 V/A
+		
+		100 resistor load (theoretical 120mA current, 123 measured via DMM):
+			-4.7k: 0.07V	== 0.57 V/A
+			-10k: 0.154V	== 1.25 V/A
+			-20k: 0.31V		== 2.52 V/A
+			-50k: 0.785V	== 6.38 V/A
+	
+		-460mA fan load (measured):
+			-4.7k: 0.255V	== .5543 V/A
+			-10k: 0.6V		== 1.30 V/A
+			-20k: 1.1V		== 2.39 V/A
+			-51k: 2.8V		== 6.08 V/A
+			
+		-880mA parallel fan load (measured)
+			-4.7k: 0.49V	== 0.56 V/A
+			-10k: 1.04V		== 1.18 V/A
+			-20k: 2.12V		== 2.41 V/A
+			-51k: 5.51V		== 6.26 V/A
+			
+		-Results of testing: there is some slight deviation of linearity over the entire range. Perhaps it would be useful to include a precision trimpot to allow for calibration?
+		-Result: Verified with minor reservations (not identical measurements going both ways, and variations in V/A of measured values)
+
+-Voltage Sense
+	-I don't have the proper resistor values currently, but this is pretty simple: it is just a couple of voltage dividers with an offset.  It has simulated successfully.
+	-Result: Verified in simulation.

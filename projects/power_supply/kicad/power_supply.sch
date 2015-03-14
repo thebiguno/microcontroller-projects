@@ -38,7 +38,7 @@ $Descr User 13000 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "11 mar 2015"
+Date "13 mar 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -3479,7 +3479,7 @@ L RSMALL R?
 U 1 1 54FFBA86
 P 7300 4550
 F 0 "R?" V 7390 4545 40  0000 C CNN
-F 1 "1k" V 7215 4550 40  0000 C CNN
+F 1 "200" V 7215 4550 40  0000 C CNN
 F 2 "~" V 7230 4550 30  0000 C CNN
 F 3 "~" H 7300 4600 30  0000 C CNN
 	1    7300 4550
