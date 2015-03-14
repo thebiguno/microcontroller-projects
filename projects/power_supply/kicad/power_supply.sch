@@ -3498,4 +3498,6 @@ Wire Wire Line
 	5900 5550 6000 5550
 Text Label 6750 4650 0    60   ~ 0
 VADJ
+Text Notes 3750 2950 0    40   ~ 0
+Resistors that have a slash (e.g. 0/X) mean that you would use \na different value resistor for positive vs. negative mode.  An\nX means to leave unpopulated.  So, a value of 0/1k would mean\nto populate with a 0 resistor for positive regulator and a 1k\nresistor for negative regulator.
 $EndSCHEMATC
