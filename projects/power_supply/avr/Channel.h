@@ -45,15 +45,16 @@
 #define DAC_CHANNEL_3						0x06
 
 //TODO Change these to be instance variables set depending on the voltage divider resistor values
-#define VOLTAGE_MULTIPLIER		3.8
-#define CURRENT_MULTIPLIER		0.1
+#define VOLTAGE_SLOPE			2.5397
+#define VOLTAGE_OFFSET			-0.399
+#define CURRENT_MULTIPLIER		1
 
 //
 #define SELECTOR_VOLTAGE		0
 #define SELECTOR_CURRENT		1
 
-#define RUNNING_AVERAGE_COUNT_VOLTAGE	50
-#define RUNNING_AVERAGE_COUNT_CURRENT	100
+#define RUNNING_AVERAGE_COUNT_VOLTAGE	5
+#define RUNNING_AVERAGE_COUNT_CURRENT	5
 
 namespace digitalcave {
 

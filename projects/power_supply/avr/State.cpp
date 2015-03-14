@@ -12,28 +12,21 @@ State::State(){
 
 int16_t State::calculate_delta(int8_t encoder_movement){
 	int16_t delta = 0;
-	switch(encoder_movement){
-		case 1:
-		case -1:
-			delta = 10 * encoder_movement;
-			break;
-		case 2:
-			delta = 50;
-			break;
-		case -2:
-			delta = -50;
-			break;
-		case 3:
-			delta = 200;
-			break;
-		case -3:
-			delta = -200;
-			break;
-		default:
-			if (encoder_movement > 0) delta = 1000;
-			else if (encoder_movement < 0) delta = -1000;
-			break;
-	}
+	if (encoder_movement > 7) return 1000;
+	else if (encoder_movement > 6) return 500;
+	else if (encoder_movement > 5) return 250;
+	else if (encoder_movement > 4) return 100;
+	else if (encoder_movement > 3) return 50;
+	else if (encoder_movement > 2) return 25;
+	else if (encoder_movement > 1) return 10;
+	else if (encoder_movement < -7) return -1000;
+	else if (encoder_movement < -6) return -500;
+	else if (encoder_movement < -5) return -250;
+	else if (encoder_movement < -4) return -100;
+	else if (encoder_movement < -3) return -50;
+	else if (encoder_movement < -2) return -25;
+	else if (encoder_movement < -1) return -10;
+	
 	
 	return delta;
 }

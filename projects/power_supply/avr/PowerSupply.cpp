@@ -32,6 +32,7 @@ int main(){
 	PORTB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	DDRB |= _BV(PORTB4) | _BV(PORTB5) | _BV(PORTB6);
 	
+	timer0_init();
 	timer1_init();
 	twi_init();
 	usb_init();

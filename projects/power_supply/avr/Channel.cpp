@@ -37,7 +37,11 @@ int16_t Channel::get_voltage_setpoint(){
 void Channel::set_voltage_setpoint(int16_t setpoint){
 	this->voltage_setpoint = setpoint;
 
-	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / VOLTAGE_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	//We use the measured slope and offset of DAC vs Output and use the formula y=mx+b (x=(y-b)/m) to find the actual dac output in volts
+	double dac_output = (((setpoint / 1000.0) - VOLTAGE_OFFSET) / VOLTAGE_SLOPE);
+	//We then convert this to a 12 bit unsigned number
+	uint16_t dac_setpoint = (uint16_t) ((dac_output / 5) * 0x0FFF);	//12 bit DAC
+	if (dac_setpoint > 0x0FFF) dac_setpoint = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
 	message[1] = ((dac_setpoint >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
@@ -79,7 +83,7 @@ void Channel::sample_actual(){
 
 	double sample;
 	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
+	sample = 0; //TODO (sample / 1024.0) * 5000 * VOLTAGE_MULTIPLIER;
 	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT_VOLTAGE - 1) * (double) this->voltage_actual)) / RUNNING_AVERAGE_COUNT_VOLTAGE;
 	
 	_delay_us(1);
