@@ -38,7 +38,7 @@ void Channel::set_voltage_setpoint(int16_t setpoint){
 	this->voltage_setpoint = setpoint;
 
 	//We use the measured slope and offset of DAC vs Output and use the formula y=mx+b (x=(y-b)/m) to find the actual dac output in volts
-	double dac_output = (((setpoint / 1000.0) - VOLTAGE_OFFSET) / VOLTAGE_SLOPE);
+	double dac_output = (((setpoint / 1000.0) - VOLTAGE_SET_OFFSET) / VOLTAGE_SET_SLOPE);
 	//We then convert this to a 12 bit unsigned number
 	uint16_t dac_setpoint = (uint16_t) ((dac_output / 5) * 0x0FFF);	//12 bit DAC
 	if (dac_setpoint > 0x0FFF) dac_setpoint = 0x0FFF;
@@ -57,6 +57,12 @@ int16_t Channel::get_current_setpoint(){
 }
 void Channel::set_current_setpoint(int16_t setpoint){
 	this->current_setpoint = setpoint;
+
+	//We use the measured slope and offset of DAC vs Output and use the formula y=mx+b (x=(y-b)/m) to find the actual dac output in volts
+	double dac_output = (((setpoint / 1000.0) - CURRENT_SET_OFFSET) / CURRENT_SET_SLOPE);
+	//We then convert this to a 12 bit unsigned number
+	uint16_t dac_setpoint = (uint16_t) ((dac_output / 5) * 0x0FFF);	//12 bit DAC
+	if (dac_setpoint > 0x0FFF) dac_setpoint = 0x0FFF;
 	
 	//TODO 
 	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_GET_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
