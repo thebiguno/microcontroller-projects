@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 15 Mar 2015 10:30:38 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, March 16, 2015 'pmt' 01:22:26 pm
 
 BeginCmp
 TimeStamp = /54EBE302;
@@ -593,6 +593,20 @@ TimeStamp = /54D2A648;
 Reference = MP19;
 ValeurCmp = GRAPHIC;
 IdModule  = DIGITALCAVE_URL;
+EndCmp
+
+BeginCmp
+TimeStamp = /55072D6F;
+Reference = MP20;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /55072D63;
+Reference = MP21;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = MOUNTING_HOLE_#4;
 EndCmp
 
 BeginCmp
