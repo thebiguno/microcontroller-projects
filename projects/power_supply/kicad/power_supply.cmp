@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 15 Mar 2015 01:34:04 PM MDT
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 15 Mar 2015 04:13:18 PM MDT
 
 BeginCmp
 TimeStamp = /54EBE302;
@@ -1047,7 +1047,7 @@ BeginCmp
 TimeStamp = /550504C6;
 Reference = U3;
 ValeurCmp = LM317T;
-IdModule  = TO-220;
+IdModule  = TO220_VERT;
 EndCmp
 
 BeginCmp
