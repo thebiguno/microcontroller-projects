@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 15 Mar 2015 04:13:18 PM MDT
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 15 Mar 2015 09:05:20 PM MDT
 
 BeginCmp
 TimeStamp = /54EBE302;
@@ -249,21 +249,21 @@ BeginCmp
 TimeStamp = /5503B422;
 Reference = D7;
 ValeurCmp = DIODESCH;
-IdModule  = D3;
+IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503B7F3;
 Reference = D8;
 ValeurCmp = DSCHSMALL;
-IdModule  = D3;
+IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
 TimeStamp = /5505E85E;
 Reference = D9;
 ValeurCmp = DSCHSMALL;
-IdModule  = D3;
+IdModule  = SM1206POL;
 EndCmp
 
 BeginCmp
@@ -362,6 +362,13 @@ TimeStamp = /54E98373;
 Reference = K13;
 ValeurCmp = VS;
 IdModule  = SCREW_TERMINAL_3;
+EndCmp
+
+BeginCmp
+TimeStamp = /55064242;
+Reference = K14;
+ValeurCmp = HEATSINK;
+IdModule  = HEATSINK_OHMITE_FSERIES;
 EndCmp
 
 BeginCmp
@@ -813,9 +820,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5505139C;
+TimeStamp = /550504CC;
 Reference = R26;
-ValeurCmp = 1k;
+ValeurCmp = Rsh;
 IdModule  = SM2512;
 EndCmp
 
@@ -967,9 +974,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /550504CC;
+TimeStamp = /5505139C;
 Reference = R48;
-ValeurCmp = 0.1;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
