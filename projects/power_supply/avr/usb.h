@@ -27,7 +27,7 @@
 #define MESSAGE_SETPOINT				3
 
 //Computer -> PSU: Request raw setpoints for given channel: [channel:1]
-//PSU -> Computer: Send raw setpoints for given channel after bounds checking: [channel:1][voltage:2][current:2]
+//PSU -> Computer: Send raw setpoints for given channel: [channel:1][voltage:2][current:2]
 #define MESSAGE_SETPOINT_RAW			4
 
 //Computer -> PSU: Change setpoints for given channel: [channel:1][voltage:2][current:2]
