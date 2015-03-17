@@ -44,80 +44,74 @@
 #define DAC_CHANNEL_2						0x04
 #define DAC_CHANNEL_3						0x06
 
-//TODO Change these to be instance variables set depending on the voltage divider resistor values
-#define VOLTAGE_SET_SLOPE			2.5397
-#define VOLTAGE_SET_OFFSET			-0.399
-#define VOLTAGE_GET_MULTIPLIER	3
-#define CURRENT_SET_SLOPE		2.5397
-#define CURRENT_SET_OFFSET		-0.399
-#define CURRENT_GET_MULTIPLIER	1
-
-#define SELECTOR_VOLTAGE		0
-#define SELECTOR_CURRENT		1
-
-#define RUNNING_AVERAGE_COUNT_VOLTAGE	5
-#define RUNNING_AVERAGE_COUNT_CURRENT	5
+#define RUNNING_AVERAGE_COUNT_VOLTAGE	3
+#define RUNNING_AVERAGE_COUNT_CURRENT	3
 
 namespace digitalcave {
 
 	class Channel {
 		private:
 			uint8_t i2c_address;
+			uint8_t adc_channel_voltage;
+			uint8_t adc_channel_current;
 			uint8_t dac_channel_voltage;
 			uint8_t dac_channel_current;
-			
-			//All voltage values are in millivolts
-			int16_t voltage_limit;
-			int16_t voltage_setpoint;
-			int16_t voltage_actual;
-			uint16_t voltage_actual_raw;
-			uint8_t voltage_adc_channel;
 
-			//All current values are in milliamps
-			int16_t current_limit;
-			int16_t current_setpoint;
-			int16_t current_actual;
-			uint16_t current_actual_raw;
-			uint8_t current_adc_channel;
+			int16_t voltage_limit;			//Max (or min, for negative) voltage
+			int16_t current_limit;			//Max current
 			
-			static uint8_t selected_i2c_address_and_reading;	//Used to show menu cursor
+			uint16_t voltage_setpoint_raw;	//Desired raw 12 bit DAC value
+			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
+
+			uint16_t current_setpoint_raw;	//Desired raw 12 bit DAC value
+			uint16_t current_actual_raw;	//Actual raw 10 bit ADC value
+			
+			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
 			
 		public:
-			//Calibration values for the formula calibrated_value = m * raw_value + b
-			double voltage_get_m;
-			double voltage_get_b;
-			double voltage_set_m;
-			double voltage_set_b;
-			double current_get_m;
-			double current_get_b;
-			double current_set_m;
-			double current_set_b;
-
+			/*
+			 * Calibration values (in form "scaled_value = slope * raw_value + offset")
+			 */
+			double voltage_actual_slope = 3;
+			double voltage_actual_offset = 0;
+			double voltage_setpoint_slope = 2.5397;
+			double voltage_setpoint_offset = -0.399;
+			double current_actual_slope = 1;
+			double current_actual_offset = 0;
+			double current_setpoint_slope = 2.5397;
+			double current_setpoint_offset = -0.399;
+		
 			/*
 			 * Initializes the channel
 			 */
 			Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
-				int16_t voltage_limit, int16_t current_limit,
-				uint8_t voltage_adc_channel, uint8_t current_adc_channel);
+				uint8_t adc_channel_voltage, uint8_t adc_channel_current,
+				int16_t voltage_limit, int16_t current_limit);
 
-
+			/*
+			 * Voltage functions
+			 */
+			int16_t get_voltage_setpoint();
+			uint16_t get_voltage_setpoint_raw();
 			int16_t get_voltage_actual();
 			uint16_t get_voltage_actual_raw();
-			int16_t get_voltage_setpoint();
-			void set_voltage_setpoint(int16_t setpoint);
-			
-			int16_t get_current_actual();
-			uint16_t get_current_actual_raw();
-			int16_t get_current_setpoint();
-			void set_current_setpoint(int16_t setpoint);
-			
-			void sample_actual();
+			void set_voltage_setpoint(int16_t millivolts);
+			void set_voltage_setpoint_raw(uint16_t raw_value);
 			
 			/*
-			 * Adjust the voltage / current setpoint by the given amount (positive or negative).
-			 * The selector will be one of 0 (voltage) or 1 (current).
+			 * Current functions
 			 */
-			void adjust_setpoint(uint8_t selector, int16_t amount);
+			int16_t get_current_setpoint();
+			uint16_t get_current_setpoint_raw();
+			int16_t get_current_actual();
+			uint16_t get_current_actual_raw();
+			void set_current_setpoint(int16_t milliamps);
+			void set_current_setpoint_raw(uint16_t raw_value);
+			
+			/*
+			 * ADC polling
+			 */
+			void sample_actual();
 	};
 }
 

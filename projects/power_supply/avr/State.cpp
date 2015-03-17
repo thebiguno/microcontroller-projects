@@ -74,8 +74,12 @@ void State::poll(){
 			Channel* channel = &channels[this->scroll_channel];
 
 			//Modify the value
-			if (encoder1_movement) channel->adjust_setpoint(SELECTOR_VOLTAGE, this->calculate_delta(encoder1_movement));
-			else if (encoder2_movement) channel->adjust_setpoint(SELECTOR_CURRENT, this->calculate_delta(encoder2_movement));
+			if (encoder1_movement){
+				channel->set_voltage_setpoint(channel->get_voltage_setpoint() + this->calculate_delta(encoder1_movement));
+			}
+			else if (encoder2_movement){
+				channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta(encoder2_movement));
+			}
 		}
 	}
 	else if (this->state == STATE_MENU){
