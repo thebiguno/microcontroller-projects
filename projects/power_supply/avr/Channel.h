@@ -70,17 +70,29 @@ namespace digitalcave {
 			int16_t voltage_limit;
 			int16_t voltage_setpoint;
 			int16_t voltage_actual;
+			uint16_t voltage_actual_raw;
 			uint8_t voltage_adc_channel;
-			
+
 			//All current values are in milliamps
 			int16_t current_limit;
 			int16_t current_setpoint;
 			int16_t current_actual;
+			uint16_t current_actual_raw;
 			uint8_t current_adc_channel;
 			
 			static uint8_t selected_i2c_address_and_reading;	//Used to show menu cursor
 			
 		public:
+			//Calibration values for the formula calibrated_value = m * raw_value + b
+			double voltage_get_m;
+			double voltage_get_b;
+			double voltage_set_m;
+			double voltage_set_b;
+			double current_get_m;
+			double current_get_b;
+			double current_set_m;
+			double current_set_b;
+
 			/*
 			 * Initializes the channel
 			 */
@@ -90,10 +102,12 @@ namespace digitalcave {
 
 
 			int16_t get_voltage_actual();
+			uint16_t get_voltage_actual_raw();
 			int16_t get_voltage_setpoint();
 			void set_voltage_setpoint(int16_t setpoint);
 			
 			int16_t get_current_actual();
+			uint16_t get_current_actual_raw();
 			int16_t get_current_setpoint();
 			void set_current_setpoint(int16_t setpoint);
 			

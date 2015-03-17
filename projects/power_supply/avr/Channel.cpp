@@ -31,6 +31,9 @@ Channel::Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_c
 int16_t Channel::get_voltage_actual(){
 	return this->voltage_actual;
 }
+uint16_t Channel::get_voltage_actual_raw(){
+	return this->voltage_actual_raw;
+}
 int16_t Channel::get_voltage_setpoint(){
 	return this->voltage_setpoint;
 }
@@ -52,6 +55,9 @@ void Channel::set_voltage_setpoint(int16_t setpoint){
 int16_t Channel::get_current_actual(){
 	return this->current_actual;
 }
+uint16_t Channel::get_current_actual_raw(){
+	return this->current_actual_raw;
+}
 int16_t Channel::get_current_setpoint(){
 	return this->current_setpoint;
 }
@@ -65,7 +71,7 @@ void Channel::set_current_setpoint(int16_t setpoint){
 	if (dac_setpoint > 0x0FFF) dac_setpoint = 0x0FFF;
 	
 	//TODO 
-	uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_GET_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
+	//uint16_t dac_setpoint = ((uint16_t) (((setpoint / 1000.0 / CURRENT_GET_MULTIPLIER) / 5) * 0x1000)) & 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;	//Single write to channel 0 or 2 (depending on bank) (see datasheet page 41)
 	message[1] = ((dac_setpoint >> 8) & 0x0F);			//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
@@ -88,9 +94,8 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);				//Start conversion
 	while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
-	double sample;
-	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * VOLTAGE_GET_MULTIPLIER;
+	this->voltage_actual_raw = ADC;
+	double sample = (this->voltage_actual_raw / 1024.0) * 5000 * VOLTAGE_GET_MULTIPLIER;
 	this->voltage_actual = (sample + ((RUNNING_AVERAGE_COUNT_VOLTAGE - 1) * (double) this->voltage_actual)) / RUNNING_AVERAGE_COUNT_VOLTAGE;
 	
 	_delay_us(1);
@@ -110,8 +115,8 @@ void Channel::sample_actual(){
 	ADCSRA |= _BV(ADSC);				//Start conversion
 	while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
-	sample = ADC;
-	sample = (sample / 1024.0) * 5000 * CURRENT_GET_MULTIPLIER;
+	this->current_actual_raw = ADC;
+	sample = (this->current_actual_raw / 1024.0) * 5000 * CURRENT_GET_MULTIPLIER;
 	this->current_actual = (sample + ((RUNNING_AVERAGE_COUNT_CURRENT - 1) * (double) this->current_actual)) / RUNNING_AVERAGE_COUNT_CURRENT;
 	
 	_delay_us(1);
