@@ -62,6 +62,7 @@ void Channel::set_voltage_setpoint(int16_t millivolts){
 }
 
 void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
+	this->voltage_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
@@ -101,6 +102,7 @@ void Channel::set_current_setpoint(int16_t milliamps){
 }
 
 void Channel::set_current_setpoint_raw(uint16_t raw_value){
+	this->current_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;		//Single write without EEPROM persist
