@@ -2,10 +2,12 @@
 
 using namespace digitalcave;
 
-Channel::Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
+Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
 		uint8_t adc_channel_voltage, uint8_t adc_channel_current,
 		int16_t voltage_limit, int16_t current_limit){
 
+	this->channel_index = channel_index;
+	
 	this->i2c_address = i2c_address;
 	this->dac_channel_voltage = dac_channel_voltage;
 	this->dac_channel_current = dac_channel_current;
@@ -15,6 +17,8 @@ Channel::Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_c
 
 	this->voltage_limit = voltage_limit;
 	this->current_limit = current_limit;
+	
+	this->load_calibration();
 	
 	twi_init();
 	
@@ -58,6 +62,7 @@ void Channel::set_voltage_setpoint(int16_t millivolts){
 	//Since "scaled_value = slope * raw_value + offset", we know
 	// that "raw_value = (scaled_value - offset) / slope".
 	if ((this->voltage_limit > 0 && millivolts > this->voltage_limit) || (this->voltage_limit < 0 && millivolts < this->voltage_limit)) millivolts = this->voltage_limit;
+	if ((this->voltage_limit > 0 && millivolts < 0) || (this->voltage_limit < 0 && millivolts > 0)) millivolts = 0;
 	this->set_voltage_setpoint_raw((millivolts - this->voltage_setpoint_offset) / this->voltage_setpoint_slope);
 }
 
@@ -155,3 +160,42 @@ void Channel::sample_actual(){
 	_delay_us(1);
 }
 
+/*
+	* Persist / load calibration to / from EEPROM
+	*/
+void Channel::save_calibration(){
+	//Each channel needs 8 * 4 = 32 bytes of EEPROM.
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 0 * sizeof(float)), (float) this->voltage_actual_slope);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 1 * sizeof(float)), (float) this->voltage_actual_offset);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 2 * sizeof(float)), (float) this->voltage_setpoint_slope);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 3 * sizeof(float)), (float) this->voltage_setpoint_offset);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 4 * sizeof(float)), (float) this->current_actual_slope);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 5 * sizeof(float)), (float) this->current_actual_offset);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 6 * sizeof(float)), (float) this->current_setpoint_slope);
+	eeprom_update_float((float*) (this->channel_index * 8 * sizeof(float) + 7 * sizeof(float)), (float) this->current_setpoint_offset);
+	
+	uint16_t raw_value = (0 - this->voltage_setpoint_offset) / this->voltage_setpoint_slope;
+	uint8_t message[3];
+	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
+	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[2] = (raw_value & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+
+	//TODO Enable this once current calibration works
+// 	raw_value = (0 - this->current_setpoint_offset) / this->current_setpoint_slope;
+// 	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
+// 	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+// 	message[2] = (raw_value & 0xFF);
+// 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+}
+
+void Channel::load_calibration(){
+	this->voltage_actual_slope = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 0 * sizeof(float)));
+	this->voltage_actual_offset = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 1 * sizeof(float)));
+	this->voltage_setpoint_slope = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 2 * sizeof(float)));
+	this->voltage_setpoint_offset = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 3 * sizeof(float)));
+	this->current_actual_slope = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 4 * sizeof(float)));
+	this->current_actual_offset = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 5 * sizeof(float)));
+	this->current_setpoint_slope = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 6 * sizeof(float)));
+	this->current_setpoint_offset = eeprom_read_float((float*) (this->channel_index * 8 * sizeof(float) + 7 * sizeof(float)));
+}

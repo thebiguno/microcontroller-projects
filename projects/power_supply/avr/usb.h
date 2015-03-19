@@ -38,10 +38,15 @@
 //PSU -> Computer: Confirm raw setpoints: [channel:1][voltage:2][current:2]
 #define MESSAGE_CHANGE_SETPOINT_RAW		7
 
-//Computer -> PSU: Change raw setpoints for given channel: [channel:1][target:1][calibration_value:4]
+//Computer -> PSU: Get calibration for given channel / target: [channel:1][target:1]
 //PSU -> Computer: Confirm raw setpoints: [channel:1][target:1][calibration_value:4]
 //Target is one of the calibration targets defined below
-#define MESSAGE_SET_CALIBRATION			8
+#define MESSAGE_GET_CALIBRATION			8
+
+//Computer -> PSU: Change calibration for given channel / target: [channel:1][target:1][calibration_value:4]
+//PSU -> Computer: Confirm raw setpoints: [channel:1][target:1][calibration_value:4]
+//Target is one of the calibration targets defined below
+#define MESSAGE_SET_CALIBRATION			9
 
 #define TARGET_VOLTAGE_ACTUAL_SLOPE			0
 #define TARGET_VOLTAGE_ACTUAL_OFFSET		1

@@ -5,6 +5,7 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
+#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -51,6 +52,8 @@ namespace digitalcave {
 
 	class Channel {
 		private:
+			uint8_t channel_index;
+			
 			uint8_t i2c_address;
 			uint8_t adc_channel_voltage;
 			uint8_t adc_channel_current;
@@ -72,19 +75,19 @@ namespace digitalcave {
 			/*
 			 * Calibration values (in form "scaled_value = slope * raw_value + offset")
 			 */
-			double voltage_actual_slope = 3;
+			double voltage_actual_slope = 1;
 			double voltage_actual_offset = 0;
-			double voltage_setpoint_slope = 2.5397;
-			double voltage_setpoint_offset = -0.399;
+			double voltage_setpoint_slope = 1;
+			double voltage_setpoint_offset = 0;
 			double current_actual_slope = 1;
 			double current_actual_offset = 0;
-			double current_setpoint_slope = 2.5397;
-			double current_setpoint_offset = -0.399;
+			double current_setpoint_slope = 1;
+			double current_setpoint_offset = 0;
 		
 			/*
 			 * Initializes the channel
 			 */
-			Channel(uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
+			Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
 				uint8_t adc_channel_voltage, uint8_t adc_channel_current,
 				int16_t voltage_limit, int16_t current_limit);
 
@@ -112,6 +115,12 @@ namespace digitalcave {
 			 * ADC polling
 			 */
 			void sample_actual();
+			
+			/*
+			 * Persist / load calibration to / from EEPROM
+			 */
+			void save_calibration();
+			void load_calibration();
 	};
 }
 

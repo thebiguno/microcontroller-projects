@@ -7,31 +7,31 @@
 #############################################################################
 import hid, re, struct, traceback, time
 
-def send_generic_message_with_response(dev, message, body):
+def send_generic_message_with_response(dev, message, body = None):
 	tx_buffer = [chr(message)]
 	if body != None:
 		tx_buffer = tx_buffer + body
 	if len(tx_buffer) == 1:
 		tx_buffer.append(chr(0))
-	print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
+	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
 	return rx_buffer;
 	
 def send_calibration_message_with_response(dev, message, channel, target, value):
 	tx_buffer = [chr(message), chr(channel), chr(target)] + list(struct.pack("<f", value))
-	print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
+	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
-	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), ord(rx_buffer[2]), struct.unpack("<f", ''.join(rx_buffer[3:]))[0]]
+	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), ord(rx_buffer[2]), struct.unpack("<f", ''.join(rx_buffer[3:7]))[0]]
 	return result;
 	
 def send_measurement_message_with_response(dev, message, channel=None, voltage=None, current=None):
@@ -46,13 +46,13 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 		tx_buffer.append(chr(current & 0xFF))
 	if len(tx_buffer) == 1:
 		tx_buffer.append(chr(0))
-	print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
+	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
 	result = [ord(rx_buffer[0])]
 	if len(rx_buffer) > 1:
 		result.append(ord(rx_buffer[1]))
@@ -72,6 +72,8 @@ try:
 	MESSAGE_SETPOINT_RAW			= 5
 	MESSAGE_CHANGE_SETPOINT			= 6
 	MESSAGE_CHANGE_SETPOINT_RAW		= 7
+	MESSAGE_GET_CALIBRATION			= 8
+	MESSAGE_SET_CALIBRATION			= 9
 
 	TARGET_VOLTAGE_ACTUAL_SLOPE			= 0
 	TARGET_VOLTAGE_ACTUAL_OFFSET		= 1
@@ -83,9 +85,13 @@ try:
 	TARGET_CURRENT_SETPOINT_OFFSET		= 7
 
 	VOLTAGE_MEASURED_VALUE_LOW = 0
-	VOLTAGE_MEASURED_VALUE_LOW = 8
+	VOLTAGE_MEASURED_VALUE_HIGH = 8000
+	CURRENT_MEASURED_VALUE_LOW = 50
+	CURRENT_MEASURED_VALUE_HIGH = 800
+	CURRENT_SETPOINT_VALUE_LOW = 0
+	CURRENT_SETPOINT_VALUE_HIGH = 500
 	
-	CHANNEL_COUNT = send_generic_message_with_response(dev, MESSAGE_CHANNELS)[1]
+	CHANNEL_COUNT = ord(send_generic_message_with_response(dev, MESSAGE_CHANNELS)[1])
 
 	integer = re.compile('^[0-9]+$')
 	increment = re.compile('^\\+[0-9]+$')
@@ -96,6 +102,10 @@ try:
 		if (channel >= 0 and channel < CHANNEL_COUNT):
 			break;
 		print("Invalid channel.  Please enter a valid channel number.")
+
+	print("Current calibration values:")
+	print("Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, 0)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, 0)[3]))
+	print("Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, 0)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, 0)[3]))
 
 	
 	print(
@@ -113,13 +123,14 @@ Please follow the instructions on screen to continue calibration.
 	rx_buffer = send_measurement_message_with_response(dev, MESSAGE_SETPOINT_RAW, channel)
 	voltage_setpoint = rx_buffer[2]
 	current_setpoint = rx_buffer[3]
-	
+
+#Voltage Actual + Setpoint Low
+	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_LOW) + """ mV.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
+
 	while True:
-		response = raw_input(
-"""
-Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_LOW) + """"V.  Hit enter when complete.
-Enter an absolute value as an integer between 0 and 4095, or an offset adjustment as an integer starting with a + / -:
-Value: """)
+		response = raw_input("DAC Value for " + str(VOLTAGE_MEASURED_VALUE_LOW) + "mV: ")
 		if increment.match(response):
 			voltage_setpoint = (voltage_setpoint + int(response[1:]))
 			
@@ -141,12 +152,12 @@ Value: """)
 		
 	raw_voltage_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
 
+#Voltage Actual + Setpoint High
+	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_HIGH) + """ mV.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
 	while True:
-		response = raw_input(
-"""
-Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_HIGH) + """"V.  Hit enter when complete.
-Enter an absolute value as an integer between 0 and 4095, or an offset adjustment as an integer starting with a + / -:
-Value: """)
+		response = raw_input("DAC Value for " + str(VOLTAGE_MEASURED_VALUE_HIGH) + "mV: ")
 		if increment.match(response):
 			voltage_setpoint = (voltage_setpoint + int(response[1:]))
 			
@@ -168,13 +179,82 @@ Value: """)
 
 	raw_voltage_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
 	
-#TODO adjust current readings and current limit setpoint.
+#Current Actual Low
+	print("""Connect a dummy load via a multimeter, and adjust measured current to exactly """ + str(CURRENT_MEASURED_VALUE_LOW) + """ mA.  Hit enter when target reached.""")
+	while True:
+		response = raw_input()
+		if response == "":
+			break;
+		
+		else:
+			print("Invalid option.")
 
-	print(raw_voltage_setpoint_low)
-	print(raw_voltage_actual_low)
-	print(raw_voltage_setpoint_high)
-	print(raw_voltage_actual_high)
+	raw_current_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
+
+#Current Actual High
+	print("""Connect a dummy load via a multimeter, and adjust measured current to exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mA.  Hit enter when target reached.""")
+	while True:
+		response = raw_input()
+		if response == "":
+			break;
+		
+		else:
+			print("Invalid option.")
+
+	raw_current_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
 	
+#Current Setpoint Low
+	print("""Turn the dummy load up to maximum, and adjust setpoint such that the measured current is limited to exactly """ + str(CURRENT_SETPOINT_VALUE_LOW) + """ mA.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
+
+	while True:
+		response = raw_input("DAC Value for " + str(CURRENT_SETPOINT_VALUE_LOW) + "mA: ")
+		if increment.match(response):
+			current_setpoint = (current_setpoint + int(response[1:]))
+			
+		elif decrement.match(response):
+			current_setpoint = (current_setpoint - int(response[1:]))
+			
+		elif integer.match(response):
+			current_setpoint = int(response) & 0x0FFF;
+
+		elif response == "":
+			raw_current_setpoint_low = current_setpoint
+			break;
+		
+		else:
+			print("Invalid option.")
+
+		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
+		print("Current setpoint: " + str(current_setpoint))
+		
+#Current Setpoint High
+	print("""Turn the dummy load up to maximum, and adjust setpoint such that the measured current is limited to exactly """ + str(CURRENT_SETPOINT_VALUE_HIGH) + """ mA.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
+
+	while True:
+		response = raw_input("DAC Value for " + str(CURRENT_SETPOINT_VALUE_HIGH) + "mA: ")
+		if increment.match(response):
+			current_setpoint = (current_setpoint + int(response[1:]))
+			
+		elif decrement.match(response):
+			current_setpoint = (current_setpoint - int(response[1:]))
+			
+		elif integer.match(response):
+			current_setpoint = int(response) & 0x0FFF;
+
+		elif response == "":
+			raw_current_setpoint_low = current_setpoint
+			break;
+		
+		else:
+			print("Invalid option.")
+
+		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
+		print("Current setpoint: " + str(current_setpoint))
+
 	
 	#We need to find the calibration values to translate the raw values into actual voltages.  To do this, we plot
 	# the values on an X/Y plane, with raw values on the X axis and voltages on the Y axis.  We know the actual values
@@ -182,14 +262,20 @@ Value: """)
 	#First is to find slope: slope is delta Y / delta X.
 	#Then we find the offset:  offset is found using y - y1 = m(x - x1).  We know a point (x1,y1), and we need to solve for y when x is 0.
 	
-	voltage_actual_slope = (VOLTAGE_MEASURED_VALUE_HIGH - VOLTAGE_MEASURED_VALUE_LOW) / (raw_voltage_actual_high - raw_voltage_atual_low)
-	voltage_actual_offset = voltage_actual_slope(0 - raw_voltage_actual_high) + VOLTAGE_MEASURED_VALUE_HIGH
-	voltage_setpoint_slope = (VOLTAGE_MEASURED_VALUE_HIGH - VOLTAGE_MEASURED_VALUE_LOW) / (raw_voltage_setpoint_high - raw_voltage_setpoint_low)
-	voltage_setpoint_offset = voltage_setpoint_slope(0 - raw_voltage_setpoint_high) + VOLTAGE_MEASURED_VALUE_HIGH
+	voltage_actual_slope = float(VOLTAGE_MEASURED_VALUE_HIGH - VOLTAGE_MEASURED_VALUE_LOW) / (raw_voltage_actual_high - raw_voltage_actual_low)
+	voltage_actual_offset = voltage_actual_slope * (0 - raw_voltage_actual_high) + VOLTAGE_MEASURED_VALUE_HIGH
+	voltage_setpoint_slope = float(VOLTAGE_MEASURED_VALUE_HIGH - VOLTAGE_MEASURED_VALUE_LOW) / (raw_voltage_setpoint_high - raw_voltage_setpoint_low)
+	voltage_setpoint_offset = voltage_setpoint_slope * (0 - raw_voltage_setpoint_high) + VOLTAGE_MEASURED_VALUE_HIGH
+	current_actual_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_actual_high - raw_current_actual_low)
+	current_actual_offset = current_actual_slope * (0 - raw_current_actual_high) + CURRENT_MEASURED_VALUE_HIGH
+	current_setpoint_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_setpoint_high - raw_current_setpoint_low)
+	current_setpoint_offset = current_setpoint_slope * (0 - raw_current_setpoint_high) + CURRENT_MEASURED_VALUE_HIGH
 		
 	while True:
-		print("Actual:   V = (" + str(voltage_actual_slope) + " * ADC_VALUE) + " + str(voltage_actual_offset))
-		print("Setpoint: V = (" + str(voltage_setpoint_slope) + " * DAC_VALUE) + " + str(voltage_setpoint_offset))
+		print("Voltage Actual:   V = (" + str(voltage_actual_slope) + " * ADC_VALUE) + " + str(voltage_actual_offset))
+		print("Voltage Setpoint: V = (" + str(voltage_setpoint_slope) + " * DAC_VALUE) + " + str(voltage_setpoint_offset))
+		print("Current Actual:   A = (" + str(current_actual_slope) + " * ADC_VALUE) + " + str(current_actual_offset))
+		print("Current Setpoint: A = (" + str(current_setpoint_slope) + " * DAC_VALUE) + " + str(current_setpoint_offset))
 
 		response = raw_input(
 """
@@ -197,10 +283,14 @@ Do you want to save these calibration values to EEPROM?
 Y/N: """)
 		if response == "Y" or response == "y":
 			print("Saved values:")
-			print("Actual:   V = (" + str(send_calibration_message_with_response(dev, message, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, voltage_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, message, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, voltage_actual_offset))
-			print("Setpoint: V = (" + str(send_calibration_message_with_response(dev, message, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, voltage_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, message, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, voltage_setpoint_offset))
-
-			send_calibration_message_with_response(dev, message, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, voltage_actual_slope)
+			print("Voltage Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, voltage_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, voltage_actual_offset)[3]))
+			print("Voltage Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, voltage_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, voltage_setpoint_offset)[3]))
+			print("Current Actual:   A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_SLOPE, current_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_OFFSET, current_actual_offset)[3]))
+			print("Current Setpoint: A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_SLOPE, current_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_OFFSET, current_setpoint_offset)[3]))
+			break;
+		elif response == "N" or response == "n":
+			print("Calibration discarded.")
+			break;
 
 finally:
 	if ("close" in dir(dev)):

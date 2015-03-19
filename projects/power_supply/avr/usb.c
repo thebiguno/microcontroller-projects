@@ -107,7 +107,24 @@ void usb_dispatch(){
 				}
 				break;
 			}
-			
+			case MESSAGE_GET_CALIBRATION: {
+				uint8_t channel = rx_buffer[1];
+				uint8_t target = rx_buffer[2];
+				double value = 0;
+				switch(target){
+					case TARGET_VOLTAGE_ACTUAL_SLOPE: value = channels[channel].voltage_actual_slope; break;
+					case TARGET_VOLTAGE_ACTUAL_OFFSET: value = channels[channel].voltage_actual_offset; break;
+					case TARGET_VOLTAGE_SETPOINT_SLOPE: value = channels[channel].voltage_setpoint_slope; break;
+					case TARGET_VOLTAGE_SETPOINT_OFFSET: value = channels[channel].voltage_setpoint_offset; break;
+					case TARGET_CURRENT_ACTUAL_SLOPE: value = channels[channel].current_actual_slope; break;
+					case TARGET_CURRENT_ACTUAL_OFFSET: value = channels[channel].current_actual_offset; break;
+					case TARGET_CURRENT_SETPOINT_SLOPE: value = channels[channel].current_setpoint_slope; break;
+					case TARGET_CURRENT_SETPOINT_OFFSET: value = channels[channel].current_setpoint_offset; break;
+				}
+				
+				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, value);
+				break;
+			}
 			case MESSAGE_SET_CALIBRATION: {
 				uint8_t channel = rx_buffer[1];
 				uint8_t target = rx_buffer[2];
@@ -122,6 +139,8 @@ void usb_dispatch(){
 					case TARGET_CURRENT_SETPOINT_SLOPE: channels[channel].current_setpoint_slope = value; break;
 					case TARGET_CURRENT_SETPOINT_OFFSET: channels[channel].current_setpoint_offset = value; break;
 				}
+				channels[channel].save_calibration();
+				
 				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, value);
 				break;
 			}
