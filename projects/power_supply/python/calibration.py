@@ -65,7 +65,8 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 
 def calibrate_voltage():
 	#Set voltage as low as possible, and current limiting off (let anything through)
-	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, 0, 0)
+	voltage_setpoint = 0
+	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)
 	
 #Voltage Actual + Setpoint Low
 	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_LOW) + """ mV.  Hit enter when target reached.
