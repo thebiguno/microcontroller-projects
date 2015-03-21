@@ -80,7 +80,7 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
  * Current functions
  */
 
-int16_t Channel::get_current_setpoint(){
+uint16_t Channel::get_current_setpoint(){
 	//scaled_value = slope * raw_value + offset
 	return this->current_setpoint_slope * this->current_setpoint_raw + this->current_setpoint_offset;
 }
@@ -89,7 +89,7 @@ uint16_t Channel::get_current_setpoint_raw(){
 	return this->current_setpoint_raw;
 }
 
-int16_t Channel::get_current_actual(){
+uint16_t Channel::get_current_actual(){
 	//scaled_value = slope * raw_value + offset
 	return this->current_actual_slope * this->current_actual_raw + this->current_actual_offset;
 }
@@ -102,8 +102,9 @@ uint16_t Channel::get_current_actual_raw(){
 void Channel::set_current_setpoint(int16_t milliamps){
 	//Since "scaled_value = slope * raw_value + offset", we know
 	// that "raw_value = (scaled_value - offset) / slope".
-	if ((this->current_limit > 0 && milliamps > this->current_limit) || (this->current_limit < 0 && milliamps < this->current_limit)) milliamps = this->current_limit;
-	this->set_current_setpoint_raw((milliamps - this->current_setpoint_offset) / this->current_setpoint_slope);
+	if (milliamps > (int16_t) this->current_limit) milliamps = this->current_limit;
+	if (milliamps < 0) milliamps = 0;
+	this->set_current_setpoint_raw(((double) milliamps - this->current_setpoint_offset) / this->current_setpoint_slope);
 }
 
 void Channel::set_current_setpoint_raw(uint16_t raw_value){
@@ -181,12 +182,11 @@ void Channel::save_calibration(){
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 
-	//TODO Enable this once current calibration works
-// 	raw_value = (0 - this->current_setpoint_offset) / this->current_setpoint_slope;
-// 	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
-// 	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
-// 	message[2] = (raw_value & 0xFF);
-// 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+ 	raw_value = (0 - this->current_setpoint_offset) / this->current_setpoint_slope;
+ 	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
+ 	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+ 	message[2] = (raw_value & 0xFF);
+ 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
 void Channel::load_calibration(){
