@@ -62,68 +62,11 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 		result.append(ord(rx_buffer[4]) * 256 + ord(rx_buffer[5]))
 	return result;
 
-try:
-	dev = hid.Device(vid=0x4200, pid=0xFF01)
+
+def calibrate_voltage():
+	#Set voltage as low as possible, and current limiting off (let anything through)
+	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, 0, 0)
 	
-	MESSAGE_CHANNELS				= 1
-	MESSAGE_ACTUAL					= 2
-	MESSAGE_ACTUAL_RAW				= 3
-	MESSAGE_SETPOINT				= 4
-	MESSAGE_SETPOINT_RAW			= 5
-	MESSAGE_CHANGE_SETPOINT			= 6
-	MESSAGE_CHANGE_SETPOINT_RAW		= 7
-	MESSAGE_GET_CALIBRATION			= 8
-	MESSAGE_SET_CALIBRATION			= 9
-
-	TARGET_VOLTAGE_ACTUAL_SLOPE			= 0
-	TARGET_VOLTAGE_ACTUAL_OFFSET		= 1
-	TARGET_VOLTAGE_SETPOINT_SLOPE		= 2
-	TARGET_VOLTAGE_SETPOINT_OFFSET		= 3
-	TARGET_CURRENT_ACTUAL_SLOPE			= 4
-	TARGET_CURRENT_ACTUAL_OFFSET		= 5
-	TARGET_CURRENT_SETPOINT_SLOPE		= 6
-	TARGET_CURRENT_SETPOINT_OFFSET		= 7
-
-	VOLTAGE_MEASURED_VALUE_LOW = 0
-	VOLTAGE_MEASURED_VALUE_HIGH = 8000
-	CURRENT_MEASURED_VALUE_LOW = 50
-	CURRENT_MEASURED_VALUE_HIGH = 800
-	CURRENT_SETPOINT_VALUE_LOW = 0
-	CURRENT_SETPOINT_VALUE_HIGH = 500
-	
-	CHANNEL_COUNT = ord(send_generic_message_with_response(dev, MESSAGE_CHANNELS)[1])
-
-	integer = re.compile('^[0-9]+$')
-	increment = re.compile('^\\+[0-9]+$')
-	decrement = re.compile('^-[0-9]+$')
-
-	while True:
-		channel = int(raw_input("Channel (0 - " + str(CHANNEL_COUNT - 1) + "): "))
-		if (channel >= 0 and channel < CHANNEL_COUNT):
-			break;
-		print("Invalid channel.  Please enter a valid channel number.")
-
-	print("Current calibration values:")
-	print("Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, 0)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, 0)[3]))
-	print("Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, 0)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, 0)[3]))
-
-	
-	print(
-"""
-To calibrate the power supply, you must perform the following steps:
-1) Find the linear calibration values for voltage (both actual readings and setpoints)
-2) Find the linear calibration values for current readings
-3) Find the linear calibration values for current limit setpoints
-
-To do this, you will need a multimeter which has both a voltage and current sensing (up to at least 1A, preferably 10A) mode.
-
-Please follow the instructions on screen to continue calibration.
-""")
-
-	rx_buffer = send_measurement_message_with_response(dev, MESSAGE_SETPOINT_RAW, channel)
-	voltage_setpoint = rx_buffer[2]
-	current_setpoint = rx_buffer[3]
-
 #Voltage Actual + Setpoint Low
 	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_LOW) + """ mV.  Hit enter when target reached.
 Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
@@ -147,7 +90,7 @@ an offset adjustment as an integer starting with a + / -""")
 		else:
 			print("Invalid option.")
 
-		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[2] & 0x0FFF
+		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)[2] & 0x0FFF
 		print("Voltage setpoint: " + str(voltage_setpoint))
 		
 	raw_voltage_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
@@ -174,88 +117,11 @@ an offset adjustment as an integer starting with a + / -""")
 		else:
 			print("Invalid option.")
 
-		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[2] & 0x0FFF
+		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)[2] & 0x0FFF
 		print("Voltage setpoint: " + str(voltage_setpoint))
 
 	raw_voltage_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
-	
-#Current Actual Low
-	print("""Connect a dummy load via a multimeter, and adjust measured current to exactly """ + str(CURRENT_MEASURED_VALUE_LOW) + """ mA.  Hit enter when target reached.""")
-	while True:
-		response = raw_input()
-		if response == "":
-			break;
-		
-		else:
-			print("Invalid option.")
 
-	raw_current_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
-
-#Current Actual High
-	print("""Connect a dummy load via a multimeter, and adjust measured current to exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mA.  Hit enter when target reached.""")
-	while True:
-		response = raw_input()
-		if response == "":
-			break;
-		
-		else:
-			print("Invalid option.")
-
-	raw_current_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
-	
-#Current Setpoint Low
-	print("""Turn the dummy load up to maximum, and adjust setpoint such that the measured current is limited to exactly """ + str(CURRENT_SETPOINT_VALUE_LOW) + """ mA.  Hit enter when target reached.
-Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
-an offset adjustment as an integer starting with a + / -""")
-
-	while True:
-		response = raw_input("DAC Value for " + str(CURRENT_SETPOINT_VALUE_LOW) + "mA: ")
-		if increment.match(response):
-			current_setpoint = (current_setpoint + int(response[1:]))
-			
-		elif decrement.match(response):
-			current_setpoint = (current_setpoint - int(response[1:]))
-			
-		elif integer.match(response):
-			current_setpoint = int(response) & 0x0FFF;
-
-		elif response == "":
-			raw_current_setpoint_low = current_setpoint
-			break;
-		
-		else:
-			print("Invalid option.")
-
-		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
-		print("Current setpoint: " + str(current_setpoint))
-		
-#Current Setpoint High
-	print("""Turn the dummy load up to maximum, and adjust setpoint such that the measured current is limited to exactly """ + str(CURRENT_SETPOINT_VALUE_HIGH) + """ mA.  Hit enter when target reached.
-Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
-an offset adjustment as an integer starting with a + / -""")
-
-	while True:
-		response = raw_input("DAC Value for " + str(CURRENT_SETPOINT_VALUE_HIGH) + "mA: ")
-		if increment.match(response):
-			current_setpoint = (current_setpoint + int(response[1:]))
-			
-		elif decrement.match(response):
-			current_setpoint = (current_setpoint - int(response[1:]))
-			
-		elif integer.match(response):
-			current_setpoint = int(response) & 0x0FFF;
-
-		elif response == "":
-			raw_current_setpoint_low = current_setpoint
-			break;
-		
-		else:
-			print("Invalid option.")
-
-		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
-		print("Current setpoint: " + str(current_setpoint))
-
-	
 	#We need to find the calibration values to translate the raw values into actual voltages.  To do this, we plot
 	# the values on an X/Y plane, with raw values on the X axis and voltages on the Y axis.  We know the actual values
 	# (as measured by a multimeter), and we have the raw values, so we can find slope and offset.
@@ -266,16 +132,10 @@ an offset adjustment as an integer starting with a + / -""")
 	voltage_actual_offset = voltage_actual_slope * (0 - raw_voltage_actual_high) + VOLTAGE_MEASURED_VALUE_HIGH
 	voltage_setpoint_slope = float(VOLTAGE_MEASURED_VALUE_HIGH - VOLTAGE_MEASURED_VALUE_LOW) / (raw_voltage_setpoint_high - raw_voltage_setpoint_low)
 	voltage_setpoint_offset = voltage_setpoint_slope * (0 - raw_voltage_setpoint_high) + VOLTAGE_MEASURED_VALUE_HIGH
-	current_actual_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_actual_high - raw_current_actual_low)
-	current_actual_offset = current_actual_slope * (0 - raw_current_actual_high) + CURRENT_MEASURED_VALUE_HIGH
-	current_setpoint_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_setpoint_high - raw_current_setpoint_low)
-	current_setpoint_offset = current_setpoint_slope * (0 - raw_current_setpoint_high) + CURRENT_MEASURED_VALUE_HIGH
-		
+
 	while True:
 		print("Voltage Actual:   V = (" + str(voltage_actual_slope) + " * ADC_VALUE) + " + str(voltage_actual_offset))
 		print("Voltage Setpoint: V = (" + str(voltage_setpoint_slope) + " * DAC_VALUE) + " + str(voltage_setpoint_offset))
-		print("Current Actual:   A = (" + str(current_actual_slope) + " * ADC_VALUE) + " + str(current_actual_offset))
-		print("Current Setpoint: A = (" + str(current_setpoint_slope) + " * DAC_VALUE) + " + str(current_setpoint_offset))
 
 		response = raw_input(
 """
@@ -285,12 +145,222 @@ Y/N: """)
 			print("Saved values:")
 			print("Voltage Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, voltage_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, voltage_actual_offset)[3]))
 			print("Voltage Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, voltage_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, voltage_setpoint_offset)[3]))
+			break;
+		elif response == "N" or response == "n":
+			print("Calibration discarded.")
+			break;
+
+def calibrate_current_measured():
+	
+	#Set voltage to 8V, and current limiting to zero (let anything through)
+	voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT, channel, 8000, 0)[2]
+	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)
+
+#Current Actual Low
+	print("""Connect a dummy load via a multimeter.  Adjust the dummy load to exactly """ + str(CURRENT_MEASURED_VALUE_LOW) + """ mA.  Hit enter when target reached.""")
+	   
+	while True:
+		response = raw_input("Target of " + str(CURRENT_MEASURED_VALUE_LOW) + "mA: ")
+		if response == "":
+			raw_current_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
+			break;
+		
+		else:
+			print("Invalid option.")
+
+#Current Actual High
+	print("""Connect a dummy load via a multimeter.  Adjust the dummy load to exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mA.  Hit enter when target reached.""")
+	   
+	while True:
+		response = raw_input("Target of " + str(CURRENT_MEASURED_VALUE_HIGH) + "mA: ")
+		if response == "":
+			raw_current_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
+			break;
+		
+		else:
+			print("Invalid option.")
+
+	#We need to find the calibration values to translate the raw values into actual voltages.  To do this, we plot
+	# the values on an X/Y plane, with raw values on the X axis and voltages on the Y axis.  We know the actual values
+	# (as measured by a multimeter), and we have the raw values, so we can find slope and offset.
+	#First is to find slope: slope is delta Y / delta X.
+	#Then we find the offset:  offset is found using y - y1 = m(x - x1).  We know a point (x1,y1), and we need to solve for y when x is 0.
+	
+	current_actual_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_actual_high - raw_current_actual_low)
+	current_actual_offset = current_actual_slope * (0 - raw_current_actual_high) + CURRENT_MEASURED_VALUE_HIGH
+
+	while True:
+		print("Current Actual:   A = (" + str(current_actual_slope) + " * ADC_VALUE) + " + str(current_actual_offset))
+
+		response = raw_input(
+"""
+Do you want to save these calibration values to EEPROM?
+Y/N: """)
+		if response == "Y" or response == "y":
+			print("Saved values:")
 			print("Current Actual:   A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_SLOPE, current_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_OFFSET, current_actual_offset)[3]))
+			break;
+		elif response == "N" or response == "n":
+			print("Calibration discarded.")
+			break;
+		
+		
+
+def calibrate_current_limit():
+	#Set voltage to 8V, and current limiting to max (let nothing through)
+	voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT, channel, 8000, 0)[2]
+	current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 4095)[3]
+
+#Current Limit Low
+	print("""Connect a dummy load capable of sinking at least 1A, via a multimeter and turn it up over 1A.  Adjust the DAC setpoint to allow exactly """ + str(CURRENT_MEASURED_VALUE_LOW) + """ mA through.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
+	   
+	while True:
+		response = raw_input("DAC Value for " + str(CURRENT_MEASURED_VALUE_LOW) + "mA: ")
+		if increment.match(response):
+			current_setpoint = (current_setpoint + int(response[1:]))
+			
+		elif decrement.match(response):
+			current_setpoint = (current_setpoint - int(response[1:]))
+			
+		elif integer.match(response):
+			current_setpoint = int(response) & 0x0FFF;
+
+		elif response == "":
+			raw_current_setpoint_low = current_setpoint
+			break;
+		
+		else:
+			print("Invalid option.")
+
+		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
+		print("Current setpoint: " + str(current_setpoint))
+
+
+#Current Limit High
+	print("""Connect a dummy load capable of sinking at least 1A, via a multimeter and turn it up over 1A.  Adjust the DAC setpoint to allow exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mA through.  Hit enter when target reached.
+Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
+an offset adjustment as an integer starting with a + / -""")
+	   
+	while True:
+		response = raw_input("DAC Value for " + str(CURRENT_MEASURED_VALUE_HIGH) + "mA: ")
+		if increment.match(response):
+			current_setpoint = (current_setpoint + int(response[1:]))
+			
+		elif decrement.match(response):
+			current_setpoint = (current_setpoint - int(response[1:]))
+			
+		elif integer.match(response):
+			current_setpoint = int(response) & 0x0FFF;
+
+		elif response == "":
+			raw_current_setpoint_high = current_setpoint
+			break;
+		
+		else:
+			print("Invalid option.")
+
+		current_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)[3] & 0x0FFF
+		print("Current setpoint: " + str(current_setpoint))
+
+	#We need to find the calibration values to translate the raw values into actual voltages.  To do this, we plot
+	# the values on an X/Y plane, with raw values on the X axis and voltages on the Y axis.  We know the actual values
+	# (as measured by a multimeter), and we have the raw values, so we can find slope and offset.
+	#First is to find slope: slope is delta Y / delta X.
+	#Then we find the offset:  offset is found using y - y1 = m(x - x1).  We know a point (x1,y1), and we need to solve for y when x is 0.
+	current_setpoint_slope = float(CURRENT_MEASURED_VALUE_HIGH - CURRENT_MEASURED_VALUE_LOW) / (raw_current_setpoint_high - raw_current_setpoint_low)
+	current_setpoint_offset = current_setpoint_slope * (0 - raw_current_setpoint_high) + CURRENT_MEASURED_VALUE_HIGH
+
+	while True:
+		print("Current Setpoint: A = (" + str(current_setpoint_slope) + " * DAC_VALUE) + " + str(current_setpoint_offset))
+
+		response = raw_input(
+"""
+Do you want to save these calibration values to EEPROM?
+Y/N: """)
+		if response == "Y" or response == "y":
+			print("Saved values:")
 			print("Current Setpoint: A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_SLOPE, current_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_OFFSET, current_setpoint_offset)[3]))
 			break;
 		elif response == "N" or response == "n":
 			print("Calibration discarded.")
 			break;
+
+try:
+	dev = hid.Device(vid=0x4200, pid=0xFF01)
+	
+	MESSAGE_CHANNELS				= 1
+	MESSAGE_ACTUAL					= 2
+	MESSAGE_ACTUAL_RAW				= 3
+	MESSAGE_SETPOINT				= 4
+	MESSAGE_SETPOINT_RAW			= 5
+	MESSAGE_CHANGE_SETPOINT			= 6
+	MESSAGE_CHANGE_SETPOINT_RAW		= 7
+	MESSAGE_GET_CALIBRATION			= 8
+	MESSAGE_SET_CALIBRATION			= 9
+
+	TARGET_VOLTAGE_ACTUAL_SLOPE			= 0
+	TARGET_VOLTAGE_ACTUAL_OFFSET		= 1
+	TARGET_VOLTAGE_SETPOINT_SLOPE		= 2
+	TARGET_VOLTAGE_SETPOINT_OFFSET		= 3
+	TARGET_CURRENT_ACTUAL_SLOPE			= 4
+	TARGET_CURRENT_ACTUAL_OFFSET		= 5
+	TARGET_CURRENT_SETPOINT_SLOPE		= 6
+	TARGET_CURRENT_SETPOINT_OFFSET		= 7
+
+	VOLTAGE_MEASURED_VALUE_LOW = 0
+	VOLTAGE_MEASURED_VALUE_HIGH = 8000
+	CURRENT_MEASURED_VALUE_LOW = 50
+	CURRENT_MEASURED_VALUE_HIGH = 800
+	
+	CHANNEL_COUNT = ord(send_generic_message_with_response(dev, MESSAGE_CHANNELS)[1])
+
+	integer = re.compile('^[0-9]+$')
+	increment = re.compile('^\\+[0-9]+$')
+	decrement = re.compile('^-[0-9]+$')
+
+	while True:
+		channel = int(raw_input("Channel (0 - " + str(CHANNEL_COUNT - 1) + "): "))
+		if (channel >= 0 and channel < CHANNEL_COUNT):
+			break;
+		print("Invalid channel.  Please enter a valid channel number.")
+
+	while True:
+
+		print("Current calibration values:")
+		print("Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_SLOPE, 0)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_ACTUAL_OFFSET, 0)[3]))
+		print("Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_SLOPE, 0)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE_SETPOINT_OFFSET, 0)[3]))
+		print("Actual:   I = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_SLOPE, 0)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_OFFSET, 0)[3]))
+		print("Setpoint: I = (" + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_SLOPE, 0)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_OFFSET, 0)[3]))
+
+		response = raw_input(
+"""
+To calibrate the power supply, you must perform the following steps:
+1) Find the linear calibration values for voltage (both actual readings and setpoints)
+2) Find the linear calibration values for current readings
+3) Find the linear calibration values for current limit setpoints
+
+To do this, you will need a multimeter which has both a voltage and current sensing (up to at least 1A, preferably 10A) mode.
+
+Please choose one of the following calibration options:
+
+1) Calibrate Voltage
+2) Calibrate Current Measurement
+3) Calibrate Current Limiting
+Q) Quit
+
+Enter a menu option: """)
+
+		if response == "1":
+			calibrate_voltage()
+		elif response == "2":
+			calibrate_current_measured()
+		elif response == "3":
+			calibrate_current_limit()
+		elif response == "Q" or response == "q":
+			break;
+
 
 finally:
 	if ("close" in dir(dev)):
