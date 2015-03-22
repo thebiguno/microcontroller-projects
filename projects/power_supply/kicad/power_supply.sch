@@ -2093,8 +2093,8 @@ Text Label 3150 2000 0    60   ~ 0
 AC_N
 Text Label 3150 1800 0    60   ~ 0
 AC_L
-Text Notes 6800 3450 0    40   ~ 0
-Use a 1 ohm shunt if using LM317 as current limiter\n(max. 500mA throughput).  Use 0.1ohm if not using\nany adjustable current limiter (max 5A throughput\nwith LM338). 
+Text Notes 6850 3600 0    40   ~ 0
+Rsh value (in conjunction with differential amp gain) will\ndetermine maximum current.  Use 0.1ohm for 5A, 1ohm\nfor 0.5A, etc.\n
 Text Notes 7300 7900 0    60   ~ 0
 User Interface
 Text Notes 3500 12250 0    60   ~ 0
