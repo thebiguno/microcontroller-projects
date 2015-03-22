@@ -80,7 +80,7 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
  * Current functions
  */
 
-uint16_t Channel::get_current_setpoint(){
+int16_t Channel::get_current_setpoint(){
 	//scaled_value = slope * raw_value + offset
 	return this->current_setpoint_slope * this->current_setpoint_raw + this->current_setpoint_offset;
 }
@@ -89,7 +89,7 @@ uint16_t Channel::get_current_setpoint_raw(){
 	return this->current_setpoint_raw;
 }
 
-uint16_t Channel::get_current_actual(){
+int16_t Channel::get_current_actual(){
 	//scaled_value = slope * raw_value + offset
 	return this->current_actual_slope * this->current_actual_raw + this->current_actual_offset;
 }

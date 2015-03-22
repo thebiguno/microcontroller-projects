@@ -61,7 +61,7 @@ namespace digitalcave {
 			uint8_t dac_channel_current;
 
 			int16_t voltage_limit;			//Max (or min, for negative) voltage
-			uint16_t current_limit;			//Max current
+			int16_t current_limit;			//Max current
 			
 			uint16_t voltage_setpoint_raw;	//Desired raw 12 bit DAC value
 			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
@@ -104,9 +104,9 @@ namespace digitalcave {
 			/*
 			 * Current functions
 			 */
-			uint16_t get_current_setpoint();
+			int16_t get_current_setpoint();
 			uint16_t get_current_setpoint_raw();
-			uint16_t get_current_actual();
+			int16_t get_current_actual();
 			uint16_t get_current_actual_raw();
 			void set_current_setpoint(int16_t milliamps);
 			void set_current_setpoint_raw(uint16_t raw_value);
