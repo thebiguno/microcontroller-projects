@@ -21,13 +21,6 @@ volatile uint8_t inj_pin;
 
 #define REG_LEN 159
 
-#define RED     _BV(PB4) | _BV(PB5)
-#define YELLOW  _BV(PB4)
-#define GREEN   _BV(PB4) | _BV(PB6)
-#define CYAN    _BV(PB6)
-#define BLUE    _BV(PB5) | _BV(PB6)
-#define MAGENTA _BV(PB5)
-
 typedef struct {
 	// tuning values
 	
@@ -46,14 +39,13 @@ typedef struct {
 	volatile uint8_t cranking_ticks;	// above this value = cranking; below this value = running normally
 	volatile uint8_t max_ign_dwell;		// the maximum dwell in timer0 ticks
 	
-	// running values
+	// running values (0x92 to 0x97)
+	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
+	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm 60/(t*36)
 	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
 	volatile uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
-	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
 	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
 	volatile uint8_t ign_dwell;			// the spark plug dwell in timer0 ticks
-	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm
-										// 60/(t*36)
 
 	volatile uint8_t inj; 				// the current injector; a value between 0 and 3
 	volatile uint8_t cam;				// the current cam tooth; a value between 0 and 3
@@ -132,16 +124,15 @@ int main(void) {
 	DDRF = 0x00;								// 0 is throttle position ADC input
 	PORTF = 0x00;
 
-	PORTB = RED;
-
 	// set up analog
 	ADCSRA = _BV(ADEN) | _BV(ADATE) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // enable, auto-trigger, prescale /128
 	ADCSRB = 0x00;		// low speed, free running
-	ADMUX = _BV(REFS0) | _BV(ADLAR); // use AVCC, left adjust result, read ADC0/PC0
+	ADMUX = _BV(REFS0) | _BV(ADLAR); // use AVCC, left adjust result, read ADC0/PF0
+	DIDR0 = _BV(ADC0D);
 
 	// set up pin interrupts
-	//EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT2 and INT3 interrupt on rising edge
-	//EIMSK = _BV(INT2) | _BV(INT3); // enable interrupts on INT2 (crank) and INT3 (cam sync)
+	EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT2 and INT3 interrupt on rising edge
+	EIMSK = _BV(INT2) | _BV(INT3); // enable interrupts on INT2 (crank) and INT3 (cam sync)
 
 	usb_init();
 	
@@ -194,13 +185,11 @@ int main(void) {
 	u.s.crank_sync = 0;
 	cam_teeth = 0;
 
-	//sei();						// enable interrupts
+	sei();						// enable interrupts
 
 	ADCSRA |= _BV(ADSC);		// start the first analog conversion
 
 	while(1) {
-		PORTB = GREEN;
-
 		// nothing in the main loop is time sensitive
 		
 		u.s.adc_tp = ADCH;
@@ -219,13 +208,10 @@ int main(void) {
 //		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 		
 		if (usb_configured()) {
-//			PORTB = CYAN;
 //			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
-//				PORTB = GREEN;
 //				uint8_t addr = rx_buffer[0];
 //				uint8_t len = rx_buffer[1];
 //				if (len & 0x80) {
-//					PORTB = YELLOW;
 //					// read request
 //					if (addr == 0xff) {
 //						// read from eeprom
@@ -248,7 +234,6 @@ int main(void) {
 //						usb_rawhid_send(tx_buffer, len + 2);
 //					}
 //				} else {
-//					PORTB = MAGENTA;
 //					// write request
 //					if (addr == 0xff) {
 //						// write to eeprom
@@ -260,7 +245,6 @@ int main(void) {
 //					}
 //				}
 			//}
-			PORTB = MAGENTA;
 			// send the six running values
 			tx_buffer[0] = 0x92;
 			tx_buffer[1] = 0x06;
@@ -272,16 +256,13 @@ int main(void) {
 	}
 }
 
-// analog ISR
-ISR(ADC_vect) {
-	u.s.adc_tp = ADCH;
-	PORTB = RED;
-}
-
 // crank ISR
 // the wheel has 36 - 2 - 2 - 2 = 30 teeth
 // each tooth represents 10 degrees
-ISR(INT0_vect) {
+ISR(INT2_vect) {
+	PORTB ^= _BV(PB6);
+
+	/*
 	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
 	if (t < 255) u.s.cranking = 0;
 	if (t > (u.s.crank_ticks << 1)) {
@@ -293,6 +274,7 @@ ISR(INT0_vect) {
 		u.s.crank++;
 		u.s.cam++;
 	}
+	u.s.crank_ticks = t;
 	
 	TCNT0 = 0; // reset timer0 to zero
 	
@@ -340,8 +322,8 @@ ISR(INT0_vect) {
 	}
 	ign_pin = ign_pins[u.s.ign];
 	inj_pin = inj_pins[u.s.inj];
-	
-	u.s.crank_ticks = t;
+
+	*/
 }
 
 // timer 0 overflow
@@ -353,7 +335,10 @@ ISR(TIMER0_OVF_vect) {
 }
 
 // cam sync ISR
-ISR(INT1_vect) {
+ISR(INT3_vect) {
+	PORTB ^= _BV(PB5);
+
+	/*
 	// now on either crank tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
 	u.s.cam++;
@@ -364,6 +349,7 @@ ISR(INT1_vect) {
 		u.s.cam = 0;
 	}
 	cam_teeth = 0;
+	*/
 }
 
 // ignition spark on

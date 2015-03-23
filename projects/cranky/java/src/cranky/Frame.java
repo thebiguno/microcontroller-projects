@@ -64,12 +64,12 @@ public class Frame extends JFrame {
 //	private int MAX_IGN_DWELL = 0x91;
 
 	// running
-	private int LOAD_ZONE = 0x92;
-	private int RPM_ZONE = 0x93;
-	private int ADC_TP = 0x94;
-	private int IGN_ADV_DEG = 0x95;
-	private int IGN_DWELL = 0x96;
-	private int CRANK_TICKS = 0x97;
+	private int ADC_TP = 0x92;
+	private int CRANK_TICKS = 0x93;
+	private int LOAD_ZONE = 0x94;
+	private int RPM_ZONE = 0x95;
+	private int IGN_ADV_DEG = 0x96;
+	private int IGN_DWELL = 0x97;
 
 	// unused running
 //	private int INJ = 0x98;
@@ -96,7 +96,7 @@ public class Frame extends JFrame {
 //	private final ValueHolder rpmModel = new ValueHolder();
 //	private final ValueHolder tpModel = new ValueHolder();
 	
-	private final SpinnerNumberModel simulatorRpmModel = new SpinnerNumberModel(300, 300, 10000, 10);
+	private final SpinnerNumberModel simulatorRpmModel = new SpinnerNumberModel(1000, 0, 10000, 10);
 	private final SpinnerNumberModel simulatorTpModel = new SpinnerNumberModel(0, 0, 100, 1);
 	
 	private byte[] rxBuffer = new byte[64];
@@ -141,6 +141,7 @@ public class Frame extends JFrame {
 		values[CRANK_TICKS].addValueChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+				System.out.println("t0 ticks: " + evt.getNewValue());
 				rpm.setValue(26041d / (0xFF & (Integer) evt.getNewValue()));
 			}
 		});
@@ -157,6 +158,7 @@ public class Frame extends JFrame {
 		values[ADC_TP].addValueChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+//				System.out.println("adc0 value: " + evt.getNewValue());
 				tp.setValue(((Integer) evt.getNewValue()).doubleValue() / 2.55d);
 			}
 		});
@@ -315,7 +317,8 @@ public class Frame extends JFrame {
 					final int tp = (Integer) simulatorTpModel.getValue();
 					
 					// first byte is OCR0A; throttle position
-					final byte ocr0a = (byte) (2.55f * tp);
+					byte ocr0a = (byte) (2.55f * tp);
+					if (ocr0a == 0) ocr0a = 1; // setting this to 0 causes the chip to constantly reset
 					
 					// second and third bytes are OCR1AH and OCR1AL; RPM
 					// 500 rpm / 60 = 8.3 Hz = 120 ms / 72 = 1666 us/event = timer1 value of 3332 (120 ms period)
@@ -404,10 +407,10 @@ public class Frame extends JFrame {
 												int b = 0xFF & rxBuffer[i+2];
 												values[addr+i].setValue(b);
 												
-//												System.out.print(b);
-//												System.out.print(", ");
+												//System.out.print(b);
+												//System.out.print(", ");
 											}
-//											System.out.println();
+											//System.out.println();
 										}
 									}
 								} catch (IOException e) {
