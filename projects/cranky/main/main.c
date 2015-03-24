@@ -151,7 +151,7 @@ int main(void) {
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (9.999 ms for missing teeth)
 	// 10000 us / .5 us = 20000 < 65535
 	TCCR3A = 0x00;						// 0C3A / OC3B disconnected
-	TCCR3B = _BV(CS31);					// clock prescase select = CLK / 64
+	TCCR3B = _BV(CS31);					// clock prescale select = CLK / 8
 
 	// timer 1 (16-bit) is used to time the spark advance
 	// 16MHz clock = 62.5 ns per clock cycle
@@ -165,7 +165,7 @@ int main(void) {
 	// 16MHz clock = 62.5 ns per clock cycle
 	// 256 * 8 = 2048 * 0.0625 us = 128 us > 66 us
 //	TCCR4A = 0x00;						// OC2A / OC2B disconnected
-//	TCCR4B = _BV(CS42);					// clock precale select = CLK / 8
+//	TCCR4B = _BV(CS42);					// clock prescale select = CLK / 8
 //	TIMSK4 = _BV(OCIE4A) | _BV(OCIE4B); // interrupt on timer 4 compare A and B
 //	OCR4A = 132; // 132 * 8 clock cycles = 66 us
 	
@@ -195,20 +195,60 @@ int main(void) {
 		// nothing in the main loop is time sensitive
 		
 		u.s.adc_tp = ADCH;
-//		for (uint8_t i = 0; i < 8; i++) {
-//			if (u.s.crank_ticks > u.s.rpm_zones[i]) {
-//				u.s.rpm_zone = i;
-//				break;
-//			}
-//		}
-//		for (uint8_t i = 0; i < 8; i++) {
-//			if (u.s.adc_tp < u.s.load_zones[i]) {
-//				u.s.load_zone = i;
-//				break;
-//			}
-//		}
-//		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 		
+		// 10000 for 333 RPM, 6666 for 500 RPM
+		u.s.hertz = (crank_ticks < 10000) ? (55556 / crank_ticks) : 0;
+
+		// determine the rpm zone and load zone
+		for (uint8_t i = 0; i < 8; i++) {
+			if (crank_ticks > u.s.rpm_zones[i]) {
+				u.s.rpm_zone = i;
+				break;
+			}
+		}
+		for (uint8_t i = 0; i < 8; i++) {
+			if (u.s.adc_tp < u.s.load_zones[i]) {
+				u.s.load_zone = i;
+				break;
+			}
+		}
+		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
+
+		// compute all of these values so that they don't have to be computed in the ISR at the 60 degree mark
+		u.s.ign_adv_deg = u.s.ign_advance[u.s.rpm_zone][u.s.load_zone]; // in degrees
+		u.s.ign_adv_deg = 10; // TODO remove test value
+		uint16_t deg = 60 - u.s.ign_adv_deg;
+		uint16_t comp = deg * crank_ticks / 10; // this isn't terribly accurate due to rounding
+		OCR1A = comp; // set up timer1 compA for on time
+		OCR1B = comp + 2048; // TODO verify this
+
+		// determine what pins should be active based on crank and cam position
+		if (u.s.crank == 1 && u.s.cam == 2) {
+			// #1BDTC; #4 just finished burning, #1 ignition just happened, #3 ignites next, #2 injects next
+			u.s.ign = 0;
+		} else if (u.s.crank == 1 && u.s.cam == 0) {
+			// #2BDTC; #3 just finished burning, #2 ignition just happened, #4 ignites next, #1 injects next
+			u.s.ign = 1;
+		} else if (u.s.crank == 19 && u.s.cam == 2) {  // in cam signal gap, so 2 not 3
+			// #3BTDC; #1 just finished burning, #3 ignition just happened, #2 ignites next, #3 injects next
+			u.s.ign = 2;
+		} else if (u.s.crank == 19 && u.s.cam == 1) {
+			// #4BTDC; #2 just finished burning, #4 ignition just happened, #1 ignites next, #4 injects next
+			u.s.ign = 3;
+		} else if (u.s.crank == 15 && u.s.cam == 2) {
+			u.s.inj = 0;
+		} else if (u.s.crank == 15 && u.s.cam == 0) {
+			u.s.inj = 1;
+		} else if (u.s.crank == 33 && u.s.cam == 2) {
+			u.s.inj = 2;
+		} else if (u.s.crank == 33 && u.s.cam == 1) {
+			u.s.inj = 3;
+		} else if (u.s.crank >= 35) {
+			u.s.crank = 0;
+		}
+		ign_pin = ign_pins[u.s.ign];
+		inj_pin = inj_pins[u.s.inj];
+
 		if (usb_configured()) {
 //			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
 //				uint8_t addr = rx_buffer[0];
@@ -263,7 +303,7 @@ int main(void) {
 // each tooth represents 10 degrees
 ISR(INT2_vect) {
 	uint16_t t = TCNT3;
-	TCNT3 = 0;
+	TCNT3 = 0;  					// reset timer as quickly as possibly so next reading is accurate
 	if (t > (crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
@@ -275,57 +315,17 @@ ISR(INT2_vect) {
 	}
 	crank_ticks = t;
 
-	// 333 RPM (6666 for 500 RPM)
-	u.s.hertz = (t < 10000) ? (55556 / t) : 0;
+//	PORTB ^= _BV(PB6);
 
-	PORTB ^= _BV(PB6);
-
-	/*
 	if (u.s.crank == 13 || u.s.crank == 16 || u.s.crank == 31) {
-		// tooth count is wrong, this is normal so just try adjusting
+		// tooth count is wrong; this is normal when starting so just try adjusting
 		u.s.crank = u.s.crank + 2;
 	} else if (u.s.crank == 12 || u.s.crank == 30) {
-		// now 60 degrees before 0/180 degrees, set the timer for the spark advance
-		u.s.ign_adv_deg = u.s.ign_advance[u.s.rpm_zone][u.s.load_zone]; // in degrees
-		u.s.ign_adv_deg = 10; // TODO remove
-		// 60 degrees - advance degrees (1024 prescale -> 8 prescale)
-		// t is a /1024 prescaled value and maxes out at about 66 @ 500 rpm
-		// OCR1A is a /8 prescaled value
-		// multiply by 128 to convert form /1024 to /8
-		uint16_t deg = 60 - u.s.ign_adv_deg;
-		
-		uint16_t comp = deg * t / 10 * 128; // this isn't terribly accurate due to rounding
-		OCR1A = comp; // set up timer1 compA for on time
-		OCR2A = comp + 2048;
-		TCNT1 = 0;	// reset timer1 to zero
+		// now 60 degrees before 0/180 degrees, start timer1 for the spark advance
+		TCNT1 = 0;
 		
 //		PORTB=0xFF;
-	} else if (u.s.crank == 1 && u.s.cam == 2) {
-		// #1BDTC; #4 just finished burning, #1 ignition just happened, #3 ignites next, #2 injects next
-		u.s.ign = 0;
-	} else if (u.s.crank == 1 && u.s.cam == 0) {
-		// #2BDTC; #3 just finished burning, #2 ignition just happened, #4 ignites next, #1 injects next
-		u.s.ign = 1;
-	} else if (u.s.crank == 19 && u.s.cam == 2) {  // in cam signal gap, so 2 not 3
-		// #3BTDC; #1 just finished burning, #3 ignition just happened, #2 ignites next, #3 injects next
-		u.s.ign = 2;
-	} else if (u.s.crank == 19 && u.s.cam == 1) {
-		// #4BTDC; #2 just finished burning, #4 ignition just happened, #1 ignites next, #4 injects next
-		u.s.ign = 3;
-	} else if (u.s.crank == 15 && u.s.cam == 2) {
-		u.s.inj = 0;
-	} else if (u.s.crank == 15 && u.s.cam == 0) {
-		u.s.inj = 1;
-	} else if (u.s.crank == 33 && u.s.cam == 2) {
-		u.s.inj = 2;
-	} else if (u.s.crank == 33 && u.s.cam == 1) {
-		u.s.inj = 3;
-	} else if (u.s.crank >= 35) {
-		u.s.crank = 0;
 	}
-	ign_pin = ign_pins[u.s.ign];
-	inj_pin = inj_pins[u.s.inj];
-	*/
 }
 
 // timer 0 overflow
@@ -340,7 +340,7 @@ ISR(TIMER0_OVF_vect) {
 ISR(TIMER4_OVF_vect) {
 	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
 	//u.s.hertz = 0;
-	TCNT4 = 65535;
+	TCNT4 = 10000; // 333 RPM
 }
 
 // cam sync ISR
