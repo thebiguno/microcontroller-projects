@@ -215,6 +215,7 @@ public class Frame extends JFrame {
 
 		grid.add(new JLabel("TP%\\RPM"));
 		
+		int v = 1000;
 		for (int i = 0; i < 8; i++) {
 			final int rpmZoneIndex = RPM_ZONES + i;
 			final ValueHolder rpmZone = values[rpmZoneIndex];
@@ -224,13 +225,15 @@ public class Frame extends JFrame {
 					final byte[] b = new byte[3];
 					b[0] = (byte) rpmZoneIndex;
 					b[1] = 1;
-					b[2] = (byte) (26041d / (Integer) rpmZone.getValue());
+					b[2] = (byte) (26041d / (Integer) rpmZone.getValue()); // TODO, this is the wrong constant now with the change to timer3
 					executor.execute(new Writer(device[0], b));
 				}
 			});
-			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(rpmZone, 300, 300, 10000, 10)));
+			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(rpmZone, v, 500, 10000, 10)));
+			v = v + 750;
 		}
 		
+		v = 10;
 		for (int i = 0; i < 8; i++) {
 			final int loadZoneIndex = LOAD_ZONES + i;
 			final ValueHolder loadZone = values[loadZoneIndex];
@@ -244,7 +247,8 @@ public class Frame extends JFrame {
 					executor.execute(new Writer(device[0], b));
 				}
 			});
-			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(loadZone, 300, 300, 10000, 10)));
+			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(loadZone, v, 0, 10000, 10)));
+			v = v + 10;
 			
 			for (int j = 0; j < 8; j++) {
 				final int advanceIndex = IGN_ADVANCE+(i*8)+j;
