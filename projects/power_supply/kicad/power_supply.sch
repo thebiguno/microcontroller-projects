@@ -38,7 +38,7 @@ $Descr User 13000 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "23 mar 2015"
+Date "24 mar 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -2094,7 +2094,7 @@ AC_N
 Text Label 3150 1800 0    60   ~ 0
 AC_L
 Text Notes 6850 3600 0    40   ~ 0
-Rsh value (in conjunction with differential amp gain) will\ndetermine maximum current.  Use 0.1ohm for 5A, 1ohm\nfor 0.5A, etc.\n
+Rsh value (in conjunction with differential amp gain) will\ndetermine maximum current.  Use 0.1ohm for 5A, 1ohm\nfor 0.5A, etc.  If in doubt, 0.1ohm is a good value.\n
 Text Notes 7300 7900 0    60   ~ 0
 User Interface
 Text Notes 3500 12250 0    60   ~ 0
@@ -2566,7 +2566,7 @@ L RSMALL R13
 U 1 1 54FFB7C7
 P 3350 4900
 F 0 "R13" V 3440 4895 40  0000 C CNN
-F 1 "2k" V 3265 4900 40  0000 C CNN
+F 1 "1k" V 3265 4900 40  0000 C CNN
 F 2 "~" V 3280 4900 30  0000 C CNN
 F 3 "~" H 3350 4950 30  0000 C CNN
 	1    3350 4900
@@ -2616,14 +2616,14 @@ F 3 "~" H 5650 4100 30  0000 C CNN
 	1    5650 4050
 	-1   0    0    1   
 $EndComp
-Text Label 1000 3850 2    60   ~ 0
+Text Label 1750 3850 2    60   ~ 0
 VA
 $Comp
 L RSMALL R12
 U 1 1 5503ADBA
 P 3350 4600
 F 0 "R12" V 3440 4595 40  0000 C CNN
-F 1 "2k" V 3265 4600 40  0000 C CNN
+F 1 "1k" V 3265 4600 40  0000 C CNN
 F 2 "~" V 3280 4600 30  0000 C CNN
 F 3 "~" H 3350 4650 30  0000 C CNN
 	1    3350 4600
@@ -2835,7 +2835,7 @@ F 3 "~" H 5500 5100 30  0000 C CNN
 	1    5500 5050
 	0    1    1    0   
 $EndComp
-Text Label 5150 4150 0    60   ~ 0
+Text Label 5250 4250 0    60   ~ 0
 VADJ
 Text Notes 2650 2950 0    40   ~ 0
 Resistors that have a slash (e.g. 0/X) mean that you would use \na different value resistor for positive vs. negative mode.  An\nX means to leave unpopulated.  So, a value of 0/1k would mean\nto populate with a 0 resistor for positive regulator and a 1k\nresistor for negative regulator.
@@ -2852,7 +2852,7 @@ F 3 "~" H 7500 3850 30  0000 C CNN
 	1    7500 3850
 	0    -1   -1   0   
 $EndComp
-Text Label 3400 3850 2    60   ~ 0
+Text Label 3900 3850 2    60   ~ 0
 V_CURRENT
 $Comp
 L CSMALL C25
@@ -2963,30 +2963,30 @@ F 3 "" H 11800 6950 60  0000 C CNN
 $EndComp
 Text Notes 8500 4550 0    40   ~ 0
 V Sense Voltage Divider: \nadjust this to change \nratio of output voltage\nto sense voltage\n
-Text Notes 2900 4300 0    40   ~ 0
-Biasing network to allow for\nadjustment down to 0.
+Text Notes 3700 4800 0    40   ~ 0
+Biasing to allow for\nadjustment down to 0.
 Text Notes 5700 5100 0    40   ~ 0
 Bypass the op amp\nusing jumpers \nif this is a positive\nchannel. Otherwise,\nit will invert the signal.
 $Comp
 L CSMALL C1
 U 1 1 550C6B38
-P 1250 4050
-F 0 "C1" H 1275 4100 30  0000 L CNN
-F 1 "0.1uF" H 1275 4000 30  0000 L CNN
-F 2 "~" H 1250 4050 60  0000 C CNN
-F 3 "~" H 1250 4050 60  0000 C CNN
-	1    1250 4050
+P 2200 4050
+F 0 "C1" H 2225 4100 30  0000 L CNN
+F 1 "1uF" H 2225 4000 30  0000 L CNN
+F 2 "~" H 2200 4050 60  0000 C CNN
+F 3 "~" H 2200 4050 60  0000 C CNN
+	1    2200 4050
 	-1   0    0    -1  
 $EndComp
 $Comp
 L GND #PWR091
 U 1 1 550C6B3E
-P 1250 4150
-F 0 "#PWR091" H 1250 4150 30  0001 C CNN
-F 1 "GND" H 1250 4080 30  0001 C CNN
-F 2 "" H 1250 4150 60  0000 C CNN
-F 3 "" H 1250 4150 60  0000 C CNN
-	1    1250 4150
+P 2200 4150
+F 0 "#PWR091" H 2200 4150 30  0001 C CNN
+F 1 "GND" H 2200 4080 30  0001 C CNN
+F 2 "" H 2200 4150 60  0000 C CNN
+F 3 "" H 2200 4150 60  0000 C CNN
+	1    2200 4150
 	-1   0    0    -1  
 $EndComp
 $Comp
@@ -3035,20 +3035,9 @@ F 3 "" H 6250 4150 60  0000 C CNN
 $EndComp
 $Comp
 L GND #PWR094
-U 1 1 550CE976
-P 1450 4150
-F 0 "#PWR094" H 1450 4150 30  0001 C CNN
-F 1 "GND" H 1450 4080 30  0001 C CNN
-F 2 "" H 1450 4150 60  0000 C CNN
-F 3 "" H 1450 4150 60  0000 C CNN
-	1    1450 4150
-	-1   0    0    -1  
-$EndComp
-$Comp
-L GND #PWR095
 U 1 1 550CEB37
 P 6500 4150
-F 0 "#PWR095" H 6500 4150 30  0001 C CNN
+F 0 "#PWR094" H 6500 4150 30  0001 C CNN
 F 1 "GND" H 6500 4080 30  0001 C CNN
 F 2 "" H 6500 4150 60  0000 C CNN
 F 3 "" H 6500 4150 60  0000 C CNN
@@ -3058,32 +3047,32 @@ $EndComp
 $Comp
 L OPAMP-4-SPLIT U3
 U 4 1 550DFFBB
-P 1600 4900
-F 0 "U3" H 1750 5100 60  0000 C CNN
-F 1 "MC3303PT" H 1850 4750 50  0000 C CNN
-F 2 "" H 1600 4900 60  0000 C CNN
-F 3 "" H 1600 4900 60  0000 C CNN
-	4    1600 4900
+P 1750 4900
+F 0 "U3" H 1900 5100 60  0000 C CNN
+F 1 "MC3303PT" H 2000 4750 50  0000 C CNN
+F 2 "" H 1750 4900 60  0000 C CNN
+F 3 "" H 1750 4900 60  0000 C CNN
+	4    1750 4900
 	1    0    0    -1  
 $EndComp
-Text Label 1600 5200 3    60   ~ 0
+Text Label 1750 5200 3    60   ~ 0
 V-
-Text Label 1600 4600 1    60   ~ 0
+Text Label 1750 4600 1    60   ~ 0
 V+
-Text Label 1300 5000 2    60   ~ 0
+Text Label 1100 5000 2    60   ~ 0
 I_SET
 $Comp
 L RSMALL R1
 U 1 1 550E03D5
-P 1700 4050
-F 0 "R1" V 1790 4045 40  0000 C CNN
-F 1 "1k" V 1615 4050 40  0000 C CNN
-F 2 "~" V 1630 4050 30  0000 C CNN
-F 3 "~" H 1700 4100 30  0000 C CNN
-	1    1700 4050
+P 2450 4050
+F 0 "R1" V 2540 4045 40  0000 C CNN
+F 1 "1k" V 2365 4050 40  0000 C CNN
+F 2 "~" V 2380 4050 30  0000 C CNN
+F 3 "~" H 2450 4100 30  0000 C CNN
+	1    2450 4050
 	-1   0    0    -1  
 $EndComp
-Text Label 1300 4800 2    60   ~ 0
+Text Label 1450 4800 2    60   ~ 0
 I_LIM
 Text Label 10550 5800 0    60   ~ 0
 I_LIM
@@ -3092,19 +3081,19 @@ V_PRESENSE
 $Comp
 L CP1SMALL C2
 U 1 1 550E4104
-P 1450 4050
-F 0 "C2" V 1540 4045 40  0000 C CNN
-F 1 "100uF" V 1365 4050 40  0000 C CNN
-F 2 "~" V 1380 4050 30  0000 C CNN
-F 3 "~" H 1450 4100 30  0000 C CNN
-	1    1450 4050
+P 2450 4600
+F 0 "C2" V 2540 4595 40  0000 C CNN
+F 1 "100uF" V 2365 4600 40  0000 C CNN
+F 2 "~" V 2380 4600 30  0000 C CNN
+F 3 "~" H 2450 4650 30  0000 C CNN
+	1    2450 4600
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR096
+L GND #PWR095
 U 1 1 550E4229
 P 4300 4150
-F 0 "#PWR096" H 4300 4150 30  0001 C CNN
+F 0 "#PWR095" H 4300 4150 30  0001 C CNN
 F 1 "GND" H 4300 4080 30  0001 C CNN
 F 2 "" H 4300 4150 60  0000 C CNN
 F 3 "" H 4300 4150 60  0000 C CNN
@@ -3134,10 +3123,10 @@ F 3 "~" H 6500 4100 30  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR097
+L GND #PWR096
 U 1 1 550E53BB
 P 3600 4750
-F 0 "#PWR097" H 3600 4750 30  0001 C CNN
+F 0 "#PWR096" H 3600 4750 30  0001 C CNN
 F 1 "GND" H 3600 4680 30  0001 C CNN
 F 2 "" H 3600 4750 60  0000 C CNN
 F 3 "" H 3600 4750 60  0000 C CNN
@@ -3156,10 +3145,10 @@ F 3 "~" H 8850 4050 60  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR098
+L GND #PWR097
 U 1 1 550F099D
 P 8850 4150
-F 0 "#PWR098" H 8850 4150 30  0001 C CNN
+F 0 "#PWR097" H 8850 4150 30  0001 C CNN
 F 1 "GND" H 8850 4080 30  0001 C CNN
 F 2 "" H 8850 4150 60  0000 C CNN
 F 3 "" H 8850 4150 60  0000 C CNN
@@ -3241,10 +3230,10 @@ F 3 "~" H 11150 6550 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR099
+L GND #PWR098
 U 1 1 550F8C96
 P 11150 6650
-F 0 "#PWR099" H 11150 6650 30  0001 C CNN
+F 0 "#PWR098" H 11150 6650 30  0001 C CNN
 F 1 "GND" H 11150 6580 30  0001 C CNN
 F 2 "" H 11150 6650 60  0000 C CNN
 F 3 "" H 11150 6650 60  0000 C CNN
@@ -3252,21 +3241,21 @@ F 3 "" H 11150 6650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR0100
+L GND #PWR099
 U 1 1 55104280
-P 2600 5200
-F 0 "#PWR0100" H 2600 5200 30  0001 C CNN
-F 1 "GND" H 2600 5130 30  0001 C CNN
-F 2 "" H 2600 5200 60  0000 C CNN
-F 3 "" H 2600 5200 60  0000 C CNN
-	1    2600 5200
+P 2850 5200
+F 0 "#PWR099" H 2850 5200 30  0001 C CNN
+F 1 "GND" H 2850 5130 30  0001 C CNN
+F 2 "" H 2850 5200 60  0000 C CNN
+F 3 "" H 2850 5200 60  0000 C CNN
+	1    2850 5200
 	-1   0    0    -1  
 $EndComp
 $Comp
-L GND #PWR0101
+L GND #PWR0100
 U 1 1 550F5824
 P 9100 4800
-F 0 "#PWR0101" H 9100 4800 30  0001 C CNN
+F 0 "#PWR0100" H 9100 4800 30  0001 C CNN
 F 1 "GND" H 9100 4730 30  0001 C CNN
 F 2 "" H 9100 4800 60  0000 C CNN
 F 3 "" H 9100 4800 60  0000 C CNN
@@ -3309,34 +3298,34 @@ $EndComp
 $Comp
 L RSMALL R7
 U 1 1 551059E4
-P 2150 4900
-F 0 "R7" V 2240 4895 40  0000 C CNN
-F 1 "1k" V 2065 4900 40  0000 C CNN
-F 2 "~" V 2080 4900 30  0000 C CNN
-F 3 "~" H 2150 4950 30  0000 C CNN
-	1    2150 4900
+P 2350 4900
+F 0 "R7" V 2440 4895 40  0000 C CNN
+F 1 "1k" V 2265 4900 40  0000 C CNN
+F 2 "~" V 2280 4900 30  0000 C CNN
+F 3 "~" H 2350 4950 30  0000 C CNN
+	1    2350 4900
 	0    -1   -1   0   
 $EndComp
 $Comp
 L NPN Q2
 U 1 1 55105FBE
-P 2500 4900
-F 0 "Q2" H 2500 4750 50  0000 R CNN
-F 1 "NPN" H 2500 5050 50  0000 R CNN
-F 2 "~" H 2500 4900 60  0000 C CNN
-F 3 "~" H 2500 4900 60  0000 C CNN
-	1    2500 4900
+P 2750 4900
+F 0 "Q2" H 2750 4750 50  0000 R CNN
+F 1 "NPN" H 2750 5050 50  0000 R CNN
+F 2 "~" H 2750 4900 60  0000 C CNN
+F 3 "~" H 2750 4900 60  0000 C CNN
+	1    2750 4900
 	1    0    0    -1  
 $EndComp
 $Comp
 L TRANSISTOR_DARLINGTON_NPN Q1
 U 1 1 550DFB9D
-P 2100 4000
-F 0 "Q1" H 1950 3750 60  0000 C CNN
-F 1 "TIP102" H 2000 3850 60  0000 C CNN
-F 2 "~" H 2250 3900 60  0000 C CNN
-F 3 "~" H 2250 3900 60  0000 C CNN
-	1    2100 4000
+P 2850 4000
+F 0 "Q1" H 2700 3750 60  0000 C CNN
+F 1 "TIP102" H 2750 3850 60  0000 C CNN
+F 2 "~" H 3000 3900 60  0000 C CNN
+F 3 "~" H 3000 3900 60  0000 C CNN
+	1    2850 4000
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -3822,7 +3811,7 @@ Wire Wire Line
 	3350 4700 3350 4800
 Connection ~ 3350 4750
 Wire Wire Line
-	1000 3850 1750 3850
+	1750 3850 2500 3850
 Wire Wire Line
 	5950 3950 5950 3850
 Connection ~ 5950 3850
@@ -3862,16 +3851,13 @@ Connection ~ 6500 3850
 Wire Wire Line
 	4600 5550 5050 5550
 Wire Wire Line
-	1250 3950 1250 3850
-Connection ~ 1450 3850
+	2200 3950 2200 3850
 Wire Wire Line
 	4600 3950 4600 3850
 Connection ~ 4600 3850
 Wire Wire Line
 	6250 3950 6250 3850
-Wire Wire Line
-	1450 3950 1450 3850
-Connection ~ 1250 3850
+Connection ~ 2200 3850
 Wire Wire Line
 	6500 3950 6500 3850
 Connection ~ 7100 3850
@@ -3930,8 +3916,6 @@ Connection ~ 5650 4250
 Wire Wire Line
 	5950 4250 5950 4150
 Wire Wire Line
-	2550 3850 4750 3850
-Wire Wire Line
 	8850 3950 8850 3850
 Connection ~ 8850 3850
 Wire Wire Line
@@ -3989,28 +3973,19 @@ Wire Wire Line
 Wire Wire Line
 	11150 6450 11150 6350
 Connection ~ 11150 6350
-Connection ~ 1700 3850
+Connection ~ 2450 3850
 Wire Wire Line
-	1700 4450 2600 4450
+	2850 5200 2850 5100
 Wire Wire Line
-	2600 5200 2600 5100
-Wire Wire Line
-	2100 4450 2100 4350
+	2850 4450 2850 4350
 Wire Wire Line
 	9300 4800 9600 4800
 Wire Wire Line
 	3400 4750 3350 4750
 Wire Wire Line
-	2250 4900 2300 4900
+	2150 4900 2250 4900
 Wire Wire Line
-	2050 4900 2000 4900
-Wire Wire Line
-	1700 3850 1700 3950
-Wire Wire Line
-	1700 4150 1700 4450
-Connection ~ 2100 4450
-Wire Wire Line
-	2600 4450 2600 4700
+	2450 3850 2450 3950
 Wire Wire Line
 	4300 5550 4300 5800
 Wire Wire Line
@@ -4035,4 +4010,74 @@ Wire Wire Line
 Wire Wire Line
 	10600 5050 10600 4800
 Connection ~ 10600 4800
+Connection ~ 2200 4900
+$Comp
+L GND #PWR0101
+U 1 1 5510BE29
+P 2450 4700
+F 0 "#PWR0101" H 2450 4700 30  0001 C CNN
+F 1 "GND" H 2450 4630 30  0001 C CNN
+F 2 "" H 2450 4700 60  0000 C CNN
+F 3 "" H 2450 4700 60  0000 C CNN
+	1    2450 4700
+	-1   0    0    -1  
+$EndComp
+$Comp
+L RSMALL R52
+U 1 1 5510CC85
+P 1250 5000
+F 0 "R52" V 1340 4995 40  0000 C CNN
+F 1 "1k" V 1165 5000 40  0000 C CNN
+F 2 "~" V 1180 5000 30  0000 C CNN
+F 3 "~" H 1250 5050 30  0000 C CNN
+	1    1250 5000
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1100 5000 1150 5000
+Wire Wire Line
+	1350 5000 1450 5000
+$Comp
+L RSMALL R53
+U 1 1 5510D2C4
+P 1950 5400
+F 0 "R53" V 2040 5395 40  0000 C CNN
+F 1 "100k" V 1865 5400 40  0000 C CNN
+F 2 "~" V 1880 5400 30  0000 C CNN
+F 3 "~" H 1950 5450 30  0000 C CNN
+	1    1950 5400
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2200 4900 2200 5400
+Wire Wire Line
+	2200 5400 2050 5400
+Wire Wire Line
+	1400 5400 1850 5400
+Wire Wire Line
+	1400 5400 1400 5000
+Connection ~ 1400 5000
+$Comp
+L RSMALL R54
+U 1 1 5510D5EF
+P 2850 4550
+F 0 "R54" V 2940 4545 40  0000 C CNN
+F 1 "100" V 2765 4550 40  0000 C CNN
+F 2 "~" V 2780 4550 30  0000 C CNN
+F 3 "~" H 2850 4600 30  0000 C CNN
+	1    2850 4550
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 4650 2850 4700
+Wire Wire Line
+	2850 4400 2450 4400
+Wire Wire Line
+	2450 4150 2450 4500
+Connection ~ 2850 4400
+Wire Wire Line
+	3300 3850 4750 3850
+Connection ~ 2450 4400
+Wire Wire Line
+	2450 4900 2550 4900
 $EndSCHEMATC
