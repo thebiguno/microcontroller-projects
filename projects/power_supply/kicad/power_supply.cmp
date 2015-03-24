@@ -1,9 +1,9 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 22 Mar 2015 09:35:47 PM MDT
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Mon 23 Mar 2015 09:19:46 PM MDT
 
 BeginCmp
 TimeStamp = /550C6B38;
 Reference = C1;
-ValeurCmp = 0.1uF;
+ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -11,7 +11,7 @@ BeginCmp
 TimeStamp = /550E4104;
 Reference = C2;
 ValeurCmp = 100uF;
-IdModule  = C1V5;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -81,7 +81,7 @@ BeginCmp
 TimeStamp = /550E4230;
 Reference = C12;
 ValeurCmp = 100uF;
-IdModule  = C1V5;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -95,7 +95,7 @@ BeginCmp
 TimeStamp = /54F6A233;
 Reference = C14;
 ValeurCmp = 100uF;
-IdModule  = C1V5;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -123,7 +123,7 @@ BeginCmp
 TimeStamp = /550E42A9;
 Reference = C18;
 ValeurCmp = 100uF;
-IdModule  = C1V5;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -235,14 +235,7 @@ BeginCmp
 TimeStamp = /54F7496E;
 Reference = C34;
 ValeurCmp = 100uF;
-IdModule  = C1V5;
-EndCmp
-
-BeginCmp
-TimeStamp = /550E53B5;
-Reference = C35;
-ValeurCmp = 1uF;
-IdModule  = SM0603_VALUE;
+IdModule  = C1V7;
 EndCmp
 
 BeginCmp
@@ -319,6 +312,13 @@ BeginCmp
 TimeStamp = /54E9440B;
 Reference = D8;
 ValeurCmp = 5.1V;
+IdModule  = SOT23-SPECIAL;
+EndCmp
+
+BeginCmp
+TimeStamp = /5510470C;
+Reference = D9;
+ValeurCmp = 3.6V;
 IdModule  = SOT23-SPECIAL;
 EndCmp
 
@@ -715,6 +715,13 @@ IdModule  = TO220_VERT;
 EndCmp
 
 BeginCmp
+TimeStamp = /55105FBE;
+Reference = Q2;
+ValeurCmp = NPN;
+IdModule  = SOT23;
+EndCmp
+
+BeginCmp
 TimeStamp = /550E03D5;
 Reference = R1;
 ValeurCmp = 1k;
@@ -724,28 +731,28 @@ EndCmp
 BeginCmp
 TimeStamp = /54E93BD2;
 Reference = R2;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54E93C09;
 Reference = R3;
-ValeurCmp = 0/X;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54E93BDD;
 Reference = R4;
-ValeurCmp = 0/X;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54E93C03;
 Reference = R5;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -757,9 +764,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /550E011C;
+TimeStamp = /551059E4;
 Reference = R7;
-ValeurCmp = 10k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -778,9 +785,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /5503ADAA;
+TimeStamp = /55106552;
 Reference = R10;
-ValeurCmp = 1k;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -794,14 +801,14 @@ EndCmp
 BeginCmp
 TimeStamp = /5503ADBA;
 Reference = R12;
-ValeurCmp = 2k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54FFB7C7;
 Reference = R13;
-ValeurCmp = 2k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -815,14 +822,14 @@ EndCmp
 BeginCmp
 TimeStamp = /5503F36B;
 Reference = R15;
-ValeurCmp = 0/1k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503F373;
 Reference = R16;
-ValeurCmp = 0/1k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -836,7 +843,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5503F73E;
 Reference = R18;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -885,7 +892,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5503E833;
 Reference = R25;
-ValeurCmp = 0/X;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -906,7 +913,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5503EE5C;
 Reference = R28;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -920,14 +927,14 @@ EndCmp
 BeginCmp
 TimeStamp = /5503F0D0;
 Reference = R30;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503E852;
 Reference = R31;
-ValeurCmp = 0/X;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -1025,21 +1032,21 @@ EndCmp
 BeginCmp
 TimeStamp = /5503DD41;
 Reference = R45;
-ValeurCmp = 0/1k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503DD36;
 Reference = R46;
-ValeurCmp = 0/1k;
+ValeurCmp = 1k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503E344;
 Reference = R47;
-ValeurCmp = X/0;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -1061,6 +1068,34 @@ BeginCmp
 TimeStamp = /550EF3BC;
 Reference = R50;
 ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5510756A;
+Reference = R51;
+ValeurCmp = 0;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5510CC85;
+Reference = R52;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5510D2C4;
+Reference = R53;
+ValeurCmp = 100k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5510D5EF;
+Reference = R54;
+ValeurCmp = 100;
 IdModule  = SM0603_VALUE;
 EndCmp
 
