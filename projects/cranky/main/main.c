@@ -41,7 +41,7 @@ typedef struct {
 	
 	// running values (0x92 to 0x97)
 	volatile uint8_t adc_tp;			// adc reading of the throttle position sensor
-	volatile uint8_t crank_ticks;		// the number of timer0 ticks since the last crank tooth; this can be turned into rpm 60/(t*36)
+	volatile uint8_t hertz;				// revolutions / second
 	volatile uint8_t load_zone;			// the current load zone; a value between 0 and 8
 	volatile uint8_t rpm_zone;			// the current rpm zone; a value between 0 and 8
 	volatile uint8_t ign_adv_deg;		// the current spark advance in degrees
@@ -54,7 +54,6 @@ typedef struct {
 	volatile uint8_t inj_dc;			// the injector duty cycle in timer2 ticks
 
 	volatile uint8_t crank_sync;	 	// crank sync has been performed; worst case is 10 rotations; 0 means calibrated
-	volatile uint8_t cranking;			// 0 = running normally; 1 = running below 383 rpm
 } reg_t;
 
 static union reg_u {
@@ -64,6 +63,7 @@ static union reg_u {
 
 // these things are not in the struct since they are never read/write over serial
 volatile uint8_t cam_teeth;			// how many crank teeth between cam teeth
+volatile uint16_t crank_ticks;
 
 uint8_t rx_buffer[64];
 uint8_t tx_buffer[64];
@@ -131,26 +131,39 @@ int main(void) {
 	DIDR0 = _BV(ADC0D);
 
 	// set up pin interrupts
-	EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT2 and INT3 interrupt on rising edge
-	EIMSK = _BV(INT2) | _BV(INT3); // enable interrupts on INT2 (crank) and INT3 (cam sync)
+	EICRA = _BV(ISC20) | _BV(ISC21) | _BV(ISC30) | _BV(ISC31); // INT0 and INT1 interrupt on rising edge
+	EIMSK = _BV(INT2) | _BV(INT3); // enable interrupts on INT0 (crank) and INT1 (cam sync)
 
 	usb_init();
 	
 	// set up timers
 	// 52 tick/tooth * 64 us/tick = 3328 us/tooth * 36 teeth = 119.808 ms/rotation = 8.34 Hz * 60 = 500 RPM
-	// 6000000 / (t * 64 * 36)
+	// 60000000 / (t * 64 * 36)
+	// 26041 / t = RPM
+	// 434 / t = hz
+
+	// 6,666 tick/tooth * .5 us/tick = 3333 us/tooth * 36 teeth = 119.988 ms/rotation = 8.33 Hz * 60 = 500 RPM
+	// 60000000 / (t * .5 * 36)
+	// 3333333 / t = RPM
+	// 55555 / t = hz
 
 	// timer 0 (8-bit) is used to compute the duration of each crank tooth
 	// to determine crank position by detecting gap teeth and to determine RPM
 	// prescaler configured so that the timer won't overflow at 500 rpm @ 36 teeth
-	// 16MHz clock = 62.5 ns per clock cycle (64 ms / timer tick @ 1024 prescale --- 15.624 kHz)
+	// 16MHz clock = 62.5 ns per clock cycle (64 us / timer tick @ 1024 prescale --- 15.625 kHz)
 	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (9.999 ms for missing teeth)
 	// 10000 us / 64 us = 156 < 256
 	// 10000 rpm = 166.6 Hz = 6 ms / 36 = 0.166 ms/tooth (0.5 ms for missing teeth)
 	// 500 us / 64 us = 7.8 > 0
 	// ??? rpm absolute minimum rpm at 1024 prescale
-//	TCCR0A = 0x00;						// OC0A / OC0B disconnected
-//	TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
+	//TCCR0A = 0x00;						// OC0A / OC0B disconnected
+	//TCCR0B = _BV(CS00) | _BV(CS02);		// clock prescale select = CLK / 1024
+
+	// 16MHz clock = 62.5 ns per clock cycle (.5 us / timer tick @ 8 prescale --- 2,000.000 kHz)
+	// 500 rpm = 8.3 Hz = 120 ms / 36 = 3.333 ms/tooth (9.999 ms for missing teeth)
+	// 10000 us / .5 us = 20000 < 65535
+	TCCR3A = 0x00;						// 0C3A / OC3B disconnected
+	TCCR3B = _BV(CS31);					// clock prescase select = CLK / 64
 
 	// timer 1 (16-bit) is used to time the spark advance
 	// 16MHz clock = 62.5 ns per clock cycle
@@ -181,9 +194,10 @@ int main(void) {
 	// initialize running state
 	u.s.crank = 0;
 	u.s.cam = 0;
-	u.s.crank_ticks = 0;
+	u.s.hertz = 0;
 	u.s.crank_sync = 0;
 	cam_teeth = 0;
+	crank_ticks = 0;
 
 	sei();						// enable interrupts
 
@@ -260,24 +274,25 @@ int main(void) {
 // the wheel has 36 - 2 - 2 - 2 = 30 teeth
 // each tooth represents 10 degrees
 ISR(INT2_vect) {
-	PORTB ^= _BV(PB6);
-
-	/*
-	uint8_t t = TCNT0; // how long 10 (or 30) degrees took
-	if (t < 255) u.s.cranking = 0;
-	if (t > (u.s.crank_ticks << 1)) {
+	uint16_t t = TCNT3;
+	TCNT3 = 0;
+	if (t > (crank_ticks << 1)) {
 		// gap detected add the two missing gap teeth
 		u.s.crank = u.s.crank + 2;
 		cam_teeth = cam_teeth + 2;
 		t = t / 3; // approximate the duration of the single tooth, accounting for the length of the gap
 	} else {
 		u.s.crank++;
-		u.s.cam++;
+		cam_teeth++;
 	}
-	u.s.crank_ticks = t;
-	
-	TCNT0 = 0; // reset timer0 to zero
-	
+	crank_ticks = t;
+
+	// 333 RPM (6666 for 500 RPM)
+	u.s.hertz = (t < 10000) ? (55556 / t) : 0;
+
+	PORTB ^= _BV(PB6);
+
+	/*
 	if (u.s.crank == 13 || u.s.crank == 16 || u.s.crank == 31) {
 		// tooth count is wrong, this is normal so just try adjusting
 		u.s.crank = u.s.crank + 2;
@@ -322,23 +337,28 @@ ISR(INT2_vect) {
 	}
 	ign_pin = ign_pins[u.s.ign];
 	inj_pin = inj_pins[u.s.inj];
-
 	*/
 }
 
 // timer 0 overflow
 ISR(TIMER0_OVF_vect) {
 	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
-	u.s.crank_ticks = 255;
-	u.s.cranking = 1;
-	TCNT0 = 255;
+	//u.s.crank_ticks = 255;
+	//u.s.cranking = 1;
+	//TCNT0 = 255;
+}
+
+// timer 0 overflow
+ISR(TIMER4_OVF_vect) {
+	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
+	//u.s.hertz = 0;
+	TCNT4 = 65535;
 }
 
 // cam sync ISR
 ISR(INT3_vect) {
 	PORTB ^= _BV(PB5);
 
-	/*
 	// now on either crank tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
 	u.s.cam++;
@@ -349,7 +369,6 @@ ISR(INT3_vect) {
 		u.s.cam = 0;
 	}
 	cam_teeth = 0;
-	*/
 }
 
 // ignition spark on

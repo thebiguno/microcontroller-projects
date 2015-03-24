@@ -141,8 +141,11 @@ public class Frame extends JFrame {
 		values[CRANK_TICKS].addValueChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				System.out.println("t0 ticks: " + evt.getNewValue());
-				rpm.setValue(26041d / (0xFF & (Integer) evt.getNewValue()));
+				//System.out.println("t0 ticks: " + evt.getNewValue());
+				int hertz = (Integer) evt.getNewValue();
+				double r = 60d * (0xFF & hertz) / 1000;
+				rpm.setValue(r);
+				rpm.setLcdValue(hertz);
 			}
 		});
 		
@@ -159,7 +162,9 @@ public class Frame extends JFrame {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 //				System.out.println("adc0 value: " + evt.getNewValue());
-				tp.setValue(((Integer) evt.getNewValue()).doubleValue() / 2.55d);
+				int v = (Integer) evt.getNewValue();
+				tp.setValue(((double) v) / 2.55d);
+				tp.setLcdValue(v);
 			}
 		});
 
