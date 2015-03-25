@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include <util/delay.h> // TODO remove
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include "lib/usb/rawhid.h"
 
@@ -92,6 +92,9 @@ float decel_fuel_pct = 20;
 */
 
 
+void load();
+void save();
+
 
 // the crank position is used to determine injection and spark timing.
 // the cam position may be used to determine injection and spark timing for sequential operation
@@ -179,10 +182,14 @@ int main(void) {
 //	}
 
 	// load test tuning values until eeprom is done
+	/*
 	for (uint8_t i = 0; i < 8; i++) {
 		u.s.load_zones[i] = 25 * (i+1); // adc values 25 to 200 (10% to 80% step 10%)
 		u.s.rpm_zones[i] = 1000 * (i+1) / 60; // hertz values 16 to 133 (1000 rpm to 8000 rpm step 1000 rpm)
 	}
+	*/
+	// load state from eeprom
+	load();
 
 	// initialize running state
 	u.s.crank = 0;
@@ -254,8 +261,8 @@ int main(void) {
 				uint8_t len = rx_buffer[1];
 				if (len & 0x80) {
 					// read request
-					if (addr == 0xff) {
-						// read from eeprom
+					if (addr == 0xfe) {
+						// send all tuning state
 						for (uint8_t i = 0; i < 18; i++) {
 							tx_buffer[0] = i * 8;
 							tx_buffer[1] = 8;
@@ -264,6 +271,9 @@ int main(void) {
 							}
 							usb_rawhid_send(tx_buffer, 10);
 						}
+					} else if (addr == 0xff) {
+						// read eeprom
+						load();
 					} else {
 						len &= 0x7f; // clear the read bit
 						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
@@ -278,6 +288,7 @@ int main(void) {
 					// write request
 					if (addr == 0xff) {
 						// write to eeprom
+						save();
 					} else {
 						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
 						for (uint8_t i = 0; i < len; i++) {
@@ -295,6 +306,15 @@ int main(void) {
 			usb_rawhid_send(tx_buffer, 8);
 		}
 	}
+}
+
+
+inline void load() {
+	eeprom_read_block((void*) 0, (uint8_t*) u.a, 144);
+}
+
+inline void save() {
+	eeprom_update_block((uint8_t*) u.a, (void*) 0, 144);
 }
 
 // crank ISR
@@ -325,17 +345,9 @@ ISR(INT2_vect) {
 	}
 }
 
-// timer 0 overflow
-ISR(TIMER0_OVF_vect) {
-	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
-	//u.s.crank_ticks = 255;
-	//u.s.cranking = 1;
-	//TCNT0 = 255;
-}
-
-// timer 0 overflow
+// timer 4 overflow
 ISR(TIMER4_OVF_vect) {
-	// if timer0 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
+	// if timer4 overflows it means that the crank is turning slower than 383 rpm (and is in a gap)
 	//u.s.hertz = 0;
 	TCNT4 = 10000; // 333 RPM
 }
@@ -382,5 +394,5 @@ ISR(TIMER4_COMPA_vect) {
 
 // injector pwm phase
 ISR(TIMER4_COMPB_vect) {
-	//PORTD = 0;
+	PORTD = 0;
 }
