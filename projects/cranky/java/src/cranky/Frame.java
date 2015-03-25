@@ -84,6 +84,8 @@ public class Frame extends JFrame {
 	private final HIDDevice[] device = new HIDDevice[2];
 	private final ValueHolder[] values = new ValueHolder[158];
 	private final JSpinner[][] spinners = new JSpinner[8][8];
+	private final JSpinner[] loadZoneSpinners = new JSpinner[8];
+	private final JSpinner[] rpmZoneSpinners = new JSpinner[8];
 //	private final SpinnerNumberModel[][] sparkAdvance = new SpinnerNumberModel[8][8];
 //	private final SpinnerNumberModel[][] injectorDuration = new SpinnerNumberModel[8][8];
 //	private final SpinnerNumberModel[] loadZones = new SpinnerNumberModel[8];
@@ -96,8 +98,24 @@ public class Frame extends JFrame {
 //	private final ValueHolder rpmModel = new ValueHolder();
 //	private final ValueHolder tpModel = new ValueHolder();
 	
-	private final SpinnerNumberModel simulatorRpmModel = new SpinnerNumberModel(1000, 0, 10000, 10);
+	private final SpinnerNumberModel simulatorRpmModel = new SpinnerNumberModel(1000, 0, 10000, 100);
 	private final SpinnerNumberModel simulatorTpModel = new SpinnerNumberModel(0, 0, 100, 1);
+	
+	private final Color[] advanceColors = new Color[] {
+			new Color(0,0,255),
+			new Color(0,84,255),
+			new Color(0,169,255),
+			new Color(0,255,255),
+			new Color(0,255,169),
+			new Color(0,255,85),
+			new Color(0,255,0),
+			new Color(84,255,0),
+			new Color(170,255,0),
+			new Color(255,255,0),
+			new Color(255,170,0),
+			new Color(255,84,0),
+			new Color(255,0,0)
+	};
 	
 	private byte[] rxBuffer = new byte[64];
 	
@@ -215,42 +233,56 @@ public class Frame extends JFrame {
 
 		grid.add(new JLabel("TP%\\RPM"));
 		
+		JSpinner spinner;
 		int v = 1000;
 		for (int i = 0; i < 8; i++) {
+			final int rz = i;
 			final int rpmZoneIndex = RPM_ZONES + i;
 			final ValueHolder rpmZone = values[rpmZoneIndex];
 			rpmZone.addValueChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
+					final int hz = ((Integer) rpmZone.getValue() / 60);
+					System.out.println("rpm zone " + rz + " = " + hz);
 					final byte[] b = new byte[3];
 					b[0] = (byte) rpmZoneIndex;
 					b[1] = 1;
-					b[2] = (byte) (26041d / (Integer) rpmZone.getValue()); // TODO, this is the wrong constant now with the change to timer3
+					b[2] = (byte) hz; // convert RPM to Hz
 					executor.execute(new Writer(device[0], b));
 				}
 			});
-			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(rpmZone, v, 500, 10000, 10)));
-			v = v + 750;
+			spinner = new JSpinner(SpinnerAdapterFactory.createNumberAdapter(rpmZone, v, 500, 10000, 10));
+			spinner.setOpaque(true);
+			rpmZoneSpinners[i] = spinner;
+			grid.add(spinner);
+			v = v + 1000;
 		}
 		
 		v = 10;
 		for (int i = 0; i < 8; i++) {
+			final int lz = i;
 			final int loadZoneIndex = LOAD_ZONES + i;
 			final ValueHolder loadZone = values[loadZoneIndex];
 			loadZone.addValueChangeListener(new PropertyChangeListener() {
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
+					final double adc = 2.55d * (Integer) loadZone.getValue();
+					System.out.println("load zone " + lz + " = " + adc);
 					final byte[] b = new byte[3];
 					b[0] = (byte) loadZoneIndex;
 					b[1] = 1;
-					b[2] = (byte) (2.55d * (Integer) loadZone.getValue());
+					b[2] = (byte) adc; // convert TP% to acd
 					executor.execute(new Writer(device[0], b));
 				}
 			});
-			grid.add(new JSpinner(SpinnerAdapterFactory.createNumberAdapter(loadZone, v, 0, 10000, 10)));
+			spinner = new JSpinner(SpinnerAdapterFactory.createNumberAdapter(loadZone, v, 0, 10000, 10));
+			spinner.setOpaque(true);
+			loadZoneSpinners[i] = spinner;
+			grid.add(spinner);
 			v = v + 10;
 			
 			for (int j = 0; j < 8; j++) {
+				final int rz = j;
 				final int advanceIndex = IGN_ADVANCE+(i*8)+j;
 				final int durationIndex = INJ_DURATION+(i*8)+j;
 				final ValueHolder advance = values[advanceIndex];
@@ -258,11 +290,15 @@ public class Frame extends JFrame {
 				advance.addPropertyChangeListener(new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
+						int v = (Integer) advance.getValue();
 						final byte[] b = new byte[3];
 						b[0] = (byte) advanceIndex;
 						b[1] = 1;
-						b[2] = (byte) (int) (Integer) advance.getValue();
+						b[2] = (byte) v;
 						executor.execute(new Writer(device[0], b));
+						
+						final Color c = advanceColors[v / 5];
+						spinners[lz][rz].setBackground(c);
 					}
 				});
 				duration.addPropertyChangeListener(new PropertyChangeListener() {
@@ -277,7 +313,8 @@ public class Frame extends JFrame {
 				});
 				final SpinnerNumberModel advanceModel = SpinnerAdapterFactory.createNumberAdapter(advance, 0, 0, 59, 1);
 				final SpinnerNumberModel durationModel = SpinnerAdapterFactory.createNumberAdapter(duration, 0, 0, 59, 1);
-				final JSpinner spinner = new JSpinner(advanceModel);
+				spinner = new JSpinner(advanceModel);
+				spinner.setOpaque(true);
 				spinners[i][j] = spinner;
 				grid.add(spinner);
 			}
@@ -287,13 +324,19 @@ public class Frame extends JFrame {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				for (int i = 0; i < 8; i++) {
-					for (int j = 0; j < 8; j++) {
-						spinners[i][j].setBackground(Color.WHITE);
-					}
+					loadZoneSpinners[i].setBackground(Color.WHITE);
 				}
-				//int i = (Integer) values[RPM_ZONE].getValue();
-				//int j = (Integer) values[LOAD_ZONE].getValue();
-				//spinners[i][j].setBackground(ORANGE);
+				for (int i = 0; i < 8; i++) {
+					rpmZoneSpinners[i].setBackground(Color.WHITE);
+				}
+				try {
+					int i = (Integer) values[LOAD_ZONE].getValue();
+					int j = (Integer) values[RPM_ZONE].getValue();
+					loadZoneSpinners[i].setBackground(Color.BLACK);
+					rpmZoneSpinners[j].setBackground(Color.BLACK);
+				} catch (NullPointerException t) {
+					;
+				}
 			}
 		};
 		values[RPM_ZONE].addValueChangeListener(l);
@@ -416,10 +459,10 @@ public class Frame extends JFrame {
 												int b = 0xFF & rxBuffer[i+2];
 												values[addr+i].setValue(b);
 												
-												//System.out.print(b);
-												//System.out.print(", ");
+//												System.out.print(b);
+//												System.out.print(", ");
 											}
-											//System.out.println();
+//											System.out.println();
 										}
 									}
 								} catch (IOException e) {
@@ -455,7 +498,7 @@ public class Frame extends JFrame {
 			try {
 				if (device[1] == null) {
 					device[1] = HIDManager.getInstance().openById(0x574a, 0x6373, null);
-					simulatorRpmModel.setValue(300);
+					simulatorRpmModel.setValue(500);
 					simulatorTpModel.setValue(0);
 					putValue(NAME, "Disconnect Simulator");
 				} else {

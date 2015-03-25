@@ -31,9 +31,9 @@ typedef struct {
 	uint8_t ign_advance[8][8];
 	// determines how open the injectors should be based on the rpm zone and load zone
 	uint8_t inj_duration[8][8];
-	// maps the throttle position into load zones
+	// maps the throttle position into load zones (adc values)
 	uint8_t load_zones[8];
-	// maps the frequency into rpm zones
+	// maps the frequency into rpm zones (hertz)
 	uint8_t rpm_zones[8];
 
 	volatile uint8_t cranking_ticks;	// above this value = cranking; below this value = running normally
@@ -176,9 +176,14 @@ int main(void) {
 //			u.s.ign_advance[i][j] = i * 5 - j;
 //			u.s.inj_duration[i][j] = i * 10;
 //		}
-//		u.s.rpm_zones[7-i] = (i*8);	// rpm = 500/581/664/794/986/1302/1915/3617 (not ideal for real life)
-//		u.s.load_zones[7-i] = 2 ^ i;
 //	}
+
+	// load test tuning values until eeprom is done
+	for (uint8_t i = 0; i < 8; i++) {
+		u.s.load_zones[i] = 25 * (i+1); // adc values 25 to 200 (10% to 80% step 10%)
+		u.s.rpm_zones[i] = 1000 * (i+1) / 60; // hertz values 16 to 133 (1000 rpm to 8000 rpm step 1000 rpm)
+	}
+
 	// initialize running state
 	u.s.crank = 0;
 	u.s.cam = 0;
@@ -200,27 +205,21 @@ int main(void) {
 		u.s.hertz = (crank_ticks < 10000) ? (55556 / crank_ticks) : 0;
 
 		// determine the rpm zone and load zone
-		for (uint8_t i = 0; i < 8; i++) {
-			if (crank_ticks > u.s.rpm_zones[i]) {
-				u.s.rpm_zone = i;
-				break;
-			}
+		// values are upper bounds
+		for (uint8_t i = 8; i > 0; i--) {
+			if (u.s.hertz < u.s.rpm_zones[i-1]) u.s.rpm_zone = i-1;
 		}
-		for (uint8_t i = 0; i < 8; i++) {
-			if (u.s.adc_tp < u.s.load_zones[i]) {
-				u.s.load_zone = i;
-				break;
-			}
+		for (uint8_t i = 8; i > 0; i--) {
+			if (u.s.adc_tp < u.s.load_zones[i-1]) u.s.load_zone = i-1;
 		}
-		u.s.inj_dc = u.s.inj_duration[u.s.rpm_zone][u.s.load_zone];
 
 		// compute all of these values so that they don't have to be computed in the ISR at the 60 degree mark
-		u.s.ign_adv_deg = u.s.ign_advance[u.s.rpm_zone][u.s.load_zone]; // in degrees
-		u.s.ign_adv_deg = 10; // TODO remove test value
-		uint16_t deg = 60 - u.s.ign_adv_deg;
-		uint16_t comp = deg * crank_ticks / 10; // this isn't terribly accurate due to rounding
-		OCR1A = comp; // set up timer1 compA for on time
-		OCR1B = comp + 2048; // TODO verify this
+		//u.s.inj_dc = u.s.inj_duration[u.s.load_zone][u.s.rpm_zone];
+		u.s.ign_adv_deg = u.s.ign_advance[u.s.load_zone][u.s.rpm_zone]; // in degrees
+		//uint16_t deg = 60 - u.s.ign_adv_deg;
+		//uint16_t comp = deg * crank_ticks / 10; // this isn't terribly accurate due to rounding
+		//OCR1A = comp; // set up timer1 compA for on time
+		//OCR1B = comp + 2048; // TODO verify this
 
 		// determine what pins should be active based on crank and cam position
 		if (u.s.crank == 1 && u.s.cam == 2) {
@@ -250,43 +249,43 @@ int main(void) {
 		inj_pin = inj_pins[u.s.inj];
 
 		if (usb_configured()) {
-//			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
-//				uint8_t addr = rx_buffer[0];
-//				uint8_t len = rx_buffer[1];
-//				if (len & 0x80) {
-//					// read request
-//					if (addr == 0xff) {
-//						// read from eeprom
-//						for (uint8_t i = 0; i < 18; i++) {
-//							tx_buffer[0] = i * 8;
-//							tx_buffer[1] = 8;
-//							for (uint8_t j = 0; j < 8; j++) {
-//								tx_buffer[j+2] = u.a[(i*8) + j];
-//							}
-//							usb_rawhid_send(tx_buffer, 10);
-//						}
-//					} else {
-//						len &= 0x7f; // clear the read bit
-//						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-//						tx_buffer[0] = addr;
-//						tx_buffer[1] = len;
-//						for (uint8_t i = 0; i < len; i++) {
-//							tx_buffer[i + 2] = u.a[i + addr];
-//						}
-//						usb_rawhid_send(tx_buffer, len + 2);
-//					}
-//				} else {
-//					// write request
-//					if (addr == 0xff) {
-//						// write to eeprom
-//					} else {
-//						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
-//						for (uint8_t i = 0; i < len; i++) {
-//							u.a[i + addr] = rx_buffer[i + 2];
-//						}
-//					}
-//				}
-			//}
+			if (usb_rawhid_recv(rx_buffer, 0) > 0) {
+				uint8_t addr = rx_buffer[0];
+				uint8_t len = rx_buffer[1];
+				if (len & 0x80) {
+					// read request
+					if (addr == 0xff) {
+						// read from eeprom
+						for (uint8_t i = 0; i < 18; i++) {
+							tx_buffer[0] = i * 8;
+							tx_buffer[1] = 8;
+							for (uint8_t j = 0; j < 8; j++) {
+								tx_buffer[j+2] = u.a[(i*8) + j];
+							}
+							usb_rawhid_send(tx_buffer, 10);
+						}
+					} else {
+						len &= 0x7f; // clear the read bit
+						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+						tx_buffer[0] = addr;
+						tx_buffer[1] = len;
+						for (uint8_t i = 0; i < len; i++) {
+							tx_buffer[i + 2] = u.a[i + addr];
+						}
+						usb_rawhid_send(tx_buffer, len + 2);
+					}
+				} else {
+					// write request
+					if (addr == 0xff) {
+						// write to eeprom
+					} else {
+						if (addr + len > REG_LEN) len = REG_LEN - addr; // prevent overflowing the register array
+						for (uint8_t i = 0; i < len; i++) {
+							u.a[i + addr] = rx_buffer[i + 2];
+						}
+					}
+				}
+			}
 			// send the six running values
 			tx_buffer[0] = 0x92;
 			tx_buffer[1] = 0x06;
@@ -314,8 +313,6 @@ ISR(INT2_vect) {
 		cam_teeth++;
 	}
 	crank_ticks = t;
-
-//	PORTB ^= _BV(PB6);
 
 	if (u.s.crank == 13 || u.s.crank == 16 || u.s.crank == 31) {
 		// tooth count is wrong; this is normal when starting so just try adjusting
@@ -345,8 +342,6 @@ ISR(TIMER4_OVF_vect) {
 
 // cam sync ISR
 ISR(INT3_vect) {
-	PORTB ^= _BV(PB5);
-
 	// now on either crank tooth 25 or 33
 	// RHS camshaft sensor, signals are at BTDC#2, BTDC#4, BTDC#1
 	u.s.cam++;
