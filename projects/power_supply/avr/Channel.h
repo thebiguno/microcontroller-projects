@@ -45,9 +45,6 @@
 #define DAC_CHANNEL_2						0x04
 #define DAC_CHANNEL_3						0x06
 
-#define RUNNING_AVERAGE_COUNT_VOLTAGE	3
-#define RUNNING_AVERAGE_COUNT_CURRENT	3
-
 namespace digitalcave {
 
 	class Channel {
