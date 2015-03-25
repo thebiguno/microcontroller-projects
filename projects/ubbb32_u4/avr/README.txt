@@ -1,4 +1,4 @@
-To install the customized LUFA DFU bootloader onto a ATMega32u2 (suitable for running on a UBBB),
+To install the customized LUFA DFU bootloader onto a ATMega32u4 (suitable for running on a UBBB),
 run the program.sh script.  This will set the fuses and install the bootloader itself.  This boot loader
 requires a 16MHz external crystal and should have a LED on B4.  After programming, be sure to use the 
 ‘dfu’ PROGRAMMER in the DigitalCave build scripts as this will automatically use dfu-programmer 
