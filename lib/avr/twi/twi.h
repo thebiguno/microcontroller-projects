@@ -49,7 +49,7 @@
 	#define TWI_STOP		1
 	#define TWI_NO_STOP		0
 	#define TWI_BLOCK		1
-	#define TWO_NO_BLOCK	0
+	#define TWI_NO_BLOCK	0
 	
 	#define TWI_READY 0
 	#define TWI_MRX	 1
