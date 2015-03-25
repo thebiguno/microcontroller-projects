@@ -38,7 +38,7 @@ $Descr User 13000 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "24 mar 2015"
+Date "25 mar 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -3237,17 +3237,6 @@ F 3 "" H 11150 6650 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR17
-U 1 1 55104280
-P 2850 5200
-F 0 "#PWR17" H 2850 5200 30  0001 C CNN
-F 1 "GND" H 2850 5130 30  0001 C CNN
-F 2 "" H 2850 5200 60  0000 C CNN
-F 3 "" H 2850 5200 60  0000 C CNN
-	1    2850 5200
-	-1   0    0    -1  
-$EndComp
-$Comp
 L GND #PWR58
 U 1 1 550F5824
 P 9100 4800
@@ -3289,39 +3278,6 @@ F 1 "3.6V" V 3415 4750 40  0000 C CNN
 F 2 "~" V 3430 4750 30  0000 C CNN
 F 3 "~" H 3500 4800 30  0000 C CNN
 	1    3500 4750
-	0    -1   -1   0   
-$EndComp
-$Comp
-L RSMALL R7
-U 1 1 551059E4
-P 2350 4900
-F 0 "R7" V 2440 4895 40  0000 C CNN
-F 1 "1k" V 2265 4900 40  0000 C CNN
-F 2 "~" V 2280 4900 30  0000 C CNN
-F 3 "~" H 2350 4950 30  0000 C CNN
-	1    2350 4900
-	0    -1   -1   0   
-$EndComp
-$Comp
-L NPN Q2
-U 1 1 55105FBE
-P 2750 4900
-F 0 "Q2" H 2750 4750 50  0000 R CNN
-F 1 "NPN" H 2750 5050 50  0000 R CNN
-F 2 "~" H 2750 4900 60  0000 C CNN
-F 3 "~" H 2750 4900 60  0000 C CNN
-	1    2750 4900
-	1    0    0    -1  
-$EndComp
-$Comp
-L TRANSISTOR_DARLINGTON_NPN Q1
-U 1 1 550DFB9D
-P 2850 4000
-F 0 "Q1" H 2700 3750 60  0000 C CNN
-F 1 "TIP102" H 2750 3850 60  0000 C CNN
-F 2 "~" H 3000 3900 60  0000 C CNN
-F 3 "~" H 3000 3900 60  0000 C CNN
-	1    2850 4000
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -3971,15 +3927,11 @@ Wire Wire Line
 Connection ~ 11150 6350
 Connection ~ 2450 3850
 Wire Wire Line
-	2850 5200 2850 5100
-Wire Wire Line
-	2850 4450 2850 4350
-Wire Wire Line
 	9300 4800 9600 4800
 Wire Wire Line
 	3400 4750 3350 4750
 Wire Wire Line
-	2150 4900 2250 4900
+	2150 4900 2950 4900
 Wire Wire Line
 	2450 3850 2450 3950
 Wire Wire Line
@@ -4054,26 +4006,19 @@ Connection ~ 1400 5000
 $Comp
 L RSMALL R54
 U 1 1 5510D5EF
-P 2850 4550
-F 0 "R54" V 2940 4545 40  0000 C CNN
-F 1 "100" V 2765 4550 40  0000 C CNN
-F 2 "~" V 2780 4550 30  0000 C CNN
-F 3 "~" H 2850 4600 30  0000 C CNN
-	1    2850 4550
+P 2950 4550
+F 0 "R54" V 3040 4545 40  0000 C CNN
+F 1 "10k" V 2865 4550 40  0000 C CNN
+F 2 "~" V 2880 4550 30  0000 C CNN
+F 3 "~" H 2950 4600 30  0000 C CNN
+	1    2950 4550
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	2850 4650 2850 4700
-Wire Wire Line
-	2850 4400 2450 4400
-Wire Wire Line
 	2450 4150 2450 4500
-Connection ~ 2850 4400
 Wire Wire Line
 	3300 3850 4750 3850
 Connection ~ 2450 4400
-Wire Wire Line
-	2450 4900 2550 4900
 $Comp
 L ISP P1
 U 1 1 55118C85
@@ -4269,4 +4214,62 @@ Text Label 900  5700 3    60   ~ 0
 I_DIFF
 Text Label 1400 5700 3    60   ~ 0
 I_SET
+$Comp
+L TRANSISTOR_DARLINGTON_PNP Q1
+U 1 1 5511FB93
+P 2950 4000
+F 0 "Q1" H 2800 3750 60  0000 C CNN
+F 1 "TIP107" H 2850 3850 60  0000 C CNN
+F 2 "~" H 3100 3900 60  0000 C CNN
+F 3 "~" H 3100 3900 60  0000 C CNN
+	1    2950 4000
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	2950 4900 2950 4650
+Wire Wire Line
+	2950 4450 2950 4350
+Wire Wire Line
+	2450 4400 2950 4400
+Connection ~ 2950 4400
+Text Notes 1500 5850 1    40   ~ 0
+POS
+Text Notes 1500 4400 1    40   ~ 0
+POS
+Text Notes 1000 4400 1    40   ~ 0
+NEG
+Text Notes 1000 5900 1    40   ~ 0
+NEG
+Text Notes 1750 6950 1    40   ~ 0
+POS
+Text Notes 1550 6550 1    40   ~ 0
+NEG
+Text Notes 1850 6550 1    40   ~ 0
+POS
+Text Notes 2050 6950 1    40   ~ 0
+NEG
+Text Notes 4400 5500 2    40   ~ 0
+NEG
+Text Notes 5350 5500 2    40   ~ 0
+NEG
+Text Notes 5450 5000 2    40   ~ 0
+NEG
+Text Notes 4900 5900 2    40   ~ 0
+POS
+Text Notes 7050 4850 3    40   ~ 0
+POS
+Text Notes 8000 4850 3    40   ~ 0
+POS
+Text Notes 7300 4900 3    40   ~ 0
+NEG
+Text Notes 7700 4900 3    40   ~ 0
+NEG
+Text Notes 10100 5150 0    40   ~ 0
+POS
+Text Notes 9800 4900 0    40   ~ 0
+NEG
+Text Notes 10200 4900 0    40   ~ 0
+NEG
+Text Notes 10700 4250 0    40   ~ 0
+NEG
 $EndSCHEMATC
