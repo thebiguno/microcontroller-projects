@@ -3,6 +3,7 @@
 
 #include "lib/usb/rawhid.h"
 
+#include "Channel.h"
 #include "State.h"
 
 //All messages start with the message type (as defined below).  The remainder of the message
@@ -47,6 +48,14 @@
 //PSU -> Computer: Confirm raw setpoints: [channel:1][target:1][calibration_value:4]
 //Target is one of the calibration targets defined below
 #define MESSAGE_SET_CALIBRATION			9
+
+//Computer -> PSU: Set DAC addresses: [old_dac_number:1][new_dac_number:1]
+//PSU -> Computer: Confirm completion: [new_dac_number:1]
+//Before running this command, you need to plug the DAC that you wish to program into 
+// PORTB0 (encoder channel 1A).  When this command is received, the AVR will attempt to program
+// the DAC that is connected to PORTB0 with the specified DAC number.  Returns a message
+// with the requested DAC number if successful, or with dac_number 0xFF if an error occurred.
+#define MESSAGE_CONFIGURE_DAC_ADDRESS	10
 
 #define TARGET_VOLTAGE_ACTUAL_SLOPE			0
 #define TARGET_VOLTAGE_ACTUAL_OFFSET		1

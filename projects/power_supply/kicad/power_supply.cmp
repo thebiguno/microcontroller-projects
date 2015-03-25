@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Mon 23 Mar 2015 09:19:46 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Tuesday, March 24, 2015 'pmt' 03:02:59 pm
 
 BeginCmp
 TimeStamp = /550C6B38;
@@ -519,6 +519,13 @@ IdModule  = SCREW_TERMINAL_2;
 EndCmp
 
 BeginCmp
+TimeStamp = /551196D2;
+Reference = K28;
+ValeurCmp = I_LIM_LED;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D2A6B5;
 Reference = MP1;
 ValeurCmp = MOUNTING_HOLE;
@@ -705,6 +712,13 @@ TimeStamp = /54D6876B;
 Reference = NA_SW1;
 ValeurCmp = SPST;
 IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /55118C85;
+Reference = P1;
+ValeurCmp = ISP;
+IdModule  = ISP_EDGE;
 EndCmp
 
 BeginCmp
@@ -1096,6 +1110,41 @@ BeginCmp
 TimeStamp = /5510D5EF;
 Reference = R54;
 ValeurCmp = 100;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55119523;
+Reference = R55;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5511D8A9;
+Reference = R56;
+ValeurCmp = 0;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5511D87B;
+Reference = R57;
+ValeurCmp = 0;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5511D37A;
+Reference = R58;
+ValeurCmp = 0;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5511D394;
+Reference = R59;
+ValeurCmp = 0;
 IdModule  = SM0603_VALUE;
 EndCmp
 
