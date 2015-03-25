@@ -7,8 +7,8 @@ void timer1_init(){
 	TCCR1A = 0x0;
 	TCCR1B |= _BV(CS12) | _BV(CS10) | _BV(WGM12);
 	
-	//Set compare value to be F_CPU (with a 1024 prescaler) divided by 5 -- fire interrupt every 1/5s (200ms)
-	OCR1A = F_CPU / 1024 / 5;
+	//Set compare value to be F_CPU (with a 1024 prescaler) divided by 4 -- fire interrupt every 1/4s (250ms)
+	OCR1A = F_CPU / 1024 / 4;
 	
 	//Enable compare interrupt
 	TIMSK1 = _BV(OCIE1A);
@@ -16,9 +16,10 @@ void timer1_init(){
 	sei();
 }
 
-void timer1_wait_for_tick(){
-	while(!tick);
-	tick = 0;
+uint8_t timer1_next_tick(){
+	uint8_t result = tick;
+	if (result) tick = 0;
+	return result;
 }
 
 EMPTY_INTERRUPT(TIMER1_COMPB_vect)
