@@ -66,7 +66,7 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 def calibrate_voltage():
 	#Set voltage as low as possible, and current limiting off (let anything through)
 	voltage_setpoint = 0
-	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)
+	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0xFFF)
 	
 #Voltage Actual + Setpoint Low
 	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_LOW) + """ mV.  Hit enter when target reached.
@@ -91,7 +91,7 @@ an offset adjustment as an integer starting with a + / -""")
 		else:
 			print("Invalid option.")
 
-		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)[2] & 0x0FFF
+		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0xFFF)[2] & 0x0FFF
 		print("Voltage setpoint: " + str(voltage_setpoint))
 		
 	raw_voltage_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
@@ -118,7 +118,7 @@ an offset adjustment as an integer starting with a + / -""")
 		else:
 			print("Invalid option.")
 
-		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0)[2] & 0x0FFF
+		voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, 0xFFF)[2] & 0x0FFF
 		print("Voltage setpoint: " + str(voltage_setpoint))
 
 	raw_voltage_actual_high = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
@@ -253,6 +253,17 @@ Press enter when ready.""")
 	send_generic_message_with_response(dev, MESSAGE_CONFIGURE_DAC_ADDRESS, [chr(old_address), chr(new_address)])
 	print("The DAC should now have the new address, but you need to verify.")
 
+def configure_aref():
+	dac_number = -1
+	dac_channel = -1
+	while dac_number < 0 or dac_number > 2:
+		dac_number = int(raw_input("Enter the DAC number (0-2): "))
+	while dac_channel < 0 or dac_channel > 3:
+		dac_channel = int(raw_input("Enter the DAC channel (0-3): "))
+	raw_input("""Configuring DAC """ + str(dac_number) + """ channel """ + str(dac_channel) + """ as AREF voltage source.
+Press enter when ready.""")
+	send_generic_message_with_response(dev, MESSAGE_CONFIGURE_AREF, [chr(dac_number), chr(dac_channel)])
+
 try:
 	dev = hid.Device(vid=0x4200, pid=0xFF01)
 	
@@ -266,6 +277,7 @@ try:
 	MESSAGE_GET_CALIBRATION			= 8
 	MESSAGE_SET_CALIBRATION			= 9
 	MESSAGE_CONFIGURE_DAC_ADDRESS	= 10
+	MESSAGE_CONFIGURE_AREF			= 11
 
 	TARGET_VOLTAGE_ACTUAL_SLOPE			= 0
 	TARGET_VOLTAGE_ACTUAL_OFFSET		= 1
@@ -315,6 +327,7 @@ Please choose one of the following calibration options:
 1) Calibrate Voltage
 2) Calibrate Current
 3) Set DAC Address
+4) Set AREF source
 Q) Quit
 
 Enter a menu option: """)
@@ -325,6 +338,8 @@ Enter a menu option: """)
 			calibrate_current()
 		elif response == "3":
 			configure_dac_address()
+		elif response == "4":
+			configure_aref();
 		elif response == "Q" or response == "q":
 			break;
 

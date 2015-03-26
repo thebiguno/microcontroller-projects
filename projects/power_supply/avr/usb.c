@@ -47,7 +47,7 @@ void usb_send_calibration(uint8_t message, uint8_t channel, uint8_t target, doub
 	usb_rawhid_send(tx_buffer, 7);
 }
 
-void usb_send_dac_program(uint8_t dac_number){
+void usb_send_dac_confirmation(uint8_t dac_number){
 	uint8_t tx_buffer[2];
 	tx_buffer[0] = MESSAGE_CONFIGURE_DAC_ADDRESS;				//Message type
 	tx_buffer[1] = dac_number;				//Channel number
@@ -156,7 +156,7 @@ void usb_dispatch(){
 				uint8_t old_dac_number = rx_buffer[1];
 				uint8_t new_dac_number = rx_buffer[2];
 				if (old_dac_number > 2 || new_dac_number > 2){
-					usb_send_dac_program(0xFF);
+					usb_send_dac_confirmation(0xFF);
 					break;
 				}
 				
@@ -185,9 +185,21 @@ void usb_dispatch(){
 				
 				_delay_ms(100);
 				
-				usb_send_dac_program(new_dac_number);
+				usb_send_dac_confirmation(new_dac_number);
 				
 				DDRB &= ~_BV(PORTB0);
+			}
+			case MESSAGE_CONFIGURE_AREF: {
+				uint8_t dac_number = rx_buffer[1];
+				uint8_t dac_channel = rx_buffer[2];
+				
+				uint8_t message[3];
+				message[0] = DAC_COMMAND_REGISTER_EEPROM | (dac_channel << 1);		//Single write with EEPROM persist
+				message[1] = 0x9F;	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.  Second nibble is all high (max value)
+				message[2] = 0xFF;	//this byte is all high (max value)
+				twi_write_to(DAC_ADDRESS_0 + dac_number, message, 3, TWI_BLOCK, TWI_STOP);
+				
+				usb_send_dac_confirmation(dac_number);
 			}
 		}
 	}

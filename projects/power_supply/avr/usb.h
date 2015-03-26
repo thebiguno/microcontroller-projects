@@ -57,6 +57,12 @@
 // with the requested DAC number if successful, or with dac_number 0xFF if an error occurred.
 #define MESSAGE_CONFIGURE_DAC_ADDRESS	10
 
+//Computer -> PSU: Set specified DAC to maximum value as AREF: [dac_number:1][dac_channel:1]
+//PSU -> Computer: Confirm completion: [dac_number:1]
+//This sets the specified DAC number / channel to the max value, to be used as AREF.
+// Manually do this once, on a DAC channel that is not in use.
+#define MESSAGE_CONFIGURE_AREF			11
+
 #define TARGET_VOLTAGE_ACTUAL_SLOPE			0
 #define TARGET_VOLTAGE_ACTUAL_OFFSET		1
 #define TARGET_VOLTAGE_SETPOINT_SLOPE		2
