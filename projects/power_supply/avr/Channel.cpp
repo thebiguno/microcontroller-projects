@@ -73,7 +73,7 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
@@ -116,7 +116,7 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;		//Single write without EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
@@ -201,7 +201,7 @@ void Channel::save_calibration(){
 	uint16_t raw_value = raw_value_double;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 
@@ -209,7 +209,7 @@ void Channel::save_calibration(){
 	if (raw_value_double < 0) raw_value_double = 0;
 	raw_value = raw_value_double;
  	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
- 	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+ 	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
  	message[2] = (raw_value & 0xFF);
  	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
