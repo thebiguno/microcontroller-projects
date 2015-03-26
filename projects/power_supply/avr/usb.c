@@ -160,15 +160,34 @@ void usb_dispatch(){
 					break;
 				}
 				
+				DDRB |= _BV(PORTB0);
 				PORTB |= _BV(PORTB0);
 				
+				
+				//This is a hack.
+				// The MCP4728 uses a weird, non-standard I2C message to set the address bits.  It uses LDAC as 
+				// a selector, and this must be toggled from high to low during the low pulse of the 8th bit
+				// in the clock of byte 2.  Obviously our I2C library does not support this, so we need to fake
+				// it.  Start the I2C command with the option 'NO BLOCK', and delay for a specific amount of
+				// time.  After the delay, bring the LDAC line low.  Timing is critical here; from experiments
+				// I found that the right time is just under 40us, but this may differ a bit.  It is recommended
+				// that you use a logic probe on SDA, SCL, and LDAC to verify the timing, and adjust this delay
+				// as needed.
+				// The good news is that this only needs to happen once (per DAC).
 				uint8_t message[3];
 				message[0] = DAC_COMMAND_ADDRESS | old_dac_number << 2 | 1;		//Command 0x60 + current address (left shifted 2) + 1
-				message[1] = DAC_COMMAND_ADDRESS | new_dac_number << 2 | 2;		//Command 0x60 + new address (left shifted 2) + 2
+				message[1] = DAC_COMMAND_ADDRESS | new_dac_number << 2 | 2;		//Command 0x60 + current address (left shifted 2) + 2
 				message[2] = DAC_COMMAND_ADDRESS | new_dac_number << 2 | 3;		//Command 0x60 + new address (left shifted 2) + 3
-				PORTB &= ~_BV(PORTB0);
-				twi_write_to(DAC_ADDRESS_0 + old_dac_number, message, 2, TWI_NO_BLOCK, TWI_STOP);
+				twi_write_to(DAC_ADDRESS_0 + old_dac_number, message, 3, TWI_NO_BLOCK, TWI_STOP);
 				
+				_delay_us(39.6);
+				PORTB &= ~_BV(PORTB0);
+				
+				_delay_ms(100);
+				
+				usb_send_dac_program(new_dac_number);
+				
+				DDRB &= ~_BV(PORTB0);
 			}
 		}
 	}

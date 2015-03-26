@@ -240,6 +240,19 @@ Y/N: """)
 			print("Calibration discarded.")
 			break;
 
+def configure_dac_address():
+	old_address = -1
+	new_address = -1
+	while old_address < 0 or old_address > 2:
+		old_address = int(raw_input("Enter the current I2C address (0-2): "))
+	while new_address < 0 or old_address > 2 or new_address == old_address:
+		new_address = int(raw_input("Enter the new I2C address (0-2): "))
+	raw_input("""Connect PORTB0 (Encoder 1A) to the I2C_PROG header with a jumper wire.
+It may be a good idea to watch the procedure with a logic probe to verify correct operation.
+Press enter when ready.""")
+	send_generic_message_with_response(dev, MESSAGE_CONFIGURE_DAC_ADDRESS, [chr(old_address), chr(new_address)])
+	print("The DAC should now have the new address, but you need to verify.")
+
 try:
 	dev = hid.Device(vid=0x4200, pid=0xFF01)
 	
@@ -252,6 +265,7 @@ try:
 	MESSAGE_CHANGE_SETPOINT_RAW		= 7
 	MESSAGE_GET_CALIBRATION			= 8
 	MESSAGE_SET_CALIBRATION			= 9
+	MESSAGE_CONFIGURE_DAC_ADDRESS	= 10
 
 	TARGET_VOLTAGE_ACTUAL_SLOPE			= 0
 	TARGET_VOLTAGE_ACTUAL_OFFSET		= 1
@@ -300,6 +314,7 @@ Please choose one of the following calibration options:
 
 1) Calibrate Voltage
 2) Calibrate Current
+3) Set DAC Address
 Q) Quit
 
 Enter a menu option: """)
@@ -308,6 +323,8 @@ Enter a menu option: """)
 			calibrate_voltage()
 		elif response == "2":
 			calibrate_current()
+		elif response == "3":
+			configure_dac_address()
 		elif response == "Q" or response == "q":
 			break;
 
