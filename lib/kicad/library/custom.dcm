@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Thursday, February 26, 2015 'pmt' 02:40:14 pm
+EESchema-DOCLIB  Version 2.0
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -126,19 +126,19 @@ D Potentiometer
 K R DEV
 $ENDCMP
 #
-$CMP R_PACK5
-D 5 resistors Pack
-K R DEV
-$ENDCMP
-#
 $CMP RELAY_DPDT
 D RELAY_DPST
 K Relay, DPST
 $ENDCMP
 #
+$CMP RELAY_OMRON_G5LE-1
+D RELAY_OMRON_G5LE-1
+K Relay, SPDT
+$ENDCMP
+#
 $CMP RELAY_OMRON_G5V-1
 D RELAY_OMRON_G5V-1
-K Relay, SPST
+K Relay, SPDT
 $ENDCMP
 #
 $CMP RELAY_SPDT
@@ -173,6 +173,11 @@ $ENDCMP
 #
 $CMP RSMALL
 D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP R_PACK5
+D 5 resistors Pack
 K R DEV
 $ENDCMP
 #
