@@ -27,7 +27,7 @@ Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel
 	DIDR0 = 0xFF;
 	DIDR2 = 0xFF;
 	
-	ADMUX = _BV(REFS0);		//Reference AVCC with cap at AREF pin
+	ADMUX = 0x00;		//Reference external AREF
 	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); 	//ADC Enable, prescaler = /128
 	
 	this->set_voltage_setpoint(0);
@@ -73,7 +73,7 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
@@ -116,7 +116,7 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;		//Single write without EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
@@ -127,6 +127,9 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
  */
  
 void Channel::sample_actual(){
+	//*********** Sample voltage ***********//
+	uint16_t sum = 0;
+
 	//Set up which pin to read for voltage
 	ADCSRA &= ~_BV(ADIF);
 	ADCSRB &= ~_BV(MUX5);
@@ -138,12 +141,21 @@ void Channel::sample_actual(){
 		ADMUX |= this->adc_channel_voltage - 0x08;
 		ADCSRB |= _BV(MUX5);
 	}
-	ADCSRA |= _BV(ADSC);				//Start conversion
-	while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
-
-	this->voltage_actual_raw = ADC;
 	
-	_delay_us(1);
+	for (uint8_t i = 0; i < 16; i++){
+		ADCSRA |= _BV(ADSC);				//Start conversion
+		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
+
+		sum += ADC;
+	
+		_delay_us(1);
+	}
+	
+	this->voltage_actual_raw = sum >> 4;	//Average of 16 samples
+	
+	
+	//*********** Sample current ***********//
+	sum = 0;
 	
 	//Set up which pin to read for current
 	ADCSRA &= ~_BV(ADIF);
@@ -157,12 +169,17 @@ void Channel::sample_actual(){
 		ADMUX |= this->adc_channel_current - 0x08;
 		ADCSRB |= _BV(MUX5);
 	}
-	ADCSRA |= _BV(ADSC);				//Start conversion
-	while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
-
-	this->current_actual_raw = ADC;
 	
-	_delay_us(1);
+	for (uint8_t i = 0; i < 16; i++){
+		ADCSRA |= _BV(ADSC);				//Start conversion
+		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
+
+		sum += ADC;
+	
+		_delay_us(1);
+	}
+	
+	this->current_actual_raw = sum >> 4;	//Average of 16 samples
 }
 
 /*
@@ -184,7 +201,7 @@ void Channel::save_calibration(){
 	uint16_t raw_value = raw_value_double;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
-	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 
@@ -192,7 +209,7 @@ void Channel::save_calibration(){
 	if (raw_value_double < 0) raw_value_double = 0;
 	raw_value = raw_value_double;
  	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
- 	message[1] = ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set all of these to zero.
+ 	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
  	message[2] = (raw_value & 0xFF);
  	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }

@@ -4,6 +4,6 @@
 #include <avr/interrupt.h>
 
 void timer1_init();
-void timer1_wait_for_tick();
+uint8_t timer1_next_tick();
 
 #endif
