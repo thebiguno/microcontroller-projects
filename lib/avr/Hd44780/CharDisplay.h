@@ -72,5 +72,11 @@ namespace digitalcave {
 			 * the buffer as clean.
 			 */
 			void refresh();
+			
+			/*
+			 * Marks the entire display dirty.  The entire display will be re-written 
+			 * next call to refresh().
+			 */
+			void mark_dirty();
 	};
 }

@@ -13,6 +13,8 @@ Display::Display() :
 }
 
 void Display::update(State state){
+	char_display.mark_dirty();
+	
 	if (state.get_state() == STATE_LOCKED){
 		char buffer[DISPLAY_COLS + 1];
 		uint8_t channel = state.get_scroll_channel();
