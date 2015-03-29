@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, March 27, 2015 'pmt' 03:38:32 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Sun 29 Mar 2015 10:21:52 AM MDT
 
 BeginCmp
 TimeStamp = /550C6B38;
@@ -80,8 +80,8 @@ EndCmp
 BeginCmp
 TimeStamp = /550E4230;
 Reference = C12;
-ValeurCmp = 4700uF;
-IdModule  = C2V10;
+ValeurCmp = 470uF;
+IdModule  = C1V8;
 EndCmp
 
 BeginCmp
@@ -236,6 +236,13 @@ TimeStamp = /54F7496E;
 Reference = C34;
 ValeurCmp = 100uF;
 IdModule  = C1V7;
+EndCmp
+
+BeginCmp
+TimeStamp = /55178775;
+Reference = C35;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
@@ -913,14 +920,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54E8BC77;
 Reference = R26;
-ValeurCmp = 1k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54E8BC8F;
-Reference = R27;
-ValeurCmp = 2k;
+ValeurCmp = 10k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -955,7 +955,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54E8BC89;
 Reference = R32;
-ValeurCmp = 1k;
+ValeurCmp = 2k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -963,13 +963,6 @@ BeginCmp
 TimeStamp = /54F522A7;
 Reference = R33;
 ValeurCmp = 100k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
-TimeStamp = /54E8C4C4;
-Reference = R34;
-ValeurCmp = 2k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -1072,16 +1065,9 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /550EF3DC;
-Reference = R49;
-ValeurCmp = 10k;
-IdModule  = SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /550EF3BC;
 Reference = R50;
-ValeurCmp = 10k;
+ValeurCmp = 2k;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -1219,14 +1205,14 @@ IdModule  = TO220_VERT;
 EndCmp
 
 BeginCmp
-TimeStamp = /54E8C12B;
+TimeStamp = /550DFFBB;
 Reference = U3;
 ValeurCmp = MC3303PT;
 IdModule  = TSSOP14;
 EndCmp
 
 BeginCmp
-TimeStamp = /54E948D4;
+TimeStamp = /54E8C12B;
 Reference = U4;
 ValeurCmp = MC3303PT;
 IdModule  = TSSOP14;
@@ -1264,6 +1250,13 @@ BeginCmp
 TimeStamp = /54D3AAE9;
 Reference = U9;
 ValeurCmp = LM7812;
+IdModule  = TO220_VERT;
+EndCmp
+
+BeginCmp
+TimeStamp = /55173599;
+Reference = U10;
+ValeurCmp = LM337T;
 IdModule  = TO220_VERT;
 EndCmp
 
