@@ -93,3 +93,9 @@ void CharDisplay::refresh(){
 		this->set_cursor_position(this->cursor_row, this->cursor_col);
 	}
 }
+
+void CharDisplay::mark_dirty(){
+	for(uint8_t r = 0; r < this->rows; r++){
+		this->dirty[r] = 0xFFFFFFFF;
+	}	
+}

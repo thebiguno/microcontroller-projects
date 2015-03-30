@@ -186,11 +186,11 @@ an offset adjustment as an integer starting with a + / -""")
 	raw_current_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
 
 #Current Actual + Setpoint High
-	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_HIGH) + """ mV.  Hit enter when target reached.
+	print("""Adjust measured voltage to exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mV.  Hit enter when target reached.
 Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
 an offset adjustment as an integer starting with a + / -""")
 	while True:
-		response = raw_input("DAC Value for " + str(VOLTAGE_MEASURED_VALUE_HIGH) + "mV: ")
+		response = raw_input("DAC Value for " + str(CURRENT_MEASURED_VALUE_HIGH) + "mV: ")
 		if increment.match(response):
 			current_setpoint = (current_setpoint + int(response[1:]))
 			
@@ -224,8 +224,8 @@ an offset adjustment as an integer starting with a + / -""")
 	current_setpoint_offset = current_setpoint_slope * (0 - raw_current_setpoint_high) + CURRENT_MEASURED_VALUE_HIGH
 
 	while True:
-		print("Current Actual:   V = (" + str(current_actual_slope) + " * ADC_VALUE) + " + str(current_actual_offset))
-		print("Current Setpoint: V = (" + str(current_setpoint_slope) + " * DAC_VALUE) + " + str(current_setpoint_offset))
+		print("Current Actual:   A = (" + str(current_actual_slope) + " * ADC_VALUE) + " + str(current_actual_offset))
+		print("Current Setpoint: A = (" + str(current_setpoint_slope) + " * DAC_VALUE) + " + str(current_setpoint_offset))
 
 		response = raw_input(
 """
@@ -233,8 +233,8 @@ Do you want to save these calibration values to EEPROM?
 Y/N: """)
 		if response == "Y" or response == "y":
 			print("Saved values:")
-			print("Current Actual:   V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_SLOPE, current_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_OFFSET, current_actual_offset)[3]))
-			print("Current Setpoint: V = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_SLOPE, current_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_OFFSET, current_setpoint_offset)[3]))
+			print("Current Actual:   A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_SLOPE, current_actual_slope)[3]) + " * ADC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_ACTUAL_OFFSET, current_actual_offset)[3]))
+			print("Current Setpoint: A = (" + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_SLOPE, current_setpoint_slope)[3]) + " * DAC_VALUE) + " + str(send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_CURRENT_SETPOINT_OFFSET, current_setpoint_offset)[3]))
 			break;
 		elif response == "N" or response == "n":
 			print("Calibration discarded.")

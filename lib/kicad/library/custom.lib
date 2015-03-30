@@ -1,4 +1,4 @@
-EESchema-LIBRARY Version 2.3
+EESchema-LIBRARY Version 2.3  Date: Thu 26 Mar 2015 07:53:13 PM MDT
 #encoding utf-8
 #
 # 4X_7SEGMENT_COMMON_ANODE
@@ -772,7 +772,7 @@ F2 "" 0 0 60 H V C CNN
 F3 "" 0 0 60 H V C CNN
 DRAW
 C 0 0 71 0 1 0 N
-X GND 1 -100 0 100 R 40 40 1 1 w
+X GND 1 -100 0 100 R 40 40 1 1 P
 ENDDRAW
 ENDDEF
 #
