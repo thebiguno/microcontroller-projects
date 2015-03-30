@@ -38,7 +38,7 @@ $Descr User 13000 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "29 mar 2015"
+Date "30 mar 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -2562,12 +2562,12 @@ $EndComp
 $Comp
 L RSMALL R21
 U 1 1 54FFBA86
-P 5650 4050
-F 0 "R21" V 5740 4045 40  0000 C CNN
-F 1 "200" V 5565 4050 40  0000 C CNN
-F 2 "~" V 5580 4050 30  0000 C CNN
-F 3 "~" H 5650 4100 30  0000 C CNN
-	1    5650 4050
+P 5950 4450
+F 0 "R21" V 6040 4445 40  0000 C CNN
+F 1 "200" V 5865 4450 40  0000 C CNN
+F 2 "~" V 5880 4450 30  0000 C CNN
+F 3 "~" H 5950 4500 30  0000 C CNN
+	1    5950 4450
 	-1   0    0    1   
 $EndComp
 Text Label 1750 3850 2    60   ~ 0
@@ -4060,9 +4060,6 @@ Wire Wire Line
 	3650 5050 3350 5050
 Connection ~ 3350 5050
 Wire Wire Line
-	5650 3950 5650 3850
-Connection ~ 5650 3850
-Wire Wire Line
 	3350 5000 3350 5450
 Wire Wire Line
 	3350 4700 3350 4800
@@ -4084,8 +4081,6 @@ Wire Wire Line
 Connection ~ 4700 5550
 Wire Wire Line
 	5650 5550 5250 5550
-Wire Wire Line
-	5650 4150 5650 5550
 Wire Wire Line
 	5600 5050 5650 5050
 Connection ~ 5650 5050
@@ -4147,7 +4142,7 @@ Wire Wire Line
 	5150 4250 5950 4250
 Connection ~ 5650 4250
 Wire Wire Line
-	5950 4250 5950 4150
+	5950 4150 5950 4350
 Wire Wire Line
 	8850 3950 8850 3850
 Connection ~ 8850 3850
@@ -4411,4 +4406,9 @@ Wire Wire Line
 	5800 3450 5800 3850
 Text Notes 4350 3200 0    40   ~ 0
 LM317 and LM337 have different pinouts.  When\nsoldering be sure to connect the right pins (requires\nbending of leads)
+Wire Wire Line
+	5650 4250 5650 5550
+Connection ~ 5950 4250
+Text Label 5950 4550 3    60   ~ 0
+V_OUT
 $EndSCHEMATC
