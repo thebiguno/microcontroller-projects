@@ -186,11 +186,11 @@ an offset adjustment as an integer starting with a + / -""")
 	raw_current_actual_low = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
 
 #Current Actual + Setpoint High
-	print("""Adjust measured voltage to exactly """ + str(VOLTAGE_MEASURED_VALUE_HIGH) + """ mV.  Hit enter when target reached.
+	print("""Adjust measured voltage to exactly """ + str(CURRENT_MEASURED_VALUE_HIGH) + """ mV.  Hit enter when target reached.
 Enter a DAC value as an integer between 0 and 4095, or change the current DAC value with
 an offset adjustment as an integer starting with a + / -""")
 	while True:
-		response = raw_input("DAC Value for " + str(VOLTAGE_MEASURED_VALUE_HIGH) + "mV: ")
+		response = raw_input("DAC Value for " + str(CURRENT_MEASURED_VALUE_HIGH) + "mV: ")
 		if increment.match(response):
 			current_setpoint = (current_setpoint + int(response[1:]))
 			
