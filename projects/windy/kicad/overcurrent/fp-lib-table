@@ -1,4 +1,4 @@
 (fp_lib_table
   (lib (name custom)(type Legacy)(uri ${KIPRJMOD}/../../../../lib/kicad/modules/custom.mod)(options "")(descr ""))
-  (lib (name mod)(type KiCad)(uri ${KIPRJMOD}/../../../../lib/kicad/mod.pretty)(options "")(descr ""))
+  (lib (name TerminalBlocks)(type KiCad)(uri ${KIPRJMOD}/../../../../lib/kicad/modules/TerminalBlocks.pretty)(options "")(descr ""))
 )
