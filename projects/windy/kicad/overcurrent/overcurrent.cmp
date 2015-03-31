@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2015-03-21 BZR 5528)-product   date = Monday, March 30, 2015 'pmt' 09:19:24 pm
+Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Tuesday, March 31, 2015 'amt' 09:48:08 am
 
 BeginCmp
 TimeStamp = /53F61D06;
@@ -179,14 +179,14 @@ BeginCmp
 TimeStamp = /5519792D;
 Reference = F1;
 ValeurCmp = FUSE;
-IdModule  = Fuse_Holders_and_Fuses:BladeFuse-Mini;
+IdModule  = Fuse_Holders_and_Fuses:Fuse_TE5_Littlefuse-395Series;
 EndCmp
 
 BeginCmp
 TimeStamp = /551945E4;
 Reference = F2;
 ValeurCmp = FUSE;
-IdModule  = Fuse_Holders_and_Fuses:BladeFuse-Mini;
+IdModule  = Fuse_Holders_and_Fuses:Fuse_TE5_Littlefuse-395Series;
 EndCmp
 
 BeginCmp
@@ -466,7 +466,7 @@ BeginCmp
 TimeStamp = /5515841B;
 Reference = U3;
 ValeurCmp = INA169;
-IdModule  = Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23-5;
 EndCmp
 
 BeginCmp
