@@ -38,7 +38,7 @@ $Descr User 14500 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "1 apr 2015"
+Date "2 apr 2015"
 Rev "1"
 Comp "Digital Cave"
 Comment1 ""
@@ -2038,7 +2038,7 @@ Text Label 3150 2000 0    60   ~ 0
 AC_N
 Text Label 3150 1800 0    60   ~ 0
 AC_L
-Text Notes 4850 3550 0    40   ~ 0
+Text Notes 4750 3550 0    40   ~ 0
 Rsh value (in conjunction with differential amp gain) will\ndetermine maximum current.  Use 0.1ohm for 5A, 1ohm\nfor 0.5A, etc.  If in doubt, 0.1ohm is a good value.\n
 Text Notes 8400 7950 0    60   ~ 0
 User Interface\n(Display + Encoders)
@@ -2732,7 +2732,7 @@ F 3 "~" H 11800 6300 30  0000 C CNN
 	1    11800 6250
 	0    1    1    0   
 $EndComp
-Text Label 7750 4350 3    60   ~ 0
+Text Label 7750 4650 3    60   ~ 0
 VADJ
 Text Label 9300 5950 2    60   ~ 0
 V+
@@ -3199,26 +3199,15 @@ F 3 "~" H 3500 6800 30  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L PINS_2 K28
-U 1 1 551196D2
-P 4000 6800
-F 0 "K28" H 4000 6650 60  0000 C CNN
-F 1 "I_LIM_LED" H 4000 6950 60  0000 C CNN
-F 2 "~" H 4000 6850 60  0000 C CNN
-F 3 "~" H 4000 6850 60  0000 C CNN
-	1    4000 6800
-	-1   0    0    -1  
-$EndComp
-$Comp
 L GND #PWR098
 U 1 1 55119882
-P 3700 6850
-F 0 "#PWR098" H 3700 6850 30  0001 C CNN
-F 1 "GND" H 3700 6780 30  0001 C CNN
-F 2 "" H 3700 6850 60  0000 C CNN
-F 3 "" H 3700 6850 60  0000 C CNN
-	1    3700 6850
-	0    1    -1   0   
+P 4100 6750
+F 0 "#PWR098" H 4100 6750 30  0001 C CNN
+F 1 "GND" H 4100 6680 30  0001 C CNN
+F 2 "" H 4100 6750 60  0000 C CNN
+F 3 "" H 4100 6750 60  0000 C CNN
+	1    4100 6750
+	0    -1   1    0   
 $EndComp
 Text Notes 3200 6500 0    40   ~ 0
 Turn on a LED when current\nlimiting is enabled.
@@ -3466,26 +3455,15 @@ F 3 "" H 12300 2100 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L PINS_2 K29
-U 1 1 55159658
-P 10800 3150
-F 0 "K29" H 10800 3000 60  0000 C CNN
-F 1 "V_LED" H 10800 3300 60  0000 C CNN
-F 2 "~" H 10800 3200 60  0000 C CNN
-F 3 "~" H 10800 3200 60  0000 C CNN
-	1    10800 3150
-	0    -1   1    0   
-$EndComp
-$Comp
 L GND #PWR0104
 U 1 1 55159668
-P 10850 3450
-F 0 "#PWR0104" H 10850 3450 30  0001 C CNN
-F 1 "GND" H 10850 3380 30  0001 C CNN
-F 2 "" H 10850 3450 60  0000 C CNN
-F 3 "" H 10850 3450 60  0000 C CNN
-	1    10850 3450
-	-1   0    0    -1  
+P 10750 3050
+F 0 "#PWR0104" H 10750 3050 30  0001 C CNN
+F 1 "GND" H 10750 2980 30  0001 C CNN
+F 2 "" H 10750 3050 60  0000 C CNN
+F 3 "" H 10750 3050 60  0000 C CNN
+	1    10750 3050
+	1    0    0    1   
 $EndComp
 $Comp
 L RSMALL R64
@@ -4574,4 +4552,39 @@ $EndComp
 Connection ~ 9700 6850
 Connection ~ 12000 2100
 Connection ~ 12200 2200
+$Comp
+L LED K28
+U 1 1 551D7488
+P 3900 6750
+F 0 "K28" H 3900 6850 50  0000 C CNN
+F 1 "I_LIM_LED" H 3900 6600 50  0000 C CNN
+F 2 "~" H 3900 6750 60  0000 C CNN
+F 3 "~" H 3900 6750 60  0000 C CNN
+	1    3900 6750
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED K29
+U 1 1 551D74BD
+P 10750 3250
+F 0 "K29" H 10750 3350 50  0000 C CNN
+F 1 "V_LED" H 10750 3100 50  0000 C CNN
+F 2 "~" H 10750 3250 60  0000 C CNN
+F 3 "~" H 10750 3250 60  0000 C CNN
+	1    10750 3250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L DSCHSMALL D?
+U 1 1 551D7EDE
+P 7750 4450
+F 0 "D?" V 7840 4445 40  0000 C CNN
+F 1 "DSCHSMALL" V 7665 4450 40  0000 C CNN
+F 2 "~" V 7680 4450 30  0000 C CNN
+F 3 "~" H 7750 4500 30  0000 C CNN
+	1    7750 4450
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	7750 4550 7750 4650
 $EndSCHEMATC
