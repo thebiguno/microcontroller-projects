@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Tuesday, March 31, 2015 'amt' 09:48:08 am
+Cmp-Mod V01 Created by Cvpcb (2015-03-21 BZR 5528)-product   date = Tuesday, March 31, 2015 'pmt' 07:45:49 pm
 
 BeginCmp
 TimeStamp = /53F61D06;
@@ -102,7 +102,7 @@ BeginCmp
 TimeStamp = /551AC56A;
 Reference = D1;
 ValeurCmp = LED;
-IdModule  = LEDs:LED-5MM;
+IdModule  = custom:SM0603_DIODE;
 EndCmp
 
 BeginCmp
@@ -123,14 +123,14 @@ BeginCmp
 TimeStamp = /551AC903;
 Reference = D4;
 ValeurCmp = LED;
-IdModule  = LEDs:LED-5MM;
+IdModule  = custom:SM0603_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /551C672A;
 Reference = D5;
 ValeurCmp = LED;
-IdModule  = LEDs:LED-5MM;
+IdModule  = custom:SM0603_DIODE;
 EndCmp
 
 BeginCmp
@@ -172,7 +172,7 @@ BeginCmp
 TimeStamp = /54D25596;
 Reference = DS1;
 ValeurCmp = HD44780;
-IdModule  = custom:HD44780;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x16;
 EndCmp
 
 BeginCmp
@@ -187,13 +187,6 @@ TimeStamp = /551945E4;
 Reference = F2;
 ValeurCmp = FUSE;
 IdModule  = Fuse_Holders_and_Fuses:Fuse_TE5_Littlefuse-395Series;
-EndCmp
-
-BeginCmp
-TimeStamp = /53DB16A5;
-Reference = J1;
-ValeurCmp = USB;
-IdModule  = conn:USB_A;
 EndCmp
 
 BeginCmp
@@ -218,23 +211,23 @@ IdModule  = Pin_Headers:Pin_Header_Straight_1x05;
 EndCmp
 
 BeginCmp
-TimeStamp = /551AF198;
+TimeStamp = /551ADA3A;
 Reference = Q1;
-ValeurCmp = IRF540N;
+ValeurCmp = Q_NMOS_GDS;
 IdModule  = SMD_Packages:DPAK-2;
 EndCmp
 
 BeginCmp
-TimeStamp = /551903C3;
+TimeStamp = /551ADDB2;
 Reference = Q2;
-ValeurCmp = IRF540N;
+ValeurCmp = Q_NMOS_GDS;
 IdModule  = SMD_Packages:DPAK-2;
 EndCmp
 
 BeginCmp
-TimeStamp = /55192AD2;
+TimeStamp = /551AE644;
 Reference = Q3;
-ValeurCmp = IRF540N;
+ValeurCmp = Q_NMOS_GDS;
 IdModule  = SMD_Packages:DPAK-2;
 EndCmp
 
@@ -379,13 +372,6 @@ IdModule  = custom:SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /53DB1EB9;
-Reference = R21;
-ValeurCmp = 100;
-IdModule  = custom:SM0603_VALUE;
-EndCmp
-
-BeginCmp
 TimeStamp = /54D25D7D;
 Reference = R22;
 ValeurCmp = 1k;
@@ -396,7 +382,7 @@ BeginCmp
 TimeStamp = /53DC8E10;
 Reference = RV1;
 ValeurCmp = 10K;
-IdModule  = Potentiometers:Potentiometer_WirePads;
+IdModule  = custom:POTENTIOMETER_SMD;
 EndCmp
 
 BeginCmp
@@ -445,6 +431,13 @@ BeginCmp
 TimeStamp = /5516D3EC;
 Reference = TB5;
 ValeurCmp = LOAD;
+IdModule  = TerminalBlocks:3.5x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /551B4AB2;
+Reference = TB6;
+ValeurCmp = 5V;
 IdModule  = TerminalBlocks:3.5x2;
 EndCmp
 
