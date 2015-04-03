@@ -1,0 +1,31 @@
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 03 Apr 2015 12:24:57 PM MDT
+
+BeginCmp
+TimeStamp = /551EDA37;
+Reference = K1;
+ValeurCmp = PINS_7;
+IdModule  = SIL-7;
+EndCmp
+
+BeginCmp
+TimeStamp = /551EDA49;
+Reference = K2;
+ValeurCmp = PINS_7;
+IdModule  = SIL-7;
+EndCmp
+
+BeginCmp
+TimeStamp = /551EDA53;
+Reference = K3;
+ValeurCmp = PINS_10;
+IdModule  = MSOP10-0.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /551EDA62;
+Reference = K4;
+ValeurCmp = PINS_14;
+IdModule  = TSSOP14;
+EndCmp
+
+EndListe
