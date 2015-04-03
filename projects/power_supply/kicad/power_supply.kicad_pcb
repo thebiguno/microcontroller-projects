@@ -3,7 +3,7 @@
   (general
     (links 367)
     (no_connects 0)
-    (area 35.509999 30.429999 134.670001 129.590001)
+    (area 31.183778 20.010001 148.969992 132.805111)
     (thickness 1.6)
     (drawings 149)
     (tracks 1416)
@@ -101,7 +101,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory svg))
   )
 
   (net 0 "")
