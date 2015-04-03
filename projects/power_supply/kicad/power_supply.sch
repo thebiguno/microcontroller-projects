@@ -842,12 +842,12 @@ $EndComp
 $Comp
 L RSMALL R40
 U 1 1 54E942A8
-P 5300 6750
-F 0 "R40" V 5390 6745 40  0000 C CNN
-F 1 "1k" V 5215 6750 40  0000 C CNN
-F 2 "~" V 5230 6750 30  0000 C CNN
-F 3 "~" H 5300 6800 30  0000 C CNN
-	1    5300 6750
+P 5300 6800
+F 0 "R40" V 5390 6795 40  0000 C CNN
+F 1 "1k" V 5215 6800 40  0000 C CNN
+F 2 "~" V 5230 6800 30  0000 C CNN
+F 3 "~" H 5300 6850 30  0000 C CNN
+	1    5300 6800
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -2632,12 +2632,12 @@ V-
 $Comp
 L RSMALL R25
 U 1 1 5503E833
-P 4900 6750
-F 0 "R25" V 4800 6750 40  0000 C CNN
-F 1 "0" V 5000 6750 40  0000 C CNN
-F 2 "~" V 4830 6750 30  0000 C CNN
-F 3 "~" H 4900 6800 30  0000 C CNN
-	1    4900 6750
+P 4900 6800
+F 0 "R25" V 4800 6800 40  0000 C CNN
+F 1 "0" V 5000 6800 40  0000 C CNN
+F 2 "~" V 4830 6800 30  0000 C CNN
+F 3 "~" H 4900 6850 30  0000 C CNN
+	1    4900 6800
 	0    1    -1   0   
 $EndComp
 $Comp
@@ -2654,12 +2654,12 @@ $EndComp
 $Comp
 L RSMALL R28
 U 1 1 5503EE5C
-P 4900 6450
-F 0 "R28" V 4800 6450 40  0000 C CNN
-F 1 "0" V 5000 6450 40  0000 C CNN
-F 2 "~" V 4830 6450 30  0000 C CNN
-F 3 "~" H 4900 6500 30  0000 C CNN
-	1    4900 6450
+P 4900 6500
+F 0 "R28" V 4800 6500 40  0000 C CNN
+F 1 "0" V 5000 6500 40  0000 C CNN
+F 2 "~" V 4830 6500 30  0000 C CNN
+F 3 "~" H 4900 6550 30  0000 C CNN
+	1    4900 6500
 	0    1    -1   0   
 $EndComp
 $Comp
@@ -3290,11 +3290,11 @@ Text Notes 12450 6200 2    40   ~ 0
 NEG
 Text Notes 11900 7100 2    40   ~ 0
 POS
-Text Notes 4950 6700 0    40   ~ 0
+Text Notes 4950 6750 0    40   ~ 0
 POS
 Text Notes 4950 6100 0    40   ~ 0
 POS
-Text Notes 4950 6400 0    40   ~ 0
+Text Notes 4950 6450 0    40   ~ 0
 NEG
 Text Notes 4950 5800 0    40   ~ 0
 NEG
@@ -3539,9 +3539,9 @@ Text Label 4650 3850 0    60   ~ 0
 PRE_CS
 Text Label 5950 3850 0    60   ~ 0
 POST_CS
-Text Label 4800 6450 2    60   ~ 0
+Text Label 4800 6500 2    60   ~ 0
 POST_CS
-Text Label 4800 6750 2    60   ~ 0
+Text Label 4800 6800 2    60   ~ 0
 PRE_CS
 Text Label 4800 6150 2    60   ~ 0
 POST_CS
@@ -3585,24 +3585,24 @@ $EndComp
 $Comp
 L RSMALL R27
 U 1 1 551ADC3E
-P 5550 6900
-F 0 "R27" V 5640 6895 40  0000 C CNN
-F 1 "5.1k" V 5465 6900 40  0000 C CNN
-F 2 "~" V 5480 6900 30  0000 C CNN
-F 3 "~" H 5550 6950 30  0000 C CNN
-	1    5550 6900
+P 5650 6800
+F 0 "R27" V 5740 6795 40  0000 C CNN
+F 1 "5.1k" V 5565 6800 40  0000 C CNN
+F 2 "~" V 5580 6800 30  0000 C CNN
+F 3 "~" H 5650 6850 30  0000 C CNN
+	1    5650 6800
 	0    1    1    0   
 $EndComp
 $Comp
 L GND #PWR0109
 U 1 1 551ADDF2
-P 5850 7000
-F 0 "#PWR0109" H 5850 7000 30  0001 C CNN
-F 1 "GND" H 5850 6930 30  0001 C CNN
-F 2 "" H 5850 7000 60  0000 C CNN
-F 3 "" H 5850 7000 60  0000 C CNN
-	1    5850 7000
-	1    0    0    -1  
+P 5850 6800
+F 0 "#PWR0109" H 5850 6800 30  0001 C CNN
+F 1 "GND" H 5850 6730 30  0001 C CNN
+F 2 "" H 5850 6800 60  0000 C CNN
+F 3 "" H 5850 6800 60  0000 C CNN
+	1    5850 6800
+	0    -1   -1   0   
 $EndComp
 $Comp
 L RSMALL R34
@@ -3827,7 +3827,7 @@ Connection ~ 2950 1600
 Wire Wire Line
 	3450 1150 3050 1150
 Wire Wire Line
-	3050 1150 3050 2000
+	3050 2000 3050 1150
 Wire Wire Line
 	1350 2000 3450 2000
 Wire Wire Line
@@ -4209,7 +4209,7 @@ Connection ~ 12800 4750
 Wire Wire Line
 	6550 3450 6550 3850
 Wire Wire Line
-	7900 3450 7900 3850
+	7900 3850 7900 3450
 Wire Wire Line
 	7750 4150 7750 4350
 Wire Wire Line
@@ -4227,26 +4227,26 @@ Wire Wire Line
 Wire Wire Line
 	5100 6150 5100 5850
 Wire Wire Line
-	5000 6450 5100 6450
+	5000 6500 5100 6500
 Wire Wire Line
-	5100 6450 5100 6750
+	5100 6500 5100 6800
 Connection ~ 4900 3850
 Connection ~ 4650 3850
 Wire Wire Line
 	11250 3850 11250 3750
-Connection ~ 5100 6750
+Connection ~ 5100 6800
 Connection ~ 5100 5850
 Wire Wire Line
 	5500 6400 5450 6400
 Wire Wire Line
-	5450 6750 5400 6750
+	5400 6800 5550 6800
 Wire Wire Line
 	5400 5850 5500 5850
 Wire Wire Line
 	5450 5850 5450 6200
 Wire Wire Line
 	5450 6200 5500 6200
-Connection ~ 5450 6750
+Connection ~ 5450 6800
 Connection ~ 5450 5850
 Wire Wire Line
 	5700 5850 6250 5850
@@ -4384,7 +4384,7 @@ Wire Wire Line
 Wire Wire Line
 	5000 5850 5200 5850
 Wire Wire Line
-	5000 6750 5200 6750
+	5000 6800 5200 6800
 Wire Notes Line
 	4350 5400 7750 5400
 Wire Notes Line
@@ -4392,11 +4392,7 @@ Wire Notes Line
 Wire Notes Line
 	7750 7250 4350 7250
 Wire Wire Line
-	5450 6400 5450 6900
-Wire Wire Line
-	5650 6900 5850 6900
-Wire Wire Line
-	5850 6900 5850 7000
+	5450 6400 5450 6800
 Wire Notes Line
 	6100 12100 6100 12950
 Wire Notes Line
@@ -4724,4 +4720,10 @@ Text Label 8500 6450 1    60   ~ 0
 V-
 Text Label 8500 7050 3    60   ~ 0
 V+
+Wire Wire Line
+	5850 6800 5750 6800
+Text Notes 5150 7000 0    40   ~ 0
+It is recommended to use precision\nresistors for the differential amp
+Text Notes 8000 3700 0    40   ~ 0
+All three diodes are reversed on\na negative channel. 
 $EndSCHEMATC
