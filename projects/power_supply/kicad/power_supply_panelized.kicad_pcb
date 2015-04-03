@@ -1,11 +1,11 @@
 (kicad_pcb (version 3) (host pcbnew "(22-Jun-2014 BZR 4027)-stable")
 
   (general
-    (links 0)
+    (links 512)
     (no_connects 20)
-    (area 99.999799 32.710001 260.729992 145.428911)
+    (area 143.019978 32.710001 260.729992 144.793911)
     (thickness 1.6)
-    (drawings 236)
+    (drawings 237)
     (tracks 2039)
     (zones 0)
     (modules 226)
@@ -71,7 +71,7 @@
     (aux_axis_origin 0 0)
     (visible_elements FFFFFBBF)
     (pcbplotparams
-      (layerselection 3178497)
+      (layerselection 284196865)
       (usegerberextensions true)
       (excludeedgelayer true)
       (linewidth 0.150000)
@@ -93,9 +93,9 @@
       (subtractmaskfromsilk false)
       (outputformat 1)
       (mirror false)
-      (drillshape 1)
+      (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory gerber))
   )
 
   (net 0 "")
@@ -3447,7 +3447,7 @@
     )
   )
 
-  (module SIL-4 (layer F.Cu) (tedit 551EDFF1) (tstamp 54F2B6E0)
+  (module SIL-4 (layer F.Cu) (tedit 551EDFF1) (tstamp 551EE7EC)
     (at 245.11 60.96 270)
     (descr "Connecteur 4 pibs")
     (tags "CONN DEV")
@@ -8779,6 +8779,8 @@
     )
   )
 
+  (gr_line (start 156.845 85.09) (end 147.955 85.09) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_line (start 161.925 85.09) (end 167.005 85.09) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_line (start 156.845 83.82) (end 148.59 83.82) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_line (start 161.925 83.82) (end 173.99 83.82) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_line (start 168.91 86.36) (end 168.91 120.015) (angle 90) (layer Edge.Cuts) (width 0.1))
@@ -9131,7 +9133,6 @@
   (gr_text TX (at 165.1 101.6 90) (layer F.SilkS)
     (effects (font (size 0.762 0.762) (thickness 0.127)))
   )
-  (gr_line (start 147.955 85.09) (end 167.005 85.09) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_arc (start 147.955 85.725) (end 147.32 85.725) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_arc (start 167.005 85.725) (end 167.005 85.09) (angle 90) (layer Edge.Cuts) (width 0.1))
   (gr_line (start 147.32 85.725) (end 147.32 125.095) (angle 90) (layer Edge.Cuts) (width 0.1))
