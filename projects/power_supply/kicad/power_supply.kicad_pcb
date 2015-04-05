@@ -1454,7 +1454,7 @@
   )
 
   (module mouse_bites (layer F.Cu) (tedit 53D81E2B) (tstamp 54EBB687)
-    (at 73.025 126.365 90)
+    (at 73.025 125.73 90)
     (path /54DD7720)
     (fp_text reference MP4 (at 0 -1.27 90) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
@@ -3401,7 +3401,7 @@
     )
   )
 
-  (module SIL-4 (layer F.Cu) (tedit 54F33C99) (tstamp 54F2B6E0)
+  (module SIL-4 (layer F.Cu) (tedit 551F0C95) (tstamp 54F2B6E0)
     (at 133.35 48.26 270)
     (descr "Connecteur 4 pibs")
     (tags "CONN DEV")
@@ -3409,7 +3409,7 @@
     (fp_text reference K17 (at 0 -2.54 270) (layer F.SilkS) hide
       (effects (font (size 1.73482 1.08712) (thickness 0.27178)))
     )
-    (fp_text value USB (at 0 -2.54 270) (layer F.SilkS)
+    (fp_text value USB (at 0 -2.54 270) (layer F.SilkS) hide
       (effects (font (size 0.762 0.762) (thickness 0.1905)))
     )
     (fp_line (start -5.08 -1.27) (end -5.08 -1.27) (layer F.SilkS) (width 0.3048))
