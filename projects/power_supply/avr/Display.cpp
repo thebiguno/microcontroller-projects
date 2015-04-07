@@ -14,6 +14,7 @@ Display::Display() :
 
 void Display::update(State state){
 	char_display.mark_dirty();
+	hd44780.set_display(DISPLAY_ON | DISPLAY_CURSOR_OFF | DISPLAY_BLINK_OFF);
 	
 	if (state.get_state() == STATE_LOCKED){
 		char buffer[DISPLAY_COLS + 1];
@@ -46,10 +47,10 @@ void Display::update(State state){
 		snprintf(buffer, DISPLAY_COLS + 1, "   Channel %d         ", channel + 1);
 		char_display.write_text(0, 0, buffer, DISPLAY_COLS);
 		
-		snprintf(buffer, DISPLAY_COLS + 1, "Set  %+6.2fV %5.2fA     ", channels[channel].get_voltage_setpoint() / 1000.0, channels[channel].get_current_setpoint() / 1000.0);
+		snprintf(buffer, DISPLAY_COLS + 1, "Set  %+6.2fV %6.3fA     ", channels[channel].get_voltage_setpoint() / 1000.0, channels[channel].get_current_setpoint() / 1000.0);
 		char_display.write_text(1, 0, buffer, DISPLAY_COLS);
 
-		snprintf(buffer, DISPLAY_COLS + 1, "Actl.%+6.2fV %5.2fA     ", channels[channel].get_voltage_actual() / 1000.0, channels[channel].get_current_actual() / 1000.0);
+		snprintf(buffer, DISPLAY_COLS + 1, "Actl.%+6.2fV %6.3fA     ", channels[channel].get_voltage_actual() / 1000.0, channels[channel].get_current_actual() / 1000.0);
 		char_display.write_text(2, 0, buffer, DISPLAY_COLS);
 
 		char_display.write_text(3, 0, "                    ", DISPLAY_COLS);
