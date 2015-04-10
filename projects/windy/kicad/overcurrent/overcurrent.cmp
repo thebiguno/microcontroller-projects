@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2015-03-21 BZR 5528)-product   date = Tuesday, March 31, 2015 'pmt' 07:45:49 pm
+Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Saturday, April 04, 2015 'pmt' 03:05:12 pm
 
 BeginCmp
 TimeStamp = /53F61D06;
@@ -95,7 +95,7 @@ BeginCmp
 TimeStamp = /551AA2D8;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
-IdModule  = Connect:USB_Mini-B;
+IdModule  = custom:USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
@@ -116,7 +116,7 @@ BeginCmp
 TimeStamp = /55173658;
 Reference = D3;
 ValeurCmp = IN4007;
-IdModule  = custom:SM0603_DIODE;
+IdModule  = custom:D2;
 EndCmp
 
 BeginCmp
