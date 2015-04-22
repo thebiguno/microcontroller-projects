@@ -13,7 +13,7 @@ import sensors	#https://pypi.python.org/pypi/PySensors/
 
 import os
 import sys
-from time import sleep
+import time
 
 buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
 dev = 0
@@ -27,9 +27,13 @@ def main():
 	}
 	
 	mp_index = 0
-	mp_timer = 0
+	temp_time = 0		#0 shows temperature, 1 shows time
+	timer = 0
 	mountpoints = [
-		{"label": "    / ", "mountpoint": "/"}
+		{"label": "    / ", "mountpoint": "/"},
+		{"label": "/home ", "mountpoint": "/home"},
+		{"label": "/data ", "mountpoint": "/mnt/data"},
+		{"label": "/bkup ", "mountpoint": "/mnt/backup"}
 	]
 	
 	while True:
@@ -88,23 +92,37 @@ def main():
 		buf[16] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
 
 
-		#CPU Temperature:
-		for chip in sensors.iter_detected_chips():
-			for feature in chip:
-				if (feature.label == "Physical id 0"):
-					cpu_temp = int(feature.get_value())
-					if (cpu_temp > 99):
-						cpu_temp = 99
-					buf[27] = str(cpu_temp / 10)
-					buf[28] = str(cpu_temp % 10)
-		
-		#GPU Temperature:
-		gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
-		gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
-		if (gpu_temp > 99):
-			gpu_temp = 99
-		buf[30] = str(gpu_temp / 10)
-		buf[31] = str(gpu_temp % 10)
+		if temp_time == 0:
+			#CPU Temperature:
+			for chip in sensors.iter_detected_chips():
+				for feature in chip:
+					if (feature.label == "Physical id 0"):
+						cpu_temp = int(feature.get_value())
+						if (cpu_temp > 99):
+							cpu_temp = 99
+						buf[27] = str(cpu_temp / 10)
+						buf[28] = str(cpu_temp % 10)
+						buf[29] = '\xDF'
+			
+			#GPU Temperature:
+			gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
+			gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
+			if (gpu_temp > 99):
+				gpu_temp = 99
+			buf[30] = str(gpu_temp / 10)
+			buf[31] = str(gpu_temp % 10)
+			buf[32] = '\xDF'
+		else:
+			time_string = time.strftime("%I:%M%p")
+			if time_string[0] != '0':
+				buf[27] = time_string[0]
+			else:
+				buf[27] = ' '
+			buf[28] = time_string[1]
+			buf[29] = time_string[2]
+			buf[30] = time_string[3]
+			buf[31] = time_string[4]
+			buf[32] = time_string[5]
 
 		#Rotate through mount points and show percentage
 		mp = mountpoints[mp_index]
@@ -118,22 +136,19 @@ def main():
 		buf[23] = str(disk_percent / 10)
 		buf[24] = str(disk_percent % 10)
 		
-		mp_timer = mp_timer + 1
-		if (mp_timer >= 5):
-			mp_timer = 0;
+		timer = timer + 1
+		if (timer >= 5):
+			timer = 0;
 			mp_index = mp_index + 1
+			temp_time = temp_time + 1
 			if (mp_index >= len(mountpoints)):
 				mp_index = 0;
-		
-		#Exception report
-		#if (exception):
-		#	buf[17] = '*'
-		#else:
-		#	buf[17] = ' '
+			if (temp_time > 1):
+				temp_time = 0;
 
 		sendData()
 
-		sleep(1)
+		time.sleep(1)
 
 def sendData():
 	dev.write(''.join(buf))
@@ -199,6 +214,7 @@ if (__name__=="__main__"):
 		while (True):
 			try:
 				dev = hid.Device(vid=0x4200, pid=0xFF00)
+				main()
 			except hid.HIDException:
 				sleep(1)
 			finally:
