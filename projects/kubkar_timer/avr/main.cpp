@@ -106,7 +106,7 @@ int main (void){
 	//Set up SPI.  We need to set SS (B2) as an output before enabling master mode
 	DDRB |= _BV(PORTB2) | _BV(PORTB3) | _BV(PORTB5);
 	//SPSR = _BV(SPI2X);
-	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR1) | _BV(SPR0);
+	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR1) | _BV(SPR0) | _BV(CPOL) | _BV(CPHA);
 	
 	//Start / stop buttons
 	Buttons b(&PORTB, START_BUTTON | STOP_BUTTON, 8, 8, 10, 10);
