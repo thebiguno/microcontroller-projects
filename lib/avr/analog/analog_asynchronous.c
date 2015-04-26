@@ -16,7 +16,7 @@ static uint8_t pins[8];
 static uint8_t pin_count;
 
 //Buffer for result values
-static uint16_t results[8];
+static volatile uint16_t results[8];
 
 //Counter for the ISR to know which ADC it is talking to at a given time.  Used to 
 // configure the ADC mux channel section.  This value refers to the index of

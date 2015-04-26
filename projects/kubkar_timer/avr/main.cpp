@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <util/delay.h>
 
+#include "lib/analog/analog.h"
 #include "lib/Button/Buttons.h"
 
 using namespace digitalcave;
+
+#define ANALOG_THRESHOLD	100
 
 #define LANE_COUNT			3
 
@@ -111,8 +114,18 @@ int main (void){
 	//Start / stop buttons
 	Buttons b(&PORTB, START_BUTTON | STOP_BUTTON, 8, 8, 10, 10);
 	
+	//Sensors
+	uint8_t analog_pins[LANE_COUNT];
+	for (uint8_t i = 0; i < LANE_COUNT; i++){
+		analog_pins[i] = i;
+	}
+	analog_init(analog_pins, LANE_COUNT, ANALOG_AVCC);
+	
 	//We drive the anodes of the LED modules via MOSFETs activated by PORTD0..PORTD3
 	DDRD |= 0xFF;
+	
+	uint16_t starting_sensor_values[LANE_COUNT];
+	uint16_t sensor_values[LANE_COUNT];
 
 	while (1) {
 		uint8_t pressed = 0x00;
@@ -127,7 +140,9 @@ int main (void){
 			b.sample();
 			pressed = b.repeat();
 			
-	
+			analog_read_a(starting_sensor_values);
+			analog_read_a(starting_sensor_values);
+			
 			display_times(0);
 			
 			if (pressed & START_BUTTON){	//The start button must begin as pressed...
@@ -140,23 +155,25 @@ int main (void){
 		
 		//Start the timer
 		timer_init();
-		time = 0;
+		time = 5;
 		
 		//Wait for the races to finish, the stop button to be pressed, or the time to run out (99.99 seconds).
 		while(1){
 			display_times(time);
-			
+
 			b.sample();
 			pressed = b.pressed();
+			analog_read_a(sensor_values);
 			
 			for(uint8_t i = 0; i < LANE_COUNT; i++){
-				if ((PINC & _BV(i)) && (finish_times[i] == 0)){	//The sensors go high when finishing
+				if ((finish_times[i] == 0) && (starting_sensor_values[i] + ANALOG_THRESHOLD < sensor_values[i])){	//The sensors go high when the light beam is interrupted
 					finish_times[i] = time;
 				}
 			}
 			
 			if (pressed & STOP_BUTTON || (finish_times[0] && finish_times[1] && finish_times[2]) || time >= 9999){
 				for(uint8_t i = 0; i < LANE_COUNT; i++){
+					//Stop any remaining timers
 					if (finish_times[i] == 0) finish_times[i] = time;
 				}
 				TCCR1B = 0x00;	//Turn off the timer
