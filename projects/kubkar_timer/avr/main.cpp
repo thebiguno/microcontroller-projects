@@ -64,6 +64,8 @@ inline uint8_t extract_digit(uint16_t number, uint8_t digit){
  * if you want to show zero times.)
  */
 void display_times(uint16_t default_value){
+	//To keep the digit-enabling math simpler, we reverse the logical order of 
+	// the digits.  Digit 3 is the 1's place; digit 2 is the 10's place, etc.
 	static uint8_t digit = 0;
 
 	for (uint8_t i = 0; i < LANE_COUNT; i++){
@@ -80,7 +82,7 @@ void display_times(uint16_t default_value){
 	PORTB |= _BV(PORTB2);			//Rising edge of RCLK (latch) line
 	_delay_us(100);
 	PORTD = ~_BV(digit) & 0x0F;		//Show the selected digit
-	_delay_ms(4);
+	_delay_ms(1);
 
 	digit++;
 	if (digit >= 4) digit = 0;
@@ -164,7 +166,7 @@ int main (void){
 		
 		//Wait for a reset (hit stop button again)
 		while(1){
-			display_times(time);
+			display_times(9999);
 			
 			b.sample();
 			pressed = b.pressed();
