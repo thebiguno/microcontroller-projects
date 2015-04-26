@@ -4,7 +4,6 @@ F_CPU=20000000
 SOURCES=main.cpp lib/Button/Buttons.cpp lib/analog/analog_synchronous.c
 PROGRAMMER=usbtiny
 COMPILER=avr-g++
-CDEFS+=-DTIMER_BITS=32 
 
 LFUSE=0xF7
 HFUSE=0xDF
