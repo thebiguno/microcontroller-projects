@@ -37,7 +37,7 @@ $Descr User 10000 7000
 encoding utf-8
 Sheet 1 1
 Title "Kub Kar Timing Circuit"
-Date "26 apr 2015"
+Date "27 apr 2015"
 Rev "1"
 Comp "Wyatt Olson - http://digitalcave.ca"
 Comment1 ""
@@ -131,17 +131,13 @@ Wire Wire Line
 Wire Wire Line
 	4700 2100 4700 1650
 Wire Wire Line
-	4700 1650 5350 1650
-Wire Wire Line
-	5350 1650 5550 1650
+	4700 1650 5550 1650
 Wire Wire Line
 	3800 1800 4800 1800
 Wire Wire Line
 	4800 1800 4800 1950
 Wire Wire Line
-	4800 1950 5250 1950
-Wire Wire Line
-	5250 1950 5550 1950
+	4800 1950 5550 1950
 $Comp
 L GND #PWR12
 U 1 1 54E40B2B
@@ -176,9 +172,7 @@ F 3 "" H 5550 5050 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5350 1650 5350 3150
-Wire Wire Line
-	5350 3150 5350 4650
+	5350 1650 5350 4650
 Wire Wire Line
 	5350 3150 5550 3150
 Connection ~ 5350 1650
@@ -219,9 +213,7 @@ F 3 "" H 5550 4750 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	5250 1950 5250 3450
-Wire Wire Line
-	5250 3450 5250 4950
+	5250 1950 5250 4950
 Wire Wire Line
 	5250 3450 5550 3450
 Connection ~ 5250 1950
@@ -499,7 +491,7 @@ L RSMALL R1
 U 1 1 54E56B74
 P 1100 5150
 F 0 "R1" V 1190 5145 40  0000 C CNN
-F 1 "2k" V 1015 5150 40  0000 C CNN
+F 1 "10k" V 1015 5150 40  0000 C CNN
 F 2 "~" V 1030 5150 30  0000 C CNN
 F 3 "~" H 1100 5200 30  0000 C CNN
 	1    1100 5150
@@ -516,11 +508,11 @@ F 3 "~" H 1600 5200 30  0000 C CNN
 	1    1600 5150
 	1    0    0    -1  
 $EndComp
-Text Label 3800 2450 0    60   ~ 0
+Text Label 4050 2450 0    60   ~ 0
 SENSOR0
-Text Label 3800 2550 0    60   ~ 0
+Text Label 4050 2550 0    60   ~ 0
 SENSOR1
-Text Label 3800 2650 0    60   ~ 0
+Text Label 4050 2650 0    60   ~ 0
 SENSOR2
 Text Label 900  5250 2    60   ~ 0
 SENSOR0
@@ -538,18 +530,14 @@ F 3 "" H 1100 4850 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1100 4850 1100 4950
-Wire Wire Line
-	1100 4950 1100 5050
+	1100 4850 1100 5050
 Wire Wire Line
 	1100 4950 1600 4950
 Wire Wire Line
 	1600 4950 1600 5050
 Connection ~ 1100 4950
 Wire Wire Line
-	1100 5650 1100 5750
-Wire Wire Line
-	1100 5750 1100 5850
+	1100 5650 1100 5850
 Wire Wire Line
 	1100 5750 1600 5750
 Wire Wire Line
@@ -593,7 +581,7 @@ L RSMALL R3
 U 1 1 54E56E1C
 P 2400 5150
 F 0 "R3" V 2490 5145 40  0000 C CNN
-F 1 "2k" V 2315 5150 40  0000 C CNN
+F 1 "10k" V 2315 5150 40  0000 C CNN
 F 2 "~" V 2330 5150 30  0000 C CNN
 F 3 "~" H 2400 5200 30  0000 C CNN
 	1    2400 5150
@@ -626,18 +614,14 @@ F 3 "" H 2400 4850 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2400 4850 2400 4950
-Wire Wire Line
-	2400 4950 2400 5050
+	2400 4850 2400 5050
 Wire Wire Line
 	2400 4950 2900 4950
 Wire Wire Line
 	2900 4950 2900 5050
 Connection ~ 2400 4950
 Wire Wire Line
-	2400 5650 2400 5750
-Wire Wire Line
-	2400 5750 2400 5850
+	2400 5650 2400 5850
 Wire Wire Line
 	2400 5750 2900 5750
 Wire Wire Line
@@ -681,7 +665,7 @@ L RSMALL R5
 U 1 1 54E56E4A
 P 3750 5150
 F 0 "R5" V 3840 5145 40  0000 C CNN
-F 1 "51k" V 3665 5150 40  0000 C CNN
+F 1 "10k" V 3665 5150 40  0000 C CNN
 F 2 "~" V 3680 5150 30  0000 C CNN
 F 3 "~" H 3750 5200 30  0000 C CNN
 	1    3750 5150
@@ -714,18 +698,14 @@ F 3 "" H 3750 4850 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3750 4850 3750 4950
-Wire Wire Line
-	3750 4950 3750 5050
+	3750 4850 3750 5050
 Wire Wire Line
 	3750 4950 4250 4950
 Wire Wire Line
 	4250 4950 4250 5050
 Connection ~ 3750 4950
 Wire Wire Line
-	3750 5650 3750 5750
-Wire Wire Line
-	3750 5750 3750 5850
+	3750 5650 3750 5850
 Wire Wire Line
 	3750 5750 4250 5750
 Wire Wire Line
@@ -826,13 +806,7 @@ F 3 "" H 5050 2500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5050 2500 5050 2600
-Wire Wire Line
-	5050 2600 5050 3100
-Wire Wire Line
-	5050 3100 5050 3600
-Wire Wire Line
-	5050 3600 5050 4100
+	5050 2500 5050 4100
 Wire Wire Line
 	5050 2600 4800 2600
 Wire Wire Line
@@ -856,9 +830,7 @@ F 3 "" H 1800 4000 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1800 3800 1800 3900
-Wire Wire Line
-	1800 3900 1800 4000
+	1800 3800 1800 4000
 Wire Wire Line
 	1800 3900 1900 3900
 Wire Wire Line
@@ -876,9 +848,7 @@ F 3 "" H 1800 1500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1800 1500 1800 1600
-Wire Wire Line
-	1800 1600 1800 1900
+	1800 1500 1800 1900
 Wire Wire Line
 	1800 1600 1900 1600
 Wire Wire Line
@@ -901,9 +871,7 @@ Wire Wire Line
 Wire Wire Line
 	4250 1600 4250 950 
 Wire Wire Line
-	3500 750  3500 1100
-Wire Wire Line
-	3500 1100 3500 1250
+	3500 750  3500 1250
 Connection ~ 3750 5250
 Connection ~ 2400 5250
 Connection ~ 1100 5250
@@ -911,4 +879,10 @@ Connection ~ 1600 5250
 Connection ~ 2900 5250
 Connection ~ 4250 5250
 NoConn ~ 6950 5350
+Wire Wire Line
+	4050 2450 3800 2450
+Wire Wire Line
+	3800 2550 4050 2550
+Wire Wire Line
+	4050 2650 3800 2650
 $EndSCHEMATC
