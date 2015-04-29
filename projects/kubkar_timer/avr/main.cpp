@@ -20,28 +20,28 @@ uint16_t finish_times[LANE_COUNT];
 inline uint8_t digit_to_segments(uint8_t digit){
 	//Mapping between digits and 7 segment values.  Since the display
 	// is common anode, we need to invert the values (a high bit means off).
-	// We always keep pin LED pin 3 (the colon) enabled.
+	// We always keep pin LED pin 3 (the colon) disabled.
 	switch(digit){
 		case 0:
-			return 0x02;
+			return 0x0A;
 		case 1:
-			return 0x73;
+			return 0x7B;
 		case 2:
-			return 0x44;
+			return 0x4C;
 		case 3:
-			return 0x60;
+			return 0x68;
 		case 4:
-			return 0x31;
+			return 0x39;
 		case 5:
-			return 0xA0;
+			return 0xA8;
 		case 6:
-			return 0x80;
+			return 0x88;
 		case 7:
-			return 0x72;
+			return 0x7A;
 		case 8:
-			return 0x00;
+			return 0x08;
 		case 9:
-			return 0x20;
+			return 0x28;
 	}
 	
 	return 0xFF;
@@ -96,8 +96,8 @@ void timer_init(){
 	TCCR1A = 0x0;
 	TCCR1B |= _BV(CS11) | _BV(CS10) | _BV(WGM12);
 	
-	//Set compare value to be F_CPU / 100 (with a 64 prescaler) -- fire interrupt every ten milliseconds
-	OCR1A = F_CPU / 6400;
+	//Set compare value to be F_CPU / 1000 (with a 64 prescaler) -- fire interrupt every millisecond
+	OCR1A = F_CPU / 64000;
 	
 	//Enable compare interrupt
 	TIMSK1 = _BV(OCIE1A);
@@ -155,7 +155,7 @@ int main (void){
 		
 		//Start the timer
 		timer_init();
-		time = 5;
+		time = 0;
 		
 		//Wait for the races to finish, the stop button to be pressed, or the time to run out (99.99 seconds).
 		while(1){
