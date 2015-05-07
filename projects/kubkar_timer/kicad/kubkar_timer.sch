@@ -37,9 +37,9 @@ $Descr User 10000 7000
 encoding utf-8
 Sheet 1 1
 Title "Kub Kar Timing Circuit"
-Date "19 feb 2015"
+Date "27 apr 2015"
 Rev "1"
-Comp "Digital Cave"
+Comp "Wyatt Olson - http://digitalcave.ca"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -491,7 +491,7 @@ L RSMALL R1
 U 1 1 54E56B74
 P 1100 5150
 F 0 "R1" V 1190 5145 40  0000 C CNN
-F 1 "2k" V 1015 5150 40  0000 C CNN
+F 1 "10k" V 1015 5150 40  0000 C CNN
 F 2 "~" V 1030 5150 30  0000 C CNN
 F 3 "~" H 1100 5200 30  0000 C CNN
 	1    1100 5150
@@ -508,16 +508,16 @@ F 3 "~" H 1600 5200 30  0000 C CNN
 	1    1600 5150
 	1    0    0    -1  
 $EndComp
-Text Label 3800 2450 0    60   ~ 0
+Text Label 4050 2450 0    60   ~ 0
 SENSOR0
-Text Label 3800 2550 0    60   ~ 0
+Text Label 4050 2550 0    60   ~ 0
 SENSOR1
-Text Label 3800 2650 0    60   ~ 0
+Text Label 4050 2650 0    60   ~ 0
 SENSOR2
-Text Label 1050 5250 2    60   ~ 0
+Text Label 900  5250 2    60   ~ 0
 SENSOR0
 Wire Wire Line
-	1050 5250 1100 5250
+	900  5250 1100 5250
 $Comp
 L VCC #PWR1
 U 1 1 54E56C31
@@ -581,7 +581,7 @@ L RSMALL R3
 U 1 1 54E56E1C
 P 2400 5150
 F 0 "R3" V 2490 5145 40  0000 C CNN
-F 1 "2k" V 2315 5150 40  0000 C CNN
+F 1 "10k" V 2315 5150 40  0000 C CNN
 F 2 "~" V 2330 5150 30  0000 C CNN
 F 3 "~" H 2400 5200 30  0000 C CNN
 	1    2400 5150
@@ -598,10 +598,10 @@ F 3 "~" H 2900 5200 30  0000 C CNN
 	1    2900 5150
 	1    0    0    -1  
 $EndComp
-Text Label 2350 5250 2    60   ~ 0
+Text Label 2200 5250 2    60   ~ 0
 SENSOR1
 Wire Wire Line
-	2350 5250 2400 5250
+	2200 5250 2400 5250
 $Comp
 L VCC #PWR5
 U 1 1 54E56E2A
@@ -665,7 +665,7 @@ L RSMALL R5
 U 1 1 54E56E4A
 P 3750 5150
 F 0 "R5" V 3840 5145 40  0000 C CNN
-F 1 "2k" V 3665 5150 40  0000 C CNN
+F 1 "10k" V 3665 5150 40  0000 C CNN
 F 2 "~" V 3680 5150 30  0000 C CNN
 F 3 "~" H 3750 5200 30  0000 C CNN
 	1    3750 5150
@@ -682,10 +682,10 @@ F 3 "~" H 4250 5200 30  0000 C CNN
 	1    4250 5150
 	1    0    0    -1  
 $EndComp
-Text Label 3700 5250 2    60   ~ 0
+Text Label 3550 5250 2    60   ~ 0
 SENSOR2
 Wire Wire Line
-	3700 5250 3750 5250
+	3550 5250 3750 5250
 $Comp
 L VCC #PWR8
 U 1 1 54E56E58
@@ -872,4 +872,17 @@ Wire Wire Line
 	4250 1600 4250 950 
 Wire Wire Line
 	3500 750  3500 1250
+Connection ~ 3750 5250
+Connection ~ 2400 5250
+Connection ~ 1100 5250
+Connection ~ 1600 5250
+Connection ~ 2900 5250
+Connection ~ 4250 5250
+NoConn ~ 6950 5350
+Wire Wire Line
+	4050 2450 3800 2450
+Wire Wire Line
+	3800 2550 4050 2550
+Wire Wire Line
+	4050 2650 3800 2650
 $EndSCHEMATC
