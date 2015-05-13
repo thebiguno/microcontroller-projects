@@ -14,7 +14,7 @@ Display::Display() :
 
 void Display::update(State state){
 	char_display.mark_dirty();
-	hd44780.set_display(DISPLAY_ON | DISPLAY_CURSOR_OFF | DISPLAY_BLINK_OFF);
+	hd44780.set_display(hd44780.DISPLAY_ON | hd44780.DISPLAY_CURSOR_OFF | hd44780.DISPLAY_BLINK_OFF);
 	
 	if (state.get_state() == STATE_LOCKED){
 		char buffer[DISPLAY_COLS + 1];
