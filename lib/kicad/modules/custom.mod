@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Monday, March 16, 2015 'amt' 11:16:51 am
+PCBNEW-LibModule-V1  Wed 13 May 2015 09:08:35 PM MDT
 # encoding utf-8
 Units mm
 $INDEX
@@ -13,6 +13,7 @@ BB8
 BRIDGE_RECTIFIER_SQUARE
 CP22V
 CRYSTAL_RESONATOR
+CRYSTAL_SMD_2.5x2
 CRYSTAL_SMD_5x3.2
 D2
 DIGITALCAVE_AUTHOR
@@ -91,7 +92,6 @@ WO10
 XBEE
 XBEE_SPARKFUN_BREAKOUT
 c_elec_18x18
-crystal_smd_2.5x2
 i4-PAC-5
 mouse_bites
 skrhaae010
@@ -1328,6 +1328,47 @@ Of 0 0 0
 Ro 0 0 0
 $EndSHAPE3D
 $EndMODULE CRYSTAL_RESONATOR
+$MODULE CRYSTAL_SMD_2.5x2
+Po 0 0 0 15 5554116C 00000000 ~~
+Li CRYSTAL_SMD_2.5x2
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -3.5 1 1 0 0.15 N I 21 N "CRYSTAL_SMD_2.5x2"
+T1 0 4 1 1 0 0.15 N I 21 N "VAL**"
+DS -2 -1.5 2 -1.5 0.15 21
+DS 2 -1.5 2 1.5 0.15 21
+DS 2 1.5 -2 1.5 0.15 21
+DS -2 1.5 -2 -1.5 0.15 21
+$PAD
+Sh "4" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.85 -0.7
+$EndPAD
+$PAD
+Sh "3" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.85 -0.7
+$EndPAD
+$PAD
+Sh "2" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.85 0.7
+$EndPAD
+$PAD
+Sh "1" R 1.2 1.1 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.85 0.7
+$EndPAD
+$EndMODULE CRYSTAL_SMD_2.5x2
 $MODULE CRYSTAL_SMD_5x3.2
 Po 0 0 0 15 54204EC3 00000000 ~~
 Li CRYSTAL_SMD_5x3.2
@@ -8679,47 +8720,6 @@ Of 0 0 0
 Ro 0 0 0
 $EndSHAPE3D
 $EndMODULE c_elec_18x18
-$MODULE crystal_smd_2.5x2
-Po 0 0 0 15 54808D45 00000000 ~~
-Li crystal_smd_2.5x2
-Sc 0
-AR 
-Op 0 0 0
-T0 0 -3.5 1 1 0 0.15 N I 21 N "crystal_smd_2.5x2"
-T1 0 4 1 1 0 0.15 N I 21 N "VAL**"
-DS -2 -1.5 2 -1.5 0.15 21
-DS 2 -1.5 2 1.5 0.15 21
-DS 2 1.5 -2 1.5 0.15 21
-DS -2 1.5 -2 -1.5 0.15 21
-$PAD
-Sh "1" R 1.2 1.1 0 0 0
-Dr 0 0 0
-At SMD N 00888000
-Ne 0 ""
-Po -0.85 -0.7
-$EndPAD
-$PAD
-Sh "2" R 1.2 1.1 0 0 0
-Dr 0 0 0
-At SMD N 00888000
-Ne 0 ""
-Po 0.85 -0.7
-$EndPAD
-$PAD
-Sh "3" R 1.2 1.1 0 0 0
-Dr 0 0 0
-At SMD N 00888000
-Ne 0 ""
-Po 0.85 0.7
-$EndPAD
-$PAD
-Sh "4" R 1.2 1.1 0 0 0
-Dr 0 0 0
-At SMD N 00888000
-Ne 0 ""
-Po -0.85 0.7
-$EndPAD
-$EndMODULE crystal_smd_2.5x2
 $MODULE i4-PAC-5
 Po 0 0 0 15 53F64433 00000000 ~~
 Li i4-PAC-5
