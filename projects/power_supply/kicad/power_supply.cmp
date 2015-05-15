@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Fri 03 Apr 2015 11:16:04 AM MDT
+Cmp-Mod V01 Created by PcbNew date = Friday, May 15, 2015 'amt' 09:34:54 am
 
 BeginCmp
 TimeStamp = /550E42A9;
@@ -270,21 +270,21 @@ BeginCmp
 TimeStamp = /5503B422;
 Reference = D1;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206POL;
+IdModule  = SM1206_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503B7F3;
 Reference = D2;
 ValeurCmp = DSCHSMALL;
-IdModule  = SM1206POL;
+IdModule  = SM1206_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /551D7EDE;
 Reference = D3;
 ValeurCmp = DSCHSMALL;
-IdModule  = SM1206POL;
+IdModule  = SM1206_DIODE;
 EndCmp
 
 BeginCmp

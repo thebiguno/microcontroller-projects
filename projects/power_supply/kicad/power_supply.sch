@@ -39,7 +39,7 @@ encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
 Date "3 apr 2015"
-Rev "1"
+Rev "1.1"
 Comp "Digital Cave"
 Comment1 ""
 Comment2 ""
