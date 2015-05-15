@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Friday, May 15, 2015 'amt' 09:34:54 am
+Cmp-Mod V01 Created by PcbNew date = Friday, May 15, 2015 'amt' 09:41:02 am
 
 BeginCmp
 TimeStamp = /550E42A9;
@@ -1299,7 +1299,7 @@ BeginCmp
 TimeStamp = /54EBDFA7;
 Reference = X1;
 ValeurCmp = CRYSTAL_SMD_4PIN;
-IdModule  = crystal_smd_2.5x2;
+IdModule  = CRYSTAL_SMD_2.5x2;
 EndCmp
 
 EndListe
