@@ -30,7 +30,6 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:ubbb_32u4-cache
 EELAYER 27 0
 EELAYER END
 $Descr User 9000 7000
@@ -38,7 +37,7 @@ encoding utf-8
 Sheet 1 1
 Title "UBBB 32u4"
 Date "2 apr 2015"
-Rev "1.1"
+Rev "1.2"
 Comp "Digital Cave"
 Comment1 ""
 Comment2 ""

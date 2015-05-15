@@ -38,8 +38,8 @@ $Descr User 14500 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "3 apr 2015"
-Rev "1"
+Date "15 may 2015"
+Rev "1.1"
 Comp "Digital Cave"
 Comment1 ""
 Comment2 ""
@@ -2560,22 +2560,11 @@ F 3 "~" H 10100 6000 30  0000 C CNN
 	0    -1   1    0   
 $EndComp
 $Comp
-L DIODESCH D1
-U 1 1 5503B422
-P 7250 3450
-F 0 "D1" H 7250 3550 40  0000 C CNN
-F 1 "DIODESCH" H 7250 3350 40  0000 C CNN
-F 2 "~" H 7250 3450 60  0000 C CNN
-F 3 "~" H 7250 3450 60  0000 C CNN
-	1    7250 3450
-	-1   0    0    1   
-$EndComp
-$Comp
 L DSCHSMALL D2
 U 1 1 5503B7F3
 P 8050 4050
 F 0 "D2" V 8140 4045 40  0000 C CNN
-F 1 "DSCHSMALL" V 7965 4050 40  0000 C CNN
+F 1 "SCHOTTKEY" V 7965 4050 40  0000 C CNN
 F 2 "~" V 7980 4050 30  0000 C CNN
 F 3 "~" H 8050 4100 30  0000 C CNN
 	1    8050 4050
@@ -4166,9 +4155,9 @@ Wire Wire Line
 Wire Wire Line
 	4650 3950 4650 3850
 Wire Wire Line
-	6550 3450 7050 3450
+	6550 3450 7150 3450
 Wire Wire Line
-	7450 3450 7900 3450
+	7350 3450 7900 3450
 Wire Wire Line
 	11050 4450 11050 5250
 Connection ~ 11050 4750
@@ -4546,7 +4535,7 @@ L DSCHSMALL D3
 U 1 1 551D7EDE
 P 7750 4450
 F 0 "D3" V 7840 4445 40  0000 C CNN
-F 1 "DSCHSMALL" V 7665 4450 40  0000 C CNN
+F 1 "SCHOTTKEY" V 7665 4450 40  0000 C CNN
 F 2 "~" V 7680 4450 30  0000 C CNN
 F 3 "~" H 7750 4500 30  0000 C CNN
 	1    7750 4450
@@ -4744,4 +4733,15 @@ Text Notes 10800 3950 0    40   ~ 0
 Reverse polarity of electrolytic\ncaps on a negative channel
 Text Notes 4350 4300 0    40   ~ 0
 Reverse polarity of electrolytic\ncaps on a negative channel
+$Comp
+L DSCHSMALL D1
+U 1 1 555625C0
+P 7250 3450
+F 0 "D1" V 7340 3445 40  0000 C CNN
+F 1 "SCHOTTKEY" V 7165 3450 40  0000 C CNN
+F 2 "~" V 7180 3450 30  0000 C CNN
+F 3 "~" H 7250 3500 30  0000 C CNN
+	1    7250 3450
+	0    -1   1    0   
+$EndComp
 $EndSCHEMATC
