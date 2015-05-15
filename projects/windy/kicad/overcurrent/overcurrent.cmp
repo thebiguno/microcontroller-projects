@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Tuesday, April 14, 2015 'pmt' 03:33:10 pm
+Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Thursday, May 07, 2015 'pmt' 03:41:47 pm
 
 BeginCmp
 TimeStamp = /53F61D06;
@@ -498,10 +498,10 @@ IdModule  = Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm;
 EndCmp
 
 BeginCmp
-TimeStamp = /53DCFC03;
+TimeStamp = /554BE5A8;
 Reference = U5;
-ValeurCmp = DS1307;
-IdModule  = Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm;
+ValeurCmp = MCP7941X;
+IdModule  = Housings_SSOP:TSSOP-8_4.4x3mm_Pitch0.65mm;
 EndCmp
 
 BeginCmp
