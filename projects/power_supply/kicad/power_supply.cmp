@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Friday, May 15, 2015 'amt' 09:41:02 am
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, May 21, 2015 'pmt' 01:02:02 pm
 
 BeginCmp
 TimeStamp = /550E42A9;
@@ -267,23 +267,23 @@ IdModule  = USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
-TimeStamp = /5503B422;
+TimeStamp = /555625C0;
 Reference = D1;
-ValeurCmp = DIODESCH;
+ValeurCmp = SCHOTTKEY;
 IdModule  = SM1206_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5503B7F3;
 Reference = D2;
-ValeurCmp = DSCHSMALL;
+ValeurCmp = SCHOTTKEY;
 IdModule  = SM1206_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /551D7EDE;
 Reference = D3;
-ValeurCmp = DSCHSMALL;
+ValeurCmp = SCHOTTKEY;
 IdModule  = SM1206_DIODE;
 EndCmp
 
@@ -750,6 +750,13 @@ IdModule  = ISP_EDGE;
 EndCmp
 
 BeginCmp
+TimeStamp = /555E3C87;
+Reference = P2;
+ValeurCmp = CONN_3X2;
+IdModule  = pin_array_3x2;
+EndCmp
+
+BeginCmp
 TimeStamp = /5511FB93;
 Reference = Q1;
 ValeurCmp = TIP107;
@@ -1053,7 +1060,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5510D2C4;
 Reference = R43;
-ValeurCmp = 100k;
+ValeurCmp = 200k;
 IdModule  = SM0603_VALUE;
 EndCmp
 

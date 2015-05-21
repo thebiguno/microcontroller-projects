@@ -38,7 +38,7 @@ $Descr User 14500 14500
 encoding utf-8
 Sheet 1 1
 Title "Adjustable Modular Power Supply"
-Date "15 may 2015"
+Date "21 may 2015"
 Rev "1.1"
 Comp "Digital Cave"
 Comment1 ""
@@ -351,13 +351,13 @@ F 3 "" H 9350 10800 60  0000 C CNN
 $EndComp
 Text Label 4800 8750 0    60   ~ 0
 ENC1_A
-Text Label 5150 8850 0    60   ~ 0
+Text Label 5700 8850 0    60   ~ 0
 ENC1_B
 Text Label 4800 10150 0    60   ~ 0
 ENC1_SW
-Text Label 5150 8950 0    60   ~ 0
+Text Label 5700 8950 0    60   ~ 0
 ENC2_A
-Text Label 5150 9050 0    60   ~ 0
+Text Label 5700 9050 0    60   ~ 0
 ENC2_B
 Text Label 4800 10250 0    60   ~ 0
 ENC2_SW
@@ -4113,11 +4113,11 @@ Connection ~ 4800 6500
 Wire Wire Line
 	5800 3850 6850 3850
 Wire Wire Line
-	4800 8850 5150 8850
+	4800 8850 4900 8850
 Wire Wire Line
-	5150 8950 4800 8950
+	4900 8950 4800 8950
 Wire Wire Line
-	4800 9050 5150 9050
+	4800 9050 4900 9050
 Wire Wire Line
 	1800 6550 2000 6550
 Wire Wire Line
@@ -4743,5 +4743,16 @@ F 2 "~" V 7180 3450 30  0000 C CNN
 F 3 "~" H 7250 3500 30  0000 C CNN
 	1    7250 3450
 	0    -1   1    0   
+$EndComp
+$Comp
+L CONN_3X2 P2
+U 1 1 555E3C87
+P 5300 9000
+F 0 "P2" H 5300 9250 50  0000 C CNN
+F 1 "PROG_JMP" V 5300 9050 40  0000 C CNN
+F 2 "" H 5300 9000 60  0000 C CNN
+F 3 "" H 5300 9000 60  0000 C CNN
+	1    5300 9000
+	-1   0    0    -1  
 $EndComp
 $EndSCHEMATC
