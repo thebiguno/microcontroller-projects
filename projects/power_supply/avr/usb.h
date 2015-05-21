@@ -1,6 +1,7 @@
 #ifndef USB_H
 #define USB_H
 
+#include "lib/bootloader/bootloader.h"
 #include "lib/usb/rawhid.h"
 
 #include "Channel.h"
@@ -62,6 +63,12 @@
 //This sets the specified DAC number / channel to the max value, to be used as AREF.
 // Manually do this once, on a DAC channel that is not in use.
 #define MESSAGE_CONFIGURE_AREF			11
+
+//Computer -> PSU: Jump to bootloader in preparation for uploading new firmware: []
+// PSU -> Computer: N/A
+// Once this is completed, dfu command line tool can be used to flash new program.
+// After programming, reset is done via a hard power cycle.
+#define MESSAGE_BOOTLOADER_JUMP			12
 
 #define TARGET_VOLTAGE_ACTUAL_SLOPE			0
 #define TARGET_VOLTAGE_ACTUAL_OFFSET		1

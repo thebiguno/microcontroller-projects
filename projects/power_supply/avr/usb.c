@@ -201,6 +201,11 @@ void usb_dispatch(){
 				
 				usb_send_dac_confirmation(dac_number);
 			}
+			
+			case MESSAGE_BOOTLOADER_JUMP: {
+				_delay_ms(1000);	//Wait for the client python program to exit
+				bootloader_jump();
+			}
 		}
 	}
 }
