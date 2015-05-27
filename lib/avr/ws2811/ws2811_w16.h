@@ -43,7 +43,7 @@ void ws2811_set(const void *values) {
 			"            LDI r16, 180\n"						// load the byte count into r2 (1)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
-			// bit 7 (1125 ns)
+			// bit 7 (1062.5 ns)
 			"start_byte: OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)
@@ -113,7 +113,7 @@ void ws2811_set(const void *values) {
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
-			// bit 0 (1125 ns if final byte, otherwise 1625 ns)
+			// bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS a0\n" 							// if carry is set, skip next instruction (1/2)
