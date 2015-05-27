@@ -1,17 +1,10 @@
-Cmp-Mod V01 Created by Cvpcb (2015-03-21 BZR 5528)-product   date = Tuesday, March 31, 2015 'pmt' 07:45:49 pm
+Cmp-Mod V01 Created by Cvpcb (2015-03-04 BZR 5478)-product   date = Thursday, May 07, 2015 'pmt' 03:41:47 pm
 
 BeginCmp
 TimeStamp = /53F61D06;
 Reference = BR1;
 ValeurCmp = FUS45-0045B;
 IdModule  = custom:i4-PAC-5;
-EndCmp
-
-BeginCmp
-TimeStamp = /53E94030;
-Reference = C1;
-ValeurCmp = 1u;
-IdModule  = custom:SM0603_VALUE;
 EndCmp
 
 BeginCmp
@@ -95,7 +88,7 @@ BeginCmp
 TimeStamp = /551AA2D8;
 Reference = CON1;
 ValeurCmp = USB-MINI-B;
-IdModule  = Connect:USB_Mini-B;
+IdModule  = custom:USB_MINI_B_fixed;
 EndCmp
 
 BeginCmp
@@ -116,7 +109,7 @@ BeginCmp
 TimeStamp = /55173658;
 Reference = D3;
 ValeurCmp = IN4007;
-IdModule  = custom:SM0603_DIODE;
+IdModule  = custom:D2;
 EndCmp
 
 BeginCmp
@@ -169,6 +162,27 @@ IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
 EndCmp
 
 BeginCmp
+TimeStamp = /552C70A4;
+Reference = D11;
+ValeurCmp = DSCHSMALL;
+IdModule  = custom:SM0603_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /552C6F34;
+Reference = D12;
+ValeurCmp = DSCHSMALL;
+IdModule  = custom:SM0603_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /552C937E;
+Reference = D13;
+ValeurCmp = ZENERsmall;
+IdModule  = custom:SM0603_DIODE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D25596;
 Reference = DS1;
 ValeurCmp = HD44780;
@@ -190,7 +204,7 @@ IdModule  = Fuse_Holders_and_Fuses:Fuse_TE5_Littlefuse-395Series;
 EndCmp
 
 BeginCmp
-TimeStamp = /55158B59;
+TimeStamp = /55223350;
 Reference = P1;
 ValeurCmp = ISP;
 IdModule  = custom:ISP_EDGE;
@@ -283,7 +297,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5518A575;
 Reference = R8;
-ValeurCmp = 20k;
+ValeurCmp = 51k;
 IdModule  = custom:SM0603_VALUE;
 EndCmp
 
@@ -372,8 +386,22 @@ IdModule  = custom:SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /552C4866;
+Reference = R21;
+ValeurCmp = 1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /54D25D7D;
 Reference = R22;
+ValeurCmp = 1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /552C61B4;
+Reference = R23;
 ValeurCmp = 1k;
 IdModule  = custom:SM0603_VALUE;
 EndCmp
@@ -470,10 +498,10 @@ IdModule  = Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm;
 EndCmp
 
 BeginCmp
-TimeStamp = /53DCFC03;
+TimeStamp = /554BE5A8;
 Reference = U5;
-ValeurCmp = DS1307;
-IdModule  = Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm;
+ValeurCmp = MCP7941X;
+IdModule  = Housings_SSOP:TSSOP-8_4.4x3mm_Pitch0.65mm;
 EndCmp
 
 BeginCmp

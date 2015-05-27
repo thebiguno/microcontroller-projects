@@ -16,14 +16,16 @@ Encoders::Encoders(){
 }
 
 int8_t Encoders::get_encoder1_movement(){
-	uint8_t result = encoder1_movement;
+	double result = encoder1_movement;
 	encoder1_movement = 0;
+	result = result / 4;
 	return result;
 }
 
 int8_t Encoders::get_encoder2_movement(){
-	uint8_t result = encoder2_movement;
+	double result = encoder2_movement;
 	encoder2_movement = 0;
+	result = result / 4;
 	return result;
 }
 
@@ -46,34 +48,32 @@ ISR(PCINT0_vect){
 	encoder1 = ((encoder1 << 2) | (PINB & 0x03)) & 0x0F;
 	encoder2 = ((encoder2 << 2) | ((PINB >> 2) & 0x03)) & 0x0F;
 	
-	//The encoders I am using now output a full sequence for one step, so we only look for one
-	// of the sub-sequences to avoid 4x faster movement than we want.  Change this as needed.
 	switch(encoder1){
 		case 0x01:
-		//case 0x07:
-		//case 0x08:
-		//case 0x0E:
+		case 0x07:
+		case 0x08:
+		case 0x0E:
 			encoder1_movement++;	//Clockwise
 			break;
 		case 0x02:
-		//case 0x04:
-		//case 0x0B:
-		//case 0x0D:
+		case 0x04:
+		case 0x0B:
+		case 0x0D:
 			encoder1_movement--;	//Counter Clockwise
 			break;
 	}
 	
 	switch(encoder2){
 		case 0x01:
-		//case 0x07:
-		//case 0x08:
-		//case 0x0E:
+		case 0x07:
+		case 0x08:
+		case 0x0E:
 			encoder2_movement++;	//Clockwise
 			break;
 		case 0x02:
-		//case 0x04:
-		//case 0x0B:
-		//case 0x0D:
+		case 0x04:
+		case 0x0B:
+		case 0x0D:
 			encoder2_movement--;	//Counter Clockwise
 			break;
 	}
