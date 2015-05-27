@@ -1,5 +1,3 @@
-include ../build/variables.mk
-
 PROJECT=clock
 MMCU=atmega168
 SOURCES=main.c timer/timer.c lib/time/time.c lib/draw/draw.c lib/draw/matrix/matrix.c lib/twi/twi.c lib/serial/serial.c lib/serial/serial_sync_rx.c lib/serial/serial_sync_tx.c lib/Ring/Ring.cpp
@@ -17,9 +15,12 @@ endif
 ifdef DIGITAL
 SOURCES+= clock/digital.c lib/draw/fonts/f_5X13.c lib/draw/fonts/cp_numbers.c 
 endif
+ifdef FIB
+SOURCES+= clock/fibonacci.c 
+endif
 
 ifndef F_CPU 
 $(error F_CPU is undefined.  Use syntax 'make F_CPU=xx000000' to supply clock speed)
 endif
 
-include ../build/targets.mk
+include ../build/avr/targets.mk
