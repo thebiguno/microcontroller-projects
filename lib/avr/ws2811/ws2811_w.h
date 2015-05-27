@@ -34,7 +34,7 @@ void ws2811_set(const void *values) {
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// bit 7
 			"start_byte: OUT %[port], %[high]\n"				// drive the line high (1)								L L
-			"            BRCS a7\n" 								// if carry is set, skip next instruction (1/2)			H H
+			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)			H H
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)							H H
 			"a7:         NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"	// (5)													L H (5)
 			"            OUT %[port], %[low]\n"					// drive the line low (1)								L H
@@ -87,7 +87,7 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)							H H
 			"a0:         LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)						L H (2)
 			"            DEC r16\n"								// decrements the byte count (1)						L H
-			"            CPI r16, 0\n"							// compare byte count to 0 (1)						L H
+			"            CPI r16, 0\n"							// compare byte count to 0 (1)							L H
 			"            BREQ end\n"							// jump to the end if the array is done (1)				L H
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)		L H
 			"            NOP\n"									// (1)													L H
