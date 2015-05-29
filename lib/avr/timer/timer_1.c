@@ -78,7 +78,10 @@ uint32_t timer_micros(){
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \
 	defined(__AVR_ATmega644PA__)   || \
-	defined(__AVR_ATmega1284P__)
+	defined(__AVR_ATmega1284P__)   || \
+	defined(__AVR_ATmega32U2__)    || \
+	defined(__AVR_ATmega16U4__)    || \
+	defined(__AVR_ATmega32U4__)
 EMPTY_INTERRUPT(TIMER1_COMPB_vect)
 EMPTY_INTERRUPT(TIMER1_OVF_vect)
 ISR(TIMER1_COMPA_vect){
