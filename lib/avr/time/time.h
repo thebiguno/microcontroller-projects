@@ -35,7 +35,7 @@ void time_get(uint32_t sec, struct time_t *t);
 /*
  * Computes the yday field.
  */
-void time_yday(struct time_t *t) {
+void time_yday(struct time_t *t);
 
 #endif
 

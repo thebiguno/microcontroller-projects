@@ -1,7 +1,5 @@
 #include "clock.h"
 #include "../lib/draw/draw.h"
-#include "../lib/draw/fonts/f_5x13.h"
-#include "../lib/draw/fonts/cp_numbers.h"
 
 
 void clock_draw(struct time_t *t) {
