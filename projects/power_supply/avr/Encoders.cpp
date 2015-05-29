@@ -9,10 +9,9 @@ volatile uint8_t buttons_held;
 volatile uint8_t buttons_released;
 
 Encoders::Encoders(){
-	//Enable pin change interrupts for encoders
-	PCICR |= _BV(PCIE0);
-	PCMSK0 |= 0x0F;							//Enable bits 0..3 for pin change interrupts
-	PORTB |= _BV(PORTB0) | _BV(PORTB1) | _BV(PORTB2) | _BV(PORTB3);
+	PCICR |= _BV(PCIE0);												//Enable pin change interrupts for encoders
+	PCMSK0 |= 0x0F;														//Enable bits 0..3 for pin change interrupts
+	PORTB |= _BV(PORTB0) | _BV(PORTB1) | _BV(PORTB2) | _BV(PORTB3);		//Pullups on 0..3
 }
 
 int8_t Encoders::get_encoder1_movement(){
@@ -53,13 +52,13 @@ ISR(PCINT0_vect){
 		case 0x07:
 		case 0x08:
 		case 0x0E:
-			encoder1_movement++;	//Clockwise
+			encoder1_movement--;	//Counter Clockwise
 			break;
 		case 0x02:
 		case 0x04:
 		case 0x0B:
 		case 0x0D:
-			encoder1_movement--;	//Counter Clockwise
+			encoder1_movement++;	//Clockwise
 			break;
 	}
 	
@@ -68,13 +67,13 @@ ISR(PCINT0_vect){
 		case 0x07:
 		case 0x08:
 		case 0x0E:
-			encoder2_movement++;	//Clockwise
+			encoder2_movement--;	//Counter Clockwise
 			break;
 		case 0x02:
 		case 0x04:
 		case 0x0B:
 		case 0x0D:
-			encoder2_movement--;	//Counter Clockwise
+			encoder2_movement++;	//Clockwise
 			break;
 	}
 }
