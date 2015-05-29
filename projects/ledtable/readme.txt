@@ -14,17 +14,19 @@ Games:
 - Checkers
 - Fibonacci Checkers
 - Tic-tac-toe
-- Minesweeper
 - Connect Four
 - Go
 - Reversi
 - Space Invaders
 - Pong
+- Minesweeper?
 - Memory?
 - Chess?
 
 Web Services:
 - Weather
+- Twitter Feed
+- News / RSS Feed
 
 Animations:
 - Plasma
@@ -36,5 +38,3 @@ Other
 - Game of Life
 - VU Meter
 - Mood light
-- Twitter Feed
-- News / RSS Feed

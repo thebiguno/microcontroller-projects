@@ -28,7 +28,7 @@
 /*
  * The core of all draw implementations; this must be implemented by the driver.
  */
-void set_pixel(int16_t x, int16_t y, uint8_t value, uint8_t overlay);
+void set_pixel(int16_t x, int16_t y, pixel_t value, uint8_t overlay);
 
 /* 
  * This must be implemented by the driver.
