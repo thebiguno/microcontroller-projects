@@ -299,5 +299,5 @@ void ws281x_set(const void *values) {
 		);
 	
 	sei();
-	_delay_us(6);  // hold the line low for 50 microseconds to send the reset signal.
+	_delay_us(6);  // hold the line low for 6 microseconds to send the reset signal.
 }
