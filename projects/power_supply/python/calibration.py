@@ -300,8 +300,9 @@ try:
 	decrement = re.compile('^-[0-9]+$')
 
 	while True:
-		channel = int(raw_input("Channel (0 - " + str(CHANNEL_COUNT - 1) + "): "))
-		if (channel >= 0 and channel < CHANNEL_COUNT):
+		channel = int(raw_input("Channel (1 - " + str(CHANNEL_COUNT) + "): "))
+		if (channel >= 1 and channel <= CHANNEL_COUNT):
+			channel = channel - 1;	#Internally this is zero based.
 			break;
 		print("Invalid channel.  Please enter a valid channel number.")
 
@@ -324,21 +325,21 @@ To do this, you will need a multimeter which has both a voltage and current sens
 
 Please choose one of the following calibration options:
 
-1) Calibrate Voltage
-2) Calibrate Current
-3) Set DAC Address
-4) Set AREF source
+V) Calibrate Voltage
+C) Calibrate Current
+D) Set DAC Address
+A) Set AREF source
 Q) Quit
 
 Enter a menu option: """)
 
-		if response == "1":
+		if response == "V" or response == "v":
 			calibrate_voltage()
-		elif response == "2":
+		elif response == "C" or response == "c":
 			calibrate_current()
-		elif response == "3":
+		elif response == "D" or response == "d":
 			configure_dac_address()
-		elif response == "4":
+		elif response == "A" or response == "a":
 			configure_aref();
 		elif response == "Q" or response == "q":
 			break;
