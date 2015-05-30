@@ -1,6 +1,3 @@
-#ifndef ws2811_h
-#define ws2811_h
-
 #ifndef WS2811_PIN
 #define WS2811_PIN 2
 #endif
@@ -8,12 +5,6 @@
 #include <stdint.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-
-typedef struct ws2811_t {
-    uint8_t green;
-    uint8_t red;
-    uint8_t blue;
-} ws2811_t;
 
 /*
  * Sends GRB values to a chain of WS2811 leds.
@@ -107,5 +98,3 @@ void ws2811_set(const void *values) {
 	sei();
 	_delay_us(50);  // hold the line low for 50 microseconds to send the reset signal.
 }
-
-#endif

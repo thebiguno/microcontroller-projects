@@ -1,19 +1,14 @@
-#ifndef ws2811_h
-#define ws2811_h
-
 #ifndef WS2811_PIN
 #define WS2811_PIN 2
+#endif
+
+#ifndef WS2811_COUNT
+#define WS2811_COUNT 144
 #endif
 
 #include <stdint.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-
-typedef struct ws2811_t {
-    uint8_t green;
-    uint8_t red;
-    uint8_t blue;
-} ws2811_t;
 
 /*
 http://wavedrom.com/editor.html
@@ -23,7 +18,8 @@ http://wavedrom.com/editor.html
   {name: 'wire', wave: 'xxxxx1....0...........1........0.......1' },
   {name: 'time', wave: 'xxxxx2....2...........2........2.......x', data: ['312.5ns','750ns','562.5ns','500ns'] },
   {name: 'data', wave: 'xxxxx2................2................x', data: ['bit n (0)','bit n (1)']}
-]}*/
+]}
+*/
 
 
 /*
@@ -31,7 +27,7 @@ http://wavedrom.com/editor.html
  * values a pointer to the first RGB triple (WS2811) or GRB triple (WS2812)
  * sz the number of triples
  */
-void ws2811_set(const void *values, uint16_t sz) {
+void ws281x_set(const void *values) {
 	cli();
 	
 	uint8_t low_val = WS2811_PORT & ~_BV(WS2811_PIN);
@@ -40,15 +36,15 @@ void ws2811_set(const void *values, uint16_t sz) {
 	asm volatile( 
 			// current byte being sent is in r0
 			// address of the end of the array is in r16
-			"            LDI r16, [sz]\n"						// load the size into r2 (1)
+			"            LDI r16, %[ct]\n"						// load the size into r2 (1)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 7 (1062.5 ns)
 			"start_byte: OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g7:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -56,9 +52,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a6\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g6:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -66,9 +62,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a5\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g5:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -76,19 +72,19 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a4\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            OUT %[port], %[low]\n"					// drive the line low (1)
+			"g4:         OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a3\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g3:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -96,9 +92,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a2\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g2:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -106,9 +102,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a1\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g1:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -116,9 +112,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// g bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a0\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS g0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g0:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n"
@@ -128,9 +124,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 7 (1062.5 ns)
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r7:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -138,9 +134,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a6\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r6:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -148,9 +144,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a5\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r5:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -158,9 +154,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a4\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r4:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -168,9 +164,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a3\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r3:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -178,9 +174,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a2\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r2:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -188,9 +184,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a1\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r1:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -198,9 +194,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// r bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a0\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS r0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"r0:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n"
@@ -210,9 +206,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 7 (1062.5 ns)
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b7:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -220,9 +216,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a6\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b6:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -230,9 +226,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a5\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b5:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -240,9 +236,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a4\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b4:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -250,9 +246,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a3\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b3:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -260,9 +256,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a2\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b2:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -270,9 +266,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a1\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"b1:         NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            NOP\n" "NOP\n" "NOP\n"
@@ -280,9 +276,9 @@ void ws2811_set(const void *values, uint16_t sz) {
 			// b bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            BRCS a0\n" 							// if carry is set, skip next instruction (1/2)
+			"            BRCS b0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            DEC r16\n"								// decrements the size count (1)
+			"b0:         DEC r16\n"								// decrements the size count (1)
 			"            CPI r16, 0\n"							// compare size count to 0 (1)
 			"            NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
@@ -295,15 +291,13 @@ void ws2811_set(const void *values, uint16_t sz) {
 			"            NOP\n" "NOP\n"
 	: // no outputs
 	: // inputs
+	[ct]    "M" (WS2811_COUNT),		// the number of leds
 	[ptr]   "e" (values), 	// pointer to grb values
-	[sz]    "r" (sz),		// number of grb values
 	[high]  "r" (high_val),	// register that contains the "up" value for the output port (constant)
 	[low]   "r" (low_val),	// register that contains the "down" value for the output port (constant)
 	[port]  "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
 	
 	sei();
-	_delay_us(6);  // hold the line low for 50 microseconds to send the reset signal.
+	_delay_us(6);  // hold the line low for 6 microseconds to send the reset signal.
 }
-
-#endif

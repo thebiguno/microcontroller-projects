@@ -1,0 +1,155 @@
+#include "Life.h"
+#include "lib/analog/analog.h"
+#include "lib/draw/draw.h"
+#include "lib/timer/timer.h"
+#include <util/delay.h>
+#include <stdlib.h>
+
+using namespace digitalcave;
+
+void Life::start() {
+	state = (uint8_t**) malloc(MATRIX_WIDTH * sizeof(uint8_t));
+	for (uint8_t i = 0; i < MATRIX_WIDTH; i++) state[i] = (uint8_t*) malloc(MATRIX_HEIGHT * sizeof(uint8_t));
+	hashes = (uint32_t*) malloc(LIFE_HASH_COUNT * sizeof(uint32_t));
+	running = 1;
+}
+	
+void Life::stop() {
+	running = 0;
+}
+	
+void Life::setState(uint8_t x, uint8_t y, uint8_t value) {
+	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
+	state[x][y] = value;
+}
+
+uint8_t Life::getState(uint8_t x, uint8_t y) {
+	if (x < 0 || y < 0 || x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0x00;
+	return state[x][y]; 
+}
+
+uint8_t Life::getNeighborCount(uint8_t x, uint8_t y) {
+	uint8_t count = 0;
+	if (getState(x - 1, y - 1)) count++;
+	if (getState(x - 1, y)) count++;
+	if (getState(x - 1, y + 1)) count++;
+	if (getState(x, y - 1)) count++;
+	if (getState(x, y + 1)) count++;
+	if (getState(x + 1, y - 1)) count++;
+	if (getState(x + 1, y)) count++;
+	if (getState(x + 1, y + 1)) count++;
+	return count;
+}
+
+uint32_t Life::getStateHash() {
+	uint32_t hash = 0;
+	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+			hash += x * y * (getState(x, y) ? 1 : 0);
+		}
+	}
+	return hash;
+}
+
+void Life::clear() {
+    for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+			setState(x, y, 0);
+		}
+    }
+
+	flush();
+	matrix_write_buffer();
+}
+
+pixel_t Life::translate(uint8_t state) {
+	pixel_t result;
+	if (state > 0) result.red = 0xFF;
+	return result;
+}
+
+void Life::flush() {
+    for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+			set_pixel(x, y, translate(state[x][y]), OVERLAY_REPLACE);
+		}
+    }
+}
+
+void Life::reset() {
+//	srandom(analog_read_p(0) + timer_micros() + timer_millis());
+
+	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
+		hashes[i] = i;
+	}
+	
+	clear();
+	
+	_delay_ms(100);
+
+	random();
+}
+
+void Life::randomize() {
+	// random start positions
+	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+			if ((random() & 0x3) == 0x3) {		//25% chance
+				setState(x, y, 0x01);
+			}
+		}
+	}
+	
+	flush();
+	matrix_write_buffer();
+}
+
+void Life::run() {
+	while (running) {
+		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+				uint8_t count = getNeighborCount(x, y);
+				if (count == 3) {
+					// birth
+					setState(x, y, 0x01);
+				}
+				else if (count == 2 || count == 3) {
+					// staying alive
+					setState(x, y, 0x01);
+				}
+				else {
+					setState(x, y, 0x00);
+				}
+			}
+		}
+
+		flush();
+		matrix_write_buffer();
+
+		//Store board hash
+		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
+			hashes[i] = hashes[i - 1];
+		}
+		hashes[0] = getStateHash();
+
+		uint8_t matches = 0;
+		for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
+			for (uint8_t j = i + 1; j < LIFE_HASH_COUNT; j++) {
+				if (hashes[i] == hashes[j]) matches++;
+			}
+		}
+		if (matches == 0) matches = 0;
+		else matches++;
+
+		if (matches >= LIFE_MATCH_COUNT) {
+			reset();
+		}
+
+		_delay_ms(70);
+	}
+	
+	free(hashes);
+	
+	for (uint8_t i = 0; i < MATRIX_WIDTH; i++) free(state[i]);
+	free(state);
+}
