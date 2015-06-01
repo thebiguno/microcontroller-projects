@@ -1,7 +1,7 @@
 PROJECT=led_table
 MMCU=atmega32u4
 F_CPU=16000000
-SOURCES=LedTable.cpp Life.cpp matrix.c lib/ws2811/ws281x_w16.c lib/timer/timer_0.c lib/usb/rawhid.c
+SOURCES=LedTable.cpp Life.cpp matrix.c lib/ws2811/ws281x_w16.c lib/psx/psx.c lib/timer/timer_0.c lib/usb/rawhid.c
 PROGRAMMER=dfu
 COMPILER=avr-g++
 

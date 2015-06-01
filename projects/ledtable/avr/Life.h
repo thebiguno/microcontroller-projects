@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "matrix.h"
+#include "lib/psx/psx.h"
 
 #define LIFE_HASH_COUNT			20
 #define LIFE_MATCH_COUNT		20
@@ -10,14 +11,13 @@
 namespace digitalcave {
 	class Life {
 	private:
-		uint8_t** state;
-		uint32_t* hashes;
+		uint8_t state[12][12];
+		uint32_t hashes[12];
 		uint8_t matches = 0;
 		uint8_t running = 0;
 	
 	public:
-		void start();
-		void stop();
+		Life();
 
 	private:
 		uint8_t getState(uint8_t x, uint8_t y);

@@ -7,17 +7,60 @@
 
 using namespace digitalcave;
 
-void Life::start() {
-	state = (uint8_t**) malloc(MATRIX_WIDTH * sizeof(uint8_t));
-	for (uint8_t i = 0; i < MATRIX_WIDTH; i++) state[i] = (uint8_t*) malloc(MATRIX_HEIGHT * sizeof(uint8_t));
-	hashes = (uint32_t*) malloc(LIFE_HASH_COUNT * sizeof(uint32_t));
-	running = 1;
-}
+Life::Life() {
+	uint8_t running = 1;
+	uint16_t buttons; 
 	
-void Life::stop() {
-	running = 0;
+	while (running) {
+		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+				uint8_t count = getNeighborCount(x, y);
+				if (count == 3) {
+					// birth
+					setState(x, y, 0x01);
+				}
+				else if (count == 2 || count == 3) {
+					// staying alive
+					setState(x, y, 0x01);
+				}
+				else {
+					setState(x, y, 0x00);
+				}
+			}
+		}
+
+		flush();
+		matrix_write_buffer();
+
+		//Store board hash
+		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
+			hashes[i] = hashes[i - 1];
+		}
+		hashes[0] = getStateHash();
+
+		uint8_t matches = 0;
+		for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
+			for (uint8_t j = i + 1; j < LIFE_HASH_COUNT; j++) {
+				if (hashes[i] == hashes[j]) matches++;
+			}
+		}
+		if (matches == 0) matches = 0;
+		else matches++;
+
+		if (matches >= LIFE_MATCH_COUNT) {
+			reset();
+		}
+		
+		void psx_read_gamepad();
+		buttons = psx_buttons();
+		if (buttons & PSB_TRIANGLE) {
+			running = 0;
+		}
+
+		_delay_ms(70);
+	}
 }
-	
+
 void Life::setState(uint8_t x, uint8_t y, uint8_t value) {
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 	state[x][y] = value;
@@ -80,7 +123,7 @@ void Life::reset() {
 //	srandom(analog_read_p(0) + timer_micros() + timer_millis());
 
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
-		hashes[i] = i;
+		hashes[i] = 0;
 	}
 	
 	clear();
@@ -102,54 +145,4 @@ void Life::randomize() {
 	
 	flush();
 	matrix_write_buffer();
-}
-
-void Life::run() {
-	while (running) {
-		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
-			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-				uint8_t count = getNeighborCount(x, y);
-				if (count == 3) {
-					// birth
-					setState(x, y, 0x01);
-				}
-				else if (count == 2 || count == 3) {
-					// staying alive
-					setState(x, y, 0x01);
-				}
-				else {
-					setState(x, y, 0x00);
-				}
-			}
-		}
-
-		flush();
-		matrix_write_buffer();
-
-		//Store board hash
-		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
-			hashes[i] = hashes[i - 1];
-		}
-		hashes[0] = getStateHash();
-
-		uint8_t matches = 0;
-		for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
-			for (uint8_t j = i + 1; j < LIFE_HASH_COUNT; j++) {
-				if (hashes[i] == hashes[j]) matches++;
-			}
-		}
-		if (matches == 0) matches = 0;
-		else matches++;
-
-		if (matches >= LIFE_MATCH_COUNT) {
-			reset();
-		}
-
-		_delay_ms(70);
-	}
-	
-	free(hashes);
-	
-	for (uint8_t i = 0; i < MATRIX_WIDTH; i++) free(state[i]);
-	free(state);
 }

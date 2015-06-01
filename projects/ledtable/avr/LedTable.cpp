@@ -8,9 +8,4 @@ int main() {
 	timer_init();
 	
 	Life life;
-	life.start();
-	
-	while (1) {
-		;
-	}
 }

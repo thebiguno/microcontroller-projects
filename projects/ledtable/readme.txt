@@ -10,18 +10,19 @@ Clocks:
 
 Games:
 - Tetris
-- Snake
-- Checkers
-- Fibonacci Checkers
+- Reversi
 - Tic-tac-toe
+- Snake
+
+- Checkers
 - Connect Four
 - Go
-- Reversi
 - Space Invaders
 - Pong
 - Minesweeper?
 - Memory?
 - Chess?
+- Fibonacci Checkers?
 
 Web Services:
 - Weather
