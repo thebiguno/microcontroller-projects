@@ -1,6 +1,7 @@
 #ifndef Life_H
 #define Life_H
 
+#include <Module.h>
 #include <stdint.h>
 #include "matrix.h"
 #include "lib/psx/psx.h"
@@ -9,7 +10,7 @@
 #define LIFE_MATCH_COUNT		20
 
 namespace digitalcave {
-	class Life {
+	class Life : public Module {
 	private:
 		uint8_t state[12][12];
 		uint32_t hashes[12];
@@ -18,6 +19,7 @@ namespace digitalcave {
 	
 	public:
 		Life();
+		~Life();
 
 	private:
 		uint8_t getState(uint8_t x, uint8_t y);

@@ -7,7 +7,13 @@
 
 using namespace digitalcave;
 
-void Tictactoe::Tictactoe() {
+Tictactoe::Tictactoe() {
+}
+
+Tictactoe::~Tictactoe() {
+}
+
+void Tictactoe::run() {
 	uint8_t running = 1;
 	uint8_t blink;
 	

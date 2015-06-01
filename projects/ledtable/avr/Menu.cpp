@@ -23,11 +23,10 @@ using namespace digitalcave;
 
 */
 
-void Life::start() {
+void Menu::run() {
 	uint16_t buttons;
-	ws2812_t black = { .red = 0xff; .green = 0x00; .blue = 0x00; };
-	ws2812_t red = { .red = 0xff; .green = 0x00; .blue = 0x00; };
 	uint8_t selected;
+	Color color;
 	
 	while (1) {
 		void psx_read_gamepad();
@@ -62,16 +61,16 @@ void Life::start() {
 		}
 		else if (buttons & PSB_CIRCLE) {
 			switch (selected) {
-				case 0x0: AnalogClock clock;
-				case 0x4: Tictactoe tictactoe;
-				case 0xc: Life life;
+				case 0x0: AnalogClock clock; clock.run(); break;
+				case 0x4: Tictactoe tictactoe; tictactoe.run(); break;
+				case 0xc: Life life; life.run(); break;
 			}
 		}
 		
-		draw_rectangle(0, 0, 12, 12, DRAW_FILLED, black)
+		draw_rectangle(0, 0, 12, 12, DRAW_FILLED, color.black)
 		uint8_t x = selection % 4;
 		uint8_t y = selection / 4;
-		draw_rectangle(x, y, x+3,y+3, DRAW_FILLED, c, DRAW_REPLACE);
+		draw_rectangle(x, y, x+3,y+3, DRAW_FILLED, color.red, DRAW_REPLACE);
 		matrix_write_buffer();
 	}
 }

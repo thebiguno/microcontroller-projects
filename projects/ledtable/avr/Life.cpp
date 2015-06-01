@@ -8,9 +8,14 @@
 using namespace digitalcave;
 
 Life::Life() {
-	uint8_t running = 1;
+}
+
+Life::~Life() {
+}
+
+void Life::run() {
 	uint16_t buttons; 
-	
+	uint8_t running = 1;
 	while (running) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
