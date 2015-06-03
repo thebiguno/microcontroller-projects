@@ -13,6 +13,7 @@ try:
 	MESSAGE_BOOTLOADER_JUMP			= 12
 
 	tx_buffer = [chr(MESSAGE_BOOTLOADER_JUMP)]
+	tx_buffer.append(chr(0))
 	dev.write(''.join(tx_buffer))
 	
 	time.sleep(0.1)

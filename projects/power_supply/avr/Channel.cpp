@@ -37,7 +37,9 @@ Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel
 /*
  * Voltage functions
  */
-
+int16_t Channel::get_voltage_limit(){
+	return this->voltage_limit;
+}
 int16_t Channel::get_voltage_setpoint(){
 	//scaled_value = slope * raw_value + offset
 	return this->voltage_setpoint_slope * this->voltage_setpoint_raw + this->voltage_setpoint_offset;
@@ -81,7 +83,9 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 /*
  * Current functions
  */
-
+int16_t Channel::get_current_limit(){
+	return this->current_limit;
+}
 int16_t Channel::get_current_setpoint(){
 	//scaled_value = slope * raw_value + offset
 	return this->current_setpoint_slope * this->current_setpoint_raw + this->current_setpoint_offset;
@@ -104,8 +108,8 @@ uint16_t Channel::get_current_actual_raw(){
 void Channel::set_current_setpoint(int16_t milliamps){
 	//Since "scaled_value = slope * raw_value + offset", we know
 	// that "raw_value = (scaled_value - offset) / slope".
-	if (milliamps > (int16_t) this->current_limit) milliamps = this->current_limit;
-	if (milliamps <= 0) milliamps = 0;
+	if ((this->current_limit > 0 && milliamps > this->current_limit) || (this->current_limit < 0 && milliamps < this->current_limit)) milliamps = this->current_limit;
+	if ((this->current_limit > 0 && milliamps < 0) || (this->current_limit < 0 && milliamps > 0)) milliamps = 0;
 	double raw_value = ((double) milliamps - this->current_setpoint_offset) / this->current_setpoint_slope;
 	if (raw_value < 0) raw_value = 0;
 	this->set_current_setpoint_raw(raw_value);

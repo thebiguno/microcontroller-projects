@@ -91,6 +91,7 @@ namespace digitalcave {
 			/*
 			 * Voltage functions
 			 */
+			int16_t get_voltage_limit();
 			int16_t get_voltage_setpoint();
 			uint16_t get_voltage_setpoint_raw();
 			int16_t get_voltage_actual();
@@ -101,6 +102,7 @@ namespace digitalcave {
 			/*
 			 * Current functions
 			 */
+			int16_t get_current_limit();
 			int16_t get_current_setpoint();
 			uint16_t get_current_setpoint_raw();
 			int16_t get_current_actual();

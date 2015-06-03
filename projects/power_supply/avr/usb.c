@@ -3,6 +3,7 @@
 using namespace digitalcave;
 
 extern Channel channels[CHANNEL_COUNT];
+extern Display display;
 extern State state;
 
 union udouble {
@@ -63,10 +64,14 @@ void usb_dispatch(){
 		switch(rx_buffer[0]){
 			case MESSAGE_CHANNELS: {
 				
-				uint8_t tx_buffer[2];
+				uint8_t tx_buffer[3];
 				tx_buffer[0] = MESSAGE_CHANNELS;
 				tx_buffer[1] = CHANNEL_COUNT;
-				usb_rawhid_send(tx_buffer, 2);
+				tx_buffer[2] = 0x00;
+				for (uint8_t i = 0; i< CHANNEL_COUNT; i++){
+					if (channels[i].get_voltage_limit() < 0) tx_buffer[2] |= _BV(i);
+				}
+				usb_rawhid_send(tx_buffer, 3);
 				break;
 			}
 			case MESSAGE_ACTUAL: {
@@ -203,6 +208,10 @@ void usb_dispatch(){
 			}
 			
 			case MESSAGE_BOOTLOADER_JUMP: {
+				display.get_char_display().clear();
+				//TODO Figure out why we can't show text at this point...
+				//display.get_char_display().write_text(0, 0, "     DFU Mode       ", DISPLAY_COLS);
+				//display.get_char_display().refresh();
 				_delay_ms(1000);	//Wait for the client python program to exit
 				bootloader_jump();
 			}

@@ -27,6 +27,8 @@ namespace digitalcave {
 			void update(State state);
 			
 			void force_reset();
+			
+			CharDisplay get_char_display();
 	};
 }
 
