@@ -22,7 +22,7 @@ void Display::update(State state){
 		if (CHANNEL_COUNT > DISPLAY_ROWS && channel > (CHANNEL_COUNT - DISPLAY_ROWS)){
 			channel = (CHANNEL_COUNT - DISPLAY_ROWS);
 		}
-		else if (CHANNEL_COUNT < DISPLAY_ROWS){
+		else if (CHANNEL_COUNT <= DISPLAY_ROWS){
 			channel = 0;	
 		}
 
@@ -65,4 +65,8 @@ void Display::update(State state){
 
 void Display::force_reset(){
 	char_display.clear();
+}
+
+CharDisplay Display::get_char_display(){
+	return char_display;
 }

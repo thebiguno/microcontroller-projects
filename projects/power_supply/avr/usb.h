@@ -5,6 +5,7 @@
 #include "lib/usb/rawhid.h"
 
 #include "Channel.h"
+#include "Display.h"
 #include "State.h"
 
 //All messages start with the message type (as defined below).  The remainder of the message
@@ -13,7 +14,7 @@
 // a value 'foo' using 4 bytes, then a value 'bar' using 1 byte.
 
 //Computer -> PSU: Request number of channels: []
-//PSU -> Computer: Send number of channels: [channel:1]
+//PSU -> Computer: Send number of channels and bitmask for negative channels: [channel:1][negatives:1]
 #define MESSAGE_CHANNELS				1
 
 //Computer -> PSU: Request actual measured values for given channel: [channel:1]

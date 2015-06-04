@@ -152,8 +152,8 @@ Y/N: """)
 			break;
 
 def calibrate_current():
-	#Set voltage as low as possible, and current limiting off (let anything through)
-	voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT, channel, 8000, 0)[2]
+	#Set voltage to the high value, and set the current setpoint to 0 (let nothing through)
+	voltage_setpoint = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT, channel, VOLTAGE_MEASURED_VALUE_HIGH, 0)[2]
 	current_setpoint = 0
 	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, voltage_setpoint, current_setpoint)
 	
@@ -288,12 +288,8 @@ try:
 	TARGET_CURRENT_SETPOINT_SLOPE		= 6
 	TARGET_CURRENT_SETPOINT_OFFSET		= 7
 
-	VOLTAGE_MEASURED_VALUE_LOW = 0
-	VOLTAGE_MEASURED_VALUE_HIGH = 8000
-	CURRENT_MEASURED_VALUE_LOW = 0
-	CURRENT_MEASURED_VALUE_HIGH = 800
-	
-	CHANNEL_COUNT = ord(send_generic_message_with_response(dev, MESSAGE_CHANNELS)[1])
+	channel_info = send_generic_message_with_response(dev, MESSAGE_CHANNELS)
+	CHANNEL_COUNT = ord(channel_info[1])
 
 	integer = re.compile('^[0-9]+$')
 	increment = re.compile('^\\+[0-9]+$')
@@ -306,6 +302,18 @@ try:
 			break;
 		print("Invalid channel.  Please enter a valid channel number.")
 
+	VOLTAGE_MEASURED_VALUE_LOW = 0
+	VOLTAGE_MEASURED_VALUE_HIGH = 8000
+	CURRENT_MEASURED_VALUE_LOW = 0
+	CURRENT_MEASURED_VALUE_HIGH = 800
+	
+	if (0 != (ord(channel_info[2]) & (1 << channel))):
+		VOLTAGE_MEASURED_VALUE_LOW = VOLTAGE_MEASURED_VALUE_LOW * -1
+		VOLTAGE_MEASURED_VALUE_HIGH = VOLTAGE_MEASURED_VALUE_HIGH * -1
+		CURRENT_MEASURED_VALUE_LOW = CURRENT_MEASURED_VALUE_LOW * -1
+		CURRENT_MEASURED_VALUE_HIGH = CURRENT_MEASURED_VALUE_HIGH * -1
+		
+	
 	while True:
 
 		print("Current calibration values:")
@@ -332,7 +340,6 @@ A) Set AREF source
 Q) Quit
 
 Enter a menu option: """)
-
 		if response == "V" or response == "v":
 			calibrate_voltage()
 		elif response == "C" or response == "c":

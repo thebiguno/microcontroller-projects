@@ -19,13 +19,14 @@
 // Use encoder2 to increment / decrement the current.
 // Hold encoder1 to return to Locked Mode.
 // Press encoder2 to increment the channel which is being edited.
-#define STATE_EDIT_ITEM					2
+#define STATE_EDIT_ITEM					1
 
 //Menu mode: scroll through configuration menu items.
 // Use encoder1 to scroll through menu items
 // Hold encoder1 to edit the selected menu item
 // Hold encoder2 to return to Normal mode
-#define STATE_MENU						3
+#define STATE_MENU						2
+
 
 namespace digitalcave {
 
