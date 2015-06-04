@@ -8,7 +8,7 @@ void mcp79410_get(struct mcp79410_time_t *time) {
 	uint8_t data[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	
 	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
-	twi_read_from(0xde, data, 7, TWI_STOP);
+	twi_read_from(0xde, data, 7, TWI_BLOCK, TWI_STOP);
 	
 	// it's not clear from the datasheet if the unused bits are 0 or undefined
 	time->second = bcd2hex(data[1] & 0x7f);		// bit 7 is the ST flag
@@ -54,7 +54,7 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 
 inline void mcp79410_control(uint8_t control) {
 	uint8_t data[2] = { 0x07, control };
-	twi_write_to(0xde, control, 2, TWI_BLOCK, SWI_STOP);
+	twi_write_to(0xde, control, 2, TWI_BLOCK, TWI_STOP);
 }
 
 void mcp79410_set_mfp_low() {
@@ -75,19 +75,20 @@ void mcp79410_set_mfp_8khz() {
 void mcp79410_set_mfp_32khz() {
 	mcp79410_control(0x43);
 }
-void mcp79410_set_mfp_alarm0_int() {
-	mcp79410_control(0x42);
+
+uint8_t mcp79410_read_sram(uint8_t offset) {
+	uint8_t data[1] = { 0x20 + offset };
+	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
+	twi_read_from(0xde, data, 1, TWI_BLOCK, TWI_STOP);
+	return data[0];
 }
 
-void mcp79410_set_alarm0_hour(uint8_t hour) {
-	uint8_t data[8] = {
-		0x0a,
-		0x00,
-		0x00,
-		hex2bcd(hour),
-		0x20,				// match on hour, assert with low level, clear match
-		0x00,
-		0x00
-	};
-	twi_write_to(0xde, data, 8, TWI_BLOCK, TWI_STOP);
+void mcp79410_write_sram(uint8_t data, uint8_t offset) {
+	uint8_t data[2] = { 0x20 + offset, data };
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
 }
+
+void mcp79410_set_trim(int8_t trim) {
+	uint8_t data[2] = { 0x09, trim };
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+}	
