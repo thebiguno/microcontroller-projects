@@ -38,14 +38,19 @@ void usb_send_measurement(uint8_t message, uint8_t channel, uint16_t voltage, ui
 	usb_rawhid_send(tx_buffer, 6);
 }
 
-void usb_send_calibration(uint8_t message, uint8_t channel, uint8_t target, double calibration_value){
-	uint8_t tx_buffer[7];
+void usb_send_calibration(uint8_t message, uint8_t channel, uint8_t target, uint8_t index, calibration_t calibration){
+	uint8_t tx_buffer[10];
 	tx_buffer[0] = message;				//Message type
 	tx_buffer[1] = channel;				//Channel number
-	tx_buffer[2] = target;
-	convert_double_to_bytes(calibration_value, tx_buffer, 3);
-
-	usb_rawhid_send(tx_buffer, 7);
+	tx_buffer[2] = target;				//Voltage or Current
+	tx_buffer[3] = index;				//Calibration index
+	tx_buffer[4] = (calibration.dac >> 8) & 0xFF;
+	tx_buffer[5] = calibration.dac & 0xFF;
+	tx_buffer[6] = (calibration.adc >> 8) & 0xFF;
+	tx_buffer[7] = calibration.adc & 0xFF;
+	tx_buffer[8] = (calibration.calibrated >> 8) & 0xFF;
+	tx_buffer[9] = calibration.calibrated & 0xFF;
+	usb_rawhid_send(tx_buffer, 10);
 }
 
 void usb_send_dac_confirmation(uint8_t dac_number){
@@ -57,7 +62,7 @@ void usb_send_dac_confirmation(uint8_t dac_number){
 }
 
 void usb_dispatch(){
-	uint8_t rx_buffer[6];
+	uint8_t rx_buffer[10];
 	uint8_t length = usb_rawhid_recv(rx_buffer, 0);
 	
 	if (length >= 2){
@@ -123,38 +128,31 @@ void usb_dispatch(){
 			case MESSAGE_GET_CALIBRATION: {
 				uint8_t channel = rx_buffer[1];
 				uint8_t target = rx_buffer[2];
-				double value = 0;
+				uint8_t index = rx_buffer[3];
+				calibration_t calibration;
 				switch(target){
-					case TARGET_VOLTAGE_ACTUAL_SLOPE: value = channels[channel].voltage_actual_slope; break;
-					case TARGET_VOLTAGE_ACTUAL_OFFSET: value = channels[channel].voltage_actual_offset; break;
-					case TARGET_VOLTAGE_SETPOINT_SLOPE: value = channels[channel].voltage_setpoint_slope; break;
-					case TARGET_VOLTAGE_SETPOINT_OFFSET: value = channels[channel].voltage_setpoint_offset; break;
-					case TARGET_CURRENT_ACTUAL_SLOPE: value = channels[channel].current_actual_slope; break;
-					case TARGET_CURRENT_ACTUAL_OFFSET: value = channels[channel].current_actual_offset; break;
-					case TARGET_CURRENT_SETPOINT_SLOPE: value = channels[channel].current_setpoint_slope; break;
-					case TARGET_CURRENT_SETPOINT_OFFSET: value = channels[channel].current_setpoint_offset; break;
+					case TARGET_VOLTAGE: calibration = channels[channel].get_calibration_voltage(index); break;
+					case TARGET_CURRENT: calibration = channels[channel].get_calibration_current(index); break;
 				}
 				
-				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, value);
+				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, index, calibration);
 				break;
 			}
 			case MESSAGE_SET_CALIBRATION: {
 				uint8_t channel = rx_buffer[1];
 				uint8_t target = rx_buffer[2];
-				double value = convert_bytes_to_double(rx_buffer, 3);
+				uint8_t index = rx_buffer[3];
+				calibration_t calibration;
+				calibration.dac = (rx_buffer[4] << 8) + rx_buffer[5];
+				calibration.adc = (rx_buffer[6] << 8) + rx_buffer[7];
+				calibration.calibrated = (rx_buffer[8] << 8) + rx_buffer[9];
 				switch(target){
-					case TARGET_VOLTAGE_ACTUAL_SLOPE: channels[channel].voltage_actual_slope = value; break;
-					case TARGET_VOLTAGE_ACTUAL_OFFSET: channels[channel].voltage_actual_offset = value; break;
-					case TARGET_VOLTAGE_SETPOINT_SLOPE: channels[channel].voltage_setpoint_slope = value; break;
-					case TARGET_VOLTAGE_SETPOINT_OFFSET: channels[channel].voltage_setpoint_offset = value; break;
-					case TARGET_CURRENT_ACTUAL_SLOPE: channels[channel].current_actual_slope = value; break;
-					case TARGET_CURRENT_ACTUAL_OFFSET: channels[channel].current_actual_offset = value; break;
-					case TARGET_CURRENT_SETPOINT_SLOPE: channels[channel].current_setpoint_slope = value; break;
-					case TARGET_CURRENT_SETPOINT_OFFSET: channels[channel].current_setpoint_offset = value; break;
+					case TARGET_VOLTAGE: channels[channel].set_calibration_voltage(index, calibration); break;
+					case TARGET_CURRENT: channels[channel].set_calibration_current(index, calibration); break;
 				}
 				channels[channel].save_calibration();
 				
-				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, value);
+				usb_send_calibration(MESSAGE_SET_CALIBRATION, channel, target, index, calibration);
 				break;
 			}
 			case MESSAGE_CONFIGURE_DAC_ADDRESS: {
