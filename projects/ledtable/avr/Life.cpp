@@ -128,7 +128,7 @@ void Life::reset() {
 //	srandom(analog_read_p(0) + timer_micros() + timer_millis());
 
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
-		hashes[i] = 0;
+		this->hashes[i] = 0;
 	}
 	
 	clear();
