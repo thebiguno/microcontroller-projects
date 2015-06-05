@@ -13,6 +13,8 @@
 
 #include "lib/twi/twi.h"
 
+#define CALIBRATION_COUNT					8
+
 #define ADC_CHANNEL_0						0
 #define ADC_CHANNEL_1						1
 #define ADC_CHANNEL_4						4
@@ -45,6 +47,12 @@
 #define DAC_CHANNEL_2						0x04
 #define DAC_CHANNEL_3						0x06
 
+typedef struct calibration {
+	uint16_t dac;
+	uint16_t adc;
+	int16_t calibrated;
+} calibration_t;
+
 namespace digitalcave {
 
 	class Channel {
@@ -57,29 +65,27 @@ namespace digitalcave {
 			uint8_t dac_channel_voltage;
 			uint8_t dac_channel_current;
 
+			/*
+			 * Calibration arrays.
+			 */
+			calibration_t calibration_voltage[CALIBRATION_COUNT];
+			calibration_t calibration_current[CALIBRATION_COUNT];
+
 			int16_t voltage_limit;			//Max (or min, for negative) voltage
 			int16_t current_limit;			//Max current
 			
-			uint16_t voltage_setpoint_raw;	//Desired raw 12 bit DAC value
+			int16_t voltage_setpoint;		//Desired voltage value (mV)
 			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
 
-			uint16_t current_setpoint_raw;	//Desired raw 12 bit DAC value
+			uint16_t current_setpoint;		//Desired current value (mA)
 			uint16_t current_actual_raw;	//Actual raw 10 bit ADC value
 			
 			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
 			
+			int16_t get_calibrated_from_adc(uint16_t adc, calibration_t* calibration_data);
+			uint16_t get_dac_from_calibrated(int16_t calibrated, calibration_t* calibration_data);
+			
 		public:
-			/*
-			 * Calibration values (in form "scaled_value = slope * raw_value + offset")
-			 */
-			double voltage_actual_slope = 1;
-			double voltage_actual_offset = 0;
-			double voltage_setpoint_slope = 1;
-			double voltage_setpoint_offset = 0;
-			double current_actual_slope = 1;
-			double current_actual_offset = 0;
-			double current_setpoint_slope = 1;
-			double current_setpoint_offset = 0;
 		
 			/*
 			 * Initializes the channel
@@ -120,6 +126,14 @@ namespace digitalcave {
 			 */
 			void save_calibration();
 			void load_calibration();
+			
+			/*
+			 * Get / set calibration values
+			 */
+			calibration_t get_calibration_voltage(uint8_t index);
+			calibration_t get_calibration_current(uint8_t index);
+			void set_calibration_voltage(uint8_t index, calibration_t calibration);
+			void set_calibration_current(uint8_t index, calibration_t calibration);
 	};
 }
 
