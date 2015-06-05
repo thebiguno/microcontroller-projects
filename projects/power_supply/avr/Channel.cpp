@@ -45,7 +45,7 @@ int16_t Channel::get_voltage_setpoint(){
 }
 
 uint16_t Channel::get_voltage_setpoint_raw(){
-	return get_dac_from_calibrated(this->voltage_setpoint, this->calibration_voltage);
+	return this->voltage_setpoint_raw;
 }
 
 int16_t Channel::get_voltage_actual(){
@@ -65,6 +65,7 @@ void Channel::set_voltage_setpoint(int16_t millivolts){
 }
 
 void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
+	this->voltage_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
@@ -84,7 +85,7 @@ int16_t Channel::get_current_setpoint(){
 }
 
 uint16_t Channel::get_current_setpoint_raw(){
-	return get_dac_from_calibrated(this->current_setpoint, this->calibration_current);
+	return this->current_setpoint_raw;
 }
 
 int16_t Channel::get_current_actual(){
@@ -104,6 +105,7 @@ void Channel::set_current_setpoint(int16_t milliamps){
 }
 
 void Channel::set_current_setpoint_raw(uint16_t raw_value){
+	this->current_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;		//Single write without EEPROM persist

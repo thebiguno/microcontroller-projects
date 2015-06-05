@@ -16,7 +16,7 @@ def send_generic_message_with_response(dev, message, body = None):
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
 	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
-	return rx_buffer;
+	return rx_buffer
 
 def send_channel_info_message_with_response(dev, channel):
 	tx_buffer = [chr(MESSAGE_CHANNEL_INFO), chr(channel)]
@@ -26,21 +26,21 @@ def send_channel_info_message_with_response(dev, channel):
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
-	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), struct.unpack("<h", ''.join(rx_buffer[2:3]))[0], struct.unpack("<h", ''.join(rx_buffer[4:5]))[0]
-	return result;
+	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), struct.unpack(">h", ''.join(chr(ord(x)) for x in rx_buffer[2:4]))[0], struct.unpack(">h", ''.join(chr(ord(x)) for x in rx_buffer[4:6]))[0]]
+	return result
 
 	
 def send_calibration_message_with_response(dev, message, channel, target, index, dac, adc, measured):
-	tx_buffer = [chr(message), chr(channel), chr(target), chr(index)] + list(struct.pack("<H", dac)) + list(struct.pack("<H", adc)) + list(struct.pack("<h", measured))
+	tx_buffer = [chr(message), chr(channel), chr(target), chr(index)] + list(struct.pack(">H", dac)) + list(struct.pack(">H", adc)) + list(struct.pack(">h", measured))
 	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
-	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), ord(rx_buffer[2], ord(rx_buffer[3]), struct.unpack("<H", ''.join(rx_buffer[4:5]))[0], struct.unpack("<H", ''.join(rx_buffer[6:7]))[0], struct.unpack("<h", ''.join(rx_buffer[8:9]))[0]]
+	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), ord(rx_buffer[2]), ord(rx_buffer[3]), struct.unpack(">H", ''.join(chr(ord(x)) for x in rx_buffer[4:6]))[0], struct.unpack(">H", ''.join(chr(ord(x)) for x in rx_buffer[6:8]))[0], struct.unpack(">h", ''.join(chr(ord(x)) for x in rx_buffer[8:10]))[0]]
 	return result;
 	
 def send_measurement_message_with_response(dev, message, channel=None, voltage=None, current=None):
@@ -55,7 +55,7 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 		tx_buffer.append(chr(current & 0xFF))
 	if len(tx_buffer) == 1:
 		tx_buffer.append(chr(0))
-	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
+	print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
@@ -77,6 +77,7 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 def calibrate_voltage(channel):
 	
 	channel_info = send_channel_info_message_with_response(dev, channel)
+	print(channel_info)
 	
 	#Set voltage as low as possible, and current limiting off (let anything through)
 	dac_raw = 0
@@ -106,19 +107,24 @@ Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""
 			dac_raw = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, dac_raw, 0xFFF)[2] & 0x0FFF
 			print("Voltage setpoint: " + str(dac_raw))
 		
-		response = raw_input("""Calibration for channel """ + channel + """, index """ + index + """:
-Measured value: """ + calibration_voltage + """
-ADC value: """ + adc + """
-DAC value: """ + dac + """
+		index = CALIBRATION_VOLTAGES.index(calibration_voltage)
+		adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
+		response = raw_input("""
+Calibration for channel """ + str(channel + 1) + """, index """ + str(index) + """:
+Measured value: """ + str(calibration_voltage) + """
+ADC value: """ + str(adc_raw) + """
+DAC value: """ + str(dac_raw) + """
 
 Do you want to save these calibration values to EEPROM?
 Y/N: """)
 		if response == "Y" or response == "y":
-			send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE, CALIBRATION_VOLTAGES.index(calibration_voltage), dac, adc, calibration_voltage)
+			send_calibration_message_with_response(dev, MESSAGE_SET_CALIBRATION, channel, TARGET_VOLTAGE, CALIBRATION_VOLTAGES.index(calibration_voltage), dac_raw, adc_raw, calibration_voltage)
 			print("Calibration Saved")
 		elif response == "N" or response == "n":
 			print("Calibration Discarded.")
 
+
+########## Calibrate Current ##########
 
 def calibrate_current():
 	print("Unimplemented")
@@ -137,7 +143,7 @@ Enter a menu option: """)
 
 		if int(response) >= 0 and int(response) <= 2:
 			old_address = int(response)
-		elif response == "Q" or response == "q"
+		elif response == "Q" or response == "q":
 			break;
 
 		response = raw_input("""
@@ -147,7 +153,7 @@ Q) Quit
 Enter a menu option: """)
 		if int(response) >= 0 and int(response) <= 2:
 			new_address = int(response)
-		elif response == "Q" or response == "q"
+		elif response == "Q" or response == "q":
 			break;
 
 		raw_input("""Connect PORTB0 (Encoder 1A) to the I2C_PROG header of the target DAC with a jumper wire.
@@ -184,9 +190,9 @@ Enter a menu option: """)
 
 def calibrate_menu(channel):
 	while True:
-		channel_info = send_generic_message_with_response(dev, MESSAGE_CHANNEL_INFO)
+		#channel_info = send_generic_message_with_response(dev, MESSAGE_CHANNEL_INFO)
 		
-		CALIBRATION_CURRENTS = [0, 10, 20, 50, 100, 500, 1000, 1500]
+		#CALIBRATION_CURRENTS = [0, 10, 20, 50, 100, 500, 1000, 1500]
 	
 		response = raw_input("""
 Please choose one of the following calibration options:
@@ -197,9 +203,9 @@ Q) Quit
 
 Enter a menu option: """)
 		if response == "V" or response == "v":
-			calibrate_voltage(channel, channel_info)
+			calibrate_voltage(channel)
 		elif response == "C" or response == "c":
-			calibrate_current(channel, channel_info)
+			calibrate_current(channel)
 		elif response == "Q" or response == "q":
 			break;
 
@@ -226,7 +232,7 @@ Enter a menu option: """)
 		elif response == "Q" or response == "q":
 			break
 		elif int(response) >= 1 and int(response) <= CHANNEL_COUNT:
-			calibrate_menu(int(response))
+			calibrate_menu(int(response) - 1)
 	
 
 

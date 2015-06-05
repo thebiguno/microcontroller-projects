@@ -75,9 +75,11 @@ namespace digitalcave {
 			int16_t current_limit;			//Max current
 			
 			int16_t voltage_setpoint;		//Desired voltage value (mV)
+			uint16_t voltage_setpoint_raw;	//Desired raw DAC value
 			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
 
 			uint16_t current_setpoint;		//Desired current value (mA)
+			uint16_t current_setpoint_raw;	//Desired raw DAC value
 			uint16_t current_actual_raw;	//Actual raw 10 bit ADC value
 			
 			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
