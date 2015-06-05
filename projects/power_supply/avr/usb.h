@@ -77,6 +77,7 @@
 // After programming, reset is done via a hard power cycle.
 #define MESSAGE_BOOTLOADER_JUMP			13
 
+//Targets used for calibration messages
 #define TARGET_VOLTAGE					0
 #define TARGET_CURRENT					1
 

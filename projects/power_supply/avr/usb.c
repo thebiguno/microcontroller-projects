@@ -6,26 +6,6 @@ extern Channel channels[CHANNEL_COUNT];
 extern Display display;
 extern State state;
 
-union udouble {
-	double d;
-	uint8_t u[sizeof(double)];
-};
-
-void convert_double_to_bytes(double value, uint8_t *buffer, uint8_t offset){
-	union udouble converter;
-	converter.d = value;
-	for (uint8_t i = 0; i < sizeof(double); i++) {
-		buffer[i + offset] = converter.u[i];
-	}
-}
-double convert_bytes_to_double(uint8_t *buffer, uint8_t offset){
-	union udouble converter;
-	for (uint8_t i = 0; i < sizeof(double); i++) {
-		converter.u[i] = buffer[i + offset];
-	}
-	return converter.d;
-}
-
 void usb_send_measurement(uint8_t message, uint8_t channel, uint16_t voltage, uint16_t current){
 	uint8_t tx_buffer[6];
 	tx_buffer[0] = message;				//Message type
@@ -68,15 +48,24 @@ void usb_dispatch(){
 	if (length >= 2){
 		switch(rx_buffer[0]){
 			case MESSAGE_CHANNELS: {
-				
-				uint8_t tx_buffer[3];
+				uint8_t tx_buffer[2];
 				tx_buffer[0] = MESSAGE_CHANNELS;
 				tx_buffer[1] = CHANNEL_COUNT;
-				tx_buffer[2] = 0x00;
-				for (uint8_t i = 0; i< CHANNEL_COUNT; i++){
-					if (channels[i].get_voltage_limit() < 0) tx_buffer[2] |= _BV(i);
-				}
 				usb_rawhid_send(tx_buffer, 3);
+				break;
+			}
+			case MESSAGE_CHANNEL_INFO: {
+				uint8_t channel = rx_buffer[1];
+				uint8_t tx_buffer[6];
+				tx_buffer[0] = MESSAGE_CHANNEL_INFO;
+				tx_buffer[1] = channel;
+				int16_t voltage_limit = channels[channel].get_voltage_limit();
+				int16_t current_limit = channels[channel].get_current_limit();
+				tx_buffer[2] = (voltage_limit >> 8) & 0xFF;
+				tx_buffer[3] = voltage_limit & 0xFF;
+				tx_buffer[4] = (current_limit >> 8) & 0xFF;
+				tx_buffer[5] = current_limit & 0xFF;
+				usb_rawhid_send(tx_buffer, 6);
 				break;
 			}
 			case MESSAGE_ACTUAL: {
