@@ -16,13 +16,8 @@ Channel channels[CHANNEL_COUNT] = {
 	Channel(2, DAC_ADDRESS_1, DAC_CHANNEL_0, DAC_CHANNEL_1, ADC_CHANNEL_6, ADC_CHANNEL_7, 12500, 1500),
 #endif
 #if CHANNEL_COUNT > 3
-	Channel(3, DAC_ADDRESS_1, DAC_CHANNEL_2, DAC_CHANNEL_3, ADC_CHANNEL_8, ADC_CHANNEL_9, -12500, -1500),
-#endif
-#if CHANNEL_COUNT > 4
-	Channel(4, DAC_ADDRESS_2, DAC_CHANNEL_0, DAC_CHANNEL_1, ADC_CHANNEL_10, ADC_CHANNEL_11, -5000, -2000),
-#endif
-#if CHANNEL_COUNT > 5
-	Channel(5, DAC_ADDRESS_2, DAC_CHANNEL_2, DAC_CHANNEL_3, ADC_CHANNEL_12, ADC_CHANNEL_13, -3500, -10000),
+	//TODO I have some bad hardware (my DAC1 channel 3 is broken), so I shuffle the channels around.  Don't do this in real life.
+	Channel(3, DAC_ADDRESS_2, DAC_CHANNEL_0, DAC_CHANNEL_1, ADC_CHANNEL_8, ADC_CHANNEL_9, -12500, -1500),
 #endif
 //You can add more channels if desired... just make sure there are enough ADCs.
 };
