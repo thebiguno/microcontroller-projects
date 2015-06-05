@@ -2,16 +2,10 @@
 #include "../../twi/twi.h"
 #include "../../bcd/bcd.h"
 
-void mcp79410_init() {
-	uint8_t data[8] = { 0x07, 0x10 };  // clkout active at 1 Hz
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
-}
-
 void mcp79410_get(struct mcp79410_time_t *time) {
 	// register, unused...
 	// seconds, minutes, hours, dow, date, month, year
-	uint8_t data[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	uint8_t data[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	
 	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
 	twi_read_from(0xde, data, 7, TWI_STOP);
@@ -27,20 +21,65 @@ void mcp79410_get(struct mcp79410_time_t *time) {
 }
 
 void mcp79410_set(struct mcp79410_time_t *time) {
-	uint8_t data[8] = { 
-		0x00,
-		hex2bcd(time->second) | 0x80,		// bit 7 is ST
-		hex2bcd(time->minute),
-		hex2bcd(time->hour),
-		hex2bcd(time->wday),				// bit 3 is VBATEN
-		hex2bcd(time->mday),
-		hex2bcd(time->month),				// bit 5 is LPYR
-		hex2bcd(time->year - 2000)
-	};
-	twi_write_to(0xde, data, 8, TWI_BLOCK, TWI_STOP);
+	// see the note in section 5.3 about how to set the timekeeping registers without rollover issues
+	uint8_t data[7];
+
+	// disable the crystal input (ST = 0)
+	data[0] = 0x00;								// seconds register
+	data[1] = 0x00;								// ST = 0
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+
+	// wait for the oscilator to stop (OSCRUN == 0)
+	data[0] = 0x03;
+	data[1] = 0x20;
+	while (data[1] & 0x20) {
+		twi_read_from(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	}
+	
+	// set the time fields
+	data[0] = 0x01;								// minutes register
+	data[1] = hex2bcd(time->minute);
+	data[2] = hex2bcd(time->hour);
+	data[3] = hex2bcd(time->wday) | 0x08,		// enable battery (VBATEN = 1) 
+	data[4] = hex2bcd(time->mday),
+	data[5] = hex2bcd(time->month),				// bit 5 is LPYR
+	data[6] = hex2bcd(time->year - 2000)
+	twi_write_to(0xde, data, 7, TWI_BLOCK, TWI_STOP);
+	
+	// set the seconds field and enable the crystal input (ST = 1)
+	data[0] = 0x00;								// seconds register
+	data[1] = hex2bcd(time->second) | 0x80;
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
 }
 
-void mcp79410_set_alarm(uint8_t hour) {
+inline void mcp79410_control(uint8_t control) {
+	uint8_t data[2] = { 0x07, control };
+	twi_write_to(0xde, control, 2, TWI_BLOCK, SWI_STOP);
+}
+
+void mcp79410_set_mfp_low() {
+	mcp79410_control(0x00);
+}	
+void mcp79410_set_mfp_high() {
+	mcp79410_control(0x80);
+}	
+void mcp79410_set_mfp_1hz() {
+	mcp79410_control(0x40);
+}
+void mcp79410_set_mfp_4khz() {
+	mcp79410_control(0x41);
+}
+void mcp79410_set_mfp_8khz() {
+	mcp79410_control(0x42);
+}
+void mcp79410_set_mfp_32khz() {
+	mcp79410_control(0x43);
+}
+void mcp79410_set_mfp_alarm0_int() {
+	mcp79410_control(0x42);
+}
+
+void mcp79410_set_alarm0_hour(uint8_t hour) {
 	uint8_t data[8] = {
 		0x0a,
 		0x00,
