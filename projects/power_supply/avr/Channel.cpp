@@ -61,6 +61,7 @@ void Channel::set_voltage_setpoint(int16_t millivolts){
 	if ((this->voltage_limit > 0 && millivolts > this->voltage_limit) || (this->voltage_limit < 0 && millivolts < this->voltage_limit)) millivolts = this->voltage_limit;
 	if ((this->voltage_limit > 0 && millivolts < 0) || (this->voltage_limit < 0 && millivolts > 0)) millivolts = 0;
 
+	this->voltage_setpoint = millivolts;
 	this->set_voltage_setpoint_raw(get_dac_from_calibrated(millivolts, this->calibration_voltage));
 }
 
@@ -204,12 +205,14 @@ uint16_t Channel::get_dac_from_calibrated(int16_t calibrated, calibration_t* cal
 	//Find the two calibration points immediately above and below the given calibrated value.  If we happen to find
 	// an exact match, then just return it.  We assume that the calibration data spans the entire calibration input
 	// range (i.e. there will never be a target calibrated value which does not have both a calibration point above it
-	// and a calibration point below it).  We do not make any assumptions about the order of the calibration
-	// points.
+	// and a calibration point below it), and that the data set is in strictly increasing order.
 	for (uint8_t i = 0; i < CALIBRATION_COUNT; i++){
 		if (calibration_data[i].calibrated == calibrated) return calibration_data[i].dac;
-		else if (calibration_data[i].calibrated < calibrated && low.calibrated < calibration_data[i].calibrated) low = calibration_data[i];
-		else if (calibration_data[i].calibrated > calibrated && high.calibrated > calibration_data[i].calibrated) high = calibration_data[i];
+		else if (calibration_data[i].calibrated > calibrated){
+			if (i == 0) i++;	//Prevent index error
+			low = calibration_data[i - 1];
+			high = calibration_data[i];
+		}
 	}
 	
 	//At this point we should have a valid high and low value.  Find the slope + offset from the high / low

@@ -10,7 +10,7 @@ import hid, time
 try:
 	dev = hid.Device(vid=0x4200, pid=0xFF01)
 	
-	MESSAGE_BOOTLOADER_JUMP			= 12
+	MESSAGE_BOOTLOADER_JUMP			= 13
 
 	tx_buffer = [chr(MESSAGE_BOOTLOADER_JUMP)]
 	tx_buffer.append(chr(0))

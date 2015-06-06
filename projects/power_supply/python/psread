@@ -1,0 +1,49 @@
+#!/usr/bin/python
+# Read values (adjusted and raw) and setpoints (adjusted and raw) from the power supply
+#############################################################################
+import hid, time, argparse, sys
+
+if (__name__=="__main__"):
+	try:
+		dev = None
+
+		parser = argparse.ArgumentParser(description="Allow reading of power supply values")
+		parser.add_argument("-c", type=int, choices=[1,2,3,4], help="channel: 1-4 (default 1)", default=1)
+		parser.add_argument("-t", choices=["r", "s"], help="type: reading / setpoint (default r)", default="r")
+		parser.add_argument("-a", choices=["a", "r"], help="adjustment: Adjusted / Raw (default a)", default="a")
+		
+		args = parser.parse_args()
+		
+		dev = hid.Device(vid=0x4200, pid=0xFF01)
+		
+		#Constants (mirrored from the C++ code)
+		MESSAGE_ACTUAL					= 3
+		MESSAGE_ACTUAL_RAW				= 4
+		MESSAGE_SETPOINT				= 5
+		MESSAGE_SETPOINT_RAW			= 6
+		
+		if args.t == "r":
+			if args.a == "a":
+				message = MESSAGE_ACTUAL
+			elif args.a == "r":
+				message == MESSAGE_ACTUAL_RAW
+		elif args.t == "s":
+			if args.a == "a":
+				message = MESSAGE_SETPOINT
+			elif args.a == "r":
+				message = MESSAGE_SETPOINT_RAW
+				
+		tx_buffer = [chr(message), chr(args.c - 1)]
+		dev.write(''.join(tx_buffer))
+
+		rx_buffer = dev.read(16, 1000)
+		if len(rx_buffer) == 0:
+			raise Exception("Unable to read data")
+		print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+		voltage = str(((ord(rx_buffer[2]) << 8) + ord(rx_buffer[3])))
+		current = str(((ord(rx_buffer[4]) << 8) + ord(rx_buffer[5])))
+		print(voltage + "\t" + current)
+		
+	finally:
+		if dev != None and "close" in dir(dev):
+			dev.close()

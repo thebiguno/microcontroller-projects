@@ -180,6 +180,7 @@ void usb_dispatch(){
 				usb_send_dac_confirmation(new_dac_number);
 				
 				DDRB &= ~_BV(PORTB0);
+				break;
 			}
 			case MESSAGE_CONFIGURE_AREF: {
 				uint8_t dac_number = rx_buffer[1];
@@ -192,6 +193,7 @@ void usb_dispatch(){
 				twi_write_to(DAC_ADDRESS_0 + dac_number, message, 3, TWI_BLOCK, TWI_STOP);
 				
 				usb_send_dac_confirmation(dac_number);
+				break;
 			}
 			
 			case MESSAGE_BOOTLOADER_JUMP: {
@@ -201,6 +203,7 @@ void usb_dispatch(){
 				//display.get_char_display().refresh();
 				_delay_ms(1000);	//Wait for the client python program to exit
 				bootloader_jump();
+				break;
 			}
 		}
 	}
