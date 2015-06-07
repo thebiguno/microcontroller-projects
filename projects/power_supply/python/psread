@@ -26,7 +26,7 @@ if (__name__=="__main__"):
 			if args.a == "a":
 				message = MESSAGE_ACTUAL
 			elif args.a == "r":
-				message == MESSAGE_ACTUAL_RAW
+				message = MESSAGE_ACTUAL_RAW
 		elif args.t == "s":
 			if args.a == "a":
 				message = MESSAGE_SETPOINT

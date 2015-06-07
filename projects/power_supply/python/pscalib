@@ -103,7 +103,7 @@ Current Calibrations:
 Index\tDAC\tADC\tMeasured""") 
 			for i in range(8):
 				c = send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE, i)
-				print(str(c[1]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
+				print(str(c[3]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
 		elif response == "Q" or response == "q":
 			break	
 		elif int(response) >= 0 and int(response) <= 7:
@@ -184,7 +184,7 @@ Current Calibrations:
 Index\tDAC\tADC\tMeasured""") 
 			for i in range(8):
 				c = send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT, i)
-				print(str(c[1]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
+				print(str(c[3]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
 		elif response == "Q" or response == "q":
 			break	
 		elif int(response) >= 0 and int(response) <= 7:
@@ -209,7 +209,7 @@ def calibrate_current_index(channel, index):
 Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""")
 
 	while True:
-		response = raw_input("DAC Value for " + str(calibration_current) + "mV: ")
+		response = raw_input("DAC Value for " + str(calibration_current) + "mA: ")
 		if response == "":
 			adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
 			break;
@@ -221,7 +221,7 @@ Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""
 			print("Invalid option.")
 
 		dac_raw = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, 0xFFF, dac_raw)[3] & 0x0FFF
-		print("Voltage setpoint: " + str(dac_raw))
+		print("Current setpoint: " + str(dac_raw))
 	
 	adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
 	response = raw_input("""

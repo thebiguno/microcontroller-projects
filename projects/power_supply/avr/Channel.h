@@ -50,7 +50,7 @@
 typedef struct calibration {
 	uint16_t dac;
 	uint16_t adc;
-	int16_t calibrated;
+	int16_t adjusted;
 } calibration_t;
 
 namespace digitalcave {
@@ -84,8 +84,8 @@ namespace digitalcave {
 			
 			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
 			
-			int16_t get_calibrated_from_adc(uint16_t adc, calibration_t* calibration_data);
-			uint16_t get_dac_from_calibrated(int16_t calibrated, calibration_t* calibration_data);
+			int16_t get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_data);
+			uint16_t get_dac_from_adjusted(int16_t adjusted, calibration_t* calibration_data);
 			
 		public:
 		

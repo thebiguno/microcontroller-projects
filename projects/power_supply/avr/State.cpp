@@ -64,6 +64,12 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
+		else if (released & BUTTON_1){
+			this->scroll_channel--;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = CHANNEL_COUNT - 1;
+			}
+		}
 		else if (released & BUTTON_2){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){

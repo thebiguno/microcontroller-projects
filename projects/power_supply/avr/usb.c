@@ -28,8 +28,8 @@ void usb_send_calibration(uint8_t message, uint8_t channel, uint8_t target, uint
 	tx_buffer[5] = calibration.dac & 0xFF;
 	tx_buffer[6] = (calibration.adc >> 8) & 0xFF;
 	tx_buffer[7] = calibration.adc & 0xFF;
-	tx_buffer[8] = (calibration.calibrated >> 8) & 0xFF;
-	tx_buffer[9] = calibration.calibrated & 0xFF;
+	tx_buffer[8] = (calibration.adjusted >> 8) & 0xFF;
+	tx_buffer[9] = calibration.adjusted & 0xFF;
 	usb_rawhid_send(tx_buffer, 10);
 }
 
@@ -134,7 +134,7 @@ void usb_dispatch(){
 				calibration_t calibration;
 				calibration.dac = (rx_buffer[4] << 8) + rx_buffer[5];
 				calibration.adc = (rx_buffer[6] << 8) + rx_buffer[7];
-				calibration.calibrated = (rx_buffer[8] << 8) + rx_buffer[9];
+				calibration.adjusted = (rx_buffer[8] << 8) + rx_buffer[9];
 				switch(target){
 					case TARGET_VOLTAGE: channels[channel].set_calibration_voltage(index, calibration); break;
 					case TARGET_CURRENT: channels[channel].set_calibration_current(index, calibration); break;
