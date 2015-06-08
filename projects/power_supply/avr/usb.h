@@ -45,7 +45,7 @@
 //PSU -> Computer: Confirm raw setpoints: [channel:1][voltage:2][current:2]
 #define MESSAGE_CHANGE_SETPOINT_RAW		8
 
-//Computer -> PSU: Get calibration for given channel / target / index: [channel:1][target:1]
+//Computer -> PSU: Get calibration for given channel / target / index: [channel:1][target:1][index:1]
 //PSU -> Computer: Confirm raw setpoints: [channel:1][target:1][index:1][dac:2][adc:2][measured:2]
 //Target is one of the calibration targets below (voltage or current)
 //Index is a value from 0 - CALIBRATION_COUNT to indicate which calibration value we want.

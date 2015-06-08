@@ -50,7 +50,7 @@
 typedef struct calibration {
 	uint16_t dac;
 	uint16_t adc;
-	int16_t calibrated;
+	int16_t adjusted;
 } calibration_t;
 
 namespace digitalcave {
@@ -75,15 +75,17 @@ namespace digitalcave {
 			int16_t current_limit;			//Max current
 			
 			int16_t voltage_setpoint;		//Desired voltage value (mV)
+			uint16_t voltage_setpoint_raw;	//Desired raw DAC value
 			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
 
 			uint16_t current_setpoint;		//Desired current value (mA)
+			uint16_t current_setpoint_raw;	//Desired raw DAC value
 			uint16_t current_actual_raw;	//Actual raw 10 bit ADC value
 			
 			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
 			
-			int16_t get_calibrated_from_adc(uint16_t adc, calibration_t* calibration_data);
-			uint16_t get_dac_from_calibrated(int16_t calibrated, calibration_t* calibration_data);
+			int16_t get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_data);
+			uint16_t get_dac_from_adjusted(int16_t adjusted, calibration_t* calibration_data);
 			
 		public:
 		
