@@ -7,7 +7,6 @@
 #define MATRIX_HEIGHT 12
 
 typedef ws2811_t pixel_t;
-
 #include "lib/draw/draw.h"
 
 void matrix_write_buffer();
