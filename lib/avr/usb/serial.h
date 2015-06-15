@@ -79,8 +79,8 @@ void usb_serial_flush_input();			// discard any buffered input
 // transmitting data
 void usb_serial_write_c(char c);		// transmit a character
 void usb_serial_write_b(uint8_t b);		// transmit a byte
-uint8_t usb_serial_putchar_nowait(uint8_t c);  // transmit a character, do not wait
-uint8_t usb_serial_write(const uint8_t *buffer, uint16_t size); // transmit a buffer
+int8_t usb_serial_putchar_nowait(uint8_t c);  // transmit a character, do not wait
+int8_t usb_serial_write(const uint8_t *buffer, uint16_t size); // transmit a buffer
 void usb_serial_flush_output(void);	// immediately transmit any buffered output
 
 // serial parameters
