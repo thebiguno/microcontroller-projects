@@ -53,6 +53,12 @@ typedef struct calibration {
 	int16_t adjusted;
 } calibration_t;
 
+//The size of one block of calibration (either voltage or current).  Each channel requires two of these.
+#define EEPROM_CALIBRATION_OFFSET			0x00
+#define EEPROM_CALIBRATION_BLOCK_SIZE		(sizeof(calibration_t) * CALIBRATION_COUNT)
+#define EEPROM_STARTUP_OFFSET				(EEPROM_CALIBRATION_BLOCK_SIZE * CHANNEL_COUNT * 2)
+#define EEPROM_STARTUP_BLOCK_SIZE			(sizeof(int16_t))
+
 namespace digitalcave {
 
 	class Channel {
@@ -73,6 +79,9 @@ namespace digitalcave {
 
 			int16_t voltage_limit;			//Max (or min, for negative) voltage
 			int16_t current_limit;			//Max current
+			
+			int16_t voltage_startup;		//Startup voltage
+			int16_t current_startup;		//Startup current
 			
 			int16_t voltage_setpoint;		//Desired voltage value (mV)
 			uint16_t voltage_setpoint_raw;	//Desired raw DAC value
@@ -106,6 +115,8 @@ namespace digitalcave {
 			uint16_t get_voltage_actual_raw();
 			void set_voltage_setpoint(int16_t millivolts);
 			void set_voltage_setpoint_raw(uint16_t raw_value);
+			int16_t get_voltage_startup();
+			void set_voltage_startup(int16_t startup);
 			
 			/*
 			 * Current functions
@@ -117,6 +128,8 @@ namespace digitalcave {
 			uint16_t get_current_actual_raw();
 			void set_current_setpoint(int16_t milliamps);
 			void set_current_setpoint_raw(uint16_t raw_value);
+			int16_t get_current_startup();
+			void set_current_startup(int16_t startup);
 			
 			/*
 			 * ADC polling

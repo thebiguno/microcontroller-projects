@@ -19,14 +19,14 @@ def send_generic_message_with_response(dev, message, body = None):
 	return rx_buffer
 
 def send_channel_info_message_with_response(dev, channel):
-	tx_buffer = [chr(MESSAGE_CHANNEL_INFO), chr(channel)]
+	tx_buffer = [chr(MESSAGE_GET_CHANNEL_INFO), chr(channel)]
 	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
 	if len(rx_buffer) == 0:
 		raise Exception("Unable to read data")
-	print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
+	#print("Received Message: " + ''.join(hex(ord(x)) + "," for x in rx_buffer))
 	result = [ord(rx_buffer[0]), ord(rx_buffer[1]), struct.unpack(">h", ''.join(chr(ord(x)) for x in rx_buffer[2:4]))[0], struct.unpack(">h", ''.join(chr(ord(x)) for x in rx_buffer[4:6]))[0]]
 	return result
 
@@ -61,7 +61,7 @@ def send_measurement_message_with_response(dev, message, channel=None, voltage=N
 		tx_buffer.append(chr(current & 0xFF))
 	if len(tx_buffer) == 1:
 		tx_buffer.append(chr(0))
-	print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
+	#print("Sending Message: " + ''.join(hex(ord(x)) + "," for x in tx_buffer))
 	dev.write(''.join(tx_buffer))
 
 	rx_buffer = dev.read(16, 1000)
@@ -85,9 +85,11 @@ def calibrate_voltage(channel):
 		response = raw_input("""
 Please choose one of the following calibration options:
 
-0-7) Calibrate Specified Index
-A) Calibrate All Indices
-C) Show All Current Calibrations
+0-7) Calibrate specified index
+A) Calibrate all indices
+C) Show all current calibrations
+S) Set voltage and save as power-on value
+T) Show power-on voltage
 Q) Quit
 
 Enter a menu option: """)
@@ -104,6 +106,25 @@ Index\tDAC\tADC\tMeasured""")
 			for i in range(8):
 				c = send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_VOLTAGE, i)
 				print(str(c[3]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
+		elif response == "S" or response == "s":
+			channel_info = send_channel_info_message_with_response(dev, channel)
+			while True:
+				startup = raw_input("Please enter a startup value in mV, or Q to exit: ")
+				if startup == "Q" or startup == "q":
+					break
+				elif (int(startup) >= 0 and int(startup) <= channel_info[2]) or (int(startup) <= 0 and int(startup) >= channel_info[2]):
+					startup = int(startup)
+					message = [chr(channel), chr(TARGET_VOLTAGE)]
+					message = message + list(struct.pack(">h", startup))
+					send_generic_message_with_response(dev, MESSAGE_SET_STARTUP_VALUE, message)
+					break
+				else:
+					print("Invalid value")
+		elif response == "T" or response == "t":
+			startup = send_generic_message_with_response(dev, MESSAGE_GET_STARTUP_VALUE, [chr(channel), chr(TARGET_VOLTAGE)])
+			print("""
+Startup voltage: """ + str(struct.unpack(">h", ''.join(chr(ord(x)) for x in startup[3:5]))[0]) + """mV
+""")
 		elif response == "Q" or response == "q":
 			break	
 		elif int(response) >= 0 and int(response) <= 7:
@@ -112,11 +133,10 @@ Index\tDAC\tADC\tMeasured""")
 def calibrate_voltage_index(channel, index):
 	
 	channel_info = send_channel_info_message_with_response(dev, channel)
-	print(channel_info)
 	
 	#Set voltage as low as possible, and current limiting off (let anything through)
 	dac_raw = 0
-	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, dac_raw, 0xFFF)
+	send_measurement_message_with_response(dev, MESSAGE_SET_SETPOINT_RAW, channel, dac_raw, 0xFFF)
 	
 	if channel_info[2] > 0:
 		CALIBRATION_VOLTAGES = [0, 1800, 2500, 3300, 5000, 8000, 10000, 12500]
@@ -126,11 +146,10 @@ def calibrate_voltage_index(channel, index):
 	calibration_voltage = CALIBRATION_VOLTAGES[index]
 	print("""Adjust measured voltage to exactly """ + str(calibration_voltage) + """ mV.  Hit enter when target reached.
 Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""")
-
 	while True:
 		response = raw_input("DAC Value for " + str(calibration_voltage) + "mV: ")
 		if response == "":
-			adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
+			adc_raw = send_measurement_message_with_response(dev, MESSAGE_GET_ACTUAL_RAW, channel)[2] & 0x03FF
 			break;
 		elif response == "Q" or response == "q":
 			return False;
@@ -139,10 +158,10 @@ Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""
 		else:
 			print("Invalid option.")
 
-		dac_raw = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, dac_raw, 0xFFF)[2] & 0x0FFF
+		dac_raw = send_measurement_message_with_response(dev, MESSAGE_SET_SETPOINT_RAW, channel, dac_raw, 0xFFF)[2] & 0x0FFF
 		print("Voltage setpoint: " + str(dac_raw))
 	
-	adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[2] & 0x03FF
+	adc_raw = send_measurement_message_with_response(dev, MESSAGE_GET_ACTUAL_RAW, channel)[2] & 0x03FF
 	response = raw_input("""
 Calibration for channel """ + str(channel + 1) + """, index """ + str(index) + """:
 Measured value: """ + str(calibration_voltage) + """mV
@@ -166,9 +185,11 @@ def calibrate_current(channel):
 		response = raw_input("""
 Please choose one of the following calibration options:
 
-0-7) Calibrate Specified Index
-A) Calibrate All Indices
-C) Show All Current Calibrations
+0-7) Calibrate specified index
+A) Calibrate all indices
+C) Show all current calibrations
+S) Set current limit and save as power-on Value
+T) Show power-on current pimit
 Q) Quit
 
 Enter a menu option: """)
@@ -185,24 +206,42 @@ Index\tDAC\tADC\tMeasured""")
 			for i in range(8):
 				c = send_calibration_message_with_response(dev, MESSAGE_GET_CALIBRATION, channel, TARGET_CURRENT, i)
 				print(str(c[3]) + "\t" + str(c[4]) + "\t" + str(c[5]) + "\t" + str(c[6]))
+		elif response == "S" or response == "s":
+			channel_info = send_channel_info_message_with_response(dev, channel)
+			while True:
+				startup = raw_input("Please enter a startup value in mA, or Q to exit: ")
+				if startup == "Q" or startup == "q":
+					break
+				elif (int(startup) >= 0 and int(startup) <= channel_info[3]) or (int(startup) <= 0 and int(startup) >= channel_info[3]):
+					startup = int(startup)
+					message = [chr(channel), chr(TARGET_CURRENT)]
+					message = message + list(struct.pack(">h", startup))
+					send_generic_message_with_response(dev, MESSAGE_SET_STARTUP_VALUE, message)
+					break
+				else:
+					print("Invalid value")
+		elif response == "T" or response == "t":
+			startup = send_generic_message_with_response(dev, MESSAGE_GET_STARTUP_VALUE, [chr(channel), chr(TARGET_CURRENT)])
+			print("""
+Startup current: """ + str(struct.unpack(">h", ''.join(chr(ord(x)) for x in startup[3:5]))[0]) + """mA
+""")
 		elif response == "Q" or response == "q":
-			break	
+			break
 		elif int(response) >= 0 and int(response) <= 7:
 			calibrate_current_index(channel, int(response))
 
 def calibrate_current_index(channel, index):
 	
 	channel_info = send_channel_info_message_with_response(dev, channel)
-	print(channel_info)
 	
 	#Set voltage to max, and current limiting to zero
 	dac_raw = 0
-	send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, 0xFFF, dac_raw)
+	send_measurement_message_with_response(dev, MESSAGE_SET_SETPOINT_RAW, channel, 0xFFF, dac_raw)
 	
 	if channel_info[3] > 0:
-		CALIBRATION_CURRENTS = [5, 10, 25, 100, 500, 1000, 1500, 2000]
+		CALIBRATION_CURRENTS = [5, 10, 25, 50, 100, 500, 1000, 1500]
 	else:
-		CALIBRATION_CURRENTS = [5, -10, -25, -100, -500, -1000, -1500, -2000]
+		CALIBRATION_CURRENTS = [-5, -10, -25, -50, -100, -500, -1000, -1500]
 
 	calibration_current = CALIBRATION_CURRENTS[index]
 	print("""Adjust measured current to exactly """ + str(calibration_current) + """ mA.  Hit enter when target reached.
@@ -211,7 +250,7 @@ Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""
 	while True:
 		response = raw_input("DAC Value for " + str(calibration_current) + "mA: ")
 		if response == "":
-			adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
+			adc_raw = send_measurement_message_with_response(dev, MESSAGE_GET_ACTUAL_RAW, channel)[3] & 0x03FF
 			break;
 		elif response == "Q" or response == "q":
 			return False;
@@ -220,10 +259,10 @@ Enter a DAC value as an integer between 0 and 4095, or 'Q' to exit calibration""
 		else:
 			print("Invalid option.")
 
-		dac_raw = send_measurement_message_with_response(dev, MESSAGE_CHANGE_SETPOINT_RAW, channel, 0xFFF, dac_raw)[3] & 0x0FFF
+		dac_raw = send_measurement_message_with_response(dev, MESSAGE_SET_SETPOINT_RAW, channel, 0xFFF, dac_raw)[3] & 0x0FFF
 		print("Current setpoint: " + str(dac_raw))
 	
-	adc_raw = send_measurement_message_with_response(dev, MESSAGE_ACTUAL_RAW, channel)[3] & 0x03FF
+	adc_raw = send_measurement_message_with_response(dev, MESSAGE_GET_ACTUAL_RAW, channel)[3] & 0x03FF
 	response = raw_input("""
 Calibration for channel """ + str(channel + 1) + """, index """ + str(index) + """:
 Measured value: """ + str(calibration_current) + """mA
@@ -271,7 +310,7 @@ Enter a menu option: """)
 It may be a good idea to watch the procedure with a logic probe to verify correct operation.
 Press enter when ready, or 'Q' to cancel...""")
 		if response != "Q" and response != "q":
-			send_generic_message_with_response(dev, MESSAGE_CONFIGURE_DAC_ADDRESS, [chr(old_address), chr(new_address)])
+			send_generic_message_with_response(dev, MESSAGE_SET_DAC_ADDRESS, [chr(old_address), chr(new_address)])
 			print("The DAC should now have the new address, but you need to verify.")
 
 
@@ -289,7 +328,7 @@ Q) Go back
 
 Enter a menu option: """)
 		if response == "D" or response == "d":
-			send_generic_message_with_response(dev, MESSAGE_CONFIGURE_AREF, [chr(2), chr(3)])
+			send_generic_message_with_response(dev, MESSAGE_SET_AREF, [chr(2), chr(3)])
 			break;
 		elif response == "V" or response == "v":
 			break;		#No need to do anything here, the DAC's EEPROM will be overwritten when calibrating the associated channel
@@ -301,7 +340,7 @@ Enter a menu option: """)
 
 def calibrate_menu(channel):
 	while True:
-		#channel_info = send_generic_message_with_response(dev, MESSAGE_CHANNEL_INFO)
+		#channel_info = send_generic_message_with_response(dev, MESSAGE_GET_CHANNEL_INFO)
 		
 		#CALIBRATION_CURRENTS = [0, 10, 20, 50, 100, 500, 1000, 1500]
 	
@@ -352,18 +391,20 @@ Enter a menu option: """)
 
 #Constants (mirrored from the C++ code)
 MESSAGE_CHANNELS				= 1
-MESSAGE_CHANNEL_INFO			= 2
-MESSAGE_ACTUAL					= 3
-MESSAGE_ACTUAL_RAW				= 4
-MESSAGE_SETPOINT				= 5
-MESSAGE_SETPOINT_RAW			= 6
-MESSAGE_CHANGE_SETPOINT			= 7
-MESSAGE_CHANGE_SETPOINT_RAW		= 8
+MESSAGE_GET_CHANNEL_INFO		= 2
+MESSAGE_GET_ACTUAL				= 3
+MESSAGE_GET_ACTUAL_RAW			= 4
+MESSAGE_GET_SETPOINT			= 5
+MESSAGE_GET_SETPOINT_RAW		= 6
+MESSAGE_SET_SETPOINT			= 7
+MESSAGE_SET_SETPOINT_RAW		= 8
 MESSAGE_GET_CALIBRATION			= 9
 MESSAGE_SET_CALIBRATION			= 10
-MESSAGE_CONFIGURE_DAC_ADDRESS	= 11
-MESSAGE_CONFIGURE_AREF			= 12
-MESSAGE_BOOTLOADER_JUMP			= 13
+MESSAGE_GET_STARTUP_VALUE		= 11
+MESSAGE_SET_STARTUP_VALUE		= 12
+MESSAGE_SET_DAC_ADDRESS			= 13
+MESSAGE_SET_AREF				= 14
+MESSAGE_BOOTLOADER_JUMP			= 15
 
 TARGET_VOLTAGE					= 0
 TARGET_CURRENT					= 1

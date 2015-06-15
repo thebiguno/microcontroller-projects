@@ -30,8 +30,8 @@ Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel
 	ADMUX = 0x00;		//Reference external AREF
 	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); 	//ADC Enable, prescaler = /128
 	
-	this->set_voltage_setpoint(0);
-	this->set_current_setpoint(0);
+	this->set_voltage_setpoint(this->voltage_startup);
+	this->set_current_setpoint(this->current_startup);
 }
 
 /*
@@ -75,6 +75,23 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
+int16_t Channel::get_voltage_startup(){
+	return this->voltage_startup;
+}
+void Channel::set_voltage_startup(int16_t startup){
+	this->voltage_startup = startup;
+	this->save_calibration();
+	
+	//Set the power-on defaults to be the startup voltage
+	uint16_t raw = get_dac_from_adjusted(startup, this->calibration_voltage);
+	uint8_t message[3];
+	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
+	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
+	message[2] = (raw & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+}
+
+
 /*
  * Current functions
  */
@@ -116,6 +133,21 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
+int16_t Channel::get_current_startup(){
+	return this->current_startup;
+}
+void Channel::set_current_startup(int16_t startup){
+	this->current_startup = startup;
+	this->save_calibration();
+	
+	//Set the power-on defaults to be the startup current
+	uint16_t raw = get_dac_from_adjusted(startup, this->calibration_current);
+	uint8_t message[3];
+	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
+	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
+	message[2] = (raw & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+}
 
 /*
  * ADC polling
@@ -137,7 +169,7 @@ void Channel::sample_actual(){
 		ADCSRB |= _BV(MUX5);
 	}
 	
-	for (uint8_t i = 0; i < 16; i++){
+	for (uint8_t i = 0; i < 32; i++){
 		ADCSRA |= _BV(ADSC);				//Start conversion
 		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
@@ -146,7 +178,7 @@ void Channel::sample_actual(){
 		_delay_us(1);
 	}
 	
-	this->voltage_actual_raw = sum >> 4;	//Average of 16 samples
+	this->voltage_actual_raw = sum >> 5;	//Average of 32 samples
 	
 	
 	//*********** Sample current ***********//
@@ -165,7 +197,7 @@ void Channel::sample_actual(){
 		ADCSRB |= _BV(MUX5);
 	}
 	
-	for (uint8_t i = 0; i < 16; i++){
+	for (uint8_t i = 0; i < 32; i++){
 		ADCSRA |= _BV(ADSC);				//Start conversion
 		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
@@ -174,7 +206,7 @@ void Channel::sample_actual(){
 		_delay_us(1);
 	}
 	
-	this->current_actual_raw = sum >> 4;	//Average of 16 samples
+	this->current_actual_raw = sum >> 5;	//Average of 32 samples
 }
 
 int16_t Channel::get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_data){
@@ -231,31 +263,19 @@ uint16_t Channel::get_dac_from_adjusted(int16_t adjusted, calibration_t* calibra
  * Persist / load calibration to / from EEPROM
  */
 void Channel::save_calibration(){
-
-//The size of one block of calibration (either voltage or current).  Each channel requires two of these.
-#define EEPROM_BLOCK_SIZE		(sizeof(calibration_t) * CALIBRATION_COUNT)
-
-	eeprom_update_block(this->calibration_voltage, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
-	eeprom_update_block(this->calibration_current, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE + EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);	
-
-	//Set the power-on defaults to be 0mV / 0mA
-	uint16_t raw = get_dac_from_adjusted(0, this->calibration_voltage);
-	uint8_t message[3];
-	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
-	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
-	message[2] = (raw & 0xFF);
-	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
-
-	raw = get_dac_from_adjusted(0, this->calibration_current);
-	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
-	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
-	message[2] = (raw & 0xFF);
-	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+	eeprom_update_block(this->calibration_voltage, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+	eeprom_update_block(this->calibration_current, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE + EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);	
+	
+	eeprom_update_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE), this->voltage_startup);
+	eeprom_update_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE + EEPROM_STARTUP_BLOCK_SIZE), this->current_startup);
 }
 
 void Channel::load_calibration(){
-	eeprom_read_block(this->calibration_voltage, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
-	eeprom_read_block(this->calibration_current, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE + EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
+	eeprom_read_block(this->calibration_voltage, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+	eeprom_read_block(this->calibration_current, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE + EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+
+	this->voltage_startup = eeprom_read_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE));
+	this->current_startup = eeprom_read_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE + EEPROM_STARTUP_BLOCK_SIZE));
 }
 
 
