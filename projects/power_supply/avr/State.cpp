@@ -42,10 +42,6 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_EDIT_ITEM;
 		}
-		else if (held & BUTTON_2){
-			display.force_reset();
-			this->state = STATE_MENU;
-		}
 		else if (encoder1_movement > 0){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
@@ -81,9 +77,6 @@ void State::poll(){
 				channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta(encoder2_movement));
 			}
 		}
-	}
-	else if (this->state == STATE_MENU){
-		//TODO...
 	}
 }
 
