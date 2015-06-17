@@ -57,7 +57,28 @@ void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, u
 	}
 }
 
-void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, uint8_t value, uint8_t o){
+void draw_get_raw(uint8_t x, uint8_t y, uint8_t width, uint8_t height, pixel_t* raw) {
+	uint8_t ir = 0;
+	for (uint8_t iy = y; iy < y + height; iy++) {
+		for (uint8_t ix = x; ix < x + width; ix++) {
+			pixel_t p = get_pixel(ix, iy);
+			raw[ir++] = p;
+		}
+	}
+}
+
+void draw_set_raw(int16_t x, int16_t y, uint8_t width, uint8_t height, pixel_t* raw, uint8_t o) {
+	uint8_t ir = 0;
+	for (int16_t iy = y; iy < y + height; iy++) {
+		for (int16_t ix = x; ix < x + width; ix++) {
+			pixel_t p = raw[ir++];
+			set_pixel(ix, iy, p, o);
+		}
+	}
+
+}
+
+void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, pixel_t value, uint8_t o){
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
@@ -66,6 +87,7 @@ void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t or
 	uint8_t bitCounter = 8;
 	uint8_t byteCounter = 0;
 
+	// account for padding, if any
 	if (glyphBitCount != 0) {
 		glyphByteCount++;
 		bitCounter = glyphBitCount - 1; // the padding is at the front of the first byte, so don't start at bit 0

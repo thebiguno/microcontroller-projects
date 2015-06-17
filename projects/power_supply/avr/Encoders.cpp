@@ -17,14 +17,12 @@ Encoders::Encoders(){
 int8_t Encoders::get_encoder1_movement(){
 	double result = encoder1_movement;
 	encoder1_movement = 0;
-	result = result / 4;
 	return result;
 }
 
 int8_t Encoders::get_encoder2_movement(){
 	double result = encoder2_movement;
 	encoder2_movement = 0;
-	result = result / 4;
 	return result;
 }
 

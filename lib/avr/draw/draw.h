@@ -26,23 +26,31 @@
 #define DRAW_FILLED		1		//Draw filled shapes
 
 /*
- * The core of all draw implementations; this must be implemented by the driver.
+ * This must be implemented by the driver.
  */
 void set_pixel(int16_t x, int16_t y, pixel_t value, uint8_t overlay);
 
 /* 
  * This must be implemented by the driver.
  */
-pixel_t get_pixel(int16_t x, int16_t y);
+pixel_t get_pixel(uint8_t x, uint8_t y);
 
 /*
- * Get a a pixel at the given X, Y co-ordinates.  This must also be implemented by the driver.  The meaning of the return value
- * depends on the driver implementation, although in general it SHOULD be zero for off and non zero for on (in various 
- * colors, etc)
+ * Gets raw values of the specified size from the canvas at the specified location.
  */
-pixel_t matrix_get_pixel(int16_t x, int16_t y);
+void draw_set_raw(int16_t x, int16_t y, uint8_t width, uint8_t height, pixel_t* raw, uint8_t overlay);
 
+/*
+ * Sets raw values of the specified size to the canvas at the specified location.
+ * The raw array must be large enough to hold width * height values; no bounds checking is done.
+ */
+void draw_get_raw(uint8_t x, uint8_t y, uint8_t width, uint8_t height, pixel_t* raw);
 
+/*
+ * Draws a bitmap from flash memory of the specified size on the screen at the specified position.
+ * For ever bit set in the bitmap a pixel of the specified value will be drawn with the specified overlay.
+ */
+void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, pixel_t value, uint8_t overlay);
 
 /*
  * Draws text on screen at the specified position, using the given font, in
@@ -50,12 +58,6 @@ pixel_t matrix_get_pixel(int16_t x, int16_t y);
  * The Width / Height are for the glyphs in the given font.
  */
 void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, pixel_t value, uint8_t overlay);
-
-/*
- * Draws a bitmap on the screen at the specified position, of specified width / height,
- * in the specified overlay mode.
- */
-void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, pixel_t value, uint8_t overlay);
 
 /*
  * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the

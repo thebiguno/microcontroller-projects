@@ -10,25 +10,24 @@ State::State(){
 
 }
 
-int16_t State::calculate_delta(int8_t encoder_movement){
-	int16_t delta = 0;
-	if (encoder_movement > 7) return 1000;
-	else if (encoder_movement > 6) return 500;
-	else if (encoder_movement > 5) return 250;
-	else if (encoder_movement > 4) return 100;
-	else if (encoder_movement > 3) return 50;
-	else if (encoder_movement > 2) return 25;
-	else if (encoder_movement > 1) return 10;
-	else if (encoder_movement < -7) return -1000;
-	else if (encoder_movement < -6) return -500;
-	else if (encoder_movement < -5) return -250;
-	else if (encoder_movement < -4) return -100;
-	else if (encoder_movement < -3) return -50;
-	else if (encoder_movement < -2) return -25;
-	else if (encoder_movement < -1) return -10;
-	
-	
-	return delta;
+int16_t State::calculate_delta_a(int8_t encoder_movement){
+	if (encoder_movement > 25) return 100;
+	else if (encoder_movement > 8) return 10;
+	else if (encoder_movement > 0) return 1;
+	else if (encoder_movement <= -25) return -100;
+	else if (encoder_movement < -8) return -10;
+	else if (encoder_movement < 0) return -1;
+	else return 0;
+}
+
+int16_t State::calculate_delta_v(int8_t encoder_movement){
+	if (encoder_movement > 25) return 1000;
+	else if (encoder_movement > 8) return 100;
+	else if (encoder_movement > 0) return 10;
+	else if (encoder_movement < -25) return -1000;
+	else if (encoder_movement < -8) return -100;
+	else if (encoder_movement < 0) return -10;
+	else return 0;
 }
 
 void State::poll(){
@@ -60,6 +59,12 @@ void State::poll(){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
+		else if (released & BUTTON_1){
+			this->scroll_channel--;
+			if (this->scroll_channel >= CHANNEL_COUNT){
+				this->scroll_channel = CHANNEL_COUNT - 1;
+			}
+		}
 		else if (released & BUTTON_2){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
@@ -71,10 +76,12 @@ void State::poll(){
 
 			//Modify the value
 			if (encoder1_movement){
-				channel->set_voltage_setpoint(channel->get_voltage_setpoint() + this->calculate_delta(encoder1_movement));
+				if (channel->get_voltage_limit() > 0) channel->set_voltage_setpoint(channel->get_voltage_setpoint() + this->calculate_delta_v(encoder1_movement));
+				else channel->set_voltage_setpoint(channel->get_voltage_setpoint() - this->calculate_delta_v(encoder1_movement));
 			}
 			else if (encoder2_movement){
-				channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta(encoder2_movement));
+				if (channel->get_current_limit() > 0) channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta_a(encoder2_movement));
+				else channel->set_current_setpoint(channel->get_current_setpoint() - this->calculate_delta_a(encoder2_movement));
 			}
 		}
 	}
