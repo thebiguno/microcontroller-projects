@@ -10,22 +10,27 @@ State::State(){
 
 }
 
-int16_t State::calculate_delta(int8_t encoder_movement){
+int16_t State::calculate_delta_a(int8_t encoder_movement){
 	int16_t delta = 0;
-	if (encoder_movement > 7) return 1000;
-	else if (encoder_movement > 6) return 500;
-	else if (encoder_movement > 5) return 250;
+	if (encoder_movement > 8) return 100;
+	else if (encoder_movement > 4) return 10;
+	else if (encoder_movement >= 1) return 1;
+	else if (encoder_movement <= -8) return -100;
+	else if (encoder_movement < -4) return -10;
+	else if (encoder_movement <= -1) return -1;
+	
+	
+	return delta;
+}
+
+int16_t State::calculate_delta_v(int8_t encoder_movement){
+	int16_t delta = 0;
+	if (encoder_movement > 8) return 1000;
 	else if (encoder_movement > 4) return 100;
-	else if (encoder_movement > 3) return 50;
-	else if (encoder_movement > 2) return 25;
-	else if (encoder_movement > 1) return 10;
-	else if (encoder_movement < -7) return -1000;
-	else if (encoder_movement < -6) return -500;
-	else if (encoder_movement < -5) return -250;
+	else if (encoder_movement >= 1) return 10;
+	else if (encoder_movement <= -8) return -1000;
 	else if (encoder_movement < -4) return -100;
-	else if (encoder_movement < -3) return -50;
-	else if (encoder_movement < -2) return -25;
-	else if (encoder_movement < -1) return -10;
+	else if (encoder_movement <= -1) return -10;
 	
 	
 	return delta;
@@ -81,10 +86,10 @@ void State::poll(){
 
 			//Modify the value
 			if (encoder1_movement){
-				channel->set_voltage_setpoint(channel->get_voltage_setpoint() + this->calculate_delta(encoder1_movement));
+				channel->set_voltage_setpoint(channel->get_voltage_setpoint() + this->calculate_delta_v(encoder1_movement));
 			}
 			else if (encoder2_movement){
-				channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta(encoder2_movement));
+				channel->set_current_setpoint(channel->get_current_setpoint() + this->calculate_delta_a(encoder2_movement));
 			}
 		}
 	}

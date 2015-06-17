@@ -33,7 +33,8 @@ namespace digitalcave {
 	class State {
 		private:
 			Encoders encoders;
-			int16_t calculate_delta(int8_t encoder_movement);
+			int16_t calculate_delta_a(int8_t encoder_movement);
+			int16_t calculate_delta_v(int8_t encoder_movement);
 			
 			uint8_t state = 0;
 			uint8_t scroll_channel = 0;	//From 0 to CHANNEL_COUNT - 1.  The currently selected channel.
