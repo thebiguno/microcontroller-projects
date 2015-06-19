@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0
+EESchema-DOCLIB  Version 2.0  Date: Friday, June 19, 2015 'pmt' 01:44:08 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -126,6 +126,11 @@ D Potentiometer
 K R DEV
 $ENDCMP
 #
+$CMP R_PACK5
+D 5 resistors Pack
+K R DEV
+$ENDCMP
+#
 $CMP RELAY_DPDT
 D RELAY_DPST
 K Relay, DPST
@@ -173,11 +178,6 @@ $ENDCMP
 #
 $CMP RSMALL
 D RSMALL
-K R DEV
-$ENDCMP
-#
-$CMP R_PACK5
-D 5 resistors Pack
 K R DEV
 $ENDCMP
 #
