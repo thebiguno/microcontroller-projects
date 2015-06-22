@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Friday, June 19, 2015 'pmt' 01:44:08 pm
+EESchema-DOCLIB  Version 2.0  Date: Monday, June 22, 2015 'pmt' 02:42:14 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -74,6 +74,11 @@ K Buck, Power
 $ENDCMP
 #
 $CMP MCP4451
+D Digital Potentiometer
+K potentiometer
+$ENDCMP
+#
+$CMP MCP46x1
 D Digital Potentiometer
 K potentiometer
 $ENDCMP
