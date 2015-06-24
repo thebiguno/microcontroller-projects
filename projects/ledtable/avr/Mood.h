@@ -1,15 +1,16 @@
-#ifndef Tictactoe_H
-#define Tictactoe_H
+#ifndef Plasma_H
+#define Plasma_H
 
 #include <Module.h>
+#include <Color.h>
 #include <stdint.h>
 #include "matrix.h"
 
 namespace digitalcave {
-	class Tictactoe : public Module {
+	class Mood : public Module {
 	public:
-		Tictactoe();
-		~Tictactoe();
+		Mood();
+		~Mood();
 	};
 }
 

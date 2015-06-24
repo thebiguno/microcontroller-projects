@@ -63,6 +63,8 @@ void Life::run() {
 		}
 
 		_delay_ms(70);
+		this->hue++;
+		this->hue &= 360;
 	}
 }
 
@@ -112,7 +114,7 @@ void Life::clear() {
 
 pixel_t Life::translate(uint8_t state) {
 	pixel_t result;
-	if (state > 0) result.red = 0xFF;
+	if (state > 0) color.h2rgb(this->hue, result);
 	return result;
 }
 
@@ -128,7 +130,7 @@ void Life::reset() {
 //	srandom(analog_read_p(0) + timer_micros() + timer_millis());
 
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
-		hashes[i] = 0;
+		this->hashes[i] = 0;
 	}
 	
 	clear();

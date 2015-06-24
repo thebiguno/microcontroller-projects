@@ -43,8 +43,17 @@
 
 // You can change these to give your code its own name.  On Windows,
 // these are only used before an INF file (driver install) is loaded.
-#define STR_MANUFACTURER	L"Digital Cave"
-#define STR_PRODUCT		L"USB Serial"
+// You can change these to give your code its own name.
+#ifndef USB_STR_MANUFACTURER
+#define USB_STR_MANUFACTURER	L"digitalcave.ca"
+#endif
+#ifndef USB_STR_PRODUCT
+#define USB_STR_PRODUCT		L"USB Serial"
+#endif
+#ifndef USB_STRING_DESCRIPTOR_LENGTH
+//The maximum length of USB_STR_MANUFACTURER and USB_STR_PRODUCT.  Keep this as small as possible to save PROGMEM space
+#define USB_STRING_DESCRIPTOR_LENGTH 16
+#endif
 
 // All USB serial devices are supposed to have a serial number
 // (according to Microsoft).  On windows, a new COM port is created
@@ -61,7 +70,9 @@
 // Udev rules (in /etc/udev/rules.d) can define persistent device
 // names linked to this serial number, as well as permissions, owner
 // and group settings.
-#define STR_SERIAL_NUMBER	L"12345"
+#ifndef USB_STR_SERIAL_NUMBER
+#define USB_STR_SERIAL_NUMBER	L"12345"
+#endif
 
 // Mac OS-X and Linux automatically load the correct drivers.  On
 // Windows, even though the driver is supplied by Microsoft, an
@@ -247,7 +258,7 @@ static const uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
 struct usb_string_descriptor_struct {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
-	int16_t wString[];
+	const wchar_t wString[USB_STRING_DESCRIPTOR_LENGTH];
 };
 static const struct usb_string_descriptor_struct PROGMEM string0 = {
 	4,
@@ -255,19 +266,19 @@ static const struct usb_string_descriptor_struct PROGMEM string0 = {
 	{0x0409}
 };
 static const struct usb_string_descriptor_struct PROGMEM string1 = {
-	sizeof(STR_MANUFACTURER),
+	sizeof(USB_STR_MANUFACTURER),
 	3,
-	STR_MANUFACTURER
+	USB_STR_MANUFACTURER
 };
 static const struct usb_string_descriptor_struct PROGMEM string2 = {
-	sizeof(STR_PRODUCT),
+	sizeof(USB_STR_PRODUCT),
 	3,
-	STR_PRODUCT
+	USB_STR_PRODUCT
 };
 static const struct usb_string_descriptor_struct PROGMEM string3 = {
-	sizeof(STR_SERIAL_NUMBER),
+	sizeof(USB_STR_SERIAL_NUMBER),
 	3,
-	STR_SERIAL_NUMBER
+	USB_STR_SERIAL_NUMBER
 };
 
 // This table defines which descriptor data is sent for each specific
@@ -281,9 +292,9 @@ static const struct descriptor_list_struct {
 	{0x0100, 0x0000, device_descriptor, sizeof(device_descriptor)},
 	{0x0200, 0x0000, config1_descriptor, sizeof(config1_descriptor)},
 	{0x0300, 0x0000, (const uint8_t *)&string0, 4},
-	{0x0301, 0x0409, (const uint8_t *)&string1, sizeof(STR_MANUFACTURER)},
-	{0x0302, 0x0409, (const uint8_t *)&string2, sizeof(STR_PRODUCT)},
-	{0x0303, 0x0409, (const uint8_t *)&string3, sizeof(STR_SERIAL_NUMBER)}
+	{0x0301, 0x0409, (const uint8_t *)&string1, sizeof(USB_STR_MANUFACTURER)},
+	{0x0302, 0x0409, (const uint8_t *)&string2, sizeof(USB_STR_PRODUCT)},
+	{0x0303, 0x0409, (const uint8_t *)&string3, sizeof(USB_STR_SERIAL_NUMBER)}
 };
 #define NUM_DESC_LIST (sizeof(descriptor_list)/sizeof(struct descriptor_list_struct))
 
@@ -647,7 +658,12 @@ void usb_serial_flush_output(void)
 // communication
 uint32_t usb_serial_get_baud(void)
 {
-	return *(uint32_t *)cdc_line_coding;
+	uint32_t result;
+	result = cdc_line_coding[0];
+	result = (result  << 8) + cdc_line_coding[1];
+	result = (result  << 8) + cdc_line_coding[2];
+	result = (result  << 8) + cdc_line_coding[3];
+	return result;
 }
 uint8_t usb_serial_get_stopbits(void)
 {

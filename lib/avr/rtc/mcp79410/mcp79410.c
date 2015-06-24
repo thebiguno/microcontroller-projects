@@ -33,7 +33,7 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 	data[0] = 0x03;
 	data[1] = 0x20;
 	while (data[1] & 0x20) {
-		twi_read_from(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+		twi_read_from(0xde, data, 2, TWI_STOP);
 	}
 	
 	// set the time fields
@@ -43,7 +43,7 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 	data[3] = hex2bcd(time->wday) | 0x08,		// enable battery (VBATEN = 1) 
 	data[4] = hex2bcd(time->mday),
 	data[5] = hex2bcd(time->month),				// bit 5 is LPYR
-	data[6] = hex2bcd(time->year - 2000)
+	data[6] = hex2bcd(time->year - 2000);
 	twi_write_to(0xde, data, 7, TWI_BLOCK, TWI_STOP);
 	
 	// set the seconds field and enable the crystal input (ST = 1)
@@ -54,7 +54,7 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 
 inline void mcp79410_control(uint8_t control) {
 	uint8_t data[2] = { 0x07, control };
-	twi_write_to(0xde, control, 2, TWI_BLOCK, SWI_STOP);
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
 }
 
 void mcp79410_set_mfp_low() {
@@ -75,19 +75,22 @@ void mcp79410_set_mfp_8khz() {
 void mcp79410_set_mfp_32khz() {
 	mcp79410_control(0x43);
 }
-void mcp79410_set_mfp_alarm0_int() {
-	mcp79410_control(0x42);
+
+uint8_t mcp79410_read_sram(uint8_t offset) {
+	uint8_t data[1];
+	data[0] = 0x20 + offset;
+	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
+	twi_read_from(0xde, data, 1, TWI_STOP);
+	return data[0];
 }
 
-void mcp79410_set_alarm0_hour(uint8_t hour) {
-	uint8_t data[8] = {
-		0x0a,
-		0x00,
-		0x00,
-		hex2bcd(hour),
-		0x20,				// match on hour, assert with low level, clear match
-		0x00,
-		0x00
-	};
-	twi_write_to(0xde, data, 8, TWI_BLOCK, TWI_STOP);
+void mcp79410_write_sram(uint8_t b, uint8_t offset) {
+	uint8_t data[2] = { 0, b };
+	data[0] = 0x20 + offset;
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
 }
+
+void mcp79410_set_trim(uint8_t trim) {
+	uint8_t data[2] = { 0x09, trim };
+	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+}	

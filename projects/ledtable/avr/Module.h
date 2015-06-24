@@ -4,8 +4,8 @@
 namespace digitalcave {
 	class Module {
 	public:
-		void run()
-	}
+		void run();
+	};
 }
 
 #endif

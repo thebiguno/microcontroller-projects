@@ -18,7 +18,6 @@ struct mcp79410_time_t {
 	uint8_t  year;
 };
 
-void mcp79410_init();
 void mcp79410_get(struct mcp79410_time_t *time);
 void mcp79410_set(struct mcp79410_time_t *time);
 
@@ -34,11 +33,10 @@ void mcp79410_set_32khz();
 void mcp79410_set_mfp_low();
 /* set multifunction pin high */
 void mcp79410_set_mfp_high();
-/* set multifunction pin as alarm 0 interrupt */
-void mcp79410_set_mfp_alarm0_int();
-/* set alarm 0 to match on hour, assert with low level (if alarm 0 interrupt is enabled), clear any existing match */
-void mcp79410_set_alarm0_hour(uint8_t hour);
-/* returns 1 if alarm 0 matches; 0 otherwise */
-uint8_t mcp79410_get_alarm0();
+
+uint8_t mcp79410_read_sram(uint8_t offset);
+void mcp79410_write_sram(uint8_t data, uint8_t offset);
+
+void mcp79410_set_trim(int8_t trim);
 
 #endif

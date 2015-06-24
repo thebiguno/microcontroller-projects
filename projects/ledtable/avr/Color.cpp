@@ -3,57 +3,31 @@
 
 using namespace digitalcave;
 
-ws2812_t Color::black = {};
-ws2812_t Color::white = { .red = 0xff; .green = 0xff; .blue = 0xff; }
-ws2812_t Color::red = { .red = 0xff; }
-ws2812_t Color::orange = { .red = 0xff; .green = 0x7f; }
-ws2812_t Color::yellow = { .red = 0xff; .green = 0xff; }
-ws2812_t Color::chartreuse = { .red = 0x7f; .green = 0xff; }
-ws2812_t Color::green = { .green = 0xff; }
-ws2812_t Color::spring = { .green = 0xff; .blue = 0x7f; }
-ws2812_t Color::cyan = { .green = 0xff; .blue = 0xff; }
-ws2812_t Color::azure = { .green = 0x7f; .blue = 0xff; }
-ws2812_t Color::blue = { .blue = 0xff; }
-ws2812_t Color::violet = { .red = 0x7f; .blue = 0xff; }
-ws2812_t Color::magenta = { .red = 0xff; .blue = 0xff; }
-ws2812_t Color::rose = { .red = 0xff; .blue = 0x7f; }
-
-inline float complementary(float c) {
+uint16_t Color::complementary(uint16_t c) {
 	return (c + 180) % 360;
 }
-inline float triad(float c) {
+uint16_t Color::triad(uint16_t c) {
 	return (c + 120) % 360;
 }
-inline float analagous_a(float c) {
+uint16_t Color::analagous_a(uint16_t c) {
 	return (c + 30) % 360;
 }
-inline float analagous_b(float c) {
+uint16_t Color::analagous_b(uint16_t c) {
 	return (c + 330) % 360;
 }
-inline float split_a(float c) {
+uint16_t Color::split_a(uint16_t c) {
 	return (c + 150) % 360;
 }
-inline float split_b(float c) {
+uint16_t Color:split_b(uint16_t c) {
 	return (c + 210) % 360;
 }
-
-/*
- * the tetradic colors are
- * a = x
- * b = tetradic(x)
- * c = complementary(x)
- * d = tetradic(c)
- */
-inline float tetradic(float c) {
-	return (c + 120) % 360;
-}
-inline float square(float c) {
+uint16_t Color::square(uint16_t c) {
 	return (c + 90) % 360;
 }
 
-void Color::h2rgb(struct ws2812_t *rgb, float h) {
+void Color::h2rgb(float h, struct ws2812_t *rgb) {
 	h /= 60;			// sector 0 to 5
-	int i = floor(h);
+	uint8_t i = floor(h);
 	float f = h - i;	// factorial part of h
 	float q = 1 - f;
 	float t = 1 - (1 - f);

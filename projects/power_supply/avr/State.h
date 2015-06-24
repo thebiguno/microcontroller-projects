@@ -21,19 +21,14 @@
 // Press encoder2 to increment the channel which is being edited.
 #define STATE_EDIT_ITEM					1
 
-//Menu mode: scroll through configuration menu items.
-// Use encoder1 to scroll through menu items
-// Hold encoder1 to edit the selected menu item
-// Hold encoder2 to return to Normal mode
-#define STATE_MENU						2
-
 
 namespace digitalcave {
 
 	class State {
 		private:
 			Encoders encoders;
-			int16_t calculate_delta(int8_t encoder_movement);
+			int16_t calculate_delta_a(int8_t encoder_movement);
+			int16_t calculate_delta_v(int8_t encoder_movement);
 			
 			uint8_t state = 0;
 			uint8_t scroll_channel = 0;	//From 0 to CHANNEL_COUNT - 1.  The currently selected channel.

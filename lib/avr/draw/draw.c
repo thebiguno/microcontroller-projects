@@ -2,7 +2,7 @@
 
 // Implementation of Bresenham's algorithm; adapted from Lady Ada's GLCD library,
 // which was in turn adapted from Wikpedia.
-void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t value, uint8_t o){
+void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, pixel_t value, uint8_t o){
 
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
 	
@@ -45,7 +45,7 @@ void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t value, ui
 	}
 }
 
-void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, uint8_t value, uint8_t o){
+void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, pixel_t value, uint8_t o){
 	//Make sure that x0,y0 is top left corner.
 	if (x0 > x1) swap(x0, x1);
 	if (y0 > y1) swap(y0, y1);
@@ -57,7 +57,28 @@ void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, u
 	}
 }
 
-void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, uint8_t value, uint8_t o){
+void draw_get_raw(uint8_t x, uint8_t y, uint8_t width, uint8_t height, pixel_t* raw) {
+	uint8_t ir = 0;
+	for (uint8_t iy = y; iy < y + height; iy++) {
+		for (uint8_t ix = x; ix < x + width; ix++) {
+			pixel_t p = get_pixel(ix, iy);
+			raw[ir++] = p;
+		}
+	}
+}
+
+void draw_set_raw(int16_t x, int16_t y, uint8_t width, uint8_t height, pixel_t* raw, uint8_t o) {
+	uint8_t ir = 0;
+	for (int16_t iy = y; iy < y + height; iy++) {
+		for (int16_t ix = x; ix < x + width; ix++) {
+			pixel_t p = raw[ir++];
+			set_pixel(ix, iy, p, o);
+		}
+	}
+
+}
+
+void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap, pixel_t value, uint8_t o){
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
@@ -66,6 +87,7 @@ void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t or
 	uint8_t bitCounter = 8;
 	uint8_t byteCounter = 0;
 
+	// account for padding, if any
 	if (glyphBitCount != 0) {
 		glyphByteCount++;
 		bitCounter = glyphBitCount - 1; // the padding is at the front of the first byte, so don't start at bit 0
@@ -105,7 +127,7 @@ void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t or
 	}
 }
 
-void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, uint8_t value, uint8_t o){
+void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, pixel_t value, uint8_t o){
 	uint8_t i = 0;
 	
 	//We need to figure out which bit the beginning of the character is, and how
@@ -131,7 +153,7 @@ void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, 
 }
 
 //Implementation of Bresenham Algorithm for a full circle, adapted from Wikipedia sample
-void draw_circle(int16_t x0, int16_t y0, uint8_t r, uint8_t fill, uint8_t value, uint8_t overlay){
+void draw_circle(int16_t x0, int16_t y0, uint8_t r, uint8_t fill, pixel_t value, uint8_t overlay){
 	int8_t f = 1 - r;
 	int8_t ddF_x = 1;
 	int8_t ddF_y = -2 * r;

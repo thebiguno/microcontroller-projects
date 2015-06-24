@@ -30,8 +30,8 @@ Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel
 	ADMUX = 0x00;		//Reference external AREF
 	ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); 	//ADC Enable, prescaler = /128
 	
-	this->set_voltage_setpoint(0);
-	this->set_current_setpoint(0);
+	this->set_voltage_setpoint(this->voltage_startup);
+	this->set_current_setpoint(this->current_startup);
 }
 
 /*
@@ -45,11 +45,11 @@ int16_t Channel::get_voltage_setpoint(){
 }
 
 uint16_t Channel::get_voltage_setpoint_raw(){
-	return get_dac_from_calibrated(this->voltage_setpoint, this->calibration_voltage);
+	return this->voltage_setpoint_raw;
 }
 
 int16_t Channel::get_voltage_actual(){
-	return get_calibrated_from_adc(this->voltage_actual_raw, this->calibration_voltage);
+	return get_adjusted_from_adc(this->voltage_actual_raw, this->calibration_voltage);
 }
 
 
@@ -61,10 +61,12 @@ void Channel::set_voltage_setpoint(int16_t millivolts){
 	if ((this->voltage_limit > 0 && millivolts > this->voltage_limit) || (this->voltage_limit < 0 && millivolts < this->voltage_limit)) millivolts = this->voltage_limit;
 	if ((this->voltage_limit > 0 && millivolts < 0) || (this->voltage_limit < 0 && millivolts > 0)) millivolts = 0;
 
-	this->set_voltage_setpoint_raw(get_dac_from_calibrated(millivolts, this->calibration_voltage));
+	this->voltage_setpoint = millivolts;
+	this->set_voltage_setpoint_raw(get_dac_from_adjusted(millivolts, this->calibration_voltage));
 }
 
 void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
+	this->voltage_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_voltage;		//Single write without EEPROM persist
@@ -72,6 +74,23 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
+
+int16_t Channel::get_voltage_startup(){
+	return this->voltage_startup;
+}
+void Channel::set_voltage_startup(int16_t startup){
+	this->voltage_startup = startup;
+	this->save_calibration();
+	
+	//Set the power-on defaults to be the startup voltage
+	uint16_t raw = get_dac_from_adjusted(startup, this->calibration_voltage);
+	uint8_t message[3];
+	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
+	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
+	message[2] = (raw & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+}
+
 
 /*
  * Current functions
@@ -84,11 +103,11 @@ int16_t Channel::get_current_setpoint(){
 }
 
 uint16_t Channel::get_current_setpoint_raw(){
-	return get_dac_from_calibrated(this->current_setpoint, this->calibration_current);
+	return this->current_setpoint_raw;
 }
 
 int16_t Channel::get_current_actual(){
-	return get_calibrated_from_adc(this->current_actual_raw, this->calibration_current);
+	return get_adjusted_from_adc(this->current_actual_raw, this->calibration_current);
 }
 
 
@@ -100,10 +119,12 @@ void Channel::set_current_setpoint(int16_t milliamps){
 	if ((this->current_limit > 0 && milliamps > this->current_limit) || (this->current_limit < 0 && milliamps < this->current_limit)) milliamps = this->current_limit;
 	if ((this->current_limit > 0 && milliamps < 0) || (this->current_limit < 0 && milliamps > 0)) milliamps = 0;
 
-	this->set_current_setpoint_raw(get_dac_from_calibrated(milliamps, this->calibration_current));
+	this->current_setpoint = milliamps;
+	this->set_current_setpoint_raw(get_dac_from_adjusted(milliamps, this->calibration_current));
 }
 
 void Channel::set_current_setpoint_raw(uint16_t raw_value){
+	this->current_setpoint_raw = raw_value;
 	if (raw_value > 0x0FFF) raw_value = 0x0FFF;
 	uint8_t message[3];
 	message[0] = DAC_COMMAND_REGISTER | this->dac_channel_current;		//Single write without EEPROM persist
@@ -112,6 +133,21 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
 }
 
+int16_t Channel::get_current_startup(){
+	return this->current_startup;
+}
+void Channel::set_current_startup(int16_t startup){
+	this->current_startup = startup;
+	this->save_calibration();
+	
+	//Set the power-on defaults to be the startup current
+	uint16_t raw = get_dac_from_adjusted(startup, this->calibration_current);
+	uint8_t message[3];
+	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
+	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
+	message[2] = (raw & 0xFF);
+	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+}
 
 /*
  * ADC polling
@@ -133,7 +169,7 @@ void Channel::sample_actual(){
 		ADCSRB |= _BV(MUX5);
 	}
 	
-	for (uint8_t i = 0; i < 16; i++){
+	for (uint8_t i = 0; i < 32; i++){
 		ADCSRA |= _BV(ADSC);				//Start conversion
 		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
@@ -142,7 +178,7 @@ void Channel::sample_actual(){
 		_delay_us(1);
 	}
 	
-	this->voltage_actual_raw = sum >> 4;	//Average of 16 samples
+	this->voltage_actual_raw = sum >> 5;	//Average of 32 samples
 	
 	
 	//*********** Sample current ***********//
@@ -161,7 +197,7 @@ void Channel::sample_actual(){
 		ADCSRB |= _BV(MUX5);
 	}
 	
-	for (uint8_t i = 0; i < 16; i++){
+	for (uint8_t i = 0; i < 32; i++){
 		ADCSRA |= _BV(ADSC);				//Start conversion
 		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
 
@@ -170,52 +206,56 @@ void Channel::sample_actual(){
 		_delay_us(1);
 	}
 	
-	this->current_actual_raw = sum >> 4;	//Average of 16 samples
+	this->current_actual_raw = sum >> 5;	//Average of 32 samples
 }
 
-int16_t Channel::get_calibrated_from_adc(uint16_t adc, calibration_t* calibration_data){
-	calibration_t low = {0, 0, 0};
-	calibration_t high = {0, 0xFFFF, 0};
+int16_t Channel::get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_data){
+	calibration_t low = calibration_data[CALIBRATION_COUNT - 2];
+	calibration_t high = calibration_data[CALIBRATION_COUNT - 1];
 	
-	//Find the two calibration points immediately above and below the given adc value.  If we happen to find
-	// an exact match, then just return it.  We assume that the calibration data spans the entire adc input
-	// range (i.e. there will never be an adc reading which does not have both a calibration point above it
-	// and a calibration point below it).  We do not make any assumptions about the order of the calibration
-	// points.
+	//Find the two calibration points closest to the given adjusted value.  We try to find one point above
+	// and one below.  If we happen to find an exact match, then just return it.  We assume that the 
+	// calibration data spans the entire calibration input range (i.e. there will never be a target
+	// adjusted value which does not have both a calibration point above it and a calibration point 
+	// below it), and that the data set is in strictly increasing order.
 	for (uint8_t i = 0; i < CALIBRATION_COUNT; i++){
-		if (calibration_data[i].adc == adc) return calibration_data[i].calibrated;
-		else if (calibration_data[i].adc < adc && low.adc < calibration_data[i].adc) low = calibration_data[i];
-		else if (calibration_data[i].adc > adc && high.adc > calibration_data[i].adc) high = calibration_data[i];
+		if (calibration_data[i].adc == adc) return calibration_data[i].adjusted;
+		else if (calibration_data[i].adc > adc){
+			if (i == 0) i++;	//Prevent index error if we are are at the bottom of the range
+			low = calibration_data[i - 1];
+			high = calibration_data[i];
+			break;
+		}
+	}
+
+	//At this point we should have a valid high and low value.  Find the slope + offset from the high / low
+	// values, then return the interpolated adjusted value.
+	double slope = ((double) high.adjusted - low.adjusted) / (high.adc - low.adc);
+	return slope * ((double) adc - high.adc) + high.adjusted;
+}
+uint16_t Channel::get_dac_from_adjusted(int16_t adjusted, calibration_t* calibration_data){
+	calibration_t low = calibration_data[CALIBRATION_COUNT - 2];
+	calibration_t high = calibration_data[CALIBRATION_COUNT - 1];
+	
+	//Find the two calibration points closest to the given adjusted value.  We try to find one point above
+	// and one below.  If we happen to find an exact match, then just return it.  We assume that the 
+	// calibration data spans the entire calibration input range (i.e. there will never be a target
+	// adjusted value which does not have both a calibration point above it and a calibration point 
+	// below it), and that the data set is in strictly increasing order.
+	for (uint8_t i = 0; i < CALIBRATION_COUNT; i++){
+		if (calibration_data[i].adjusted == adjusted) return calibration_data[i].dac;
+		else if (calibration_data[i].adjusted > adjusted){
+			if (i == 0) i++;	//Prevent index error if we are are at the bottom of the range
+			low = calibration_data[i - 1];
+			high = calibration_data[i];
+			break;
+		}
 	}
 	
 	//At this point we should have a valid high and low value.  Find the slope + offset from the high / low
 	// values, then return the interpolated adjusted value.
-	double slope = ((double) high.calibrated - low.calibrated) / (high.adc - low.adc);
-	double offset = slope * (0 - high.adc) + high.calibrated;
-
-	return (int16_t) slope * adc + offset;
-}
-uint16_t Channel::get_dac_from_calibrated(int16_t calibrated, calibration_t* calibration_data){
-	calibration_t low = {0, 0, 0};
-	calibration_t high = {0, 0, 0x7FFF};
-	
-	//Find the two calibration points immediately above and below the given calibrated value.  If we happen to find
-	// an exact match, then just return it.  We assume that the calibration data spans the entire calibration input
-	// range (i.e. there will never be a target calibrated value which does not have both a calibration point above it
-	// and a calibration point below it).  We do not make any assumptions about the order of the calibration
-	// points.
-	for (uint8_t i = 0; i < CALIBRATION_COUNT; i++){
-		if (calibration_data[i].calibrated == calibrated) return calibration_data[i].dac;
-		else if (calibration_data[i].calibrated < calibrated && low.calibrated < calibration_data[i].calibrated) low = calibration_data[i];
-		else if (calibration_data[i].calibrated > calibrated && high.calibrated > calibration_data[i].calibrated) high = calibration_data[i];
-	}
-	
-	//At this point we should have a valid high and low value.  Find the slope + offset from the high / low
-	// values, then return the interpolated adjusted value.
-	double slope = ((double) high.dac - low.dac) / (high.calibrated - low.calibrated);
-	double offset = slope * (0 - high.calibrated) + high.dac;
-
-	return (uint16_t) slope * calibrated + offset;
+	double slope = ((double) high.dac - low.dac) / (high.adjusted - low.adjusted);
+	return slope * ((double) adjusted - high.adjusted) + high.dac;
 }
 
 
@@ -223,31 +263,19 @@ uint16_t Channel::get_dac_from_calibrated(int16_t calibrated, calibration_t* cal
  * Persist / load calibration to / from EEPROM
  */
 void Channel::save_calibration(){
-
-//The size of one block of calibration (either voltage or current).  Each channel requires two of these.
-#define EEPROM_BLOCK_SIZE		(sizeof(calibration_t) * CALIBRATION_COUNT)
-
-	eeprom_update_block(this->calibration_voltage, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
-	eeprom_update_block(this->calibration_current, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE + EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);	
-
-	//Set the power-on defaults to be 0mV / 0mA
-	uint16_t raw = get_dac_from_calibrated(0, this->calibration_voltage);
-	uint8_t message[3];
-	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_voltage;		//Single write with EEPROM persist
-	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
-	message[2] = (raw & 0xFF);
-	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
-
-	raw = get_dac_from_calibrated(0, this->calibration_current);
-	message[0] = DAC_COMMAND_REGISTER_EEPROM | this->dac_channel_current;		//Single write with EEPROM persist
-	message[1] = 0x90 | ((raw >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
-	message[2] = (raw & 0xFF);
-	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+	eeprom_update_block(this->calibration_voltage, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+	eeprom_update_block(this->calibration_current, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE + EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);	
+	
+	eeprom_update_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE), this->voltage_startup);
+	eeprom_update_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE + EEPROM_STARTUP_BLOCK_SIZE), this->current_startup);
 }
 
 void Channel::load_calibration(){
-	eeprom_read_block(this->calibration_voltage, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
-	eeprom_read_block(this->calibration_current, (void*) (this->channel_index * 2 * EEPROM_BLOCK_SIZE + EEPROM_BLOCK_SIZE), EEPROM_BLOCK_SIZE);
+	eeprom_read_block(this->calibration_voltage, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+	eeprom_read_block(this->calibration_current, (void*) (EEPROM_CALIBRATION_OFFSET + this->channel_index * 2 * EEPROM_CALIBRATION_BLOCK_SIZE + EEPROM_CALIBRATION_BLOCK_SIZE), EEPROM_CALIBRATION_BLOCK_SIZE);
+
+	this->voltage_startup = eeprom_read_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE));
+	this->current_startup = eeprom_read_word((uint16_t*) (EEPROM_STARTUP_OFFSET + this->channel_index * 2 * EEPROM_STARTUP_BLOCK_SIZE + EEPROM_STARTUP_BLOCK_SIZE));
 }
 
 
