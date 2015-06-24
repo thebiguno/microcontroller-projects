@@ -6,13 +6,31 @@
 
 namespace digitalcave {
 	class Color {
+	private:
+		uint16_t h;
+		uint8_t s;
+		uint8_t v;
 	public:
-		void h2rgb(float hue, struct ws2812_t *rgb);
+		Color(uint16_t h);
+		Color(uint16_t h, uint8_t s, uint8_t v);
+		Color(Color c);
+		~Color();
+		
+		uint16_t getHue();
+		void setHue(uint16_t h);
+
+		uint8_t getSaturation();
+		void setSaturation(uint8_t s);
+
+		uint8_t getValue();
+		void setValue(uint8_t h);
+
+		pixel_t rgb();
 		
 		/* Returns the hue 180 degrees from the current hue. */
-		uint16_t complementary(uint16_t h);
+		Color complementary();
 		/* Returns the hue 120 degrees from the current hue.  Call twice to get three hues total or use in conjunction with complementary to get four tetradic hues. */
-		uint16_t triad(uint16_t c);
+		Co triad(uint16_t c);
 		/* Returns the hue 30 degrees from the current hue.  Use in conjunction with analagous_b to get three hues total. */
 		uint16_t analagous_a(uint16_t c);
 		/* Returns the hue 330 degrees from the current hue.  Use in conjunction with analagous_a to get three hues total. */
@@ -33,17 +51,17 @@ namespace digitalcave {
 		 */
 		
 		static const uint16_t RED = 0;
-		static const uint16_t orange = 30;
-		static const uint16_t yellow = 60;
-		static const uint16_t chartreuse = 90;
-		static const uint16_t green = 120;
-		static const uint16_t spring = 150;
-		static const uint16_t cyan = 180;
-		static const uint16_t azure = 210;
-		static const uint16_t blue = 240;
-		static const uint16_t violet = 270;
-		static const uint16_t magenta = 300;
-		static const uint16_t rose = 330;
+		static const uint16_t ORANGE = 30;
+		static const uint16_t YELLOW = 60;
+		static const uint16_t CHARTREUSE = 90;
+		static const uint16_t GREEN = 120;
+		static const uint16_t SPRING = 150;
+		static const uint16_t CYAN = 180;
+		static const uint16_t AZURE = 210;
+		static const uint16_t BLUE = 240;
+		static const uint16_t VIOLET = 270;
+		static const uint16_t MAGENTA = 300;
+		static const uint16_t ROSE = 330;
 	};
 }
 

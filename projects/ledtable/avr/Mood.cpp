@@ -1,29 +1,26 @@
 #include "Mood.h"
-#include "lib/timer/timer.h"
 #include "lib/draw/draw.h"
 #include "Color.h"
-#include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
-Plasma::Plasma() {
+Mood::Mood() {
 }
 
-Plasma::~Plasma() {
+Mood::~Mood() {
 }
 
-void Plasma::run() {
+void Mood::run() {
 	uint8_t running = 1;
 	
-	float hue;
-	ws2812_t c;
+	uint16_t h;
 	Color color;
 	
 	while (running > 0) {
-		color.h2rgb(hue, c);
-		draw_rectangle(0,0,11,11,DRAW_FILLED,c,DRAW_REPLACE);
-		hue++;
-		hue &= 360;
+		draw_rectangle(0,0,11,11,DRAW_FILLED,color.rgb(),DRAW_REPLACE);
+		h++;
+		h &= 360;
+		color.setHue(h);
 	}
 }
