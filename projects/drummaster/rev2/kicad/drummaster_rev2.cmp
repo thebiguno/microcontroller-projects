@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Monday, June 22, 2015 'pmt' 02:57:18 pm
+Cmp-Mod V01 Created by PcbNew date = Wednesday, June 24, 2015 'pmt' 04:24:07 pm
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -291,84 +291,84 @@ BeginCmp
 TimeStamp = /54875BC3;
 Reference = D9;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /54875BDA;
 Reference = D10;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7555;
 Reference = D11;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B755B;
 Reference = D12;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B75D4;
 Reference = D13;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B75DA;
 Reference = D14;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7653;
 Reference = D15;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7659;
 Reference = D16;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B76D2;
 Reference = D17;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B76D8;
 Reference = D18;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7751;
 Reference = D19;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
 TimeStamp = /548B7757;
 Reference = D20;
 ValeurCmp = DIODESCH;
-IdModule  = SM1206_DIODE;
+IdModule  = SOD-123_DIODE;
 EndCmp
 
 BeginCmp
@@ -444,98 +444,98 @@ EndCmp
 BeginCmp
 TimeStamp = /5584DA48;
 Reference = L1;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584DA3A;
 Reference = L2;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584DA2C;
 Reference = L3;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584DA1E;
 Reference = L4;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584DA10;
 Reference = L5;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584DA02;
 Reference = L6;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584D9F4;
 Reference = L7;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /549E0FA9;
 Reference = L8;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /558890B5;
 Reference = L9;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /558890EA;
 Reference = L10;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5584D9E6;
 Reference = L11;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /5588911F;
 Reference = L12;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /55889154;
 Reference = L13;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
 TimeStamp = /55889189;
 Reference = L14;
-ValeurCmp = FER_BEAD;
+ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -795,14 +795,14 @@ BeginCmp
 TimeStamp = /5487B048;
 Reference = U8;
 ValeurCmp = 74HC4067;
-IdModule  = tssop-28;
+IdModule  = tssop-24;
 EndCmp
 
 BeginCmp
 TimeStamp = /548A02CC;
 Reference = U9;
 ValeurCmp = 74HC4067;
-IdModule  = tssop-28;
+IdModule  = tssop-24;
 EndCmp
 
 BeginCmp
