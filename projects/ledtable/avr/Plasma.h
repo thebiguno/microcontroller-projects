@@ -11,7 +11,7 @@ namespace digitalcave {
 	public:
 		Plasma();
 		~Plasma();
-	}
+	};
 }
 
 #endif

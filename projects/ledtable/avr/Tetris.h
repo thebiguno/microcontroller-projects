@@ -7,7 +7,7 @@
 #include "matrix.h"
 
 namespace digitalcave {
-	class Tictactoe : public Module {
+	class Tetris : public Module {
 	private:
 	// each row is represented by 16 bits where 0 and is blank and 1 is filled
 	// this is used to make determinations about collisions; the colors are not stored here but are bufferred in the matrix directly
@@ -28,19 +28,20 @@ namespace digitalcave {
 	};
 	// each piece bitmap is painted in has a specific color
 	ws2812_t colors[7] = {
-		color.yellow,
-		color.cyan,
-		color.green,
-		color.red,
-		color.orange,
-		color.blue,
-		color.violet
+		color.h2rgb(color.yellow),
+		color.h2rgb(color.cyan),
+		color.h2rgb(color.green),
+		color.h2rgb(color.red),
+		color.h2rgb(color.orange),
+		color.h2rgb(color.blue),
+		color.h2rgb(color.violet)
 	};
 		
 	public:
 		Tetris();
 		~Tetris();
-		
+	
+	private:
 		uint8_t newGame();
 		void generate();
 		void rotate();
@@ -50,7 +51,7 @@ namespace digitalcave {
 		uint8_t collisionTest();
 		void removeRow();
 		void flush();
-	}
+	};
 }
 
 #endif

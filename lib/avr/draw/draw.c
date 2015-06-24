@@ -2,7 +2,7 @@
 
 // Implementation of Bresenham's algorithm; adapted from Lady Ada's GLCD library,
 // which was in turn adapted from Wikpedia.
-void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t value, uint8_t o){
+void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, pixel_t value, uint8_t o){
 
 	uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
 	
@@ -45,7 +45,7 @@ void draw_line(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t value, ui
 	}
 }
 
-void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, uint8_t value, uint8_t o){
+void draw_rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f, pixel_t value, uint8_t o){
 	//Make sure that x0,y0 is top left corner.
 	if (x0 > x1) swap(x0, x1);
 	if (y0 > y1) swap(y0, y1);
@@ -127,7 +127,7 @@ void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t or
 	}
 }
 
-void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, uint8_t value, uint8_t o){
+void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* font, uint8_t* codepage, pixel_t value, uint8_t o){
 	uint8_t i = 0;
 	
 	//We need to figure out which bit the beginning of the character is, and how
@@ -153,7 +153,7 @@ void draw_text(int16_t x, int16_t y, char* text, uint8_t width, uint8_t height, 
 }
 
 //Implementation of Bresenham Algorithm for a full circle, adapted from Wikipedia sample
-void draw_circle(int16_t x0, int16_t y0, uint8_t r, uint8_t fill, uint8_t value, uint8_t overlay){
+void draw_circle(int16_t x0, int16_t y0, uint8_t r, uint8_t fill, pixel_t value, uint8_t overlay){
 	int8_t f = 1 - r;
 	int8_t ddF_x = 1;
 	int8_t ddF_y = -2 * r;

@@ -32,7 +32,10 @@ void set_pixel(int16_t x, int16_t y, pixel_t rgb, uint8_t overlay) {
 pixel_t get_pixel(uint8_t x, uint8_t y) {
 	uint8_t i = ((x & 0x01) == 0x00) ? (x * 12 + y * 3) : (x * 23 - y * 3);
 	
-	if (i >= 144 || i < 0) return { .red = 0x00, .green = 0x00; .blue = 0x00 );
+	if (i >= 144 || i < 0) {
+		pixel_t black;
+		return black;
+	}
 
 	return buffer[i];
 }

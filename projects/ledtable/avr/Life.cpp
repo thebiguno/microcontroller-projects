@@ -63,6 +63,8 @@ void Life::run() {
 		}
 
 		_delay_ms(70);
+		this->hue++;
+		this->hue &= 360;
 	}
 }
 
@@ -112,7 +114,7 @@ void Life::clear() {
 
 pixel_t Life::translate(uint8_t state) {
 	pixel_t result;
-	if (state > 0) result.red = 0xFF;
+	if (state > 0) color.h2rgb(this->hue, result);
 	return result;
 }
 

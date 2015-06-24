@@ -12,6 +12,7 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
+		float hue = 0;
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t matches = 0;
