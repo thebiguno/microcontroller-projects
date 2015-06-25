@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Wednesday, June 24, 2015 'pmt' 04:24:07 pm
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, June 25, 2015 'pmt' 01:13:57 pm
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -228,6 +228,20 @@ BeginCmp
 TimeStamp = /5588917D;
 Reference = C33;
 ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C524F;
+Reference = C34;
+ValeurCmp = 10uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C5255;
+Reference = C35;
+ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -848,10 +862,17 @@ IdModule  = TSSOP14;
 EndCmp
 
 BeginCmp
-TimeStamp = /5494836A;
+TimeStamp = /558C42C8;
 Reference = VR1;
-ValeurCmp = LD29150DT50R;
-IdModule  = ;
+ValeurCmp = MCP1702;
+IdModule  = SOT23-SPECIAL;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C51F0;
+Reference = VR2;
+ValeurCmp = MCP1702;
+IdModule  = SOT23-SPECIAL;
 EndCmp
 
 EndListe
