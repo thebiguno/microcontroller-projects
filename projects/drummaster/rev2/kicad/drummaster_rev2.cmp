@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Thursday, June 25, 2015 'pmt' 03:09:30 pm
+Cmp-Mod V01 Created by PcbNew date = Friday, June 26, 2015 'amt' 09:38:03 am
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -859,6 +859,13 @@ TimeStamp = /55889195;
 Reference = U15;
 ValeurCmp = MCP46X1;
 IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /558D814D;
+Reference = U16;
+ValeurCmp = S25FL512S;
+IdModule  = SO16W;
 EndCmp
 
 BeginCmp
