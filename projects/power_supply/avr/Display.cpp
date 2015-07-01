@@ -30,7 +30,7 @@ void Display::update(State state){
 			double voltage = state.get_state() == STATE_LOCKED ? channels[channel].get_voltage_actual() / 1000.0 : channels[channel].get_voltage_setpoint() / 1000.0;
 			double current = state.get_state() == STATE_LOCKED ? channels[channel].get_current_actual() / 1000.0 : channels[channel].get_current_setpoint() / 1000.0;
 
-			snprintf(buffer, DISPLAY_COLS + 1, "Ch %d %+6.2fV %5.2fA   ", channel + 1, voltage, current);
+			snprintf(buffer, DISPLAY_COLS + 1, "Ch %d %6.2fV %6.3fA ", channel + 1, voltage, current);
 			char_display.write_text(row, 0, buffer, DISPLAY_COLS);
 
 			channel++;
