@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Friday, June 26, 2015 'pmt' 01:26:58 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 30 Jun 2015 08:18:47 PM MDT
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -771,6 +771,20 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /55934E2B;
+Reference = R20;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55934E25;
+Reference = R21;
+ValeurCmp = 1k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /5584BA7C;
 Reference = RV1;
 ValeurCmp = POTENTIOMETER;
@@ -778,52 +792,17 @@ IdModule  = POTENTIOMETER_SMD;
 EndCmp
 
 BeginCmp
+TimeStamp = /5593479C;
+Reference = SW1;
+ValeurCmp = SW_PUSH_SMALL;
+IdModule  = SW_6x3;
+EndCmp
+
+BeginCmp
 TimeStamp = /55848A6B;
 Reference = U1;
 ValeurCmp = TEENSY_3.1;
 IdModule  = TEENSY_3.1;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B660C;
-Reference = U2;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B758D;
-Reference = U3;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B760C;
-Reference = U4;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B768B;
-Reference = U5;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B770A;
-Reference = U6;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
-EndCmp
-
-BeginCmp
-TimeStamp = /548B7789;
-Reference = U7;
-ValeurCmp = MCP6004T;
-IdModule  = TSSOP14;
 EndCmp
 
 BeginCmp
