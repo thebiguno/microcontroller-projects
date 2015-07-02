@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, July 02, 2015 'pmt' 12:54:08 pm
+Cmp-Mod V01 Created by PcbNew date = Thursday, July 02, 2015 'pmt' 02:38:42 pm
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -449,17 +449,17 @@ IdModule  = SIL-4;
 EndCmp
 
 BeginCmp
-TimeStamp = /5588726E;
+TimeStamp = /5595B3A5;
 Reference = K4;
-ValeurCmp = PINS_4;
-IdModule  = SIL-4;
+ValeurCmp = PINS_5;
+IdModule  = SIL-5;
 EndCmp
 
 BeginCmp
-TimeStamp = /5584DCE4;
+TimeStamp = /5595B3D6;
 Reference = K5;
-ValeurCmp = PINS_4;
-IdModule  = SIL-4;
+ValeurCmp = PINS_6;
+IdModule  = SIL-6;
 EndCmp
 
 BeginCmp

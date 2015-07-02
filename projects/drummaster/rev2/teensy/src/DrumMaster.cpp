@@ -1,5 +1,3 @@
-#include "WProgram.h"
-
 #include <SerialFlash.h>
 #include <SPI.h>
 
