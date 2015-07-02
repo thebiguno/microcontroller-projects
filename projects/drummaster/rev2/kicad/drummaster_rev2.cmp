@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Tue 30 Jun 2015 08:18:47 PM MDT
+Cmp-Mod V01 Created by CvPcb (2014-01-10 BZR 4027)-stable date = Thursday, July 02, 2015 'pmt' 12:54:08 pm
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -246,15 +246,22 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /558DA5B7;
+TimeStamp = /5595964F;
 Reference = C36;
 ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /558DB684;
+TimeStamp = /55959655;
 Reference = C37;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55959F79;
+Reference = C38;
 ValeurCmp = 0.1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -568,8 +575,15 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
-TimeStamp = /558DA5C8;
+TimeStamp = /55959649;
 Reference = L15;
+ValeurCmp = Fe;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55959F73;
+Reference = L16;
 ValeurCmp = Fe;
 IdModule  = SM0603_VALUE;
 EndCmp
@@ -806,6 +820,48 @@ IdModule  = TEENSY_3.1;
 EndCmp
 
 BeginCmp
+TimeStamp = /548B660C;
+Reference = U2;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B758D;
+Reference = U3;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B760C;
+Reference = U4;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B768B;
+Reference = U5;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B770A;
+Reference = U6;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B7789;
+Reference = U7;
+ValeurCmp = MCP6004T;
+IdModule  = TSSOP14;
+EndCmp
+
+BeginCmp
 TimeStamp = /5487B048;
 Reference = U8;
 ValeurCmp = 74HC4067;
@@ -862,7 +918,7 @@ IdModule  = TSSOP14;
 EndCmp
 
 BeginCmp
-TimeStamp = /558D814D;
+TimeStamp = /5595963C;
 Reference = U16;
 ValeurCmp = S25FL512S;
 IdModule  = SO16W;

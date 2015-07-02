@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Wednesday, June 24, 2015 'pmt' 02:11:49 pm
+PCBNEW-LibModule-V1  Thursday, July 02, 2015 'pmt' 01:21:23 pm
 # encoding utf-8
 Units mm
 $INDEX
@@ -7613,7 +7613,7 @@ Po 10.16 0
 $EndPAD
 $EndMODULE TB_3
 $MODULE TEENSY_3.1
-Po 0 0 0 15 55887C1F 00000000 ~~
+Po 0 0 0 15 55958F2F 00000000 ~~
 Li TEENSY_3.1
 Sc 0
 AR 
@@ -7831,14 +7831,14 @@ Ne 0 ""
 Po -5.08 17.78
 $EndPAD
 $PAD
-Sh "3v3" C 1.524 1.524 0 0 0
+Sh "3v32" C 1.524 1.524 0 0 0
 Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -2.54 17.78
 $EndPAD
 $PAD
-Sh "GND" C 1.524 1.524 0 0 0
+Sh "GND2" C 1.524 1.524 0 0 0
 Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
@@ -7915,7 +7915,7 @@ Ne 0 ""
 Po 2.54 5.08
 $EndPAD
 $PAD
-Sh "3v3" C 1.524 1.524 0 0 0
+Sh "3v33" C 1.524 1.524 0 0 0
 Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
@@ -7964,7 +7964,7 @@ Ne 0 ""
 Po 0 5.08
 $EndPAD
 $PAD
-Sh "GND" C 1.524 1.524 0 0 0
+Sh "GND3" C 1.524 1.524 0 0 0
 Dr 1.016 0 0
 At STD N 00E0FFFF
 Ne 0 ""
