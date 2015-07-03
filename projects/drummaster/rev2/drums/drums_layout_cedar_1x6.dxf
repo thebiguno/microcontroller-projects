@@ -1393,7 +1393,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-8_rim
+8_drum
 340
 0
   0
@@ -1405,7 +1405,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-8_drum
+8_rim
 340
 0
   0
@@ -1697,7 +1697,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-8_rim
+8_drum
  70
 0
  10
@@ -1707,7 +1707,7 @@ AcDbBlockBegin
  30
 0.0
   3
-8_rim
+8_drum
   1
 
   0
@@ -1733,7 +1733,7 @@ BYLAYER
  30
 0.0
  40
-3.875
+4.875
   0
 CIRCLE
   5
@@ -1757,7 +1757,7 @@ BYLAYER
  30
 0.0
  40
-3.5
+4.125
   0
 ENDBLK
   5
@@ -1779,7 +1779,7 @@ AcDbEntity
 100
 AcDbBlockBegin
   2
-8_drum
+8_rim
  70
 0
  10
@@ -1789,7 +1789,7 @@ AcDbBlockBegin
  30
 0.0
   3
-8_drum
+8_rim
   1
 
   0
@@ -1815,7 +1815,7 @@ BYLAYER
  30
 0.0
  40
-4.875
+3.875
   0
 CIRCLE
   5
@@ -1839,7 +1839,7 @@ BYLAYER
  30
 0.0
  40
-4.125
+3.5
   0
 ENDBLK
   5
@@ -5059,7 +5059,7 @@ AcDbXrecord
 280
 1
  40
--53.341812053333264
+-44.9697203656129005
   0
 XRECORD
   5
@@ -5071,7 +5071,7 @@ AcDbXrecord
 280
 1
  40
--47.6894549333332165
+-33.8868172860104551
   0
 XRECORD
   5

@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Thursday, July 02, 2015 'pmt' 02:38:42 pm
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Thu 02 Jul 2015 07:40:29 PM MDT
 
 BeginCmp
 TimeStamp = /5488A170;
@@ -263,6 +263,62 @@ BeginCmp
 TimeStamp = /55959F79;
 Reference = C38;
 ValeurCmp = 0.1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595E266;
+Reference = C39;
+ValeurCmp = 100uF;
+IdModule  = C1V7;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595F328;
+Reference = C40;
+ValeurCmp = 10nF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595F322;
+Reference = C41;
+ValeurCmp = 10nF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595F317;
+Reference = C42;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55960A49;
+Reference = C43;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55960C38;
+Reference = C44;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55960C3E;
+Reference = C45;
+ValeurCmp = 1uF;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55960C44;
+Reference = C46;
+ValeurCmp = 1uF;
 IdModule  = SM0603_VALUE;
 EndCmp
 
@@ -799,6 +855,27 @@ IdModule  = SM0603_VALUE;
 EndCmp
 
 BeginCmp
+TimeStamp = /5595E76E;
+Reference = R22;
+ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595E774;
+Reference = R23;
+ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5595E77A;
+Reference = R24;
+ValeurCmp = 10k;
+IdModule  = SM0603_VALUE;
+EndCmp
+
+BeginCmp
 TimeStamp = /5584BA7C;
 Reference = RV1;
 ValeurCmp = POTENTIOMETER;
@@ -808,7 +885,7 @@ EndCmp
 BeginCmp
 TimeStamp = /5593479C;
 Reference = SW1;
-ValeurCmp = SW_PUSH_SMALL;
+ValeurCmp = PROG;
 IdModule  = SW_6x3;
 EndCmp
 
