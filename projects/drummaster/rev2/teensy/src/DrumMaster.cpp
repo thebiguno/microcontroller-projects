@@ -3,10 +3,10 @@
 #include <SD.h>
 #include <SPI.h>
 
-AudioPlaySdWav samples[16];
-AudioMixer4 mixers[3];
+AudioPlaySdRaw samples[16];
+AudioMixer4 mixers[4];
 AudioMixer4 masterMixer;
-AudioOutputI2S           i2s1;
+AudioOutputI2S           output;
 AudioConnection          patchCord0(samples[0], 0, mixers[0], 0);
 AudioConnection          patchCord1(samples[1], 0, mixers[0], 1);
 AudioConnection          patchCord2(samples[2], 0, mixers[0], 2);
@@ -27,8 +27,8 @@ AudioConnection          patchCord16(mixers[0], 0, masterMixer, 0);
 AudioConnection          patchCord17(mixers[1], 0, masterMixer, 1);
 AudioConnection          patchCord18(mixers[2], 0, masterMixer, 2);
 AudioConnection          patchCord19(mixers[3], 0, masterMixer, 3);
-AudioConnection          patchCord20(masterMixer, 0, i2s1, 0);
-AudioConnection          patchCord21(masterMixer, 0, i2s1, 1);
+AudioConnection          patchCord20(masterMixer, 0, output, 0);
+AudioConnection          patchCord21(masterMixer, 0, output, 1);
 AudioControlSGTL5000     sgtl5000;
 
 //Index into samples array
@@ -44,6 +44,8 @@ int main(){
 	SPI.setMOSI(7);
 	SPI.setMISO(12);
 	SPI.setSCK(14);
+	
+	AudioMemory(16);
 	
 	sgtl5000.enable();
 	sgtl5000.volume(0.5);
@@ -62,9 +64,22 @@ int main(){
 		button0.update();
 		
 		if (button0.fallingEdge()) {
-			Serial.println("Button push");
-			samples[sampleCounter].play("SDTEST1.WAV");
-			sampleCounter = (sampleCounter + 1) & 0x0F;
+			Serial.print("Button push sample ");
+			Serial.println(sampleCounter);
+			samples[sampleCounter].stop();
+			samples[sampleCounter].play("00.RAW");
+			sampleCounter = (sampleCounter + 1) & 0x03;
+			
+			Serial.print("CPU: ");
+			Serial.print(AudioProcessorUsage());
+			Serial.print(",");
+			Serial.print(AudioProcessorUsageMax());
+			Serial.print("    ");
+			Serial.print("Memory: ");
+			Serial.print(AudioMemoryUsage());
+			Serial.print(",");
+			Serial.print(AudioMemoryUsageMax());
+			Serial.println();
 		}
 		
 		delay(5);
