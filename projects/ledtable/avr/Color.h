@@ -11,36 +11,39 @@ namespace digitalcave {
 		uint8_t s;
 		uint8_t v;
 	public:
-		Color(uint16_t h);
+		Color(uint16_t);
 		Color(uint16_t h, uint8_t s, uint8_t v);
-		Color(Color c);
+		Color(const Color &);
 		~Color();
 		
 		uint16_t getHue();
 		void setHue(uint16_t h);
+		void addHue(int16_t h);
 
 		uint8_t getSaturation();
 		void setSaturation(uint8_t s);
+		void addSaturation(int8_t s);
 
 		uint8_t getValue();
-		void setValue(uint8_t h);
+		void setValue(uint8_t v);
+		void addValue(int8_t v);
 
 		pixel_t rgb();
 		
-		/* Returns the hue 180 degrees from the current hue. */
-		Color complementary();
-		/* Returns the hue 120 degrees from the current hue.  Call twice to get three hues total or use in conjunction with complementary to get four tetradic hues. */
-		Co triad(uint16_t c);
-		/* Returns the hue 30 degrees from the current hue.  Use in conjunction with analagous_b to get three hues total. */
-		uint16_t analagous_a(uint16_t c);
-		/* Returns the hue 330 degrees from the current hue.  Use in conjunction with analagous_a to get three hues total. */
-		uint16_t analagous_b(uint16_t c);
-		/* Returns the hue 150 degrees from the current hue.  Use in conjunction with split_b to get three hues total. */
-		uint16_t split_a(uint16_t c);
-		/* Returns the hue 210 degrees from the current hue.  Use in conjunction with split_a to get three hues total. */
-		uint16_t split_b(uint16_t c);
-		/* Returns the hue 90 degrees from the current hue.  Call thrice to get four hues total. */
-		uint16_t square(uint16_t c);
+		/* Alters the hue 180 degrees from the current hue. */
+		void complementary();
+		/* Alters the hue 120 degrees from the current hue.  Call twice to get three hues total or use in conjunction with complementary to get four tetradic hues. */
+		void triad();
+		/* Alters the hue 30 degrees from the current hue.  Use in conjunction with analagous_b to get three hues total. */
+		void analagous_a();
+		/* Alters the hue 330 degrees from the current hue.  Use in conjunction with analagous_a to get three hues total. */
+		void analagous_b();
+		/* Alters the hue 150 degrees from the current hue.  Use in conjunction with split_b to get three hues total. */
+		void split_a();
+		/* Alters the hue 210 degrees from the current hue.  Use in conjunction with split_a to get three hues total. */
+		void split_b();
+		/* Alters the hue 90 degrees from the current hue.  Call thrice to get four hues total. */
+		void square();
 
 		/*
 		 * the tetradic colors are
