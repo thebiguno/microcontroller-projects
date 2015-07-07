@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "matrix.h"
-#include "lib/ws281x/ws281x.h"
+#include "lib/ws281x/ws2812.h"
 typedef ws2812_t pixel_t;
 
 namespace digitalcave {

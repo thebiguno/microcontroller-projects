@@ -2,7 +2,7 @@
 #define MATRIX_H
 
 #include "lib/draw/draw.h"
-#include "lib/ws281x/ws281x.h"
+#include "lib/ws281x/ws2812.h"
 
 #define MATRIX_WIDTH 12
 #define MATRIX_HEIGHT 12

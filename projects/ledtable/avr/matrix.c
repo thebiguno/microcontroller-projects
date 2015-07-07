@@ -8,8 +8,8 @@ void draw_set_value(ws2812_t value) {
 }
 
 void draw_set_pixel(int16_t x, int16_t y) {
-	uint8_t i = ((x & 0x01) == 0x00) ? (x * 12 + y) : (x * 23 - y);
-	
+	//uint8_t i = ((x & 0x01) == 0x00) ? (x * 24 + y) : (x * 23 - y);
+	uint8_t i = x * 12 + y;
 	if (i >= 144 || i < 0) return;
 	
 	uint8_t draw_overlay = draw_get_overlay();

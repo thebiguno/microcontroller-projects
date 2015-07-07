@@ -1,7 +1,6 @@
 #include "LedTable.h"
 
-#include "lib/ws281x/ws281x.h"
-typedef ws2812_t pixel_t;
+#include "lib/ws281x/ws2812.h"
 #include "Color.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
@@ -24,6 +23,38 @@ using namespace digitalcave;
 
 int main() {
 	//timer_init();
+	
+	DDRB = 0xff;
+	
+	pixel_t black;
+	pixel_t c;
+	c.red = 0;
+	c.green = 0;
+	c.blue = 5;
+	
+	ws2812_t buf[144];
+	
+	for (uint8_t i = 0; i < 144; i++) {
+		buf[i].blue = 5;
+	}
+	ws281x_set(buf);
+	
+	while (true) {
+		;
+		/*
+		for (uint8_t x = 0; x < 12; x++) {
+			for (uint8_t y = 0; y < 12; y++) {
+				draw_set_value(c);
+				draw_set_pixel(x, y);
+				draw_flush();
+//				PORTB ^= 0x10;
+				_delay_ms(50);
+				//draw_set_value(black);
+				//draw_set_pixel(x, y);
+			}
+		}
+		*/
+	}
 	
 	uint16_t buttons;
 	uint8_t selected;
