@@ -12,7 +12,7 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		float hue = 0;
+		Color color;
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t matches = 0;
@@ -41,8 +41,6 @@ namespace digitalcave {
 	
 		/* remove hashes, clear the board, and set it to a random state */
 		void reset();
-	
-		void run();
 	};
 }
 

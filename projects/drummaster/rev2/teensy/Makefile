@@ -101,21 +101,21 @@ OBJCOPY = $(abspath $(COMPILERPATH))/arm-none-eabi-objcopy
 SIZE = $(abspath $(COMPILERPATH))/arm-none-eabi-size
 
 # automatically create lists of the sources and objects
-LC_FILES := $(wildcard $(LIBRARYPATH)/*/*.c)
-LCPP_FILES := $(wildcard $(LIBRARYPATH)/*/*.cpp)
-TC_FILES := $(wildcard $(COREPATH)/*.c)
-TCPP_FILES := $(wildcard $(COREPATH)/*.cpp)
-C_FILES := $(wildcard src/*.c)
-CPP_FILES := $(wildcard src/*.cpp)
-INO_FILES := $(wildcard src/*.ino)
+LC_FILES := $(shell find $(LIBRARYPATH) -name '*.c')
+LCPP_FILES := $(shell find $(LIBRARYPATH) -name '*.cpp')
+TC_FILES := $(shell find $(COREPATH) -name '*.c')
+TCPP_FILES := $(shell find $(COREPATH) -name '*.cpp')
+C_FILES := $(shell find src -name '*.c')
+CPP_FILES := $(shell find src -name '*.cpp')
 
 # include paths for libraries
-L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
+L_INC := $(foreach lib,$(shell find $(LIBRARYPATH)/ -type d), -I$(lib))
 
-SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
+SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
+#$(info $(L_INC))
 
-all: clean hex
+all: hex
 
 build: $(TARGET).elf
 
@@ -127,7 +127,7 @@ post_compile: $(TARGET).hex
 reboot:
 	@-$(abspath $(TOOLSPATH))/teensy_reboot
 
-upload: post_compile reboot
+flash: post_compile reboot
 
 $(BUILDDIR)/%.o: %.c
 	@echo "[CC]\t$<"

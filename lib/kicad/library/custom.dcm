@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Monday, June 22, 2015 'pmt' 02:42:14 pm
+EESchema-DOCLIB  Version 2.0  Date: Thursday, July 02, 2015 'pmt' 01:20:28 pm
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -78,7 +78,7 @@ D Digital Potentiometer
 K potentiometer
 $ENDCMP
 #
-$CMP MCP46x1
+$CMP MCP46X1
 D Digital Potentiometer
 K potentiometer
 $ENDCMP
@@ -184,6 +184,10 @@ $ENDCMP
 $CMP RSMALL
 D RSMALL
 K R DEV
+$ENDCMP
+#
+$CMP S25FL512S
+D Spansion S25FL512S 64MB SPI Flash Module
 $ENDCMP
 #
 $CMP SPDT

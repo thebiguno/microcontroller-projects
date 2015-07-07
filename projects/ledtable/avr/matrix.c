@@ -1,11 +1,16 @@
 #include "matrix.h"
 
 uint8_t changed;
-pixel_t buffer[144];
+ws2812_t draw_buffer[144];
+ws2812_t draw_value;
 
-void set_pixel(int16_t x, int16_t y, pixel_t rgb, uint8_t overlay) {
-	uint8_t i = ((x & 0x01) == 0x00) ? (x * 12 + y) : (x * 23 - y);
-	
+void draw_set_value(ws2812_t value) {
+	draw_value = value;
+}
+
+void draw_set_pixel(int16_t x, int16_t y) {
+	//uint8_t i = ((x & 0x01) == 0x00) ? (x * 24 + y) : (x * 23 - y);
+	uint8_t i = x * 12 + y;
 	if (i >= 144 || i < 0) return;
 	
 	pixel_t current;
@@ -13,42 +18,32 @@ void set_pixel(int16_t x, int16_t y, pixel_t rgb, uint8_t overlay) {
 	current.green = buffer[i].green;
 	current.blue = buffer[i].blue;
 	
-	if (overlay == OVERLAY_REPLACE){
-		buffer[i].red   = rgb.red;
-		buffer[i].green = rgb.green;
-		buffer[i].blue  = rgb.blue;
+	uint8_t draw_overlay = draw_get_overlay();
+	if (draw_overlay == DRAW_OVERLAY_REPLACE){
+		draw_buffer[i].red   = draw_value.red;
+		draw_buffer[i].green = draw_value.green;
+		draw_buffer[i].blue  = draw_value.blue;
 	}
-	else if (overlay == OVERLAY_OR){
-		buffer[i].red   |= rgb.red;
-		buffer[i].green |= rgb.green;
-		buffer[i].blue  |= rgb.blue;
+	else if (draw_overlay == DRAW_OVERLAY_OR){
+		draw_buffer[i].red   |= draw_value.red;
+		draw_buffer[i].green |= draw_value.green;
+		draw_buffer[i].blue  |= draw_value.blue;
 	}
-	else if (overlay == OVERLAY_NAND){
-		buffer[i].red   &= ~rgb.red;
-		buffer[i].green &= ~rgb.green;
-		buffer[i].blue  &= ~rgb.blue;
+	else if (draw_overlay == DRAW_OVERLAY_NAND){
+		draw_buffer[i].red   &= ~draw_value.red;
+		draw_buffer[i].green &= ~draw_value.green;
+		draw_buffer[i].blue  &= ~draw_value.blue;
 	}
-	else if (overlay == OVERLAY_XOR){
-		buffer[i].red   ^= rgb.red;
-		buffer[i].green ^= rgb.green;
-		buffer[i].blue  ^= rgb.blue;
+	else if (draw_overlay == DRAW_OVERLAY_XOR){
+		draw_buffer[i].red   ^= draw_value.red;
+		draw_buffer[i].green ^= draw_value.green;
+		draw_buffer[i].blue  ^= draw_value.blue;
 	}
 	
 	if (buffer[i].red != current.red || buffer[i].green != current.green || buffer[i].blue != current.blue) changed = 1;
 }
 
-pixel_t get_pixel(uint8_t x, uint8_t y) {
-	uint8_t i = ((x & 0x01) == 0x00) ? (x * 12 + y * 3) : (x * 23 - y * 3);
-	
-	if (i >= 144 || i < 0) {
-		pixel_t black;
-		return black;
-	}
-
-	return buffer[i];
-}
-
-void matrix_write_buffer(){
+void draw_flush(){
 	if (changed) {
 		ws281x_set(buffer);
 		changed = 0;
