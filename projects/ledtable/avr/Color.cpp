@@ -80,7 +80,6 @@ void Color::square() {
 	this->addHue(90);
 }
 
-
 pixel_t Color::rgb() {
 	float h = this->h;
 	uint8_t s = this->s;

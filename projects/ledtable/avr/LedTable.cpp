@@ -1,4 +1,7 @@
 #include "LedTable.h"
+
+#include "lib/ws281x/ws281x.h"
+typedef ws2812_t pixel_t;
 #include "Color.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
@@ -26,6 +29,8 @@ int main() {
 	uint8_t selected;
 	Color color = Color(0);
 	
+	draw_set_font(font_3x5, codepage_ascii_caps, 3, 5);
+	
 	while (1) {
 		void psx_read_gamepad();
 		buttons = psx_buttons();
@@ -52,25 +57,25 @@ int main() {
 			}
 		}
 		
-		pixel_t c = color.rgb();
+		draw_set_value(color.rgb());
 		
 		switch (selected) {
-			case 0: draw_text(0, 3, "CLK", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 1: draw_text(0, 3, "ALT", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 2: draw_text(0, 3, "TTT", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 3: draw_text(0, 3, "TET", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 4: draw_text(0, 3, "LIF", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 5: draw_text(0, 3, "MOO", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
-			case 6: draw_text(0, 3, "PLA", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, c, OVERLAY_REPLACE); break;
+			case 0: draw_text(0, 3, "CLK", DRAW_ORIENTATION_NORMAL); break;
+			case 1: draw_text(0, 3, "ALT", DRAW_ORIENTATION_NORMAL); break;
+			case 2: draw_text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
+			case 3: draw_text(0, 3, "TET", DRAW_ORIENTATION_NORMAL); break;
+			case 4: draw_text(0, 3, "LIF", DRAW_ORIENTATION_NORMAL); break;
+			case 5: draw_text(0, 3, "MOO", DRAW_ORIENTATION_NORMAL); break;
+			case 6: draw_text(0, 3, "PLA", DRAW_ORIENTATION_NORMAL); break;
 		}
 		
-		set_pixel(4, 1, c, OVERLAY_REPLACE);
-		set_pixel(5, 0, c, OVERLAY_REPLACE);
-		set_pixel(6, 1, c, OVERLAY_REPLACE);
-		set_pixel(4, 9, c, OVERLAY_REPLACE);
-		set_pixel(5, 10, c, OVERLAY_REPLACE);
-		set_pixel(6, 9, c, OVERLAY_REPLACE);
-		matrix_write_buffer();
+		draw_set_pixel(4, 1);
+		draw_set_pixel(5, 0);
+		draw_set_pixel(6, 1);
+		draw_set_pixel(4, 9);
+		draw_set_pixel(5, 10);
+		draw_set_pixel(6, 9);
+		draw_flush();
 	}
 	
 }

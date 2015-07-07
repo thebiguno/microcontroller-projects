@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include "matrix.h"
+#include "lib/ws281x/ws281x.h"
+typedef ws2812_t pixel_t;
 
 namespace digitalcave {
 	class Color {

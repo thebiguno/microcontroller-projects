@@ -1,5 +1,5 @@
 #include "TestPattern.h"
-#include "lib/draw/draw.h"
+#include "matrix.h"
 #include <stdlib.h>
 
 using namespace digitalcave;
@@ -16,7 +16,9 @@ void TestPattern::run() {
 	Color color = Color(0);
 	
 	while (running > 0) {
-		set_pixel(0, 0, color.rgb(), OVERLAY_REPLACE);
+		draw_set_value(color.rgb());
+		draw_set_pixel(0, 0);
 		color.addHue(1);
+		draw_flush();
 	}
 }
