@@ -15,7 +15,9 @@
 #######################################################
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/build)
+ifndef BUILDDIR
+	BUILDDIR = $(abspath $(CURDIR)/build)
+endif
 
 # configurable options
 ifndef OPTIONS
