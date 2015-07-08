@@ -30,10 +30,10 @@ Samples::Samples():
 	AudioMemory(16);
 	
 	//Initialize maps
-	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		this->sampleToChannelMap[i] = 0xFF;
 	}
-	for (uint8_t i = 0; i < 11; i++){
+	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
 		this->channelToSampleMap[i] = 0xFF;
 	}
 }

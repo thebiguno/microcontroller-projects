@@ -4,6 +4,7 @@
 #include <Audio.h>
 
 #define SAMPLE_COUNT				16
+#define CHANNEL_COUNT				11
 
 //If 
 #define DOUBLE_HIT_THRESHOLD		20
@@ -50,16 +51,16 @@ namespace digitalcave {
 			//The index of this array is the sample index;
 			// the value is the channel which was last played
 			// on the given sample.  Init'd to 0xFF.
-			uint8_t sampleToChannelMap[SAMPLE_SIZE];
+			uint8_t sampleToChannelMap[SAMPLE_COUNT];
 			
 			//The index of this array is the channel number;
 			// the value is the sample index which was last 
 			// played for the given channel.  Init'd to 0xFF.
-			uint8_t channelToSampleMap[11];
+			uint8_t channelToSampleMap[CHANNEL_COUNT];
 			
 			//The time in millis in which this channel was last played.
 			// Used for double hit threshold detection.
-			uint32_t lastPlayedChannel[11];
+			uint32_t lastPlayedChannel[CHANNEL_COUNT];
 			
 			//Find the first available sample that is not currently playing; if all samples
 			// are playing, then find the oldest one to stop it.
