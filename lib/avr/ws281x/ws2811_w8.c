@@ -40,8 +40,8 @@ void ws2811_set(const void *values) {
 			"start_byte: OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a7\n" 							// if carry is set, skip next instruction (1/2)
-			"a7:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a7:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -50,8 +50,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a6\n" 							// if carry is set, skip next instruction (1/2)
-			"a6:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a6:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -60,8 +60,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a5\n" 							// if carry is set, skip next instruction (1/2)
-			"a5:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a5:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -70,8 +70,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a4\n" 							// if carry is set, skip next instruction (1/2)
-			"a4:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a4:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -80,8 +80,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a3\n" 							// if carry is set, skip next instruction (1/2)
-			"a5:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a3:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -90,8 +90,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a2\n" 							// if carry is set, skip next instruction (1/2)
-			"a2:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a2:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -100,8 +100,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n"
 			"            BRCS a1\n" 							// if carry is set, skip next instruction (1/2)
-			"a1:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n"
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a1:         NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n"
 			"            NOP\n"
@@ -110,8 +110,8 @@ void ws2811_set(const void *values) {
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            DEC r16\n"								// decrements the byte count (1)
 			"            BRCS a0\n" 							// if carry is set, skip next instruction (1/2)
-			"a0:         OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            CPI r16, 0\n"							// compare byte count to 0 (1)
+			"            OUT %[port], %[low]\n"					// else drive the line low (1)
+			"a0:         CPI r16, 0\n"							// compare byte count to 0 (1)
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            BREQ end\n"							// jump to the end if the array is done (1/2)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)

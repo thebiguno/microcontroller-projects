@@ -17,10 +17,10 @@
 /*
 http://wavedrom.com/editor.html
 {signal: [
-  {name: 'inst', wave: '22.234..534..34.....534..5.4..34.....53x', 
-   	data: ['ldi','ld','lsl','out','nop','brcs','out','nop','out','nop','lsl','out','nop','brcs','nop','out','nop','lsl','out']},
-  {name: 'wire', wave: 'xxxxx1....0...........1........0.......1' },
-  {name: 'time', wave: 'xxxxx2....2...........2........2.......x', data: ['312.5ns','750ns','562.5ns','500ns'] },
+  {name: 'inst', wave: '22.234..534...34....534..5.4...34....53x',
+       data: ['ldi','ld','lsl','out','nop','brcs','out','nop','out','nop','lsl','out','nop','brcs','nop','out','nop','lsl','out']},
+  {name: 'wire', wave: 'xxxxx1....0...........1.........0......1' },
+  {name: 'time', wave: 'xxxxx2....2...........2.........2......x', data: ['312.5ns','750ns','625ns','437.5ns'] },
   {name: 'data', wave: 'xxxxx2................2................x', data: ['bit n (0)','bit n (1)']}
 ]}
 */
@@ -40,87 +40,79 @@ void ws281x_set(const void *values) {
 			// current byte being sent is in r0
 			// address of the end of the array is in r16
 			"            LDI r16, %[ct]\n"						// load the size into r2 (1)
-			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
+			"start_byte: LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 7 (1062.5 ns)
-			"start_byte: OUT %[port], %[high]\n"				// drive the line high (1)
+			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g7:         NOP\n" "NOP\n" "NOP\n"
+			"g7:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g6:         NOP\n" "NOP\n" "NOP\n"
+			"g6:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g5:         NOP\n" "NOP\n" "NOP\n"
+			"g5:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"g4:         OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"g4:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
+			"            OUT %[port], %[low]\n"					// drive the line low (1)
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g3:         NOP\n" "NOP\n" "NOP\n"
+			"g3:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g2:         NOP\n" "NOP\n" "NOP\n"
+			"g2:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g1:         NOP\n" "NOP\n" "NOP\n"
+			"g1:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// g bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS g0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"g0:         NOP\n" "NOP\n" "NOP\n"
+			"g0:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n"
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			
@@ -129,80 +121,72 @@ void ws281x_set(const void *values) {
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r7:         NOP\n" "NOP\n" "NOP\n"
+			"r7:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r6:         NOP\n" "NOP\n" "NOP\n"
+			"r6:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r5:         NOP\n" "NOP\n" "NOP\n"
+			"r5:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r4:         NOP\n" "NOP\n" "NOP\n"
+			"r4:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r3:         NOP\n" "NOP\n" "NOP\n"
+			"r3:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r2:         NOP\n" "NOP\n" "NOP\n"
+			"r2:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r1:         NOP\n" "NOP\n" "NOP\n"
+			"r1:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// r bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS r0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"r0:         NOP\n" "NOP\n" "NOP\n"
+			"r0:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n"
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			
@@ -211,87 +195,77 @@ void ws281x_set(const void *values) {
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b7\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b7:         NOP\n" "NOP\n" "NOP\n"
+			"b7:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 6
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b6\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b6:         NOP\n" "NOP\n" "NOP\n"
+			"b6:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 5
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b5\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b5:         NOP\n" "NOP\n" "NOP\n"
+			"b5:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 4
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b4\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b4:         NOP\n" "NOP\n" "NOP\n"
+			"b4:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 3
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b3\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b3:         NOP\n" "NOP\n" "NOP\n"
+			"b3:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 2
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b2\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b2:         NOP\n" "NOP\n" "NOP\n"
+			"b2:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 1
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
 			"            NOP\n" "NOP\n" "NOP\n"
 			"            BRCS b1\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b1:         NOP\n" "NOP\n" "NOP\n"
+			"b1:         NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
-			"            NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n" "NOP\n" "NOP\n" "NOP\n"
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			// b bit 0
 			"            OUT %[port], %[high]\n"				// drive the line high (1)
-			"            NOP\n" "NOP\n" "NOP\n"
+			"            NOP\n" "NOP\n"
+			"            DEC r16\n"								// decrements the size count (1)
 			"            BRCS b0\n" 							// if carry is set, skip next instruction (1/2)
 			"            OUT %[port], %[low]\n"					// else drive the line low (1)
-			"b0:         DEC r16\n"								// decrements the size count (1)
+			"b0:         NOP\n" "NOP\n" "NOP\n"
 			"            CPI r16, 0\n"							// compare size count to 0 (1)
-			"            NOP\n"
 			"            OUT %[port], %[low]\n"					// drive the line low (1)
 			"            BREQ end\n"							// jump to the end if the array is done (1/2)
-			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
-			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			"            JMP start_byte\n"						// start the next grb (3)
 			
-			"end:        NOP\n" "NOP\n" "NOP\n"
-			"            NOP\n" "NOP\n"
+			"end:        NOP\n" "NOP\n" "NOP\n" "NOP\n"
 	: // no outputs
 	: // inputs
 	[ct]    "M" (WS281X_COUNT),		// the number of leds
@@ -302,5 +276,5 @@ void ws281x_set(const void *values) {
 		);
 	
 	sei();
-	_delay_us(10);  // hold the line low for 6 microseconds to send the reset signal.
+	_delay_us(16);  // hold the line low for 16 microseconds to send the reset signal.
 }

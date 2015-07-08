@@ -29,7 +29,7 @@ int main() {
 	pixel_t black;
 	pixel_t c;
 	c.red = 0;
-	c.green = 0;
+	c.green = 5;
 	c.blue = 5;
 	
 	ws2812_t buf[144];
@@ -47,10 +47,10 @@ int main() {
 				draw_set_value(c);
 				draw_set_pixel(x, y);
 				draw_flush();
-//				PORTB ^= 0x10;
+				PORTB ^= 0x10;
 				_delay_ms(50);
-				//draw_set_value(black);
-				//draw_set_pixel(x, y);
+				draw_set_value(black);
+				draw_set_pixel(x, y);
 			}
 		}
 		*/
