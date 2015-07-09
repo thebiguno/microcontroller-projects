@@ -1,14 +1,12 @@
 #include "LedTable.h"
 
+#include <stdlib.h>
+#include <util/delay.h>
 #include "lib/ws281x/ws2812.h"
 #include "Color.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
 #include "matrix.h"
-#include "lib/psx/psx.h"
-#include <stdlib.h>
-
-#include "TestPattern.h"
 /*
 #include "Clock.h"
 #include "AltClock.h"
@@ -33,9 +31,9 @@ int main() {
 	c.red = 5;
 	c.blue = 5;
 	pixel_t black;
-	
+
 	ws2812_t buf[144];
-	/*
+
 	for (uint8_t i = 0; i < 144; i++) {
 		buf[i].red = 0x00;
 		buf[i].green = 0x00;
@@ -43,6 +41,7 @@ int main() {
 	}
 	ws281x_set(buf);
 	_delay_ms(255);
+/*	
 
 	for (uint8_t i = 0; i < 144; i++) {
 		buf[i].red = 0x00;
@@ -67,15 +66,13 @@ int main() {
 	}
 	ws281x_set(buf);
 	_delay_ms(255);
-	*/
-	
+*/
 	while (true) {
-		for (uint8_t x = 0; x < 12; x++) {
-			for (uint8_t y = 0; y < 12; y++) {
+		for (int8_t x = 0; x < 12; x++) {
+			for (int8_t y = 0; y < 12; y++) {
 				draw_set_value(c);
 				draw_set_pixel(x, y);
 				draw_flush();
-				PORTB ^= _BV(1);
 				_delay_ms(255);
 				draw_set_value(black);
 				draw_set_pixel(x, y);
@@ -83,6 +80,7 @@ int main() {
 		}
 	}
 	
+	/*
 	uint16_t buttons;
 	uint8_t selected;
 	Color color = Color(0);
@@ -102,7 +100,6 @@ int main() {
 		}
 		else if (buttons & PSB_CIRCLE) {
 			switch (selected) {
-				/*
 				case 0: { Clock clk; clk.run(); break; }
 				case 1: { AltClock alt; alt.run(); break; }
 				case 2: { Tictactoe ttt; ttt.run(); break; }
@@ -110,8 +107,6 @@ int main() {
 				case 4: { Life lif; lif.run(); break; }
 				case 5: { Mood moo; moo.run(); break; }
 				case 6: { Plasma pla; pla.run(); break; }
-				*/
-				case 0: { TestPattern test; test.run(); break; }
 			}
 		}
 		
@@ -135,5 +130,7 @@ int main() {
 		draw_set_pixel(6, 9);
 		draw_flush();
 	}
+	
+	*/
 	
 }

@@ -39,6 +39,7 @@ void ws281x_set(const void *values) {
 	asm volatile( 
 			// current byte being sent is in r0
 			// address of the end of the array is in r16
+			"            PUSH r16\n"
 			"            LDI r16, %[ct]\n"						// load the size into r2 (1)
 			"start_byte: LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			// g bit 7 (1062.5 ns)
@@ -267,6 +268,7 @@ void ws281x_set(const void *values) {
 			"            JMP start_byte\n"						// start the next grb (3)
 			
 			"end:        NOP\n" "NOP\n" "NOP\n" "NOP\n"
+			"            POP r16\n"
 	: // no outputs
 	: // inputs
 	[ct]    "M" (WS281X_COUNT),		// the number of leds

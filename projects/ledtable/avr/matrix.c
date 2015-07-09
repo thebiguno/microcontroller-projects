@@ -12,7 +12,7 @@ void draw_set_value(ws2812_t value) {
 
 void draw_set_pixel(int16_t x, int16_t y) {
 	int16_t i = (x & 0x01) ? (x * 12 + 11 - y) : (x * 12 + y);
-//	uint8_t i = x * 12 + y;
+	//int16_t i = (x * 12) + y;
 	if (i >= 144 || i < 0) return;
 	
 	ws2812_t current;
@@ -43,6 +43,8 @@ void draw_set_pixel(int16_t x, int16_t y) {
 	}
 	
 	if (draw_buffer[i].red != current.red || draw_buffer[i].green != current.green || draw_buffer[i].blue != current.blue) draw_changed = 1;
+	
+//	draw_buffer[x*12+y].red = 0xff;
 }
 
 void draw_flush(){
