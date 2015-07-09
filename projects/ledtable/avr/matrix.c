@@ -1,19 +1,17 @@
 #include "matrix.h"
 
 uint8_t draw_changed;
-ws2812_t draw_buffer[144];
+ws2812_t draw_buffer[MATRIX_WIDTH * MATRIX_HEIGHT];
 ws2812_t draw_value;
 
 void draw_set_value(ws2812_t value) {
-	draw_value.red = value.red;
-	draw_value.green = value.green;
-	draw_value.blue = value.blue;
+	draw_value = value;
 }
 
 void draw_set_pixel(int16_t x, int16_t y) {
-	int16_t i = (x & 0x01) ? (x * 12 + 11 - y) : (x * 12 + y);
+	int16_t i = (x & 0x01) ? (x * MATRIX_WIDTH + MATRIX_HEIGHT - 1 - y) : (x * MATRIX_HEIGHT + y);
 	//int16_t i = (x * 12) + y;
-	if (i >= 144 || i < 0) return;
+	if (i >= MATRIX_WIDTH * MATRIX_HEIGHT || i < 0) return;
 	
 	ws2812_t current;
 	current.red = draw_buffer[i].red;

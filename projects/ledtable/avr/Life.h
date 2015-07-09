@@ -2,6 +2,7 @@
 #define Life_H
 
 #include <Module.h>
+#include <Color.h>
 #include <stdint.h>
 #include "matrix.h"
 #include "lib/psx/psx.h"
@@ -12,34 +13,29 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		Color color;
+		Color color = Color(0);
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
-		uint8_t matches = 0;
 		uint8_t running = 0;
+		uint8_t matches = 0;
 	
 	public:
 		Life();
 		~Life();
+		void run();
 
 	private:
+		/* bounds-safe way of getting the current state of each pixel */
 		uint8_t getState(uint8_t x, uint8_t y);
-		void setState(uint8_t x, uint8_t y, uint8_t value);
-
-		/* clear the board */
-		void clear();
-	
-		/* create a random board */
-		void randomize();
 
 		uint8_t getNeighborCount(uint8_t x, uint8_t y);
 		uint32_t getStateHash();
-		pixel_t translate(uint8_t state);
+		ws2812_t translate(uint8_t state);
 	
 		/* write the board state to the matrix */
 		void flush();
 	
-		/* remove hashes, clear the board, and set it to a random state */
+		/* remove hashes and randomize */
 		void reset();
 	};
 }

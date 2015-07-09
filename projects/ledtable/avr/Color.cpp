@@ -18,16 +18,20 @@ Color::Color(uint16_t h, uint8_t s, uint8_t v) {
 }
 
 Color::Color(const Color &c) {
-	this->h = c.h;
-	this->s = c.s;
-	this->v = c.v;
+	h = c.h;
+	s = c.s;
+	v = c.v;
+}
+
+Color::~Color() {
+	
 }
 
 void Color::setHue(uint16_t h) {
 	this->h = h % 360;
 }
 uint16_t Color::getHue() {
-	return this->h;
+	return h;
 }
 void Color::addHue(int16_t h) {
 	this->h += h;
@@ -39,7 +43,7 @@ void Color::setSaturation(uint8_t s) {
 	this->s = s;
 }
 uint8_t Color::getSaturation() {
-	return this->s;
+	return s;
 }
 void Color::addSaturation(int8_t s) {
 	this->s += s;
@@ -51,7 +55,7 @@ void Color::setValue(uint8_t v) {
 	this->v = v;
 }
 uint8_t Color::getValue() {
-	return this->v;
+	return v;
 }
 void Color::addValue(int8_t v) {
 	this->v += v;
@@ -59,32 +63,28 @@ void Color::addValue(int8_t v) {
 }
 
 void Color::complementary() {
-	this->addHue(180);
+	addHue(180);
 }
 void Color::triad() {
-	this->addHue(120);
+	addHue(120);
 }
 void Color::analagous_a() {
-	this->addHue(30);
+	addHue(30);
 }
 void Color::analagous_b() {
-	this->addHue(-30);
+	addHue(-30);
 }
 void Color::split_a() {
-	this->addHue(150);
+	addHue(150);
 }
 void Color::split_b() {
-	this->addHue(-150);
+	addHue(-150);
 }
 void Color::square() {
-	this->addHue(90);
+	addHue(90);
 }
 
 pixel_t Color::rgb() {
-	float h = this->h;
-	uint8_t s = this->s;
-	uint8_t v = this->v;
-	
 	pixel_t rgb;
 	uint8_t i = floor(h / 60); // sector 0 to 5
 	float f = h - i;

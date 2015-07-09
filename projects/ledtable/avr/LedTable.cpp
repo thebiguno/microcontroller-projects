@@ -7,12 +7,13 @@
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
 #include "matrix.h"
+
+#include "Life.h"
 /*
 #include "Clock.h"
 #include "AltClock.h"
 #include "Tictactoe.h"
 #include "Tetris.h"
-#include "Life.h"
 #include "Mood.h"
 #include "Plasma.h"
 */
@@ -20,65 +21,15 @@
 using namespace digitalcave;
 
 int main() {
+	srandom(0);
+
 	//timer_init();
 	
 	DDRB = 0xff;
 	PORTB = 0x00;
 
-	_delay_ms(100);
-	
-	pixel_t c;
-	c.red = 5;
-	c.blue = 5;
-	pixel_t black;
-
-	ws2812_t buf[144];
-
-	for (uint8_t i = 0; i < 144; i++) {
-		buf[i].red = 0x00;
-		buf[i].green = 0x00;
-		buf[i].blue = (i & 0x01) ? 0x00 : 0x05;
-	}
-	ws281x_set(buf);
-	_delay_ms(255);
-/*	
-
-	for (uint8_t i = 0; i < 144; i++) {
-		buf[i].red = 0x00;
-		buf[i].green = (i & 0x01) ? 0x00 : 0x05;
-		buf[i].blue = 0x00;
-	}
-	ws281x_set(buf);
-	_delay_ms(255);
-
-	for (uint8_t i = 0; i < 144; i++) {
-		buf[i].red = (i & 0x01) ? 0x00 : 0x05;
-		buf[i].green = 0x00;
-		buf[i].blue = 0x00;
-	}
-	ws281x_set(buf);
-	_delay_ms(255);
-	
-	for (uint8_t i = 0; i < 144; i++) {
-		buf[i].red = (i & 0x01) ? 0x00 : 0x02;
-		buf[i].green = (i & 0x01) ? 0x02 : 0x00;
-		buf[i].blue = 0x00;
-	}
-	ws281x_set(buf);
-	_delay_ms(255);
-*/
-	while (true) {
-		for (int8_t x = 0; x < 12; x++) {
-			for (int8_t y = 0; y < 12; y++) {
-				draw_set_value(c);
-				draw_set_pixel(x, y);
-				draw_flush();
-				_delay_ms(255);
-				draw_set_value(black);
-				draw_set_pixel(x, y);
-			}
-		}
-	}
+	Life lif; 
+	lif.run();
 	
 	/*
 	uint16_t buttons;
