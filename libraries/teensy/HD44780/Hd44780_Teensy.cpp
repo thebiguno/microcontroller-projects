@@ -1,17 +1,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "Hd44780_Direct_Teensy.h"
+#include "Hd44780_Teensy.h"
 
 using namespace digitalcave;
 
-Hd44780_Teensy::Hd44780_Teensy(uint8_t function, 
-								uint8_t pin_rs,
-								uint8_t pin_e,
-								uint8_t pin_d4,
-								uint8_t pin_d5,
-								uint8_t pin_d6,
-								uint8_t pin_d7) {
+Hd44780_Teensy::Hd44780_Teensy(uint8_t function, uint8_t pin_rs, uint8_t pin_e,
+		uint8_t pin_d4, uint8_t pin_d5, uint8_t pin_d6, uint8_t pin_d7) {
 
 	this->pin_rs = pin_rs;
 	this->pin_e = pin_e;

@@ -1,9 +1,4 @@
-#include <ADC.h>
-#include <Bounce.h>
-#include <SD.h>
-#include <SPI.h>
-
-#include "Samples.h"
+#include "DrumMaster.h"
 
 using namespace digitalcave;
 
@@ -15,19 +10,16 @@ using namespace digitalcave;
 #define DRAIN_EN					4
 #define ADC_EN						5
 #define ADC_INPUT					A14
-#define ENC_PUSH					15
-#define ENC_A						20
-#define ENC_B						21
 
 //Constants
 #define MIN_VALUE					10
 
+State state;
 Samples samples;
 AudioControlSGTL5000 control;
 
 ADC adc;
 
-Bounce button0 = Bounce(ENC_PUSH, 25);
 
 uint8_t readDrum(uint8_t channel){
 	if (channel >= 8) return 0;		//TODO Remove on real board; breadboard MUX only have 8 inputs
@@ -77,9 +69,6 @@ int main(){
 	pinMode(MUX3, OUTPUT);
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
-	pinMode(ENC_PUSH, INPUT_PULLUP);	//Encoder pushbutton
-	pinMode(ENC_A, INPUT_PULLUP);	//Encoder A
-	pinMode(ENC_B, INPUT_PULLUP);	//Encoder B
 	
 	//Set up ADC
 	adc.setResolution(8);
@@ -94,26 +83,13 @@ int main(){
 	
 	uint8_t channel = 0;
 	while (1){
-		button0.update();
+		state.poll();
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){
 			samples.play(channel, value);
 		}
 		channel = (channel + 1) & 0x0F;
-/*		
-		if (button0.fallingEdge()) {
-			Serial.print("Button push sample ");
-			Serial.println(sampleCounter);
-			samples[sampleCounter].stop();
-			samples[sampleCounter].play("00.RAW");
-			sampleCounter = (sampleCounter + 1) & 0x03;
-			
-
-		}
-		
-		delay(5);
-*/
 	}
 }
 
