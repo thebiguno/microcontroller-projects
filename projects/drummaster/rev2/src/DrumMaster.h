@@ -3,9 +3,9 @@
 
 #include <ADC.h>
 #include <SD.h>
+#include <SerialFlash.h>
 #include <SPI.h>
 
-#include "Display.h"
 #include "Samples.h"
 #include "State.h"
 

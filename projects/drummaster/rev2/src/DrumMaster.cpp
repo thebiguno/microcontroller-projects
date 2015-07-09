@@ -14,7 +14,6 @@ using namespace digitalcave;
 //Constants
 #define MIN_VALUE					10
 
-Display display;
 State state;
 Samples samples;
 AudioControlSGTL5000 control;
@@ -85,7 +84,6 @@ int main(){
 	uint8_t channel = 0;
 	while (1){
 		state.poll();
-		display.update(state);
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){
