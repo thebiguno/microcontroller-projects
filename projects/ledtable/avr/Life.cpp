@@ -14,7 +14,6 @@ Life::~Life() {
 }
 
 void Life::run() {
-	color.setValue(10);
 	uint16_t buttons; 
 	uint8_t running = 1;
 	
@@ -43,7 +42,7 @@ void Life::run() {
 		}
 
 		flush();
-		draw_flush();
+		matrix.flush();
 
 		//Store board hash
 		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
@@ -72,7 +71,6 @@ void Life::run() {
 //		}
 
 		_delay_ms(64);
-		color.addHue(1);
 	}
 }
 
@@ -104,25 +102,15 @@ uint32_t Life::getStateHash() {
 	return hash;
 }
 
-ws2812_t Life::translate(uint8_t state) {
-	ws2812_t result;
-	if (state > 0) {
-		result.red = 5;
-		result.green 
-	}
-	else {
-		result.red = 0;
-		result.green = 0;
-		result.blue = 0;
-	}
-	return result;
-}
-
 void Life::flush() {
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-			draw_set_value(translate(state[x][y]));
-			draw_set_pixel(x, y);
+			if (state > 0) {
+				matrix.setColor(5,0,0);
+			} else {
+				matrix.setColor(0,0,0);
+			}
+			matrix.setPixel(x, y);
 		}
     }
 }
@@ -155,5 +143,5 @@ void Life::reset() {
 	}
 	
 	flush();
-	draw_flush();
+	matrix.flush();
 }

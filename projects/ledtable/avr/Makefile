@@ -1,7 +1,7 @@
 PROJECT=led_table
 MMCU=atmega32u4
 F_CPU=16000000
-SOURCES=LedTable.cpp Color.cpp matrix.c lib/draw/draw.c lib/draw/fonts/f_3x5.c lib/draw/fonts/cp_ascii_caps.c lib/ws281x/ws281x_w16.c Life.cpp
+SOURCES=LedTable.cpp Matrix.cpp lib/Draw/Draw.cpp lib/Draw/Rgb.cpp lib/Draw/Hsv.cpp lib/draw/fonts/f_3x5.c lib/draw/fonts/cp_ascii_caps.c lib/ws281x/ws281x_w16.c Life.cpp
 PROGRAMMER=dfu
 COMPILER=avr-g++
 

@@ -1,11 +1,9 @@
 #ifndef Life_H
 #define Life_H
 
+#include "Matrix.h"
 #include <Module.h>
-#include <Color.h>
 #include <stdint.h>
-#include "matrix.h"
-#include "lib/psx/psx.h"
 
 #define LIFE_HASH_COUNT			20
 #define LIFE_MATCH_COUNT		20
@@ -13,7 +11,7 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		Color color = Color(0);
+		Matrix matrix;
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t running = 0;
@@ -30,7 +28,6 @@ namespace digitalcave {
 
 		uint8_t getNeighborCount(uint8_t x, uint8_t y);
 		uint32_t getStateHash();
-		ws2812_t translate(uint8_t state);
 	
 		/* write the board state to the matrix */
 		void flush();

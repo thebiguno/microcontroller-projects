@@ -3,10 +3,9 @@
 #include <stdlib.h>
 #include <util/delay.h>
 #include "lib/ws281x/ws2812.h"
-#include "Color.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
-#include "matrix.h"
+//#include "Matrix.h"
 
 #include "Life.h"
 /*
