@@ -24,6 +24,9 @@ ifndef OPTIONS
 	OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 endif
 
+# This should be in your path.  Compile from source found at https://github.com/PaulStoffregen/teensy_loader_cli
+TEENSY_LOADER = teensy_loader_cli
+
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 TOOLSPATH = $(CURDIR)/tools
 
@@ -71,17 +74,20 @@ ifeq ($(TEENSY), 30)
 	CPPFLAGS += -D__MK20DX128__ -mcpu=cortex-m4
 	LDSCRIPT = $(COREPATH)/mk20dx128.ld
 	LDFLAGS += -mcpu=cortex-m4 -T$(LDSCRIPT)
+	MCU = mk20dx128
 else
 	ifeq ($(TEENSY), 31)
 		CPPFLAGS += -D__MK20DX256__ -mcpu=cortex-m4
 		LDSCRIPT = $(COREPATH)/mk20dx256.ld
 		LDFLAGS += -mcpu=cortex-m4 -T$(LDSCRIPT)
+		MCU = mk20dx256
 	else
 		ifeq ($(TEENSY), LC)
 			CPPFLAGS += -D__MKL26Z64__ -mcpu=cortex-m0plus
 			LDSCRIPT = $(COREPATH)/mkl26z64.ld
 			LDFLAGS += -mcpu=cortex-m0plus -T$(LDSCRIPT)
 			LIBS += -larm_cortexM0l_math
+			MCU = mkl26z64
 		else
 			$(error Invalid setting for TEENSY)
 		endif
@@ -112,7 +118,7 @@ L_INC := $(foreach lib,$(shell find -L $(LIBRARYPATH)/ -type d), -I$(lib))
 
 SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
-$(info $(L_INC))
+#$(info $(L_INC))
 
 all: hex
 
@@ -120,13 +126,8 @@ build: $(PROJECT).elf
 
 hex: $(PROJECT).hex
 
-post_compile: $(PROJECT).hex
-	@$(abspath $(TOOLSPATH))/teensy_post_compile -file="$(basename $<)" -path=$(CURDIR) -tools="$(abspath $(TOOLSPATH))"
-
-reboot:
-	@-$(abspath $(TOOLSPATH))/teensy_reboot
-
-flash: post_compile reboot
+flash: hex
+	@$(TEENSY_LOADER) --mcu=$(MCU) -v -w -s $(PROJECT).hex
 
 $(BUILDDIR)/%.o: %.c
 	@echo "[CC]\t$<"
