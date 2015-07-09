@@ -26,23 +26,28 @@ void Life::run() {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 				uint8_t count = getNeighborCount(x, y);
-				if (count == 3) {
-					// birth
-					state[x][y] = 0x01;
+				uint8_t alive = state[x][y];
+				if (alive) {
+					if (count == 3) {
+						// birth
+						state[x][y] = 0x01;
+					}
+					else if (count == 2 || count == 3) {
+						// staying alive
+						state[x][y] = 0x01;
+					}
+					else {
+						// overpopulation or underpopulation
+						state[x][y] = 0x00;
+					}
 				}
-				else if (count == 2 || count == 3) {
-					// staying alive
+				else if (count == 3) {
 					state[x][y] = 0x01;
-				}
-				else {
-					// overpopulation or underpopulation
-					state[x][y] = 0x00;
 				}
 			}
 		}
 
 		flush();
-		matrix.flush();
 
 		//Store board hash
 		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
@@ -61,7 +66,6 @@ void Life::run() {
 
 		if (matches >= LIFE_MATCH_COUNT) {
 			reset();
-			_delay_ms(255);
 		}
 		
 //		void psx_read_gamepad();
@@ -105,7 +109,7 @@ uint32_t Life::getStateHash() {
 void Life::flush() {
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-			if (state > 0) {
+			if (state[x][y] > 0) {
 				matrix.setColor(5,0,0);
 			} else {
 				matrix.setColor(0,0,0);
@@ -113,15 +117,25 @@ void Life::flush() {
 			matrix.setPixel(x, y);
 		}
     }
+	matrix.flush();
 }
 
 void Life::reset() {
+	matrix.setColor(5,5,5);
+	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+			matrix.setPixel(x, y);
+		}
+    }
+	matrix.flush();
+	_delay_ms(255);
+	
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
 		hashes[i] = 0;
 	}
+	matches = 0;
 	
 	// random start positions
-	/*
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			if ((random() & 0x3) == 0x3) {		//25% chance
@@ -131,17 +145,9 @@ void Life::reset() {
 			}
 		}
 	}
-	*/
-	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
-		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-			if (x == y) {
-				state[x][y] = 0x01; // birth
-			} else {
-				state[x][y] = 0x00;
-			}
-		}
-	}
 	
 	flush();
-	matrix.flush();
+	
+	// pause to show start position
+	_delay_ms(255);
 }
