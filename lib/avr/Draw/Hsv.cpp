@@ -4,15 +4,13 @@ using namespace digitalcave;
 
 Hsv::Hsv(uint16_t h) {
 	this->h = h %= 360;
-	this->s = 100;
-	this->v = 100;
+	this->s = 255;
+	this->v = 255;
 }
 
 Hsv::Hsv(uint16_t h, uint8_t s, uint8_t v) {
 	this->h = h %= 360;
-	if (s > 100) s = 100;
 	this->s = s;
-	if (v > 100) v = 100;
 	this->v = v;
 }
 
@@ -46,7 +44,6 @@ uint8_t Hsv::getSaturation() const {
 }
 void Hsv::addSaturation(int8_t s) {
 	this->s += s;
-	if (this->s > 100) this->s = 100;
 }
 
 void Hsv::setValue(uint8_t v) {
@@ -58,5 +55,4 @@ uint8_t Hsv::getValue() const {
 }
 void Hsv::addValue(int8_t v) {
 	this->v += v;
-	if (this->v > 100) this->v = 100;
 }

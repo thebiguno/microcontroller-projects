@@ -75,10 +75,20 @@ void Life::run() {
 		
 		psx.poll();
 		uint16_t buttons = psx.buttons();
-		if (buttons > 1) {
+		if (buttons & PSB_TRIANGLE) {
 			reset();
 			
 			//running = 0;
+		} else if (buttons & PSB_PAD_LEFT) {
+			hsv.addHue(-30);
+		} else if (buttons & PSB_PAD_RIGHT) {
+			hsv.addHue(30);
+		} else if (buttons & PSB_PAD_DOWN) {
+			hsv.addValue(-8);
+		} else if (buttons & PSB_PAD_UP) {
+			hsv.addValue(8);
+		} else if (buttons & PSB_CROSS) {
+			hsv = Hsv(300,127,255);
 		}
 
 		_delay_ms(64);
@@ -114,10 +124,11 @@ uint32_t Life::getStateHash() {
 }
 
 void Life::flush() {
+	Rgb rgb = Rgb(hsv);
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			if (state[x][y] > 0) {
-				matrix.setColor(5,0,0);
+				matrix.setColor(rgb);
 			} else {
 				matrix.setColor(0,0,0);
 			}

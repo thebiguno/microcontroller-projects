@@ -18,25 +18,20 @@ Rgb::Rgb(const Rgb &c) {
 Rgb::Rgb(const Hsv &c) {
 	uint8_t s = c.getSaturation();
 	uint8_t v = c.getValue();
+	uint16_t h = c.getHue();
 	if (s == 0) {
 		// achromatic (grey)
 		r = g = b = v;
 	} else {
-		float h = ((float) c.getHue()) / 60; // sector 0 to 5
-	
-		uint8_t i = floor( h );
-		float f = h - i;			// factorial part of h
-		float p = v * ( 1 - s );
-		float q = v * ( 1 - s * f );
-		float t = v * ( 1 - s * ( 1 - f ) );
+		uint8_t base = ((255 - s) * v) >> 8;
 		
-		switch(i) {
-			case 0: r = v; g = t; v = p; break;
-			case 1: r = q; g = v; b = p; break;
-			case 2: r = p; g = v; b = t; break;
-			case 3: r = p; g = q; b = v; break;
-			case 4: r = t; g = p; b = v; break;
-			default: r = v; g = p; b = q; break;
+		switch(h / 60) {
+			case 0: r = v; g = (((v-base)*h)/60)+base; b = base; break;
+			case 1: r = (((v-base)*(60-(h%60)))/60)+base; g = v; b = base; break;
+			case 2: r = base; g = v; b = (((v-base)*(h%60))/60)+base; break;
+			case 3: r = base; g = (((v-base)*(60-(h%60)))/60)+base; b = v; break;
+			case 4: r = (((v-base)*(h%60))/60)+base; g = base; b = v; break;
+			default: r = v; g = base; b = (((v-base)*(60-(h%60)))/60)+base; break;
 		}
 	}
 }
