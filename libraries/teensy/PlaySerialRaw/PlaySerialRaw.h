@@ -24,55 +24,28 @@
  * THE SOFTWARE.
  */
 
-// Plays from Serial Flash (c) Frank Bösing, 2014/12, 2015
+#ifndef play_serial_raw_h_
+#define play_serial_raw_h_
 
-#ifndef play_serialflash_h_
-#define play_serialflash_h_
-/*
-	Set AUDIOBOARD to 1 if you use the PJRC-Audioboard, else 0
-*/
-#define AUDIOBOARD 1
-
-#define SERFLASH_CS 			6	//Chip Select pin W25Q128FV SPI Flash
-
-#include <Arduino.h>
 #include <AudioStream.h>
-#include <SPI.h>
-#include <SPIFIFO.h>
-#include "spi_interrupt.h"
+#include <SerialFlash.h>
 
-class AudioPlaySerialFlash : public AudioStream
+class AudioPlaySerialRaw : public AudioStream
 {
 public:
-	AudioPlaySerialFlash(void) : AudioStream(0, NULL), playing(0) { flashinit(); }
-	void play(const unsigned int data);
-	//void loop(const unsigned int data);
+	AudioPlaySerialRaw(void) : AudioStream(0, NULL) { begin(); }
+	void begin(void);
+	bool play(const char *filename);
 	void stop(void);
-	bool isPlaying(void);
-	bool pause(bool _paused);
-	uint32_t position(void);
+	bool isPlaying(void) { return playing; }
 	uint32_t positionMillis(void);
-	uint32_t length(void);
 	uint32_t lengthMillis(void);
-//	void setPosition(const unsigned int n);
-	void setPositionMillis(const unsigned int millis);
 	virtual void update(void);
-protected:
-	void flashinit(void);	
-	inline void readSerStart(const size_t position) __attribute__((always_inline));
-	inline void readSerDone(void) __attribute__((always_inline));
 private:
-	SPISettings spisettings;
-	unsigned int sample;
-	unsigned int beginning;
-	unsigned int len;
-	unsigned int b16; //Flag: 1=16-Bit Samples, 0 = 8-Bit Samples
-	unsigned short prior;	
-	volatile uint8_t playing;
-	volatile bool paused;	
-	inline uint32_t b2m(void) __attribute__((always_inline));
-	inline uint32_t calcMillis(uint32_t position) __attribute__((always_inline));
-	int SamplesConsumedPerUpdate(void);
+	SerialFlashFile rawfile;
+	uint32_t file_size;
+	volatile uint32_t file_offset;
+	volatile bool playing;
 };
 
 #endif

@@ -34,7 +34,7 @@ void State::poll(){
 		uint32_t size = SerialFlash.capacity(id);
 		
 		char_display.clear();
-		snprintf(buf, sizeof(buf), "Erasing %dMB...", (uint16_t) (size >> 20));
+		snprintf(buf, sizeof(buf), "Erasing %dMB...       ", (uint16_t) (size >> 20));
 		char_display.write_text(0, 0, buf, sizeof(buf));
 		char_display.refresh();
 		
@@ -58,7 +58,7 @@ void State::poll(){
 		}
 
 		char_display.clear();
-		snprintf(buf, sizeof(buf), "Copy SD...             ");
+		snprintf(buf, sizeof(buf), "Copy SD...                 ");
 		char_display.write_text(0, 0, buf, sizeof(buf));
 		char_display.refresh();
 		
@@ -106,6 +106,9 @@ void State::poll(){
 			f.close();
 		}
 		rootdir.close();
+		char_display.clear();
+		
+		this->state = 0;
 	}
 	else {
 		snprintf(buf, sizeof(buf), "State %d                   ", (uint8_t) this->get_state());
