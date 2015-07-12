@@ -1,55 +1,58 @@
 #ifndef PSX_lib_h
 #define PSX_lib_h
 
+#include "AbstractPsx.h"
 
-#include <avr/io.h>
-#include <util/delay.h>
+namespace digitalcave {
+	class Psx : public AbstractPsx {
+	private:
+		//Define ports used
+		volatile uint8_t *data_port;
+		volatile uint8_t *clock_port;
+		volatile uint8_t *command_port;
+		volatile uint8_t *attention_port;
 
-//Half a clock cycle; 10µs seems to be about right
-#define CTRL_CLK        10
+		//Define the input
+		volatile uint8_t *data_in;
 
-//These are our button constants
-#define PSB_SELECT      0x0001
-#define PSB_L3          0x0002
-#define PSB_R3          0x0004
-#define PSB_START       0x0008
-#define PSB_PAD_UP      0x0010
-#define PSB_PAD_RIGHT   0x0020
-#define PSB_PAD_DOWN    0x0040
-#define PSB_PAD_LEFT    0x0080
-#define PSB_L2          0x0100
-#define PSB_R2          0x0200
-#define PSB_L1          0x0400
-#define PSB_R1          0x0800
-#define PSB_TRIANGLE    0x1000
-#define PSB_CIRCLE      0x2000
-#define PSB_CROSS       0x4000
-#define PSB_SQUARE      0x8000
+		//Define ddr used
+		volatile uint8_t *data_ddr;
+		volatile uint8_t *clock_ddr;
+		volatile uint8_t *command_ddr;
+		volatile uint8_t *attention_ddr;
 
-//These are stick values
-#define PSS_RX 5
-#define PSS_RY 6
-#define PSS_LX 7
-#define PSS_LY 8
-
-/* Initialize the controller, specifying which port and pins to use for each connection.
- * We extrapolate the DDR register from the PORT register for each connection.
- */
-void psx_init(volatile uint8_t *data_port, uint8_t data_pin,
-				volatile uint8_t *clock_port, uint8_t clock_pin,
-				volatile uint8_t *command_port, uint8_t command_pin,
-				volatile uint8_t *attention_port, uint8_t attention_pin);
-				
-/* Returns the current state of all 16 buttons */
-uint16_t psx_buttons();
+		//Define pins to use
+		uint8_t clock_pin;
+		uint8_t command_pin;
+		uint8_t attention_pin;
+		uint8_t data_pin;
+		
+		uint8_t shift(uint8_t b);
+		void sendCommand(uint8_t send_data[], uint8_t size);
+		
+	public:
+		/* Connect controller wires as follows:
+			Signal
+			1. Brown:  <- Data
+			2. Orange: -> Command
+			6. Yellow: -> /Attention
+			7. Blue:   -> Clock
 			
-/* Returns non-zero if the given button is pressed. */
-uint8_t psx_button(uint16_t);
+			Power
+			4. Black   Ground
+			5. Red:    3v ~ 5v VCC
 
-/* Returns the value of the given analog stick (0-255) */
-uint8_t psx_stick(unsigned int);
-
-/* Updates the current value of the game pad. */
-void psx_read_gamepad();
+			N/C
+			3. Grey:   7.2v ~ 9v vibration motor power
+			8. White:  Unused
+			9. Green:  /Acknowlege
+		*/
+		Psx(volatile uint8_t *data_port, uint8_t data_pin,
+			volatile uint8_t *clock_port, uint8_t clock_pin,
+			volatile uint8_t *command_port, uint8_t command_pin,
+			volatile uint8_t *attention_port, uint8_t attention_pin);
+		~Psx();
+	};
+}
 
 #endif

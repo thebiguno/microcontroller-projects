@@ -17,11 +17,11 @@
 /*
 http://wavedrom.com/editor.html
 {signal: [
-  {name: 'inst', wave: '22.234..534...34....534..5.4...34....53x',
-       data: ['ldi','ld','lsl','out','nop','brcs','out','nop','out','nop','lsl','out','nop','brcs','nop','out','nop','lsl','out']},
-  {name: 'wire', wave: 'xxxxx1....0...........1.........0......1' },
-  {name: 'time', wave: 'xxxxx2....2...........2.........2......x', data: ['312.5ns','750ns','625ns','437.5ns'] },
-  {name: 'data', wave: 'xxxxx2................2................x', data: ['bit n (0)','bit n (1)']}
+  {name: 'inst', wave: '5.534.5534...34.....34.55.4...34.....3x',
+       data: ['ldi','ld','out','nop','lsl','brcs','out','nop','out','nop','out','nop','lsl','brcs','nop','out','nop','out']},
+  {name: 'wire', wave: 'xxxx1....0...........1.........0......1' },
+  {name: 'time', wave: 'xxxx2....2...........2.........2......x', data: ['312.5ns','750ns','625ns','437.5ns'] },
+  {name: 'data', wave: 'xxxx2................2................x', data: ['bit n (0)','bit n (1)']}
 ]}
 */
 
