@@ -2,10 +2,15 @@
 #include "lib/analog/analog.h"
 #include "lib/draw/draw.h"
 #include "lib/timer/timer.h"
+#include "lib/Psx/Psx.h"
+#include "Matrix.h"
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
+
+extern Matrix matrix;
+extern Psx psx;
 
 Life::Life() {
 }
@@ -68,11 +73,13 @@ void Life::run() {
 			reset();
 		}
 		
-//		void psx_read_gamepad();
-//		buttons = psx_buttons();
-//		if (buttons & PSB_TRIANGLE) {
-//			running = 0;
-//		}
+		psx.poll();
+		uint16_t buttons = psx.buttons();
+		if (buttons > 1) {
+			reset();
+			
+			//running = 0;
+		}
 
 		_delay_ms(64);
 	}

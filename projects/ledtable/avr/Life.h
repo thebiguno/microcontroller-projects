@@ -1,7 +1,6 @@
 #ifndef Life_H
 #define Life_H
 
-#include "Matrix.h"
 #include <Module.h>
 #include <stdint.h>
 
@@ -11,7 +10,6 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		Matrix matrix;
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t running = 0;

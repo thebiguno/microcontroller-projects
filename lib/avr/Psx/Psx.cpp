@@ -68,6 +68,10 @@ Psx::Psx(volatile uint8_t *data_port, uint8_t data_pin,
 	sendCommand(exit_config_command, 9);
 }
 
+Psx::~Psx() {
+	
+}
+
 void Psx::sendCommand(uint8_t send_data[], uint8_t size){
 	//Before you submit each command packet, you must set attention low; once
 	// you are done each packet, return it high.  You have to toggle the line before

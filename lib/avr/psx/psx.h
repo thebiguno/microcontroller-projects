@@ -32,10 +32,20 @@ namespace digitalcave {
 		
 	public:
 		/* Connect controller wires as follows:
-			Brown:  Data
-			Blue:   Clock
-			Orange: Command
-			Yellow: Attention
+			Signal
+			1. Brown:  <- Data
+			2. Orange: -> Command
+			6. Yellow: -> /Attention
+			7. Blue:   -> Clock
+			
+			Power
+			4. Black   Ground
+			5. Red:    3v ~ 5v VCC
+
+			N/C
+			3. Grey:   7.2v ~ 9v vibration motor power
+			8. White:  Unused
+			9. Green:  /Acknowlege
 		*/
 		Psx(volatile uint8_t *data_port, uint8_t data_pin,
 			volatile uint8_t *clock_port, uint8_t clock_pin,

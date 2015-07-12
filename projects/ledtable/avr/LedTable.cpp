@@ -5,7 +5,9 @@
 #include "lib/ws281x/ws2812.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
-//#include "Matrix.h"
+
+#include "Matrix.h"
+#include "lib/Psx/Psx.h"
 
 #include "Life.h"
 /*
@@ -18,6 +20,9 @@
 */
 
 using namespace digitalcave;
+
+Matrix matrix = Matrix();
+Psx psx = Psx(&PORTF, 7, &PORTF, 5, &PORTF, 6, &PORTF, 4);
 
 int main() {
 	srandom(0);
