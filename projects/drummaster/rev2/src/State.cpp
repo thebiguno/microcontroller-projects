@@ -45,7 +45,7 @@ void State::poll(){
 		uint8_t row = 1;
 		uint8_t col = 0;
 		while (!SerialFlash.ready()) {
-			if (millis() - last_millis > 5000) {
+			if (millis() - last_millis > 2000) {
 				last_millis = millis();
 				char_display.write_text(row, col, '.');
 				col++;
@@ -106,10 +106,9 @@ void State::poll(){
 			f.close();
 		}
 		rootdir.close();
-
 	}
 	else {
-		snprintf(buf, sizeof(buf), "%d																	", (uint8_t) this->get_state());
+		snprintf(buf, sizeof(buf), "State %d                   ", (uint8_t) this->get_state());
 		char_display.write_text(0, 0, buf, sizeof(buf));
 	}
 	

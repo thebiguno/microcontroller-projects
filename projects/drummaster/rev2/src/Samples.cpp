@@ -102,7 +102,8 @@ void Samples::play(uint8_t channel, uint8_t value){
 	
 	uint8_t c = this->findAvailableSample();
 	this->mixers[c >> 2].gain(c & 0x03, volume / 2);
-	this->samples[c].play("00.RAW");
+	SerialFlashFile ff = SerialFlash.open("00.RAW");		//TODO Change to be dynamic, and possibly cache file address in a hash map by file name
+	this->samples[c].play(ff.getFlashAddress());
 	
 	this->sampleToChannelMap[c] = channel;
 	this->channelToSampleMap[channel] = c;

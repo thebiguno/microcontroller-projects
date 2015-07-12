@@ -2,6 +2,8 @@
 #define SAMPLES_H
 
 #include <Audio.h>
+#include <SerialFlash.h>
+#include <play_serialflash.h>
 
 #define SAMPLE_COUNT				16
 #define CHANNEL_COUNT				11
@@ -18,7 +20,7 @@ namespace digitalcave {
 			// fit properly depending on the SAMPLE_COUNT.  We keep the SAMPLE_COUNT
 			// for self-documenting purposes, but note that it can't really be changed
 			// and expected to work without other code changes to support it.
-			AudioPlaySdRaw samples[SAMPLE_COUNT];
+			AudioPlaySerialFlash samples[SAMPLE_COUNT];
 			AudioMixer4 mixers[SAMPLE_COUNT >> 2];
 			AudioMixer4 masterMixer;
 			AudioOutputI2S output;
