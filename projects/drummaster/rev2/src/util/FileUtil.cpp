@@ -1,13 +1,11 @@
 #include "FileUtil.h"
 
-using namespace digitalcave;
-
-copyFolderToFlash(const char* folderName, CharDisplay display){
+void copyFolderToFlash(const char* folderName, CharDisplay display){
 	char buf[21];
 	if (!SD.begin(CS_SD)) {
-		char_display.clear();
-		char_display.write_text(0, 0, "SD Error", 8);
-		char_display.refresh();
+		display.clear();
+		display.write_text(0, 0, "SD Error", 8);
+		display.refresh();
 		delay(1000);
 		return;
 	}
@@ -16,10 +14,10 @@ copyFolderToFlash(const char* folderName, CharDisplay display){
 	SerialFlash.readID(id);
 	uint32_t size = SerialFlash.capacity(id);
 	
-	char_display.clear();
+	display.clear();
 	snprintf(buf, sizeof(buf), "Erasing %dMB...       ", (uint16_t) (size >> 20));
-	char_display.write_text(0, 0, buf, sizeof(buf));
-	char_display.refresh();
+	display.write_text(0, 0, buf, sizeof(buf));
+	display.refresh();
 	
 	SerialFlash.eraseAll();
 	
@@ -30,20 +28,20 @@ copyFolderToFlash(const char* folderName, CharDisplay display){
 	while (!SerialFlash.ready()) {
 		if (millis() - last_millis > 2000) {
 			last_millis = millis();
-			char_display.write_text(row, col, '.');
+			display.write_text(row, col, '.');
 			col++;
 			if (col >= DISPLAY_COLS){
 				col = 0;
 				row++;
 			}
-			char_display.refresh();
+			display.refresh();
 		}
 	}
 
-	char_display.clear();
+	display.clear();
 	snprintf(buf, sizeof(buf), "Copy SD...                 ");
-	char_display.write_text(0, 0, buf, sizeof(buf));
-	char_display.refresh();
+	display.write_text(0, 0, buf, sizeof(buf));
+	display.refresh();
 	
 	File folder = SD.open(folderName);
 	while (1) {
@@ -53,8 +51,8 @@ copyFolderToFlash(const char* folderName, CharDisplay display){
 		const char *filename = f.name();
 		uint32_t length = f.size();
 		snprintf(buf, sizeof(buf), "%s                       ", filename);
-		char_display.write_text(1, 0, buf, sizeof(buf));
-		char_display.refresh();
+		display.write_text(1, 0, buf, sizeof(buf));
+		display.refresh();
 		
 		// Create the file on the Flash chip and copy data
 		if (SerialFlash.create(filename, length)) {
@@ -72,22 +70,22 @@ copyFolderToFlash(const char* folderName, CharDisplay display){
 				ff.close();
 			} 
 			else {
-				char_display.clear();
-				char_display.write_text(0, 0, "Flash Error Open", 17);
-				char_display.refresh();
+				display.clear();
+				display.write_text(0, 0, "Flash Error Open", 17);
+				display.refresh();
 				delay(1000);
 				return;
 			}
 		}
 		else {
-			char_display.clear();
-			char_display.write_text(0, 0, "Flash Error Create", 18);
-			char_display.refresh();
+			display.clear();
+			display.write_text(0, 0, "Flash Error Create", 18);
+			display.refresh();
 			delay(1000);
 			return;
 		}
 		f.close();
 	}
 	folder.close();
-	char_display.clear();
+	display.clear();
 }

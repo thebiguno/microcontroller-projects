@@ -1,7 +1,12 @@
 #ifndef FILEUTIL_H
 #define FILEUTIL_H
 
+
 #include <CharDisplay.h>
+
+#include "../State.h"
+
+using namespace digitalcave;
 
 /*
  * Copy all files in the named directory to the root of the flash device.  Used to copy 
@@ -10,6 +15,6 @@
  * 
  * Note: this function erases the flash before copying.
  */
-copyFolderToFlash(const char* folderName, CharDisplay display);
+void copyFolderToFlash(const char* folderName, CharDisplay display);
 
 #endif
