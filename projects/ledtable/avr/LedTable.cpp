@@ -38,6 +38,30 @@ int main() {
 	
 	matrix.setFont(font_3x5, codepage_ascii_caps, 3, 5);
 	
+	
+	matrix.setColor(64,64,64);
+	matrix.rectangle(3,3,8,8, DRAW_FILLED);
+	matrix.setColor(0,0,0);
+	matrix.rectangle(5,5,6,6, DRAW_FILLED);
+	matrix.setColor(192,192,192);
+	matrix.rectange(0,0,2,2, DRAW_FILLED);
+	matrix.rectange(9,0,11,2, DRAW_FILLED);
+	matrix.rectange(0,9,2,11, DRAW_FILLED);
+	matrix.rectange(9,9,11,11, DRAW_FILLED);
+	matrix.setColor(255,255,255);
+	matrix.setPixel(0,0);
+	matrix.setPixel(0,11);
+	matrix.setPixel(11,0);
+	matrix.setPixel(11,11);
+	matrix.setColor(128,255,128);
+	matrix.line(3,0,4,0);
+	matrix.setColor(192,255,128);
+	matrix.line(5,0,6,0);
+	matrix.setColor(255,255,128);
+	matrix.line(7,0,8,0);
+
+	
+	
 	while (1) {
 		psx.poll();
 		buttons = psx.buttons();
