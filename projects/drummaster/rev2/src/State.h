@@ -10,6 +10,8 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
+#include "util/FileUtil.h"
+
 #define PIN_RS							16
 #define PIN_E							17
 #define PIN_D4							0
@@ -33,7 +35,16 @@
 //We use a FSM to move between different modes.  Each mode will have differences in display
 // and user interface.  The modes are listed below, along with comments describing what is
 // happening and how to move to different states.
-//TODO
+
+//Default mode.  Switch between different menu options.
+#define STATE_MENU						0
+
+//Change master volume.
+#define STATE_VOLUME					1
+
+//Search folders mode.  Turning the encoder will scroll through all directories immediately below
+// the root folder on the SD card.
+#define STATE_SCAN_FOLDERS				2
 
 namespace digitalcave {
 

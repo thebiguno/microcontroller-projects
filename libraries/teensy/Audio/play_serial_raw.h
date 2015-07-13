@@ -1,5 +1,6 @@
 /* Audio Library for Teensy 3.X
  * Copyright (c) 2014, Paul Stoffregen, paul@pjrc.com
+ * Modified to use SerialFlash instead of SD library by Wyatt Olson <wyatt@digitalcave.ca>
  *
  * Development of this audio library was funded by PJRC.COM, LLC by sales of
  * Teensy and Audio Adaptor boards.  Please support PJRC's efforts to develop

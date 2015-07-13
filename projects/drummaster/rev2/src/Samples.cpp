@@ -97,6 +97,7 @@ void Samples::play(uint8_t channel, uint8_t value){
 	//Check if this channel was recently played.  If it was, check the value; we will increase
 	// the gain for higher values, but will not change it for lower values.
 	if (millis() - this->lastPlayedChannel[channel] < DOUBLE_HIT_THRESHOLD){
+		//TODO Change the sample + volume to match the highest value
 		return;
 	}
 	
