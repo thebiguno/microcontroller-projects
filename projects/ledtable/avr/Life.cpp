@@ -34,13 +34,8 @@ void Life::run() {
 				uint8_t count = getNeighborCount(x, y);
 				uint8_t alive = state[x][y];
 				if (alive) {
-					if (count == 3) {
-						// birth
-						state[x][y] = 0x01;
-					}
-					else if (count == 2 || count == 3) {
-						// staying alive
-						state[x][y] = 0x01;
+					if (count == 2 || count == 3) {
+						// staying alive; do nothing
 					}
 					else {
 						// overpopulation or underpopulation
@@ -48,6 +43,7 @@ void Life::run() {
 					}
 				}
 				else if (count == 3) {
+					// birth
 					state[x][y] = 0x01;
 				}
 			}
