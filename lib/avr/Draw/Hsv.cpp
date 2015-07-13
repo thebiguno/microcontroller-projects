@@ -36,7 +36,6 @@ void Hsv::addHue(int16_t h) {
 }
 
 void Hsv::setSaturation(uint8_t s) {
-	if (s > 100) s = 100;
 	this->s = s;
 }
 uint8_t Hsv::getSaturation() const {
@@ -47,7 +46,6 @@ void Hsv::addSaturation(int8_t s) {
 }
 
 void Hsv::setValue(uint8_t v) {
-	if (v > 100) v = 100;
 	this->v = v;
 }
 uint8_t Hsv::getValue() const {
