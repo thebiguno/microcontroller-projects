@@ -53,11 +53,6 @@ uint8_t readDrum(uint8_t channel){
 }
 
 int main(){
-	//Audio shield SPI setup
-	SPI.setMOSI(7);
-	SPI.setMISO(12);
-	SPI.setSCK(14);
-	
 	//Turn on the audio chip
 	control.enable();
 	control.volume(0.5);
@@ -73,7 +68,16 @@ int main(){
 	//Set up ADC
 	adc.setResolution(8);
 	
+	//Audio shield SD / flash setup
+	SPI.setMOSI(MOSI);
+	SPI.setMISO(MISO);
+	SPI.setSCK(SCK);
 	SerialFlash.begin(CS_FLASH);
+	SD.begin(CS_SD);
+	
+	//Turn on the audio chip
+	control.enable();
+	control.volume(state.get_volume());
 	
 	uint8_t channel = 0;
 	while (1){

@@ -10,6 +10,7 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
+#include "DrumMaster.h"
 #include "util/FileUtil.h"
 
 #define PIN_RS							16
@@ -26,12 +27,6 @@
 #define ENC_A							21
 #define ENC_B							20
 
-#define CS_FLASH						6
-#define CS_SD							10
-
-#define MENU_COUNT						4
-#define ENCODER_STATE_COUNT				(MENU_COUNT * 2)
-
 //We use a FSM to move between different modes.  Each mode will have differences in display
 // and user interface.  The modes are listed below, along with comments describing what is
 // happening and how to move to different states.
@@ -40,21 +35,32 @@
 #define STATE_MENU						0
 
 //Change master volume.
-#define STATE_VOLUME					1
+#define STATE_MAIN_VOLUME				1
+//Change channel volume
+#define STATE_CHANNEL_VOLUME			2
 
 //Search folders mode.  Turning the encoder will scroll through all directories immediately below
 // the root folder on the SD card.
-#define STATE_SCAN_FOLDERS				2
+#define STATE_SCAN_FOLDERS				3
+
+
+#define MENU_MAIN_VOLUME				0
+#define MENU_CHANNEL_VOLUME				1
+#define MENU_LOAD_SAMPLES				2
+
+#define MENU_COUNT						3
 
 namespace digitalcave {
 
 	class State {
 		private:
 			Hd44780_Teensy hd44780;
-			CharDisplay char_display;
+			CharDisplay display;
 			Encoder encoder;
 			Bounce button;
-			uint8_t state = 0;
+			uint8_t state = STATE_MENU;
+			uint8_t menu = MENU_MAIN_VOLUME;
+			float volume = 0.5;		//TODO save last volume to EEPROM
 			
 		public:
 			State();
@@ -62,6 +68,8 @@ namespace digitalcave {
 			void poll();
 			
 			uint8_t get_state();
+			
+			float get_volume();
 	};
 }
 

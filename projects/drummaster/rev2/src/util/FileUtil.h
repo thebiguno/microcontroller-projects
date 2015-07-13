@@ -1,6 +1,7 @@
 #ifndef FILEUTIL_H
 #define FILEUTIL_H
 
+#include <vector>
 
 #include <CharDisplay.h>
 
@@ -16,5 +17,7 @@ using namespace digitalcave;
  * Note: this function erases the flash before copying.
  */
 void copyFolderToFlash(const char* folderName, CharDisplay display);
+
+std::vector<String> getTopLevelFolders();
 
 #endif
