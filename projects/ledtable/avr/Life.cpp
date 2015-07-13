@@ -11,6 +11,7 @@ using namespace digitalcave;
 
 extern Matrix matrix;
 extern Psx psx;
+extern Hsv hsv;
 
 Life::Life() {
 }
@@ -27,7 +28,7 @@ void Life::run() {
 	_delay_ms(255);
 	
 	
-	while (true) {
+	while (running) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 				uint8_t count = getNeighborCount(x, y);
@@ -74,21 +75,21 @@ void Life::run() {
 		}
 		
 		psx.poll();
-		uint16_t buttons = psx.buttons();
+		buttons = psx.buttons();
 		if (buttons & PSB_TRIANGLE) {
-			reset();
-			
-			//running = 0;
-		} else if (buttons & PSB_PAD_LEFT) {
+			running = 0;
+		}
+		else if (buttons & PSB_L1) {
 			hsv.addHue(-30);
-		} else if (buttons & PSB_PAD_RIGHT) {
+		}
+		else if (buttons & PSB_R1) {
 			hsv.addHue(30);
-		} else if (buttons & PSB_PAD_DOWN) {
-			hsv.addValue(-8);
-		} else if (buttons & PSB_PAD_UP) {
-			hsv.addValue(8);
-		} else if (buttons & PSB_CROSS) {
-			hsv = Hsv(300,127,255);
+		}
+		else if (buttons & PSB_L2) {
+			hsv.addSaturation(15);
+		}
+		else if (buttons & PSB_R2) {
+			hsv.addValue(15);
 		}
 
 		_delay_ms(64);
