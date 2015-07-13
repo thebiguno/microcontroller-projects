@@ -3,7 +3,6 @@
 
 #include <Module.h>
 #include <stdint.h>
-#include "lib/draw/Hsv.h"
 
 #define LIFE_HASH_COUNT			20
 #define LIFE_MATCH_COUNT		20
@@ -11,7 +10,6 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		Hsv hsv = Hsv(0, 255, 8);
 		uint8_t state[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t running = 0;

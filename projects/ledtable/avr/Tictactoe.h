@@ -10,6 +10,7 @@ namespace digitalcave {
 	public:
 		Tictactoe();
 		~Tictactoe();
+		void run();
 	};
 }
 
