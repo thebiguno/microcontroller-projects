@@ -10,12 +10,12 @@
 #include "lib/Psx/Psx.h"
 
 #include "Life.h"
+#include "Mood.h"
 #include "Tictactoe.h"
 /*
 #include "Clock.h"
 #include "AltClock.h"
 #include "Tetris.h"
-#include "Mood.h"
 #include "Plasma.h"
 */
 
@@ -43,11 +43,11 @@ int main() {
 		buttons = psx.buttons();
 		if (buttons & PSB_PAD_UP) {
 			selected++;
-			selected %= 2;
+			selected %= 3;
 		}
 		else if (buttons & PSB_PAD_DOWN) {
 			selected--;
-			selected %= 2;
+			selected %= 3;
 		}
 		else if (buttons & PSB_L1) {
 			hsv.addHue(-30);
@@ -56,7 +56,7 @@ int main() {
 			hsv.addHue(30);
 		}
 		else if (buttons & PSB_L2) {
-			hsv.addSaturation(15);
+			hsv.addValue(-15);
 		}
 		else if (buttons & PSB_R2) {
 			hsv.addValue(15);
@@ -65,6 +65,7 @@ int main() {
 			switch (selected) {
 				case 0: { Life life; life.run(); break; }
 				case 1: { Tictactoe ttt; ttt.run(); break; }
+				case 2: { Mood mood; mood.run(); break; }
 /*
 				case 0: { Clock clk; clk.run(); break; }
 				case 1: { AltClock alt; alt.run(); break; }
@@ -83,13 +84,11 @@ int main() {
 		switch (selected) {
 			case 0: matrix.text(0, 3, "LIF", DRAW_ORIENTATION_NORMAL); break;
 			case 1: matrix.text(0, 3, "TET", DRAW_ORIENTATION_NORMAL); break;
+			case 2: matrix.text(0, 3, "MOO", DRAW_ORIENTATION_NORMAL); break;
 /*
 			case 0: draw_text(0, 3, "CLK", DRAW_ORIENTATION_NORMAL); break;
 			case 1: draw_text(0, 3, "ALT", DRAW_ORIENTATION_NORMAL); break;
 			case 2: draw_text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
-			case 3: draw_text(0, 3, "TET", DRAW_ORIENTATION_NORMAL); break;
-			case 4: draw_text(0, 3, "LIF", DRAW_ORIENTATION_NORMAL); break;
-			case 5: draw_text(0, 3, "MOO", DRAW_ORIENTATION_NORMAL); break;
 			case 6: draw_text(0, 3, "PLA", DRAW_ORIENTATION_NORMAL); break;
 */
 		}
