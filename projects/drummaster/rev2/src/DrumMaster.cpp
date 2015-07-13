@@ -72,14 +72,8 @@ int main(){
 	
 	//Set up ADC
 	adc.setResolution(8);
-
-	if (!(SD.begin(10))) {
-		// stop here, but print a message repetitively
-		while (1) {
-			Serial.println("Unable to access the SD card");
-			delay(500);
-		}
-	}
+	
+	SerialFlash.begin(CS_FLASH);
 	
 	uint8_t channel = 0;
 	while (1){

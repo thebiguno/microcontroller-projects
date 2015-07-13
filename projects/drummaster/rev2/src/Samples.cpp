@@ -42,7 +42,7 @@ Samples::Samples():
 uint8_t Samples::findAvailableSample(){
 	uint8_t oldestSample = 0;
 	uint16_t oldestSamplePosition = 0;
-	for (uint8_t i = 0; i < 4; i++){	//TODO Change 4 to SAMPLE_COUNT
+	for (uint8_t i = 0; i < 12; i++){		//TODO
 		if (this->samples[i].isPlaying() == 0){
 			return i;
 		}
@@ -97,12 +97,12 @@ void Samples::play(uint8_t channel, uint8_t value){
 	//Check if this channel was recently played.  If it was, check the value; we will increase
 	// the gain for higher values, but will not change it for lower values.
 	if (millis() - this->lastPlayedChannel[channel] < DOUBLE_HIT_THRESHOLD){
-		
+		return;
 	}
 	
 	uint8_t c = this->findAvailableSample();
 	this->mixers[c >> 2].gain(c & 0x03, volume / 2);
-	this->samples[c].play("00.RAW");
+	this->samples[c].play("RD00.RAW");			//TODO Change to be dynamic
 	
 	this->sampleToChannelMap[c] = channel;
 	this->channelToSampleMap[channel] = c;
