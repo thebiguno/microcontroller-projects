@@ -10,6 +10,8 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
+#include "util/FileUtil.h"
+
 #define PIN_RS							16
 #define PIN_E							17
 #define PIN_D4							0

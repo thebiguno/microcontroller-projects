@@ -3,7 +3,7 @@
 
 #include <Audio.h>
 #include <SerialFlash.h>
-#include <PlaySerialRaw.h>
+#include <play_serial_raw.h>
 
 #define SAMPLE_COUNT				16
 #define CHANNEL_COUNT				11

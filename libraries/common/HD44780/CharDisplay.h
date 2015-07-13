@@ -1,3 +1,6 @@
+#ifndef CHARDISPLAY_H
+#define CHARDISPLAY_H
+
 /*
  * An abstraction to allow simpler access to a display, and avoid all the low level stuff.
  * This class includes a display buffer of the specified size, along with metadata
@@ -80,3 +83,5 @@ namespace digitalcave {
 			void mark_dirty();
 	};
 }
+
+#endif

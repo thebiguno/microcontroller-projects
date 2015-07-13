@@ -25,7 +25,7 @@
  */
 
 #include "PlaySerialRaw.h"
-#include <spi_interrupt.h>
+#include "spi_interrupt.h"
 
 
 void AudioPlaySerialRaw::begin(void)
