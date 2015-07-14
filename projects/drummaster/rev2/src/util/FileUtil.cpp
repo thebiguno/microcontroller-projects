@@ -2,14 +2,7 @@
 
 void copyFolderToFlash(const char* folderName, CharDisplay display){
 	char buf[21];
-// 	if (!SD.begin(CS_SD)) {
-// 		display.write_text(2, 0, "SD Error", 8);
-// 		display.refresh();
-// 		delay(1000);
-// 		display.clear();
-// 		return;
-// 	}
-//	SerialFlash.begin(CS_FLASH);
+
 	uint8_t id[3];
 	SerialFlash.readID(id);
 	uint32_t size = SerialFlash.capacity(id);
@@ -86,12 +79,7 @@ void copyFolderToFlash(const char* folderName, CharDisplay display){
 
 std::vector<String> getTopLevelFolders(){
 	std::vector<String> result;
-//	Serial.println("Cancel");
 	result.push_back(String("<Cancel>"));
-	
-// 	if (!SD.begin(CS_SD)) {
-// 		return result;
-// 	}
 	
 	File rootdir = SD.open("/");
 	while (1){
@@ -99,7 +87,6 @@ std::vector<String> getTopLevelFolders(){
 		if (!f) break;
 		if (f.isDirectory()) {
 			result.push_back(String(f.name()));
-			//Serial.println(f.name());
 		}
 		f.close();
 	}
