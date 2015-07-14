@@ -8,6 +8,7 @@
 
 using namespace digitalcave;
 
+extern Hsv hsv;
 extern Matrix matrix;
 extern Psx psx;
 
@@ -21,16 +22,17 @@ void Mood::run() {
 	uint8_t running = 1;
 	uint16_t buttons;
 	
-	Hsv hsv = Hsv(0,255,127);
+	Hsv c = Hsv(hsv);
 	
+	uint8_t i = 0;
 	while (running > 0) {
-		matrix.rectangle(0,0,11,11,DRAW_FILLED);
-		matrix.flush();
-		
-		_delay_ms(127);
-		
-		hsv.addHue(1);
-		matrix.setColor(Rgb(hsv));
+		if (i++ == 0) {
+			matrix.rectangle(0,0,11,11,DRAW_FILLED);
+			matrix.flush();
+
+			c.addHue(1);
+			matrix.setColor(Rgb(c));
+		}
 		
 		psx.poll();
 		buttons = psx.buttons();

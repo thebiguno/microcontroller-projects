@@ -38,30 +38,6 @@ int main() {
 	
 	matrix.setFont(font_3x5, codepage_ascii_caps, 3, 5);
 	
-	
-	matrix.setColor(64,64,64);
-	matrix.rectangle(3,3,8,8, DRAW_FILLED);
-	matrix.setColor(0,0,0);
-	matrix.rectangle(5,5,6,6, DRAW_FILLED);
-	matrix.setColor(192,192,192);
-	matrix.rectange(0,0,2,2, DRAW_FILLED);
-	matrix.rectange(9,0,11,2, DRAW_FILLED);
-	matrix.rectange(0,9,2,11, DRAW_FILLED);
-	matrix.rectange(9,9,11,11, DRAW_FILLED);
-	matrix.setColor(255,255,255);
-	matrix.setPixel(0,0);
-	matrix.setPixel(0,11);
-	matrix.setPixel(11,0);
-	matrix.setPixel(11,11);
-	matrix.setColor(128,255,128);
-	matrix.line(3,0,4,0);
-	matrix.setColor(192,255,128);
-	matrix.line(5,0,6,0);
-	matrix.setColor(255,255,128);
-	matrix.line(7,0,8,0);
-
-	
-	
 	while (1) {
 		psx.poll();
 		buttons = psx.buttons();
@@ -73,17 +49,63 @@ int main() {
 			selected--;
 			selected %= 3;
 		}
-		else if (buttons & PSB_L1) {
+		else if (buttons & PSB_L3) {
 			hsv.addHue(-30);
 		}
-		else if (buttons & PSB_R1) {
+		else if (buttons & PSB_R3) {
 			hsv.addHue(30);
 		}
 		else if (buttons & PSB_L2) {
-			hsv.addValue(-15);
+			uint8_t v = hsv.getValue();
+			switch (v) {
+				case 0xff: hsv.setValue(0x7f); break;
+				case 0x7f: hsv.setValue(0x3f); break;
+				case 0x3f: hsv.setValue(0x1f); break;
+				case 0x1f: hsv.setValue(0x0f); break;
+				case 0x0f: hsv.setValue(0x07); break;
+				case 0x07: hsv.setValue(0x03); break;
+				case 0x03: hsv.setValue(0x01); break;
+				default: hsv.setValue(0x00);
+			}
 		}
 		else if (buttons & PSB_R2) {
-			hsv.addValue(15);
+			uint8_t v = hsv.getValue();
+			switch (v) {
+				case 0x00: hsv.setValue(0x01); break;
+				case 0x01: hsv.setValue(0x03); break;
+				case 0x03: hsv.setValue(0x07); break;
+				case 0x07: hsv.setValue(0x0f); break;
+				case 0x0f: hsv.setValue(0x1f); break;
+				case 0x1f: hsv.setValue(0x3f); break;
+				case 0x3f: hsv.setValue(0x7f); break;
+				default: hsv.setValue(0xff);
+			}
+		}
+		else if (buttons & PSB_L1) {
+			uint8_t s = hsv.getSaturation();
+			switch (s) {
+				case 0xff: hsv.setSaturation(0xfe); break;
+				case 0xfe: hsv.setSaturation(0xfc); break;
+				case 0xfc: hsv.setSaturation(0xf8); break;
+				case 0xf8: hsv.setSaturation(0xf0); break;
+				case 0xf0: hsv.setSaturation(0xe0); break;
+				case 0xe0: hsv.setSaturation(0xc0); break;
+				case 0xc0: hsv.setSaturation(0x80); break;
+				default: hsv.setSaturation(0x00);
+			}
+		}
+		else if (buttons & PSB_R1) {
+			uint8_t s = hsv.getSaturation();
+			switch (s) {
+				case 0x00: hsv.setSaturation(0x80); break;
+				case 0x80: hsv.setSaturation(0xc0); break;
+				case 0xc0: hsv.setSaturation(0xe0); break;
+				case 0xe0: hsv.setSaturation(0xf0); break;
+				case 0xf0: hsv.setSaturation(0xf8); break;
+				case 0xf8: hsv.setSaturation(0xfc); break;
+				case 0xfc: hsv.setSaturation(0xfe); break;
+				default: hsv.setSaturation(0xff);
+			}
 		}
 		else if (buttons & PSB_CROSS) {
 			switch (selected) {
@@ -107,7 +129,7 @@ int main() {
 		matrix.setColor(Rgb(hsv));
 		switch (selected) {
 			case 0: matrix.text(0, 3, "LIF", DRAW_ORIENTATION_NORMAL); break;
-			case 1: matrix.text(0, 3, "TET", DRAW_ORIENTATION_NORMAL); break;
+			case 1: matrix.text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
 			case 2: matrix.text(0, 3, "MOO", DRAW_ORIENTATION_NORMAL); break;
 /*
 			case 0: draw_text(0, 3, "CLK", DRAW_ORIENTATION_NORMAL); break;
