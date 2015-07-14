@@ -1,6 +1,10 @@
 #include "AltClock.h"
 #include "lib/timer/timer.h"
 
+using namespace digitalcave;
+
+extern Hsv hsv;
+
 AltClock::run() {
 	uint8_t running = 0;
 
@@ -42,29 +46,39 @@ AltClock::run() {
 			d = ms / 13183593;			// 1/65536 day (hex second) ~= 1.32 seconds
 			
 			// 4 horizontal binary bars with each bit as a 3x3 block
-			draw_rectangle(0,0,11,11,DRAW_FILL,color.black,DRAW_REPLACE);
-			if (a & 0x01) draw_rectangle(9,0,11,2,DRAW_FILL,color.red,DRAW_REPLACE);
-			if (a & 0x02) draw_rectangle(6,0,8,2,DRAW_FILL,color.red,DRAW_REPLACE);
-			if (a & 0x04) draw_rectangle(3,0,5,2,DRAW_FILL,color.red,DRAW_REPLACE);
-			if (a & 0x08) draw_rectangle(0,0,2,2,DRAW_FILL,color.red,DRAW_REPLACE);
+			matrix.setColor(0,0,0);
+			matrix.rectangle(0,0,11,11,DRAW_FILL);
 			
-			if (b & 0x01) draw_rectangle(9,3,11,5,DRAW_FILL,color.chartreuse,DRAW_REPLACE);
-			if (b & 0x02) draw_rectangle(6,3,8,5,DRAW_FILL,color.chartreuse,DRAW_REPLACE);
-			if (b & 0x04) draw_rectangle(3,3,5,5,DRAW_FILL,color.chartreuse,DRAW_REPLACE);
-			if (b & 0x08) draw_rectangle(0,3,2,5,DRAW_FILL,color.chartreuse,DRAW_REPLACE);
+			Hsv c = Hsv(hsv);
+			matrix.setColor(Rgb(c));
+			if (a & 0x01) matrix.rectangle(9,0,11,2,DRAW_FILL);
+			if (a & 0x02) matrix.rectangle(6,0,8,2,DRAW_FILL);
+			if (a & 0x04) matrix.rectangle(3,0,5,2,DRAW_FILL);
+			if (a & 0x08) matrix.rectangle(0,0,2,2,DRAW_FILL);
+
+			c.addHue(90);
+			matrix.setColor(Rgb(c));
+			if (b & 0x01) matrix.rectangle(9,3,11,5,DRAW_FILL);
+			if (b & 0x02) matrix.rectangle(6,3,8,5,DRAW_FILL);
+			if (b & 0x04) matrix.rectangle(3,3,5,5,DRAW_FILL);
+			if (b & 0x08) matrix.rectangle(0,3,2,5,DRAW_FILL);
 			
-			if (c & 0x01) draw_rectangle(9,6,11,8,DRAW_FILL,color.cyan,DRAW_REPLACE);
-			if (c & 0x02) draw_rectangle(6,6,8,8,DRAW_FILL,color.cyan,DRAW_REPLACE);
-			if (c & 0x04) draw_rectangle(3,6,5,8,DRAW_FILL,color.cyan,DRAW_REPLACE);
-			if (c & 0x08) draw_rectangle(0,6,2,8,DRAW_FILL,color.cyan,DRAW_REPLACE);
+			c.addHue(90);
+			matrix.setColor(Rgb(c));
+			if (c & 0x01) matrix.rectangle(9,6,11,8,DRAW_FILL);
+			if (c & 0x02) matrix.rectangle(6,6,8,8,DRAW_FILL);
+			if (c & 0x04) matrix.rectangle(3,6,5,8,DRAW_FILL);
+			if (c & 0x08) matrix.rectangle(0,6,2,8,DRAW_FILL);
 			
-			if (d & 0x01) draw_rectangle(9,9,11,11,DRAW_FILL,color.violet,DRAW_REPLACE);
-			if (d & 0x02) draw_rectangle(6,9,8,11,DRAW_FILL,color.violet,DRAW_REPLACE);
-			if (d & 0x04) draw_rectangle(3,9,5,11,DRAW_FILL,color.violet,DRAW_REPLACE);
-			if (d & 0x08) draw_rectangle(0,9,2,11,DRAW_FILL,color.violet,DRAW_REPLACE);
+			c.addHue(90);
+			matrix.setColor(Rgb(c));
+			if (d & 0x01) matrix.rectangle(9,9,11,11,DRAW_FILL);
+			if (d & 0x02) matrix.rectangle(6,9,8,11,DRAW_FILL);
+			if (d & 0x04) matrix.rectangle(3,9,5,11,DRAW_FILL);
+			if (d & 0x08) matrix.rectangle(0,9,2,11,DRAW_FILL);
 		}
 		
-		if (running == 2) {
+		else if (running == 2) {
 			// milliseconds to octal (777.777)
 			a = ms / 10800000;			// 1/8 day = 3 h
 			ms -= 10800000 * (uint32_t) a ;
@@ -80,36 +94,50 @@ AltClock::run() {
 			ms -= 26367187 * (uint32_t) e;
 			ms *= 100;
 			f = ms / 329589843;			// 1/262144 day ~= .329 s
+
+			matrix.setColor(0,0,0);
+			matrix.rectangle(0,0,11,11,DRAW_FILL);
 			
 			// 6 horizontal binary bars with each bit as a 4x2 block
-			draw_rectangle(0,0,11,11,DRAW_FILL,color.black,DRAW_REPLACE);
-			if (a & 0x01) draw_rectangle(8,0,11,1,DRAW_FILL,color.red,DRAW_REPLACE);
-			if (a & 0x02) draw_rectangle(4,0,7,1,DRAW_FILL,color.red,DRAW_REPLACE);
-			if (a & 0x04) draw_rectangle(0,0,3,1,DRAW_FILL,color.red,DRAW_REPLACE);
+			Hsv c = Hsv(hsv);
+			matrix.setColor(Rgb(c));
+			if (a & 0x01) matrix.rectangle(8,0,11,1,DRAW_FILL);
+			if (a & 0x02) matrix.rectangle(4,0,7,1,DRAW_FILL);
+			if (a & 0x04) matrix.rectangle(0,0,3,1,DRAW_FILL);
 			
-			if (b & 0x01) draw_rectangle(8,2,11,3,DRAW_FILL,color.yellow,DRAW_REPLACE);
-			if (b & 0x02) draw_rectangle(4,2,7,3,DRAW_FILL,color.yellow,DRAW_REPLACE);
-			if (b & 0x04) draw_rectangle(0,2,3,3,DRAW_FILL,color.yellow,DRAW_REPLACE);
+			c.addHue(60);
+			matrix.setColor(Rgb(c));
+			if (b & 0x01) matrix.rectangle(8,2,11,3,DRAW_FILL);
+			if (b & 0x02) matrix.drectangle(4,2,7,3,DRAW_FILL);
+			if (b & 0x04) matrix.rectangle(0,2,3,3,DRAW_FILL);
 			
-			if (c & 0x01) draw_rectangle(8,4,11,5,DRAW_FILL,color.green,DRAW_REPLACE);
-			if (c & 0x02) draw_rectangle(4,4,7,5,DRAW_FILL,color.green,DRAW_REPLACE);
-			if (c & 0x04) draw_rectangle(0,4,3,5,DRAW_FILL,color.green,DRAW_REPLACE);
+			c.addHue(60);
+			matrix.setColor(Rgb(c));
+			if (c & 0x01) matrix.rectangle(8,4,11,5,DRAW_FILL);
+			if (c & 0x02) matrix.rectangle(4,4,7,5,DRAW_FILL);
+			if (c & 0x04) matrix.rectangle(0,4,3,5,DRAW_FILL);
 			
-			if (d & 0x01) draw_rectangle(8,6,11,7,DRAW_FILL,color.cyan,DRAW_REPLACE);
-			if (d & 0x02) draw_rectangle(4,6,7,7,DRAW_FILL,color.cyan,DRAW_REPLACE);
-			if (d & 0x04) draw_rectangle(0,6,3,7,DRAW_FILL,color.cyan,DRAW_REPLACE);
+			c.addHue(60);
+			matrix.setColor(Rgb(c));
+			if (d & 0x01) matrix.rectangle(8,6,11,7,DRAW_FILL);
+			if (d & 0x02) matrix.rectangle(4,6,7,7,DRAW_FILL);
+			if (d & 0x04) matrix.rectangle(0,6,3,7,DRAW_FILL;
 
-			if (e & 0x01) draw_rectangle(8,8,11,9,DRAW_FILL,color.blue,DRAW_REPLACE);
-			if (e & 0x02) draw_rectangle(4,8,7,9,DRAW_FILL,color.blue,DRAW_REPLACE);
-			if (e & 0x04) draw_rectangle(0,8,3,9,DRAW_FILL,color.blue,DRAW_REPLACE);
+			c.addHue(60);
+			matrix.setColor(Rgb(c));
+			if (e & 0x01) matrix.rectangle(8,8,11,9,DRAW_FILL);
+			if (e & 0x02) matrix.rectangle(4,8,7,9,DRAW_FILL);
+			if (e & 0x04) matrix.rectangle(0,8,3,9,DRAW_FILL);
 
-			if (f & 0x01) draw_rectangle(8,10,11,11,DRAW_FILL,color.magenta,DRAW_REPLACE);
-			if (f & 0x02) draw_rectangle(4,10,7,11,DRAW_FILL,color.magenta,DRAW_REPLACE);
-			if (f & 0x04) draw_rectangle(0,10,3,11,DRAW_FILL,color.magenta,DRAW_REPLACE);
+			c.addHue(60);
+			matrix.setColor(Rgb(c));
+			if (f & 0x01) matrix.rectangle(8,10,11,11,DRAW_FILL);
+			if (f & 0x02) matrix.rectangle(4,10,7,11,DRAW_FILL);
+			if (f & 0x04) matrix.rectangle(0,10,3,11,DRAW_FILL);
 		}
 		
-		if (running == 3) {
-			//milliseconds to decimal (BBB.BB)
+		else if (running == 3) {
+			//milliseconds to dozenal (BBB.BB)
 			a = ms / 7200000;			// 1/12 day = 2 h (shichen)
 			ms -= 7200000 * (uint32_t) a;
 			b = ms / 600000;			// 1/144 day = 10 m
@@ -128,7 +156,7 @@ AltClock::run() {
 			if (e & 0x01) set_pixel(11,11,color.white);
 		}
 
-		if (running == 4) {
+		else if (running == 4) {
 			//this method was introduced during the French Revolution in 1793
 			//milliseconds to decimal (999.99)
 			a = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
@@ -150,6 +178,43 @@ AltClock::run() {
 		}
 		
 		if (running == 5) {
+			//milliseconds to senary (555.555)
+			a = ms / 14400000;		// 1/6 day = 4 h
+			ms -= 14400000 * (uint32_t) a;
+			b = Math.floor(ms / 2400000);		// 1/36 day = 40 m
+			ms -= 2400000 * (uint32_t) b;
+			ms *= 100;
+			c = Math.floor(ms / 40000000);		// 1/216 day = 6 m 40 s
+			ms -= 40000000 * (uint32_t) c;
+			ms *= 100;
+			d = Math.floor(ms / 666666666);		// 1/1296 day = 66.6 s
+			ms -= 666666666 * (uint32_t) d;
+			e = Math.floor(ms / 111111111);		// 1/7776 day = 11.1 s
+			ms -= 111111111 * (uint32_t) e;
+			ms *= 10;
+			f = Math.floor(ms / 185185185);		// 1/46656 day = 1.85 s
+			ms -= 185185185 * (uint32_t) f;
+			g = Math.floor(ms / 30864197);		// 1/279936 day = 0.308 s
+			
+			matrix.setColor(red);
+			if (a > 0) matrix.rectangle(0,0,(2*a)+1,1);
+			if (b > 0) matrix.rectangle(0,3,(2*b)+1,4)
+			
+			document.getElementById('clock_6').innerHTML = '' + v6[0] + v6[1] + ':' + v6[2] + v6[3] + ':' + v6[4] + v6[5];
+
+
+			a = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
+			ms -= 8640000 * (uint32_t) a;
+			b = ms / 864000;			// 1/100 day (centiday) = 14 m 24 s
+			ms -= 864000 * (uint32_t) b;
+			c = ms / 86400;				// 1/1000 day (milliday; beat) = 1 m 26.4 s (ke)
+			ms -= 86400 * (uint32_t) c;
+			d = ms / 8640;				// 1/10000 day = 8.64 s (decibeat)
+			ms -= 8640 * (uint32_t) d
+			e = ms / 864;				// 1/100000 day (centibeat) / .864 s (fen)
+		}
+		
+		else if (running == 6) {
 			//milliseconds to vigesimal (19.19.19.19)
 			a = ms / 4320000;			// 1/20 day = 1 h 12 m
 			ms -= 4320000 * (uint32_t) a;
@@ -197,7 +262,7 @@ AltClock::run() {
 			if (d > 14) draw_line(7,10,10,10,color.violet,DRAW_REPLACE);
 		}
 	
-		if (running == 6) {
+		if (running == 7) {
 			//milliseconds to d'ni (24:24:24)
 			a = ms / 3456000;			// 1/25 day = 57 m 36 s
 			ms -= 3456000 * (uint32_t) a;

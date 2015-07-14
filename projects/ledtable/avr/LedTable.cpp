@@ -115,10 +115,7 @@ int main() {
 /*
 				case 0: { Clock clk; clk.run(); break; }
 				case 1: { AltClock alt; alt.run(); break; }
-				case 2: { Tictactoe ttt; ttt.run(); break; }
 				case 3: { Tetris tet; tet.run; break; }
-				case 4: { Life lif; lif.run(); break; }
-				case 5: { Mood moo; moo.run(); break; }
 				case 6: { Plasma pla; pla.run(); break; }
 */
 			}
