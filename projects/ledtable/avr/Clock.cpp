@@ -23,15 +23,17 @@ void Clock::run() {
 	mcp79410_time_t time;
 	uint16_t buttons;
 	uint8_t running = 1;
+	uint8_t set = 0;
 
 	while (running) {
-		mcp79410_get(&time);
+		if (!set) mcp79410_get(&time);
 		
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
 		
 		if (running == 1) {
 			// hour and minute hands drawn as lines
+			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
 			uint8_t m = time.minute & 12;
 			
@@ -75,6 +77,7 @@ void Clock::run() {
 		}
 		else if (running == 2) {
 			// hour and minute hands drawn as blocks
+			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
 			uint8_t m = time.minute & 12;
 			
@@ -115,6 +118,7 @@ void Clock::run() {
 		}
 		else if (running == 3) {
 			// BCD
+			// 1 second accuracy
 			uint8_t one = time.hour;
 			uint8_t ten = 0;
 			while (one > 10) { 
@@ -167,24 +171,76 @@ void Clock::run() {
 		}
 		else if (running == 4) {
 			// one pixel for every hour, minute, second
+			uint8_t h = time.hour;
+			uint8_t m = time.minute;
+			uint8_t s = time.second;
 			
+			uint8_t x = h / 12;
+			uint8_t y = h % 12;
+			
+			Hsv c = Hsv(hsv);
+			matrix.setColor(Rgb(c));
+			matrix.setPixel(x,y);
+			
+			x = (m / 12) + 2;
+			y = m % 12;
+			
+			c.addHue(120);
+			matrix.setColor(Rgb(c));
+			matrix.setPixel(x,y);
+			
+			x = (s / 12) + 7;
+			y = s % 12;
+			
+			c.addHue(120);
+			matrix.setColor(Rgb(c));
+			matrix.setPixel(x,y);
 		}
 
 		matrix.flush();
 		
 		psx.poll();
 		buttons = psx.buttons();
-		if (buttons & PSB_PAD_UP || buttons & PSB_PAD_LEFT) {
-			if (running == 0) running = 5;
-			else running -= 1;
+		if (set) {
+			if (buttons & PSB_PAD_UP) {
+				time.hour++;
+				time.hour %= 24;
+			}
+			else if (buttons & PSB_PAD_DOWN) {
+				time.hour--;
+				time.hour %= 24;
+			}
+			else if (buttons & PSB_LEFT) {
+				time.minute++;
+				time.minute %= 60;
+			}
+			else if (buttons & PSB_PAD_RIGHT) {
+				time.minute--;
+				time.minute %= 60;
+			}
+			else if (buttons & PSB_SELECT) {
+				time.second = 0;-
+				mcp79410_set(&time);
+				set = 0;
+			}
 		}
-		else if (buttons & PSB_PAD_DOWN || buttons & PSB_PAD_RIGHT) {
-			running += 1;
+		else {
+			if (buttons & PSB_PAD_UP || buttons & PSB_PAD_LEFT) {
+				if (running == 0) running = 5;
+				else running -= 1;
+			}
+			else if (buttons & PSB_PAD_DOWN || buttons & PSB_PAD_RIGHT) {
+				running += 1;
+			}
+			else if (buttons & PSB_SELECT) {
+				running = 4;
+				set = 1;
+			}
+			running %= 5;
+
+			if (buttons & PSB_TRIANGLE) running = 0;
 		}
-		running %= 5;
-
-		if (buttons & PSB_TRIANGLE) running = 0;
-
+		
 		_delay_ms(100);
 	}
 }
