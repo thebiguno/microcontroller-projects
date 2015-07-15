@@ -5,6 +5,7 @@
 #include "lib/ws281x/ws2812.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
+#include "lib/twi/twi.h"
 
 #include "Matrix.h"
 #include "lib/Psx/Psx.h"
@@ -12,8 +13,8 @@
 #include "Life.h"
 #include "Mood.h"
 #include "Tictactoe.h"
-/*
 #include "Clock.h"
+/*
 #include "AltClock.h"
 #include "Tetris.h"
 #include "Plasma.h"
@@ -26,6 +27,7 @@ Psx psx = Psx(&PORTF, 7, &PORTF, 5, &PORTF, 6, &PORTF, 4);
 Hsv hsv = Hsv(0,255,30);
 
 int main() {
+	twi_init();
 	srandom(0);
 
 	//timer_init();
@@ -43,11 +45,15 @@ int main() {
 		buttons = psx.buttons();
 		if (buttons & PSB_PAD_UP) {
 			selected++;
-			selected %= 3;
+			selected %= 4;
 		}
 		else if (buttons & PSB_PAD_DOWN) {
-			selected--;
-			selected %= 3;
+			if (selected == 0) {
+				selected = 3;
+			} else {
+				selected--;
+				selected %= 4;
+			}
 		}
 		else if (buttons & PSB_L3) {
 			hsv.addHue(-30);
@@ -112,8 +118,8 @@ int main() {
 				case 0: { Life life; life.run(); break; }
 				case 1: { Tictactoe ttt; ttt.run(); break; }
 				case 2: { Mood mood; mood.run(); break; }
+				case 3: { Clock clk; clk.run(); break; }
 /*
-				case 0: { Clock clk; clk.run(); break; }
 				case 1: { AltClock alt; alt.run(); break; }
 				case 3: { Tetris tet; tet.run; break; }
 				case 6: { Plasma pla; pla.run(); break; }
@@ -128,8 +134,8 @@ int main() {
 			case 0: matrix.text(0, 3, "LIF", DRAW_ORIENTATION_NORMAL); break;
 			case 1: matrix.text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
 			case 2: matrix.text(0, 3, "MOO", DRAW_ORIENTATION_NORMAL); break;
+			case 3: matrix.text(0, 3, "CLK", DRAW_ORIENTATION_NORMAL); break;
 /*
-			case 0: draw_text(0, 3, "CLK", DRAW_ORIENTATION_NORMAL); break;
 			case 1: draw_text(0, 3, "ALT", DRAW_ORIENTATION_NORMAL); break;
 			case 2: draw_text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
 			case 6: draw_text(0, 3, "PLA", DRAW_ORIENTATION_NORMAL); break;
