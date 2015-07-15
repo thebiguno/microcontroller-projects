@@ -210,7 +210,7 @@ void Clock::run() {
 				time.hour--;
 				time.hour %= 24;
 			}
-			else if (buttons & PSB_LEFT) {
+			else if (buttons & PSB_PAD_LEFT) {
 				time.minute++;
 				time.minute %= 60;
 			}
@@ -219,7 +219,7 @@ void Clock::run() {
 				time.minute %= 60;
 			}
 			else if (buttons & PSB_SELECT) {
-				time.second = 0;-
+				time.second = 0;
 				mcp79410_set(&time);
 				set = 0;
 			}
