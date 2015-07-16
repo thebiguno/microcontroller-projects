@@ -11,13 +11,13 @@ void mcp79410_get(struct mcp79410_time_t *time) {
 	twi_read_from(0x6f, data, 7, TWI_STOP);
 	
 	// it's not clear from the datasheet if the unused bits are 0 or undefined
-	time->second = bcd2hex(data[1] & 0x7f);		// bit 7 is the ST flag
-	time->minute = bcd2hex(data[2]);
-	time->hour = bcd2hex(data[3]);
-	time->wday = bcd2hex(data[4] & 0x07);		// bit 5 is OSCRUN, bit 4 is PWRFAIL, bit 3 is VBATEN
-	time->mday = bcd2hex(data[5]);
-	time->month = bcd2hex(data[6] & 0x1f);		// bit 5 is LPYR
-	time->year = 2000 + bcd2hex(data[7]);
+	time->second = bcd2hex(data[0] & 0x7f);		// bit 7 is the ST flag
+	time->minute = bcd2hex(data[1]);
+	time->hour = bcd2hex(data[2]);
+	time->wday = bcd2hex(data[3] & 0x07);		// bit 5 is OSCRUN, bit 4 is PWRFAIL, bit 3 is VBATEN
+	time->mday = bcd2hex(data[4]);
+	time->month = bcd2hex(data[5] & 0x1f);		// bit 5 is LPYR
+	time->year = 2000 + bcd2hex(data[6]);
 }
 
 void mcp79410_set(struct mcp79410_time_t *time) {

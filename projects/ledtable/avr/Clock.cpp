@@ -35,12 +35,12 @@ void Clock::run() {
 			// hour and minute hands drawn as lines
 			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute & 12;
+			uint8_t m = time.minute % 12;
 			
 			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
 			matrix.setPixel(5, 0);
 			matrix.setPixel(0, 5);
-			matrix.setPixel(10, 0);
+			matrix.setPixel(10, 5);
 			matrix.setPixel(5, 10);
 			
 			Hsv c = Hsv(hsv);
@@ -79,7 +79,7 @@ void Clock::run() {
 			// hour and minute hands drawn as blocks
 			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute & 12;
+			uint8_t m = time.minute % 12;
 			
 			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
 			matrix.rectangle(2, 2, 9, 9, DRAW_UNFILLED);
@@ -133,7 +133,7 @@ void Clock::run() {
 			if (one & 0x01) matrix.rectangle(9,2,11,3,DRAW_FILLED);
 			if (one & 0x02) matrix.rectangle(6,2,8,3,DRAW_FILLED);
 			if (one & 0x04) matrix.rectangle(3,2,5,3,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,2,3,3,DRAW_FILLED);
+			if (one & 0x08) matrix.rectangle(0,2,2,3,DRAW_FILLED);
 
 			c.addHue(120);
 			matrix.setColor(Rgb(c));
@@ -150,7 +150,7 @@ void Clock::run() {
 			if (one & 0x01) matrix.rectangle(9,6,11,7,DRAW_FILLED);
 			if (one & 0x02) matrix.rectangle(6,6,8,7,DRAW_FILLED);
 			if (one & 0x04) matrix.rectangle(3,6,5,7,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,6,3,7,DRAW_FILLED);
+			if (one & 0x08) matrix.rectangle(0,6,2,7,DRAW_FILLED);
 
 			c.addHue(120);
 			matrix.setColor(Rgb(c));
@@ -167,7 +167,7 @@ void Clock::run() {
 			if (one & 0x01) matrix.rectangle(9,10,11,11,DRAW_FILLED);
 			if (one & 0x02) matrix.rectangle(6,10,8,11,DRAW_FILLED);
 			if (one & 0x04) matrix.rectangle(3,10,5,11,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,10,3,11,DRAW_FILLED);
+			if (one & 0x08) matrix.rectangle(0,10,2,11,DRAW_FILLED);
 		}
 		else if (running == 4) {
 			// one pixel for every hour, minute, second
@@ -175,22 +175,22 @@ void Clock::run() {
 			uint8_t m = time.minute;
 			uint8_t s = time.second;
 			
-			uint8_t x = h / 12;
-			uint8_t y = h % 12;
+			uint8_t y = h / 12;
+			uint8_t x = h % 12;
 			
 			Hsv c = Hsv(hsv);
 			matrix.setColor(Rgb(c));
 			matrix.setPixel(x,y);
 			
-			x = (m / 12) + 2;
-			y = m % 12;
+			y = (m / 12) + 2;
+			x = m % 12;
 			
 			c.addHue(120);
 			matrix.setColor(Rgb(c));
 			matrix.setPixel(x,y);
 			
-			x = (s / 12) + 7;
-			y = s % 12;
+			y = (s / 12) + 7;
+			x = s % 12;
 			
 			c.addHue(120);
 			matrix.setColor(Rgb(c));
@@ -207,7 +207,7 @@ void Clock::run() {
 				time.hour %= 24;
 			}
 			else if (buttons & PSB_PAD_DOWN) {
-				time.hour--;
+				if (time.hour > 0) time.hour--;
 				time.hour %= 24;
 			}
 			else if (buttons & PSB_PAD_LEFT) {
@@ -215,28 +215,30 @@ void Clock::run() {
 				time.minute %= 60;
 			}
 			else if (buttons & PSB_PAD_RIGHT) {
-				time.minute--;
+				if (time.minute > 0) time.minute--;
 				time.minute %= 60;
 			}
 			else if (buttons & PSB_SELECT) {
 				time.second = 0;
 				mcp79410_set(&time);
 				set = 0;
+				running = 1;
 			}
 		}
 		else {
 			if (buttons & PSB_PAD_UP || buttons & PSB_PAD_LEFT) {
-				if (running == 0) running = 5;
-				else running -= 1;
+				running--;
+				if (running == 0) running = 4;
 			}
 			else if (buttons & PSB_PAD_DOWN || buttons & PSB_PAD_RIGHT) {
-				running += 1;
+				running++;
+				running %= 5;
+				if (running == 0) running = 1;
 			}
 			else if (buttons & PSB_SELECT) {
 				running = 4;
 				set = 1;
 			}
-			running %= 5;
 
 			if (buttons & PSB_TRIANGLE) running = 0;
 		}
