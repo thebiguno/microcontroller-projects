@@ -7,17 +7,17 @@ void mcp79410_get(struct mcp79410_time_t *time) {
 	// seconds, minutes, hours, dow, date, month, year
 	uint8_t data[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	
-	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
-	twi_read_from(0xde, data, 7, TWI_STOP);
+	twi_write_to(0x6f, data, 1, TWI_BLOCK, TWI_NO_STOP);
+	twi_read_from(0x6f, data, 7, TWI_STOP);
 	
 	// it's not clear from the datasheet if the unused bits are 0 or undefined
-	time->second = bcd2hex(data[1] & 0x7f);		// bit 7 is the ST flag
-	time->minute = bcd2hex(data[2]);
-	time->hour = bcd2hex(data[3]);
-	time->wday = bcd2hex(data[4] & 0x07);		// bit 5 is OSCRUN, bit 4 is PWRFAIL, bit 3 is VBATEN
-	time->mday = bcd2hex(data[5]);
-	time->month = bcd2hex(data[6] & 0x1f);		// bit 5 is LPYR
-	time->year = 2000 + bcd2hex(data[7]);
+	time->second = bcd2hex(data[0] & 0x7f);		// bit 7 is the ST flag
+	time->minute = bcd2hex(data[1]);
+	time->hour = bcd2hex(data[2]);
+	time->wday = bcd2hex(data[3] & 0x07);		// bit 5 is OSCRUN, bit 4 is PWRFAIL, bit 3 is VBATEN
+	time->mday = bcd2hex(data[4]);
+	time->month = bcd2hex(data[5] & 0x1f);		// bit 5 is LPYR
+	time->year = 2000 + bcd2hex(data[6]);
 }
 
 void mcp79410_set(struct mcp79410_time_t *time) {
@@ -27,13 +27,13 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 	// disable the crystal input (ST = 0)
 	data[0] = 0x00;								// seconds register
 	data[1] = 0x00;								// ST = 0
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 
 	// wait for the oscilator to stop (OSCRUN == 0)
 	data[0] = 0x03;
 	data[1] = 0x20;
 	while (data[1] & 0x20) {
-		twi_read_from(0xde, data, 2, TWI_STOP);
+		twi_read_from(0x6f, data, 2, TWI_STOP);
 	}
 	
 	// set the time fields
@@ -44,17 +44,17 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 	data[4] = hex2bcd(time->mday),
 	data[5] = hex2bcd(time->month),				// bit 5 is LPYR
 	data[6] = hex2bcd(time->year - 2000);
-	twi_write_to(0xde, data, 7, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 7, TWI_BLOCK, TWI_STOP);
 	
 	// set the seconds field and enable the crystal input (ST = 1)
 	data[0] = 0x00;								// seconds register
 	data[1] = hex2bcd(time->second) | 0x80;
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 }
 
 inline void mcp79410_control(uint8_t control) {
 	uint8_t data[2] = { 0x07, control };
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 }
 
 void mcp79410_set_mfp_low() {
@@ -79,18 +79,18 @@ void mcp79410_set_mfp_32khz() {
 uint8_t mcp79410_read_sram(uint8_t offset) {
 	uint8_t data[1];
 	data[0] = 0x20 + offset;
-	twi_write_to(0xde, data, 1, TWI_BLOCK, TWI_NO_STOP);
-	twi_read_from(0xde, data, 1, TWI_STOP);
+	twi_write_to(0x6f, data, 1, TWI_BLOCK, TWI_NO_STOP);
+	twi_read_from(0x6f, data, 1, TWI_STOP);
 	return data[0];
 }
 
 void mcp79410_write_sram(uint8_t b, uint8_t offset) {
 	uint8_t data[2] = { 0, b };
 	data[0] = 0x20 + offset;
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 }
 
 void mcp79410_set_trim(uint8_t trim) {
 	uint8_t data[2] = { 0x09, trim };
-	twi_write_to(0xde, data, 2, TWI_BLOCK, TWI_STOP);
+	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 }	
