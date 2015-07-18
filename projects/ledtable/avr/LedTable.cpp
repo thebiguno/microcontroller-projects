@@ -24,7 +24,7 @@ using namespace digitalcave;
 
 Matrix matrix = Matrix();
 Psx psx = Psx(&PORTF, 7, &PORTF, 5, &PORTF, 6, &PORTF, 4);
-Hsv hsv = Hsv(0,255,30);
+Hsv hsv = Hsv(0,0xff,0x0f);
 
 int main() {
 	twi_init();

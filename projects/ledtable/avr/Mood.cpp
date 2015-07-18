@@ -23,6 +23,8 @@ void Mood::run() {
 	uint16_t buttons;
 	
 	Hsv c = Hsv(hsv);
+	// at values lower than this the color mixing doesn't work well
+	if (c.getValue() < 0x0f) c.setValue(0x0f);
 	
 	uint8_t i = 0;
 	while (running > 0) {
