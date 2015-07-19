@@ -56,15 +56,15 @@ void Animated::run() {
 		if (running == 1) {
 			h.setHue(30);
 			matrix.setColor(Rgb(h));
-			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_90,&sprites[(state & 0x04) ? 8 : 0]);
+			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_0,&sprites[(state & 0x04) ? 8 : 0]);
 		} else if (running == 2) {
 			h.setHue(0);
 			matrix.setColor(Rgb(h));
-			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_180,&sprites[(state & 0x04) ? 24 : 16]);
+			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_0,&sprites[(state & 0x04) ? 24 : 16]);
 		} else if (running == 3) {
 			h.setHue(240);
 			matrix.setColor(Rgb(h));
-			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_270,&sprites[(state & 0x04) ? 40 : 32]);
+			matrix.bitmap(2,2,8,8,DRAW_ORIENTATION_0,&sprites[(state & 0x04) ? 40 : 32]);
 		} else if (running == 4) {
 			h.setHue(300);
 			matrix.setColor(Rgb(h));
