@@ -70,17 +70,65 @@ void Tictactoe::run() {
 
 		psx.poll();
 		buttons = psx.buttons();
-		if (buttons & PSB_PAD_UP || buttons & PSB_PAD_LEFT) {
+		if (buttons & PSB_PAD_LEFT) {
 			do {
-				selection--;
-				selection %= 9;
+				switch (selection) {
+					case 0: selection = 2; break;
+					case 1: selection = 0; break;
+					case 2: selection = 1; break;
+					case 3: selection = 5; break;
+					case 4: selection = 3; break;
+					case 5: selection = 4; break;
+					case 6: selection = 8; break;
+					case 7: selection = 6; break;
+					default: selection = 7; break;
+				}
 			} while (state[selection] != 0);
 		}
-		else if (buttons & PSB_PAD_DOWN || buttons & PSB_PAD_RIGHT) {
+		else if (buttons & PSB_PAD_RIGHT) {
 			do {
-				selection++;
-				selection %= 9;
+				switch (selection) {
+					case 0: selection = 1; break;
+					case 1: selection = 2; break;
+					case 2: selection = 0; break;
+					case 3: selection = 4; break;
+					case 4: selection = 5; break;
+					case 5: selection = 3; break;
+					case 6: selection = 7; break;
+					case 7: selection = 8; break;
+					default: selection = 6; break;
+				}
 			} while (state[selection] != 0);
+		}
+		else if (buttons & PSB_PAD_DOWN) {
+			do {
+				switch (selection) {
+					case 0: selection = 3; break;
+					case 1: selection = 4; break;
+					case 2: selection = 5; break;
+					case 3: selection = 6; break;
+					case 4: selection = 7; break;
+					case 5: selection = 8; break;
+					case 6: selection = 0; break;
+					case 7: selection = 1; break;
+					default: selection = 2; break;
+				}
+			} while (state[selection] != 0);
+		}
+		else if (buttons & PSB_PAD_UP) {
+			do {
+				switch (selection) {
+					case 0: selection = 6; break;
+					case 1: selection = 7; break;
+					case 2: selection = 8; break;
+					case 3: selection = 1; break;
+					case 4: selection = 2; break;
+					case 5: selection = 3; break;
+					case 6: selection = 3; break;
+					case 7: selection = 4; break;
+					default: selection = 5; break;
+				}
+			} while (state[selection != 0]);
 		}
 		else if (buttons & PSB_CROSS) {
 			// set the state to the current player and change players
