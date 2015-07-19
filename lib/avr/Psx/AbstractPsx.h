@@ -33,14 +33,19 @@ namespace digitalcave {
 	private:
 		uint8_t data[21];
 
+		uint16_t buttons_state;
+		uint16_t buttons_changed;
+		
 		virtual void sendCommand(uint8_t send_data[], uint8_t size);
 		
 	public:
 		/* Reads the gamepad.  Call this whenever you want updated state. */
 		void poll();
 		
-		/* Gets a bitmask of all buttons.  The bit is set if the button is down and unset if the button is released. */
+		/* Gets a bitmask of all buttons that are pressed. */
 		uint16_t buttons();
+		/* Gets a bitmask of all buttons that have changed state since the last call to buttons. */
+		uint16_t changed();
 		/* Gets the state of one button. */
 		uint8_t button(uint16_t button);
 		/* Gets the value of a stick axis. */
