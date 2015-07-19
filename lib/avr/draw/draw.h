@@ -13,6 +13,11 @@
 //Orientation modes.
 #define DRAW_ORIENTATION_NORMAL	0		//Normal, left to right
 #define DRAW_ORIENTATION_DOWN	1		//Rotated 90 degrees CW
+#define DRAW_ORIENTATION_0		0		//Normal, left to right
+#define DRAW_ORIENTATION_90		1		//Rotated 90 degrees CW
+#define DRAW_ORIENTATION_180	2		//Rotated 180 degrees CW
+#define DRAW_ORIENTATION_270	3		//Rotated 270 degrees CW
+
 //#define DRAW_ORIENTATION_UP		2		//Rotated 90 degrees CCW (i.e. 270 degrees CW)
 
 //Overlay modes.
