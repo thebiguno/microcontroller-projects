@@ -24,6 +24,7 @@ namespace digitalcave {
 			AudioMixer4 mixers[SAMPLE_COUNT >> 2];
 			AudioMixer4 masterMixer;
 			AudioOutputI2S output;
+			AudioInputI2Sslave input;
 			
 			AudioConnection patchCord00;
 			AudioConnection patchCord01;
@@ -48,6 +49,9 @@ namespace digitalcave {
 			AudioConnection patchCord19;
 			AudioConnection patchCord20;
 			AudioConnection patchCord21;
+			
+			AudioConnection patchCord22;
+			AudioConnection patchCord23;
 
 
 			//The index of this array is the sample index;
