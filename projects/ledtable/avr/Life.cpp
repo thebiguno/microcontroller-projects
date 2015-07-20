@@ -75,18 +75,6 @@ void Life::run() {
 		if (buttons & PSB_TRIANGLE) {
 			running = 0;
 		}
-		else if (buttons & PSB_L1) {
-			hsv.addHue(-30);
-		}
-		else if (buttons & PSB_R1) {
-			hsv.addHue(30);
-		}
-		else if (buttons & PSB_L2) {
-			hsv.addSaturation(15);
-		}
-		else if (buttons & PSB_R2) {
-			hsv.addValue(15);
-		}
 
 		_delay_ms(64);
 	}
@@ -136,7 +124,7 @@ void Life::flush() {
 }
 
 void Life::reset() {
-	matrix.setColor(5,5,5);
+	matrix.setColor(Rgb(hsv));
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			matrix.setPixel(x, y);

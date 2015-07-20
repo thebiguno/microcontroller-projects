@@ -11,6 +11,7 @@ namespace digitalcave {
 	public:
 		Clock();
 		~Clock();
+		void run();
 	};
 }
 
