@@ -3,30 +3,24 @@
 using namespace digitalcave;
 
 Samples::Samples():
-	patchCord00(samples[0],  0, mixers[0], 0),
-	patchCord01(samples[1],  0, mixers[0], 1),
-	patchCord02(samples[2],  0, mixers[0], 2),
-	patchCord03(samples[3],  0, mixers[0], 3),
-	patchCord04(samples[4],  0, mixers[1], 0),
-	patchCord05(samples[5],  0, mixers[1], 1),
-	patchCord06(samples[6],  0, mixers[1], 2),
-	patchCord07(samples[7],  0, mixers[1], 3),
-	patchCord08(samples[8],  0, mixers[2], 0),
-	patchCord09(samples[9],  0, mixers[2], 1),
-	patchCord10(samples[10], 0, mixers[2], 2),
-	patchCord11(samples[11], 0, mixers[2], 3),
-	patchCord12(samples[12], 0, mixers[3], 0),
-	patchCord13(samples[13], 0, mixers[3], 1),
-	patchCord14(samples[14], 0, mixers[3], 2),
-	patchCord15(samples[15], 0, mixers[3], 3),
-	patchCord16(mixers[0], 0, masterMixer, 0),
-	patchCord17(mixers[1], 0, masterMixer, 1),
-	patchCord18(mixers[2], 0, masterMixer, 2),
-	patchCord19(mixers[3], 0, masterMixer, 3),
-	patchCord20(masterMixer, 0, output, 0),
-	patchCord21(masterMixer, 0, output, 1),
-	patchCord22(input, 0, masterMixer, 2),
-	patchCord23(input, 1, masterMixer, 3)
+	patchCord00(samples[0],  0, mixer, 0),
+	patchCord01(samples[1],  0, mixer, 1),
+	patchCord02(samples[2],  0, mixer, 2),
+	patchCord03(samples[3],  0, mixer, 3),
+	patchCord04(samples[4],  0, mixer, 4),
+	patchCord05(samples[5],  0, mixer, 5),
+	patchCord06(samples[6],  0, mixer, 6),
+	patchCord07(samples[7],  0, mixer, 7),
+	patchCord08(samples[8],  0, mixer, 8),
+	patchCord09(samples[9],  0, mixer, 9),
+	patchCord10(samples[10], 0, mixer, 10),
+	patchCord11(samples[11], 0, mixer, 11),
+	
+	patchCord12(input, 0, mixer, 12),
+	patchCord13(input, 1, mixer, 13),
+
+	patchCord14(mixer, 0, output, 0),
+	patchCord15(mixer, 0, output, 1)
 {	
 	//Allocate enough memory for audio
 	AudioMemory(16);
@@ -38,13 +32,31 @@ Samples::Samples():
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
 		this->channelToSampleMap[i] = 0xFF;
 	}
+	
+	//Set the gain for the pass through channels
+	this->mixer.gain(12, 0.5);
+	this->mixer.gain(13, 0.5);
+	
+	//Search through the files on flash and see what samples are available
+	SerialFlash.opendir();
+	char filename[64];
+	uint32_t filesize;
+	
+	while (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
+		String drum = String(filename).substring(0, 2);
+		uint8_t velocity = String(filename).charAt(3) - 0x30;
+		char sample = String(filename).charAt(5);
+		
+		if (drum == "DX") {
+			//TODO
+		}
+	}
 }
-
 
 uint8_t Samples::findAvailableSample(){
 	uint8_t oldestSample = 0;
 	uint16_t oldestSamplePosition = 0;
-	for (uint8_t i = 0; i < 12; i++){		//TODO
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){		//TODO
 		if (this->samples[i].isPlaying() == 0){
 			return i;
 		}
@@ -104,7 +116,7 @@ void Samples::play(uint8_t channel, uint8_t value){
 	}
 	
 	uint8_t c = this->findAvailableSample();
-	this->mixers[c >> 2].gain(c & 0x03, volume / 2);
+	this->mixer.gain(c, volume / 2);
 	this->samples[c].play("RD00.RAW");			//TODO Change to be dynamic
 	
 	this->sampleToChannelMap[c] = channel;

@@ -5,24 +5,25 @@ The naming convension for samples is as follows:
 XX_V_N.raw
 
 where:
-	XX is the two letter drum name (e.g. SN for snare, RD for ride, etc)
+	XX is the two letter drum name, as follows:
+		SN = Snare
+		BS = Bass
+		T1 = Tom 1 (High)
+		T2 = Tom 2 (Med)
+		T3 = Tom 3 (Low)
+		DX = Drum X (Extra drum)
+		CR = Crash
+		SP = Splash
+		RD = Ride
+		CX = Cymbal X (Extra cymbal)
+		H1 = HiHat Fully Closed
+		H2 = HiHat Semi Closed
+		H3 = HiHat Half Open
+		H4 = HiHat Semi Open
+		H5 = HiHat Fully Open
+		HC = HiHat Chic
+		HS = Hihat Foot Splash
 	V is the relative velocity (from 0-9, 0 being lowest velocity and 9 being highest)
 	N is the sample number, allowing multiple samples for the same drum + velocity (from a-z); if there are multiple samples, one will be randomly selected.
 	
-The exception to this is the HiHat.  Here, the sample naming is as follows:
-
-HH_XX_V_N.raw
-
-where:
-	HH is always HH (HiHat samples)
-	XX is the type of hit, and is one of:
-		FC - Fully Closed
-		SC - Semi Closed
-		HO - Half Open
-		SO - Semi Open
-		FO - Fully Open
-		SP - Foot Splash
-		CK - Foot Chic
-	V and N are the same as above.
-
 All samples MUST be in mono signed 16 bit PCM RAW format.
