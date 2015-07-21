@@ -24,7 +24,9 @@ Samples::Samples():
 	patchCord18(mixers[2], 0, masterMixer, 2),
 	patchCord19(mixers[3], 0, masterMixer, 3),
 	patchCord20(masterMixer, 0, output, 0),
-	patchCord21(masterMixer, 0, output, 1)
+	patchCord21(masterMixer, 0, output, 1),
+	patchCord22(input, 0, masterMixer, 2),
+	patchCord23(input, 1, masterMixer, 3)
 {	
 	//Allocate enough memory for audio
 	AudioMemory(16);
