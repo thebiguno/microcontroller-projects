@@ -37,9 +37,15 @@ void AbstractPsx::poll() {
 	sendCommand(data, 21);
 }
 
+uint16_t AbstractPsx::changed() {
+	return buttons_changed;
+}
+
 uint16_t AbstractPsx::buttons() {
-	uint16_t buttons = *(uint16_t*)(data + 3); //Get 2 bytes, comprising data positions 3 and 4.
-	return ~buttons;
+	uint16_t read = ~(*(uint16_t*)(data + 3)); //Get 2 bytes, comprising data positions 3 and 4.
+	buttons_changed = buttons_state ^ read;
+	buttons_state = read;
+	return buttons_state;
 }
 
 uint8_t AbstractPsx::button(uint16_t button) {

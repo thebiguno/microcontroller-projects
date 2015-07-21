@@ -1,0 +1,402 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ATMEGA48-A IC1
+U 1 1 55AE71A6
+P 4400 3800
+F 0 "IC1" H 3650 5050 40  0000 L BNN
+F 1 "ATMEGA48-A" H 4850 2400 40  0000 L BNN
+F 2 "TQFP32" H 4400 3800 30  0000 C CIN
+F 3 "" H 4400 3800 60  0000 C CNN
+	1    4400 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U1
+U 1 1 55AEBFD4
+P 10000 2750
+F 0 "U1" H 10000 2800 60  0000 C CNN
+F 1 "74LS08" H 10000 2700 60  0000 C CNN
+F 2 "" H 10000 2750 60  0000 C CNN
+F 3 "" H 10000 2750 60  0000 C CNN
+	1    10000 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U1
+U 2 1 55AEBFF4
+P 10000 3250
+F 0 "U1" H 10000 3300 60  0000 C CNN
+F 1 "74LS08" H 10000 3200 60  0000 C CNN
+F 2 "" H 10000 3250 60  0000 C CNN
+F 3 "" H 10000 3250 60  0000 C CNN
+	2    10000 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U1
+U 3 1 55AEC026
+P 10000 3750
+F 0 "U1" H 10000 3800 60  0000 C CNN
+F 1 "74LS08" H 10000 3700 60  0000 C CNN
+F 2 "" H 10000 3750 60  0000 C CNN
+F 3 "" H 10000 3750 60  0000 C CNN
+	3    10000 3750
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U2
+U 1 1 55AEC094
+P 10000 4250
+F 0 "U2" H 10000 4300 60  0000 C CNN
+F 1 "74LS08" H 10000 4200 60  0000 C CNN
+F 2 "" H 10000 4250 60  0000 C CNN
+F 3 "" H 10000 4250 60  0000 C CNN
+	1    10000 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U2
+U 2 1 55AEC0D2
+P 10000 4750
+F 0 "U2" H 10000 4800 60  0000 C CNN
+F 1 "74LS08" H 10000 4700 60  0000 C CNN
+F 2 "" H 10000 4750 60  0000 C CNN
+F 3 "" H 10000 4750 60  0000 C CNN
+	2    10000 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS08 U2
+U 3 1 55AEC14B
+P 10000 5250
+F 0 "U2" H 10000 5300 60  0000 C CNN
+F 1 "74LS08" H 10000 5200 60  0000 C CNN
+F 2 "" H 10000 5250 60  0000 C CNN
+F 3 "" H 10000 5250 60  0000 C CNN
+	3    10000 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 2650 9200 2650
+Wire Wire Line
+	9200 2650 9200 3650
+Wire Wire Line
+	9200 3150 9400 3150
+Wire Wire Line
+	9200 3650 9400 3650
+Connection ~ 9200 3150
+Wire Wire Line
+	9200 3600 9200 4150
+Wire Wire Line
+	9200 4150 9400 4150
+Connection ~ 9200 3600
+Wire Wire Line
+	9200 4100 9200 5150
+Wire Wire Line
+	9200 4650 9400 4650
+Connection ~ 9200 4100
+Wire Wire Line
+	9200 5150 9400 5150
+Connection ~ 9200 4650
+Text Label 5400 3000 0    60   ~ 0
+MOSI
+Text Label 5400 3100 0    60   ~ 0
+MISO
+Text Label 5400 3200 0    60   ~ 0
+SCLK
+Text Label 5400 2900 0    60   ~ 0
+SSEL
+$Comp
+L Csmall C?
+U 1 1 55AEC310
+P 3300 2700
+F 0 "C?" H 3325 2750 30  0000 L CNN
+F 1 "0.1u" H 3325 2650 30  0000 L CNN
+F 2 "" H 3300 2700 60  0000 C CNN
+F 3 "" H 3300 2700 60  0000 C CNN
+	1    3300 2700
+	0    1    1    0   
+$EndComp
+$Comp
+L Csmall C?
+U 1 1 55AEC36D
+P 3300 2800
+F 0 "C?" H 3325 2850 30  0000 L CNN
+F 1 "0.1u" H 3325 2750 30  0000 L CNN
+F 2 "" H 3300 2800 60  0000 C CNN
+F 3 "" H 3300 2800 60  0000 C CNN
+	1    3300 2800
+	0    1    1    0   
+$EndComp
+$Comp
+L Csmall C?
+U 1 1 55AEC390
+P 3300 3000
+F 0 "C?" H 3325 3050 30  0000 L CNN
+F 1 "0.1u" H 3325 2950 30  0000 L CNN
+F 2 "" H 3300 3000 60  0000 C CNN
+F 3 "" H 3300 3000 60  0000 C CNN
+	1    3300 3000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3500 4800 3500 5100
+Connection ~ 3500 4900
+Wire Wire Line
+	3500 2700 3500 3000
+Connection ~ 3500 2800
+Wire Wire Line
+	3500 2700 3400 2700
+Wire Wire Line
+	3500 2800 3400 2800
+Wire Wire Line
+	3500 3000 3400 3000
+Wire Wire Line
+	3200 2700 3200 3000
+Connection ~ 3200 2800
+Text Label 5400 4800 0    60   ~ 0
+PWM
+Text Label 9200 2650 2    60   ~ 0
+PWM
+Text Label 5400 2700 0    60   ~ 0
+WH_EN
+Text Label 5400 2800 0    60   ~ 0
+WL_EN
+Text Label 9400 2850 2    60   ~ 0
+WH_EN
+Text Label 9400 3350 2    60   ~ 0
+VH_EN
+Text Label 9400 3850 2    60   ~ 0
+UH_EN
+Text Label 9400 4350 2    60   ~ 0
+WL_EN
+Text Label 9400 4850 2    60   ~ 0
+VL_EN
+Text Label 9400 5350 2    60   ~ 0
+UL_EN
+Text Label 5400 3550 0    60   ~ 0
+U_ADC
+Text Label 5400 3650 0    60   ~ 0
+V_ADC
+Text Label 5400 3750 0    60   ~ 0
+W_ADC
+Text Label 5400 3850 0    60   ~ 0
+SHUNT_REF
+Text Label 5400 3950 0    60   ~ 0
+SPEED_REF
+Text Label 5400 4050 0    60   ~ 0
+VCC_REF
+Text Label 5400 4150 0    60   ~ 0
+RESET
+Text Label 5400 4900 0    60   ~ 0
+AIN0
+Text Label 5400 5000 0    60   ~ 0
+AIN1
+Text Label 5400 4300 0    60   ~ 0
+UH_EN
+Text Label 5400 4400 0    60   ~ 0
+UL_EN
+Text Label 5400 4500 0    60   ~ 0
+VH_EN
+Text Label 5400 4600 0    60   ~ 0
+VL_EN
+$Comp
+L GND #PWR?
+U 1 1 55AECAE3
+P 3500 5100
+F 0 "#PWR?" H 3500 4850 60  0001 C CNN
+F 1 "GND" H 3500 4950 60  0000 C CNN
+F 2 "" H 3500 5100 60  0000 C CNN
+F 3 "" H 3500 5100 60  0000 C CNN
+	1    3500 5100
+	1    0    0    -1  
+$EndComp
+Connection ~ 3500 5000
+Text Label 10600 2750 0    60   ~ 0
+WH_PWM
+Text Label 10600 3250 0    60   ~ 0
+VH_PWM
+Text Label 10600 3750 0    60   ~ 0
+UH_PWM
+Text Label 10600 4250 0    60   ~ 0
+WL_PWM
+Text Label 10600 4750 0    60   ~ 0
+VL_PWM
+Text Label 10600 5250 0    60   ~ 0
+UL_PWM
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AECE9B
+P 8300 1100
+F 0 "Q?" H 8600 1150 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 8950 1050 50  0000 R CNN
+F 2 "" H 8500 1200 29  0000 C CNN
+F 3 "" H 8300 1100 60  0000 C CNN
+	1    8300 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AECF1A
+P 9300 1100
+F 0 "Q?" H 9600 1150 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 9950 1050 50  0000 R CNN
+F 2 "" H 9500 1200 29  0000 C CNN
+F 3 "" H 9300 1100 60  0000 C CNN
+	1    9300 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AECF83
+P 8300 1900
+F 0 "Q?" H 8600 1950 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 8950 1850 50  0000 R CNN
+F 2 "" H 8500 2000 29  0000 C CNN
+F 3 "" H 8300 1900 60  0000 C CNN
+	1    8300 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AECF89
+P 9300 1900
+F 0 "Q?" H 9600 1950 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 9950 1850 50  0000 R CNN
+F 2 "" H 9500 2000 29  0000 C CNN
+F 3 "" H 9300 1900 60  0000 C CNN
+	1    9300 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AECFFB
+P 10300 1100
+F 0 "Q?" H 10600 1150 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 10950 1050 50  0000 R CNN
+F 2 "" H 10500 1200 29  0000 C CNN
+F 3 "" H 10300 1100 60  0000 C CNN
+	1    10300 1100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 55AED001
+P 10300 1900
+F 0 "Q?" H 10600 1950 50  0000 R CNN
+F 1 "Q_NMOS_GSD" H 10950 1850 50  0000 R CNN
+F 2 "" H 10500 2000 29  0000 C CNN
+F 3 "" H 10300 1900 60  0000 C CNN
+	1    10300 1900
+	1    0    0    -1  
+$EndComp
+Text Label 8100 1100 2    60   ~ 0
+UH_PWM
+Text Label 8100 1900 2    60   ~ 0
+UL_PWM
+Text Label 9100 1100 2    60   ~ 0
+VH_PWM
+Text Label 9100 1900 2    60   ~ 0
+VL_PWM
+Text Label 10100 1100 2    60   ~ 0
+WH_PWM
+Text Label 10100 1900 2    60   ~ 0
+WL_PWM
+Wire Wire Line
+	8400 1300 8400 1700
+Wire Wire Line
+	9400 1300 9400 1700
+Wire Wire Line
+	10400 1300 10400 1700
+Wire Wire Line
+	8400 1500 8500 1500
+Connection ~ 8400 1500
+Wire Wire Line
+	9400 1500 9500 1500
+Connection ~ 9400 1500
+Wire Wire Line
+	10400 1500 10500 1500
+Connection ~ 10400 1500
+Text Label 8500 1500 0    60   ~ 0
+U
+Text Label 9500 1500 0    60   ~ 0
+V
+Text Label 10500 1500 0    60   ~ 0
+W
+Wire Wire Line
+	8400 2100 10400 2100
+Connection ~ 9400 2100
+Wire Wire Line
+	8400 900  10400 900 
+Connection ~ 9400 900 
+$Comp
+L +BATT #PWR?
+U 1 1 55AED940
+P 9400 800
+F 0 "#PWR?" H 9400 650 60  0001 C CNN
+F 1 "+BATT" H 9400 940 60  0000 C CNN
+F 2 "" H 9400 800 60  0000 C CNN
+F 3 "" H 9400 800 60  0000 C CNN
+	1    9400 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 800  9400 900 
+$Comp
+L GND #PWR?
+U 1 1 55AEDA60
+P 9400 2200
+F 0 "#PWR?" H 9400 1950 60  0001 C CNN
+F 1 "GND" H 9400 2050 60  0000 C CNN
+F 2 "" H 9400 2200 60  0000 C CNN
+F 3 "" H 9400 2200 60  0000 C CNN
+	1    9400 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 2100 9400 2200
+$EndSCHEMATC

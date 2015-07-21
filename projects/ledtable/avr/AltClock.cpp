@@ -21,6 +21,8 @@ AltClock::run() {
 	uint32_t millis = time.hour * 3600000 + time.minute * 60000 + time.seconds * 1000;
 	timer_init();
 	
+	// modes are 16,8,12,6,20,10
+	
 	while (running > 0) {
 		
 		uint32_t ms = millis + timer_millis();
@@ -148,36 +150,78 @@ AltClock::run() {
 			ms -= 4167 * (uint32_t) d;
 			e = ms / 347;				// 1/248832 day ~= .347 s
 			
-			draw_rectangle(0,0,11,11,DRAW_FILL,color.black,DRAW_REPLACE);
-			draw_line(a,0,a,2,color.red,DRAW_REPLACE);
-			draw_line(b,3,b,5,color.chartreuse,DRAW_REPLACE);
-			draw_line(c,6,c,8,color.cyan,DRAW_REPLACE);
-			draw_line(d,9,d,11,color.violet,DRAW_REPLACE);
-			if (e & 0x01) set_pixel(11,11,color.white);
-		}
+			Hsv h = Hsv(hsv);
+			matrix.setColor(Rgb(hsv));
+			if (a == 0) matrix.line(5,0,6,0);
+			else if (a == 1) matrix.line(7,0,8,0);
+			else if (a == 2) matrix.line(11,3,11,4);
+			else if (a == 3) matrix.line(11,5,11,6);
+			else if (a == 4) matrix.line(11,7,11,8);
+			else if (a == 5) matrix.line(7,11,8,11);
+			else if (a == 6) matrix.line(5,11,6,11);
+			else if (a == 7) matrix.line(3,11,4,11);
+			else if (a == 8) matrix.line(0,7,0,8);
+			else if (a == 9) matrix.line(0,5,0,6);
+			else if (a == 10) matrix.line(0,2,0,4);
+			else if (a == 11) matrix.line(3,0,4,0);
 
-		else if (running == 4) {
-			//this method was introduced during the French Revolution in 1793
-			//milliseconds to decimal (999.99)
-			a = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
-			ms -= 8640000 * (uint32_t) a;
-			b = ms / 864000;			// 1/100 day (centiday) = 14 m 24 s
-			ms -= 864000 * (uint32_t) b;
-			c = ms / 86400;				// 1/1000 day (milliday; beat) = 1 m 26.4 s (ke)
-			ms -= 86400 * (uint32_t) c;
-			d = ms / 8640;				// 1/10000 day = 8.64 s (decibeat)
-			ms -= 8640 * (uint32_t) d
-			e = ms / 864;				// 1/100000 day (centibeat) / .864 s (fen)
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (b == 0) matrix.line(5,1,6,1);
+			else if (b == 1) matrix.line(7,1,8,1);
+			else if (b == 2) matrix.line(10,3,10,4);
+			else if (b == 3) matrix.line(10,5,10,6);
+			else if (b == 4) matrix.line(10,7,10,8);
+			else if (b == 5) matrix.line(7,10,8,10);
+			else if (b == 6) matrix.line(5,10,6,10);
+			else if (b == 7) matrix.line(3,10,4,10);
+			else if (b == 8) matrix.line(1,7,1,8);
+			else if (b == 9) matrix.line(1,5,1,6);
+			else if (b == 10) matrix.line(1,2,1,4);
+			else if (b == 11) matrix.line(3,1,4,1);
+			
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (c == 0) matrix.line(5,2,6,2);
+			else if (c == 1) matrix.line(7,2,8,2);
+			else if (c == 2) matrix.line(9,3,9,4);
+			else if (c == 3) matrix.line(9,5,9,6);
+			else if (c == 4) matrix.line(9,7,9,8);
+			else if (c == 5) matrix.line(7,9,8,9);
+			else if (c == 6) matrix.line(5,9,6,9);
+			else if (c == 7) matrix.line(3,9,4,9);
+			else if (c == 8) matrix.line(2,7,2,8);
+			else if (c == 9) matrix.line(2,5,2,6);
+			else if (c == 10) matrix.line(2,2,2,4);
+			else if (c == 11) matrix.line(3,2,4,2);
+			
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (d == 0) matrix.line(5,3,6,3);
+			else if (d == 1) matrix.line(7,3,8,3);
+			else if (d == 2) matrix.line(8,3,8,4);
+			else if (d == 3) matrix.line(8,5,8,6);
+			else if (d == 4) matrix.line(8,7,8,8);
+			else if (d == 5) matrix.line(7,8,8,8);
+			else if (d == 6) matrix.line(5,8,6,8);
+			else if (d == 7) matrix.line(3,8,4,8);
+			else if (d == 8) matrix.line(3,7,3,8);
+			else if (d == 9) matrix.line(3,5,3,6);
+			else if (d == 10) matrix.line(3,2,3,4);
+			else if (d == 11) matrix.line(3,3,4,3);
 
-			draw_rectangle(0,0,11,11,DRAW_FILL,color.black,DRAW_REPLACE);
-			draw_line(a,0,a,2,color.red,DRAW_REPLACE);
-			draw_line(b,3,b,5,color.chartreuse,DRAW_REPLACE);
-			draw_line(c,6,c,8,color.cyan,DRAW_REPLACE);
-			draw_line(d,9,d,11,color.violet,DRAW_REPLACE);
-			if (e & 0x01) set_pixel(11,11,color.white);
+			h.setSaturation(0);
+			matrix.setColor(Rgb(hsv));
+			if (e & 0x01) {
+				matrix.setPixel(5,5);
+				matrix.setPixel(6,6);
+			} else {
+				matrix.setPixel(5,6);
+				matrix.setPixel(6,5);
+			}
 		}
 		
-		if (running == 5) {
+		if (running == 4) {
 			//milliseconds to senary (555.555)
 			a = ms / 14400000;		// 1/6 day = 4 h
 			ms -= 14400000 * (uint32_t) a;
@@ -196,25 +240,72 @@ AltClock::run() {
 			ms -= 185185185 * (uint32_t) f;
 			g = Math.floor(ms / 30864197);		// 1/279936 day = 0.308 s
 			
-			matrix.setColor(red);
-			if (a > 0) matrix.rectangle(0,0,(2*a)+1,1);
-			if (b > 0) matrix.rectangle(0,3,(2*b)+1,4)
+			Hsv h = Hsv(hsv);
+			matrix.setColor(Rgb(hsv));
+			if (a == 0) matrix.line(1,0,10,0);
+			else if (a == 1) matrix.line(11,0,11,5);
+			else if (a == 2) matrix.line(11,6,11,11);
+			else if (a == 3) matrix.line(1,11,10,11);
+			else if (a == 4) matrix.line(0,6,0,11);
+			else if (a == 5) matrix.line(0,0,0,5);
 			
-			document.getElementById('clock_6').innerHTML = '' + v6[0] + v6[1] + ':' + v6[2] + v6[3] + ':' + v6[4] + v6[5];
+			h.addHue(60);
+			matrix.setColor(Rgb(hsv));
+			if (b == 0) matrix.line(2,1,9,1);
+			else if (b == 1) matrix.line(10,1,10,5);
+			else if (b == 2) matrix.line(10,6,10,10);
+			else if (b == 3) matrix.line(2,10,9,10);
+			else if (b == 4) matrix.line(1,6,1,10);
+			else if (b == 5) matrix.line(1,1,1,5);
 
+			h.addHue(60);
+			matrix.setColor(Rgb(hsv));
+			if (c == 0) matrix.line(3,2,8,2);
+			else if (c == 1) matrix.line(9,2,9,5);
+			else if (c == 2) matrix.line(9,6,9,9);
+			else if (c == 3) matrix.line(3,9,8,9);
+			else if (c == 4) matrix.line(2,6,2,9);
+			else if (c == 5) matrix.line(2,2,2,5);
 
-			a = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
-			ms -= 8640000 * (uint32_t) a;
-			b = ms / 864000;			// 1/100 day (centiday) = 14 m 24 s
-			ms -= 864000 * (uint32_t) b;
-			c = ms / 86400;				// 1/1000 day (milliday; beat) = 1 m 26.4 s (ke)
-			ms -= 86400 * (uint32_t) c;
-			d = ms / 8640;				// 1/10000 day = 8.64 s (decibeat)
-			ms -= 8640 * (uint32_t) d
-			e = ms / 864;				// 1/100000 day (centibeat) / .864 s (fen)
+			h.addHue(60);
+			matrix.setColor(Rgb(hsv));
+			if (d == 0) matrix.line(4,3,7,3);
+			else if (d == 1) matrix.line(8,3,8,5);
+			else if (d == 2) matrix.line(8,6,8,8);
+			else if (d == 3) matrix.line(4,8,7,8);
+			else if (d == 4) matrix.line(3,6,3,8);
+			else if (d == 5) matrix.line(3,3,3,5);
+
+			h.addHue(60);
+			matrix.setColor(Rgb(hsv));
+			if (e == 0) matrix.line(5,4,6,5);
+			else if (e == 1) matrix.line(7,4,7,5);
+			else if (e == 2) matrix.line(7,6,7,7);
+			else if (e == 3) matrix.line(5,7,6,7);
+			else if (e == 4) matrix.line(4,6,4,7);
+			else if (e == 5) matrix.line(4,4,4,5);
+
+			h.addHue(60);
+			matrix.setColor(Rgb(hsv));
+			if (f == 0) matrix.line(5,4,6,5);
+			else if (f == 1) matrix.line(7,4,7,5);
+			else if (f == 2) matrix.line(7,6,7,7);
+			else if (f == 3) matrix.line(5,7,6,7);
+			else if (f == 4) matrix.line(4,6,4,7);
+			else if (f == 5) matrix.line(4,4,4,5);
+
+			h.setSaturation(0);
+			matrix.setColor(Rgb(hsv));
+			if (g & 0x01) {
+				matrix.setPixel(5,5);
+				matrix.setPixel(6,6);
+			} else {
+				matrix.setPixel(5,6);
+				matrix.setPixel(6,5);
+			}
 		}
-		
-		else if (running == 6) {
+
+		else if (running == 5) {
 			//milliseconds to vigesimal (19.19.19.19)
 			a = ms / 4320000;			// 1/20 day = 1 h 12 m
 			ms -= 4320000 * (uint32_t) a;
@@ -226,52 +317,118 @@ AltClock::run() {
 			
 			// 4 mayan blocks
 			uint8_t x = a % 5;
-			if (x == 1) set_pixel(1,1,color.red);
-			if (x == 2) set_pixel(2,1,color.red);
-			if (x == 3) set_pixel(3,1,color.red);
-			if (x == 4) set_pixel(4,1,color.red);
-			if (a > 4) draw_line(1,2,4,2,color.red,DRAW_REPLACE);
-			if (a > 9) draw_line(1,3,4,3,color.red,DRAW_REPLACE);
-			if (a > 14) draw_line(1,4,4,4,color.red,DRAW_REPLACE);
+			Hsv h = Hsv(hsv);
+			matrix.setColor(Rgb(hsv));
+			if (x == 1) matrix.setPixel(1,1);
+			if (x == 2) matrix.setPixel(2,1);
+			if (x == 3) matrix.setPixel(3,1);
+			if (x == 4) matrix.setPixel(4,1);
+			if (a > 4) matrix.line(1,2,4,2);
+			if (a > 9) matrix.line(1,3,4,3);
+			if (a > 14) matrix.line(1,4,4,4);
 
 			x = b % 5;
-			if (x == 1) set_pixel(7,1,color.chartreuse);
-			if (x == 2) set_pixel(8,1,color.chartreuse);
-			if (x == 3) set_pixel(9,1,color.chartreuse);
-			if (x == 4) set_pixel(10,1,color.chartreuse);
-			if (b > 4) draw_line(7,2,10,2,color.chartreuse,DRAW_REPLACE);
-			if (b > 9) draw_line(7,3,10,3,color.chartreuse,DRAW_REPLACE);
-			if (b > 14) draw_line(7,4,10,4,color.chartreuse,DRAW_REPLACE);
+			if (x == 1) matrix.setPixel(7,1);
+			if (x == 2) matrix.setPixel(8,1);
+			if (x == 3) matrix.setPixel(9,1);
+			if (x == 4) matrix.setPixel(10,1);
+			if (b > 4) matrix.line(7,2,10,2);
+			if (b > 9) matrix.line(7,3,10,3);
+			if (b > 14) matrix.line(7,4,10,4);
 
 			x = c % 5;
-			if (x == 1) set_pixel(1,7,color.cyan);
-			if (x == 2) set_pixel(2,7,color.cyan);
-			if (x == 3) set_pixel(3,7,color.cyan);
-			if (x == 4) set_pixel(4,7,color.cyan);
-			if (c > 4) draw_line(1,8,4,8,color.cyan,DRAW_REPLACE);
-			if (c > 9) draw_line(1,9,4,9,color.cyan,DRAW_REPLACE);
-			if (c > 14) draw_line(1,10,4,10,color.cyan,DRAW_REPLACE);
+			if (x == 1) matrix.setPixel(1,7);
+			if (x == 2) matrix.setPixel(2,7);
+			if (x == 3) matrix.setPixel(3,7);
+			if (x == 4) matrix.setPixel(4,7);
+			if (c > 4) matrix.line(1,8,4,8);
+			if (c > 9) matrix.line(1,9,4,9);
+			if (c > 14) matrix.line(1,10,4,10);
 
 			x = c % 5;
-			if (x == 1) set_pixel(7,7,color.violet);
-			if (x == 2) set_pixel(8,7,color.violet);
-			if (x == 3) set_pixel(9,7,color.violet);
-			if (x == 4) set_pixel(10,7,color.violet);
-			if (d > 4) draw_line(7,8,10,8,color.violet,DRAW_REPLACE);
-			if (d > 9) draw_line(7,9,10,9,color.violet,DRAW_REPLACE);
-			if (d > 14) draw_line(7,10,10,10,color.violet,DRAW_REPLACE);
+			if (x == 1) matrix.setPixel(7,7);
+			if (x == 2) matrix.setPixel(8,7);
+			if (x == 3) matrix.setPixel(9,7);
+			if (x == 4) matrix.setPixel(10,7);
+			if (d > 4) matrix.line(7,8,10,8);
+			if (d > 9) matrix.line(7,9,10,9);
+			if (d > 14) matrix.line(7,10,10,10);
 		}
-	
-		if (running == 7) {
-			//milliseconds to d'ni (24:24:24)
-			a = ms / 3456000;			// 1/25 day = 57 m 36 s
-			ms -= 3456000 * (uint32_t) a;
-			b = ms / 138240;			// 1/625 day = 2 m 18.24 s
-			ms -= 138240 * (uint32_t) b;
-			ms *= 10;					// bump up the precision
-			c = ms / 55296;				// 1/15625 day ~= 5.5 s
-			ms -= 55296 * (uint32_t) c;
-			d = ms / 2212;				// 1/390625 day ~= .22 s
+		
+		else if (running == 6) {
+			//this method was introduced during the French Revolution in 1793
+			//milliseconds to decimal (999.99)
+			a = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
+			ms -= 8640000 * (uint32_t) a;
+			b = ms / 864000;			// 1/100 day (centiday) = 14 m 24 s
+			ms -= 864000 * (uint32_t) b;
+			c = ms / 86400;				// 1/1000 day (milliday; beat) = 1 m 26.4 s (ke)
+			ms -= 86400 * (uint32_t) c;
+			d = ms / 8640;				// 1/10000 day = 8.64 s (decibeat)
+			ms -= 8640 * (uint32_t) d
+			e = ms / 864;				// 1/100000 day (centibeat) / .864 s (fen)
+
+			Hsv h = Hsv(hsv);
+			matrix.setColor(Rgb(hsv));
+			if (a == 0) matrix.line(5,0,6,0);
+			else if (a == 1) matrix.line(7,0,8,0);
+			else if (a == 2) matrix.line(11,4,11,5);
+			else if (a == 3) matrix.line(11,6,11,7);
+			else if (a == 4) matrix.line(7,11,8,11);
+			else if (a == 5) matrix.line(5,11,6,11);
+			else if (a == 6) matrix.line(3,11,4,11);
+			else if (a == 7) matrix.line(0,6,0,7);
+			else if (a == 8) matrix.line(0,4,0,5);
+			else if (a == 9) matrix.line(3,0,4,0);
+			
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (b == 0) matrix.line(5,1,6,1);
+			else if (b == 1) matrix.line(7,1,8,1);
+			else if (b == 2) matrix.line(10,4,10,5);
+			else if (b == 3) matrix.line(10,6,10,7);
+			else if (b == 4) matrix.line(7,10,8,10);
+			else if (b == 5) matrix.line(5,10,6,10);
+			else if (b == 6) matrix.line(3,10,4,10);
+			else if (b == 7) matrix.line(1,6,1,7);
+			else if (b == 8) matrix.line(1,4,1,5);
+			else if (b == 9) matrix.line(3,1,4,1);
+
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (c == 0) matrix.line(5,2,6,2);
+			else if (c == 1) matrix.line(7,2,8,2);
+			else if (c == 2) matrix.line(9,4,9,5);
+			else if (c == 3) matrix.line(9,6,9,7);
+			else if (c == 4) matrix.line(7,9,8,9);
+			else if (c == 5) matrix.line(5,9,6,9);
+			else if (c == 6) matrix.line(3,9,4,9);
+			else if (c == 7) matrix.line(1,6,1,7);
+			else if (c == 8) matrix.line(1,4,1,5);
+			else if (c == 9) matrix.line(3,1,4,1);
+
+			h.addHue(90);
+			matrix.setColor(Rgb(hsv));
+			if (d == 0) matrix.line(5,3,6,3);
+			else if (d == 1) matrix.line(7,3,8,3);
+			else if (d == 2) matrix.line(8,4,8,5);
+			else if (d == 3) matrix.line(8,6,8,7);
+			else if (d == 4) matrix.line(7,8,8,8);
+			else if (d == 5) matrix.line(5,8,6,8);
+			else if (d == 6) matrix.line(3,8,4,8);
+			else if (d == 7) matrix.line(3,6,3,7);
+			else if (d == 8) matrix.line(3,4,3,5);
+			else if (d == 9) matrix.line(3,3,4,3);
+
+			h.setSaturation(0);
+			matrix.setColor(Rgb(hsv));
+			if (g & 0x01) {
+				matrix.setPixel(5,5);
+				matrix.setPixel(6,6);
+			} else {
+				matrix.setPixel(5,6);
+				matrix.setPixel(6,5);
+			}
 		}
 		
 		void psx_read_gamepad();

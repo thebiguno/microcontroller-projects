@@ -90,6 +90,7 @@ std::vector<String> getTopLevelFolders(){
 		}
 		f.close();
 	}
+	rootdir.close();
 	
 	return result;
 }
