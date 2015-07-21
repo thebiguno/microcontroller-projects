@@ -6,8 +6,8 @@ XX_V_N.raw
 
 where:
 	XX is the two letter drum name (e.g. SN for snare, RD for ride, etc)
-	V is the relative velocity (from 9 to 0)
-	N is the sample number (allowing multiple samples for the same drum + velocity); if there are multiple samples, one will be randomly selected.
+	V is the relative velocity (from 0-9, 0 being lowest velocity and 9 being highest)
+	N is the sample number, allowing multiple samples for the same drum + velocity (from a-z); if there are multiple samples, one will be randomly selected.
 	
 The exception to this is the HiHat.  Here, the sample naming is as follows:
 
