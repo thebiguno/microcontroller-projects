@@ -35,7 +35,7 @@ void Clock::run() {
 			// hour and minute hands drawn as lines
 			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute % 12;
+			uint8_t m = time.minute / 5;
 			
 			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
 			matrix.setPixel(5, 0);
@@ -79,7 +79,7 @@ void Clock::run() {
 			// hour and minute hands drawn as blocks
 			// 5 minute accuracy
 			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute % 12;
+			uint8_t m = time.minute / 5;
 			
 			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
 			matrix.rectangle(2, 2, 9, 9, DRAW_UNFILLED);

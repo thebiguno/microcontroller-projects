@@ -5,7 +5,7 @@
 #include <SerialFlash.h>
 #include <play_serial_raw.h>
 
-#define SAMPLE_COUNT				16
+#define SAMPLE_COUNT				12
 #define CHANNEL_COUNT				11
 
 //If 
@@ -21,10 +21,11 @@ namespace digitalcave {
 			// for self-documenting purposes, but note that it can't really be changed
 			// and expected to work without other code changes to support it.
 			AudioPlaySerialRaw samples[SAMPLE_COUNT];
-			AudioMixer4 mixers[SAMPLE_COUNT >> 2];
-			AudioMixer4 masterMixer;
+			AudioMixer16 mixer;
 			AudioOutputI2S output;
+			AudioInputI2Sslave input;
 			
+			//Samples to mixer
 			AudioConnection patchCord00;
 			AudioConnection patchCord01;
 			AudioConnection patchCord02;
@@ -37,18 +38,14 @@ namespace digitalcave {
 			AudioConnection patchCord09;
 			AudioConnection patchCord10;
 			AudioConnection patchCord11;
+			
+			//Input passthrough to mixer
 			AudioConnection patchCord12;
 			AudioConnection patchCord13;
+
+			//Mixer to output
 			AudioConnection patchCord14;
 			AudioConnection patchCord15;
-
-			AudioConnection patchCord16;
-			AudioConnection patchCord17;
-			AudioConnection patchCord18;
-			AudioConnection patchCord19;
-			AudioConnection patchCord20;
-			AudioConnection patchCord21;
-
 
 			//The index of this array is the sample index;
 			// the value is the channel which was last played
@@ -75,6 +72,7 @@ namespace digitalcave {
 			void play(uint8_t channel, uint8_t value);
 
 	};
+	
 }
 
 #endif
