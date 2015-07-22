@@ -5,10 +5,10 @@
     (no_connects 91)
     (area 0 0 0 0)
     (thickness 1.6)
-    (drawings 6)
+    (drawings 16)
     (tracks 18)
     (zones 0)
-    (modules 41)
+    (modules 45)
     (nets 44)
   )
 
@@ -187,15 +187,67 @@
     (add_net "Net-(Q2-Pad2)")
   )
 
-  (module Capacitors_ThroughHole:C_Radial_D5_L6_P2.5 (layer F.Cu) (tedit 0) (tstamp 55AF05C0)
-    (at 177.8 99.695 90)
+  (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF16E5)
+    (at 267.208 97.155)
+    (descr "module 1 pin (ou trou mecanique de percage)")
+    (tags DEV)
+    (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value 1pin (at 0 2.794) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad "" np_thru_hole circle (at 0 0) (size 2 2) (drill 2) (layers *.Cu *.Mask F.SilkS))
+  )
+
+  (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF16DB)
+    (at 267.208 106.172)
+    (descr "module 1 pin (ou trou mecanique de percage)")
+    (tags DEV)
+    (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value 1pin (at 0 2.794) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad "" np_thru_hole circle (at 0 0) (size 2 2) (drill 2) (layers *.Cu *.Mask F.SilkS))
+  )
+
+  (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF16C6)
+    (at 256.159 101.6)
+    (descr "module 1 pin (ou trou mecanique de percage)")
+    (tags DEV)
+    (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value 1pin (at 0 2.794) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad "" np_thru_hole circle (at 0 0) (size 2 2) (drill 2) (layers *.Cu *.Mask F.SilkS))
+  )
+
+  (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF162F)
+    (at 269.113 101.6)
+    (descr "module 1 pin (ou trou mecanique de percage)")
+    (tags DEV)
+    (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (fp_text value 1pin (at 0 2.794) (layer F.SilkS) hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    )
+    (pad "" np_thru_hole circle (at 0 0) (size 2 2) (drill 2) (layers *.Cu *.Mask F.SilkS))
+  )
+
+  (module Capacitors_ThroughHole:C_Radial_D5_L6_P2.5 (layer F.Cu) (tedit 55AF13E1) (tstamp 55AF05C0)
+    (at 189.23 96.52 180)
     (descr "Radial Electrolytic Capacitor Diameter 5mm x Length 6mm, Pitch 2.5mm")
     (tags "Electrolytic Capacitor")
     (path /55AF196D)
-    (fp_text reference C1 (at 1.25 -3.8 90) (layer F.SilkS)
+    (fp_text reference C1 (at 1.25 -3.8 180) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value C (at 1.25 3.8 90) (layer F.Fab)
+    (fp_text value C (at 1.25 3.8 180) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 1.325 -2.499) (end 1.325 2.499) (layer F.SilkS) (width 0.15))
@@ -232,9 +284,9 @@
     (fp_circle (center 2.5 0) (end 2.5 -0.9) (layer F.SilkS) (width 0.15))
     (fp_circle (center 1.25 0) (end 1.25 -2.5375) (layer F.SilkS) (width 0.15))
     (fp_circle (center 1.25 0) (end 1.25 -2.8) (layer F.CrtYd) (width 0.05))
-    (pad 1 thru_hole rect (at 0 0 90) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole rect (at 0 0 180) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
       (net 1 +BATT))
-    (pad 2 thru_hole circle (at 2.5 0 90) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
+    (pad 2 thru_hole circle (at 2.5 0 180) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
       (net 2 GND))
     (model Capacitors_ThroughHole.3dshapes/C_Radial_D5_L6_P2.5.wrl
       (at (xyz 0.0492126 0 0))
@@ -243,15 +295,15 @@
     )
   )
 
-  (module Capacitors_ThroughHole:C_Radial_D5_L6_P2.5 (layer F.Cu) (tedit 0) (tstamp 55AF05C6)
-    (at 177.8 103.505 270)
+  (module Capacitors_ThroughHole:C_Radial_D5_L6_P2.5 (layer F.Cu) (tedit 55AF13EA) (tstamp 55AF05C6)
+    (at 189.23 106.68 180)
     (descr "Radial Electrolytic Capacitor Diameter 5mm x Length 6mm, Pitch 2.5mm")
     (tags "Electrolytic Capacitor")
     (path /55AF181D)
-    (fp_text reference C2 (at 1.25 -3.8 270) (layer F.SilkS)
+    (fp_text reference C2 (at 0.635 -4.445 180) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value 220u (at 1.25 3.8 270) (layer F.Fab)
+    (fp_text value 220u (at 1.25 3.8 180) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 1.325 -2.499) (end 1.325 2.499) (layer F.SilkS) (width 0.15))
@@ -288,9 +340,9 @@
     (fp_circle (center 2.5 0) (end 2.5 -0.9) (layer F.SilkS) (width 0.15))
     (fp_circle (center 1.25 0) (end 1.25 -2.5375) (layer F.SilkS) (width 0.15))
     (fp_circle (center 1.25 0) (end 1.25 -2.8) (layer F.CrtYd) (width 0.05))
-    (pad 1 thru_hole rect (at 0 0 270) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole rect (at 0 0 180) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
       (net 1 +BATT))
-    (pad 2 thru_hole circle (at 2.5 0 270) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
+    (pad 2 thru_hole circle (at 2.5 0 180) (size 1.3 1.3) (drill 0.8) (layers *.Cu *.Mask F.SilkS)
       (net 2 GND))
     (model Capacitors_ThroughHole.3dshapes/C_Radial_D5_L6_P2.5.wrl
       (at (xyz 0.0492126 0 0))
@@ -300,22 +352,22 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05CC)
-    (at 189.23 95.25)
+    (at 204.47 101.6 90)
     (path /55AF5470)
     (attr smd)
-    (fp_text reference C3 (at 0 0) (layer F.SilkS) hide
+    (fp_text reference C3 (at 0 0 90) (layer F.SilkS) hide
       (effects (font (size 0.508 0.508) (thickness 0.1143)))
     )
-    (fp_text value 4.7n (at 0 0 90) (layer F.SilkS)
+    (fp_text value 4.7n (at 0 0 180) (layer F.SilkS)
       (effects (font (size 0.508 0.508) (thickness 0.1143)))
     )
     (fp_line (start -1.143 -0.508) (end -1.143 0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start -1.143 0.508) (end 1.143 0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start 1.143 0.508) (end 1.143 -0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start 1.143 -0.508) (end -1.143 -0.508) (layer F.SilkS) (width 0.1524))
-    (pad 1 smd rect (at -0.762 0) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
+    (pad 1 smd rect (at -0.762 0 90) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
       (net 3 "Net-(C3-Pad1)"))
-    (pad 2 smd rect (at 0.762 0) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
+    (pad 2 smd rect (at 0.762 0 90) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
       (net 2 GND))
     (model smd\resistors\R0603.wrl
       (at (xyz 0 0 0.001))
@@ -325,7 +377,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05D2)
-    (at 182.88 100.33 90)
+    (at 191.135 99.06 90)
     (path /55AEC310)
     (attr smd)
     (fp_text reference C4 (at 0 0 90) (layer F.SilkS) hide
@@ -350,7 +402,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05D8)
-    (at 196.85 104.775 90)
+    (at 204.47 104.775 90)
     (path /55AEC36D)
     (attr smd)
     (fp_text reference C5 (at 0 0 90) (layer F.SilkS) hide
@@ -375,7 +427,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05DE)
-    (at 182.88 104.14 270)
+    (at 191.135 104.14 270)
     (path /55AEC390)
     (attr smd)
     (fp_text reference C6 (at 0 0 270) (layer F.SilkS) hide
@@ -400,7 +452,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05E4)
-    (at 196.85 98.425 270)
+    (at 204.47 98.425 270)
     (path /55AF0CE8)
     (attr smd)
     (fp_text reference C7 (at 0 0 270) (layer F.SilkS) hide
@@ -425,7 +477,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05EA)
-    (at 205.74 98.425 270)
+    (at 211.455 98.425 270)
     (path /55AEEA28)
     (attr smd)
     (fp_text reference C8 (at 0 0 270) (layer F.SilkS) hide
@@ -450,7 +502,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05F0)
-    (at 205.74 101.6 270)
+    (at 211.455 101.6 270)
     (path /55AEE48E)
     (attr smd)
     (fp_text reference C9 (at 0 0 270) (layer F.SilkS) hide
@@ -475,7 +527,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05F6)
-    (at 216.535 104.775)
+    (at 218.44 105.41)
     (path /55AF3C88)
     (attr smd)
     (fp_text reference C10 (at 0 0) (layer F.SilkS) hide
@@ -500,7 +552,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05FC)
-    (at 205.74 104.775 270)
+    (at 211.455 104.775 270)
     (path /55AEE9A5)
     (attr smd)
     (fp_text reference C11 (at 0 0 270) (layer F.SilkS) hide
@@ -549,13 +601,13 @@
       (net 5 +3V3))
   )
 
-  (module Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm (layer F.Cu) (tedit 55AF06F5) (tstamp 55AF0628)
-    (at 189.23 101.6)
+  (module Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm (layer F.Cu) (tedit 55AF13E4) (tstamp 55AF0628)
+    (at 197.485 101.6)
     (descr "32-Lead Plastic Thin Quad Flatpack (PT) - 7x7x1.0 mm Body, 2.00 mm [TQFP] (see Microchip Packaging Specification 00000049BS.pdf)")
     (tags "QFP 0.8")
     (path /55AE71A6)
     (attr smd)
-    (fp_text reference IC1 (at 0 -6.05) (layer F.SilkS)
+    (fp_text reference IC1 (at 0 0) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value ATMEGA48-A (at 0 6.05) (layer F.SilkS) hide
@@ -646,7 +698,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_2x04 (layer F.Cu) (tedit 55AF074E) (tstamp 55AF0644)
-    (at 161.29 97.79)
+    (at 178.435 97.79)
     (descr "Through hole pin header")
     (tags "pin header")
     (path /55AEF122)
@@ -931,7 +983,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06B7)
-    (at 198.755 104.775 270)
+    (at 206.375 104.775 270)
     (path /55AF52BF)
     (attr smd)
     (fp_text reference R2 (at 0 0 270) (layer F.SilkS) hide
@@ -956,7 +1008,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06BD)
-    (at 200.66 98.425 270)
+    (at 208.28 98.425 270)
     (path /55AF0CDC)
     (attr smd)
     (fp_text reference R3 (at 0 0 270) (layer F.SilkS) hide
@@ -981,7 +1033,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06C3)
-    (at 198.755 98.425 90)
+    (at 206.375 98.425 90)
     (path /55AF0CE2)
     (attr smd)
     (fp_text reference R4 (at 0 0 90) (layer F.SilkS) hide
@@ -1006,7 +1058,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06C9)
-    (at 273.685 107.315)
+    (at 273.05 105.41)
     (path /55AF6EDC)
     (attr smd)
     (fp_text reference R5 (at 0 0) (layer F.SilkS) hide
@@ -1031,7 +1083,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06CF)
-    (at 273.685 105.41)
+    (at 273.05 107.315)
     (path /55AF7008)
     (attr smd)
     (fp_text reference R6 (at 0 0) (layer F.SilkS) hide
@@ -1056,7 +1108,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06D5)
-    (at 209.55 98.425 270)
+    (at 215.265 98.425 270)
     (path /55AEEA1C)
     (attr smd)
     (fp_text reference R7 (at 0 0 270) (layer F.SilkS) hide
@@ -1081,7 +1133,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06DB)
-    (at 207.645 98.425 90)
+    (at 213.36 98.425 90)
     (path /55AEEA22)
     (attr smd)
     (fp_text reference R8 (at 0 0 90) (layer F.SilkS) hide
@@ -1106,7 +1158,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06E1)
-    (at 209.55 101.6 270)
+    (at 215.265 101.6 270)
     (path /55AEE320)
     (attr smd)
     (fp_text reference R9 (at 0 0 270) (layer F.SilkS) hide
@@ -1131,7 +1183,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06E7)
-    (at 207.645 101.6 270)
+    (at 213.36 101.6 270)
     (path /55AEE428)
     (attr smd)
     (fp_text reference R10 (at 0 0 270) (layer F.SilkS) hide
@@ -1156,7 +1208,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06ED)
-    (at 216.535 98.425)
+    (at 218.44 97.79)
     (path /55AF3B63)
     (attr smd)
     (fp_text reference R11 (at 0 0) (layer F.SilkS) hide
@@ -1181,22 +1233,22 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06F3)
-    (at 162.56 95.25)
+    (at 208.28 101.6 270)
     (path /55AEFD06)
     (attr smd)
-    (fp_text reference R12 (at 0 0) (layer F.SilkS) hide
+    (fp_text reference R12 (at 0 0 270) (layer F.SilkS) hide
       (effects (font (size 0.508 0.508) (thickness 0.1143)))
     )
-    (fp_text value 10k (at 0 0 90) (layer F.SilkS)
+    (fp_text value 10k (at 0 0 360) (layer F.SilkS)
       (effects (font (size 0.508 0.508) (thickness 0.1143)))
     )
     (fp_line (start -1.143 -0.508) (end -1.143 0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start -1.143 0.508) (end 1.143 0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start 1.143 0.508) (end 1.143 -0.508) (layer F.SilkS) (width 0.1524))
     (fp_line (start 1.143 -0.508) (end -1.143 -0.508) (layer F.SilkS) (width 0.1524))
-    (pad 1 smd rect (at -0.762 0) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
+    (pad 1 smd rect (at -0.762 0 270) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
       (net 29 /RESET))
-    (pad 2 smd rect (at 0.762 0) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
+    (pad 2 smd rect (at 0.762 0 270) (size 0.635 0.889) (layers F.Cu F.Paste F.Mask)
       (net 5 +3V3))
     (model smd\resistors\R0603.wrl
       (at (xyz 0 0 0.001))
@@ -1206,7 +1258,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06F9)
-    (at 273.685 97.79)
+    (at 273.05 97.79)
     (path /55AF8753)
     (attr smd)
     (fp_text reference R13 (at 0 0) (layer F.SilkS) hide
@@ -1231,7 +1283,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06FF)
-    (at 209.55 104.775 270)
+    (at 215.265 104.775 270)
     (path /55AEE999)
     (attr smd)
     (fp_text reference R14 (at 0 0 270) (layer F.SilkS) hide
@@ -1256,7 +1308,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF0705)
-    (at 207.645 104.775 270)
+    (at 213.36 104.775 270)
     (path /55AEE99F)
     (attr smd)
     (fp_text reference R15 (at 0 0 270) (layer F.SilkS) hide
@@ -1281,7 +1333,7 @@
   )
 
   (module Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm (layer F.Cu) (tedit 55AF0744) (tstamp 55AF071D)
-    (at 222.885 101.6 90)
+    (at 224.79 101.6 90)
     (descr "SSOP14: plastic shrink small outline package; 14 leads; body width 5.3 mm; (see NXP SSOP-TSSOP-VSO-REFLOW.pdf and sot337-1_po.pdf)")
     (tags "SSOP 0.65")
     (path /55AEBFD4)
@@ -1336,7 +1388,7 @@
   )
 
   (module Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm (layer F.Cu) (tedit 55AF0742) (tstamp 55AF072F)
-    (at 230.505 101.6 90)
+    (at 232.41 101.6 90)
     (descr "SSOP14: plastic shrink small outline package; 14 leads; body width 5.3 mm; (see NXP SSOP-TSSOP-VSO-REFLOW.pdf and sot337-1_po.pdf)")
     (tags "SSOP 0.65")
     (path /55AEC094)
@@ -1391,7 +1443,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF0800)
-    (at 200.66 104.775 90)
+    (at 208.28 104.775 90)
     (path /55AF0359)
     (attr smd)
     (fp_text reference R1 (at 0 0 90) (layer F.SilkS) hide
@@ -1431,7 +1483,7 @@
   )
 
   (module custom:MOUNTING_HOLE_#4 (layer F.Cu) (tedit 54D7E870) (tstamp 55AF085E)
-    (at 170.18 101.6)
+    (at 186.055 101.6)
     (descr "Mounting hole for #4 screw")
     (path /55AF9BC4)
     (fp_text reference MP2 (at 0 -3.175) (layer F.SilkS) hide
@@ -1446,7 +1498,7 @@
   )
 
   (module custom:RESISTOR_POWER (layer F.Cu) (tedit 54D17260) (tstamp 55AF0D2B)
-    (at 226.695 101.6 180)
+    (at 228.6 101.6 180)
     (path /55AF0B7D)
     (fp_text reference R18 (at 0 -3 180) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
@@ -1469,6 +1521,38 @@
       (net 38 "Net-(Q2-Pad2)"))
   )
 
+  (dimension 12.7 (width 0.3) (layer Cmts.User)
+    (gr_text "0.5000 in" (at 280.75 101.6 270) (layer Cmts.User)
+      (effects (font (size 1.5 1.5) (thickness 0.3)))
+    )
+    (feature1 (pts (xy 275.59 107.95) (xy 282.1 107.95)))
+    (feature2 (pts (xy 275.59 95.25) (xy 282.1 95.25)))
+    (crossbar (pts (xy 279.4 95.25) (xy 279.4 107.95)))
+    (arrow1a (pts (xy 279.4 107.95) (xy 278.813579 106.823496)))
+    (arrow1b (pts (xy 279.4 107.95) (xy 279.986421 106.823496)))
+    (arrow2a (pts (xy 279.4 95.25) (xy 278.813579 96.376504)))
+    (arrow2b (pts (xy 279.4 95.25) (xy 279.986421 96.376504)))
+  )
+  (gr_line (start 176.53 106.045) (end 176.53 97.155) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_line (start 178.435 95.25) (end 273.685 95.25) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_line (start 273.685 107.95) (end 178.435 107.95) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_line (start 275.59 106.045) (end 275.59 97.155) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_arc (start 273.685 106.045) (end 275.59 106.045) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_arc (start 273.685 97.155) (end 273.685 95.25) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_arc (start 178.435 106.045) (end 178.435 107.95) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (gr_arc (start 178.435 97.155) (end 176.53 97.155) (angle 90) (layer Edge.Cuts) (width 0.1))
+  (dimension 99.06 (width 0.3) (layer Cmts.User)
+    (gr_text "3.9000 in" (at 226.06 90.09) (layer Cmts.User)
+      (effects (font (size 1.5 1.5) (thickness 0.3)))
+    )
+    (feature1 (pts (xy 176.53 95.25) (xy 176.53 88.74)))
+    (feature2 (pts (xy 275.59 95.25) (xy 275.59 88.74)))
+    (crossbar (pts (xy 275.59 91.44) (xy 176.53 91.44)))
+    (arrow1a (pts (xy 176.53 91.44) (xy 177.656504 90.853579)))
+    (arrow1b (pts (xy 176.53 91.44) (xy 177.656504 92.026421)))
+    (arrow2a (pts (xy 275.59 91.44) (xy 274.463496 90.853579)))
+    (arrow2b (pts (xy 275.59 91.44) (xy 274.463496 92.026421)))
+  )
   (gr_line (start 271.145 101.6) (end 147.32 101.6) (angle 90) (layer Cmts.User) (width 0.2))
   (gr_circle (center 267.058349 97.14638) (end 267.058349 98.146378) (layer Cmts.User) (width 0.2))
   (gr_circle (center 267.058349 106.14638) (end 267.05835 107.146378) (layer Cmts.User) (width 0.2))
@@ -1476,23 +1560,23 @@
   (gr_circle (center 269.05835 101.646379) (end 269.05835 102.646378) (layer Cmts.User) (width 0.2))
   (gr_circle (center 262.558349 101.64638) (end 262.558349 109.646378) (layer Cmts.User) (width 0.2))
 
-  (segment (start 205.74 105.537) (end 207.645 105.537) (width 0.25) (layer F.Cu) (net 2))
-  (segment (start 205.74 105.537) (end 204.597 105.537) (width 0.25) (layer F.Cu) (net 2))
-  (via (at 204.47 105.41) (size 0.6) (layers F.Cu B.Cu) (net 2))
-  (segment (start 204.597 105.537) (end 204.47 105.41) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF1308))
-  (segment (start 205.74 102.362) (end 204.597 102.362) (width 0.25) (layer F.Cu) (net 2))
-  (via (at 204.47 102.235) (size 0.6) (layers F.Cu B.Cu) (net 2))
-  (segment (start 204.597 102.362) (end 204.47 102.235) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF1301))
-  (segment (start 205.74 99.187) (end 204.597 99.187) (width 0.25) (layer F.Cu) (net 2))
-  (via (at 204.47 99.06) (size 0.6) (layers F.Cu B.Cu) (net 2))
-  (segment (start 204.597 99.187) (end 204.47 99.06) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF12FC))
-  (segment (start 205.74 102.362) (end 207.645 102.362) (width 0.25) (layer F.Cu) (net 2))
-  (segment (start 205.74 99.187) (end 207.645 99.187) (width 0.25) (layer F.Cu) (net 2))
-  (segment (start 207.645 97.663) (end 209.55 97.663) (width 0.25) (layer F.Cu) (net 7))
-  (segment (start 205.74 97.663) (end 207.645 97.663) (width 0.25) (layer F.Cu) (net 7))
-  (segment (start 207.645 100.838) (end 209.55 100.838) (width 0.25) (layer F.Cu) (net 8))
-  (segment (start 205.74 100.838) (end 207.645 100.838) (width 0.25) (layer F.Cu) (net 8))
-  (segment (start 207.645 104.013) (end 209.55 104.013) (width 0.25) (layer F.Cu) (net 10))
-  (segment (start 205.74 104.013) (end 207.645 104.013) (width 0.25) (layer F.Cu) (net 10))
+  (segment (start 211.455 105.537) (end 213.36 105.537) (width 0.25) (layer F.Cu) (net 2))
+  (segment (start 211.455 105.537) (end 210.312 105.537) (width 0.25) (layer F.Cu) (net 2))
+  (via (at 210.185 105.41) (size 0.6) (layers F.Cu B.Cu) (net 2))
+  (segment (start 210.312 105.537) (end 210.185 105.41) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF1308))
+  (segment (start 211.455 102.362) (end 210.312 102.362) (width 0.25) (layer F.Cu) (net 2))
+  (via (at 210.185 102.235) (size 0.6) (layers F.Cu B.Cu) (net 2))
+  (segment (start 210.312 102.362) (end 210.185 102.235) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF1301))
+  (segment (start 211.455 99.187) (end 210.312 99.187) (width 0.25) (layer F.Cu) (net 2))
+  (via (at 210.185 99.06) (size 0.6) (layers F.Cu B.Cu) (net 2))
+  (segment (start 210.312 99.187) (end 210.185 99.06) (width 0.25) (layer F.Cu) (net 2) (tstamp 55AF12FC))
+  (segment (start 211.455 102.362) (end 213.36 102.362) (width 0.25) (layer F.Cu) (net 2))
+  (segment (start 211.455 99.187) (end 213.36 99.187) (width 0.25) (layer F.Cu) (net 2))
+  (segment (start 213.36 97.663) (end 215.265 97.663) (width 0.25) (layer F.Cu) (net 7))
+  (segment (start 211.455 97.663) (end 213.36 97.663) (width 0.25) (layer F.Cu) (net 7))
+  (segment (start 213.36 100.838) (end 215.265 100.838) (width 0.25) (layer F.Cu) (net 8))
+  (segment (start 211.455 100.838) (end 213.36 100.838) (width 0.25) (layer F.Cu) (net 8))
+  (segment (start 213.36 104.013) (end 215.265 104.013) (width 0.25) (layer F.Cu) (net 10))
+  (segment (start 211.455 104.013) (end 213.36 104.013) (width 0.25) (layer F.Cu) (net 10))
 
 )
