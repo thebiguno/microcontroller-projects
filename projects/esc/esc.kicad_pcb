@@ -2,11 +2,11 @@
 
   (general
     (links 100)
-    (no_connects 91)
+    (no_connects 79)
     (area 0 0 0 0)
     (thickness 1.6)
-    (drawings 16)
-    (tracks 18)
+    (drawings 12)
+    (tracks 49)
     (zones 0)
     (modules 45)
     (nets 44)
@@ -37,7 +37,9 @@
   )
 
   (setup
-    (last_trace_width 0.25)
+    (last_trace_width 0.508)
+    (user_trace_width 0.254)
+    (user_trace_width 0.508)
     (trace_clearance 0.2)
     (zone_clearance 0.508)
     (zone_45_only no)
@@ -188,7 +190,7 @@
   )
 
   (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF16E5)
-    (at 267.208 97.155)
+    (at 266.446 96.266)
     (descr "module 1 pin (ou trou mecanique de percage)")
     (tags DEV)
     (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
@@ -201,7 +203,7 @@
   )
 
   (module Connect:1pin (layer F.Cu) (tedit 55AF15D2) (tstamp 55AF16DB)
-    (at 267.208 106.172)
+    (at 266.446 106.934)
     (descr "module 1 pin (ou trou mecanique de percage)")
     (tags DEV)
     (fp_text reference REF** (at 0 -3.048) (layer F.SilkS) hide
@@ -527,7 +529,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF05F6)
-    (at 218.44 105.41)
+    (at 238.76 96.52)
     (path /55AF3C88)
     (attr smd)
     (fp_text reference C10 (at 0 0) (layer F.SilkS) hide
@@ -602,7 +604,7 @@
   )
 
   (module Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm (layer F.Cu) (tedit 55AF13E4) (tstamp 55AF0628)
-    (at 197.485 101.6)
+    (at 197.485 100.965)
     (descr "32-Lead Plastic Thin Quad Flatpack (PT) - 7x7x1.0 mm Body, 2.00 mm [TQFP] (see Microchip Packaging Specification 00000049BS.pdf)")
     (tags "QFP 0.8")
     (path /55AE71A6)
@@ -744,7 +746,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_1x03 (layer F.Cu) (tedit 55AF0720) (tstamp 55AF064B)
-    (at 252.095 99.06)
+    (at 247.65 99.06)
     (descr "Through hole pin header")
     (tags "pin header")
     (path /55AF6897)
@@ -779,7 +781,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF0709) (tstamp 55AF065B)
-    (at 248.285 97.79 90)
+    (at 243.84 97.79 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AECE9B)
@@ -813,7 +815,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF0714) (tstamp 55AF066B)
-    (at 248.285 101.6 90)
+    (at 251.46 97.79 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AECF83)
@@ -847,7 +849,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF0705) (tstamp 55AF067B)
-    (at 248.285 105.41 90)
+    (at 243.84 101.6 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AECF1A)
@@ -881,7 +883,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF070D) (tstamp 55AF068B)
-    (at 243.84 97.79 90)
+    (at 251.46 101.6 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AECF89)
@@ -915,7 +917,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF0700) (tstamp 55AF069B)
-    (at 243.84 101.6 90)
+    (at 243.84 105.41 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AECFFB)
@@ -949,7 +951,7 @@
   )
 
   (module Housings_SOT-23_SOT-143_TSOT-6:SOT-23 (layer F.Cu) (tedit 55AF06FB) (tstamp 55AF06AB)
-    (at 243.84 105.41 90)
+    (at 251.46 105.41 90)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /55AED001)
@@ -1208,7 +1210,7 @@
   )
 
   (module custom:SM0603_VALUE (layer F.Cu) (tedit 558850BC) (tstamp 55AF06ED)
-    (at 218.44 97.79)
+    (at 238.76 98.425)
     (path /55AF3B63)
     (attr smd)
     (fp_text reference R11 (at 0 0) (layer F.SilkS) hide
@@ -1498,12 +1500,12 @@
   )
 
   (module custom:RESISTOR_POWER (layer F.Cu) (tedit 54D17260) (tstamp 55AF0D2B)
-    (at 228.6 101.6 180)
+    (at 228.6 101.6)
     (path /55AF0B7D)
-    (fp_text reference R18 (at 0 -3 180) (layer F.SilkS) hide
+    (fp_text reference R18 (at 0 -3) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value 0.1 (at -5 2 180) (layer F.SilkS)
+    (fp_text value 0.1 (at -5 2) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -8 0) (end -6 0) (layer F.SilkS) (width 0.15))
@@ -1515,9 +1517,9 @@
     (fp_line (start 3 -2) (end 5 2) (layer F.SilkS) (width 0.15))
     (fp_line (start 5 2) (end 6 0) (layer F.SilkS) (width 0.15))
     (fp_line (start 6 0) (end 8 0) (layer F.SilkS) (width 0.15))
-    (pad 1 thru_hole circle (at -10 0 180) (size 3.048 3.048) (drill 1.524) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at -10 0) (size 3.048 3.048) (drill 1.524) (layers *.Cu *.Mask F.SilkS)
       (net 2 GND))
-    (pad 2 thru_hole circle (at 10 0 180) (size 3.048 3.048) (drill 1.524) (layers *.Cu *.Mask F.SilkS)
+    (pad 2 thru_hole circle (at 10 0) (size 3.048 3.048) (drill 1.524) (layers *.Cu *.Mask F.SilkS)
       (net 38 "Net-(Q2-Pad2)"))
   )
 
@@ -1554,12 +1556,14 @@
     (arrow2b (pts (xy 275.59 91.44) (xy 274.463496 92.026421)))
   )
   (gr_line (start 271.145 101.6) (end 147.32 101.6) (angle 90) (layer Cmts.User) (width 0.2))
-  (gr_circle (center 267.058349 97.14638) (end 267.058349 98.146378) (layer Cmts.User) (width 0.2))
-  (gr_circle (center 267.058349 106.14638) (end 267.05835 107.146378) (layer Cmts.User) (width 0.2))
-  (gr_circle (center 256.05835 101.646379) (end 256.058349 102.646378) (layer Cmts.User) (width 0.2))
-  (gr_circle (center 269.05835 101.646379) (end 269.05835 102.646378) (layer Cmts.User) (width 0.2))
   (gr_circle (center 262.558349 101.64638) (end 262.558349 109.646378) (layer Cmts.User) (width 0.2))
 
+  (segment (start 189.23 106.68) (end 189.865 107.315) (width 0.508) (layer F.Cu) (net 1))
+  (segment (start 189.865 107.315) (end 242.57 107.315) (width 0.508) (layer F.Cu) (net 1) (tstamp 55AF1A91))
+  (segment (start 242.57 107.315) (end 242.84178 107.04322) (width 0.508) (layer F.Cu) (net 1) (tstamp 55AF1A92))
+  (segment (start 242.84178 107.04322) (end 242.84178 105.41) (width 0.508) (layer F.Cu) (net 1) (tstamp 55AF1A93))
+  (segment (start 242.84178 97.79) (end 242.84178 101.6) (width 0.508) (layer F.Cu) (net 1))
+  (segment (start 242.84178 105.41) (end 242.84178 101.6) (width 0.508) (layer F.Cu) (net 1))
   (segment (start 211.455 105.537) (end 213.36 105.537) (width 0.25) (layer F.Cu) (net 2))
   (segment (start 211.455 105.537) (end 210.312 105.537) (width 0.25) (layer F.Cu) (net 2))
   (via (at 210.185 105.41) (size 0.6) (layers F.Cu B.Cu) (net 2))
@@ -1578,5 +1582,30 @@
   (segment (start 211.455 100.838) (end 213.36 100.838) (width 0.25) (layer F.Cu) (net 8))
   (segment (start 213.36 104.013) (end 215.265 104.013) (width 0.25) (layer F.Cu) (net 10))
   (segment (start 211.455 104.013) (end 213.36 104.013) (width 0.25) (layer F.Cu) (net 10))
+  (segment (start 250.46178 97.79) (end 248.92 97.79) (width 0.508) (layer F.Cu) (net 33))
+  (segment (start 248.92 97.79) (end 247.65 99.06) (width 0.508) (layer F.Cu) (net 33) (tstamp 55AF1A36))
+  (segment (start 244.84076 96.84) (end 245.43 96.84) (width 0.508) (layer F.Cu) (net 33))
+  (segment (start 245.43 96.84) (end 247.65 99.06) (width 0.508) (layer F.Cu) (net 33) (tstamp 55AF1A33))
+  (segment (start 250.46178 101.6) (end 247.65 101.6) (width 0.508) (layer F.Cu) (net 34))
+  (segment (start 244.84076 100.65) (end 246.7 100.65) (width 0.508) (layer F.Cu) (net 34))
+  (segment (start 246.7 100.65) (end 247.65 101.6) (width 0.508) (layer F.Cu) (net 34) (tstamp 55AF1A30))
+  (segment (start 247.65 104.14) (end 249.19178 104.14) (width 0.508) (layer F.Cu) (net 35))
+  (segment (start 249.19178 104.14) (end 250.46178 105.41) (width 0.508) (layer F.Cu) (net 35) (tstamp 55AF1A3E))
+  (segment (start 244.84076 104.46) (end 247.33 104.46) (width 0.508) (layer F.Cu) (net 35))
+  (segment (start 247.33 104.46) (end 247.65 104.14) (width 0.508) (layer F.Cu) (net 35) (tstamp 55AF1A2D))
+  (segment (start 252.46076 96.84) (end 252.415 96.84) (width 0.508) (layer F.Cu) (net 38))
+  (segment (start 252.415 96.84) (end 251.46 95.885) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A55))
+  (segment (start 240.665 99.535) (end 238.6 101.6) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A59))
+  (segment (start 240.665 97.155) (end 240.665 99.535) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A58))
+  (segment (start 241.935 95.885) (end 240.665 97.155) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A57))
+  (segment (start 251.46 95.885) (end 241.935 95.885) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A56))
+  (segment (start 252.46076 100.65) (end 254 99.11076) (width 0.508) (layer F.Cu) (net 38))
+  (segment (start 254 99.11076) (end 254 98.425) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A4F))
+  (segment (start 254 98.425) (end 252.46076 96.88576) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A50))
+  (segment (start 252.46076 96.88576) (end 252.46076 96.84) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A51))
+  (segment (start 252.46076 100.65) (end 252.46076 100.69576) (width 0.508) (layer F.Cu) (net 38))
+  (segment (start 252.46076 100.69576) (end 254 102.235) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A49))
+  (segment (start 254 102.92076) (end 252.46076 104.46) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A4B))
+  (segment (start 254 102.235) (end 254 102.92076) (width 0.508) (layer F.Cu) (net 38) (tstamp 55AF1A4A))
 
 )
