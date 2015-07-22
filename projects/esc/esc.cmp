@@ -1,0 +1,290 @@
+Cmp-Mod V01 Created by Cvpcb (2015-03-21 BZR 5528)-product   date = Tuesday, July 21, 2015 'pmt' 09:06:25 pm
+
+BeginCmp
+TimeStamp = /55AF196D;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = Capacitors_ThroughHole:C_Radial_D5_L6_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF181D;
+Reference = C2;
+ValeurCmp = 220u;
+IdModule  = Capacitors_ThroughHole:C_Radial_D5_L6_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF5470;
+Reference = C3;
+ValeurCmp = 4.7n;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEC310;
+Reference = C4;
+ValeurCmp = 0.1u;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEC36D;
+Reference = C5;
+ValeurCmp = 0.1u;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEC390;
+Reference = C6;
+ValeurCmp = 0.1u;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF0CE8;
+Reference = C7;
+ValeurCmp = C_Small;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEEA28;
+Reference = C8;
+ValeurCmp = C_Small;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE48E;
+Reference = C9;
+ValeurCmp = C_Small;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF3C88;
+Reference = C10;
+ValeurCmp = 2.2n;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE9A5;
+Reference = C11;
+ValeurCmp = C_Small;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF84CD;
+Reference = D1;
+ValeurCmp = RGB_LED_COMMON_ANODE_ALT1;
+IdModule  = custom:LED_RGB_4-PLCC_ALT1;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AE71A6;
+Reference = IC1;
+ValeurCmp = ATMEGA48-A;
+IdModule  = Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF9B54;
+Reference = MP1;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = custom:MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF9BC4;
+Reference = MP2;
+ValeurCmp = MOUNTING_HOLE;
+IdModule  = custom:MOUNTING_HOLE_#4;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEF122;
+Reference = P1;
+ValeurCmp = INPUT;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x04;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF6897;
+Reference = P2;
+ValeurCmp = OUTPUT;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AECE9B;
+Reference = Q1;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AECF83;
+Reference = Q2;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AECF1A;
+Reference = Q3;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AECF89;
+Reference = Q4;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AECFFB;
+Reference = Q5;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AED001;
+Reference = Q6;
+ValeurCmp = Q_NMOS_GSD;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF0359;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF52BF;
+Reference = R2;
+ValeurCmp = 5.1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF0CDC;
+Reference = R3;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF0CE2;
+Reference = R4;
+ValeurCmp = 5.1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF6EDC;
+Reference = R5;
+ValeurCmp = 1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF7008;
+Reference = R6;
+ValeurCmp = 1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEEA1C;
+Reference = R7;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEEA22;
+Reference = R8;
+ValeurCmp = 5.1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE320;
+Reference = R9;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE428;
+Reference = R10;
+ValeurCmp = 5.1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF3B63;
+Reference = R11;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEFD06;
+Reference = R12;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF8753;
+Reference = R13;
+ValeurCmp = 1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE999;
+Reference = R14;
+ValeurCmp = 10k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEE99F;
+Reference = R15;
+ValeurCmp = 5.1k;
+IdModule  = custom:SM0603_VALUE;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AF0B7D;
+Reference = R18;
+ValeurCmp = 0.1;
+IdModule  = custom:RESISTOR_POWER;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEBFD4;
+Reference = U1;
+ValeurCmp = 74LS08;
+IdModule  = Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /55AEC094;
+Reference = U2;
+ValeurCmp = 74LS08;
+IdModule  = Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm;
+EndCmp
+
+EndListe
