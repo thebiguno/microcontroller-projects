@@ -10,7 +10,6 @@ LIBS:cmos4000
 LIBS:adc-dac
 LIBS:memory
 LIBS:xilinx
-LIBS:special
 LIBS:microcontrollers
 LIBS:dsp
 LIBS:microchip
@@ -32,7 +31,7 @@ LIBS:valves
 LIBS:custom
 LIBS:power_supply
 LIBS:power_supply-cache
-EELAYER 27 0
+EELAYER 25 0
 EELAYER END
 $Descr User 14500 14500
 encoding utf-8
@@ -80,7 +79,7 @@ F 3 "" H 12700 10200 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C33
+L Csmall C33
 U 1 1 54D12660
 P 13200 10350
 F 0 "C33" H 13225 10400 30  0000 L CNN
@@ -91,7 +90,7 @@ F 3 "~" H 13200 10350 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C32
+L Csmall C32
 U 1 1 54D12666
 P 12200 10350
 F 0 "C32" H 12225 10400 30  0000 L CNN
@@ -149,7 +148,7 @@ Text Notes 1250 950  0    60   ~ 0
 Switching Power Supply Module
 Text Notes 7000 2800 0    60   ~ 0
 Adjustable Regulator
-Text Notes 950  7750 0    60   ~ 0
+Text Notes 1100 8000 0    60   ~ 0
 Digital Control Board
 $Comp
 L PINS_3 K3
@@ -496,7 +495,7 @@ F 3 "" H 12950 9250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C25
+L Csmall C25
 U 1 1 54D3AAEF
 P 13350 9400
 F 0 "C25" H 13375 9450 30  0000 L CNN
@@ -507,7 +506,7 @@ F 3 "~" H 13350 9400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C24
+L Csmall C24
 U 1 1 54D3AAF5
 P 12550 9400
 F 0 "C24" H 12575 9450 30  0000 L CNN
@@ -888,7 +887,7 @@ V+
 Text Label 10700 6450 1    60   ~ 0
 V-
 $Comp
-L CSMALL C35
+L Csmall C35
 U 1 1 54E9501E
 P 7150 11950
 F 0 "C35" H 7175 12000 30  0000 L CNN
@@ -910,7 +909,7 @@ F 3 "" H 7050 11950 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C7
+L Csmall C7
 U 1 1 54E951E0
 P 13100 3200
 F 0 "C7" H 13125 3250 30  0000 L CNN
@@ -932,7 +931,7 @@ F 3 "" H 13000 3200 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C8
+L Csmall C8
 U 1 1 54E951F8
 P 13550 3200
 F 0 "C8" H 13575 3250 30  0000 L CNN
@@ -1029,7 +1028,7 @@ Text Notes 13050 2800 0    40   ~ 0
 Op Amp Decoupling
 Text Notes 1900 3300 0    40   ~ 0
 The high current supply line (whether that \nbe + for LM317 or - for LM337) is connected to\nVA.  The low current supply line (to\nsupply the other rail for the op amps) is\nconnected to VB.  Bridge the appropriate \nresistors depending on whether the\nchannel is positve or negative.
-Text Notes 9700 7000 0    40   ~ 0
+Text Notes 9650 7100 0    40   ~ 0
 The V_SET input\naccepts a voltage\nfrom 0 to 5V.
 Text Label 1600 5050 0    60   ~ 0
 V_SET
@@ -1069,7 +1068,7 @@ F 3 "" H 1950 9500 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C23
+L Csmall C23
 U 1 1 54EBE302
 P 2150 9000
 F 0 "C23" H 2175 9050 30  0000 L CNN
@@ -1080,7 +1079,7 @@ F 3 "~" H 2150 9000 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CSMALL C26
+L Csmall C26
 U 1 1 54EBE314
 P 2150 9500
 F 0 "C26" H 2175 9550 30  0000 L CNN
@@ -1135,7 +1134,7 @@ F 3 "" H 1950 8400 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C17
+L Csmall C17
 U 1 1 54EBE931
 P 3250 8150
 F 0 "C17" H 3275 8200 30  0000 L CNN
@@ -1146,7 +1145,7 @@ F 3 "~" H 3250 8150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C18
+L Csmall C18
 U 1 1 54EBE943
 P 3500 8150
 F 0 "C18" H 3525 8200 30  0000 L CNN
@@ -1157,7 +1156,7 @@ F 3 "~" H 3500 8150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C19
+L Csmall C19
 U 1 1 54EBE949
 P 3600 8150
 F 0 "C19" H 3625 8200 30  0000 L CNN
@@ -1168,7 +1167,7 @@ F 3 "~" H 3600 8150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C20
+L Csmall C20
 U 1 1 54EBE94F
 P 3850 8150
 F 0 "C20" H 3875 8200 30  0000 L CNN
@@ -1179,7 +1178,7 @@ F 3 "~" H 3850 8150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C21
+L Csmall C21
 U 1 1 54EBE955
 P 3950 8150
 F 0 "C21" H 3975 8200 30  0000 L CNN
@@ -1212,7 +1211,7 @@ F 3 "" H 4050 8050 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CSMALL C34
+L Csmall C34
 U 1 1 54EBF6AB
 P 1800 11150
 F 0 "C34" H 1825 11200 30  0000 L CNN
@@ -1289,7 +1288,7 @@ F 3 "" H 11000 8600 60  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L CSMALL C31
+L Csmall C31
 U 1 1 54EC0326
 P 2350 10350
 F 0 "C31" H 2375 10400 30  0000 L CNN
@@ -1392,7 +1391,7 @@ F 3 "" H 8450 12600 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CSMALL C36
+L Csmall C36
 U 1 1 54EC0A80
 P 8900 11950
 F 0 "C36" H 8925 12000 30  0000 L CNN
@@ -1486,7 +1485,7 @@ F 3 "" H 10150 12600 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CSMALL C37
+L Csmall C37
 U 1 1 54EC0AB7
 P 10600 11950
 F 0 "C37" H 10625 12000 30  0000 L CNN
@@ -2040,7 +2039,7 @@ Text Label 3150 1800 0    60   ~ 0
 AC_L
 Text Notes 4750 3550 0    40   ~ 0
 Rsh value (in conjunction with differential amp gain) will\ndetermine maximum current.  Use 0.1ohm for 5A, 1ohm\nfor 0.5A, etc.  If in doubt, 0.1ohm is a good value.\n
-Text Notes 8400 7950 0    60   ~ 0
+Text Notes 8600 8050 0    60   ~ 0
 User Interface\n(Display + Encoders)
 Text Notes 2400 12250 0    60   ~ 0
 Channel Setpoint / Feedback Headers
@@ -2051,7 +2050,7 @@ Fan (12V)
 Text Notes 8350 5950 0    40   ~ 0
 I_GET outputs a voltage\nfrom 0 to 5V, representing\nthe actual current output.  \nAdjust resistor values to\nchange gain on differential\namp.
 $Comp
-L CSMALL C28
+L Csmall C28
 U 1 1 54EF9C69
 P 7600 10250
 F 0 "C28" H 7625 10300 30  0000 L CNN
@@ -2062,7 +2061,7 @@ F 3 "~" H 7600 10250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C27
+L Csmall C27
 U 1 1 54EF9C6F
 P 7450 10250
 F 0 "C27" H 7475 10300 30  0000 L CNN
@@ -2099,7 +2098,7 @@ ENC2_A
 Text Label 8600 10600 2    60   ~ 0
 ENC2_B
 $Comp
-L CSMALL C30
+L Csmall C30
 U 1 1 54EFB629
 P 9250 10250
 F 0 "C30" H 9275 10300 30  0000 L CNN
@@ -2110,7 +2109,7 @@ F 3 "~" H 9250 10250 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C29
+L Csmall C29
 U 1 1 54EFB62F
 P 9100 10250
 F 0 "C29" H 9125 10300 30  0000 L CNN
@@ -2378,7 +2377,7 @@ F 3 "" H 6700 8750 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CSMALL C22
+L Csmall C22
 U 1 1 54F6A66B
 P 6900 8650
 F 0 "C22" H 6925 8700 30  0000 L CNN
@@ -2737,7 +2736,7 @@ F 3 "~" H 5550 3850 30  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CSMALL C5
+L Csmall C5
 U 1 1 5505EB40
 P 13100 3000
 F 0 "C5" H 13125 3050 30  0000 L CNN
@@ -2759,7 +2758,7 @@ F 3 "" H 13000 3000 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C6
+L Csmall C6
 U 1 1 5505EB4C
 P 13550 3000
 F 0 "C6" H 13575 3050 30  0000 L CNN
@@ -2795,9 +2794,9 @@ F 3 "~" H 13400 6850 60  0000 C CNN
 	1    13400 6850
 	1    0    0    -1  
 $EndComp
-Text Notes 12400 6850 0    40   ~ 0
+Text Notes 12400 7000 0    40   ~ 0
 Invert V_SET if this is\nfor a negative channel
-Text Notes 950  5650 0    40   ~ 0
+Text Notes 900  5800 0    40   ~ 0
 Connectors from each channel to\nthe main control board.  Each pin\n(both input and output) is an\nanalog value from 0 - 5V.
 $Comp
 L MOUNTING_HOLE MP11
@@ -2843,12 +2842,12 @@ F 3 "" H 13300 6250 60  0000 C CNN
 	1    13300 6250
 	0    1    1    0   
 $EndComp
-Text Notes 9500 5150 0    40   ~ 0
+Text Notes 9450 5500 0    40   ~ 0
 V Sense Voltage Divider: \nadjust this to change \nratio of output voltage\nto sense voltage.  Be sure \nthat the highest voltage\nstill fits within 5v when divided\n(4v if using DAC as AREF)\n
 Text Notes 10750 6000 0    40   ~ 0
 Biasing to allow for\nadjustment down to 0.
 $Comp
-L CSMALL C10
+L Csmall C10
 U 1 1 550C6B38
 P 3100 4050
 F 0 "C10" H 3125 4100 30  0000 L CNN
@@ -2870,7 +2869,7 @@ F 3 "" H 3100 4150 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L CSMALL C12
+L Csmall C12
 U 1 1 550C6CAF
 P 6700 4050
 F 0 "C12" H 6725 4100 30  0000 L CNN
@@ -2892,7 +2891,7 @@ F 3 "" H 6700 4150 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L CSMALL C11
+L Csmall C11
 U 1 1 550CE6F4
 P 4900 4050
 F 0 "C11" H 4925 4100 30  0000 L CNN
@@ -2957,7 +2956,7 @@ F 3 "" H 10650 5950 60  0000 C CNN
 	0    -1   1    0   
 $EndComp
 $Comp
-L CSMALL C9
+L Csmall C9
 U 1 1 550F0997
 P 11550 3650
 F 0 "C9" H 11575 3700 30  0000 L CNN
@@ -2990,7 +2989,7 @@ F 3 "~" H 7300 5900 30  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C16
+L Csmall C16
 U 1 1 550F899C
 P 8850 6500
 F 0 "C16" H 8875 6550 30  0000 L CNN
@@ -3023,7 +3022,7 @@ F 3 "" H 9700 4650 60  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L CSMALL C14
+L Csmall C14
 U 1 1 550F581C
 P 9800 4650
 F 0 "C14" H 9825 4700 30  0000 L CNN
@@ -3276,7 +3275,7 @@ Text Notes 6950 6450 0    40   ~ 0
 NEG
 Text Notes 6950 5800 0    40   ~ 0
 NEG
-Text Notes 12050 6500 0    40   ~ 0
+Text Notes 12250 6000 0    40   ~ 0
 This op amp inverts the\nsignal for negative channels
 $Comp
 L RSMALL R9
@@ -3490,7 +3489,7 @@ $EndComp
 Text Notes 12250 5100 0    40   ~ 0
 NEG
 $Comp
-L CSMALL C15
+L Csmall C15
 U 1 1 55178775
 P 12800 4950
 F 0 "C15" H 12825 5000 30  0000 L CNN
@@ -3805,7 +3804,7 @@ Connection ~ 2950 1600
 Wire Wire Line
 	3450 1150 3050 1150
 Wire Wire Line
-	3050 2000 3050 1150
+	3050 1150 3050 2000
 Wire Wire Line
 	1350 2000 3450 2000
 Wire Wire Line
@@ -4102,11 +4101,11 @@ Connection ~ 5250 6500
 Wire Wire Line
 	5800 3850 6850 3850
 Wire Wire Line
-	4800 8850 4900 8850
+	4800 8850 5100 8850
 Wire Wire Line
-	4900 8950 4800 8950
+	4800 8950 5100 8950
 Wire Wire Line
-	4800 9050 4900 9050
+	4800 9050 5100 9050
 Wire Wire Line
 	2350 6550 2550 6550
 Wire Wire Line
@@ -4181,7 +4180,7 @@ Connection ~ 12800 4750
 Wire Wire Line
 	6550 3450 6550 3850
 Wire Wire Line
-	7900 3850 7900 3450
+	7900 3450 7900 3850
 Wire Wire Line
 	7750 4150 7750 4350
 Wire Wire Line
@@ -4506,7 +4505,7 @@ F 1 "I_LIM_LED" H 2550 6800 50  0000 C CNN
 F 2 "~" H 2550 6950 60  0000 C CNN
 F 3 "~" H 2550 6950 60  0000 C CNN
 	1    2550 6950
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
 $Comp
 L LED K8
@@ -4517,7 +4516,7 @@ F 1 "V_LED" H 10750 3100 50  0000 C CNN
 F 2 "~" H 10750 3250 60  0000 C CNN
 F 3 "~" H 10750 3250 60  0000 C CNN
 	1    10750 3250
-	0    -1   -1   0   
+	0    1    1    0   
 $EndComp
 $Comp
 L DSCHSMALL D3
@@ -4533,7 +4532,7 @@ $EndComp
 Wire Wire Line
 	7750 4550 7750 4650
 $Comp
-L CSMALL C13
+L Csmall C13
 U 1 1 551DE17D
 P 3350 4600
 F 0 "C13" H 3375 4650 30  0000 L CNN
@@ -4686,7 +4685,7 @@ Text Label 3400 7050 3    60   ~ 0
 V+
 Wire Wire Line
 	7850 6800 7750 6800
-Text Notes 7150 7000 0    40   ~ 0
+Text Notes 7200 7100 0    40   ~ 0
 It is recommended to use precision\nresistors for the differential amp
 Text Notes 8000 3700 0    40   ~ 0
 All three diodes are reversed on\na negative channel. 
@@ -4716,7 +4715,7 @@ Wire Notes Line
 	850  7250 850  6000
 Wire Notes Line
 	850  6000 2650 6000
-Text Notes 10800 3950 0    40   ~ 0
+Text Notes 10800 4050 0    40   ~ 0
 Reverse polarity of electrolytic\ncaps on a negative channel
 Text Notes 4350 4300 0    40   ~ 0
 Reverse polarity of electrolytic\ncaps on a negative channel
@@ -4730,17 +4729,6 @@ F 2 "~" V 7180 3450 30  0000 C CNN
 F 3 "~" H 7250 3500 30  0000 C CNN
 	1    7250 3450
 	0    -1   1    0   
-$EndComp
-$Comp
-L CONN_3X2 P2
-U 1 1 555E3C87
-P 5300 9000
-F 0 "P2" H 5300 9250 50  0000 C CNN
-F 1 "PROG_JMP" V 5300 9050 40  0000 C CNN
-F 2 "" H 5300 9000 60  0000 C CNN
-F 3 "" H 5300 9000 60  0000 C CNN
-	1    5300 9000
-	-1   0    0    -1  
 $EndComp
 Wire Wire Line
 	1550 6450 1550 6150
@@ -4822,4 +4810,21 @@ Wire Wire Line
 Wire Wire Line
 	1450 6650 1650 6650
 Connection ~ 1200 6850
+$Comp
+L CONN_02X03 P2
+U 1 1 55B1FB5B
+P 5350 8950
+F 0 "P2" H 5350 9150 50  0000 C CNN
+F 1 "CONN_02X03" H 5350 8750 50  0000 C CNN
+F 2 "" H 5350 7750 60  0000 C CNN
+F 3 "" H 5350 7750 60  0000 C CNN
+	1    5350 8950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5600 9050 5700 9050
+Wire Wire Line
+	5700 8950 5600 8950
+Wire Wire Line
+	5600 8850 5700 8850
 $EndSCHEMATC
