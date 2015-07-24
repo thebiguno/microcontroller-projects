@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/wyatt/Documents/Electronics/projects/projects/drummaster/rev2/kicad/drummaster_rev2.sch)
-    (date "Thu 23 Jul 2015 08:00:46 PM MDT")
+    (date "Thu 23 Jul 2015 08:41:39 PM MDT")
     (tool "Eeschema (2015-07-22 BZR 5980)-product")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -475,7 +475,7 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 54AF040B))
     (comp (ref D21)
-      (value NUP2105LT1G)
+      (value TVS)
       (footprint Housings_SOT-23_SOT-143_TSOT-6:SOT-23)
       (datasheet http://www.mouser.com/ds/2/308/NUP2105L-D-91918.pdf)
       (fields
@@ -1064,29 +1064,6 @@
       (pins
         (pin (num 1) (name ~) (type input))
         (pin (num 2) (name ~) (type input))))
-    (libpart (lib custom) (part MCP1702_SOT23)
-      (fields
-        (field (name Reference) VR)
-        (field (name Value) MCP1702_SOT23))
-      (pins
-        (pin (num 1) (name GND) (type power_in))
-        (pin (num 2) (name VOUT) (type power_out))
-        (pin (num 3) (name VIN) (type power_in))))
-    (libpart (lib device) (part CP1)
-      (description "Polarised capacitor")
-      (footprints
-        (fp SMD*_Pol)
-        (fp c_elec*)
-        (fp C*elec)
-        (fp TantalC*)
-        (fp Elko*)
-        (fp CP*))
-      (fields
-        (field (name Reference) C)
-        (field (name Value) CP1))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive))))
     (libpart (lib custom) (part 74HC4067)
       (description "16 Channel Analog Multiplexer / Demultiplexer")
       (fields
@@ -1150,6 +1127,14 @@
       (pins
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type input))))
+    (libpart (lib custom) (part MCP1702_SOT23)
+      (fields
+        (field (name Reference) VR)
+        (field (name Value) MCP1702_SOT23))
+      (pins
+        (pin (num 1) (name GND) (type power_in))
+        (pin (num 2) (name VOUT) (type power_out))
+        (pin (num 3) (name VIN) (type power_in))))
     (libpart (lib custom) (part MCP46x1)
       (fields
         (field (name Reference) U)
@@ -1373,14 +1358,29 @@
         (field (name Value) SW_PUSH_SMALL))
       (pins
         (pin (num 1) (name 1) (type passive))
-        (pin (num 2) (name 2) (type passive)))))
+        (pin (num 2) (name 2) (type passive))))
+    (libpart (lib device) (part CP1)
+      (description "Polarised capacitor")
+      (footprints
+        (fp SMD*_Pol)
+        (fp c_elec*)
+        (fp C*elec)
+        (fp TantalC*)
+        (fp Elko*)
+        (fp CP*))
+      (fields
+        (field (name Reference) C)
+        (field (name Value) CP1))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive)))))
   (libraries
+    (library (logical drummaster_rev2-cache)
+      (uri /home/wyatt/Documents/Electronics/projects/projects/drummaster/rev2/kicad/drummaster_rev2-cache.lib))
     (library (logical device)
       (uri /usr/share/kicad/library/device.lib))
     (library (logical custom)
-      (uri /home/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib))
-    (library (logical drummaster_rev2-cache)
-      (uri /home/wyatt/Documents/Electronics/projects/projects/drummaster/rev2/kicad/drummaster_rev2-cache.lib)))
+      (uri /home/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib)))
   (nets
     (net (code 1) (name "Net-(U14-Pad9)")
       (node (ref U14) (pin 9))
