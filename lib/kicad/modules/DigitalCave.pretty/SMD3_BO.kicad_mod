@@ -1,0 +1,11 @@
+(module SMD3_BO (layer F.Cu) (tedit 546955A2)
+  (fp_text reference SMD3_BO (at 1.27 -2.54) (layer F.SilkS) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value VAL** (at 2.54 2.54) (layer F.SilkS) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 2 smd rect (at -1.27 0) (size 1.524 3.048) (layers F.Cu F.Paste F.Mask))
+  (pad 3 smd rect (at 1.27 0) (size 1.524 3.048) (layers F.Cu F.Paste F.Mask))
+  (pad 1 smd rect (at 0 -3.81) (size 3.048 1.524) (layers F.Cu F.Paste F.Mask))
+)
