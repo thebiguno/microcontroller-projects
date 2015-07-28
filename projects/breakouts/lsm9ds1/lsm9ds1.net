@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/wyatt/Documents/Electronics/projects/projects/breakouts/lsm9ds1/lsm9ds1.sch)
-    (date "Friday, July 24, 2015 'pmt' 02:48:18 pm")
+    (date "Tuesday, July 28, 2015 'amt' 09:39:01 am")
     (tool "Eeschema (2015-07-22 BZR 5980)-product")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -58,6 +58,20 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 55B29D44)))
   (libparts
+    (libpart (lib device) (part C_Small)
+      (description "Unpolarized capacitor")
+      (footprints
+        (fp C?)
+        (fp C_????_*)
+        (fp C_????)
+        (fp SMD*_c)
+        (fp Capacitor*))
+      (fields
+        (field (name Reference) C)
+        (field (name Value) C_Small))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
     (libpart (lib conn) (part DIL24)
       (fields
         (field (name Reference) P)
@@ -100,31 +114,17 @@
         (pin (num 1) (name P1) (type passive))
         (pin (num 2) (name P2) (type passive))
         (pin (num 3) (name P3) (type passive))
-        (pin (num 4) (name P4) (type passive))))
-    (libpart (lib device) (part C_Small)
-      (description "Unpolarized capacitor")
-      (footprints
-        (fp C?)
-        (fp C_????_*)
-        (fp C_????)
-        (fp SMD*_c)
-        (fp Capacitor*))
-      (fields
-        (field (name Reference) C)
-        (field (name Value) C_Small))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive)))))
+        (pin (num 4) (name P4) (type passive)))))
   (libraries
-    (library (logical device)
-      (uri "/Library/Application Support/kicad/library/device.lib"))
     (library (logical conn)
-      (uri "/Library/Application Support/kicad/library/conn.lib")))
+      (uri "/Library/Application Support/kicad/library/conn.lib"))
+    (library (logical device)
+      (uri "/Library/Application Support/kicad/library/device.lib")))
   (nets
     (net (code 1) (name GND)
       (node (ref C3) (pin 2))
       (node (ref C2) (pin 2))
-      (node (ref P1) (pin 2))
+      (node (ref P1) (pin 1))
       (node (ref C5) (pin 2))
       (node (ref C4) (pin 2))
       (node (ref U1) (pin 20))
@@ -157,7 +157,7 @@
       (node (ref U1) (pin 23))
       (node (ref C4) (pin 1))
       (node (ref C5) (pin 1))
-      (node (ref P1) (pin 1)))
+      (node (ref P1) (pin 2)))
     (net (code 8) (name /SCL)
       (node (ref U1) (pin 2))
       (node (ref P1) (pin 4)))
