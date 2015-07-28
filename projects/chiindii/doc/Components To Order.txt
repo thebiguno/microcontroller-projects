@@ -1,8 +1,0 @@
-HobbyKing:
-  1x Bullet Conn (5)	http://www.hobbycity.com/hobbycity/store/uh_viewItem.asp?idProduct=10255	$4.50	$4.50
-
-Digikey:
-Part			Description			WO Num	WO Price	WJ Num	WK Price
-497-11071-1-ND		3 axis gyro (I2C)		?
-?			Trimming Capacitor		2			1?
-
