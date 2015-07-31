@@ -1,9 +1,9 @@
-(kicad_pcb (version 4) (host pcbnew "(2015-07-22 BZR 5980)-product")
+(kicad_pcb (version 4) (host pcbnew "(2015-07-21 BZR 5971)-product")
 
   (general
     (links 158)
     (no_connects 23)
-    (area 23.544343 23.241795 179.480553 189.519379)
+    (area 26.241795 23.241795 179.480553 179.557828)
     (thickness 1.6)
     (drawings 146)
     (tracks 615)
@@ -45,7 +45,7 @@
     (zone_clearance 0.254)
     (zone_45_only no)
     (trace_min 0.1778)
-    (segment_width 0.2)
+    (segment_width 0.1)
     (edge_width 0.1)
     (via_size 0.6858)
     (via_drill 0.3556)
@@ -66,7 +66,7 @@
     (pad_to_mask_clearance 0)
     (aux_axis_origin 0 0)
     (grid_origin 63.5 125.73)
-    (visible_elements FFFFFB7F)
+    (visible_elements FFFFFF7F)
     (pcbplotparams
       (layerselection 0x00030_80000001)
       (usegerberextensions false)
@@ -366,7 +366,7 @@
     )
   )
 
-  (module DigitalCave:SW_6x3 (layer F.Cu) (tedit 54B04AC4) (tstamp 55B9F031)
+  (module DigitalCave:SW_6x3 (layer F.Cu) (tedit 55BADC6A) (tstamp 55B9F031)
     (at 61.595 132.715)
     (descr "Switch 6x3mm")
     (tags SWITCH)
@@ -374,7 +374,7 @@
     (fp_text reference SW1 (at 0 -1) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value SW_PUSH_SMALL (at 0 1) (layer F.SilkS) hide
+    (fp_text value RESET (at 6.985 1.27) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 3.75 2) (end -3.75 2) (layer F.SilkS) (width 0.15))
@@ -387,7 +387,7 @@
       (net 47 "Net-(P17-Pad4)"))
   )
 
-  (module DigitalCave:SW_6x3 (layer F.Cu) (tedit 54B04AC4) (tstamp 55B9F03B)
+  (module DigitalCave:SW_6x3 (layer F.Cu) (tedit 55BADC6C) (tstamp 55B9F03B)
     (at 61.595 137.16)
     (descr "Switch 6x3mm")
     (tags SWITCH)
@@ -395,7 +395,7 @@
     (fp_text reference SW2 (at 0 -1) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value SW_PUSH_SMALL (at 0 1) (layer F.SilkS) hide
+    (fp_text value HWB (at 6.35 1.27) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start 3.75 2) (end -3.75 2) (layer F.SilkS) (width 0.15))
@@ -2560,16 +2560,16 @@
     )
   )
 
-  (module Connect:USB_Mini-B (layer F.Cu) (tedit 5543E571) (tstamp 55BA782A)
+  (module Connect:USB_Mini-B (layer F.Cu) (tedit 55BADC7C) (tstamp 55BA782A)
     (at 60.325 124.46)
     (descr "USB Mini-B 5-pin SMD connector")
     (tags "USB USB_B USB_Mini connector")
     (path /55BADD7C)
     (attr smd)
-    (fp_text reference P12 (at 0 6.90118) (layer F.SilkS)
+    (fp_text reference P12 (at 0 6.90118) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value USB_OTG (at 0 -7.0993) (layer F.Fab)
+    (fp_text value USB_OTG (at 0 -7.0993) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -4.85 -5.7) (end 4.85 -5.7) (layer F.CrtYd) (width 0.05))
@@ -2666,7 +2666,7 @@
   (gr_arc (start 117.939108 117.973718) (end 118.398728 117.514099) (angle 90) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F6EB))
   (gr_arc (start 141.950973 117.973381) (end 141.491353 117.513762) (angle -90) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F6EA))
   (gr_line (start 147.148207 111.856908) (end 141.491353 117.513762) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F6E9))
-  (gr_circle (center 89.994567 129.982037) (end 89.994567 129.482037) (layer Edge.Cuts) (width 0.1))
+  (gr_circle (center 89.994567 129.982037) (end 89.994567 129.482037) (layer F.SilkS) (width 0.1))
   (gr_arc (start 89.999712 179.485392) (end 73.736256 149.079801) (angle 56.28320357) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F562))
   (gr_arc (start 89.995448 80.51609) (end 106.258904 110.921681) (angle 56.28320357) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F561))
   (gr_arc (start 139.458737 129.974682) (end 109.053146 146.238138) (angle 56.28320357) (layer Edge.Cuts) (width 0.1) (tstamp 55B8F551))
