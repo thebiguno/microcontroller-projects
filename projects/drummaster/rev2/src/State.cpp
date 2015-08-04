@@ -82,6 +82,7 @@ void State::poll(){
 		state = STATE_MENU; //TODO
 	}
 	else if (state == STATE_SCAN_FOLDERS){
+		/*
 		static std::vector<String> folders = getTopLevelFolders();
 		
 		int8_t encoder_state = encoder.read() / 2;
@@ -110,6 +111,7 @@ void State::poll(){
 			display.clear();
 			display.mark_dirty();
 		}
+		*/
 	}
 	else if (state == STATE_CALIBRATION){
 		int8_t encoder_state = encoder.read() / 2;

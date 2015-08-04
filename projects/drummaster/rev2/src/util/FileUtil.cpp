@@ -76,21 +76,3 @@ void copyFolderToFlash(const char* folderName, CharDisplay display){
 	delay(1000);
 	display.clear();
 }
-
-std::vector<String> getTopLevelFolders(){
-	std::vector<String> result;
-	result.push_back(String("<Cancel>"));
-	
-	File rootdir = SD.open("/");
-	while (1){
-		File f = rootdir.openNextFile();
-		if (!f) break;
-		if (f.isDirectory()) {
-			result.push_back(String(f.name()));
-		}
-		f.close();
-	}
-	rootdir.close();
-	
-	return result;
-}
