@@ -29,17 +29,17 @@ Hd44780_Shift::Hd44780_Shift(volatile uint8_t *e_port, uint8_t e_pin, volatile u
 	*(this->spi_port - 0x01) |= (this->mosi_bv | this->sclk_bv);
 	SPCR = _BV(SPE) | _BV(MSTR) | _BV(SPR0);
 	
-	this->init_display(function);
+//	this->init_display(function);		//TODO Without this line, it probably won't work... with it, it fails to compile.
 }
 
-void Hd44780_Shift::setByte(uint8_t b) {
+void Hd44780_Shift::write_byte(uint8_t b) {
 	*this->rs_port |= this->rs_bv;
 	SPDR = b;
 	while(!(SPSR & (1<<SPIF)));
 	_delay_us(64);
 	latch();
 }
-void Hd44780_Shift::cmd(uint8_t b) {
+void Hd44780_Shift::write_command(uint8_t b) {
 	*this->rs_port &= ~this->rs_bv;
 	SPDR = b;
 	while(!(SPSR & (1<<SPIF)));
