@@ -53,13 +53,16 @@ endif
 CDEFS+=-DF_CPU=$(F_CPU)
 
 #C and C++ flags
-CPPFLAGS += -mmcu=$(MMCU) -pedantic -Os -Wall
+CPPFLAGS += -mmcu=$(MMCU) -pedantic -g -Os -Wall
 
 #C flags only
 CFLAGS += -std=gnu99
 
 #C++ flags only
 CXXFLAGS += -std=gnu++11
+
+# linker options
+LDFLAGS = -mmcu=$(MMCU) -Os -Wl,--gc-sections
 
 CC = avr-gcc
 CXX = avr-g++
@@ -155,12 +158,7 @@ $(BUILDDIR)/%.o: %.cpp
 	@mkdir -p "$(dir $@)"
 	@$(CXX) $(CDEFS) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -c "$<"
 
-$(BUILDDIR)/%.o
-	@echo "[CXX]\t$<"
-	@mkdir -p "$(dir $@)"
-	@$(CXX) $(CDEFS) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -x c++ -include Arduino.h -c "$<"
-
-$(PROJECT).elf: $(OBJS) $(LDSCRIPT)
+$(PROJECT).elf: $(OBJS)
 	@echo "[LD]\t$@"
 	@$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS)
 
