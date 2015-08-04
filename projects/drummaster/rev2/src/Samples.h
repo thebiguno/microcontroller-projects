@@ -8,8 +8,10 @@
 #define SAMPLE_COUNT				12
 #define CHANNEL_COUNT				11
 
-//If 
-#define DOUBLE_HIT_THRESHOLD		20
+//Min time in millis between hits
+#define DOUBLE_HIT_THRESHOLD		25
+//Min increase between last hit and next before it is considered not a double hit
+#define DOUBLE_HIT_VELOCITY			10
 
 namespace digitalcave {
 
@@ -20,46 +22,48 @@ namespace digitalcave {
 			// fit properly depending on the SAMPLE_COUNT.  We keep the SAMPLE_COUNT
 			// for self-documenting purposes, but note that it can't really be changed
 			// and expected to work without other code changes to support it.
-			AudioPlaySerialRaw samples[SAMPLE_COUNT];
-			AudioMixer16 mixer;
-			AudioOutputI2S output;
-			AudioInputI2Sslave input;
+			AudioPlaySerialRaw _samples[SAMPLE_COUNT];
+			AudioMixer16 _mixer;
+			AudioOutputI2S _output;
+			AudioInputI2Sslave _input;
 			
 			//Samples to mixer
-			AudioConnection patchCord00;
-			AudioConnection patchCord01;
-			AudioConnection patchCord02;
-			AudioConnection patchCord03;
-			AudioConnection patchCord04;
-			AudioConnection patchCord05;
-			AudioConnection patchCord06;
-			AudioConnection patchCord07;
-			AudioConnection patchCord08;
-			AudioConnection patchCord09;
-			AudioConnection patchCord10;
-			AudioConnection patchCord11;
+			AudioConnection _patchCord00;
+			AudioConnection _patchCord01;
+			AudioConnection _patchCord02;
+			AudioConnection _patchCord03;
+			AudioConnection _patchCord04;
+			AudioConnection _patchCord05;
+			AudioConnection _patchCord06;
+			AudioConnection _patchCord07;
+			AudioConnection _patchCord08;
+			AudioConnection _patchCord09;
+			AudioConnection _patchCord10;
+			AudioConnection _patchCord11;
 			
 			//Input passthrough to mixer
-			AudioConnection patchCord12;
-			AudioConnection patchCord13;
+			AudioConnection _patchCord12;
+			AudioConnection _patchCord13;
 
 			//Mixer to output
-			AudioConnection patchCord14;
-			AudioConnection patchCord15;
+			AudioConnection _patchCord14;
+			AudioConnection _patchCord15;
 
 			//The index of this array is the sample index;
 			// the value is the channel which was last played
 			// on the given sample.  Init'd to 0xFF.
-			uint8_t sampleToChannelMap[SAMPLE_COUNT];
+			uint8_t _sampleToChannelMap[SAMPLE_COUNT];
 			
 			//The index of this array is the channel number;
 			// the value is the sample index which was last 
 			// played for the given channel.  Init'd to 0xFF.
-			uint8_t channelToSampleMap[CHANNEL_COUNT];
+			uint8_t _channelToSampleMap[CHANNEL_COUNT];
 			
 			//The time in millis in which this channel was last played.
 			// Used for double hit threshold detection.
-			uint32_t lastPlayedChannel[CHANNEL_COUNT];
+			uint32_t _lastPlayedChannel[CHANNEL_COUNT];
+			//The last played value.  Used in conjunction with lastPlayedChannel
+			uint8_t _lastPlayedValue[CHANNEL_COUNT];
 			
 			//Find the first available sample that is not currently playing; if all samples
 			// are playing, then find the oldest one to stop it.

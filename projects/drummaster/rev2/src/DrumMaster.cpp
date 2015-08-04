@@ -40,13 +40,14 @@ uint8_t readDrum(uint8_t channel){
 
 	//Enable ADC MUX, read value, and disable MUX again
 	digitalWriteFast(ADC_EN, 1);
-	delayMicroseconds(1);
+	delayMicroseconds(10);
 	uint8_t result = adc.analogRead(ADC_INPUT);
 	digitalWriteFast(ADC_EN, 0);
 	
 	if (result > MIN_VALUE){
 		//Reset the peak value
 		digitalWriteFast(DRAIN_EN, 1);
+		delay(1);
 	}
 	
 	return result;

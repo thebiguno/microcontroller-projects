@@ -43,6 +43,13 @@ void State::poll(){
 					encoder.write(0);
 				}
 				break;
+			case MENU_CALIBRATE:
+				display.write_text(0, 0, "Calibrate Channels  ", 20);
+				if (button.fallingEdge()){
+					state = STATE_CALIBRATION;
+					encoder.write(0);
+				}
+				break;
 			default:
 				display.write_text(0, 0, "Unknown Menu Option ", 20);
 				break;
@@ -102,6 +109,19 @@ void State::poll(){
 			state = STATE_MENU;
 			display.clear();
 			display.mark_dirty();
+		}
+	}
+	else if (state == STATE_CALIBRATION){
+		int8_t encoder_state = encoder.read() / 2;
+		if (encoder_state < 0) encoder.write((CHANNEL_COUNT - 1) * 2);
+		else if (encoder_state >= CHANNEL_COUNT) encoder.write(0);
+
+		snprintf(buf, sizeof(buf), "Ch. %2d     ", encoder_state);
+		display.write_text(1, 0, buf, 8);
+		
+		if (button.fallingEdge()){
+			//Start calibration routine
+			calibrateChannel(encoder_state, display, button);
 		}
 	}
 	else {

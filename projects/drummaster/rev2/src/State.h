@@ -11,6 +11,7 @@
 #include <SerialFlash.h>
 
 #include "DrumMaster.h"
+#include "util/DigitalPot.h"
 #include "util/FileUtil.h"
 
 #define PIN_RS							16
@@ -38,17 +39,20 @@
 #define STATE_MAIN_VOLUME				1
 //Change channel volume
 #define STATE_CHANNEL_VOLUME			2
-
 //Search folders mode.  Turning the encoder will scroll through all directories immediately below
 // the root folder on the SD card.
 #define STATE_SCAN_FOLDERS				3
+//Calibrate channels
+#define STATE_CALIBRATION				4
+
 
 
 #define MENU_MAIN_VOLUME				0
 #define MENU_CHANNEL_VOLUME				1
 #define MENU_LOAD_SAMPLES				2
+#define MENU_CALIBRATE					3
 
-#define MENU_COUNT						3
+#define MENU_COUNT						4
 
 namespace digitalcave {
 
