@@ -13,7 +13,7 @@ namespace digitalcave {
 			float volume = 0.5;		//TODO save last volume to EEPROM
 			
 		public:
-			MainVolume(CharDisplay display, Encoder encoder, Bounce button);
+			MainVolume();
 			virtual void handleAction();
 	};
 }

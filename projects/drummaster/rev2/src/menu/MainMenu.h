@@ -2,6 +2,9 @@
 #define MENUMAIN_H
 
 #include "Menu.h"
+#include "LoadSamples.h"
+#include "MainMenu.h"
+#include "MainVolume.h"
 
 namespace digitalcave {
 
@@ -10,8 +13,7 @@ namespace digitalcave {
 		private:
 
 		public:
-			MainMenu(CharDisplay display, Encoder encoder, Bounce button);
-			
+			MainMenu();
 			virtual void handleAction();
 	};
 }

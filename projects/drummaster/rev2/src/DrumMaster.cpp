@@ -14,7 +14,6 @@ using namespace digitalcave;
 //Constants
 #define MIN_VALUE					10
 
-State state;
 Samples samples;
 AudioControlSGTL5000 control;
 
@@ -66,6 +65,9 @@ int main(){
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
 	
+	//Instantiate the main menu object
+	MainMenu menu();
+	
 	//Set up ADC
 	adc.setResolution(8);
 	
@@ -78,11 +80,12 @@ int main(){
 	
 	//Turn on the audio chip
 	control.enable();
-	control.volume(state.get_volume());
+	//control.volume(state.get_volume());
+	control.volume(0.5);
 	
 	uint8_t channel = 0;
 	while (1){
-		state.poll();
+		Menu::poll();
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){

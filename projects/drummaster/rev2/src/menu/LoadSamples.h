@@ -16,7 +16,7 @@ namespace digitalcave {
 			std::vector<String> folders;
 			
 		public:
-			LoadSamples(CharDisplay display, Encoder encoder, Bounce button);
+			LoadSamples();
 			virtual void handleAction();
 	};
 }

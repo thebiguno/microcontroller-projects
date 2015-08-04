@@ -2,11 +2,27 @@
 #define MENU_H
 
 #include <stdlib.h>
-#include <stack>
 
 #include <Bounce.h>
 #include <CharDisplay.h>
 #include <Encoder.h>
+#include <Hd44780_Teensy.h>
+
+#include <stack>
+
+#define PIN_RS							16
+#define PIN_E							17
+#define PIN_D4							0
+#define PIN_D5							1
+#define PIN_D6							2
+#define PIN_D7							3
+
+#define DISPLAY_ROWS					4
+#define DISPLAY_COLS					20
+
+#define ENC_PUSH						15
+#define ENC_A							21
+#define ENC_B							20
 
 namespace digitalcave {
 
@@ -16,17 +32,18 @@ namespace digitalcave {
 			static std::stack<Menu> menuStack;
 			static char buf[21];	//Temp space for string operations
 
-			Menu();		//Prevent public instantiation
+			static Hd44780_Teensy hd44780;
+			static CharDisplay display;
+			static Encoder encoder;
+			static Bounce button;
 			
-			CharDisplay display;
-			Encoder encoder;
-			Bounce button;
+			Menu();		//Prevent public instantiation
 			
 			int16_t encoderState;
 
 		public:
 			//Calls the handleAction() method for the current top on the stack
-			static void handleCurrent();
+			static void poll();
 
 			//Go up one menu level if possible, and restore the state of the new
 			// menu level.

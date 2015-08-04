@@ -2,11 +2,7 @@
 
 using namespace digitalcave;
 
-LoadSamples::LoadSamples(CharDisplay display, Encoder encoder, Bounce button){
-	this->display = display;
-	this->encoder = encoder;
-	this->button = button;
-
+LoadSamples::LoadSamples(){
 	folders.push_back(String("<Cancel>"));
 	
 	File rootdir = SD.open("/");

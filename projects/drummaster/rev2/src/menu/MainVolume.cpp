@@ -4,10 +4,7 @@ using namespace digitalcave;
 
 extern AudioControlSGTL5000 control;
 
-MainVolume::MainVolume(CharDisplay display, Encoder encoder, Bounce button){
-	this->display = display;
-	this->encoder = encoder;
-	this->button = button;
+MainVolume::MainVolume(){
 }
 
 void MainVolume::handleAction(){
