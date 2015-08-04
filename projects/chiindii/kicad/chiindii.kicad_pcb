@@ -3,7 +3,7 @@
   (general
     (links 156)
     (no_connects 20)
-    (area 26.241795 23.241795 179.480553 179.557828)
+    (area 23.544343 23.241795 179.480553 189.519379)
     (thickness 1.6)
     (drawings 146)
     (tracks 619)
@@ -37,7 +37,7 @@
   )
 
   (setup
-    (last_trace_width 0.762)
+    (last_trace_width 0.1778)
     (user_trace_width 0.3048)
     (user_trace_width 0.508)
     (user_trace_width 0.762)
@@ -1421,7 +1421,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_1x02 (layer F.Cu) (tedit 54EA090C) (tstamp 55B9EEB0)
-    (at 40.132 135.128)
+    (at 42.545 138.43)
     (descr "Through hole pin header")
     (tags "pin header")
     (path /55B9F483)
