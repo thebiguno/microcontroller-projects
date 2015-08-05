@@ -29,7 +29,7 @@ namespace digitalcave {
 	class Menu {
 	
 		protected:
-			static std::vector<Menu> menuStack;
+			static std::vector<Menu*> menuStack;
 			static char buf[21];	//Temp space for string operations
 
 			static Hd44780_Teensy hd44780;
@@ -37,7 +37,7 @@ namespace digitalcave {
 			static Encoder encoder;
 			static Bounce button;
 			
-			Menu();		//Prevent public instantiation
+			//Menu();		//Prevent public instantiation
 			
 			int16_t encoderState;
 
@@ -51,7 +51,7 @@ namespace digitalcave {
 			
 			//Navigate down to the specified menu, saving state in the current
 			// one and placing the new menu on the stack.
-			void down(Menu childMenu);
+			void down(Menu* childMenu);
 			
 			//Check the encoder and button state to see if we need to do anything.
 			// Update the display as needed.  Can call up() to return to higher 
