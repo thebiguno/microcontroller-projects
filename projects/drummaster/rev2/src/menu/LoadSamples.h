@@ -17,7 +17,7 @@ namespace digitalcave {
 			
 		public:
 			LoadSamples();
-			virtual void handleAction();
+			void handleAction();
 	};
 }
 

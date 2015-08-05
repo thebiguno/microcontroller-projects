@@ -7,7 +7,7 @@
 #include <SPI.h>
 
 #include "Samples.h"
-#include "menu/MainMenu.h"
+#include "menu/Menu.h"
 
 #define MOSI							7
 #define MISO							12

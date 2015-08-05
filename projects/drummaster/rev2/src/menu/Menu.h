@@ -37,8 +37,6 @@ namespace digitalcave {
 			static Encoder encoder;
 			static Bounce button;
 			
-			//Menu();		//Prevent public instantiation
-			
 			int16_t encoderState;
 
 		public:

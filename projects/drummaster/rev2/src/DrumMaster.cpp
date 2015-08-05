@@ -65,6 +65,9 @@ int main(){
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
 	
+	//Encoder pushbutton
+	pinMode(ENC_PUSH, INPUT_PULLUP);
+	
 	//Set up ADC
 	adc.setResolution(8);
 	
@@ -85,7 +88,6 @@ int main(){
 	
 	uint8_t channel = 0;
 	while (1){
-		delay(100);
 		Menu::poll();
 		
 		uint8_t value = readDrum(channel);

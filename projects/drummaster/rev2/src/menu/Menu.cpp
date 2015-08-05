@@ -4,28 +4,21 @@
 using namespace digitalcave;
 
 //Initialize static member variables
+std::vector<Menu*> Menu::menuStack;
+char Menu::buf[21];
+
 Hd44780_Teensy Menu::hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, PIN_RS, PIN_E, PIN_D4, PIN_D5, PIN_D6, PIN_D7);
 CharDisplay Menu::display(&hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 Encoder Menu::encoder(ENC_A, ENC_B);
 Bounce Menu::button(ENC_PUSH, 25);
-char Menu::buf[21];
-std::vector<Menu*> Menu::menuStack;
-
-// Menu::Menu(){
-// 	//Do nothing; implemented in sub class
-// }
-
-// void Menu::handleAction(){
-// 	//Do nothing; implemented in sub class
-// 	Serial.println("Menu.cpp");
-// }
 
 void Menu::poll(){
+	button.update();
+	
 	if (menuStack.size() == 0){
-		menuStack.push_back(new MainMenu());
+		menuStack.push_back(&MenuState::mainMenu);
 	}
 	menuStack.back()->handleAction();
-	Serial.println((uint32_t) &(menuStack.back()));
 	display.refresh();
 }
 
@@ -42,6 +35,7 @@ void Menu::down(Menu* newMenu) {
 	encoder.write(newMenu->encoderState);
 }
 
+//Add some functions needed for vector
 namespace std {
   void __throw_bad_alloc(){
     Serial.println("Unable to allocate memory");

@@ -5,6 +5,7 @@ using namespace digitalcave;
 extern AudioControlSGTL5000 control;
 
 MainVolume::MainVolume(){
+	encoder.write(control.getVolume());
 }
 
 void MainVolume::handleAction(){

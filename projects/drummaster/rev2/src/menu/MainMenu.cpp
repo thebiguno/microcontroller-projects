@@ -7,7 +7,6 @@ MainMenu::MainMenu(){
 
 void MainMenu::handleAction(){
 	#define MENU_COUNT 4
-	Serial.println("MainMenu.cpp");
 
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
@@ -18,7 +17,7 @@ void MainMenu::handleAction(){
 		case 0:
 			display.write_text(0, 0, "Main Volume         ", 20);
 			if (button.fallingEdge()){
-				down(new MainVolume());
+				down(&MenuState::mainVolume);
 			}
 			break;
 		case 1:
@@ -32,7 +31,7 @@ void MainMenu::handleAction(){
 		case 2:
 			display.write_text(0, 0, "Load Samples        ", 20);
 			if (button.fallingEdge()){
-				down(new LoadSamples());
+				down(&MenuState::loadSamples);
 			}
 			break;
 		case 3:

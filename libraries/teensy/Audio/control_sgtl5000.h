@@ -34,7 +34,8 @@ class AudioControlSGTL5000 : public AudioControl
 public:
 	bool enable(void);
 	bool disable(void) { return false; }
-	bool volume(float n) { return volumeInteger(n * 129 + 0.499); }
+	bool volume(float n) { volumeFloat = n; return volumeInteger(n * 129 + 0.499); }
+	float getVolume() { return volumeFloat; }
 	bool inputLevel(float n) {return false;}
 	bool muteHeadphone(void) { return write(0x0024, ana_ctrl | (1<<4)); }
 	bool unmuteHeadphone(void) { return write(0x0024, ana_ctrl & ~(1<<4)); }
@@ -95,6 +96,7 @@ protected:
 	unsigned int modify(unsigned int reg, unsigned int val, unsigned int iMask);
 	unsigned short dap_audio_eq_band(uint8_t bandNum, float n);
 private:
+	float volumeFloat;	//Last set value to volume(float)
 	bool semi_automated;
 	void automate(uint8_t dap, uint8_t eq);
 	void automate(uint8_t dap, uint8_t eq, uint8_t filterCount);

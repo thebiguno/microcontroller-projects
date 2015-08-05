@@ -2,9 +2,7 @@
 #define MENUMAIN_H
 
 #include "Menu.h"
-#include "LoadSamples.h"
-#include "MainMenu.h"
-#include "MainVolume.h"
+#include "../MenuState.h"
 
 namespace digitalcave {
 
