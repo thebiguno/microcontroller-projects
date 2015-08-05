@@ -2,7 +2,6 @@
 #define MENUMAIN_H
 
 #include "Menu.h"
-#include "../MenuState.h"
 
 namespace digitalcave {
 
@@ -12,7 +11,7 @@ namespace digitalcave {
 
 		public:
 			MainMenu();
-			void handleAction();
+			Menu* handleAction();
 	};
 }
 

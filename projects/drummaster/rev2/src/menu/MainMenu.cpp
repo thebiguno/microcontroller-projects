@@ -2,10 +2,13 @@
 
 using namespace digitalcave;
 
+extern Menu* mainVolume;
+extern Menu* loadSamples;
+
 MainMenu::MainMenu(){
 }
 
-void MainMenu::handleAction(){
+Menu* MainMenu::handleAction(){
 	#define MENU_COUNT 4
 
 	int8_t menuItem = encoder.read() / 2;
@@ -17,7 +20,7 @@ void MainMenu::handleAction(){
 		case 0:
 			display.write_text(0, 0, "Main Volume         ", 20);
 			if (button.fallingEdge()){
-				down(&MenuState::mainVolume);
+				return mainVolume;
 			}
 			break;
 		case 1:
@@ -31,7 +34,7 @@ void MainMenu::handleAction(){
 		case 2:
 			display.write_text(0, 0, "Load Samples        ", 20);
 			if (button.fallingEdge()){
-				down(&MenuState::loadSamples);
+				return loadSamples;
 			}
 			break;
 		case 3:
@@ -45,4 +48,6 @@ void MainMenu::handleAction(){
 			display.write_text(0, 0, "Unknown Menu Option ", 20);
 			break;
 	}
+	
+	return NULL;
 }

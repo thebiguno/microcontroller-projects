@@ -2,6 +2,8 @@
 
 using namespace digitalcave;
 
+extern Menu* mainMenu;
+
 LoadSamples::LoadSamples(){
 	folders.push_back(String("<Cancel>"));
 	
@@ -17,22 +19,22 @@ LoadSamples::LoadSamples(){
 	rootdir.close();
 }
 
-void LoadSamples::handleAction(){
-	int8_t encoder_state = encoder.read() / 2;
-	if (encoder_state < 0){
-		encoder_state = folders.size() - 1;
+Menu* LoadSamples::handleAction(){
+	int8_t selectedFolder = encoder.read() / 2;
+	if (selectedFolder < 0){
+		selectedFolder = folders.size() - 1;
 		encoder.write((folders.size() - 1) * 2);
 	}
-	else if (encoder_state >= (int32_t) folders.size()){
-		encoder_state = 0;
+	else if (selectedFolder >= (int32_t) folders.size()){
+		selectedFolder = 0;
 		encoder.write(0);
 	}
 	
-	snprintf(buf, sizeof(buf), "%s                   ", folders[encoder_state].c_str());
+	snprintf(buf, sizeof(buf), "%s                   ", folders[selectedFolder].c_str());
 	display.write_text(1, 0, buf, 20);
 	
 	if (button.fallingEdge()){
-		if (encoder_state != 0){
+		if (selectedFolder != 0){
 			uint8_t id[3];
 			SerialFlash.readID(id);
 			uint32_t size = SerialFlash.capacity(id);
@@ -55,7 +57,7 @@ void LoadSamples::handleAction(){
 				}
 			}
 
-			File folder = SD.open(folders[encoder_state].c_str());
+			File folder = SD.open(folders[selectedFolder].c_str());
 			while (1) {
 				// open a file from the SD card
 				File f = folder.openNextFile();
@@ -87,7 +89,7 @@ void LoadSamples::handleAction(){
 						display.refresh();
 						delay(1000);
 						display.clear();
-						return;
+						return mainMenu;
 					}
 				}
 				else {
@@ -96,7 +98,7 @@ void LoadSamples::handleAction(){
 					display.refresh();
 					delay(1000);
 					display.clear();
-					return;
+					return mainMenu;
 				}
 				f.close();
 			}
@@ -107,6 +109,8 @@ void LoadSamples::handleAction(){
 			display.clear();
 		
 		}
-		up();
+		
+		return mainMenu;
 	}
+	return NULL;
 }

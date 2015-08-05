@@ -17,6 +17,13 @@ using namespace digitalcave;
 Samples samples;
 AudioControlSGTL5000 control;
 
+MainMenu* mainMenu = new MainMenu();
+MainVolume* mainVolume = new MainVolume();
+LoadSamples* loadSamples = new LoadSamples();
+
+MenuState menuState(mainMenu);
+
+
 ADC adc;
 
 
@@ -83,12 +90,9 @@ int main(){
 	//control.volume(state.get_volume());
 	control.volume(0.5);
 	
-	//MainMenu *mainMenu = new MainMenu();
-	//mainMenu->down(*mainMenu);
-	
 	uint8_t channel = 0;
 	while (1){
-		Menu::poll();
+		menuState.poll();
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){

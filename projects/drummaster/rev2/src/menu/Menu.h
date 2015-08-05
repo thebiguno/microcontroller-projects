@@ -29,9 +29,9 @@ namespace digitalcave {
 	class Menu {
 	
 		protected:
-			static std::vector<Menu*> menuStack;
 			static char buf[21];	//Temp space for string operations
 
+		public:
 			static Hd44780_Teensy hd44780;
 			static CharDisplay display;
 			static Encoder encoder;
@@ -39,22 +39,10 @@ namespace digitalcave {
 			
 			int16_t encoderState;
 
-		public:
-			//Calls the handleAction() method for the current top on the stack
-			static void poll();
-
-			//Go up one menu level if possible, and restore the state of the new
-			// menu level.
-			void up();
-			
-			//Navigate down to the specified menu, saving state in the current
-			// one and placing the new menu on the stack.
-			void down(Menu* childMenu);
-			
 			//Check the encoder and button state to see if we need to do anything.
-			// Update the display as needed.  Can call up() to return to higher 
-			// level menus.
-			virtual void handleAction();
+			// Update the display as needed.  Return NULL to stay in the same 
+			// menu, or a Menu pointer to change to that menu item.
+			virtual Menu* handleAction();
 	};
 }
 

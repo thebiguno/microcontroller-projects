@@ -3,12 +3,13 @@
 using namespace digitalcave;
 
 extern AudioControlSGTL5000 control;
+extern Menu* mainMenu;
 
 MainVolume::MainVolume(){
 	encoder.write(control.getVolume());
 }
 
-void MainVolume::handleAction(){
+Menu* MainVolume::handleAction(){
 	int8_t encoderVolume = encoder.read();
 	if (volume * 100 != encoderVolume){
 		if (encoderVolume > 100){
@@ -26,6 +27,8 @@ void MainVolume::handleAction(){
 	display.write_text(1, 0, buf, 4);
 	
 	if (button.fallingEdge()){
-		up();
+		return mainMenu;
 	}
+	
+	return NULL;
 }

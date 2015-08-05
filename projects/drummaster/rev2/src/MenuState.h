@@ -1,17 +1,22 @@
 #ifndef MENUSTATE_H
 #define MENUSTATE_H
 
-#include "menu/MainMenu.h"
-#include "menu/LoadSamples.h"
-#include "menu/MainVolume.h"
+#include "menu/Menu.h"
 
 namespace digitalcave {
 
 	class MenuState {
+		private:
+			Menu *current;
+	
 		public:
-			static MainMenu mainMenu;
-			static MainVolume mainVolume;
-			static LoadSamples loadSamples;
+			MenuState(Menu* menu);
+		
+			//Calls the handleAction() method for the current menu
+			void poll();
+
+			//Change state to the specified menu
+			void change(Menu* newMenu);
 	};
 }
 
