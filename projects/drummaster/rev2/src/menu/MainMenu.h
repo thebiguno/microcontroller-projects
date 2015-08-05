@@ -14,7 +14,7 @@ namespace digitalcave {
 
 		public:
 			MainMenu();
-			virtual void handleAction();
+			void handleAction();
 	};
 }
 

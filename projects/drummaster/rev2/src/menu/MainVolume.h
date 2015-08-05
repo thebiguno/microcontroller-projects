@@ -14,7 +14,7 @@ namespace digitalcave {
 			
 		public:
 			MainVolume();
-			virtual void handleAction();
+			void handleAction();
 	};
 }
 

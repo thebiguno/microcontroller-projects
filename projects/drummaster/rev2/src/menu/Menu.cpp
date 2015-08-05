@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "MainMenu.h"
 
 using namespace digitalcave;
 
@@ -7,22 +8,26 @@ Hd44780_Teensy Menu::hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8
 CharDisplay Menu::display(&hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 Encoder Menu::encoder(ENC_A, ENC_B);
 Bounce Menu::button(ENC_PUSH, 25);
-std::stack<Menu> Menu::menuStack;
-
+char Menu::buf[21];
+std::vector<Menu> Menu::menuStack;
 
 void Menu::poll(){
-	menuStack.top().handleAction();
+	Serial.println(menuStack.size());
+	if (menuStack.size() > 0){
+		menuStack.back().handleAction();
+	}
+	display.refresh();
 }
 
 void Menu::up(){
 	if (menuStack.size() > 1){
-		menuStack.pop();
-		encoder.write(menuStack.top().encoderState);
+		menuStack.pop_back();
+		encoder.write(menuStack.back().encoderState);
 	}
 }
 
 void Menu::down(Menu newMenu) {
 	encoderState = encoder.read();
-	menuStack.push(newMenu);
+	menuStack.push_back(newMenu);
 	encoder.write(newMenu.encoderState);
 }

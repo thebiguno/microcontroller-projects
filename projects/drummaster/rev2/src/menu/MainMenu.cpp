@@ -3,9 +3,6 @@
 using namespace digitalcave;
 
 MainMenu::MainMenu(){
-	if (menuStack.size() == 0){
-//		menuStack.push(this);
-	}
 }
 
 void MainMenu::handleAction(){

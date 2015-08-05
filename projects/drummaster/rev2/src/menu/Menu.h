@@ -8,7 +8,7 @@
 #include <Encoder.h>
 #include <Hd44780_Teensy.h>
 
-#include <stack>
+#include <vector>
 
 #define PIN_RS							16
 #define PIN_E							17
@@ -29,7 +29,7 @@ namespace digitalcave {
 	class Menu {
 	
 		protected:
-			static std::stack<Menu> menuStack;
+			static std::vector<Menu> menuStack;
 			static char buf[21];	//Temp space for string operations
 
 			static Hd44780_Teensy hd44780;

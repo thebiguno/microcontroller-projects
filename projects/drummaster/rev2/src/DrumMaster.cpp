@@ -53,6 +53,7 @@ uint8_t readDrum(uint8_t channel){
 }
 
 int main(){
+	delay(2000);
 	//Turn on the audio chip
 	control.enable();
 	control.volume(0.5);
@@ -66,7 +67,9 @@ int main(){
 	pinMode(ADC_EN, OUTPUT);
 	
 	//Instantiate the main menu object
-	MainMenu menu();
+	Serial.println("1");
+	//MainMenu menu();
+	Serial.println("2");
 	
 	//Set up ADC
 	adc.setResolution(8);
@@ -85,6 +88,8 @@ int main(){
 	
 	uint8_t channel = 0;
 	while (1){
+		delay(100);
+		Serial.println("Foo");
 		Menu::poll();
 		
 		uint8_t value = readDrum(channel);
