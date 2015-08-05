@@ -4,79 +4,51 @@
 
 #include <stdint.h>
 
-class PID
-{
+//Constants used in some of the functions below
+#define DIRECTION_NORMAL	0
+#define DIRECTION_REVERSE	1
 
-
+class PID {
+	private:
+		//Pid tuning variables
+		double kp, ki, kd;
+		
+		//Direction (normal or reverse)
+		uint8_t direction;
+		
+		//Period of computation
+		uint16_t period;
+		
+		//Output limits
+		double outMin, outMax;
+		
+		//State variables
+		uint32_t lastTime;
+		double integratedError;
+		double lastMeasured;
+		
 	public:
 
-	//Constants used in some of the functions below
-	#define AUTOMATIC	1
-	#define MANUAL	0
-	#define DIRECT	0
-	#define REVERSE	1
-
-	//commonly used functions **************************************************************************
-		PID(double*, double*, double*,				// * constructor.	links the PID to the Input, Output, and 
-				double, double, double, int,			//	 Setpoint.	Initial tuning parameters are also set here
-				uint32_t time);									 
-	
-		void SetMode(int Mode);							 // * sets PID to either Manual (0) or Auto (non-0)
+		//Constructor
+		PID(double kp, double ki, double kd, uint8_t direction, uint32_t period, uint32_t time);
 
 		// Perform the actual PID calculation.  It should be called repeatedly in the main loop. 
-		// ON/OFF and calculation frequency can be set using SetMode SetSampleTime respectively
-		bool Compute(uint32_t time);	
+		// ON/OFF and calculation frequency can be set using setMode and setSampleTime respectively.
+		// Returns non-zero if new output is computed, zero otherwise.  Passes the output
+		// back by reference.
+		uint8_t compute(double setPoint, double measured, double* output, uint32_t time);
 
-		void SetOutputLimits(double, double); //clamps the output to a specific range. 0-255 by default, but
-											//it's likely the user will want to change this depending on
-											//the application
+		//Clamps the output to a specific range. (0-255 by default)
+		void setOutputLimits(double min, double max);
 	
-
-
-	//available but not commonly used functions ********************************************************
-		void SetTunings(double, double,			 // * While most users will set the tunings once in the 
-										double);				 		//	 constructor, this function gives the user the option
-																					//	 of changing tunings during runtime for Adaptive control
-	void SetControllerDirection(int);		// * Sets the Direction, or "Action" of the controller. DIRECT
-											//	 means the output will increase when error is positive. REVERSE
-											//	 means the opposite.	it's very unlikely that this will be needed
-											//	 once it is set in the constructor.
-	void SetSampleTime(int);							// * sets the frequency, in Milliseconds, with which 
-																					//	 the PID calculation is performed.	default is 100
-											
-											
-											
-	//Display functions ****************************************************************
-	double GetKp();							// These functions query the pid for interal values.
-	double GetKi();							//	they were created mainly for the pid front-end,
-	double GetKd();							// where it's important to know what is actually 
-	int GetMode();							//	inside the PID.
-	int GetDirection();						//
-
-	private:
-	void Initialize();
-	
-	double dispKp;				// * we'll hold on to the tuning parameters in user-entered 
-	double dispKi;				//	 format for display purposes
-	double dispKd;				//
+		//Change PID tunings
+		void setTunings(double kp, double ki, double kd);
 		
-	double kp;									// * (P)roportional Tuning Parameter
-	double ki;									// * (I)ntegral Tuning Parameter
-	double kd;									// * (D)erivative Tuning Parameter
+		//Sets the direction.  Normal means output will increase if error is positive.  Reverse is the opposite.
+		void setDirection(uint8_t direction);
 
-	int controllerDirection;
-
-		double *myInput;							// * Pointers to the Input, Output, and Setpoint variables
-		double *myOutput;						 //	 This creates a hard link between the variables and the 
-		double *mySetpoint;					 //	 PID, freeing the user from having to constantly tell us
-																	//	 what these values are.	with pointers we'll just know.
-				
-	unsigned long lastTime;
-	double ITerm, lastInput;
-
-	unsigned long SampleTime;
-	double outMin, outMax;
-	bool inAuto;
+		// Set the period (ms) at which the PID calculation is performed.
+		void setPeriod(uint16_t newPeriod);
 };
 #endif
 
