@@ -79,6 +79,8 @@ int main(){
 	
 	//Set up ADC
 	adc.setResolution(8);
+	adc.setAveraging(4);
+	adc.setConversionSpeed(ADC_LOW_SPEED);
 	
 	//Audio shield SD / flash setup
 	SPI.setMOSI(MOSI);
@@ -97,8 +99,7 @@ int main(){
 	
 	//Turn on the audio chip
 	control.enable();
-	//control.volume(state.get_volume());
-	control.volume(0.5);
+	control.volume(0.8);	//TODO Load from EEPROM
 	
 	uint8_t channel = 0;
 	while (1){

@@ -91,18 +91,20 @@ void Samples::play(uint8_t channel, uint8_t value){
 			break;
 	}
 	
-	//Double trigger detection
+	//Double trigger detection.  If this hit is within DOUBLE_HIT_THRESHOLD millis of the last
+	// hit, then we will either adjust the previously played sample to match this new (louder)
+	// volume, or we will ignore it.
 	if (_lastPlayedChannel[channel] + DOUBLE_HIT_THRESHOLD > millis()){
+		_lastPlayedChannel[channel] = millis();
 		if (_lastPlayedValue[channel] < value){
 			//Change the last volume to the higher (new) value and stop processing
 			_mixer.gain(_channelToSampleMap[channel], volume / 2);
 			//TODO Change the sample + volume to match the highest value
-			Serial.println("Adjusted last hit");
-			_lastPlayedChannel[channel] = millis();
+			//Serial.println("Adjusted last hit");
 			return;
 		}
 		else {
-			Serial.println("Ignoring double trigger");
+			//Serial.println("Ignoring double trigger");
 			return;
 		}
 	}

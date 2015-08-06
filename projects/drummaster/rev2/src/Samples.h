@@ -9,9 +9,7 @@
 #define CHANNEL_COUNT				11
 
 //Min time in millis between hits
-#define DOUBLE_HIT_THRESHOLD		25
-//Min increase between last hit and next before it is considered not a double hit
-#define DOUBLE_HIT_VELOCITY			10
+#define DOUBLE_HIT_THRESHOLD		10
 
 namespace digitalcave {
 
