@@ -14,9 +14,15 @@ using namespace digitalcave;
 //Constants
 #define MIN_VALUE					10
 
-State state;
 Samples samples;
 AudioControlSGTL5000 control;
+
+MainMenu* mainMenu;
+MainVolume* mainVolume;
+LoadSamples* loadSamples;
+
+MenuState* menuState;
+
 
 ADC adc;
 
@@ -40,13 +46,14 @@ uint8_t readDrum(uint8_t channel){
 
 	//Enable ADC MUX, read value, and disable MUX again
 	digitalWriteFast(ADC_EN, 1);
-	delayMicroseconds(1);
+	delayMicroseconds(10);
 	uint8_t result = adc.analogRead(ADC_INPUT);
 	digitalWriteFast(ADC_EN, 0);
 	
 	if (result > MIN_VALUE){
 		//Reset the peak value
 		digitalWriteFast(DRAIN_EN, 1);
+		delay(1);
 	}
 	
 	return result;
@@ -65,6 +72,9 @@ int main(){
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
 	
+	//Encoder pushbutton
+	pinMode(ENC_PUSH, INPUT_PULLUP);
+	
 	//Set up ADC
 	adc.setResolution(8);
 	
@@ -75,13 +85,20 @@ int main(){
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
 	
+	mainMenu = new MainMenu();
+	mainVolume = new MainVolume();
+	loadSamples = new LoadSamples();
+
+	menuState = new MenuState(mainMenu);
+	
 	//Turn on the audio chip
 	control.enable();
-	control.volume(state.get_volume());
+	//control.volume(state.get_volume());
+	control.volume(0.5);
 	
 	uint8_t channel = 0;
 	while (1){
-		state.poll();
+		menuState->poll();
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){

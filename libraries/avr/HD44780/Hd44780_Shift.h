@@ -35,7 +35,9 @@ namespace digitalcave {
 			 */
 			Hd44780_Shift(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *rs_port, uint8_t rs_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function);
 
-			virtual void setByte(uint8_t b);
+			// Implementation of virtual functions declared in superclass
+			virtual void write_byte(uint8_t b);
+			virtual void write_command(uint8_t c);
 	};
 }
 

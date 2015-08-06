@@ -69,6 +69,7 @@ int Bounce::read()
 int Bounce::debounce() {
 	
 	uint8_t newState = digitalRead(pin);
+	Serial.println("0");
 	if (state != newState ) {
   		if (millis() - previous_millis >= interval_millis) {
   			previous_millis = millis();

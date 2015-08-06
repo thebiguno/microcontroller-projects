@@ -1,6 +1,0 @@
--Install minibian
--Increase root partition size to about 900MB
--Install aptitude
--Mark everything as auto except openssh-server, raspberrypi-bootloader.  Remove packages that are no longer required.
--Run aptitude purge '~c' to purge config of removed packages
--Install python-pygame, python-rpi.gpio, python-serial, vim

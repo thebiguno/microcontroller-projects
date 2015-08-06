@@ -3,69 +3,51 @@
 using namespace digitalcave;
 
 Samples::Samples():
-	patchCord00(samples[0],  0, mixer, 0),
-	patchCord01(samples[1],  0, mixer, 1),
-	patchCord02(samples[2],  0, mixer, 2),
-	patchCord03(samples[3],  0, mixer, 3),
-	patchCord04(samples[4],  0, mixer, 4),
-	patchCord05(samples[5],  0, mixer, 5),
-	patchCord06(samples[6],  0, mixer, 6),
-	patchCord07(samples[7],  0, mixer, 7),
-	patchCord08(samples[8],  0, mixer, 8),
-	patchCord09(samples[9],  0, mixer, 9),
-	patchCord10(samples[10], 0, mixer, 10),
-	patchCord11(samples[11], 0, mixer, 11),
+	_patchCord00(_samples[0],  0, _mixer, 0),
+	_patchCord01(_samples[1],  0, _mixer, 1),
+	_patchCord02(_samples[2],  0, _mixer, 2),
+	_patchCord03(_samples[3],  0, _mixer, 3),
+	_patchCord04(_samples[4],  0, _mixer, 4),
+	_patchCord05(_samples[5],  0, _mixer, 5),
+	_patchCord06(_samples[6],  0, _mixer, 6),
+	_patchCord07(_samples[7],  0, _mixer, 7),
+	_patchCord08(_samples[8],  0, _mixer, 8),
+	_patchCord09(_samples[9],  0, _mixer, 9),
+	_patchCord10(_samples[10], 0, _mixer, 10),
+	_patchCord11(_samples[11], 0, _mixer, 11),
 	
-	patchCord12(input, 0, mixer, 12),
-	patchCord13(input, 1, mixer, 13),
+	_patchCord12(_input, 0, _mixer, 12),
+	_patchCord13(_input, 1, _mixer, 13),
 
-	patchCord14(mixer, 0, output, 0),
-	patchCord15(mixer, 0, output, 1)
+	_patchCord14(_mixer, 0, _output, 0),
+	_patchCord15(_mixer, 0, _output, 1)
 {	
 	//Allocate enough memory for audio
 	AudioMemory(16);
 	
 	//Initialize maps
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
-		this->sampleToChannelMap[i] = 0xFF;
+		_sampleToChannelMap[i] = 0xFF;
 	}
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
-		this->channelToSampleMap[i] = 0xFF;
-	}
-	
-	//Set the gain for the pass through channels
-	this->mixer.gain(12, 0.5);
-	this->mixer.gain(13, 0.5);
-	
-	//Search through the files on flash and see what samples are available
-	SerialFlash.opendir();
-	char filename[64];
-	uint32_t filesize;
-	
-	while (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
-		String drum = String(filename).substring(0, 2);
-		uint8_t velocity = String(filename).charAt(3) - 0x30;
-		char sample = String(filename).charAt(5);
-		
-		if (drum == "DX") {
-			//TODO
-		}
+		_channelToSampleMap[i] = 0xFF;
 	}
 }
+
 
 uint8_t Samples::findAvailableSample(){
 	uint8_t oldestSample = 0;
 	uint16_t oldestSamplePosition = 0;
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){		//TODO
-		if (this->samples[i].isPlaying() == 0){
+		if (_samples[i].isPlaying() == 0){
 			return i;
 		}
-		else if (this->samples[i].positionMillis() > oldestSamplePosition){
-			oldestSamplePosition = this->samples[i].positionMillis();
+		else if (_samples[i].positionMillis() > oldestSamplePosition){
+			oldestSamplePosition = _samples[i].positionMillis();
 			oldestSample = i;
 		}
 	}
-	this->samples[oldestSample].stop();
+	_samples[oldestSample].stop();
 	return oldestSample;
 }
 
@@ -108,35 +90,57 @@ void Samples::play(uint8_t channel, uint8_t value){
 			break;
 	}
 	
-	//Check if this channel was recently played.  If it was, check the value; we will increase
-	// the gain for higher values, but will not change it for lower values.
-	if (millis() - this->lastPlayedChannel[channel] < DOUBLE_HIT_THRESHOLD){
-		//TODO Change the sample + volume to match the highest value
-		return;
+	Serial.print("Sample: ");
+	Serial.print(value);
+	Serial.print(",");
+	Serial.println(millis());
+	
+	//Double trigger detection
+	if (_lastPlayedChannel[channel] + DOUBLE_HIT_THRESHOLD > millis()){
+		if (_lastPlayedValue[channel] < value){
+			//Change the last volume to the higher (new) value and stop processing
+			_mixer.gain(_channelToSampleMap[channel], volume / 2);
+			//TODO Change the sample + volume to match the highest value
+			Serial.println("Adjusted last hit");
+			_lastPlayedChannel[channel] = millis();
+			return;
+		}
+		else {
+			Serial.println("Ignoring double trigger");
+			return;
+		}
 	}
+// 	else {
+// 		_lastPlayedChannel[channel] = millis();
+// 		//Change the last volume to the higher (new) value and return
+// 		_mixer.gain(_channelToSampleMap[channel], volume / 2);
+// 		//TODO Change the sample + volume to match the highest value
+// 		return;
+// 	}
 	
-	uint8_t c = this->findAvailableSample();
-	this->mixer.gain(c, volume / 2);
-	this->samples[c].play("RD00.RAW");			//TODO Change to be dynamic
+	uint8_t c = findAvailableSample();
+	_mixer.gain(c, volume / 2);
+	_samples[c].play("SN00.RAW");			//TODO Change to be dynamic
 	
-	this->sampleToChannelMap[c] = channel;
-	this->channelToSampleMap[channel] = c;
-	this->lastPlayedChannel[channel] = millis();
+	_sampleToChannelMap[c] = channel;
+	_channelToSampleMap[channel] = c;
+	_lastPlayedChannel[channel] = millis();
+	_lastPlayedValue[channel] = value;
 	
-	Serial.print("Playing sample index ");
-	Serial.print(c);
-	Serial.print(" at volume ");
-	Serial.print(volume);
-	Serial.println();
+	//Serial.print("Playing sample index ");
+	//Serial.print(c);
+	//Serial.print(" at volume ");
+	//Serial.print(volume);
+	//Serial.println();
 	
-	Serial.print("CPU: ");
-	Serial.print(AudioProcessorUsage());
-	Serial.print(",");
-	Serial.print(AudioProcessorUsageMax());
-	Serial.print("    ");
-	Serial.print("Memory: ");
-	Serial.print(AudioMemoryUsage());
-	Serial.print(",");
-	Serial.print(AudioMemoryUsageMax());
-	Serial.println();
+	//Serial.print("CPU: ");
+	//Serial.print(AudioProcessorUsage());
+	//Serial.print(",");
+	//Serial.print(AudioProcessorUsageMax());
+	//Serial.print("    ");
+	//Serial.print("Memory: ");
+	//Serial.print(AudioMemoryUsage());
+	//Serial.print(",");
+	//Serial.print(AudioMemoryUsageMax());
+	//Serial.println();
 }
