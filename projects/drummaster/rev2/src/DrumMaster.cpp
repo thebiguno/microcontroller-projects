@@ -2,19 +2,35 @@
 
 using namespace digitalcave;
 
-//Pin assignments
-#define MUX0						0
-#define MUX1						1
-#define MUX2						2
-#define MUX3						3
-#define DRAIN_EN					4
-#define ADC_EN						5
-#define ADC_INPUT					A14
+Pad pads[PAD_COUNT] = {
+	Pad(0),
+	Pad(1),
+	Pad(2),
+	Pad(3),
+	Pad(4),
+	Pad(5),
+	Pad(6),
+	Pad(7),
+	Pad(8),
+	Pad(9),
+	Pad(10)	//TODO This is HiHat
+};
 
-//Constants
-#define MIN_VALUE					10
+Sample samples[SAMPLE_COUNT] = {
+	Sample(0),
+	Sample(1),
+	Sample(2),
+	Sample(3),
+	Sample(4),
+	Sample(5),
+	Sample(6),
+	Sample(7),
+	Sample(8),
+	Sample(9),
+	Sample(10),
+	Sample(11)
+};
 
-Samples samples;
 AudioControlSGTL5000 control;
 
 MainMenu* mainMenu;
@@ -25,41 +41,37 @@ CalibratePad* calibratePad;
 
 MenuState* menuState;
 
-
-ADC adc;
-
-
-uint8_t readDrum(uint8_t channel){
-	if (channel >= 8) return 0;		//TODO Remove on real board; breadboard MUX only have 8 inputs
-	
-	//Disable both MUXs
-	digitalWriteFast(ADC_EN, 0);
-	digitalWriteFast(DRAIN_EN, 0);
-	
-	delayMicroseconds(1);
-	
-	//Set channel
-	digitalWriteFast(MUX0, channel & 0x01);
-	digitalWriteFast(MUX1, channel & 0x02);
-	digitalWriteFast(MUX2, channel & 0x04);
-	digitalWriteFast(MUX3, channel & 0x08);
-
-	delayMicroseconds(1);
-
-	//Enable ADC MUX, read value, and disable MUX again
-	digitalWriteFast(ADC_EN, 1);
-	delayMicroseconds(10);
-	uint8_t result = adc.analogRead(ADC_INPUT);
-	digitalWriteFast(ADC_EN, 0);
-	
-	if (result > MIN_VALUE){
-		//Reset the peak value
-		digitalWriteFast(DRAIN_EN, 1);
-		delay(1);
-	}
-	
-	return result;
-}
+// uint8_t readDrum(uint8_t channel){
+// 	if (channel >= 8) return 0;		//TODO Remove on real board; breadboard MUX only have 8 inputs
+// 	
+// 	//Disable both MUXs
+// 	digitalWriteFast(ADC_EN, 0);
+// 	digitalWriteFast(DRAIN_EN, 0);
+// 	
+// 	delayMicroseconds(1);
+// 	
+// 	//Set channel
+// 	digitalWriteFast(MUX0, channel & 0x01);
+// 	digitalWriteFast(MUX1, channel & 0x02);
+// 	digitalWriteFast(MUX2, channel & 0x04);
+// 	digitalWriteFast(MUX3, channel & 0x08);
+// 
+// 	delayMicroseconds(1);
+// 
+// 	//Enable ADC MUX, read value, and disable MUX again
+// 	digitalWriteFast(ADC_EN, 1);
+// 	delayMicroseconds(10);
+// 	uint8_t result = adc.analogRead(ADC_INPUT);
+// 	digitalWriteFast(ADC_EN, 0);
+// 	
+// 	if (result > MIN_VALUE){
+// 		//Reset the peak value
+// 		digitalWriteFast(DRAIN_EN, 1);
+// 		delay(1);
+// 	}
+// 	
+// 	return result;
+// }
 
 int main(){
 	//Turn on the audio chip
@@ -76,11 +88,6 @@ int main(){
 	
 	//Encoder pushbutton
 	pinMode(ENC_PUSH, INPUT_PULLUP);
-	
-	//Set up ADC
-	adc.setResolution(8);
-	adc.setAveraging(4);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
 	
 	//Audio shield SD / flash setup
 	SPI.setMOSI(MOSI);
@@ -105,10 +112,10 @@ int main(){
 	while (1){
 		menuState->poll();
 		
-		uint8_t value = readDrum(channel);
-		if (value > MIN_VALUE){
-			samples.play(channel, value);
-		}
+// 		uint8_t value = readDrum(channel);
+// 		if (value > MIN_VALUE){
+// 			samples.play(channel, value);
+// 		}
 		channel = (channel + 1) & 0x0F;
 	}
 }
