@@ -6,7 +6,9 @@ extern AudioControlSGTL5000 control;
 extern Menu* mainMenu;
 
 MainVolume::MainVolume(){
-	encoder.write(control.getVolume());
+	encoderState = 50;
+	encoder.write(encoderState);
+	control.volume(encoderState / 100.0);
 }
 
 Menu* MainVolume::handleAction(){
@@ -27,6 +29,7 @@ Menu* MainVolume::handleAction(){
 	display.write_text(1, 0, buf, 4);
 	
 	if (button.fallingEdge()){
+		display.write_text(1, 0, "    ", 4);
 		return mainMenu;
 	}
 	

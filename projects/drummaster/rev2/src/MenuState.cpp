@@ -8,8 +8,11 @@ MenuState::MenuState(Menu* menu){
 
 void MenuState::poll(){
 	current->button.update();
-	current->handleAction();
+	Menu* newMenu = current->handleAction();
 	current->display.refresh();
+	if (newMenu != NULL){
+		change(newMenu);
+	}
 }
 
 void MenuState::change(Menu* newMenu){
