@@ -44,7 +44,7 @@ namespace digitalcave {
 			uint8_t mixerIndex;
 			
 			//Patchcord to the mixer
-			AudioConnection* patchCord;
+			AudioConnection patchCord;
 // 			
 // 			//The index of this array is the sample index;
 // 			// the value is the channel which was last played

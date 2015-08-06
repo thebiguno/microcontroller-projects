@@ -15,8 +15,9 @@ Sample::_init::_init(){
 	AudioMemory(16);
 }
 
-Sample::Sample(uint8_t mixerIndex){
-	patchCord = new AudioConnection(sample, 0, mixer, mixerIndex);
+Sample::Sample(uint8_t mixerIndex):
+	patchCord(sample, 0, mixer, mixerIndex)
+{
 	this->mixerIndex = mixerIndex;
 }
 
