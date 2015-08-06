@@ -4,6 +4,7 @@ using namespace digitalcave;
 
 extern Menu* mainVolume;
 extern Menu* loadSamples;
+extern Menu* calibratePads;
 
 MainMenu::MainMenu(){
 }
@@ -14,7 +15,6 @@ Menu* MainMenu::handleAction(){
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
 	else if (menuItem >= MENU_COUNT) encoder.write(0);
-	
 	
 	switch(menuItem){
 		case 0:
@@ -38,14 +38,10 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 3:
-			display.write_text(0, 0, "Calibrate Channels  ", 20);
+			display.write_text(0, 0, "Calibrate Pads      ", 20);
 			if (button.fallingEdge()){
-				//down(CalilbrateChannels());
+				return calibratePads;
 			}
-			break;
-		default:
-			//This should never happen...
-			display.write_text(0, 0, "Unknown Menu Option ", 20);
 			break;
 	}
 	

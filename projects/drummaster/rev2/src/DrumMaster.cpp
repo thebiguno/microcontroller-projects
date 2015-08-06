@@ -20,6 +20,8 @@ AudioControlSGTL5000 control;
 MainMenu* mainMenu;
 MainVolume* mainVolume;
 LoadSamples* loadSamples;
+CalibratePads* calibratePads;
+CalibratePad* calibratePad;
 
 MenuState* menuState;
 
@@ -88,6 +90,8 @@ int main(){
 	mainMenu = new MainMenu();
 	mainVolume = new MainVolume();
 	loadSamples = new LoadSamples();
+	calibratePads = new CalibratePads();
+	calibratePad = new CalibratePad();
 
 	menuState = new MenuState(mainMenu);
 	

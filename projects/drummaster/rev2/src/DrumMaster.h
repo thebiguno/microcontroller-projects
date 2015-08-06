@@ -12,8 +12,11 @@
 #include "menu/MainMenu.h"
 #include "menu/MainVolume.h"
 #include "menu/LoadSamples.h"
+#include "menu/CalibratePads.h"
+#include "menu/CalibratePad.h"
 
-
+//The base potentiometer address.  Add bits 0..2 for A0-A2 pins.
+#define POT_ADDRESS						0x28
 
 #define MOSI							7
 #define MISO							12

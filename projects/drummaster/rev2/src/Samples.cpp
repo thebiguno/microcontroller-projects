@@ -74,26 +74,22 @@ void Samples::play(uint8_t channel, uint8_t value){
 			snprintf(sample, sizeof(sample), "T3%02d.RAW", 0);
 			break;
 		case 6:
+		case 7:		//TODO Handle the HH Pedal
 			snprintf(sample, sizeof(sample), "HH%02d.RAW", 0);
 			break;
-		case 7:
+		case 8:
 			snprintf(sample, sizeof(sample), "SP%02d.RAW", 0);
 			break;
-		case 8:
+		case 9:
 			snprintf(sample, sizeof(sample), "CR%02d.RAW", 0);
 			break;
-		case 9:
+		case 10:
 			snprintf(sample, sizeof(sample), "RD%02d.RAW", 0);
 			break;
-		case 10:
+		case 11:
 			snprintf(sample, sizeof(sample), "CX%02d.RAW", 0);
 			break;
 	}
-	
-	Serial.print("Sample: ");
-	Serial.print(value);
-	Serial.print(",");
-	Serial.println(millis());
 	
 	//Double trigger detection
 	if (_lastPlayedChannel[channel] + DOUBLE_HIT_THRESHOLD > millis()){
@@ -117,7 +113,7 @@ void Samples::play(uint8_t channel, uint8_t value){
 // 		//TODO Change the sample + volume to match the highest value
 // 		return;
 // 	}
-	
+
 	uint8_t c = findAvailableSample();
 	_mixer.gain(c, volume / 2);
 	_samples[c].play("SN00.RAW");			//TODO Change to be dynamic
@@ -126,6 +122,12 @@ void Samples::play(uint8_t channel, uint8_t value){
 	_channelToSampleMap[channel] = c;
 	_lastPlayedChannel[channel] = millis();
 	_lastPlayedValue[channel] = value;
+	
+	Serial.print("Sample: ");
+	Serial.print(value);
+	Serial.print(",");
+	Serial.println(millis());
+
 	
 	//Serial.print("Playing sample index ");
 	//Serial.print(c);
