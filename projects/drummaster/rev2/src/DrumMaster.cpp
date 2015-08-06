@@ -17,11 +17,11 @@ using namespace digitalcave;
 Samples samples;
 AudioControlSGTL5000 control;
 
-MainMenu* mainMenu = new MainMenu();
-MainVolume* mainVolume = new MainVolume();
-LoadSamples* loadSamples = new LoadSamples();
+MainMenu* mainMenu;
+MainVolume* mainVolume;
+LoadSamples* loadSamples;
 
-MenuState menuState(mainMenu);
+MenuState* menuState;
 
 
 ADC adc;
@@ -85,6 +85,12 @@ int main(){
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
 	
+	mainMenu = new MainMenu();
+	mainVolume = new MainVolume();
+	loadSamples = new LoadSamples();
+
+	menuState = new MenuState(mainMenu);
+	
 	//Turn on the audio chip
 	control.enable();
 	//control.volume(state.get_volume());
@@ -92,7 +98,7 @@ int main(){
 	
 	uint8_t channel = 0;
 	while (1){
-		menuState.poll();
+		menuState->poll();
 		
 		uint8_t value = readDrum(channel);
 		if (value > MIN_VALUE){
