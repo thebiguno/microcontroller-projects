@@ -2,8 +2,8 @@
 
 using namespace digitalcave;
 
-extern Menu* mainMenu;
-extern CalibratePad* calibratePad;
+extern Menu mainMenu;
+extern CalibratePad calibratePad;
 
 CalibratePads::CalibratePads(){
 }
@@ -58,12 +58,12 @@ Menu* CalibratePads::handleAction(){
 	if (button.fallingEdge()){
 		if (pad == SAMPLE_COUNT){
 			display.write_text(1, 0, "                    ", 20);
-			return mainMenu;
+			return &mainMenu;
 		}
 		else {
-			calibratePad->value = -1;
-			calibratePad->selectedPad = pad;
-			return calibratePad;
+			calibratePad.value = -1;
+			calibratePad.selectedPad = pad;
+			return &calibratePad;
 		}
 	}
 

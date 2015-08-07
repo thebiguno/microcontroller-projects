@@ -3,7 +3,7 @@
 using namespace digitalcave;
 
 extern AudioControlSGTL5000 control;
-extern Menu* mainMenu;
+extern Menu mainMenu;
 
 MainVolume::MainVolume(){
 	encoderState = 80;
@@ -30,7 +30,7 @@ Menu* MainVolume::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(1, 0, "    ", 4);
-		return mainMenu;
+		return &mainMenu;
 	}
 	
 	return NULL;

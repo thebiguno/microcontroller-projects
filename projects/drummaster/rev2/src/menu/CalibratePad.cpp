@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-extern Menu* calibratePads;
+extern Menu calibratePads;
 
 CalibratePad::CalibratePad(){
 }
@@ -30,7 +30,7 @@ Menu* CalibratePad::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(2, 0, "                    ", 20);
-		return calibratePads;
+		return &calibratePads;
 	}
 	
 	return NULL;

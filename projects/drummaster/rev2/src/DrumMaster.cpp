@@ -18,13 +18,13 @@ Pad pads[PAD_COUNT] = {
 
 AudioControlSGTL5000 control;
 
-MainMenu* mainMenu;
-MainVolume* mainVolume;
-LoadSamples* loadSamples;
-CalibratePads* calibratePads;
-CalibratePad* calibratePad;
+MainMenu mainMenu;
+MainVolume mainVolume;
+LoadSamples loadSamples;
+CalibratePads calibratePads;
+CalibratePad calibratePad;
 
-MenuState* menuState;
+MenuState menuState(&mainMenu);
 
 int main(){
 	//Enable pins
@@ -44,14 +44,6 @@ int main(){
 	SPI.setSCK(SCK);
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
-	
-	mainMenu = new MainMenu();
-	mainVolume = new MainVolume();
-	loadSamples = new LoadSamples();
-	calibratePads = new CalibratePads();
-	calibratePad = new CalibratePad();
-
-	menuState = new MenuState(mainMenu);
 
 	//Allocate enough memory for audio
 	AudioMemory(16);
@@ -61,7 +53,7 @@ int main(){
 	control.volume(0.8);	//TODO Load from EEPROM
 	
 	while (1){
-		menuState->poll();
+		menuState.poll();
 		
 		for (uint8_t i = 0; i < PAD_COUNT; i++){
 			pads[i].poll();

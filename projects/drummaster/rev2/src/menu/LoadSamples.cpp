@@ -2,24 +2,31 @@
 
 using namespace digitalcave;
 
-extern Menu* mainMenu;
+extern Menu mainMenu;
 
 LoadSamples::LoadSamples(){
-	folders.push_back(String("<Cancel>"));
-	
-	File rootdir = SD.open("/");
-	while (1){
-		File f = rootdir.openNextFile();
-		if (!f) break;
-		if (f.isDirectory()) {
-			folders.push_back(String(f.name()));
+}
+
+void LoadSamples::ensureFoldersLoaded(){
+	if (folders.size() == 0){
+		folders.push_back(String("<Cancel>"));
+		
+		File rootdir = SD.open("/");
+		while (1){
+			File f = rootdir.openNextFile();
+			if (!f) break;
+			if (f.isDirectory()) {
+				folders.push_back(String(f.name()));
+			}
+			f.close();
 		}
-		f.close();
+		rootdir.close();
 	}
-	rootdir.close();
 }
 
 Menu* LoadSamples::handleAction(){
+	ensureFoldersLoaded();
+	
 	int8_t selectedFolder = encoder.read() / 2;
 	if (selectedFolder < 0){
 		selectedFolder = folders.size() - 1;
@@ -89,7 +96,7 @@ Menu* LoadSamples::handleAction(){
 						display.refresh();
 						delay(1000);
 						display.clear();
-						return mainMenu;
+						return &mainMenu;
 					}
 				}
 				else {
@@ -98,7 +105,7 @@ Menu* LoadSamples::handleAction(){
 					display.refresh();
 					delay(1000);
 					display.clear();
-					return mainMenu;
+					return &mainMenu;
 				}
 				f.close();
 			}
@@ -109,8 +116,11 @@ Menu* LoadSamples::handleAction(){
 			display.clear();
 		
 		}
+		else {
+			display.write_text(1, 0, "                    ", 20);
+		}
 		
-		return mainMenu;
+		return &mainMenu;
 	}
 	return NULL;
 }

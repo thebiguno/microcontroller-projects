@@ -14,6 +14,7 @@ namespace digitalcave {
 	
 		private:
 			std::vector<String> folders;
+			void ensureFoldersLoaded();
 			
 		public:
 			LoadSamples();

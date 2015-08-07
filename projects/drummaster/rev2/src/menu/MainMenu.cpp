@@ -2,9 +2,9 @@
 
 using namespace digitalcave;
 
-extern Menu* mainVolume;
-extern Menu* loadSamples;
-extern Menu* calibratePads;
+extern Menu mainVolume;
+extern Menu loadSamples;
+extern Menu calibratePads;
 
 MainMenu::MainMenu(){
 }
@@ -20,7 +20,7 @@ Menu* MainMenu::handleAction(){
 		case 0:
 			display.write_text(0, 0, "Main Volume         ", 20);
 			if (button.fallingEdge()){
-				return mainVolume;
+				return &mainVolume;
 			}
 			break;
 		case 1:
@@ -34,13 +34,13 @@ Menu* MainMenu::handleAction(){
 		case 2:
 			display.write_text(0, 0, "Load Samples        ", 20);
 			if (button.fallingEdge()){
-				return loadSamples;
+				return &loadSamples;
 			}
 			break;
 		case 3:
 			display.write_text(0, 0, "Calibrate Pads      ", 20);
 			if (button.fallingEdge()){
-				return calibratePads;
+				return &calibratePads;
 			}
 			break;
 	}
