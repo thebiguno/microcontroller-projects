@@ -57,7 +57,7 @@ Menu* LoadSamples::handleAction(){
 			while (!SerialFlash.ready()) {
 				if (millis() - last_millis > 500) {
 					last_millis = millis();
-					snprintf(buf, sizeof(buf), "Erasing %dMB%c%c%c       ", (uint16_t) (size >> 20), i > 0 ? '.' : ' ', i > 1 ? '.' : ' ', i > 2 ? '.' : ' ');
+					snprintf(buf, sizeof(buf), "Erasing %dMB%c%c%c       ", (uint16_t) (size >> 20), (i > 0 ? '.' : ' '), (i > 1 ? '.' : ' '), (i > 2 ? '.' : ' '));
 					display.write_text(2, 0, buf, 20);
 					display.refresh();
 					i = (i + 1) & 0x03;
