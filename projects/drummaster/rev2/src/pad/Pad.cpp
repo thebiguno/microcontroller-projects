@@ -2,27 +2,10 @@
 
 using namespace digitalcave;
 
-ADC Pad::adc;
-extern Sample samples[];
+static ADC adc;
+static Samples samples;
 
-Pad::_init::_init(){
-	//TODO Does this actually work?!?!
-	adc.setResolution(8);
-	adc.setAveraging(4);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
-}
-
-Pad::Pad(uint8_t channel){
-	//Set up ADC (only needs to be done once, but doing it multiple times doesn't hurt anything)
-// 	adc.setResolution(8);
-// 	adc.setAveraging(4);
-// 	adc.setConversionSpeed(ADC_LOW_SPEED);
-
-	this->channel = channel;
-	maxAttackValue = 0;
-	lastSample = 0;		//TODO
-	lastTime = 0;
-	lastValue = 0;
+Pad::Pad(uint8_t channel) : channel(channel), lastSample(NULL), lastTime(0), lastVolume(0), peakVolume(0) {
 }
 
 void Pad::poll(){
@@ -49,53 +32,57 @@ void Pad::poll(){
 	delayMicroseconds(10);
 	
 	//... read value...
-	uint8_t result = Pad::adc.analogRead(ADC_INPUT);
+	uint8_t volume = adc.analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, 0);
 	
-	//TODO perform double hit detection here, rather than in Sample
-// 	//Double trigger detection.  If this hit is within DOUBLE_HIT_THRESHOLD millis of the last
-// 	// hit, then we will either adjust the previously played sample to match this new (louder)
-// 	// volume, or we will ignore it.
-// 	if (_lastPlayedChannel[channel] + DOUBLE_HIT_THRESHOLD > millis()){
-// 		_lastPlayedChannel[channel] = millis();
-// 		if (_lastPlayedValue[channel] < value){
-// 			//Change the last volume to the higher (new) value and stop processing
-// 			_mixer.gain(_channelToSampleMap[channel], volume / 2);
-// 			//TODO Change the sample + volume to match the highest value
-// 			//Serial.println("Adjusted last hit");
-// 			return;
-// 		}
-// 		else {
-// 			//Serial.println("Ignoring double trigger");
-// 			return;
-// 		}
-// 	}
+	//Double trigger detection.  If this hit is within DOUBLE_HIT_THRESHOLD millis of the last
+	// hit, then we will either adjust the previously played sample to match this new (louder)
+	// volume, or we will ignore it.
+	if (lastTime + DOUBLE_HIT_THRESHOLD > millis()){
+		//lastTime = millis();
+		if (lastSample != NULL && lastVolume < volume){
+			//Change the last volume to the higher (new) value and stop processing
+			lastSample->setGain(volume);
+			//TODO Change the sample + volume to match the highest value
+			//Serial.println("Adjusted last hit");
+			return;
+		}
+		else {
+			//Serial.println("Ignoring double trigger");
+			return;
+		}
+	}
 	
-	if (result > maxAttackValue){
+	if (volume > peakVolume){
 		//Is the result is still increasing?  If so, wait for it to stabilize
-		maxAttackValue = result;
+		peakVolume = volume;
 		return;
 	}
-	else if (maxAttackValue < MIN_VALUE){
+	else if (peakVolume < MIN_VALUE){
 		//If the result has stabilized, but it is less than MIN_VALUE, then ignore it
 		//TODO do we need this?  Perhaps just take out MIN_VALUE altogether?
-		maxAttackValue = 0;
+		peakVolume = 0;
 	}
 	else {
 		//The result has stabilized and it is large enough to play a sample.
 		//Reset the peak value by turning on the drain MUX
 		digitalWriteFast(DRAIN_EN, 1);
 
-		lastTime = millis();
-		lastValue = maxAttackValue;
 		
 		//Start the sample playback
-		//TODO
-		samples[0].play(channel, maxAttackValue);
+
+		Serial.print(millis());
+		Serial.print(",");
+		Serial.println(peakVolume);
+		lastSample = samples.findAvailableSample();
+		lastSample->play(channel, peakVolume);
+		lastTime = millis();
+		lastVolume = peakVolume;
+		peakVolume = 0;
 		
-		maxAttackValue = 0;
+		Serial.println((uint32_t) lastSample);
 		//Wait for a bit to let the peak drain
 		//delay(1);
 	}

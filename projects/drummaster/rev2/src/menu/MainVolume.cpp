@@ -8,7 +8,7 @@ extern Menu* mainMenu;
 MainVolume::MainVolume(){
 	encoderState = 80;
 	encoder.write(encoderState);
-	control.volume(encoderState / 100.0);
+	//control.volume(encoderState / 100.0);
 }
 
 Menu* MainVolume::handleAction(){

@@ -5,7 +5,6 @@
 #include <SerialFlash.h>
 #include <SPI.h>
 
-#include "Sample.h"
 #include "pad/Pad.h"
 #include "MenuState.h"
 
@@ -15,7 +14,6 @@
 #include "menu/CalibratePads.h"
 #include "menu/CalibratePad.h"
 
-#define CHANNEL_COUNT				12
 #define PAD_COUNT					11
 
 //The base potentiometer address.  Add bits 0..2 for A0-A2 pins.
