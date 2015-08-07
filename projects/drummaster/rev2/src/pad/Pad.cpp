@@ -2,6 +2,9 @@
 
 using namespace digitalcave;
 
+ADC Pad::adc;
+extern Sample samples[];
+
 Pad::_init::_init(){
 	//TODO Does this actually work?!?!
 	adc.setResolution(8);
@@ -90,6 +93,7 @@ void Pad::poll(){
 		
 		//Start the sample playback
 		//TODO
+		samples[0].play(channel, maxAttackValue);
 		
 		maxAttackValue = 0;
 		//Wait for a bit to let the peak drain

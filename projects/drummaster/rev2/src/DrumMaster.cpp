@@ -104,19 +104,18 @@ int main(){
 
 	menuState = new MenuState(mainMenu);
 	
+	AudioMemory(16);
+	
 	//Turn on the audio chip
 	control.enable();
 	control.volume(0.8);	//TODO Load from EEPROM
 	
-	uint8_t channel = 0;
 	while (1){
 		menuState->poll();
 		
-// 		uint8_t value = readDrum(channel);
-// 		if (value > MIN_VALUE){
-// 			samples.play(channel, value);
-// 		}
-		channel = (channel + 1) & 0x0F;
+		for (uint8_t i = 0; i < PAD_COUNT; i++){
+			pads[i].poll();
+		}
 	}
 }
 
