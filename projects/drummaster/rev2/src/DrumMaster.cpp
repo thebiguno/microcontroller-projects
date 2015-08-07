@@ -18,7 +18,7 @@ Pad pads[PAD_COUNT] = {
 
 //Inputs
 AudioPlaySerialRaw samples[SAMPLE_COUNT];
-AudioInputI2Sslave input;
+AudioInputI2S input;
 
 //Mixer
 AudioMixer16 mixer;

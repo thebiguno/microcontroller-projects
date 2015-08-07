@@ -31,5 +31,5 @@ void Sample::stop(){
 }
 
 void Sample::setGain(uint8_t volume){
-	mixer.gain(index, 0.5);//volume / VOLUME_DIVISOR);
+	mixer.gain(index, volume / VOLUME_DIVISOR);
 }
