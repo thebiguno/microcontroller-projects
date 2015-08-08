@@ -2,6 +2,8 @@
 
 using namespace digitalcave;
 
+ADC adc;
+
 Pad pads[PAD_COUNT] = {
 	Pad(0),
 	Pad(1),
@@ -76,6 +78,11 @@ int main(){
 	SPI.setSCK(SCK);
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
+	
+	//Set up the ADC
+	adc.setResolution(8);
+	adc.setConversionSpeed(ADC_LOW_SPEED);
+	adc.setAveraging(16);
 
 	//Allocate enough memory for audio
 	AudioMemory(16);
@@ -87,7 +94,7 @@ int main(){
 	while (1){
 		menuState.poll();
 		
-		for (uint8_t i = 0; i < PAD_COUNT; i++){
+		for (uint8_t i = 0; i < 8; i++){		//TODO Change 8 to PAD_COUNT
 			pads[i].poll();
 		}
 	}

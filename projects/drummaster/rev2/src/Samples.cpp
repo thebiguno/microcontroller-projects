@@ -27,8 +27,6 @@ Sample* Samples::findAvailableSample(){
 	uint16_t oldestSamplePosition = 0;
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){		//TODO
 		if (samples[i].isPlaying() == 0){
-			Serial.print("Sample not playing: ");
-			Serial.println(i);
 			return &(samples[i]);
 		}
 		else if (samples[i].positionMillis() > oldestSamplePosition){
@@ -36,9 +34,6 @@ Sample* Samples::findAvailableSample(){
 			oldestSample = i;
 		}
 	}
-	Serial.print("Sample playing and stopped: ");
-	Serial.println(oldestSample);
-
 	samples[oldestSample].stop();
 	return &(samples[oldestSample]);
 }

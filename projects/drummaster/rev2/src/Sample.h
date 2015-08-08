@@ -4,10 +4,12 @@
 #include <Audio.h>
 #include <SerialFlash.h>
 #include <play_serial_raw.h>
+#include <math.h>
 
 #define SAMPLE_COUNT				12
-//TODO use an exponential function rather than a linear divisor
-#define VOLUME_DIVISOR				384.0
+
+//The volume divisor converts a number from 0..256 to 0..1 (with a bit of headroom to prevent clipping)
+#define VOLUME_DIVISOR				300.0
 
 namespace digitalcave {
 
