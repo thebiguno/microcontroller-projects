@@ -26,8 +26,40 @@ namespace digitalcave {
 
 	class Sample {
 		private:
+			static AudioPlaySerialRaw samples[];
+			static AudioInputI2S input;
+
+			//Mixer
+			static AudioMixer16 mixer;
+
+			//Output
+			static AudioOutputI2S output;
+
+			//Samples to mixer
+			static AudioConnection sample0ToMixer;
+			static AudioConnection sample1ToMixer;
+			static AudioConnection sample2ToMixer;
+			static AudioConnection sample3ToMixer;
+			static AudioConnection sample4ToMixer;
+			static AudioConnection sample5ToMixer;
+			static AudioConnection sample6ToMixer;
+			static AudioConnection sample7ToMixer;
+			static AudioConnection sample8ToMixer;
+			static AudioConnection sample9ToMixer;
+			static AudioConnection sample10ToMixer;
+			static AudioConnection sample11ToMixer;
+
+			//Input passthrough to mixer
+			static AudioConnection inputToMixer0;
+			static AudioConnection inputToMixer1;
+
+			//Mixer to output
+			static AudioConnection mixerToOutput0;
+			static AudioConnection mixerToOutput1;
+
 			//This sample's index into mixer
 			uint8_t index;
+			
 			
 		public:
 			Sample(uint8_t index);
