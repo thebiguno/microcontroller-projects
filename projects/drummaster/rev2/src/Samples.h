@@ -14,6 +14,7 @@ namespace digitalcave {
 		public:
 			Samples();
 			Sample* findAvailableSample();
+			static void setMasterVolume(double volume);
 
 	};
 	

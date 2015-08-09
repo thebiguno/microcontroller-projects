@@ -2,6 +2,9 @@
 
 using namespace digitalcave;
 
+static AudioControlSGTL5000 control;
+static uint8_t controlEnabled = 0;
+
 Samples::Samples():
 	samples {
 		Sample(0),
@@ -21,6 +24,13 @@ Samples::Samples():
 	//Nothing to see here...
 }
 
+void Samples::setMasterVolume(double volume){
+	if (!controlEnabled){
+		control.enable();
+		controlEnabled = 1;
+	}
+	control.volume(volume);
+}
 
 Sample* Samples::findAvailableSample(){
 	uint8_t oldestSample = 0;

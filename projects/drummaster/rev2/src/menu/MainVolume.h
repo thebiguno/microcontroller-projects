@@ -1,9 +1,8 @@
 #ifndef MAINVOLUME_H
 #define MAINVOLUME_H
 
-#include <Audio.h>
-
 #include "Menu.h"
+#include "../Samples.h"
 
 namespace digitalcave {
 
