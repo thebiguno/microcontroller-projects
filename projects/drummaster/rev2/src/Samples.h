@@ -9,6 +9,9 @@ namespace digitalcave {
 
 	class Samples {
 		private:
+			static AudioControlSGTL5000 control;
+			static uint8_t controlEnabled;
+			
 			Sample samples[SAMPLE_COUNT];
 			
 		public:

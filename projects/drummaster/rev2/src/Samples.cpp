@@ -2,8 +2,8 @@
 
 using namespace digitalcave;
 
-static AudioControlSGTL5000 control;
-static uint8_t controlEnabled = 0;
+AudioControlSGTL5000 Samples::control;
+uint8_t Samples::controlEnabled = 0;
 
 Samples::Samples():
 	samples {
