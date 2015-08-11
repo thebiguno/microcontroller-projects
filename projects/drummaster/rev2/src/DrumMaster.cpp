@@ -2,68 +2,31 @@
 
 using namespace digitalcave;
 
-//Pin assignments
-#define MUX0						0
-#define MUX1						1
-#define MUX2						2
-#define MUX3						3
-#define DRAIN_EN					4
-#define ADC_EN						5
-#define ADC_INPUT					A14
-
-//Constants
-#define MIN_VALUE					10
-
-Samples samples;
-AudioControlSGTL5000 control;
-
-MainMenu* mainMenu;
-MainVolume* mainVolume;
-LoadSamples* loadSamples;
-
-MenuState* menuState;
-
-
 ADC adc;
 
+Pad pads[PAD_COUNT] = {
+	Pad(0),
+	Pad(1),
+	Pad(2),
+	Pad(3),
+	Pad(4),
+	Pad(5),
+	Pad(6),
+	Pad(7),
+	Pad(8),
+	Pad(9),
+	Pad(10)	//TODO This is HiHat
+};
 
-uint8_t readDrum(uint8_t channel){
-	if (channel >= 8) return 0;		//TODO Remove on real board; breadboard MUX only have 8 inputs
-	
-	//Disable both MUXs
-	digitalWriteFast(ADC_EN, 0);
-	digitalWriteFast(DRAIN_EN, 0);
-	
-	delayMicroseconds(1);
-	
-	//Set channel
-	digitalWriteFast(MUX0, channel & 0x01);
-	digitalWriteFast(MUX1, channel & 0x02);
-	digitalWriteFast(MUX2, channel & 0x04);
-	digitalWriteFast(MUX3, channel & 0x08);
+MainMenu mainMenu;
+MainVolume mainVolume;
+LoadSamples loadSamples;
+CalibratePads calibratePads;
+CalibratePad calibratePad;
 
-	delayMicroseconds(1);
-
-	//Enable ADC MUX, read value, and disable MUX again
-	digitalWriteFast(ADC_EN, 1);
-	delayMicroseconds(10);
-	uint8_t result = adc.analogRead(ADC_INPUT);
-	digitalWriteFast(ADC_EN, 0);
-	
-	if (result > MIN_VALUE){
-		//Reset the peak value
-		digitalWriteFast(DRAIN_EN, 1);
-		delay(1);
-	}
-	
-	return result;
-}
+MenuState menuState(&mainMenu);
 
 int main(){
-	//Turn on the audio chip
-	control.enable();
-	control.volume(0.5);
-	
 	//Enable pins
 	pinMode(MUX0, OUTPUT);
 	pinMode(MUX1, OUTPUT);
@@ -75,9 +38,6 @@ int main(){
 	//Encoder pushbutton
 	pinMode(ENC_PUSH, INPUT_PULLUP);
 	
-	//Set up ADC
-	adc.setResolution(8);
-	
 	//Audio shield SD / flash setup
 	SPI.setMOSI(MOSI);
 	SPI.setMISO(MISO);
@@ -85,26 +45,23 @@ int main(){
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
 	
-	mainMenu = new MainMenu();
-	mainVolume = new MainVolume();
-	loadSamples = new LoadSamples();
+	//Set up the ADC
+	adc.setResolution(8);
+	adc.setConversionSpeed(ADC_LOW_SPEED);
+	adc.setAveraging(16);
 
-	menuState = new MenuState(mainMenu);
+	//Allocate enough memory for audio
+	AudioMemory(16);
 	
 	//Turn on the audio chip
-	control.enable();
-	//control.volume(state.get_volume());
-	control.volume(0.5);
+	Samples::setMasterVolume(0.8);	//TODO Load from EEPROM
 	
-	uint8_t channel = 0;
 	while (1){
-		menuState->poll();
+		menuState.poll();
 		
-		uint8_t value = readDrum(channel);
-		if (value > MIN_VALUE){
-			samples.play(channel, value);
+		for (uint8_t i = 0; i < 8; i++){		//TODO Change 8 to PAD_COUNT
+			pads[i].poll();
 		}
-		channel = (channel + 1) & 0x0F;
 	}
 }
 
