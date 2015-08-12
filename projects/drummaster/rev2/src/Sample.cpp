@@ -38,11 +38,12 @@ AudioConnection Sample::mixerToOutput1(mixer, 0, output, 1);
 
 
 
-Sample::Sample(uint8_t index): index(index) {
+Sample::Sample(uint8_t index): index(index), lastChannel(0xFF) {
 	//Nothing to see here...
 }
 
 void Sample::play(uint8_t channel, uint8_t rawValue){
+	lastChannel = channel;
 	setGain(rawValue);
 	Serial.println(index);
 	samples[index].play("RD00.RAW");			//TODO Change to be dynamic
@@ -52,7 +53,7 @@ uint8_t Sample::isPlaying(){
 	return samples[index].isPlaying();
 }
 
-uint32_t Sample::positionMillis(){
+uint32_t Sample::getPositionMillis(){
 	return samples[index].positionMillis();
 }
 
@@ -63,4 +64,8 @@ void Sample::stop(){
 void Sample::setGain(uint8_t rawValue){
 	double volume = max(rawValue / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, rawValue));
 	mixer.gain(index, volume / VOLUME_DIVISOR);
+}
+
+uint8_t Sample::getLastChannel(){
+	return lastChannel;
 }

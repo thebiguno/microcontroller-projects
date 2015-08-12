@@ -32,18 +32,42 @@ void Samples::setMasterVolume(double volume){
 	control.volume(volume);
 }
 
-Sample* Samples::findAvailableSample(){
+Sample* Samples::findAvailableSample(uint8_t channel){
+	//Oldest overall sample
 	uint8_t oldestSample = 0;
 	uint16_t oldestSamplePosition = 0;
+
+	//Oldest sample with the same channel
+	uint8_t oldestSampleByChannel = 0;
+	uint16_t oldestSampleByChannelPosition = 0;
+	uint8_t sampleByChannelCount = 0;
+
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){		//TODO
 		if (samples[i].isPlaying() == 0){
 			return &(samples[i]);
 		}
-		else if (samples[i].positionMillis() > oldestSamplePosition){
-			oldestSamplePosition = samples[i].positionMillis();
-			oldestSample = i;
+		else {
+			if (samples[i].getPositionMillis() > oldestSamplePosition){
+				oldestSamplePosition = samples[i].getPositionMillis();
+				oldestSample = i;
+			}
+			if (samples[i].getLastChannel() == channel && samples[i].getPositionMillis() > oldestSampleByChannelPosition){
+				oldestSampleByChannelPosition = samples[i].getPositionMillis();
+				oldestSampleByChannel = i;
+				sampleByChannelCount++;
+			}
 		}
 	}
-	samples[oldestSample].stop();
-	return &(samples[oldestSample]);
+	
+	if (sampleByChannelCount >= 2){
+		//We don't want to kill the latest sound in this channel...
+		samples[oldestSampleByChannel].stop();
+		return &(samples[oldestSampleByChannel]);
+	}
+	else {
+		//If there are no free samples and not enough playing samples in the current channel, we 
+		// just pick the oldest sound and stop it.
+		samples[oldestSample].stop();
+		return &(samples[oldestSample]);
+	}
 }

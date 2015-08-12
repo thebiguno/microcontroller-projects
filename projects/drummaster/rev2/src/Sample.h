@@ -60,16 +60,18 @@ namespace digitalcave {
 			//This sample's index into mixer
 			uint8_t index;
 			
+			//The most recently played channel
+			uint8_t lastChannel;
 			
 		public:
 			Sample(uint8_t index);
 			
 			void play(uint8_t channel, uint8_t volume);
 			uint8_t isPlaying();
-			uint32_t positionMillis();
+			uint32_t getPositionMillis();
 			void stop();
 			void setGain(uint8_t volume);
-
+			uint8_t getLastChannel();
 	};
 	
 }
