@@ -8,10 +8,10 @@
 
 
 //Min time in millis between hits
-#define DOUBLE_HIT_THRESHOLD		25
+#define DOUBLE_HIT_THRESHOLD		50
 
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					5
+#define MIN_VALUE					10
 
 namespace digitalcave {
 

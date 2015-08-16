@@ -32,16 +32,16 @@ void Samples::setMasterVolume(double volume){
 	control.volume(volume);
 }
 
-Sample* Samples::findAvailableSample(uint8_t channel){
+Sample* Samples::findAvailableSample(uint8_t channel, uint8_t volume){
 	//Oldest overall sample
 	uint8_t oldestSample = 0;
 	uint16_t oldestSamplePosition = 0;
 
-	//Oldest sample with the same channel
+	//Oldest sample within the same channel (that is quieter than the new sound)
 	uint8_t oldestSampleByChannel = 0;
 	uint16_t oldestSampleByChannelPosition = 0;
 	uint8_t sampleByChannelCount = 0;
-
+	
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){		//TODO
 		if (samples[i].isPlaying() == 0){
 			return &(samples[i]);
@@ -51,7 +51,9 @@ Sample* Samples::findAvailableSample(uint8_t channel){
 				oldestSamplePosition = samples[i].getPositionMillis();
 				oldestSample = i;
 			}
-			if (samples[i].getLastChannel() == channel && samples[i].getPositionMillis() > oldestSampleByChannelPosition){
+			if (samples[i].getLastChannel() == channel 
+					&& samples[i].getGain() < volume
+					&& samples[i].getPositionMillis() > oldestSampleByChannelPosition){
 				oldestSampleByChannelPosition = samples[i].getPositionMillis();
 				oldestSampleByChannel = i;
 				sampleByChannelCount++;
@@ -59,7 +61,7 @@ Sample* Samples::findAvailableSample(uint8_t channel){
 		}
 	}
 	
-	if (sampleByChannelCount >= 2){
+	if (sampleByChannelCount >= 1){
 		//We don't want to kill the latest sound in this channel...
 		samples[oldestSampleByChannel].stop();
 		return &(samples[oldestSampleByChannel]);

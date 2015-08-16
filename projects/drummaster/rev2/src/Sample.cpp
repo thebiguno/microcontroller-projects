@@ -46,7 +46,8 @@ void Sample::play(uint8_t channel, uint8_t rawValue){
 	lastChannel = channel;
 	setGain(rawValue);
 	Serial.println(index);
-	samples[index].play("RD00.RAW");			//TODO Change to be dynamic
+	//samples[index].play("SN_9_A.RAW");			//TODO Change to be dynamic
+	samples[index].play("RD_0_A.RAW");			//TODO Change to be dynamic
 }
 
 uint8_t Sample::isPlaying(){
@@ -61,7 +62,12 @@ void Sample::stop(){
 	samples[index].stop();
 }
 
+uint8_t Sample::getGain(){
+	return lastGain;
+}
+
 void Sample::setGain(uint8_t rawValue){
+	lastGain = rawValue;
 	double volume = max(rawValue / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, rawValue));
 	mixer.gain(index, volume / VOLUME_DIVISOR);
 }

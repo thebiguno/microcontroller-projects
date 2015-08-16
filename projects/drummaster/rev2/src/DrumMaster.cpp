@@ -54,7 +54,7 @@ int main(){
 	AudioMemory(16);
 	
 	//Turn on the audio chip
-	Samples::setMasterVolume(0.8);	//TODO Load from EEPROM
+	Samples::setMasterVolume(0.7);	//TODO Load from EEPROM
 	
 	while (1){
 		menuState.poll();

@@ -98,7 +98,7 @@ void Pad::poll(){
 		Serial.print(peakRawValue);
 		Serial.print("; time = ");
 		Serial.println(millis());
-		lastSample = samples.findAvailableSample(channel);
+		lastSample = samples.findAvailableSample(channel, peakRawValue);
 		lastSample->play(channel, peakRawValue);
 		lastPlayTime = millis();
 		lastRawValue = peakRawValue;
