@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-//All the audio junk.  I can't seem to get it into the class structure...
+//All the audio junk.  Static members of the class.
 
 //Inputs
 AudioPlaySerialRaw Sample::samples[SAMPLE_COUNT];
