@@ -11,6 +11,7 @@ namespace digitalcave {
 	public:
 		AltClock();
 		~AltClock();
+		void run();
 	};
 }
 

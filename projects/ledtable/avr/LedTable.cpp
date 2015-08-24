@@ -16,9 +16,7 @@
 #include "Clock.h"
 #include "Tetris.h"
 #include "Animated.h"
-/*
 #include "AltClock.h"
-*/
 
 using namespace digitalcave;
 
@@ -45,25 +43,17 @@ int main() {
 		psx.poll();
 		buttons = psx.buttons();
 		changed = psx.changed();
-		if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
+		if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 			selected++;
-			selected %= 5;
+			selected %= 6;
 		}
-		else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
-			if (selected == 0) {
-				selected = 4;
-			} else {
-				selected--;
-				selected %= 5;
-			}
-		}
-		else if (buttons & PSB_L3 && changed & PSB_L3) {
+		else if (buttons & PSB_SQUARE && changed & PSB_SQUARE) {
 			hsv.addHue(-30);
 		}
-		else if (buttons & PSB_R3 && changed & PSB_R3) {
+		else if (buttons & PSB_CIRCLE && changed & PSB_CIRCLE) {
 			hsv.addHue(30);
 		}
-		else if (buttons & PSB_L2 && changed & PSB_L2) {
+		else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
 			uint8_t v = hsv.getValue();
 			switch (v) {
 				case 0xff: hsv.setValue(0x7f); break;
@@ -76,7 +66,7 @@ int main() {
 				default: hsv.setValue(0x00);
 			}
 		}
-		else if (buttons & PSB_R2 && changed & PSB_R2) {
+		else if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
 			uint8_t v = hsv.getValue();
 			switch (v) {
 				case 0x00: hsv.setValue(0x01); break;
@@ -89,7 +79,7 @@ int main() {
 				default: hsv.setValue(0xff);
 			}
 		}
-		else if (buttons & PSB_L1 && changed & PSB_L1) {
+		else if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
 			uint8_t s = hsv.getSaturation();
 			switch (s) {
 				case 0xff: hsv.setSaturation(0xfe); break;
@@ -102,7 +92,7 @@ int main() {
 				default: hsv.setSaturation(0x00);
 			}
 		}
-		else if (buttons & PSB_R1 && changed & PSB_R1) {
+		else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
 			uint8_t s = hsv.getSaturation();
 			switch (s) {
 				case 0x00: hsv.setSaturation(0x80); break;
@@ -115,17 +105,15 @@ int main() {
 				default: hsv.setSaturation(0xff);
 			}
 		}
-		else if (buttons & PSB_CROSS && changed & PSB_CROSS) {
+		else if (buttons & PSB_START && changed & PSB_START) {
 			switch (selected) {
-				case 0: { Life life; life.run(); break; }
-				case 1: { Tictactoe ttt; ttt.run(); break; }
-				case 2: { Mood mood; mood.run(); break; }
-				case 3: { Clock clk; clk.run(); break; }
-				case 4: { Animated ani; ani.run(); break; }
-/*
+				case 0: { Clock clk; clk.run(); break; }
 				case 1: { AltClock alt; alt.run(); break; }
-				case 3: { Tetris tet; tet.run; break; }
-*/
+				case 2: { Life life; life.run(); break; }
+				case 3: { Mood mood; mood.run(); break; }
+				case 4: { Animated ani; ani.run(); break; }
+				case 5: { Tictactoe ttt; ttt.run(); break; }
+				case 6: { Tetris tet; tet.run(); break; }
 			}
 		}
 		
@@ -133,24 +121,14 @@ int main() {
 		matrix.rectangle(0,0,11,11, DRAW_FILLED);
 		matrix.setColor(Rgb(hsv));
 		switch (selected) {
-			case 0: matrix.text(0, 3, "LIF", DRAW_ORIENTATION_0); break;
-			case 1: matrix.text(0, 3, "TTT", DRAW_ORIENTATION_0); break;
-			case 2: matrix.text(0, 3, "MOO", DRAW_ORIENTATION_0); break;
-			case 3: matrix.text(0, 3, "CLK", DRAW_ORIENTATION_0); break;
+			case 0: matrix.text(0, 3, "CLK", DRAW_ORIENTATION_0); break;
+			case 1: matrix.text(0, 3, "ALT", DRAW_ORIENTATION_0); break;
+			case 2: matrix.text(0, 3, "LIF", DRAW_ORIENTATION_0); break;
+			case 3: matrix.text(0, 3, "MOO", DRAW_ORIENTATION_0); break;
 			case 4: matrix.text(0, 3, "ANI", DRAW_ORIENTATION_0); break;
-/*
-			case 1: draw_text(0, 3, "ALT", DRAW_ORIENTATION_NORMAL); break;
-			case 2: draw_text(0, 3, "TTT", DRAW_ORIENTATION_NORMAL); break;
-			case 6: draw_text(0, 3, "PLA", DRAW_ORIENTATION_NORMAL); break;
-*/
+			case 5: matrix.text(0, 3, "TTT", DRAW_ORIENTATION_0); break;
+			case 6: matrix.text(0, 3, "TET", DRAW_ORIENTATION_0); break;
 		}
-		
-		matrix.setPixel(4, 1);
-		matrix.setPixel(5, 0);
-		matrix.setPixel(6, 1);
-		matrix.setPixel(4, 9);
-		matrix.setPixel(5, 10);
-		matrix.setPixel(6, 9);
 		
 		matrix.flush();
 		

@@ -21,12 +21,11 @@ Life::~Life() {
 
 void Life::run() {
 	uint16_t buttons; 
+	uint16_t changed;
 	uint8_t running = 1;
+	uint8_t overflow = 128;
 	
 	reset();
-	
-	_delay_ms(255);
-	
 	
 	while (running) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
@@ -83,11 +82,19 @@ void Life::run() {
 		
 		psx.poll();
 		buttons = psx.buttons();
-		if (buttons & PSB_TRIANGLE) {
+		changed = psx.changed();
+		if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
+			overflow += 8;
+		} else if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
+			overflow -= 8;
+		} else if (buttons & PSB_START) {
 			running = 0;
 		}
 
-		_delay_ms(64);
+		for (int i = 0; i < overflow; i++) {
+			_delay_ms(1);
+		}
+
 	}
 }
 

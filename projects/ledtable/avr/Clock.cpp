@@ -22,6 +22,7 @@ Clock::~Clock() {
 void Clock::run() {
 	mcp79410_time_t time;
 	uint16_t buttons;
+	uint16_t changed;
 	uint8_t running = 1;
 	uint8_t set = 0;
 
@@ -201,24 +202,25 @@ void Clock::run() {
 		
 		psx.poll();
 		buttons = psx.buttons();
+		changed = psx.changed();
 		if (set) {
-			if (buttons & PSB_PAD_UP) {
+			if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
 				time.hour++;
 				time.hour %= 24;
 			}
-			else if (buttons & PSB_PAD_DOWN) {
+			else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
 				if (time.hour > 0) time.hour--;
 				time.hour %= 24;
 			}
-			else if (buttons & PSB_PAD_LEFT) {
-				time.minute++;
+			else if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
+				time.minute--;
 				time.minute %= 60;
 			}
-			else if (buttons & PSB_PAD_RIGHT) {
-				if (time.minute > 0) time.minute--;
+			else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
+				if (time.minute > 0) time.minute++;
 				time.minute %= 60;
 			}
-			else if (buttons & PSB_SELECT) {
+			else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 				time.second = 0;
 				mcp79410_set(&time);
 				set = 0;
@@ -226,21 +228,21 @@ void Clock::run() {
 			}
 		}
 		else {
-			if (buttons & PSB_PAD_UP || buttons & PSB_PAD_LEFT) {
+			if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
 				running--;
 				if (running == 0) running = 4;
 			}
-			else if (buttons & PSB_PAD_DOWN || buttons & PSB_PAD_RIGHT) {
+			else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
 				running++;
 				running %= 5;
 				if (running == 0) running = 1;
 			}
-			else if (buttons & PSB_SELECT) {
+			else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 				running = 4;
 				set = 1;
 			}
 
-			if (buttons & PSB_TRIANGLE) running = 0;
+			if (buttons & PSB_START & changed & PSB_START) running = 0;
 		}
 		
 		_delay_ms(100);

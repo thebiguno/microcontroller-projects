@@ -80,7 +80,7 @@ void Animated::run() {
 		buttons = psx.buttons();
 		changed = psx.changed();
 		
-		if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP ) {
+		if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
 			running++;
 			if (running == 6) running = 1;
 		} else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
@@ -88,7 +88,7 @@ void Animated::run() {
 			if (running == 0) running = 5;
 		}
 		
-		if (buttons & PSB_TRIANGLE && changed & PSB_TRIANGLE) {
+		if (buttons & PSB_START && changed & PSB_START) {
 			running = 0;
 		}
 		
