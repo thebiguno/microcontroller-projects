@@ -31,21 +31,32 @@ void Life::run() {
 	while (running) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+				tempstate[x][y] = state[x][y];
+			}
+		}
+		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 				uint8_t count = getNeighborCount(x, y);
-				uint8_t alive = state[x][y];
-				if (alive) {
+				if (state[x][y] > 0) {
+					// alive
 					if (count == 2 || count == 3) {
 						// staying alive; do nothing
+						tempstate[x][y] = 0x01;
 					}
 					else {
 						// overpopulation or underpopulation
-						state[x][y] = 0x00;
+						tempstate[x][y] = 0x00;
 					}
 				}
 				else if (count == 3) {
 					// birth
-					state[x][y] = 0x01;
+					tempstate[x][y] = 0x01;
 				}
+			}
+		}
+		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+				state[x][y] = tempstate[x][y];
 			}
 		}
 
@@ -80,12 +91,15 @@ void Life::run() {
 	}
 }
 
-uint8_t Life::getState(uint8_t x, uint8_t y) {
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return 0x00;
+uint8_t Life::getState(int8_t x, int8_t y) {
+	if (x < 0) x = 11;
+	else if (x > 11) x = 0;
+	if (y < 0) y = 11;
+	else if (y > 11) y = 0;
 	return state[x][y]; 
 }
 
-uint8_t Life::getNeighborCount(uint8_t x, uint8_t y) {
+uint8_t Life::getNeighborCount(int8_t x, int8_t y) {
 	uint8_t count = 0;
 	if (getState(x - 1, y - 1)) count++;
 	if (getState(x - 1, y)) count++;

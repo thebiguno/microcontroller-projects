@@ -11,6 +11,7 @@ namespace digitalcave {
 	class Life : public Module {
 	private:
 		uint8_t state[12][12];
+		uint8_t tempstate[12][12];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t running = 0;
 		uint8_t matches = 0;
@@ -22,9 +23,9 @@ namespace digitalcave {
 
 	private:
 		/* bounds-safe way of getting the current state of each pixel */
-		uint8_t getState(uint8_t x, uint8_t y);
+		uint8_t getState(int8_t x, int8_t y);
 
-		uint8_t getNeighborCount(uint8_t x, uint8_t y);
+		uint8_t getNeighborCount(int8_t x, int8_t y);
 		uint32_t getStateHash();
 	
 		/* write the board state to the matrix */
