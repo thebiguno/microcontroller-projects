@@ -220,7 +220,7 @@ void Clock::run() {
 				if (time.minute > 0) time.minute++;
 				time.minute %= 60;
 			}
-			else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
+			else if (buttons & PSB_START && changed & PSB_START) {
 				time.second = 0;
 				mcp79410_set(&time);
 				set = 0;
@@ -228,16 +228,12 @@ void Clock::run() {
 			}
 		}
 		else {
-			if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
-				running--;
-				if (running == 0) running = 4;
-			}
-			else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
+			if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 				running++;
 				running %= 5;
 				if (running == 0) running = 1;
 			}
-			else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
+			else if (buttons & PSB_L2 && changed & PSB_L2) {
 				running = 4;
 				set = 1;
 			}
