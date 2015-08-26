@@ -64,6 +64,8 @@
 				803D10231B856D7300B8D958 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
+			wrapsLines = 0;
 		};
 		803D10231B856D7300B8D958 /* Products */ = {
 			isa = PBXGroup;
@@ -409,6 +411,7 @@
 				803D10431B856D7400B8D958 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		803D10441B856D7400B8D958 /* Build configuration list for PBXNativeTarget "ChindiiTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +420,7 @@
 				803D10461B856D7400B8D958 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
