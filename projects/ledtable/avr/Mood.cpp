@@ -49,7 +49,33 @@ void Mood::run() {
 
 			c.addHue(1);
 			matrix.setColor(Rgb(c));
-		} else if (running > 1) {
+		} else if (running == 2) {
+			// color test pattern
+			for (uint8_t x = 0; x < 12; x++) {
+				for (uint8_t y = 0; y < 12; y++) {
+					if (x < 6) c.setSaturation(0xff);
+					else c.setValue(0xff);
+					switch (x) {
+						case 0: c.setValue(0x07); break;
+						case 1: c.setValue(0x0f); break;
+						case 2: c.setValue(0x1f); break;
+						case 3: c.setValue(0x3f); break;
+						case 4: c.setValue(0x7f); break;
+						case 5: c.setValue(0xff); break;
+						case 6: c.setSaturation(0xff); break;
+						case 7: c.setSaturation(0xf0); break;
+						case 8: c.setSaturation(0xe0); break;
+						case 9: c.setSaturation(0xc0); break;
+						case 10: c.setSaturation(0x80); break;
+						case 11: c.setSaturation(0x40); break;
+					}
+					c.setHue(y * 30);
+					matrix.setColor(Rgb(c));
+					matrix.setPixel(x,y);
+				}
+			}
+			matrix.flush();
+		} else if (running > 2) {
 			// plasma
 			// http://www.bidouille.org/prog/plasma
 
@@ -66,24 +92,24 @@ void Mood::run() {
 					v += sin(sqrt(100.0*(cx*cx+cy*cy)+1.0)+time);
 					v /= 2.0;
 			
-					if (running == 2) {
+					if (running == 3) {
 						r = 64.0*(.5+.5*sin(M_PI*v));
 						g = 64.0*(.5+.5*cos(M_PI*v));
 						b = 0;
-					} else if (running == 3) {
+					} else if (running == 4) {
 						r = 64.0;
 						g = 64.0*(.5+.5*cos(M_PI*v));
 						b = 64.0*(.5+.5*sin(M_PI*v));
-					} else if (running == 4) {
+					} else if (running == 5) {
 						r = 64.0*(.5+.5*sin(M_PI*v));
 						g = 64.0*(.5+.5*sin(M_PI*v+2*M_PI/3));
 						b = 64.0*(.5+.5*sin(M_PI*v+4*M_PI/3));
-					} else if (running == 5) {
+					} else if (running == 6) {
 						float c = 64.0*(.5+.5*sin(M_PI*v*5.0));
 						r = c;
 						g = c;
 						b = c;
-					} else if (running == 6) {
+					} else if (running == 7) {
 						float c = 64.0*(.5+.5*v*0.8);
 						r = 64.0*c;
 						g = 64.0*c;
@@ -106,7 +132,7 @@ void Mood::run() {
 			overflow -= 8;
 		} else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 			running++;
-			running %= 6;
+			running %= 7;
 			if (running == 0) running = 1;
 		}
 		
