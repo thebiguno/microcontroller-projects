@@ -111,6 +111,7 @@ Menu* LoadSamples::handleAction(){
 			}
 			folder.close();
 			display.write_text(2, 0, "Load Samples Done   ", 20);
+			encoder.write(0);
 			display.refresh();
 			delay(1000);
 			display.clear();

@@ -1,0 +1,29 @@
+#include <stdio.h>
+
+#include "Protocol.h"
+
+using namespace digitalcave;
+
+int main(){
+	Protocol p;
+	Message outgoing(1);
+	Message *incoming;
+	outgoing.append(0x7e);
+	outgoing.append(0x7d);
+	outgoing.append(0x7e);
+	outgoing.append(0x7e);
+	
+	uint8_t b;
+	while(outgoing.flush(&b)){
+		printf("0x%02x\n", b);
+		incoming = p.poll(b);
+		if (incoming != NULL){
+			printf("Received message: command = %d, length = %d.  Bytes: ", incoming->getCommand(), incoming->getLength());
+			for (uint8_t i = 0; i < incoming->getLength(); i++){
+				printf("0x%02x ", incoming->getMessage()[i]);
+			}
+			printf("\n");
+		}
+	}
+	
+}

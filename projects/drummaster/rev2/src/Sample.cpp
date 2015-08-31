@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-//All the audio junk.  I can't seem to get it into the class structure...
+//All the audio junk.  Static members of the class.
 
 //Inputs
 AudioPlaySerialRaw Sample::samples[SAMPLE_COUNT];
@@ -38,21 +38,23 @@ AudioConnection Sample::mixerToOutput1(mixer, 0, output, 1);
 
 
 
-Sample::Sample(uint8_t index): index(index) {
+Sample::Sample(uint8_t index): index(index), lastChannel(0xFF) {
 	//Nothing to see here...
 }
 
 void Sample::play(uint8_t channel, uint8_t rawValue){
+	lastChannel = channel;
 	setGain(rawValue);
 	Serial.println(index);
-	samples[index].play("RD00.RAW");			//TODO Change to be dynamic
+	//samples[index].play("SN_9_A.RAW");			//TODO Change to be dynamic
+	samples[index].play("RD_0_A.RAW");			//TODO Change to be dynamic
 }
 
 uint8_t Sample::isPlaying(){
 	return samples[index].isPlaying();
 }
 
-uint32_t Sample::positionMillis(){
+uint32_t Sample::getPositionMillis(){
 	return samples[index].positionMillis();
 }
 
@@ -60,7 +62,16 @@ void Sample::stop(){
 	samples[index].stop();
 }
 
+uint8_t Sample::getGain(){
+	return lastGain;
+}
+
 void Sample::setGain(uint8_t rawValue){
+	lastGain = rawValue;
 	double volume = max(rawValue / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, rawValue));
 	mixer.gain(index, volume / VOLUME_DIVISOR);
+}
+
+uint8_t Sample::getLastChannel(){
+	return lastChannel;
 }

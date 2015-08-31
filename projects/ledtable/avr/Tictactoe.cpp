@@ -173,7 +173,7 @@ void Tictactoe::run() {
 				}
 			}
 		}
-		else if (buttons & PSB_TRIANGLE && changed & PSB_TRIANGLE) {
+		else if (buttons & PSB_START && changed & PSB_START) {
 			running = 0;
 		}
 		

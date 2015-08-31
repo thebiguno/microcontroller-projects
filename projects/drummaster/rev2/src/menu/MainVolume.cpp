@@ -6,9 +6,8 @@ extern AudioControlSGTL5000 control;
 extern Menu mainMenu;
 
 MainVolume::MainVolume(){
-	encoderState = 80;
+	encoderState = 70;
 	encoder.write(encoderState);
-	//control.volume(encoderState / 100.0);
 }
 
 Menu* MainVolume::handleAction(){

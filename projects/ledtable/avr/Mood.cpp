@@ -22,12 +22,13 @@ Mood::~Mood() {
 void Mood::run() {
 	uint8_t running = 1;
 	uint16_t buttons;
+	uint16_t changed;
 	
 	Hsv c = Hsv(hsv);
 	// at values lower than this the color mixing doesn't work well
 	if (c.getValue() < 0x0f) c.setValue(0x0f);
 
-	uint8_t overflow = 0;
+	uint8_t overflow = 128;
 	
 	const float k = 10.0;
 	float v = 0.0;
@@ -98,19 +99,18 @@ void Mood::run() {
 		
 		psx.poll();
 		buttons = psx.buttons();
-		if (buttons & PSB_PAD_LEFT) {
+		changed = psx.changed();
+		if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
 			overflow += 8;
-		} else if (buttons & PSB_PAD_RIGHT) {
+		} else if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
 			overflow -= 8;
-		} else if (buttons & PSB_PAD_UP) {
+		} else if (buttons & PSB_SELECT && changed & PSB_SELECT) {
 			running++;
-			if (running == 7) running = 1;
-		} else if (buttons & PSB_PAD_DOWN) {
-			running--;
-			if (running == 0) running = 6;
+			running %= 6;
+			if (running == 0) running = 1;
 		}
 		
-		if (buttons & PSB_TRIANGLE) {
+		if (buttons & PSB_START && changed & PSB_START) {
 			running = 0;
 		}
 		

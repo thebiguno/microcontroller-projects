@@ -51,6 +51,9 @@ void timer_init(){
 	defined(__AVR_ATmega644P__)    || \
 	defined(__AVR_ATmega644PA__)   || \
 	defined(__AVR_ATmega1284P__)
+	defined(__AVR_ATmega32U2__)    || \
+	defined(__AVR_ATmega16U4__)    || \
+	defined(__AVR_ATmega32U4__)
 	
 	TIMSK0 = _BV(OCIE0A);
 	
