@@ -1,0 +1,15 @@
+(module H_JOINT_TH (layer F.Cu) (tedit 55E657F8)
+  (fp_text reference P3 (at 0 -5.1) (layer F.SilkS) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value H_JOINT_TH (at 0 -3.25) (layer F.Fab) hide
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (pad 1 thru_hole rect (at 0.25 -1.5) (size 5 2) (drill 1 (offset -1.5 0)) (layers *.Cu *.Mask F.SilkS))
+  (pad 2 thru_hole rect (at 0.25 1.5) (size 5 2) (drill 1 (offset -1.5 0)) (layers *.Cu *.Mask F.SilkS))
+  (model Pin_Headers.3dshapes/Pin_Header_Straight_1x02.wrl
+    (at (xyz 0 -0.05 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 90))
+  )
+)
