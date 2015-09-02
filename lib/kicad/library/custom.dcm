@@ -200,6 +200,10 @@ D Motor Controller, Full H-Bridge x2
 K Motor, Bridge, H-Bridge
 $ENDCMP
 #
+$CMP XC9140
+D XC9140_Boost_Regulator
+$ENDCMP
+#
 $CMP XTALSMALL
 D RSMALL
 K R DEV
