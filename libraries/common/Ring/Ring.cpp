@@ -1,5 +1,7 @@
 #include "Ring.h"
 
+using namespace digitalcave;
+
 Ring::Ring(uint8_t size) {
 	this->buffer = (uint8_t*) malloc(size);
 	this->size = size;
