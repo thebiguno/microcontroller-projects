@@ -11,6 +11,8 @@ namespace digitalcave {
 	uint16_t state[12][12];
 	uint8_t piece; 			// 0 to 6
 	uint8_t orientation;	// 0 to 3
+	int8_t x;				// location of current piece
+	int8_t y;				// range depends on piece and orientation
 	
 	public:
 		Tetris();

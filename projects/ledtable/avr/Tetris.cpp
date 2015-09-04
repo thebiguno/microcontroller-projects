@@ -57,20 +57,10 @@ void Tetris::run() {
 	}
 }
 
-void Tetris::flush() {
-	Hsv h = Hsv(hsv);
-	for (uint8_t x = 0; x < 12; x++) {
-		for (uint8_t y = 0; y < 12; y++) {
-			uint8_t s = state[x][y];
-			if (s < 7) {
-				h.setHue(hues[s]);
-				matrix.setColor(Rgb(h));
-			} else {
-				matrix.setColor(0,0,0);
-			}
-			matrix.setPixel(x,y);
-		}
-	}
+void Tetris::draw() {
+	drawState();
+	drawPiece();
+	
 	matrix.flush();
 }
 
@@ -84,17 +74,75 @@ uint8_t Tetris::newGame() {
 	return 0;
 }
 
-void Tetris::generate() {
-	orientation = 0;
-	uint8_t r = rand() % 7;
-	uint8_t offset = 2 * r; // two bytes per piece
-	matrix.bitmap(4, 0, 4, 4, orientation, &pieces[offset]);
-	
-	
-	/*
-	for(int16_t iy = y; iy < y + height; iy++){
-		for(int16_t ix = x; ix < x + width; ix++){
-			if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)){
+uint8_t Tetris::drawState() {
+	Hsv h = Hsv(hsv);
+	for (uint8_t x = 0; x < 12; x++) {
+		for (uint8_t y = 0; y < 12; y++) {
+			uint8_t s = state[x][y];
+			if (s < 7) {
+				h.setHue(hues[s]);
+				matrix.setColor(Rgb(h));
+			} else {
+				matrix.setColor(0,0,0);
+			}
+			matrix.setPixel(x,y);
+		}
+	}
+}
+uint8_t Tetris::drawPiece() {
+	uint8_t offset = 2 * piece * orientation; // 2 bytes per piece, 4 orientations per piece, 8 bytes total per piece
+	uint8_t* bitmap = &pieces[offset];
+		
+	// each block is 4x4
+	// first check that drawing the piece in this location will not conflict with any existing state
+	boolean ok = true;
+	for (int8_t iy = y; iy < y + 4; iy++) {
+		for (int8_t ix = x; ix < x + 4; ix++) {
+			if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)) {
+				ok &= (state[ix][iy] == 255)
+			}
+			if (bitCounter == 0){
+				byteCounter++;
+				bitCounter = 8;
+			}
+			bitCounter--;
+		}
+	}
+	if (!ok) {
+		if (down == 0) {
+			// write the bitmap to the state matrix
+			for (int8_t iy = y; iy < y + 4; iy++) {
+				for (int8_t ix = x; ix < x + 4; ix++) {
+					if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)) {
+						state[ix][iy] = piece;
+					}
+					if (bitCounter == 0){
+						byteCounter++;
+						bitCounter = 8;
+					}
+					bitCounter--;
+				}
+			}
+			return 0;
+		} else {
+			return 1; // drawing this shape in this location was not permitted
+		}
+	} else {
+		matrix.set
+		matrix.bitmap(4, 0, 4, 4, DRAW_ORIENTATION_0, bitmap);
+		return 0;
+	}
+}
+
+uint8_t Tetris::translate(int8_t x, int8_t y, uint8_t piece, uint8_t orientation) {
+	uint8_t offset = 2 * piece * orientation; // 2 bytes per piece, 4 orientations per piece, 8 bytes total per piece
+	uint8_t* bitmap = &pieces[offset];
+		
+	// each block is 4x4
+	// copy the bitmap into state map
+	for (int8_t iy = y; iy < y + 4; iy++) {
+		for (int8_t ix = x; ix < x + 4; ix++) {
+			if (pgm_read_byte_near(bitmap + byteCounter) & _BV(bitCounter)) {
 				state[ix][iy] = piece;
 			}
 			if (bitCounter == 0){
@@ -104,9 +152,16 @@ void Tetris::generate() {
 			bitCounter--;
 		}
 	}
+}
+
+
+void Tetris::generate() {
+	orientation = 0;
+	uint8_t r = rand() % 7;
+	uint8_t offset = 2 * r; // two bytes per piece
+	matrix.bitmap(4, 0, 4, 4, orientation, &pieces[offset]);
 	
-	flush();
-	*/
+	
 }
 
 void Tetris::rotate() {
