@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Thursday, July 02, 2015 'pmt' 01:20:28 pm
+EESchema-DOCLIB  Version 2.0
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -78,11 +78,6 @@ D Digital Potentiometer
 K potentiometer
 $ENDCMP
 #
-$CMP MCP46X1
-D Digital Potentiometer
-K potentiometer
-$ENDCMP
-#
 $CMP MCP4728
 D Quad I2C DAC (http://ww1.microchip.com/downloads/en/DeviceDoc/22187a.pdf)
 K DAC
@@ -128,11 +123,6 @@ $ENDCMP
 #
 $CMP POTENTIOMETER
 D Potentiometer
-K R DEV
-$ENDCMP
-#
-$CMP R_PACK5
-D 5 resistors Pack
 K R DEV
 $ENDCMP
 #
@@ -186,6 +176,11 @@ D RSMALL
 K R DEV
 $ENDCMP
 #
+$CMP R_PACK5
+D 5 resistors Pack
+K R DEV
+$ENDCMP
+#
 $CMP S25FL512S
 D Spansion S25FL512S 64MB SPI Flash Module
 $ENDCMP
@@ -203,6 +198,10 @@ $ENDCMP
 $CMP TB6552FNG
 D Motor Controller, Full H-Bridge x2
 K Motor, Bridge, H-Bridge
+$ENDCMP
+#
+$CMP XC9140
+D XC9140_Boost_Regulator
 $ENDCMP
 #
 $CMP XTALSMALL
