@@ -52,20 +52,7 @@ Psx::Psx(volatile uint8_t *data_port, uint8_t data_pin,
 	*this->data_ddr &= ~(_BV(data_pin));
 	*this->data_port |= _BV(data_pin);
 	
-	//Init by polling once
-	poll();
-
-	//Enter Config Mode
-	uint8_t enter_config_command[] = {0x01, 0x43, 0x00, 0x01, 0x00};
-	sendCommand(enter_config_command, 5);
-
-	// Lock to Analog Mode on Stick
-	uint8_t lock_analog_mode_command[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
-	sendCommand(lock_analog_mode_command, 9);
-
-	//Exit config mode
-	uint8_t exit_config_command[] = {0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A};
-	sendCommand(exit_config_command, 9);
+	init();
 }
 
 Psx::~Psx() {

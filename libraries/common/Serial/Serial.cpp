@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-uint8_t Serial::read(uint8_t *a, uint8_t len){
+uint8_t Serial::read(uint8_t* a, uint8_t len){
 	uint8_t count = 0;
 	uint8_t data = 0;
 	
@@ -13,6 +13,9 @@ uint8_t Serial::read(uint8_t *a, uint8_t len){
 	return count;
 }
 
+void Serial::write(const char* data){
+	write((char*) data);
+}
 void Serial::write(char *data){
 	while (*data){
 		write(*data++);
