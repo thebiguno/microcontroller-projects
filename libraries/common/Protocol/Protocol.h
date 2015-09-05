@@ -2,7 +2,6 @@
 #define PROTOCOL_H
 
 #include <stdint.h>
-#include <cstddef>
 
 #define NO_ERROR							0
 
