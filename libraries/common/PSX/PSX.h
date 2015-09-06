@@ -40,6 +40,8 @@ namespace digitalcave {
 			
 		public:
 			//Reads the gamepad.  Call this whenever you want updated state.
+			// Also forces controller into analog mode (it appears that some controllers don't like it the first
+			// few times that you try to set analog mode... not sure why).
 			void poll();
 			
 			//Initialize the gamepad.  This should be called from the hardware-specific implementations.

@@ -56,6 +56,8 @@ int main (void){
 	
 // 	char buf[20];
 	
+//	psx.init();
+	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
@@ -64,9 +66,10 @@ int main (void){
 
 		psx.init();
 		
-// 		snprintf(buf, sizeof(buf), "%d                                   ", psx.buttons());
-// 		display.write_text(1, 0, buf, 20);
-// 		display.refresh();
+// // 		char buf[20];
+// // 		snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", psx.buttons(), psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
+// // 		display.write_text(1, 0, buf, 20);
+// // 		display.refresh();
 		
 		if (psx.stick(PSS_LX) != last_LX){
 			last_LX = psx.stick(PSS_LX);

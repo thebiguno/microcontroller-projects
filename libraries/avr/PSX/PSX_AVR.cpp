@@ -44,9 +44,11 @@ PSX_AVR::PSX_AVR(volatile uint8_t *data_port, uint8_t data_pin,				//MISO (Brown
 	*this->data_ddr &= ~(_BV(data_pin));
 	*this->data_port |= _BV(data_pin);
 	
-	_delay_ms(100);
+// 	init();
+// 	
+// 	_delay_ms(500);
 	
-	init();
+//	init();
 	
 }
 
