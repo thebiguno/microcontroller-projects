@@ -54,9 +54,7 @@ int main (void){
 	display.write_text(0, 0, "It Works!           ", 20);
 	display.refresh();
 	
-// 	char buf[20];
-	
-//	psx.init();
+ 	char buf[16];
 	
 	//Main program loop
 	while (1){
@@ -66,60 +64,26 @@ int main (void){
 
 		psx.poll();
 		
-		char buf[20];
-		snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", psx.buttons(), psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
-		display.write_text(1, 0, buf, 20);
+		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select          ", 16);
+		if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1          ", 16);
+		if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2          ", 16);
+		if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3          ", 16);
+		if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1         ", 16);
+		if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2         ", 16);
+		if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3         ", 16);
+		if (psx.button(PSB_START)) display.write_text(0, 0, "Start           ", 16);
+		if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up          ", 16);
+		if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left        ", 16);
+		if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down        ", 16);
+		if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right       ", 16);
+		if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle        ", 16);
+		if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle          ", 16);
+		if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross           ", 16);
+		if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square          ", 16);
+
+		snprintf(buf, sizeof(buf), "%02X,%02X   %02X,%02X                   ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
+		display.write_text(1, 0, buf, 16);
+		
 		display.refresh();
-		
-		if (psx.stick(PSS_LX) != last_LX){
-			last_LX = psx.stick(PSS_LX);
-			PORTB ^= _BV(PORTB4);
-		}
-		
-		if (psx.buttons()) PORTB &= ~_BV(PORTB5);
-		else PORTB |= _BV(PORTB5);
-
-
-// 		if (psx.button(PSB_SELECT)) serial.write("Select\n\r");
-// 		if (psx.button(PSB_L1)) serial.write("Left 1\n\r");
-// 		if (psx.button(PSB_L2)) serial.write("Left 2\n\r");
-// 		if (psx.button(PSB_L3)) serial.write("Left 3\n\r");
-// 		if (psx.button(PSB_R1)) serial.write("Right 1\n\r");
-// 		if (psx.button(PSB_R2)) serial.write("Right 2\n\r");
-// 		if (psx.button(PSB_R3)) serial.write("Right 3\n\r");
-// 		if (psx.button(PSB_START)) serial.write("Start\n\r");
-// 		if (psx.button(PSB_PAD_UP)) serial.write("Pad Up\n\r");
-// 		if (psx.button(PSB_PAD_LEFT)) serial.write("Pad Left\n\r");
-// 		if (psx.button(PSB_PAD_DOWN)) serial.write("Pad Down\n\r");
-// 		if (psx.button(PSB_PAD_RIGHT)) serial.write("Pad Right\n\r");
-// 		if (psx.button(PSB_TRIANGLE)) serial.write("Triangle\n\r");
-// 		if (psx.button(PSB_CIRCLE)) serial.write("Circle\n\r");
-// 		if (psx.button(PSB_CROSS)) serial.write("Cross\n\r");
-// 		if (psx.button(PSB_SQUARE)) serial.write("Square\n\r");
-// 
-// 		if (psx.stick(PSS_LX) != last_LX){
-// 			last_LX = psx.stick(PSS_LX);
-// 			serial.write("LX: ");
-// 			serial.write(itoa(last_LX, temp, 16));
-// 			serial.write("\n\r");
-// 		}
-// 		if (psx.stick(PSS_LY) != last_LY){
-// 			last_LY = psx.stick(PSS_LY);
-// 			serial.write("LY: ");
-// 			serial.write(itoa(last_LY, temp, 16));
-// 			serial.write("\n\r");
-// 		}
-// 		if (psx.stick(PSS_RX) != last_RX){
-// 			last_RX = psx.stick(PSS_RX);
-// 			serial.write("RX: ");
-// 			serial.write(itoa(last_RX, temp, 16));
-// 			serial.write("\n\r");
-// 		}
-// 		if (psx.stick(PSS_RY) != last_RY){
-// 			last_RY = psx.stick(PSS_RY);
-// 			serial.write("RY: ");
-// 			serial.write(itoa(last_RY, temp, 16));
-// 			serial.write("\n\r");
-// 		}
 	}
 }
