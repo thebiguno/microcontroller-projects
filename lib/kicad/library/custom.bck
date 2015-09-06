@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0
+EESchema-DOCLIB  Version 2.0  Date: Sun 06 Sep 2015 12:46:28 PM MDT
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
@@ -47,6 +47,16 @@ $ENDCMP
 $CMP ISP
 D ISP Header
 K ISP HEADER
+$ENDCMP
+#
+$CMP JACK_TRS
+D Jack TRS
+K TRS Jack Stereo
+$ENDCMP
+#
+$CMP JACK_TS
+D Jack TS
+K TRS Jack Mono
 $ENDCMP
 #
 $CMP L293D
@@ -126,6 +136,11 @@ D Potentiometer
 K R DEV
 $ENDCMP
 #
+$CMP R_PACK5
+D 5 resistors Pack
+K R DEV
+$ENDCMP
+#
 $CMP RELAY_DPDT
 D RELAY_DPST
 K Relay, DPST
@@ -173,11 +188,6 @@ $ENDCMP
 #
 $CMP RSMALL
 D RSMALL
-K R DEV
-$ENDCMP
-#
-$CMP R_PACK5
-D 5 resistors Pack
 K R DEV
 $ENDCMP
 #
