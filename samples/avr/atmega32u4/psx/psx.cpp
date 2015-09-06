@@ -62,7 +62,7 @@ int main (void){
 		
 		//usb_serial_write((const uint8_t*) "Foo\n", 5);
 
-		psx.poll();
+		psx.init();
 		
 // 		snprintf(buf, sizeof(buf), "%d                                   ", psx.buttons());
 // 		display.write_text(1, 0, buf, 20);
