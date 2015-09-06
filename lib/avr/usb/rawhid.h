@@ -1,6 +1,7 @@
 #ifndef usb_serial_h__
 #define usb_serial_h__
 
+#include <stddef.h>
 #include <stdint.h>
 
 void usb_init(void);			// initialize everything

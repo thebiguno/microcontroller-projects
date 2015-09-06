@@ -2,15 +2,27 @@
  * PS2 Controller test.  Connect the wires as indicated in the PSX constructor
  */
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include <stdlib.h>
+
 #include <PSX_AVR.h>
-#include <Serial_AVR.h>
+#include <Hd44780_Direct.h>
+#include <CharDisplay.h>
 
 using namespace digitalcave;
 
+Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
+	&PORTF, PORTF0,
+	&PORTF, PORTF1,
+	&PORTF, PORTF4,
+	&PORTF, PORTF5,
+	&PORTF, PORTF6,
+	&PORTF, PORTF7);
+CharDisplay display(&hd44780, 2, 16);
+	
 char temp[32];
 uint8_t last_LX = 0;
 uint8_t last_LY = 0;
@@ -19,28 +31,50 @@ uint8_t last_RY = 0;
 
 int main (void){
 	//Do setup here
-	
+	DDRB |= _BV(PORTB4) | _BV(PORTB5);
 
-	//Serial_AVR serial(9600);
+	//usb_init();
+	//while (!usb_configured()) /* wait */ ;
+	//_delay_ms(1000);
+	
+// 	Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
+// 		&PORTF, PORTF0,
+// 		&PORTF, PORTF1,
+// 		&PORTF, PORTF4,
+// 		&PORTF, PORTF5,
+// 		&PORTF, PORTF6,
+// 		&PORTF, PORTF7);
+// 	CharDisplay display(&hd44780, 2, 16);
 
 	PSX_AVR psx(&PORTD, PORTD2, //Data (Brown)
 		&PORTD, PORTD3, //Command (Orange)
 		&PORTD, PORTD4, //Clock (Blue)
 		&PORTD, PORTD5); //Attention (Yellow)
 	
+	display.write_text(0, 0, "It Works!           ", 20);
+	display.refresh();
+	
+// 	char buf[20];
+	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
+		
+		//usb_serial_write((const uint8_t*) "Foo\n", 5);
 
 		psx.poll();
+		
+// 		snprintf(buf, sizeof(buf), "%d                                   ", psx.buttons());
+// 		display.write_text(1, 0, buf, 20);
+// 		display.refresh();
 		
 		if (psx.stick(PSS_LX) != last_LX){
 			last_LX = psx.stick(PSS_LX);
 			PORTB ^= _BV(PORTB4);
 		}
 		
-		if (psx.button(PSB_PAD_LEFT)) PORTB |= _BV(PORTB5);
-		else PORTB &= ~_BV(PORTB5);
+		if (psx.buttons()) PORTB &= ~_BV(PORTB5);
+		else PORTB |= _BV(PORTB5);
 
 
 // 		if (psx.button(PSB_SELECT)) serial.write("Select\n\r");

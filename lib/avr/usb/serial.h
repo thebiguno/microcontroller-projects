@@ -1,6 +1,7 @@
 #ifndef USB_SERIAL_H
 #define USB_SERIAL_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #define EP_TYPE_CONTROL			0x00

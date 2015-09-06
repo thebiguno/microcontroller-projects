@@ -40,6 +40,10 @@
 
 using namespace digitalcave;
 
+#include <stdio.h>
+#include <CharDisplay.h>
+extern CharDisplay display;
+
 void PSX::poll() {
 	data[0] = 0x01;
 	data[1] = 0x42;
@@ -47,6 +51,15 @@ void PSX::poll() {
 		data[i] = 0x00;
 	}
 	sendCommand(data, 21);
+	
+	uint16_t read = ~(((uint16_t) data[4] << 8) | data[3]); //Get 2 bytes, comprising data positions 3 and 4.  Active low, so invert it.
+	buttons_changed = buttons_state ^ read;
+	buttons_state = read;
+	
+	char buf[20];
+	snprintf(buf, sizeof(buf), "%d                         ", read);
+	display.write_text(1, 0, buf, 20);
+	display.refresh();
 }
 
 void PSX::init(){
@@ -71,14 +84,12 @@ uint16_t PSX::changed() {
 }
 
 uint16_t PSX::buttons() {
-	uint16_t read = data[3] << 8 || data[4]; //Get 2 bytes, comprising data positions 3 and 4.
-	buttons_changed = buttons_state ^ read;
-	buttons_state = read;
 	return buttons_state;
 }
 
 uint8_t PSX::button(uint16_t button) {
-	return ((buttons() & button) > 0);
+	if (buttons_state & button) return 1;
+	return 0;
 }
 
 uint8_t PSX::stick(unsigned int stick) {
