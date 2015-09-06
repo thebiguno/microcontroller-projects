@@ -46,7 +46,7 @@ namespace digitalcave {
 			
 			//Initialize the gamepad.  This should be called from the hardware-specific implementations.
 			// This function calls the sendCommand() function with the correct initialization sequence.
-			void init();
+			//void init();
 			
 			//Gets a bitmask of all buttons that are pressed.
 			uint16_t buttons();

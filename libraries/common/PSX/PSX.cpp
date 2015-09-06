@@ -45,24 +45,6 @@ using namespace digitalcave;
 extern CharDisplay display;
 
 void PSX::poll() {
-	data[0] = 0x01;
-	data[1] = 0x42;
-	for (uint8_t i = 2; i < 21; i++){
-		data[i] = 0x00;
-	}
-	sendCommand(data, 21);
-	
-	uint16_t read = ~(((uint16_t) data[4] << 8) | data[3]); //Get 2 bytes, comprising data positions 3 and 4.  Active low, so invert it.
-	buttons_changed = buttons_state ^ read;
-	buttons_state = read;
-	
-	char buf[20];
-	snprintf(buf, sizeof(buf), "%d                         ", read);
-	display.write_text(1, 0, buf, 20);
-	display.refresh();
-}
-
-void PSX::init(){
 	//Start to init by polling once
 	//poll();
 	
@@ -73,10 +55,6 @@ void PSX::init(){
 	// Lock to Analog Mode on Stick
 	uint8_t lock_analog_mode_command[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
 	sendCommand(lock_analog_mode_command, 9);
-// 	uint8_t lock_analog_mode_command2[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
-// 	sendCommand(lock_analog_mode_command2, 9);
-// 	uint8_t lock_analog_mode_command3[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
-// 	sendCommand(lock_analog_mode_command3, 9);
 	
 	//Exit config mode and poll data
 	uint8_t exit_config_command[] = {0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A};
@@ -85,7 +63,7 @@ void PSX::init(){
 	//Read data
 	data[0] = 0x01;
 	data[1] = 0x42;
-	for (uint8_t i = 2; i < 21; i++){
+	for (uint8_t i = 2; i < 9; i++){
 		data[i] = 0x00;
 	}
 	sendCommand(data, 9);
@@ -93,12 +71,45 @@ void PSX::init(){
 	uint16_t read = ~(((uint16_t) data[4] << 8) | data[3]); //Get 2 bytes, comprising data positions 3 and 4.  Active low, so invert it.
 	buttons_changed = buttons_state ^ read;
 	buttons_state = read;
-	
-	char buf[20];
-	snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", read, data[5], data[6], data[7], data[8]);
-	display.write_text(1, 0, buf, 20);
-	display.refresh();
 }
+
+// void PSX::init(){
+// 	//Start to init by polling once
+// 	//poll();
+// 	
+// 	//Enter Config Mode
+// 	uint8_t enter_config_command[] = {0x01, 0x43, 0x00, 0x01, 0x00};
+// 	sendCommand(enter_config_command, 5);
+// 	
+// 	// Lock to Analog Mode on Stick
+// 	uint8_t lock_analog_mode_command[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
+// 	sendCommand(lock_analog_mode_command, 9);
+// // 	uint8_t lock_analog_mode_command2[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
+// // 	sendCommand(lock_analog_mode_command2, 9);
+// // 	uint8_t lock_analog_mode_command3[] = {0x01, 0x44, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00};
+// // 	sendCommand(lock_analog_mode_command3, 9);
+// 	
+// 	//Exit config mode and poll data
+// 	uint8_t exit_config_command[] = {0x01, 0x43, 0x00, 0x00, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A};
+// 	sendCommand(exit_config_command, 9);
+// 	
+// 	//Read data
+// 	data[0] = 0x01;
+// 	data[1] = 0x42;
+// 	for (uint8_t i = 2; i < 21; i++){
+// 		data[i] = 0x00;
+// 	}
+// 	sendCommand(data, 9);
+// 	
+// 	uint16_t read = ~(((uint16_t) data[4] << 8) | data[3]); //Get 2 bytes, comprising data positions 3 and 4.  Active low, so invert it.
+// 	buttons_changed = buttons_state ^ read;
+// 	buttons_state = read;
+// 	
+// 	char buf[20];
+// 	snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", read, data[5], data[6], data[7], data[8]);
+// 	display.write_text(1, 0, buf, 20);
+// 	display.refresh();
+// }
 
 uint16_t PSX::changed() {
 	return buttons_changed;

@@ -64,12 +64,12 @@ int main (void){
 		
 		//usb_serial_write((const uint8_t*) "Foo\n", 5);
 
-		psx.init();
+		psx.poll();
 		
-// // 		char buf[20];
-// // 		snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", psx.buttons(), psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
-// // 		display.write_text(1, 0, buf, 20);
-// // 		display.refresh();
+		char buf[20];
+		snprintf(buf, sizeof(buf), "%d;%02X,%02X;%02X,%02X                         ", psx.buttons(), psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
+		display.write_text(1, 0, buf, 20);
+		display.refresh();
 		
 		if (psx.stick(PSS_LX) != last_LX){
 			last_LX = psx.stick(PSS_LX);
