@@ -10,14 +10,14 @@ PSX_AVR::PSX_AVR(volatile uint8_t *data_port, uint8_t data_pin,				//MISO (Brown
 				volatile uint8_t *attention_port, uint8_t attention_pin) {	//CS (Yellow)
 
 	//Store the ports...
-	this->command_port = command_port;
 	this->data_port = data_port;
+	this->command_port = command_port;
 	this->clock_port = clock_port;
 	this->attention_port = attention_port;
 	
 	//... and data direction registers...
-	this->command_ddr = command_port - 0x1;
 	this->data_ddr = data_port - 0x1;
+	this->command_ddr = command_port - 0x1;
 	this->clock_ddr = clock_port - 0x1;
 	this->attention_ddr = attention_port - 0x1;
 
@@ -25,8 +25,8 @@ PSX_AVR::PSX_AVR(volatile uint8_t *data_port, uint8_t data_pin,				//MISO (Brown
 	this->data_in = data_port - 0x2;
 
 	//... and pin numbers.
-	this->command_pin = command_pin;
 	this->data_pin = data_pin;
+	this->command_pin = command_pin;
 	this->clock_pin = clock_pin;
 	this->attention_pin = attention_pin;
 	
@@ -44,7 +44,11 @@ PSX_AVR::PSX_AVR(volatile uint8_t *data_port, uint8_t data_pin,				//MISO (Brown
 	*this->data_ddr &= ~(_BV(data_pin));
 	*this->data_port |= _BV(data_pin);
 	
-	init();
+// 	init();
+// 	
+// 	_delay_ms(500);
+	
+//	init();
 	
 }
 

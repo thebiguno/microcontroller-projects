@@ -12,7 +12,7 @@
 #include <PSX.h>
 
 //Half a clock cycle; 10µs seems to be about right
-#define CTRL_CLK        10
+#define CTRL_CLK        15
 
 
 namespace digitalcave {
