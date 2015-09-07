@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  LandscapeViewController.swift
 //  Chindii
 //
 //  Created by Warren Janssens on 2015-08-19.
@@ -8,8 +8,14 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LandscapeViewController: UIViewController {
 
+	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+		if (toInterfaceOrientation.isPortrait) {
+			performSegueWithIdentifier("toMenu", sender: self);
+		}
+	}
+	
 	override func viewDidLoad() {
         super.viewDidLoad()
 		
@@ -20,4 +26,5 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
 }
