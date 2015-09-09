@@ -8,7 +8,9 @@
 
 import UIKit
 
-class PortraitViewController: UITableViewController {
+class MenuViewController: UITableViewController, UITableViewDataSource {
+	
+	var items = [String]()
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
 		if (toInterfaceOrientation.isLandscape) {

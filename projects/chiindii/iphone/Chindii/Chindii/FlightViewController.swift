@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LandscapeViewController: UIViewController {
+class FlightViewController: UIViewController {
 
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
 		if (toInterfaceOrientation.isPortrait) {
