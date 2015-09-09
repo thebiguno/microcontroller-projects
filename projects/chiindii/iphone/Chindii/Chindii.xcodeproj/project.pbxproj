@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		803D10281B856D7400B8D958 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10271B856D7400B8D958 /* AppDelegate.swift */; };
-		803D102A1B856D7400B8D958 /* LandscapeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10291B856D7400B8D958 /* LandscapeViewController.swift */; };
+		803D102A1B856D7400B8D958 /* FlightViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10291B856D7400B8D958 /* FlightViewController.swift */; };
 		803D102D1B856D7400B8D958 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 803D102B1B856D7400B8D958 /* Main.storyboard */; };
 		803D102F1B856D7400B8D958 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 803D102E1B856D7400B8D958 /* Images.xcassets */; };
 		803D10321B856D7400B8D958 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 803D10301B856D7400B8D958 /* LaunchScreen.xib */; };
 		803D103E1B856D7400B8D958 /* ChindiiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D103D1B856D7400B8D958 /* ChindiiTests.swift */; };
-		803D10521B9950A900B8D958 /* LandscapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10511B9950A900B8D958 /* LandscapeView.swift */; };
-		803D10541B9E22A700B8D958 /* PortraitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10531B9E22A700B8D958 /* PortraitViewController.swift */; };
+		803D10521B9950A900B8D958 /* FlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10511B9950A900B8D958 /* FlightView.swift */; };
+		803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10531B9E22A700B8D958 /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,15 +31,15 @@
 		803D10221B856D7300B8D958 /* Chindii.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chindii.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D10261B856D7400B8D958 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D10271B856D7400B8D958 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		803D10291B856D7400B8D958 /* LandscapeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandscapeViewController.swift; sourceTree = "<group>"; };
+		803D10291B856D7400B8D958 /* FlightViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlightViewController.swift; sourceTree = "<group>"; };
 		803D102C1B856D7400B8D958 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		803D102E1B856D7400B8D958 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		803D10311B856D7400B8D958 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		803D10371B856D7400B8D958 /* ChindiiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChindiiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D103C1B856D7400B8D958 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D103D1B856D7400B8D958 /* ChindiiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChindiiTests.swift; sourceTree = "<group>"; };
-		803D10511B9950A900B8D958 /* LandscapeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandscapeView.swift; sourceTree = "<group>"; };
-		803D10531B9E22A700B8D958 /* PortraitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PortraitViewController.swift; sourceTree = "<group>"; };
+		803D10511B9950A900B8D958 /* FlightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightView.swift; sourceTree = "<group>"; };
+		803D10531B9E22A700B8D958 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,13 +84,13 @@
 			isa = PBXGroup;
 			children = (
 				803D10271B856D7400B8D958 /* AppDelegate.swift */,
-				803D10291B856D7400B8D958 /* LandscapeViewController.swift */,
-				803D10531B9E22A700B8D958 /* PortraitViewController.swift */,
+				803D10291B856D7400B8D958 /* FlightViewController.swift */,
+				803D10531B9E22A700B8D958 /* MenuViewController.swift */,
 				803D102B1B856D7400B8D958 /* Main.storyboard */,
 				803D102E1B856D7400B8D958 /* Images.xcassets */,
 				803D10301B856D7400B8D958 /* LaunchScreen.xib */,
 				803D10251B856D7300B8D958 /* Supporting Files */,
-				803D10511B9950A900B8D958 /* LandscapeView.swift */,
+				803D10511B9950A900B8D958 /* FlightView.swift */,
 			);
 			path = Chindii;
 			sourceTree = "<group>";
@@ -220,10 +220,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				803D10521B9950A900B8D958 /* LandscapeView.swift in Sources */,
-				803D102A1B856D7400B8D958 /* LandscapeViewController.swift in Sources */,
+				803D10521B9950A900B8D958 /* FlightView.swift in Sources */,
+				803D102A1B856D7400B8D958 /* FlightViewController.swift in Sources */,
 				803D10281B856D7400B8D958 /* AppDelegate.swift in Sources */,
-				803D10541B9E22A700B8D958 /* PortraitViewController.swift in Sources */,
+				803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
