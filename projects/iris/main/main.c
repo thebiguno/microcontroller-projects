@@ -1,7 +1,7 @@
 #define WS2811_PORT PORTB
 
 #include <avr/interrupt.h>
-#include "lib/ws2811/ws2811_w.h"
+#include "lib/ws281x/ws2811.h"
 #include "lib/rtc/ds1307/ds1307.h"
 #include "lib/twi/twi.h"
 //#include "lib/serial/serial.h"
@@ -292,41 +292,20 @@ int main() {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = markers;
 				}
-				// hour fill
-				uint8_t hour = (sys.tm_hour % 12) * 5;
-				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = fill;
-				}
-				colors[sys.tm_min] = other1;
-				colors[sys.tm_sec] = other2;
+				// replace one of the marker points with the hour hand (0-11)
+				colors[sys.tm_hour * 5] = fill;
+				// for even numbered seconds, draw the minute hand (0-59)
+				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_min] = other1;
 			} else if (mode == MODE_MD) {
 				// month, day of month
-				// if (sys.tm_mon < 2) fill = azure; // jan, feb
-				// else if (sys.tm_mon < 5) fill = spring; // mar, apr, may
-				// else if (sys.tm_mon < 8) fill = rose; // jun, jul, aug
-				// else if (sys.tm_mon < 11) fill = orange; // sep, oct, nov
-				// else fill = azure; // dec
-				
 				// markers
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = markers;
 				}
-				// month fill
-				uint8_t mon = (sys.tm_mon % 12) * 5;
-				for (uint8_t i = mon + 1; i < mon + 5; i++) {
-					colors[i] = fill;
-				}
-				// day fill
-				if (sys.tm_mday < 31) {
-					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = other1;
-					colors[i+1] = other1;
-				} else {
-					colors[58] = other1;
-					colors[59] = other1;
-					colors[0] = other1;
-					colors[1] = other1;
-				}
+				// replace one of the marker points with the month hand (0-11)
+				colors[sys.tm_hour * 5] = fill;
+				// for even numbered seconds, draw the day of the month (0-30)
+				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_mday - 1] = other1;
 			} else if (mode == MODE_WD) {
 				// week, day of week
 				// markers
@@ -334,19 +313,10 @@ int main() {
 				for (uint8_t i = 10; i < 60; i = i + 8) {
 					colors[i] = markers;
 				}
-				// week fill
-				uint8_t wday = sys.tm_wday * 8;
-				for (uint8_t i = wday + 3; i < wday + 10; i++) {
-					colors[i] = fill;
-				}
-				if (sys.tm_wday == 0) {
-					colors[0] = fill;
-					colors[1] = fill; 
-				} else if (sys.tm_wday == 6) {
-					colors[58] = fill;
-					colors[59] = fill;
-				}
-				colors[week] = other1;
+				// draw the week of the year (0 to 51)
+				colors[week] = fill;
+				// for even numbered seconds, replace one of the marker points with the day of the week
+				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_wday * 5] = other1;
 			} else if (mode == MODE_PCT) {
 				// persoixante of day
 				uint8_t ps = ((sys.tm_hour * 60) + sys.tm_min) / 24;
