@@ -1,6 +1,6 @@
 /*
  * Read the buttons on the PS2 Controller, and send them over the 
- * serial link (probably to an XBee).  We send all button events.
+ * serial link.  We send all button events and changes to analog state.
  * We let the receiving end decide what to do with this information.
  * Initially designed for a hexapod controller, but it should be usable 
  * for most robotics / gaming interface tasks.
@@ -19,50 +19,84 @@
  * use the enable / disable button / joystick commands.
  */
 
+#include <stdio.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <avr/power.h>
+#include <util/delay.h>
 
 #include <stdlib.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
 
-//Configuration state
-static uint8_t analog_enabled = 0x01;
-static uint16_t button_mask = 0xFFFF;
+#include <Serial_AVR.h>
+#include <PSX_AVR.h>
+#include <Hd44780_Direct.h>
+#include <CharDisplay.h>
 
-//Temporal controller state
-static uint8_t last_lx = 0;
-static uint8_t last_ly = 0;
-static uint8_t last_rx = 0;
-static uint8_t last_ry = 0;
+using namespace digitalcave;
 
-static uint16_t last_buttons = 0x00;
-
-static volatile uint8_t digital_poll_event = 0x00;	//Set this to non-zero to force sending button pressed status
-static volatile uint8_t analog_poll_event = 0x00;	//Set this to non-zero to force sending analog stick state
-static volatile uint8_t analog_release_event = 0x00;	//Set this to non-zero to send analog state
+uint8_t last_LX = 0;
+uint8_t last_LY = 0;
+uint8_t last_RX = 0;
+uint8_t last_RY = 0;
 
 int main (void){
 	//Do setup here
+	clock_prescale_set(clock_div_2);	//Run at 8MHz so that we can run on 3.3v
 	
-	//We use timer 0 to limit the sending analog status to a maximum of every X millis (default about 36ms, adjustable with MESSAGE_UC_SET_ANALOG_FREQUENCY command)
-	TCCR0A = 0x0; //Normal mode (we reset TCNT0 when sending data)
-	TCCR0B |= _BV(CS02) | _BV(CS00);	//F_CPU / 1024 prescaler
-	OCR0A = 0xFF;		//Set analog stick compare value; this will result in showing analog values at most once every ~8ms
-	TIMSK0 = _BV(OCIE0A);  //Enable compare interrupt on A
-	
-	
-	//We use timer 1 to send a status byte every X millis (default about 500ms, adjustable with MESSAGE_UC_SET_POLL_FREQUENCY command)
-	TCCR1A = 0x0; //Normal mode (we reset TCNT1 when sending data)
-	TCCR1B |= _BV(CS12) | _BV(CS10);	//F_CPU / 1024 prescaler
-	OCR1A = 0x0F00;		//Set poll compare value; this will result in forcing status to be fired every ~500ms
-	TIMSK1 = _BV(OCIE1A);  //Enable compare interrupt on A
+	Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
+		&PORTF, PORTF0,
+		&PORTF, PORTF1,
+		&PORTF, PORTF4,
+		&PORTF, PORTF5,
+		&PORTF, PORTF6,
+		&PORTF, PORTF7);
+	CharDisplay display(&hd44780, 2, 16);
 
-	//TODO Serial setup
-	//TODO PSX Setup
-
-	sei();
-	uint8_t announceControlIdTimer = 0x00;
+	PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
+		&PORTD, PORTD5, //Command (Orange)
+		&PORTD, PORTD6, //Clock (Blue)
+		&PORTD, PORTD7); //Attention (Yellow)
 		
+	Serial_AVR serial(9600, 8, 0, 1, 1);
+	
+	//Set up timer0 to output PWM for negative voltage
+	DDRB |= _BV(PORTB7);
+	TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
+	TCCR0B = _BV(CS02);							//Div 256 prescaler
+	OCR0A = 1;									//Set compare value
+	sei();
+	
+ 	char buf[17];
+	
 	//Main program loop
 	while (1){
+		_delay_ms(10);
+		
+		psx.poll();
+		
+		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select          ", 16);
+		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1          ", 16);
+		else if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2          ", 16);
+		else if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3          ", 16);
+		else if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1         ", 16);
+		else if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2         ", 16);
+		else if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3         ", 16);
+		else if (psx.button(PSB_START)) display.write_text(0, 0, "Start           ", 16);
+		else if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up          ", 16);
+		else if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left        ", 16);
+		else if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down        ", 16);
+		else if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right       ", 16);
+		else if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle        ", 16);
+		else if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle          ", 16);
+		else if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross           ", 16);
+		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square          ", 16);
+		else display.write_text(0, 0, "                ", 16);
+
+		snprintf(buf, sizeof(buf), "L:%02X,%02X R:%02X,%02X ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
+		display.write_text(1, 0, buf, 16);
+		
+		display.refresh();
+		
+		//serial.write("Foo\n\r");
 	}
 }
