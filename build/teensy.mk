@@ -41,9 +41,6 @@ else
 	endif
 endif
 
-# path location for Arduino libraries
-LIBRARYPATH = lib
-
 # path location for the arm-none-eabi compiler
 COMPILERPATH = $(TOOLSPATH)/arm/bin
 
@@ -61,7 +58,7 @@ CXXFLAGS = -std=gnu++0x -felide-constructors -fno-exceptions -fno-rtti
 CFLAGS =
 
 # path location for Teensy 3 core
-COREPATH = $(LIBRARYPATH)/teensy/Core/
+COREPATH = inc/teensy/Core/
 
 # linker options
 LDFLAGS = -Os -Wl,--gc-sections -mthumb
@@ -108,13 +105,13 @@ OBJCOPY = $(abspath $(COMPILERPATH))/arm-none-eabi-objcopy
 SIZE = $(abspath $(COMPILERPATH))/arm-none-eabi-size
 
 # automatically create lists of the sources and objects
-LC_FILES := $(shell find -L $(LIBRARYPATH) -name '*.c')
-LCPP_FILES := $(shell find -L $(LIBRARYPATH) -name '*.cpp')
-C_FILES := $(shell find . -name '*.c' ! -path "./lib/*" ! -path "./build/*")
-CPP_FILES := $(shell find . -name '*.cpp' ! -path "./lib/*" ! -path "./build/*")
+LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/teensy" -name '*.c')
+LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/teensy" -name '*.cpp')
+C_FILES := $(shell find . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
+CPP_FILES := $(shell find . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
 
 # include paths for libraries
-L_INC := $(foreach lib,$(shell find -L $(LIBRARYPATH)/ -type d), -I$(lib))
+L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/teensy" -type d), -I$(lib))
 
 SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
