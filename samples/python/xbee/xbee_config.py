@@ -90,14 +90,14 @@ def change(ser):
 		return False
 
 	#Choose a channel
-	channel = raw_input("Choose a Channel (B: XBee) (C: XBee Pro) [" + VALUES[3] + "]: ")
-	if (channel == ""):
-		channel = VALUES[3]
-	if (channel == 'B' or channel == 'C'):
-		ch = channel
-	else:
-		print("Invalid input\n")
-		return False
+#	channel = raw_input("Choose a Channel (B: XBee) (C: XBee Pro) [" + VALUES[3] + "]: ")
+#	if (channel == ""):
+#		channel = VALUES[3]
+#	if (channel == 'B' or channel == 'C'):
+#		ch = channel
+#	else:
+#		print("Invalid input\n")
+#		return False
 
 	#Choose the PAN ID
 	panId = raw_input("Choose a PAN ID (0 - FFFE) [" + VALUES[4] + "]:")
@@ -128,7 +128,7 @@ def change(ser):
 		my = 1
 		dl = 1
 		
-	atCommandString = "ATBD" + str(bd) + ",CE" + str(ce) + ",ID" + format(id, 'x') + ",MY" + str(my) + ",DL" + str(dl) + ",WR"
+	atCommandString = "BD" + str(bd) + ",CE" + str(ce) + ",ID" + format(id, 'x') + ",MY" + str(my) + ",DL" + str(dl) + ",WR"
 	
 	confirm = raw_input(atCommandString + "\nOK to write? (y/n): ")
 	if (confirm == "y" or confirm == "Y"):
