@@ -106,7 +106,6 @@ def readChannel(atCommand):
 		print("Invalid input\n")
 		return None
 
-
 def readCoordinator(atCommand):
 	coordinator = raw_input("Choose end device (0) or coordinator (1) [" + str(atCommand["oldValue"]) + "]: ")
 	if (coordinator == ""):
