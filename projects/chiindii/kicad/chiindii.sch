@@ -1191,7 +1191,6 @@ NoConn ~ 12000 2300
 NoConn ~ 12000 2100
 NoConn ~ 12000 2000
 NoConn ~ 12000 1900
-NoConn ~ 12000 1800
 $Comp
 L CP1 C1
 U 1 1 55BB8B1E
@@ -2611,4 +2610,34 @@ Wire Wire Line
 	5300 1800 5300 1900
 Wire Wire Line
 	5100 1900 5100 1800
+Text Label 12000 1800 0    60   ~ 0
+B0
+$Comp
+L CONN_01X01 P50
+U 1 1 55F7BD06
+P 12550 1800
+F 0 "P50" H 12550 1900 50  0000 C CNN
+F 1 "B0" V 12650 1800 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 12550 1800 60  0001 C CNN
+F 3 "" H 12550 1800 60  0000 C CNN
+	1    12550 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12000 1800 12350 1800
+Text Label 12000 1900 0    60   ~ 0
+B1
+$Comp
+L CONN_01X01 P51
+U 1 1 55F7CC16
+P 12350 1900
+F 0 "P51" H 12350 2000 50  0000 C CNN
+F 1 "B1" V 12450 1900 50  0000 C CNN
+F 2 "Measurement_Points:Measurement_Point_Round-TH_Small" H 12350 1900 60  0001 C CNN
+F 3 "" H 12350 1900 60  0000 C CNN
+	1    12350 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12000 1900 12150 1900
 $EndSCHEMATC
