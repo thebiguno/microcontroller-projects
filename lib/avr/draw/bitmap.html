@@ -71,6 +71,18 @@ var output = function() {
 		html += '0x';
 		html += a[i].toString(16);
 	}
+	html += '<br/>';
+	
+	var str = String.fromCharCode.apply(null,a);
+	var b64 = btoa(str);
+	html += b64;
+	html += '<br/>';
+	
+	var tmp = atob(b64);
+	for(var i = 0; i < tmp.length; i++) {
+		html += tmp.charCodeAt(i).toString(16);
+		html += ' ';
+	}
 	$('#out').html(html);
 };
 		</script>
