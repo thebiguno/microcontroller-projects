@@ -65,6 +65,11 @@ namespace digitalcave {
 			void get_cursor_position(uint8_t* row, uint8_t* col);
 			
 			/*
+			 * Sets all 8 custom characters
+			 */
+			void set_custom_chars(uint8_t* characters);
+			
+			/*
 			 * Clears all data from display, blanks buffer to all spaces, and 
 			 * clears the dirty flags.
 			 */

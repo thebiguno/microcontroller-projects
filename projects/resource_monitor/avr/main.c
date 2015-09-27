@@ -52,7 +52,8 @@ void initDisplay(){
 	};
 	display.set_cgram_address(0x00);
 	_delay_ms(64);
-	display.write_bytes(custom, 64); }
+	display.write_bytes(custom, 64);
+}
 
 void initTimer(){
 	TCCR0A = 0x0;

@@ -32,6 +32,14 @@
 #include <Hd44780_Direct.h>
 #include <CharDisplay.h>
 
+#include "lib/analog.h"
+
+#define ADC_THROTTLE		0
+#define ADC_BATTERY			1
+
+#define THROTTLE_COUNT		10
+#define BATTERY_COUNT		100
+
 using namespace digitalcave;
 
 uint8_t last_LX = 0;
@@ -51,6 +59,18 @@ int main (void){
 		&PORTF, PORTF6,
 		&PORTF, PORTF7);
 	CharDisplay display(&hd44780, 2, 16);
+	uint8_t custom[64] = {
+		0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,			// 0 (Use 0xFE)
+		0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f,			// 1
+		0x0,0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,			// 2
+		0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,			// 3
+		0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,		// 4
+		0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,		// 5
+		0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,		// 6
+		0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f		// 7
+													// 8 (Use 0xFF)
+	};
+	display.set_custom_chars(custom);
 
 	PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 		&PORTD, PORTD5, //Command (Orange)
@@ -59,6 +79,11 @@ int main (void){
 		
 	Serial_AVR serial(9600, 8, 0, 1, 1);
 	
+	uint8_t analog_pins[2];
+	analog_pins[ADC_THROTTLE] = 13;
+	analog_pins[ADC_BATTERY] = 12;
+	analog_init(analog_pins, 2, ANALOG_AVCC);
+	
 	//Set up timer0 to output PWM for negative voltage
 	DDRB |= _BV(PORTB7);
 	TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
@@ -66,11 +91,26 @@ int main (void){
 	OCR0A = 1;									//Set compare value
 	sei();
 	
+	uint8_t throttle_counter = 0;
+	uint8_t battery_counter = 0;
+
+	uint8_t throttle_position = 0;
+	uint8_t battery_level = 0;
+	
  	char buf[17];
 	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
+		
+		if (throttle_counter > THROTTLE_COUNT){
+			throttle_position = (analog_read_p(ADC_THROTTLE) >> 2);
+		}
+		if (battery_counter > BATTERY_COUNT){
+			battery_level = (analog_read_p(ADC_BATTERY) >> 2);
+		}
+		throttle_counter++;
+		battery_level++;
 		
 		psx.poll();
 		
@@ -96,7 +136,5 @@ int main (void){
 		display.write_text(1, 0, buf, 16);
 		
 		display.refresh();
-		
-		//serial.write("Foo\n\r");
 	}
 }

@@ -1,0 +1,1 @@
+../../../../../lib/avr/analog/analog_synchronous.c

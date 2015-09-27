@@ -64,6 +64,11 @@ void CharDisplay::get_cursor_position(uint8_t* row, uint8_t* col){
 	*col = this->cursor_col;
 }
 
+void CharDisplay::set_custom_chars(uint8_t* characters){
+	this->hd44780->set_cgram_address(0x00);
+	this->hd44780->write_bytes(characters, 64);
+}
+			
 void CharDisplay::clear(){
 	this->hd44780->clear();
 	for(uint8_t i = 0; i < 80; i++){

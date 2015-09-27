@@ -35,7 +35,10 @@
 	#define ANALOG_INTERNAL_256	3
 #endif
 
-
+#if defined (__cplusplus)
+extern "C" {
+#endif
+	
 /*
  * Initializes analog hardware.  analog_pins is an array of pin numbers;
  * count is the length of this array.  This allows you to only init the 
@@ -62,4 +65,8 @@ void analog_read_a(uint16_t *data);
  */
 uint16_t analog_read_p(uint8_t index);
 
+#if defined (__cplusplus)
+}
+#endif
+	
 #endif
