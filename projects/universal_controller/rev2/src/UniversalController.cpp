@@ -33,12 +33,14 @@
 #include <CharDisplay.h>
 
 #include "lib/analog.h"
+#include "lib/bootloader.h"
 
 #define ADC_THROTTLE		0
 #define ADC_BATTERY			1
 
 #define THROTTLE_COUNT		10
 #define BATTERY_COUNT		100
+#define BOOTLOADER_COUNT	250
 
 using namespace digitalcave;
 
@@ -93,6 +95,7 @@ int main (void){
 	
 	uint8_t throttle_counter = 0;
 	uint8_t battery_counter = 0;
+	uint8_t bootloader_counter = 0;
 
 	uint8_t throttle_position = 0;
 	uint8_t battery_level = 0;
@@ -134,6 +137,17 @@ int main (void){
 
 		snprintf(buf, sizeof(buf), "L:%02X,%02X R:%02X,%02X ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
 		display.write_text(1, 0, buf, 16);
+		
+		//Hold down circle + triangle and push left stick all the way up for more than 2.5s to enter bootloader mode
+		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.stick(PSS_LY) == 0x00){
+			if (bootloader_counter >= BOOTLOADER_COUNT){
+				bootloader_jump();
+			}
+			bootloader_counter++;
+		}
+		else {
+			bootloader_counter = 0;
+		}
 		
 		display.refresh();
 	}

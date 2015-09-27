@@ -9,9 +9,17 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
+	
 /*
  * Jump to the bootloader.
  */
 void bootloader_jump();
 
+#if defined (__cplusplus)
+}
+#endif
+	
 #endif
