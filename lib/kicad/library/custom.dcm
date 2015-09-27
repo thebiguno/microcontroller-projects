@@ -1,4 +1,4 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 06 Sep 2015 12:48:56 PM MDT
+EESchema-DOCLIB  Version 2.0
 #
 $CMP 3PDT
 D 3PDT Switch
@@ -141,11 +141,6 @@ D Potentiometer
 K R DEV
 $ENDCMP
 #
-$CMP R_PACK5
-D 5 resistors Pack
-K R DEV
-$ENDCMP
-#
 $CMP RELAY_DPDT
 D RELAY_DPST
 K Relay, DPST
@@ -193,6 +188,11 @@ $ENDCMP
 #
 $CMP RSMALL
 D RSMALL
+K R DEV
+$ENDCMP
+#
+$CMP R_PACK5
+D 5 resistors Pack
 K R DEV
 $ENDCMP
 #

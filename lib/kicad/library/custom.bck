@@ -1,4 +1,9 @@
-EESchema-DOCLIB  Version 2.0  Date: Sun 06 Sep 2015 12:46:28 PM MDT
+EESchema-DOCLIB  Version 2.0  Date: Sun 06 Sep 2015 12:48:56 PM MDT
+#
+$CMP 3PDT
+D 3PDT Switch
+K 3PDT Switch
+$ENDCMP
 #
 $CMP 74HC4067
 D 16 Channel Analog Multiplexer / Demultiplexer
