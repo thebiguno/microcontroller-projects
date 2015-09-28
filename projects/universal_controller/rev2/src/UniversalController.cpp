@@ -40,7 +40,7 @@
 
 #define THROTTLE_COUNT		10
 #define BATTERY_COUNT		100
-#define BOOTLOADER_COUNT	250
+#define BOOTLOADER_COUNT	125
 
 using namespace digitalcave;
 
@@ -82,9 +82,10 @@ int main (void){
 	Serial_AVR serial(9600, 8, 0, 1, 1);
 	
 	uint8_t analog_pins[2];
-	analog_pins[ADC_THROTTLE] = 13;
-	analog_pins[ADC_BATTERY] = 12;
+	analog_pins[ADC_THROTTLE] = 0x25;	//ADC13
+	analog_pins[ADC_BATTERY] = 0x24;	//ADC12
 	analog_init(analog_pins, 2, ANALOG_AVCC);
+	ADMUX |= _BV(ADLAR);
 	
 	//Set up timer0 to output PWM for negative voltage
 	DDRB |= _BV(PORTB7);
@@ -107,10 +108,12 @@ int main (void){
 		_delay_ms(10);
 		
 		if (throttle_counter > THROTTLE_COUNT){
-			throttle_position = (analog_read_p(ADC_THROTTLE) >> 2);
+			throttle_position = (analog_read_p(ADC_THROTTLE) >> 8);
+			throttle_counter = 0;
 		}
 		if (battery_counter > BATTERY_COUNT){
-			battery_level = (analog_read_p(ADC_BATTERY) >> 2);
+			battery_level = (analog_read_p(ADC_BATTERY) >> 8);
+			battery_counter = 0;
 		}
 		throttle_counter++;
 		battery_level++;
@@ -135,12 +138,15 @@ int main (void){
 		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square          ", 16);
 		else display.write_text(0, 0, "                ", 16);
 
-		snprintf(buf, sizeof(buf), "L:%02X,%02X R:%02X,%02X ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY));
+		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
 		display.write_text(1, 0, buf, 16);
 		
 		//Hold down circle + triangle and push left stick all the way up for more than 2.5s to enter bootloader mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.stick(PSS_LY) == 0x00){
 			if (bootloader_counter >= BOOTLOADER_COUNT){
+				display.write_text(0, 0, "DFU Bootloader  ", 16);
+				display.write_text(1, 0, "                ", 16);
+				display.refresh();
 				bootloader_jump();
 			}
 			bootloader_counter++;

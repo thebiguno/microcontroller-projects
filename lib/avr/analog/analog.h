@@ -43,6 +43,13 @@ extern "C" {
  * Initializes analog hardware.  analog_pins is an array of pin numbers;
  * count is the length of this array.  This allows you to only init the 
  * analog pins that you need to use.
+ * 
+ * Note that the pin numbers technically map to the MUX numbers of the ADC,
+ * not strictly the ADC pin number itself.  For most chips the numbers are
+ * the same; however, for the ATMega32u4 (among some others) the higher ADCs
+ * have MUX numbers which do not match the ADC pin number.  For instance
+ * on this chip ADC 13 is MUX 0x25.  To use ADC 13, you should pass in
+ * 0x25 as the pin number.
  *
  * The aref argument can be one of three things:
  *  ANALOG_AREF: Use AREF, internal Vref turned off

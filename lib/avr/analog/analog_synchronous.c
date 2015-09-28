@@ -34,7 +34,7 @@ void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref){
 
 		//Disable digital input on selected pins.
 		//TODO Should we do this?
-		DIDR0 |= _BV(pins[i]);
+		//DIDR0 |= _BV(pins[i]);
 	}
 
 	//ADC Enable, prescaler as specified with default of 0x4 (F_CPU / 16)
@@ -58,7 +58,14 @@ void analog_read_a(uint16_t *data){
 #ifndef ADC_SLEEP_MODE
 uint16_t analog_read_p(uint8_t index){
 	//Set up which pin to read
-	ADMUX = (ADMUX & 0xF0) | pins[index];
+	ADMUX &= 0xE0;
+	ADMUX |= pins[index] & 0x1F;
+#ifdef MUX5
+	ADCSRB &= ~_BV(MUX5);
+	if (pins[index] & 0x20){
+		ADCSRB |= _BV(MUX5);
+	}
+#endif
 
 	//Start conversion
 	ADCSRA |= _BV(ADSC);
@@ -72,7 +79,12 @@ uint16_t analog_read_p(uint8_t index){
 #else
 uint16_t analog_read_p(uint8_t index){
 	//Set up which pin to read
-	ADMUX = (ADMUX & 0xF0) | pins[index];
+	ADMUX &= 0xE0;
+	ADMUX |= pins[index] & 0x1F;
+#ifdef MUX5
+	ADCSRB &= ~_BV(MUX5);
+	ADCSRB |= (pins[index] & 0x20) ? _BV(MUX5) : 0;
+#endif
 
 	ADCSRA |= _BV( ADIE ); 	//Set ADC Interrupt
 	set_sleep_mode(SLEEP_MODE_ADC); 
