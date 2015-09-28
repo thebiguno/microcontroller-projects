@@ -39,7 +39,7 @@ var output = function() {
 	var w = parseInt($('#w').val());
 	var h = parseInt($('#h').val());
 	
-	var bytes = ((w * h) >> 3);
+	var bytes = (w * h) >> 3;
 	var bits = (w * h) & 0x7;
 	
 	var bit = 7;
@@ -61,8 +61,8 @@ var output = function() {
 				byt++;
 				bit = 8;
 			}
-			bit--;			
-		})
+			bit--;
+		});
 	});
 	
 	var html = '';
@@ -73,18 +73,55 @@ var output = function() {
 	}
 	html += '<br/>';
 	
+	a.splice(0,0,w,h);
 	var str = String.fromCharCode.apply(null,a);
 	var b64 = btoa(str);
-	html += b64;
-	html += '<br/>';
 	
-	var tmp = atob(b64);
-	for(var i = 0; i < tmp.length; i++) {
-		html += tmp.charCodeAt(i).toString(16);
-		html += ' ';
-	}
 	$('#out').html(html);
+	$('#o').val(b64);
 };
+var set = function() {
+	var b64 = $('#o').val();
+	
+	var a = [];
+	var str = atob(b64);
+	for (var i = 0; i < str.length; i++) {
+		a.push(str.charCodeAt(i));
+	}
+	var size = a.splice(0,2);
+	$('#w').val(size[0]);
+	$('#h').val(size[1]);
+	resize();
+	
+	var w = parseInt(size[0]);
+	var h = parseInt(size[1]);
+	var bytes = (w * h) >> 3;  // (w*h)/8
+	var bits = (w * h) & 0x7; // (w*h)%8
+	
+	var bit = 7;
+	var byt = 0;
+	
+	if (bits != 0) {
+		bytes++;
+		bit = bits - 1;
+	}
+	
+	$.each($('#t').find('tr'), function() {
+		$.each($(this).find('td'), function() {
+			if (a[byt] & _bv(bit)) {
+				$(this).addClass('on');
+			}
+			if (bit == 0) {
+				byt++;
+				bit = 8;
+			}
+			bit--;
+		});
+	});
+	
+	output();
+	
+}
 		</script>
 		<style type="text/css">
 .px { width: 20px; height: 20px; border: 1px solid black; }
@@ -93,10 +130,16 @@ var output = function() {
 	</head>
 	<body>
 		<form>
+			<p>
 			<label for="w">Width</label>
 			<input id="w"/>
 			<label for="h">Height</label>
 			<input id="h"/>
+			</p>
+			<p>
+			<label for="o">Encoded</label>
+			<input id="o" style="width: 300px;"/>
+			</p>
 		</form>
 		<table id="t">
 		</table>
@@ -105,6 +148,7 @@ var output = function() {
 $(function() {
 	$('#w').change(function() { resize(); });
 	$('#h').change(function() { resize(); });
+	$('#o').change(function() { set(); });
 });
 		</script>
 	</body>
