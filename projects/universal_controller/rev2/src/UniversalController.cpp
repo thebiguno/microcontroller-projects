@@ -32,11 +32,12 @@
 #include <Hd44780_Direct.h>
 #include <CharDisplay.h>
 
-#include "lib/analog.h"
 #include "lib/bootloader.h"
 
-#define ADC_THROTTLE		0
-#define ADC_BATTERY			1
+#include "Analog.h"
+
+#define ADC_THROTTLE		13
+#define ADC_BATTERY			12
 
 #define THROTTLE_COUNT		10
 #define BATTERY_COUNT		100
@@ -62,15 +63,14 @@ int main (void){
 		&PORTF, PORTF7);
 	CharDisplay display(&hd44780, 2, 16);
 	uint8_t custom[64] = {
-		0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,			// 0 (Use 0xFE)
-		0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1f,			// 1
-		0x0,0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,			// 2
-		0x0,0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,			// 3
-		0x0,0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,		// 4
-		0x0,0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,		// 5
-		0x0,0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,		// 6
-		0x0,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f		// 7
-													// 8 (Use 0xFF)
+		0x0e,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,	// 0 (Battery Full)
+		0x0e,0x11,0x11,0x11,0x1f,0x1f,0x1f,0x1f,	// 1 (Battery Half)
+		0x0e,0x11,0x11,0x11,0x11,0x11,0x11,0x1f,	// 2 (Battery Empty)
+		0x04,0x06,0x15,0x0e,0x0e,0x15,0x06,0x04,	// 3 (Bluetooth icon)
+		0x11,0x11,0x0a,0x04,0x04,0x0a,0x11,0x11,	// 4 (XBee icon)
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 5 (Unused)
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 6 (Unused)
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 	// 7 (Unused)
 	};
 	display.set_custom_chars(custom);
 
@@ -79,13 +79,9 @@ int main (void){
 		&PORTD, PORTD6, //Clock (Blue)
 		&PORTD, PORTD7); //Attention (Yellow)
 		
-	Serial_AVR serial(9600, 8, 0, 1, 1);
+	Serial_AVR serial(38400, 8, 0, 1, 1);
 	
-	uint8_t analog_pins[2];
-	analog_pins[ADC_THROTTLE] = 0x25;	//ADC13
-	analog_pins[ADC_BATTERY] = 0x24;	//ADC12
-	analog_init(analog_pins, 2, ANALOG_AVCC);
-	ADMUX |= _BV(ADLAR);
+	Analog analog;
 	
 	//Set up timer0 to output PWM for negative voltage
 	DDRB |= _BV(PORTB7);
@@ -108,11 +104,11 @@ int main (void){
 		_delay_ms(10);
 		
 		if (throttle_counter > THROTTLE_COUNT){
-			throttle_position = (analog_read_p(ADC_THROTTLE) >> 8);
+			throttle_position = (analog.read(ADC_THROTTLE));
 			throttle_counter = 0;
 		}
 		if (battery_counter > BATTERY_COUNT){
-			battery_level = (analog_read_p(ADC_BATTERY) >> 8);
+			battery_level = (analog.read(ADC_BATTERY));
 			battery_counter = 0;
 		}
 		throttle_counter++;
@@ -141,7 +137,7 @@ int main (void){
 		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
 		display.write_text(1, 0, buf, 16);
 		
-		//Hold down circle + triangle and push left stick all the way up for more than 2.5s to enter bootloader mode
+		//Hold down circle + triangle and push left stick all the way up for a few seconds to enter bootloader mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.stick(PSS_LY) == 0x00){
 			if (bootloader_counter >= BOOTLOADER_COUNT){
 				display.write_text(0, 0, "DFU Bootloader  ", 16);

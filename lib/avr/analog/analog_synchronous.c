@@ -34,7 +34,7 @@ void analog_init(uint8_t analog_pins[], uint8_t count, uint8_t aref){
 
 		//Disable digital input on selected pins.
 		//TODO Should we do this?
-		//DIDR0 |= _BV(pins[i]);
+		DIDR0 |= _BV(pins[i]);
 	}
 
 	//ADC Enable, prescaler as specified with default of 0x4 (F_CPU / 16)
