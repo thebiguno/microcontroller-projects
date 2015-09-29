@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 
+#include <Protocol.h>
 #include <Serial_AVR.h>
 #include <PSX_AVR.h>
 #include <Hd44780_Direct.h>
@@ -36,10 +37,34 @@
 
 #include "Analog.h"
 
+//Generic messages are in 0x0X space...
+#define MESSAGE_ANNOUNCE_CONTROL_ID				0x00
+#define MESSAGE_SEND_ACKNOWLEDGE				0x01
+#define MESSAGE_SEND_COMPLETE					0x02
+#define MESSAGE_REQUEST_ENABLE_DEBUG			0x03
+#define MESSAGE_REQUEST_DISABLE_DEBUG			0x04
+#define MESSAGE_SEND_DEBUG						0x05
+#define MESSAGE_REQUEST_BATTERY					0x06
+#define MESSAGE_SEND_BATTERY					0x07
+
+//Universal Controller messages are in 0x1X space...
+#define MESSAGE_UC_BUTTON_PUSH					0x10
+#define MESSAGE_UC_BUTTON_RELEASE				0x11
+#define MESSAGE_UC_BUTTON_NONE					0x12
+#define MESSAGE_UC_JOYSTICK_MOVE				0x13
+#define MESSAGE_UC_BUTTON_ENABLE				0x14
+#define MESSAGE_UC_BUTTON_DISABLE				0x15
+#define MESSAGE_UC_JOYSTICK_ENABLE				0x16
+#define MESSAGE_UC_JOYSTICK_DISABLE				0x17
+#define MESSAGE_UC_SET_POLL_FREQUENCY			0x18
+#define MESSAGE_UC_SET_ANALOG_FREQUENCY			0x19
+
+
 #define ADC_THROTTLE		13
 #define ADC_BATTERY			12
 
 #define THROTTLE_COUNT		10
+#define POLL_COUNT			30
 #define BATTERY_COUNT		100
 #define BOOTLOADER_COUNT	125
 
@@ -67,12 +92,15 @@ int main (void){
 		0x0e,0x11,0x11,0x11,0x1f,0x1f,0x1f,0x1f,	// 1 (Battery Half)
 		0x0e,0x11,0x11,0x11,0x11,0x11,0x11,0x1f,	// 2 (Battery Empty)
 		0x04,0x06,0x15,0x0e,0x0e,0x15,0x06,0x04,	// 3 (Bluetooth icon)
-		0x11,0x11,0x0a,0x04,0x04,0x0a,0x11,0x11,	// 4 (XBee icon)
+		0x19,0x19,0x1d,0x0c,0x06,0x17,0x13,0x13,	// 4 (XBee icon)
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 5 (Unused)
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 6 (Unused)
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 	// 7 (Unused)
 	};
 	display.set_custom_chars(custom);
+
+	Protocol protocol;
+	Message incoming(0);
 
 	PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 		&PORTD, PORTD5, //Command (Orange)
@@ -93,16 +121,21 @@ int main (void){
 	uint8_t throttle_counter = 0;
 	uint8_t battery_counter = 0;
 	uint8_t bootloader_counter = 0;
+	uint8_t poll_counter = 0;
 
 	uint8_t throttle_position = 0;
 	uint8_t battery_level = 0;
 	
- 	char buf[17];
+	char buf[17];	//String buffer, used for display formatting
 	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
-		
+
+		poll_counter++;
+		throttle_counter++;
+		battery_counter++;
+	
 		if (throttle_counter > THROTTLE_COUNT){
 			throttle_position = (analog.read(ADC_THROTTLE));
 			throttle_counter = 0;
@@ -111,10 +144,51 @@ int main (void){
 			battery_level = (analog.read(ADC_BATTERY));
 			battery_counter = 0;
 		}
-		throttle_counter++;
-		battery_level++;
 		
 		psx.poll();
+		uint16_t buttons = psx.buttons();
+		uint16_t changed = psx.changed();
+		
+		if (changed){
+			for (uint8_t x = 0; x < 16; x++){
+				//If this was triggered by a real button event, show the current state (newly pressed or newly released)
+				if (changed & _BV(x)){
+					if (buttons & _BV(x)){
+						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+						m.write(&serial);
+					}
+					else {
+						Message m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
+						m.write(&serial);
+					}
+				}
+			}
+			
+			poll_counter = 0;
+		}
+		
+		if (poll_counter > POLL_COUNT){
+			if (buttons){
+				for (uint8_t x = 0; x < 16; x++){
+					if (buttons & _BV(x)){
+						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+						m.write(&serial);
+					}
+				}
+			}
+			else {
+				Message m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+				m.write(&serial);
+			}
+
+			poll_counter = 0;
+		}
+
+		//Read any incoming bytes and handle completed messages if applicable
+		if (protocol.read(&serial, &incoming)){
+			//TODO
+		}
+
 		
 		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select          ", 16);
 		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1          ", 16);

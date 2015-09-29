@@ -60,8 +60,8 @@ namespace digitalcave {
 			virtual void write(uint8_t data);
 			
 			//Allow calling functions to find the read / write methods on the superclass.  See http://stackoverflow.com/questions/1734893/overloading-a-method-in-a-subclass-in-c for details
-			using Serial::read;
-			using Serial::write;
+			using Stream::read;
+			using Stream::write;
 	};
 }
 

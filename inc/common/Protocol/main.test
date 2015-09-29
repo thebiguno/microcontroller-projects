@@ -4,26 +4,76 @@
 
 using namespace digitalcave;
 
+class Console : public Stream {
+	private:
+	
+	public:
+		virtual uint8_t read(uint8_t *b);
+		virtual void write(uint8_t b);
+};
+
+class ByteStream : public Stream {
+	private:
+		uint8_t data[256];
+		uint8_t head;
+		uint8_t tail;
+	public:
+		ByteStream();
+		virtual uint8_t read(uint8_t *b);
+		virtual void write(uint8_t b);
+};
+
+uint8_t Console::read(uint8_t *b){
+	return 0;
+}
+void Console::write(uint8_t b){
+	printf("Console write: 0x%02x\n", b);
+}
+ByteStream::ByteStream(){
+	head = 0;
+	tail = 0;
+}
+uint8_t ByteStream::read(uint8_t *b){
+	if (tail == head) return 0;
+	*b = data[tail];
+	tail++;
+	return 1;
+}
+void ByteStream::write(uint8_t b){
+	data[head] = b;
+	printf("ByteStream write: 0x%02x\n", b);
+	head++;
+}
+
 int main(){
-	Protocol p;
-	Message outgoing(1);
-	Message *incoming;
+	Protocol protocol;
+
+	Message incoming(0x00);
+
+	Message outgoing(0x01);
+	outgoing.append(0x42);
 	outgoing.append(0x7e);
 	outgoing.append(0x7d);
-	outgoing.append(0x7e);
-	outgoing.append(0x7e);
+	outgoing.append(0x54);
+	outgoing.append(0x23);
 	
-	uint8_t b;
-	while(outgoing.flush(&b)){
-		printf("0x%02x\n", b);
-		incoming = p.poll(b);
-		if (incoming != NULL){
-			printf("Received message: command = %d, length = %d.  Bytes: ", incoming->getCommand(), incoming->getLength());
-			for (uint8_t i = 0; i < incoming->getLength(); i++){
-				printf("0x%02x ", incoming->getMessage()[i]);
-			}
-			printf("\n");
-		}
+	Console console;
+	ByteStream byteStream;
+	
+	printf("Outgoing message:\n");
+	printf("Command: 0x%02x\n", outgoing.getCommand());
+	for (uint8_t i = 0; i < outgoing.getLength(); i++){
+		printf("Message[%d]: 0x%02x\n", i, outgoing.getMessage()[i]);
 	}
 	
+	outgoing.write(&byteStream);
+	protocol.read(&byteStream, &incoming);
+	
+	printf("Incoming message:\n");
+	printf("Command: 0x%02x\n", incoming.getCommand());
+	for (uint8_t i = 0; i < incoming.getLength(); i++){
+		printf("Message[%d]: 0x%02x\n", i, incoming.getMessage()[i]);
+	}
+	
+	return 0;
 }

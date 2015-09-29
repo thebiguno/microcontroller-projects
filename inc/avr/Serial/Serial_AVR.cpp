@@ -98,8 +98,8 @@ uint8_t Serial_AVR::read(uint8_t *c){
 	return 0;
 }
 
-void Serial_AVR::write(uint8_t data){
+void Serial_AVR::write(uint8_t b){
 	//Nop loop to wait until last transmission has completed
 	while (!(*UCSRA & _BV(UDRE)));
-	*UDR = data;
+	*UDR = b;
 }
