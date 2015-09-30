@@ -63,7 +63,7 @@
 #define ADC_THROTTLE		13
 #define ADC_BATTERY			12
 
-#define THROTTLE_COUNT		10
+#define THROTTLE_COUNT		2
 #define POLL_COUNT			30
 #define BATTERY_COUNT		100
 #define BOOTLOADER_COUNT	125
@@ -75,18 +75,30 @@ uint8_t last_LY = 0;
 uint8_t last_RX = 0;
 uint8_t last_RY = 0;
 
+Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
+	&PORTF, PORTF0,
+	&PORTF, PORTF1,
+	&PORTF, PORTF4,
+	&PORTF, PORTF5,
+	&PORTF, PORTF6,
+	&PORTF, PORTF7);
+CharDisplay display(&hd44780, 2, 16);
+
+Protocol protocol;
+
+PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
+	&PORTD, PORTD5, //Command (Orange)
+	&PORTD, PORTD6, //Clock (Blue)
+	&PORTD, PORTD7); //Attention (Yellow)
+	
+Serial_AVR serial(38400, 8, 0, 1, 1);
+
+Analog analog;
+
 int main (void){
 	//Do setup here
 	clock_prescale_set(clock_div_2);	//Run at 8MHz so that we can run on 3.3v
 	
-	Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
-		&PORTF, PORTF0,
-		&PORTF, PORTF1,
-		&PORTF, PORTF4,
-		&PORTF, PORTF5,
-		&PORTF, PORTF6,
-		&PORTF, PORTF7);
-	CharDisplay display(&hd44780, 2, 16);
 	uint8_t custom[64] = {
 		0x0e,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,	// 0 (Battery Full)
 		0x0e,0x11,0x11,0x11,0x1f,0x1f,0x1f,0x1f,	// 1 (Battery Half)
@@ -99,17 +111,7 @@ int main (void){
 	};
 	display.set_custom_chars(custom);
 
-	Protocol protocol;
 	Message incoming(0);
-
-	PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
-		&PORTD, PORTD5, //Command (Orange)
-		&PORTD, PORTD6, //Clock (Blue)
-		&PORTD, PORTD7); //Attention (Yellow)
-		
-	Serial_AVR serial(38400, 8, 0, 1, 1);
-	
-	Analog analog;
 	
 	//Set up timer0 to output PWM for negative voltage
 	DDRB |= _BV(PORTB7);
@@ -227,4 +229,8 @@ int main (void){
 		
 		display.refresh();
 	}
+}
+
+ISR(USART1_RX_vect){
+	serial.handleRead(UDR1);
 }

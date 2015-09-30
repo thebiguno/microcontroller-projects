@@ -56,12 +56,11 @@ namespace digitalcave {
 			Serial_AVR(uint32_t baud, uint8_t dataBits = 8, uint8_t parity = 0, uint8_t stopBits = 1, uint8_t serialPort = 0);
 			
 			// Implementation of virtual functions declared in superclass
-			virtual uint8_t read(uint8_t *b);
-			virtual void write(uint8_t data);
+			uint8_t read(uint8_t *b);
+			void write(uint8_t data);
 			
-			//Allow calling functions to find the read / write methods on the superclass.  See http://stackoverflow.com/questions/1734893/overloading-a-method-in-a-subclass-in-c for details
-			using Stream::read;
-			using Stream::write;
+			//Pass a byte to the read buffer; to be called from an ISR.
+			void handleRead(uint8_t b);
 	};
 }
 

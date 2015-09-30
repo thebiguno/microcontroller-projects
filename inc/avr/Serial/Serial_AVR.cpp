@@ -81,10 +81,7 @@ Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t 
 	*UCSRC |= (parity << UPM0) | ((stopBits - 1) << USBS);
 	
 	//Enable Rx (interrupt) / Tx (blocking)
-	*UCSRB |= _BV(RXEN);
-	//TODO set up interrupts?
-
-	*UCSRB |= _BV(TXEN);
+	*UCSRB |= _BV(RXEN) | _BV(TXEN) | _BV(RXCIE);
 }
 
 uint8_t Serial_AVR::read(uint8_t *c){
@@ -102,4 +99,10 @@ void Serial_AVR::write(uint8_t b){
 	//Nop loop to wait until last transmission has completed
 	while (!(*UCSRA & _BV(UDRE)));
 	*UDR = b;
+}
+
+void Serial_AVR::handleRead(uint8_t b){
+	if (!rxBuffer.isFull()){
+		rxBuffer.put(b);
+	}
 }
