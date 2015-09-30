@@ -157,11 +157,11 @@ int main (void){
 				if (changed & _BV(x)){
 					if (buttons & _BV(x)){
 						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						m.write(&serial);
+						protocol.write(&serial, &m);
 					}
 					else {
 						Message m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						m.write(&serial);
+						protocol.write(&serial, &m);
 					}
 				}
 			}
@@ -174,13 +174,13 @@ int main (void){
 				for (uint8_t x = 0; x < 16; x++){
 					if (buttons & _BV(x)){
 						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						m.write(&serial);
+						protocol.write(&serial, &m);
 					}
 				}
 			}
 			else {
 				Message m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				m.write(&serial);
+				protocol.write(&serial, &m);
 			}
 
 			poll_counter = 0;
@@ -232,5 +232,5 @@ int main (void){
 }
 
 ISR(USART1_RX_vect){
-	serial.handleRead(UDR1);
+	serial.isr();
 }

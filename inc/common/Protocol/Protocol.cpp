@@ -8,18 +8,18 @@ Message::Message(uint8_t command){
 	length = 0;
 }
 
-Message::Message(uint8_t command, uint8_t* message, uint8_t length){
+Message::Message(uint8_t command, uint8_t* data, uint8_t length){
 	this->command = command;
 	this->length = length;
 	for(uint8_t i = 0; i < length; i++){
-		this->message[i] = message[i];
+		this->data[i] = data[i];
 	}
 }
 
 void Message::clone(Message* m){
 	command = m->command;
 	for(uint8_t i = 0; i < MAX_SIZE; i++){
-		message[i] = m->message[i];
+		data[i] = m->data[i];
 	}
 	length = m->length;
 }
@@ -32,51 +32,12 @@ uint8_t Message::getLength(){
 	return length;
 }
 
-uint8_t* Message::getMessage(){
-	return message;
+uint8_t* Message::getData(){
+	return data;
 }
 
 void Message::append(uint8_t b){
-	message[length++] = b;
-}
-void Message::escapeByte(Stream* stream, uint8_t b){
-	if (b == START || b == ESCAPE) {
-		stream->write(ESCAPE);
-		stream->write(b ^ 0x20);
-	} else {
-		stream->write(b);
-	}
-}
-		
-void Message::write(Stream* stream){
-	for(uint8_t position = 0; position <= (length + 3); position++){
-		switch(position){
-			case 0:
-				stream->write(START);
-				break;
-			case 1:
-				escapeByte(stream, length + 1);
-				break;
-			case 2:
-				escapeByte(stream, command);
-				break;
-			default:
-				if (position - 3 == length){
-					//Write checksum
-					uint8_t result = command;
-				
-					for (uint8_t i = 0; i < length; i++) {
-						result += message[i];
-					}
-
-					escapeByte(stream, 0xff - result);
-				}
-				else {
-					escapeByte(stream, message[position - 3]);
-				}
-				break;
-		}
-	}
+	data[length++] = b;
 }
 
 Protocol::Protocol(){
@@ -90,6 +51,15 @@ Protocol::Protocol(){
 
 uint8_t Protocol::getError(){
 	return error;
+}
+
+void Protocol::escapeByte(Stream* stream, uint8_t b){
+	if (b == START || b == ESCAPE) {
+		stream->write(ESCAPE);
+		stream->write(b ^ 0x20);
+	} else {
+		stream->write(b);
+	}
 }
 
 uint8_t Protocol::read(Stream* stream, Message* result){
@@ -165,3 +135,39 @@ uint8_t Protocol::read(Stream* stream, Message* result){
 	
 	return 0;
 }
+
+void Protocol::write(Stream* stream, Message* message){
+	uint8_t length = message->getLength();
+	uint8_t command = message->getCommand();
+	uint8_t* data = message->getData();
+	
+	for(uint8_t position = 0; position <= (length + 3); position++){
+		switch(position){
+			case 0:
+				stream->write(START);
+				break;
+			case 1:
+				escapeByte(stream, length + 1);
+				break;
+			case 2:
+				escapeByte(stream, command);
+				break;
+			default:
+				if (position - 3 == length){
+					//Write checksum
+					uint8_t result = command;
+				
+					for (uint8_t i = 0; i < length; i++) {
+						result += data[i];
+					}
+
+					escapeByte(stream, 0xff - result);
+				}
+				else {
+					escapeByte(stream, data[position - 3]);
+				}
+				break;
+		}
+	}
+}
+

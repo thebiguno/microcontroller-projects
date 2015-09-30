@@ -25,14 +25,11 @@ namespace digitalcave {
 		private:
 			//Data
 			uint8_t command;
-			uint8_t message[MAX_SIZE];
+			uint8_t data[MAX_SIZE];
 		
 			//State
 			uint8_t length;
 
-			//Convenience method to escape the given byte if needed
-			void escapeByte(Stream* stream, uint8_t b);
-		
 		public:
 			//Construct a new message for writing
 			Message(uint8_t command);
@@ -45,13 +42,10 @@ namespace digitalcave {
 		
 			uint8_t getCommand();
 			uint8_t getLength();
-			uint8_t* getMessage();
+			uint8_t* getData();
 		
 			//Construct the message one byte at a time
 			void append(uint8_t b);
-		
-			//Call this to write the entire message into the provided stream.
-			void write(Stream* stream);
 	};
 
 	class Protocol {
@@ -64,6 +58,9 @@ namespace digitalcave {
 			uint8_t escape;	 					// Escape byte seen, unescape next byte
 			uint8_t error;	 					// Error condition, ignore bytes until next frame start byte
 			uint8_t message[MAX_SIZE];	// Incoming message
+			
+			//Convenience method to escape the given byte if needed
+			void escapeByte(Stream* stream, uint8_t b);
 
 		public:
 			Protocol();
@@ -73,6 +70,9 @@ namespace digitalcave {
 			 * If a message is completed with this call, then return 1 and update the message's internal values, otherwise return 0.
 			 */
 			uint8_t read(Stream* stream, Message* result);
+			
+			//Call this to write the entire message into the provided stream.
+			void write(Stream* stream, Message* message);
 		
 			/*
 			 * Gets the latest error status code.  0 means no error, non-zero is error.

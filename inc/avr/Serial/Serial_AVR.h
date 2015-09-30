@@ -59,8 +59,8 @@ namespace digitalcave {
 			uint8_t read(uint8_t *b);
 			void write(uint8_t data);
 			
-			//Pass a byte to the read buffer; to be called from an ISR.
-			void handleRead(uint8_t b);
+			//Notify serial library that there is a byte ready for reading.  This MUST be called by the serial read ISR.
+			void isr();
 	};
 }
 

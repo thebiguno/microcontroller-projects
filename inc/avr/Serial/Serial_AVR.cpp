@@ -9,7 +9,7 @@ using namespace digitalcave;
 //ISR(USART1_RX_vect){
 //	//Be sure to pass your serial object instance the correct data; i.e. UDR0 for serial port 0, UDR1 
 //	// for serial port 1, etc.
-//	serial.handleRead(UDR0);
+//	serial.handleISR(UDR0);
 //}
 
 Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort):
@@ -111,8 +111,8 @@ void Serial_AVR::write(uint8_t b){
 	*UDR = b;
 }
 
-void Serial_AVR::handleRead(uint8_t b){
+void Serial_AVR::isr(){
 	if (!this->rxBuffer.isFull()){
-		this->rxBuffer.put(b);
+		this->rxBuffer.put(*UDR);
 	}
 }
