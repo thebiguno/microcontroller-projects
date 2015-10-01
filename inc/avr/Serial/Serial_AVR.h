@@ -8,27 +8,13 @@
 #include <avr/io.h>
 
 #include <Serial.h>
-#include <Ring.h>
-
-//The buffer size; if separate buffer sizes are not defined for rx and tx, this one is
-// used for both RX and TX buffers.  Defaults to 64 bytes.  You can change it by 
-// redefining SERIAL_BUFFER_SIZE in your makefile (in the CDEFS variable,
-// beside where F_CPU is defined).
-#ifdef SERIAL_BUFFER_SIZE
-#if SERIAL_BUFFER_SIZE > 255
-#undef SERIAL_BUFFER_SIZE
-#define SERIAL_BUFFER_SIZE 255
-#endif
-#else
-#define SERIAL_BUFFER_SIZE 64
-#endif
-
+#include <ArrayStream.h>
 
 namespace digitalcave {
 
 	class Serial_AVR : public Serial {
 		private:
-			Ring rxBuffer;
+			ArrayStream rxBuffer;
 			
 			//Register variables, to allow different serial port instances to point at different hardware ports
 			volatile uint8_t* UBRRH;
@@ -53,11 +39,11 @@ namespace digitalcave {
 			
 		public:
 			//Initialize specifying baud rate and all other optional parameters
-			Serial_AVR(uint32_t baud, uint8_t dataBits = 8, uint8_t parity = 0, uint8_t stopBits = 1, uint8_t serialPort = 0);
+			Serial_AVR(uint32_t baud, uint8_t dataBits = 8, uint8_t parity = 0, uint8_t stopBits = 1, uint8_t serialPort = 0, uint8_t bufferSize = 64);
 			
 			// Implementation of virtual functions declared in superclass
 			uint8_t read(uint8_t *b);
-			void write(uint8_t data);
+			uint8_t write(uint8_t data);
 			
 			//Pass a byte to the read buffer; to be called from an ISR.
 			void handleRead(uint8_t b);
