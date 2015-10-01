@@ -27,21 +27,24 @@ namespace digitalcave {
 			/*
 			 * Writes a single byte to the stream.  Implementations MUST block until the 
 			 * write is completed.
+			 * Returns 1 if the write was successful; 0 otherwise.
 			 */
-			virtual void write(uint8_t data) = 0;
+			virtual uint8_t write(uint8_t data) = 0;
 
 			/*
 			 * Writes a null terminated string to the stream.  Uses write(char) to actually send
 			 * bytes to the stream.
+			 * Returns 1 if the entire string was written successfully; 0 otherwise.
 			 */
-			void write(char* data);
-			void write(const char* data);
+			uint8_t write(char* data);
+			uint8_t write(const char* data);
 
 			/*
 			 * Writes a byte array to the stream.  Uses write(uint8_t) to actually send bytes
 			 * to the stream.
+			 * Returns 1 if the entire array was written successfully; 0 otherwise.
 			 */
-			void write(uint8_t* data, uint8_t len);
+			uint8_t write(uint8_t* data, uint8_t len);
 	};
 }
 
