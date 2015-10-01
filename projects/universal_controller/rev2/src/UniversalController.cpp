@@ -91,7 +91,7 @@ PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD6, //Clock (Blue)
 	&PORTD, PORTD7); //Attention (Yellow)
 	
-Serial_AVR serial(38400, 8, 0, 1, 1);
+Serial_AVR serial(38400, 8, 0, 1, 1, 32);
 
 Analog analog;
 

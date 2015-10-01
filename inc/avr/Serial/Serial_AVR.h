@@ -47,6 +47,9 @@ namespace digitalcave {
 			
 			//Notify serial library that there is a byte ready for reading.  This MUST be called by the serial read ISR.
 			void isr();
+			
+			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
+			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
 	};
 }
 

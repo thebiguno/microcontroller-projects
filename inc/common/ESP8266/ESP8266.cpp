@@ -52,7 +52,7 @@ void ESP8266::quit() {
 	response();
 }
 
-uint8_t ESP8266:response() {
+uint8_t ESP8266::response() {
 	// <status>\r\n 		(optional)
 	// \r\n					(blank line)
 	// [OK|ERROR]\r\n		(status)
@@ -61,25 +61,26 @@ uint8_t ESP8266:response() {
 	uint8_t b;
 	while (true) {
 		i++;
-		b = serial->read();
+		serial->read(&b);
 		if (b == '\n' && i == 1) break; 	// \r\n
 		else if (b == '\n') i = 0;			// <status>\r\n
 	}
-	b = serial->read();
+	serial->read(&b);
 	if (b == 'O') {
 		result = 1;
+	}
 	else {
 		result = 0;
 	}
 	while (true) {
-		b = serial->read();
+		serial->read(&b);
 		if (b == '\n') break; 				// OK|ERROR\r\n
 	}
 	return result;
 }
 
 uint8_t ESP8266::connect(char type, char* address, uint16_t port) {
-	char[5] buf;
+	char buf[5];
 	sprintf(buf, "%d", port);
 	
 	serial->write("AT+CIPSTART=");
@@ -96,9 +97,9 @@ uint8_t ESP8266::connect(char type, char* address, uint16_t port) {
 
 void ESP8266::close() {
 	serial->write("AT+CIPCLOSE");
-	serial->write('=');
-	serial->write(48 + id);
-	serial->write(',');
+//	serial->write('=');
+//	serial->write(48 + id);
+//	serial->write(',');
 	serial->write('\r');
 	serial->write('\n');
 	response();
@@ -112,7 +113,7 @@ uint8_t ESP8266::read(uint8_t* a, uint8_t len) {
 	return buffer.read(a, len);
 }
 
-void poll() {
+void ESP8266::poll() {
 	uint8_t b;
 	while (serial->read(&b)) {
 		switch (state) {
@@ -143,21 +144,24 @@ void poll() {
 }
 
 void ESP8266::write(uint8_t b) {
+	uint8_t temp;
 	serial->write("AT+CIPSEND=");
 //	serial->write(48 + id);
 //	serial->write(',');
 	serial->write(48 + 3);	// one byte plus CR/LF
 	response();
-	serial->read(); 			// >
-	serial->read(); 			// sp
+	serial->read(&temp); 			// >
+	serial->read(&temp); 			// sp
 	serial->write(b);
 	serial->write('\r');
 	serial->write('\n');
 }
 
 void ESP8266::write(char* msg) {
-	uint8_t len = strlen(msg) + 2;
-	char[4] buf;
+	//uint8_t len = strlen(msg) + 2;	//TODO Don't use strlen if at all possible... we don't want to include String.h
+	uint8_t len = 0;					//TODO get real length
+	uint8_t b;
+	char buf[4];
 	sprintf(buf, "%d", len);
 
 	serial->write("AT+CIPSEND=");
@@ -165,8 +169,8 @@ void ESP8266::write(char* msg) {
 //	serial->write(',');
 	serial->write(buf);
 	response();
-	serial->read(); 			// >
-	serial->read(); 			// sp
+	serial->read(&b); 			// >
+	serial->read(&b); 			// sp
 	serial->write(msg);
 	serial->write('\r');
 	serial->write('\n');

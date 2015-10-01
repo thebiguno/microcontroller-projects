@@ -2,11 +2,9 @@
 #define ARRAY_STREAM_H
 
 #include "Stream.h"
-#include <stdlib.h>
-#include <stdint.h>
 
 namespace digitalcave {
-	class ArrayStream {
+	class ArrayStream : public Stream {
 		
 		
 		private:
@@ -17,10 +15,13 @@ namespace digitalcave {
 		public:
 			ArrayStream(uint8_t size);
 			uint8_t read(uint8_t *b);
-			void write(uint8_t b);
+			uint8_t write(uint8_t b);
 
 			uint8_t isEmpty();
 			uint8_t isFull();
+			
+			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
+			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
 	};
 }
 
