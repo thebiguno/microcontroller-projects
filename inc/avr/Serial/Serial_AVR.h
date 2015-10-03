@@ -1,5 +1,14 @@
 /*
  * AVR implementation of Serial library.
+ * 
+ * ***** IMPORTANT: *****
+ * You need to put an ISR into your own code somewhere to handle incoming characters and pass them to the 
+ * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
+ *		ISR(USART1_RX_vect){
+ *			//Be sure to pass your serial object instance the correct data; i.e. UDR0 for serial port 0, UDR1 
+ *			// for serial port 1, etc.
+ *			serial.isr(UDR0);
+ * 		}
  */
 
 #ifndef SERIAL_AVR_H

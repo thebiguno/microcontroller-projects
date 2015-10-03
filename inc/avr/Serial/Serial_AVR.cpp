@@ -2,16 +2,6 @@
 
 using namespace digitalcave;
 
-/*
- * You need to put an ISR into your own code somewhere to handle incoming characters and pass them to the 
- * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
- */
-//ISR(USART1_RX_vect){
-//	//Be sure to pass your serial object instance the correct data; i.e. UDR0 for serial port 0, UDR1 
-//	// for serial port 1, etc.
-//	serial.isr(UDR0);
-//}
-
 Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort, uint8_t bufferSize):
 	rxBuffer(bufferSize) {
 	if (serialPort == 0){
