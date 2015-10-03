@@ -69,9 +69,9 @@
 #define ADC_BATTERY			12
 
 #define THROTTLE_COUNT		2
+#define COMMUNICATION_COUNT	10
 #define DIGITAL_POLL_COUNT	30
 #define ANALOG_POLL_COUNT	50
-#define COMMUNICATION_COUNT	50
 #define BATTERY_COUNT		100
 #define BOOTLOADER_COUNT	125
 
@@ -120,7 +120,7 @@ int main (void){
 
 	FramedSerialMessage incoming(0, 32);
 	
-	//Set up timer0 to output PWM for negative voltage
+	//Set up timer0 to output PWM for negative voltage generation
 	DDRB |= _BV(PORTB7);
 	TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
 	TCCR0B = _BV(CS02);							//Div 256 prescaler
