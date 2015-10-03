@@ -9,7 +9,8 @@ ArrayStream::ArrayStream(uint8_t capacity) {
 	tail = 0x00;
 }
 ArrayStream::~ArrayStream() {
-	free data;
+	free((void*) data);
+}
 
 uint8_t ArrayStream::remaining() {
 	return capacity - size();
