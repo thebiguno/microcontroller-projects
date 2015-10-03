@@ -2,8 +2,18 @@
 
 using namespace digitalcave;
 
-Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort):
-	rxBuffer(SERIAL_BUFFER_SIZE) {
+/*
+ * You need to put an ISR into your own code somewhere to handle incoming characters and pass them to the 
+ * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
+ */
+//ISR(USART1_RX_vect){
+//	//Be sure to pass your serial object instance the correct data; i.e. UDR0 for serial port 0, UDR1 
+//	// for serial port 1, etc.
+//	serial.isr(UDR0);
+//}
+
+Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort, uint8_t bufferSize):
+	rxBuffer(bufferSize) {
 	if (serialPort == 0){
 #ifdef UDR0
 		UBRRH = UBRR0H;
@@ -87,22 +97,22 @@ Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t 
 uint8_t Serial_AVR::read(uint8_t *c){
 	*UCSRB &= ~_BV(RXCIE); //Temporarily disable RX interrupts so we don't get interrupted
 	if (!rxBuffer.isEmpty()){
-		*c = rxBuffer.get();
-		*UCSRB |= _BV(RXCIE); //Re-enable interrupts
-		return 1;
+		if (rxBuffer.read(c)){
+			*UCSRB |= _BV(RXCIE); //Re-enable interrupts
+			return 1;
+		}
 	}
 	*UCSRB |= _BV(RXCIE); //Re-enable interrupts
 	return 0;
 }
 
-void Serial_AVR::write(uint8_t b){
+uint8_t Serial_AVR::write(uint8_t b){
 	//Nop loop to wait until last transmission has completed
 	while (!(*UCSRA & _BV(UDRE)));
 	*UDR = b;
+	return 1;
 }
 
-void Serial_AVR::handleRead(uint8_t b){
-	if (!rxBuffer.isFull()){
-		rxBuffer.put(b);
-	}
+void Serial_AVR::isr(){
+	rxBuffer.write(*UDR);
 }

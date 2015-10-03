@@ -17,6 +17,13 @@ namespace digitalcave {
 			virtual uint8_t read(uint8_t* b) = 0;
 
 			/*
+			 * Writes a single byte to the stream.  Implementations MUST block until the 
+			 * write is completed.
+			 * Returns 1 if the write was successful; 0 otherwise.
+			 */
+			virtual uint8_t write(uint8_t data) = 0;
+
+			/*
 			 * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
 			 * which were read.  Implementations MUST NOT block until the entire buffer is filled.
 			 * The character after the last read character will be null terminated (which is why
@@ -25,23 +32,19 @@ namespace digitalcave {
 			uint8_t read(uint8_t* a, uint8_t len);
 
 			/*
-			 * Writes a single byte to the stream.  Implementations MUST block until the 
-			 * write is completed.
-			 */
-			virtual void write(uint8_t data) = 0;
-
-			/*
 			 * Writes a null terminated string to the stream.  Uses write(char) to actually send
 			 * bytes to the stream.
+			 * Returns the number of bytes which were written successfully.
 			 */
-			void write(char* data);
-			void write(const char* data);
+			uint8_t write(char* data);
+			uint8_t write(const char* data);
 
 			/*
 			 * Writes a byte array to the stream.  Uses write(uint8_t) to actually send bytes
 			 * to the stream.
+			 * Returns the number of bytes which were written successfully.
 			 */
-			void write(uint8_t* data, uint8_t len);
+			uint8_t write(uint8_t* data, uint8_t len);
 	};
 }
 
