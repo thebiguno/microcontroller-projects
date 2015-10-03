@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/python
 #
 # Reads from a serial port sending ascii data.
 #
@@ -7,7 +7,7 @@
 import serial, sys
 from time import sleep
 
-ser = serial.Serial("/dev/tty.usbserial-FTE0U36U", sys.argv[1])
+ser = serial.Serial(sys.argv[1], sys.argv[2])
 
 sleep(1);
 
