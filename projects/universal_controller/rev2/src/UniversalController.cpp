@@ -10,10 +10,15 @@
  * can ensure that the receiving client does not miss an event.  The idle
  * polling does not re-send analog data.
  *
- * See lib/protocol/protocol.txt for protocol details and lib/universal_controller/protocol.txt 
- * for Universal Controller-specific commands.
- *
  * We announce the controller id ('U', for Universal Controller) every once in a while.
+ * 
+ * The display reserves the two most right characters on both rows for status.
+ * The farthest right char on the top row is the remote device's battery; the bottom row
+ * is the Universal Controller's battery.  The second farthest right char on the top row
+ * is the TX / RX status (flashes when TX / RX events happen); the bottom row is the
+ * radio switch position (XBee or Bluetooth).
+ * 
+ * The rest of the display can be used for debug / status messages from the remote device.
  *
  * By default, all 16 buttons and both joysticks are enabled.  To change this,
  * use the enable / disable button / joystick commands.
@@ -27,11 +32,11 @@
 
 #include <stdlib.h>
 
-#include <Protocol.h>
-#include <Serial_AVR.h>
-#include <PSX_AVR.h>
-#include <Hd44780_Direct.h>
 #include <CharDisplay.h>
+#include <Hd44780_Direct.h>
+#include <FramedSerialProtocol.h>
+#include <PSX_AVR.h>
+#include <Serial_AVR.h>
 
 #include "lib/bootloader.h"
 
@@ -64,7 +69,9 @@
 #define ADC_BATTERY			12
 
 #define THROTTLE_COUNT		2
-#define POLL_COUNT			30
+#define DIGITAL_POLL_COUNT	30
+#define ANALOG_POLL_COUNT	50
+#define COMMUNICATION_COUNT	50
 #define BATTERY_COUNT		100
 #define BOOTLOADER_COUNT	125
 
@@ -84,14 +91,14 @@ Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8,
 	&PORTF, PORTF7);
 CharDisplay display(&hd44780, 2, 16);
 
-Protocol protocol;
+FramedSerialProtocol fsp(32);
 
 PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD5, //Command (Orange)
 	&PORTD, PORTD6, //Clock (Blue)
 	&PORTD, PORTD7); //Attention (Yellow)
 	
-Serial_AVR serial(38400, 8, 0, 1, 1, 32);
+Serial_AVR serial(38400, 8, 0, 1, 1);
 
 Analog analog;
 
@@ -105,13 +112,13 @@ int main (void){
 		0x0e,0x11,0x11,0x11,0x11,0x11,0x11,0x1f,	// 2 (Battery Empty)
 		0x04,0x06,0x15,0x0e,0x0e,0x15,0x06,0x04,	// 3 (Bluetooth icon)
 		0x19,0x19,0x1d,0x0c,0x06,0x17,0x13,0x13,	// 4 (XBee icon)
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 5 (Unused)
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 6 (Unused)
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 	// 7 (Unused)
+		0x00,0x00,0x00,0x00,0x06,0x05,0x06,0x05,	// 5 (Rx)
+		0x1c,0x08,0x08,0x08,0x00,0x00,0x00,0x00,	// 6 (Tx)
+		0x1c,0x08,0x08,0x08,0x06,0x05,0x06,0x05 	// 7 (Rx + Tx)
 	};
 	display.set_custom_chars(custom);
 
-	Message incoming(0);
+	FramedSerialMessage incoming(0, 32);
 	
 	//Set up timer0 to output PWM for negative voltage
 	DDRB |= _BV(PORTB7);
@@ -120,23 +127,31 @@ int main (void){
 	OCR0A = 1;									//Set compare value
 	sei();
 	
+	//Turn the switch sensors' pullups on
+	PORTC |= _BV(PORTC6) | _BV(PORTC7);
+	
 	uint8_t throttle_counter = 0;
 	uint8_t battery_counter = 0;
 	uint8_t bootloader_counter = 0;
-	uint8_t poll_counter = 0;
+	uint8_t analog_poll_counter = 0;
+	uint8_t digital_poll_counter = 0;
+	uint8_t communication_counter = 0;
 
+	uint8_t communication = 0x00;	//bit 0 is tx; 1 is rx
 	uint8_t throttle_position = 0;
-	uint8_t battery_level = 0;
+	uint8_t battery_level = 0xFF;
 	
-	char buf[17];	//String buffer, used for display formatting
+	char buf[15];	//String buffer, used for display formatting
 	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
 
-		poll_counter++;
+		analog_poll_counter++;
+		digital_poll_counter++;
 		throttle_counter++;
 		battery_counter++;
+		communication_counter++;
 	
 		if (throttle_counter > THROTTLE_COUNT){
 			throttle_position = (analog.read(ADC_THROTTLE));
@@ -146,72 +161,128 @@ int main (void){
 			battery_level = (analog.read(ADC_BATTERY));
 			battery_counter = 0;
 		}
+		if (communication_counter > COMMUNICATION_COUNT){
+			communication = 0;
+			communication_counter = 0;
+		}
 		
 		psx.poll();
+		
 		uint16_t buttons = psx.buttons();
 		uint16_t changed = psx.changed();
 		
+		//Digital transmission section
 		if (changed){
 			for (uint8_t x = 0; x < 16; x++){
 				//If this was triggered by a real button event, show the current state (newly pressed or newly released)
 				if (changed & _BV(x)){
 					if (buttons & _BV(x)){
-						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						protocol.write(&serial, &m);
+						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+						fsp.write(&serial, &m);
+						communication |= _BV(0);
 					}
 					else {
-						Message m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						protocol.write(&serial, &m);
+						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
+						fsp.write(&serial, &m);
+						communication |= _BV(0);
 					}
 				}
 			}
 			
-			poll_counter = 0;
+			digital_poll_counter = 0;
 		}
 		
-		if (poll_counter > POLL_COUNT){
+		if (digital_poll_counter > DIGITAL_POLL_COUNT){
 			if (buttons){
 				for (uint8_t x = 0; x < 16; x++){
 					if (buttons & _BV(x)){
-						Message m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						protocol.write(&serial, &m);
+						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+						fsp.write(&serial, &m);
+						communication |= _BV(0);
 					}
 				}
 			}
 			else {
-				Message m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				protocol.write(&serial, &m);
+				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+				fsp.write(&serial, &m);
+				communication |= _BV(0);
 			}
 
-			poll_counter = 0;
+			digital_poll_counter = 0;
+		}
+		
+		//Analog transmission section
+		if (changed){
+			//TODO write analog values
+			analog_poll_counter = 0;
+		}
+		if (analog_poll_counter > ANALOG_POLL_COUNT){
+			//TODO write analog values
 		}
 
 		//Read any incoming bytes and handle completed messages if applicable
-		if (protocol.read(&serial, &incoming)){
+		if (fsp.read(&serial, &incoming)){
+			communication |= _BV(1);
 			//TODO
 		}
 
 		
-		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select          ", 16);
-		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1          ", 16);
-		else if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2          ", 16);
-		else if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3          ", 16);
-		else if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1         ", 16);
-		else if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2         ", 16);
-		else if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3         ", 16);
-		else if (psx.button(PSB_START)) display.write_text(0, 0, "Start           ", 16);
-		else if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up          ", 16);
-		else if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left        ", 16);
-		else if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down        ", 16);
-		else if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right       ", 16);
-		else if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle        ", 16);
-		else if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle          ", 16);
-		else if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross           ", 16);
-		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square          ", 16);
+		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select        ", 14);
+		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1        ", 14);
+		else if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2        ", 14);
+		else if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3        ", 14);
+		else if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1       ", 14);
+		else if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2       ", 14);
+		else if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3       ", 14);
+		else if (psx.button(PSB_START)) display.write_text(0, 0, "Start         ", 14);
+		else if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up        ", 14);
+		else if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left      ", 14);
+		else if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down      ", 14);
+		else if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right     ", 14);
+		else if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle      ", 14);
+		else if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle        ", 14);
+		else if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross         ", 14);
+		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square        ", 14);
 		else display.write_text(0, 0, "                ", 16);
 
 		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
 		display.write_text(1, 0, buf, 16);
+		
+		//Check the switch state, and show custom chars accordingly
+		if ((PINC & _BV(PORTC6)) == 0){
+			display.write_text(1, 14, (char) 0x04);	//XBee
+		}
+		else if ((PINC & _BV(PORTC7)) == 0){
+			display.write_text(1, 14, (char) 0x03);	//Bluetooth
+		}
+		else {
+			display.write_text(1, 14, (char) 0xFE);	//Nothing
+		}
+		
+		//Show battery level
+		if (battery_level > 170){
+			display.write_text(1, 15, (char) 0x00);	//Battery full
+		}
+		else if (battery_level > 140){
+			display.write_text(1, 15, (char) 0x01);	//Battery half full
+		}
+		else {
+			display.write_text(1, 15, (char) 0x02);	//Battery empty
+		}
+		
+		//Show Rx / Tx Status
+		if (communication == 0x03){
+			display.write_text(0, 14, (char) 0x07);	//Rx + Tx
+		}
+		else if (communication == 0x02){
+			display.write_text(0, 14, (char) 0x05);	//Rx
+		}
+		else if (communication == 0x01){
+			display.write_text(0, 14, (char) 0x06);	//Tx
+		}
+		else {
+			display.write_text(0, 14, (char) 0xFE);	//Nothing
+		}
 		
 		//Hold down circle + triangle and push left stick all the way up for a few seconds to enter bootloader mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.stick(PSS_LY) == 0x00){
