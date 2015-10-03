@@ -1,17 +1,17 @@
 #include "Serial_AVR.h"
-
+#include <util/delay.h>
 using namespace digitalcave;
 
 Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort, uint8_t bufferSize):
 	rxBuffer(bufferSize) {
 	if (serialPort == 0){
 #ifdef UDR0
-		UBRRH = UBRR0H;
-		UBRRL = UBRR0L;
-		UCSRA = UCSR0A;
-		UCSRB = UCSR0B;
-		UCSRC = UCSR0C;
-		UDR = UDR0;
+		UBRRH = &UBRR0H;
+		UBRRL = &UBRR0L;
+		UCSRA = &UCSR0A;
+		UCSRB = &UCSR0B;
+		UCSRC = &UCSR0C;
+		UDR = &UDR0;
 		
 		UDRE = UDRE0;
 		UCSZ0 = UCSZ00;
@@ -42,7 +42,6 @@ Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t 
 		RXEN = RXEN1;
 		TXEN = TXEN1;
 		RXCIE = RXCIE1;
-		
 		U2X = U2X1;
 		MPCM = MPCM1;
 		UPM0 = UPM10;
