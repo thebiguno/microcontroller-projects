@@ -1,46 +1,54 @@
-#include <stdio.h>
-#include "Protocol.h"
+#include "FramedSerialProtocol.h"
 
 using namespace digitalcave;
 
-Message::Message(uint8_t command){
+FramedSerialMessage::FramedSerialMessage(uint8_t command, uint8_t maxSize){
+	this->data = (uint8_t*) malloc(maxSize);
 	this->command = command;
+	this->maxSize = maxSize;
 	length = 0;
 }
 
-Message::Message(uint8_t command, uint8_t* data, uint8_t length){
+FramedSerialMessage::~FramedSerialMessage(){
+	free((void*) data);
+}
+
+FramedSerialMessage::FramedSerialMessage(uint8_t command, uint8_t* data, uint8_t length){
+	this->data = (uint8_t*) malloc(maxSize);
 	this->command = command;
 	this->length = length;
+	this->maxSize = length;
 	for(uint8_t i = 0; i < length; i++){
 		this->data[i] = data[i];
 	}
 }
 
-void Message::clone(Message* m){
+void FramedSerialMessage::clone(FramedSerialMessage* m){
 	command = m->command;
-	for(uint8_t i = 0; i < MAX_SIZE; i++){
+	for(uint8_t i = 0; i < maxSize; i++){
 		data[i] = m->data[i];
 	}
 	length = m->length;
 }
 
-uint8_t Message::getCommand(){
+uint8_t FramedSerialMessage::getCommand(){
 	return command;
 }
 
-uint8_t Message::getLength(){
+uint8_t FramedSerialMessage::getLength(){
 	return length;
 }
 
-uint8_t* Message::getData(){
+uint8_t* FramedSerialMessage::getData(){
 	return data;
 }
 
-void Message::append(uint8_t b){
+void FramedSerialMessage::append(uint8_t b){
 	data[length++] = b;
 }
 
-Protocol::Protocol(){
+FramedSerialProtocol::FramedSerialProtocol(uint8_t maxSize){
+	data = (uint8_t*) malloc(maxSize);
 	position = 0;
 	length = 0;
 	command = 0;
@@ -49,11 +57,15 @@ Protocol::Protocol(){
 	error = 0;
 }
 
-uint8_t Protocol::getError(){
+FramedSerialProtocol::~FramedSerialProtocol(){
+	free(data);
+}
+
+uint8_t FramedSerialProtocol::getError(){
 	return error;
 }
 
-void Protocol::escapeByte(Stream* stream, uint8_t b){
+void FramedSerialProtocol::escapeByte(Stream* stream, uint8_t b){
 	if (b == START || b == ESCAPE) {
 		stream->write(ESCAPE);
 		stream->write(b ^ 0x20);
@@ -62,7 +74,7 @@ void Protocol::escapeByte(Stream* stream, uint8_t b){
 	}
 }
 
-uint8_t Protocol::read(Stream* stream, Message* result){
+uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 	uint8_t b;
 	while (stream->read(&b)){
 		if (error > 0){
@@ -111,13 +123,13 @@ uint8_t Protocol::read(Stream* stream, Message* result){
 				position++;
 				break;
 			default:
-				if (position > MAX_SIZE){
+				if (position > maxSize){
 					//Max size exceeded
 					error = INCOMING_ERROR_EXCEED_MAX_LENGTH;
 				}
 				else if (position == (length + 2)) {
 					if (checksum == 0xff) {
-						Message m(command, message, length - 1);
+						FramedSerialMessage m(command, data, length - 1);
 						result->clone(&m);
 						return 1;
 					} else {
@@ -127,7 +139,7 @@ uint8_t Protocol::read(Stream* stream, Message* result){
 					checksum = 0;
 				}
 				else {
-					message[position++ - 3] = b;
+					data[position++ - 3] = b;
 				}
 				break;
 		}
@@ -136,7 +148,7 @@ uint8_t Protocol::read(Stream* stream, Message* result){
 	return 0;
 }
 
-void Protocol::write(Stream* stream, Message* message){
+void FramedSerialProtocol::write(Stream* stream, FramedSerialMessage* message){
 	uint8_t length = message->getLength();
 	uint8_t command = message->getCommand();
 	uint8_t* data = message->getData();

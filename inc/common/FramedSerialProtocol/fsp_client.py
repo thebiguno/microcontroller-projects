@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Python implementation of the Universal Controller framing protocol.  Reads the raw values,
+# Python implementation of the Framed Serial Protocol.  Reads the raw values,
 # and interprets them using the specified logic.
 #
 ###################

@@ -1,4 +1,4 @@
-Protocol Info
+Framed Serial Protocol Info
 -------------
 
 Message Structure (bi-directional):
