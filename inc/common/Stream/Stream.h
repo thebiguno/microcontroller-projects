@@ -23,8 +23,6 @@ namespace digitalcave {
 			 */
 			virtual uint8_t write(uint8_t data) = 0;
 
-
-
 			/*
 			 * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
 			 * which were read.  Implementations MUST NOT block until the entire buffer is filled.

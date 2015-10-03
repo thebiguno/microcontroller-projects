@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-ESP8266::ESP8266(Stream* serial, uint8_t bufferSize) : buffer(bufferSize) {
+ESP8266::ESP8266(Stream* serial, uint8_t rxBufferSize, uint8_t txBufferSize) : rxBuffer(rxBufferSize), txBuffer(txBufferSize) {
 //	serial.setBaud(115200);
 	reset();
 	setMode();
@@ -106,11 +106,11 @@ void ESP8266::close() {
 }
 
 uint8_t ESP8266::read(uint8_t* b) {
-	return buffer.read(b);
+	return rxBuffer.read(b);
 }
 
 uint8_t ESP8266::read(uint8_t* a, uint8_t len) {
-	return buffer.read(a, len);
+	return rxBuffer.read(a, len);
 }
 
 void ESP8266::poll() {
@@ -138,40 +138,32 @@ void ESP8266::poll() {
 				if (b == ':') state = 4;
 				break;
 			default:
-				buffer.write(b);
+				rxBuffer.write(b);
 		}
 	}
 }
 
-void ESP8266::write(uint8_t b) {
-	uint8_t temp;
-	serial->write("AT+CIPSEND=");
-//	serial->write(48 + id);
-//	serial->write(',');
-	serial->write(48 + 3);	// one byte plus CR/LF
-	response();
-	serial->read(&temp); 			// >
-	serial->read(&temp); 			// sp
-	serial->write(b);
-	serial->write('\r');
-	serial->write('\n');
+uint8_t ESP8266::write(uint8_t b) {
+	if (txBuffer.isFull()) {
+		flush();
+	}
+	return txBuffer.write(b);
 }
 
-void ESP8266::write(char* msg) {
-	//uint8_t len = strlen(msg) + 2;	//TODO Don't use strlen if at all possible... we don't want to include String.h
-	uint8_t len = 0;					//TODO get real length
+void ESP8266::flush() {
+	uint8_t len = txBuffer.size();
 	uint8_t b;
-	char buf[4];
+	char buf[3];
 	sprintf(buf, "%d", len);
 
 	serial->write("AT+CIPSEND=");
-//	serial->write(48 + id);
-//	serial->write(',');
 	serial->write(buf);
 	response();
 	serial->read(&b); 			// >
 	serial->read(&b); 			// sp
-	serial->write(msg);
+	while (txBuffer.read(&b)) {
+		serial->write(b);
+	}
 	serial->write('\r');
 	serial->write('\n');
 }
