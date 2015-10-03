@@ -71,6 +71,7 @@
 #define THROTTLE_COUNT		2
 #define COMMUNICATION_COUNT	10
 #define DIGITAL_POLL_COUNT	30
+#define CONTRAST_COUNT		40
 #define ANALOG_POLL_COUNT	50
 #define BATTERY_COUNT		100
 #define BOOTLOADER_COUNT	125
@@ -130,6 +131,7 @@ int main (void){
 	//Turn the switch sensors' pullups on
 	PORTC |= _BV(PORTC6) | _BV(PORTC7);
 	
+	uint8_t contrast_counter = 0xFF;
 	uint8_t throttle_counter = 0;
 	uint8_t battery_counter = 0;
 	uint8_t bootloader_counter = 0;
@@ -296,6 +298,24 @@ int main (void){
 		}
 		else {
 			bootloader_counter = 0;
+		}
+		
+		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.button(PSB_PAD_UP)){
+			if (contrast_counter > CONTRAST_COUNT){
+				OCR0A--;
+				contrast_counter = 0;
+			}
+			contrast_counter++;
+		}
+		else if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.button(PSB_PAD_DOWN)){
+			if (contrast_counter > CONTRAST_COUNT){
+				OCR0A++;
+				contrast_counter = 0;
+			}
+			contrast_counter++;
+		}
+		else {
+			contrast_counter = 0xFF;
 		}
 		
 		display.refresh();
