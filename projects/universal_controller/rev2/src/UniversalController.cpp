@@ -67,16 +67,20 @@
 #define MESSAGE_UC_SET_ANALOG_FREQUENCY			0x19
 
 
-#define ADC_THROTTLE		13
-#define ADC_BATTERY			12
+#define ADC_THROTTLE							13
+#define ADC_BATTERY								12
 
-#define THROTTLE_COUNT		2
-#define COMMUNICATION_COUNT	10
-#define DIGITAL_POLL_COUNT	30
-#define CONTRAST_COUNT		40
-#define ANALOG_POLL_COUNT	50
-#define BATTERY_COUNT		100
-#define BOOTLOADER_COUNT	125
+#define BATTERY_FULL_THRESHOLD					170
+#define BATTERY_EMPTY_THRESHOLD 				140
+
+#define THROTTLE_COUNT							2
+#define COMMUNICATION_COUNT						10
+#define DIGITAL_POLL_COUNT						30
+#define CONTRAST_COUNT							40
+#define ANALOG_POLL_COUNT						50
+#define BATTERY_COUNT							100
+#define BOOTLOADER_COUNT						125
+
 
 using namespace digitalcave;
 
@@ -145,7 +149,7 @@ int main (void){
 
 	uint8_t communication = 0x00;	//bit 0 is tx; 1 is rx
 	uint8_t throttle_position = 0;
-	uint8_t battery_level = 0xFF;
+	uint8_t battery_level = 0;
 	
 	char buf[15];	//String buffer, used for display formatting
 	Serial* serial;		//Pointer to which serial port (tx) we are currently using
@@ -166,7 +170,11 @@ int main (void){
 			throttle_counter = 0;
 		}
 		if (battery_counter > BATTERY_COUNT){
-			battery_level = (analog.read(ADC_BATTERY));
+			uint8_t reading = (analog.read(ADC_BATTERY));
+			if (battery_level == 0 && reading < (BATTERY_FULL_THRESHOLD - 5)) battery_level = 1;			//Move from full to med
+			else if (battery_level == 1 && reading >= (BATTERY_FULL_THRESHOLD + 5)) battery_level = 0;		//Move from med to full
+			else if (battery_level == 1 && reading <= (BATTERY_EMPTY_THRESHOLD - 5)) battery_level = 2;		//Move from med to empty
+			else if (battery_level == 2 && reading >= (BATTERY_EMPTY_THRESHOLD + 5)) battery_level = 1;		//Move from empty to med
 			battery_counter = 0;
 		}
 		if (communication_counter > COMMUNICATION_COUNT){
@@ -277,15 +285,7 @@ int main (void){
 		display.write_text(1, 0, buf, 16);
 		
 		//Show battery level
-		if (battery_level > 170){
-			display.write_text(1, 15, (char) 0x00);	//Battery full
-		}
-		else if (battery_level > 140){
-			display.write_text(1, 15, (char) 0x01);	//Battery half full
-		}
-		else {
-			display.write_text(1, 15, (char) 0x02);	//Battery empty
-		}
+		display.write_text(1, 15, battery_level);
 		
 		//Show radio icons according to serial device / switch state
 		if (serial == &serialXbee){
