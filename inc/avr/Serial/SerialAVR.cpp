@@ -1,8 +1,8 @@
-#include "Serial_AVR.h"
+#include "SerialAVR.h"
 #include <util/delay.h>
 using namespace digitalcave;
 
-Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort, uint8_t bufferSize):
+SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t stopBits, uint8_t serialPort, uint8_t bufferSize):
 	rxBuffer(bufferSize) {
 	if (serialPort == 0){
 #ifdef UDR0
@@ -83,7 +83,7 @@ Serial_AVR::Serial_AVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t 
 	*UCSRB |= _BV(RXEN) | _BV(TXEN) | _BV(RXCIE);
 }
 
-uint8_t Serial_AVR::read(uint8_t *c){
+uint8_t SerialAVR::read(uint8_t *c){
 	*UCSRB &= ~_BV(RXCIE); //Temporarily disable RX interrupts so we don't get interrupted
 	if (!rxBuffer.isEmpty()){
 		if (rxBuffer.read(c)){
@@ -95,13 +95,13 @@ uint8_t Serial_AVR::read(uint8_t *c){
 	return 0;
 }
 
-uint8_t Serial_AVR::write(uint8_t b){
+uint8_t SerialAVR::write(uint8_t b){
 	//Nop loop to wait until last transmission has completed
 	while (!(*UCSRA & _BV(UDRE)));
 	*UDR = b;
 	return 1;
 }
 
-void Serial_AVR::isr(){
+void SerialAVR::isr(){
 	rxBuffer.write(*UDR);
 }
