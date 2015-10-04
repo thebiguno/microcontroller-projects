@@ -35,8 +35,10 @@
 #include <CharDisplay.h>
 #include <Hd44780_Direct.h>
 #include <FramedSerialProtocol.h>
+#include <NullSerial.h>
 #include <PSX_AVR.h>
-#include <Serial_AVR.h>
+#include <SerialAVR.h>
+#include <SoftwareSerialAVR.h>
 
 #include "lib/bootloader.h"
 
@@ -99,7 +101,9 @@ PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD6, //Clock (Blue)
 	&PORTD, PORTD7); //Attention (Yellow)
 	
-Serial_AVR serial(38400, 8, 0, 1, 1);
+SerialAVR serialBluetooth(38400, 8, 0, 1, 1);
+SoftwareSerialAVR serialXbee(&PORTE, PORTE6, 38400);
+NullSerial nullSerial;
 
 Analog analog;
 
@@ -124,8 +128,8 @@ int main (void){
 	//Set up timer0 to output PWM for negative voltage generation
 	DDRB |= _BV(PORTB7);
 	TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
-	TCCR0B = _BV(CS02);							//Div 256 prescaler
-	OCR0A = 1;									//Set compare value
+	TCCR0B = _BV(CS01) | _BV(CS00);				//Div 64 prescaler
+	OCR0A = 5;									//Set compare value
 	sei();
 	
 	//Turn the switch sensors' pullups on
@@ -144,10 +148,12 @@ int main (void){
 	uint8_t battery_level = 0xFF;
 	
 	char buf[15];	//String buffer, used for display formatting
+	Serial* serial;		//Pointer to which serial port (tx) we are currently using
 	
 	//Main program loop
 	while (1){
 		_delay_ms(10);
+		
 
 		analog_poll_counter++;
 		digital_poll_counter++;
@@ -168,6 +174,18 @@ int main (void){
 			communication_counter = 0;
 		}
 		
+		//Read the switch state
+		if ((PINC & _BV(PORTC6)) == 0){
+			serial = &serialXbee;
+		}
+		else if ((PINC & _BV(PORTC7)) == 0){
+			serial = &serialBluetooth;
+		}
+		else {
+			serial = &nullSerial;
+		}
+
+		
 		psx.poll();
 		
 		uint16_t buttons = psx.buttons();
@@ -180,12 +198,12 @@ int main (void){
 				if (changed & _BV(x)){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						fsp.write(&serial, &m);
+						//fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 					else {
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						fsp.write(&serial, &m);
+						//fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 				}
@@ -199,15 +217,23 @@ int main (void){
 				for (uint8_t x = 0; x < 16; x++){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						fsp.write(&serial, &m);
+						//fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 				}
 			}
 			else {
-				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				fsp.write(&serial, &m);
-				communication |= _BV(0);
+				serial->write(0x7e);
+				serial->write('F');
+				serial->write('o');
+				serial->write('o');
+				serial->write('1');
+				serial->write('2');
+				serial->write('3');
+				serial->write('\n');
+				//FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+				//fsp.write(serial, &m);
+				//communication |= _BV(0);
 			}
 
 			digital_poll_counter = 0;
@@ -223,7 +249,7 @@ int main (void){
 		}
 
 		//Read any incoming bytes and handle completed messages if applicable
-		if (fsp.read(&serial, &incoming)){
+		if (fsp.read(serial, &incoming)){
 			communication |= _BV(1);
 			//TODO
 		}
@@ -250,17 +276,6 @@ int main (void){
 		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
 		display.write_text(1, 0, buf, 16);
 		
-		//Check the switch state, and show custom chars accordingly
-		if ((PINC & _BV(PORTC6)) == 0){
-			display.write_text(1, 14, (char) 0x04);	//XBee
-		}
-		else if ((PINC & _BV(PORTC7)) == 0){
-			display.write_text(1, 14, (char) 0x03);	//Bluetooth
-		}
-		else {
-			display.write_text(1, 14, (char) 0xFE);	//Nothing
-		}
-		
 		//Show battery level
 		if (battery_level > 170){
 			display.write_text(1, 15, (char) 0x00);	//Battery full
@@ -270,6 +285,17 @@ int main (void){
 		}
 		else {
 			display.write_text(1, 15, (char) 0x02);	//Battery empty
+		}
+		
+		//Show radio icons according to serial device / switch state
+		if (serial == &serialXbee){
+			display.write_text(1, 14, (char) 0x04);	//XBee
+		}
+		else if (serial == &serialBluetooth){
+			display.write_text(1, 14, (char) 0x03);	//Bluetooth
+		}
+		else {
+			display.write_text(1, 14, (char) 0xFE);	//Nothing
 		}
 		
 		//Show Rx / Tx Status
@@ -323,5 +349,5 @@ int main (void){
 }
 
 ISR(USART1_RX_vect){
-	serial.isr();
+	//serial->isr();
 }
