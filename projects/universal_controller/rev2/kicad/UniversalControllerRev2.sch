@@ -268,7 +268,7 @@ SS_YELLOW
 Text Label 2750 3650 1    60   ~ 0
 AVR_RX
 Text Label 2850 3650 1    60   ~ 0
-AVR_TX
+AVR_TX_BT
 Text Label 5500 3450 0    60   ~ 0
 XBEE_TX
 Text Label 5500 3550 0    60   ~ 0
@@ -485,11 +485,9 @@ Wire Wire Line
 Wire Wire Line
 	2750 2200 2750 3850
 Wire Wire Line
-	2850 2300 2850 4600
+	2850 2300 2850 5050
 Wire Wire Line
 	2850 2300 3250 2300
-Wire Wire Line
-	2850 4600 4900 4600
 Wire Wire Line
 	8100 1900 8100 2000
 Wire Wire Line
@@ -520,10 +518,6 @@ Wire Wire Line
 	4800 3750 4800 3450
 Wire Wire Line
 	4800 3450 6350 3450
-Wire Wire Line
-	4900 3550 4900 5050
-Wire Wire Line
-	4900 3550 6350 3550
 Wire Wire Line
 	4800 5150 6500 5150
 Wire Wire Line
@@ -605,8 +599,7 @@ Wire Wire Line
 Wire Wire Line
 	6050 4750 6500 4750
 Wire Wire Line
-	4900 5050 6500 5050
-Connection ~ 4900 4600
+	2850 5050 6500 5050
 Wire Wire Line
 	4800 3750 4050 3750
 Wire Wire Line
@@ -639,4 +632,12 @@ Wire Wire Line
 Wire Wire Line
 	5100 2500 5100 4250
 Connection ~ 5100 4250
+Wire Wire Line
+	4250 2400 5200 2400
+Wire Wire Line
+	5200 2400 5200 3550
+Wire Wire Line
+	5200 3550 6350 3550
+Text Label 4350 2400 0    60   ~ 0
+AVR_TX_XBEE
 $EndSCHEMATC
