@@ -6,6 +6,8 @@
  * 
  * Tested and calibrated on 16MHz and 8MHz, at 9600, 19200, 38400, 57600, and 115200 (at 16Mhz only).
  * Other clock speeds and baud rates are not currently supported.
+ * 
+ * Even with supported speeds, things tend to be more accurate at lower speeds (9600, etc).  Be conservative.
  */
 
 #ifndef SOFTWARE_SERIAL_AVR_H

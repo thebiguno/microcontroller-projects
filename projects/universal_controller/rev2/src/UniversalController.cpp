@@ -106,7 +106,7 @@ PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD7); //Attention (Yellow)
 	
 SerialAVR serialBluetooth(38400, 8, 0, 1, 1);
-SoftwareSerialAVR serialXbee(&PORTE, PORTE6, 38400);
+SoftwareSerialAVR serialXbee(&PORTE, PORTE6, 9600);
 NullSerial nullSerial;
 
 Analog analog;

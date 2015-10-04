@@ -7,8 +7,8 @@ SoftwareSerialAVR::SoftwareSerialAVR(volatile uint8_t* port, uint8_t pin, uint32
 	this->pin = pin;
 	this->baud = baud;
 	
-	*this->port |= _BV(pin);
-	*(this->port - 1) |= _BV(pin);
+	*(this->port - 1) |= _BV(pin);		//Set as output
+	*this->port |= _BV(pin);			//Set logic high
 	
 #if F_CPU == 16000000
 	switch(baud){
