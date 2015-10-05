@@ -105,8 +105,8 @@ PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD6, //Clock (Blue)
 	&PORTD, PORTD7); //Attention (Yellow)
 	
-SerialAVR serialBluetooth(38400, 8, 0, 1, 1);
-SoftwareSerialAVR serialXbee(&PORTE, PORTE6, 9600);
+SerialAVR serialAvr(38400, 8, 0, 1, 1);
+SoftwareSerialAVR softwareSerialAvr(&PORTE, PORTE6, 9600);
 NullSerial nullSerial;
 
 Analog analog;
@@ -184,10 +184,10 @@ int main (void){
 		
 		//Read the switch state
 		if ((PINC & _BV(PORTC6)) == 0){
-			serial = &serialXbee;
+			serial = &softwareSerialAvr;
 		}
 		else if ((PINC & _BV(PORTC7)) == 0){
-			serial = &serialBluetooth;
+			serial = &serialAvr;
 		}
 		else {
 			serial = &nullSerial;
@@ -206,12 +206,12 @@ int main (void){
 				if (changed & _BV(x)){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						//fsp.write(serial, &m);
+						fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 					else {
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						//fsp.write(serial, &m);
+						fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 				}
@@ -225,23 +225,15 @@ int main (void){
 				for (uint8_t x = 0; x < 16; x++){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						//fsp.write(serial, &m);
+						fsp.write(serial, &m);
 						communication |= _BV(0);
 					}
 				}
 			}
 			else {
-				serial->write(0x7e);
-				serial->write('F');
-				serial->write('o');
-				serial->write('o');
-				serial->write('1');
-				serial->write('2');
-				serial->write('3');
-				serial->write('\n');
-				//FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				//fsp.write(serial, &m);
-				//communication |= _BV(0);
+				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+				fsp.write(serial, &m);
+				communication |= _BV(0);
 			}
 
 			digital_poll_counter = 0;
@@ -257,7 +249,7 @@ int main (void){
 		}
 
 		//Read any incoming bytes and handle completed messages if applicable
-		if (fsp.read(serial, &incoming)){
+		if (fsp.read(&serialAvr, &incoming)){
 			communication |= _BV(1);
 			//TODO
 		}
@@ -288,10 +280,10 @@ int main (void){
 		display.write_text(1, 15, battery_level);
 		
 		//Show radio icons according to serial device / switch state
-		if (serial == &serialXbee){
+		if (serial == &softwareSerialAvr){
 			display.write_text(1, 14, (char) 0x04);	//XBee
 		}
-		else if (serial == &serialBluetooth){
+		else if (serial == &serialAvr){
 			display.write_text(1, 14, (char) 0x03);	//Bluetooth
 		}
 		else {
@@ -349,5 +341,5 @@ int main (void){
 }
 
 ISR(USART1_RX_vect){
-	//serial->isr();
+	serialAvr.isr();
 }
