@@ -28,7 +28,7 @@ void ESP8266::setMode() {
 }
 void ESP8266::setMux() {
 	serial->write("AT+CIPMUX=");
-	serial->write(48 + 1); // single connection mode
+	serial->write(48 + 0); // single connection mode
 	serial->write('\r');
 	serial->write('\n');
 	response();
@@ -79,7 +79,7 @@ uint8_t ESP8266::response() {
 	return result;
 }
 
-uint8_t ESP8266::connect(char type, char* address, uint16_t port) {
+uint8_t ESP8266::connect(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 	
@@ -96,8 +96,7 @@ uint8_t ESP8266::connect(char type, char* address, uint16_t port) {
 }
 
 void ESP8266::close() {
-	serial->write("AT+CIPCLOSE");
-//	serial->write('=');
+	serial->write("AT+CIPCLOSE=");
 //	serial->write(48 + id);
 //	serial->write(',');
 	serial->write('\r');

@@ -26,9 +26,10 @@ namespace digitalcave {
 			uint8_t join(char* ssid, char* password);
 			void quit();
 		
-			uint8_t connect(char type, char* address, uint16_t port);
+			uint8_t connect(char* address, uint16_t port);
 			void close();
 			
+			/* process whatever is in the serial receive buffer */
 			void poll();
 			
 			uint8_t read(uint8_t* b);
