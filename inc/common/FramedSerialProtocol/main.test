@@ -21,16 +21,12 @@ uint8_t Console::write(uint8_t b){
 }
 
 int main(){
-	FramedSerialProtocol protocol;
+	FramedSerialProtocol protocol(32);
 
-	FramedSerialMessage incoming(0x00);
+	FramedSerialMessage incoming(0x00, 32);
 
-	FramedSerialMessage outgoing(0x01);
-	outgoing.append(0x42);
-	outgoing.append(0x7e);
-	outgoing.append(0x7d);
-	outgoing.append(0x54);
-	outgoing.append(0x23);
+	FramedSerialMessage outgoing(0x12, 32);
+
 	
 	Console console;
 	ArrayStream arrayStream((uint8_t) 255);
@@ -42,6 +38,7 @@ int main(){
 	}
 	
 	protocol.write(&arrayStream, &outgoing);
+	protocol.write(&console, &outgoing);
 	printf("Foo\n");
 	protocol.read(&arrayStream, &incoming);
 	
@@ -50,6 +47,6 @@ int main(){
 	for (uint8_t i = 0; i < incoming.getLength(); i++){
 		printf("FramedSerialMessage[%d]: 0x%02x\n", i, incoming.getData()[i]);
 	}
-	
+	protocol.write(&console, &incoming);
 	return 0;
 }
