@@ -134,6 +134,13 @@ else
 		-U flash:w:$(PROJECT).hex 
 endif
 
+start:
+ifeq 'dfu' '$(PROGRAMMER)'
+	$(DFU) $(MMCU) start
+else
+	echo "Cannot only start in DFU Programmer mode"
+endif
+
 fuse:
 ifeq 'dfu' '$(PROGRAMMER)'
 	echo "Cannot set fuses in DFU Programmer mode"
