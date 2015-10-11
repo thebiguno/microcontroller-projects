@@ -62,6 +62,7 @@ namespace digitalcave {
 		 * Draws text on screen at the specified position, using the given font, in the given overlay mode.
 		 */
 		void text(int16_t x, int16_t y, const char* text, uint8_t orientation);
+		void character(int16_t x, int16_t y, char c, uint8_t orientation);
 		
 		/*
 		 * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the

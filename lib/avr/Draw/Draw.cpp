@@ -158,18 +158,21 @@ void Draw::bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t o
 void Draw::text(int16_t x, int16_t y, const char* text, uint8_t orientation) {
 	uint8_t i = 0;
 	
-	while (text[i]){
-		//Find the entry in the code page
-		uint8_t glyph_index = pgm_read_byte_near(font_codepage + (uint8_t) text[i]);
-
-		if (glyph_index != 0xFF) {
-			bitmap(x, y, font_width, font_height, orientation, font + (glyph_index * font_glyph_byte_ct));
-		}
-
-		if (orientation == DRAW_ORIENTATION_NORMAL) x += (font_width + 1);
-		else if (orientation == DRAW_ORIENTATION_DOWN) y += (font_width + 1);
+	while (text[i]) {
+		this->character(x, y, text[i], orientation);
 		i++;
 	}
+}
+void Draw::character(int16_t x, int16_t y, char c, uint8_t orientation) {
+	//Find the entry in the code page
+	uint8_t glyph_index = pgm_read_byte_near(font_codepage + (uint8_t) c);
+
+	if (glyph_index != 0xFF) {
+		bitmap(x, y, font_width, font_height, orientation, font + (glyph_index * font_glyph_byte_ct));
+	}
+
+	if (orientation == DRAW_ORIENTATION_NORMAL) x += (font_width + 1);
+	else if (orientation == DRAW_ORIENTATION_DOWN) y += (font_width + 1);
 }
 
 //Implementation of Bresenham Algorithm for a full circle, adapted from Wikipedia sample
