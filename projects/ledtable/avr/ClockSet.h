@@ -1,5 +1,5 @@
-#ifndef AltClock_H
-#define AltClock_H
+#ifndef ClockSet_H
+#define ClockSet_H
 
 #include <Module.h>
 #include <stdint.h>
@@ -7,10 +7,10 @@
 #include "lib/rtc/mcp79410/mcp79410.h"
 
 namespace digitalcave {
-	class AltClock : public Module {
+	class ClockSet : public Module {
 	public:
-		AltClock();
-		~AltClock();
+		ClockSet();
+		~ClockSet();
 		void run();
 	};
 }

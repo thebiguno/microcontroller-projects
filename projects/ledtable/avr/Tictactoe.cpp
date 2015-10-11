@@ -3,15 +3,15 @@
 #include "lib/analog/analog.h"
 #include "lib/draw/Rgb.h"
 #include "lib/draw/Hsv.h"
-#include "lib/Psx/Psx.h"
-#include "lib/timer/timer.h"
+#include "lib/Button/Buttons.h"
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
+extern uint8_t sample;
 extern Matrix matrix;
-extern Psx psx;
+extern Buttons buttons;
 extern Hsv hsv;
 
 Tictactoe::Tictactoe() {
@@ -21,8 +21,6 @@ Tictactoe::~Tictactoe() {
 }
 
 void Tictactoe::run() {
-	_delay_ms(127);
-	
 	uint8_t running = 1;
 	uint8_t blink = 0;
 	
@@ -31,8 +29,8 @@ void Tictactoe::run() {
 
 	uint8_t selection = 0;
 	
-	uint16_t buttons;
-	uint16_t changed;
+	uint8_t released;
+	uint8_t held;
 	
 	Hsv comp = Hsv(hsv);
 	comp.addHue(180);
@@ -69,63 +67,31 @@ void Tictactoe::run() {
 		blink++;
 		blink %= 2;
 
-		psx.poll();
-		buttons = psx.buttons();
-		changed = psx.changed();
-		if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
-			switch (selection) {
-				case 0: selection = 2; break;
-				case 1: selection = 0; break;
-				case 2: selection = 1; break;
-				case 3: selection = 5; break;
-				case 4: selection = 3; break;
-				case 5: selection = 4; break;
-				case 6: selection = 8; break;
-				case 7: selection = 6; break;
-				default: selection = 7; break;
+		// sample buttons
+		if (sample) {
+			buttons.sample();
+			released = buttons.released();
+			held = buttons.held();
+			sample = 0;
+		}
+
+		// take action
+		if (held && 0x01) {
+			// exit
+			running = 0;
+		}
+		else if (released && 0x01) {
+			// select square
+			selection++;
+			while (state[selection] > 0) {
+				selection++;
 			}
 		}
-		else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
-			switch (selection) {
-				case 0: selection = 1; break;
-				case 1: selection = 2; break;
-				case 2: selection = 0; break;
-				case 3: selection = 4; break;
-				case 4: selection = 5; break;
-				case 5: selection = 3; break;
-				case 6: selection = 7; break;
-				case 7: selection = 8; break;
-				default: selection = 6; break;
-			}
+		else if (held && 0x02) {
+			// noop
 		}
-		else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
-			switch (selection) {
-				case 0: selection = 3; break;
-				case 1: selection = 4; break;
-				case 2: selection = 5; break;
-				case 3: selection = 6; break;
-				case 4: selection = 7; break;
-				case 5: selection = 8; break;
-				case 6: selection = 0; break;
-				case 7: selection = 1; break;
-				default: selection = 2; break;
-			}
-		}
-		else if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
-			switch (selection) {
-				case 0: selection = 6; break;
-				case 1: selection = 7; break;
-				case 2: selection = 8; break;
-				case 3: selection = 0; break;
-				case 4: selection = 1; break;
-				case 5: selection = 2; break;
-				case 6: selection = 3; break;
-				case 7: selection = 4; break;
-				default: selection = 5; break;
-			}
-		}
-		else if (buttons & PSB_CROSS && changed & PSB_CROSS) {
-			// set the state to the current player and change players
+		else if (released && 0x02) {
+			// choose square
 			if (state[selection] == 0) {
 				state[selection] = player;
 				player = (player == 1) ? 2 : 1;
@@ -172,9 +138,6 @@ void Tictactoe::run() {
 					}
 				}
 			}
-		}
-		else if (buttons & PSB_START && changed & PSB_START) {
-			running = 0;
 		}
 		
 		_delay_ms(127);

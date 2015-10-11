@@ -1,5 +1,6 @@
 #include "Clock.h"
-#include "lib/Psx/Psx.h"
+#include "ClockSet.h"
+#include "lib/Button/Buttons.h"
 #include "lib/Draw/Hsv.h"
 #include "lib/Draw/Rgb.h"
 #include "Matrix.h"
@@ -11,7 +12,8 @@ using namespace digitalcave;
 
 extern Hsv hsv;
 extern Matrix matrix;
-extern Psx psx;
+extern Buttons buttons;
+extern uint8_t sample;
 
 Clock::Clock() {
 }
@@ -21,224 +23,175 @@ Clock::~Clock() {
 
 void Clock::run() {
 	mcp79410_time_t time;
-	uint16_t buttons;
-	uint16_t changed;
 	uint8_t running = 1;
-	uint8_t set = 0;
+
+	uint8_t second = 0;
+	uint8_t tick = 0;
+	uint32_t ms;
+	
+	uint8_t released;
+	uint8_t held;
+
+	uint8_t field[4];
+	char c[4];
 
 	while (running) {
-		if (!set) mcp79410_get(&time);
+		mcp79410_get(&time);
 		
+		if (sample) {
+			// this will be 1 every 12 ms
+			tick++;
+		}
+		
+		if (time.second != second) {
+			// change the hue every second
+			second = time.second;
+			hsv.addHue(1);
+			
+			tick = 0;
+		}
+		
+		ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+		
+		if (running == 1) {
+			field[0] = time.hour / 12;
+			field[1] = time.hour - (12 * field[0]);
+			field[2] = time.minute / 10;
+			field[3] = time.minute - (10 * field[2]);
+		}
+		else if (running == 2) {
+			// This method was first proposed in the 1850s by John W. Nystrom
+			// milliseconds to hexadecimal (FF.FF)
+			field[0] = ms / 5400000;			// 1/16 day (hex hour) = 1 h 30 m
+			ms -= 5400000 * (uint32_t) field[0];
+			field[1] = ms / 337500;			// 1/256 day (hex maxime) = 5 m 37.5 s
+			ms -= 337500 * (uint32_t) field[1];
+			ms *= 100;					// bump up the precision
+			field[2] = ms / 2109375;			// 1/4096 day (hex minute) ~= 21 seconds
+			ms -= 2109375 * (uint32_t) field[2];
+			ms *= 100;					// bump up the precision again
+			field[3] = ms / 13183593;			// 1/65536 day (hex second) ~= 1.32 seconds
+		}
+		else if (running == 3) {
+			// milliseconds to octal (777.777)
+			field[0] = ms / 10800000;			// 1/8 day = 3 h
+			ms -= 10800000 * (uint32_t) field[0];
+			field[1] = ms / 1350000;			// 1/64 day = 22 m 30 s
+			ms -= 1350000 * (uint32_t) field[1];
+			field[2] = ms / 168750;			// 1/512 day ~= 2 m 49 s
+			ms -= 168750 * (uint32_t) field[2];
+			ms *= 100;					// bump up the precision
+			field[3] = ms / 2109375;			// 1/4096 day ~= 21 s
+		}
+		else if (running == 4) {
+			//milliseconds to dozenal (BBB.BB)
+			field[0] = ms / 7200000;			// 1/12 day = 2 h (shichen)
+			ms -= 7200000 * (uint32_t) field[0];
+			field[1] = ms / 600000;			// 1/144 day = 10 m
+			ms -= 600000 * (uint32_t) field[1];
+			field[2] = ms / 50000;				// 1/1728 day = 50 s
+			ms -= 50000 * (uint32_t) field[2];
+			field[3] = ms / 4167;				// 1/20736 day ~= 4.167 s
+		}
+		if (running == 5) {
+			//milliseconds to senary (555.555)
+			field[0] = ms / 14400000;		// 1/6 day = 4 h
+			ms -= 14400000 * (uint32_t) field[0];
+			field[1] = floor(ms / 2400000);		// 1/36 day = 40 m
+			ms -= 2400000 * (uint32_t) field[1];
+			ms *= 100;
+			field[2] = floor(ms / 40000000);		// 1/216 day = 6 m 40 s
+			ms -= 40000000 * (uint32_t) field[2];
+			ms *= 100;
+			field[3] = floor(ms / 666666666);		// 1/1296 day = 66.6 s
+		}
+		else if (running == 6) {
+			//milliseconds to vigesimal (19.19.19.19)
+			field[0] = ms / 4320000;			// 1/20 day = 1 h 12 m
+			ms -= 4320000 * (uint32_t) field[0];
+			field[1] = ms / 216000;			// 1/400 day = 3 m 36 s
+			ms -= 216000 * (uint32_t) field[1];
+			field[2] = ms / 10800;				// 1/8000 day = 10.8 s
+			ms -= 10800 * (uint32_t) field[2];
+			field[3] = ms / 540;				// 1/160000 day = .54 s
+		}
+		else if (running == 7) {
+			//this method was introduced during the French Revolution in 1793
+			//milliseconds to decimal (999.99)
+			field[0] = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
+			ms -= 8640000 * (uint32_t) field[0];
+			field[1] = ms / 864000;			// 1/100 day (centiday) = 14 m 24 s
+			ms -= 864000 * (uint32_t) field[1];
+			field[2] = ms / 86400;				// 1/1000 day (milliday; beat) = 1 m 26.4 s (ke)
+			ms -= 86400 * (uint32_t) field[2];
+			field[3] = ms / 8640;				// 1/10000 day = 8.64 s (decibeat)
+		}
+		
+		for (uint8_t i = 0; i < 4; i++) {
+			uint8_t f = field[i];
+			switch (f) {
+				case 0: c[i] = '0'; break;
+				case 1: c[i] = '1'; break;
+				case 2: c[i] = '2'; break;
+				case 3: c[i] = '3'; break;
+				case 4: c[i] = '4'; break;
+				case 5: c[i] = '5'; break;
+				case 6: c[i] = '6'; break;
+				case 7: c[i] = '7'; break;
+				case 8: c[i] = '8'; break;
+				case 9: c[i] = '9'; break;
+				case 10: c[i] = 'A'; break;
+				case 11: c[i] = 'B'; break;
+				case 12: c[i] = 'C'; break;
+				case 13: c[i] = 'D'; break;
+				case 14: c[i] = 'E'; break;
+				case 15: c[i] = 'F'; break;
+				case 16: c[i] = 'G'; break;
+				case 17: c[i] = 'H'; break;
+				case 18: c[i] = 'I'; break;
+				case 19: c[i] = 'J'; break;
+			}
+		}
+		
+		// draw
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
 		
-		if (running == 1) {
-			// hour and minute hands drawn as lines
-			// 5 minute accuracy
-			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute / 5;
-			
-			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
-			matrix.setPixel(5, 0);
-			matrix.setPixel(0, 5);
-			matrix.setPixel(10, 5);
-			matrix.setPixel(5, 10);
-			
-			Hsv c = Hsv(hsv);
-			matrix.setColor(Rgb(c));
-			
-			if (m == 0) matrix.line(5, 5, 5, 0);
-			else if (m == 1) matrix.line(5, 5, 7, 0);
-			else if (m == 2) matrix.line(5, 5, 10, 3);
-			else if (m == 3) matrix.line(5, 5, 10, 5);
-			else if (m == 4) matrix.line(5, 5, 10, 7);
-			else if (m == 5) matrix.line(5, 5, 7, 10);
-			else if (m == 6) matrix.line(5, 5, 5, 10);
-			else if (m == 7) matrix.line(5, 5, 3, 10);
-			else if (m == 8) matrix.line(5, 5, 0, 7);
-			else if (m == 9) matrix.line(5, 5, 0, 5);
-			else if (m == 10) matrix.line(5, 5, 0, 3);
-			else if (m == 11) matrix.line(5, 5, 3, 0);
-			
-			c.addHue(180);
-			matrix.setColor(Rgb(c));
-			
-			if (h == 0) matrix.line(5, 5, 5, 2);
-			else if (h == 1) matrix.line(5, 5, 6, 2);
-			else if (h == 2) matrix.line(5, 5, 8, 4);
-			else if (h == 3) matrix.line(5, 5, 8, 5);
-			else if (h == 4) matrix.line(5, 5, 8, 6);
-			else if (h == 5) matrix.line(5, 5, 6, 8);
-			else if (h == 6) matrix.line(5, 5, 5, 8);
-			else if (h == 7) matrix.line(5, 5, 4, 8);
-			else if (h == 8) matrix.line(5, 5, 2, 6);
-			else if (h == 9) matrix.line(5, 5, 2, 5);
-			else if (h == 10) matrix.line(5, 5, 2, 4);
-			else if (h == 11) matrix.line(5, 5, 4, 2);
-		}
-		else if (running == 2) {
-			// hour and minute hands drawn as blocks
-			// 5 minute accuracy
-			uint8_t h = time.hour % 12;
-			uint8_t m = time.minute / 5;
-			
-			matrix.setColor(Rgb(Hsv(0,0,hsv.getValue())));
-			matrix.rectangle(2, 2, 9, 9, DRAW_UNFILLED);
-
-			Hsv c = Hsv(hsv);
-			matrix.setColor(Rgb(c));
-			
-			if (m == 0) matrix.rectangle(5, 0, 6, 1,DRAW_FILLED);
-			else if (m == 1) matrix.rectangle(7, 0, 8, 1,DRAW_FILLED);
-			else if (m == 2) matrix.rectangle(10, 3, 11, 4,DRAW_FILLED);
-			else if (m == 3) matrix.rectangle(10, 5, 11, 6,DRAW_FILLED);
-			else if (m == 4) matrix.rectangle(10, 7, 11, 8,DRAW_FILLED);
-			else if (m == 5) matrix.rectangle(7, 10, 8, 11,DRAW_FILLED);
-			else if (m == 6) matrix.rectangle(5, 10, 6, 11,DRAW_FILLED);
-			else if (m == 7) matrix.rectangle(3, 10, 4, 11,DRAW_FILLED);
-			else if (m == 8) matrix.rectangle(0, 7, 1, 8,DRAW_FILLED);
-			else if (m == 9) matrix.rectangle(0, 5, 1, 6,DRAW_FILLED);
-			else if (m == 10) matrix.rectangle(0, 3, 1, 4,DRAW_FILLED);
-			else if (m == 11) matrix.rectangle(3, 0, 4, 1,DRAW_FILLED);
-			
-			c.addHue(180);
-			matrix.setColor(Rgb(c));
-			
-			if (h == 0) matrix.rectangle(5, 3, 6, 4,DRAW_FILLED);
-			else if (h == 1) matrix.rectangle(6, 3, 7, 4,DRAW_FILLED);
-			else if (h == 2) matrix.rectangle(7, 4, 8, 5,DRAW_FILLED);
-			else if (h == 3) matrix.rectangle(7, 5, 8, 6,DRAW_FILLED);
-			else if (h == 4) matrix.rectangle(7, 7, 8, 8,DRAW_FILLED);
-			else if (h == 5) matrix.rectangle(6, 7, 7, 8,DRAW_FILLED);
-			else if (h == 6) matrix.rectangle(5, 7, 6, 8,DRAW_FILLED);
-			else if (h == 7) matrix.rectangle(4, 7, 5, 8,DRAW_FILLED);
-			else if (h == 8) matrix.rectangle(3, 6, 4, 7,DRAW_FILLED);
-			else if (h == 9) matrix.rectangle(3, 5, 4, 6,DRAW_FILLED);
-			else if (h == 10) matrix.rectangle(3, 4, 4, 5,DRAW_FILLED);
-			else if (h == 11) matrix.rectangle(4, 3, 5, 4,DRAW_FILLED);
-		}
-		else if (running == 3) {
-			// BCD
-			// 1 second accuracy
-			uint8_t one = time.hour;
-			uint8_t ten = 0;
-			while (one > 10) { 
-				ten++;
-				one -= 10;
-			}
-			Hsv c = Hsv(hsv);
-			matrix.setColor(Rgb(c));
-			if (ten & 0x01) matrix.rectangle(9,0,11,1,DRAW_FILLED);
-			if (ten & 0x02) matrix.rectangle(6,0,8,1,DRAW_FILLED);
-			
-			if (one & 0x01) matrix.rectangle(9,2,11,3,DRAW_FILLED);
-			if (one & 0x02) matrix.rectangle(6,2,8,3,DRAW_FILLED);
-			if (one & 0x04) matrix.rectangle(3,2,5,3,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,2,2,3,DRAW_FILLED);
-
-			c.addHue(120);
-			matrix.setColor(Rgb(c));
-			one = time.minute;
-			ten = 0;
-			while (one > 10) { 
-				ten++;
-				one -= 10;
-			}
-			if (ten & 0x01) matrix.rectangle(9,4,11,5,DRAW_FILLED);
-			if (ten & 0x02) matrix.rectangle(6,4,8,5,DRAW_FILLED);
-			if (ten & 0x04) matrix.rectangle(3,4,5,5,DRAW_FILLED);
-			
-			if (one & 0x01) matrix.rectangle(9,6,11,7,DRAW_FILLED);
-			if (one & 0x02) matrix.rectangle(6,6,8,7,DRAW_FILLED);
-			if (one & 0x04) matrix.rectangle(3,6,5,7,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,6,2,7,DRAW_FILLED);
-
-			c.addHue(120);
-			matrix.setColor(Rgb(c));
-			one = time.second;
-			ten = 0;
-			while (one > 10) { 
-				ten++;
-				one -= 10;
-			}
-			if (ten & 0x01) matrix.rectangle(9,8,11,9,DRAW_FILLED);
-			if (ten & 0x02) matrix.rectangle(6,8,8,9,DRAW_FILLED);
-			if (ten & 0x04) matrix.rectangle(3,8,5,9,DRAW_FILLED);
-			
-			if (one & 0x01) matrix.rectangle(9,10,11,11,DRAW_FILLED);
-			if (one & 0x02) matrix.rectangle(6,10,8,11,DRAW_FILLED);
-			if (one & 0x04) matrix.rectangle(3,10,5,11,DRAW_FILLED);
-			if (one & 0x08) matrix.rectangle(0,10,2,11,DRAW_FILLED);
-		}
-		else if (running == 4) {
-			// one pixel for every hour, minute, second
-			uint8_t h = time.hour;
-			uint8_t m = time.minute;
-			uint8_t s = time.second;
-			
-			uint8_t y = h / 12;
-			uint8_t x = h % 12;
-			
-			Hsv c = Hsv(hsv);
-			matrix.setColor(Rgb(c));
-			matrix.setPixel(x,y);
-			
-			y = (m / 12) + 2;
-			x = m % 12;
-			
-			c.addHue(120);
-			matrix.setColor(Rgb(c));
-			matrix.setPixel(x,y);
-			
-			y = (s / 12) + 7;
-			x = s % 12;
-			
-			c.addHue(120);
-			matrix.setColor(Rgb(c));
-			matrix.setPixel(x,y);
-		}
+		matrix.setColor(Rgb(hsv));
+		matrix.character(0,0, c[0], 0);
+		matrix.character(7,0, c[1], 0);
+		matrix.character(0,7, c[2], 0);
+		matrix.character(7,7, c[3], 0);
 
 		matrix.flush();
 		
-		psx.poll();
-		buttons = psx.buttons();
-		changed = psx.changed();
-		if (set) {
-			if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
-				time.hour++;
-				time.hour %= 24;
-			}
-			else if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
-				if (time.hour > 0) time.hour--;
-				time.hour %= 24;
-			}
-			else if (buttons & PSB_PAD_LEFT && changed & PSB_PAD_LEFT) {
-				time.minute--;
-				time.minute %= 60;
-			}
-			else if (buttons & PSB_PAD_RIGHT && changed & PSB_PAD_RIGHT) {
-				if (time.minute > 0) time.minute++;
-				time.minute %= 60;
-			}
-			else if (buttons & PSB_START && changed & PSB_START) {
-				time.second = 0;
-				mcp79410_set(&time);
-				set = 0;
-				running = 1;
-			}
-		}
-		else {
-			if (buttons & PSB_SELECT && changed & PSB_SELECT) {
-				running++;
-				running %= 5;
-				if (running == 0) running = 1;
-			}
-			else if (buttons & PSB_L2 && changed & PSB_L2) {
-				running = 4;
-				set = 1;
-			}
+		// sample buttons
+		if (sample) {
+			buttons.sample();
+			released = buttons.released();
+			held = buttons.held();
 
-			if (buttons & PSB_START & changed & PSB_START) running = 0;
+			sample = 0;
+		}
+
+		// take action
+		if (held && 0x01) {
+			// exit
+			running = 0;
+		}
+		else if (released && 0x01) {
+			// change clock (trad, vig, dec, hex, oct, doz, sen)
+			running++;
+			running %= 8;
+			if (running == 0) running = 1;
+		}
+		else if (held && 0x02) {
+			// set date/time
+			ClockSet cs = ClockSet();
+			cs.run();
+		}
+		else if (released && 0x02) {
+			// noop
 		}
 		
 		_delay_ms(100);
