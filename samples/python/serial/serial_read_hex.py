@@ -13,6 +13,8 @@ sleep(1);
 
 while True:
         b = ser.read()
-        sys.stdout.write(str(hex(ord(b))) + " (" + b + ")\n")
+        sys.stdout.write(str(hex(ord(b))) + "\n")
         #sys.stdout.write(b);
-
+        message = [0x7e, 0x01, 0x12, 0xed]
+        ser.write(''.join(chr(b) for b in message))
+        ser.flush()
