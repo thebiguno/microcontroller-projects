@@ -1,15 +1,15 @@
-#ifndef Mood_H
-#define Mood_H
+#ifndef Plasma_H
+#define Plasma_H
 
 #include "Module.h"
 #include "Matrix.h"
 #include <stdint.h>
 
 namespace digitalcave {
-	class Mood : public Module {
+	class Plasma : public Module {
 	public:
-		Mood();
-		~Mood();
+		Plasma();
+		~Plasma();
 		void run();
 	};
 }

@@ -14,6 +14,7 @@
 #ifndef SERIAL_AVR_H
 #define SERIAL_AVR_H
 
+#include <avr/interrupt.h>
 #include <avr/io.h>
 
 #include <Serial.h>

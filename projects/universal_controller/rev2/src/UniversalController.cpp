@@ -207,12 +207,14 @@ int main (void){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
 						fsp.write(serial, &m);
-						communication |= _BV(0);
+						communication |= _BV(1);
+						communication_counter = 0;
 					}
 					else {
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
 						fsp.write(serial, &m);
-						communication |= _BV(0);
+						communication |= _BV(1);
+						communication_counter = 0;
 					}
 				}
 			}
@@ -226,14 +228,16 @@ int main (void){
 					if (buttons & _BV(x)){
 						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
 						fsp.write(serial, &m);
-						communication |= _BV(0);
+						communication |= _BV(1);
+						communication_counter = 0;
 					}
 				}
 			}
 			else {
 				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
 				fsp.write(serial, &m);
-				communication |= _BV(0);
+				communication |= _BV(1);
+				communication_counter = 0;
 			}
 
 			digital_poll_counter = 0;
@@ -250,7 +254,8 @@ int main (void){
 
 		//Read any incoming bytes and handle completed messages if applicable
 		if (fsp.read(&serialAvr, &incoming)){
-			communication |= _BV(1);
+			communication |= _BV(0);
+			communication_counter = 0;
 			//TODO
 		}
 
@@ -295,10 +300,10 @@ int main (void){
 			display.write_text(0, 14, (char) 0x07);	//Rx + Tx
 		}
 		else if (communication == 0x02){
-			display.write_text(0, 14, (char) 0x05);	//Rx
+			display.write_text(0, 14, (char) 0x06);	//Tx
 		}
 		else if (communication == 0x01){
-			display.write_text(0, 14, (char) 0x06);	//Tx
+			display.write_text(0, 14, (char) 0x05);	//Rx
 		}
 		else {
 			display.write_text(0, 14, (char) 0xFE);	//Nothing

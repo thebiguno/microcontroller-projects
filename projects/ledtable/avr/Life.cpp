@@ -1,17 +1,17 @@
 #include "Life.h"
 #include "lib/analog/analog.h"
 #include "lib/draw/draw.h"
-#include "lib/timer/timer.h"
-#include "lib/Psx/Psx.h"
+#include "lib/Button/Buttons.h"
 #include "Matrix.h"
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
+extern uint8_t sample;
 extern Matrix matrix;
-extern Psx psx;
 extern Hsv hsv;
+extern Buttons buttons;
 
 Life::Life() {
 }
@@ -20,10 +20,11 @@ Life::~Life() {
 }
 
 void Life::run() {
-	uint16_t buttons; 
-	uint16_t changed;
 	uint8_t running = 1;
 	uint8_t overflow = 128;
+	
+	uint8_t released;
+	uint8_t held;
 	
 	reset();
 	
@@ -80,17 +81,35 @@ void Life::run() {
 			reset();
 		}
 		
-		psx.poll();
-		buttons = psx.buttons();
-		changed = psx.changed();
-		if (buttons & PSB_PAD_DOWN && changed & PSB_PAD_DOWN) {
-			overflow += 8;
-		} else if (buttons & PSB_PAD_UP && changed & PSB_PAD_UP) {
-			overflow -= 8;
-		} else if (buttons & PSB_START) {
-			running = 0;
+		// sample buttons
+		if (sample) {
+			buttons.sample();
+			released = buttons.released();
+			held = buttons.held();
+
+			sample = 0;
 		}
 
+		// take action
+		if (held && 0x01) {
+			// exit
+			running = 0;
+		}
+		else if (released && 0x01) {
+			// noop
+		}
+		else if (held && 0x02) {
+			// noop
+		}
+		else if (released && 0x02) {
+			// change speed
+			overflow += 64;
+		}
+		
+		for (int i = 0; i < overflow; i++) {
+			_delay_ms(1);
+		}
+		
 		for (int i = 0; i < overflow; i++) {
 			_delay_ms(1);
 		}
@@ -130,6 +149,7 @@ uint32_t Life::getStateHash() {
 }
 
 void Life::flush() {
+	hsv.addHue(1);
 	Rgb rgb = Rgb(hsv);
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {

@@ -1,41 +1,36 @@
-Ideas
+main menu
+	A: select a mode (clock, life, mood, ttt)
+	B: start selected mode
+	hold A: decrease brightness
+	hold B: increase brightness
+	hold A & B: jump to bootloader
 
-Clocks:
-- Analog
-- Digital
-- Binary
-- Fibonacci
-- Metric
-- Hexadecimal
+clock
+	A: change clock (trad, vig, dec, hex, oct, doz, sen)
+	B: n/a
+	hold A: exit
+	hold B: set date/time
 
-Games:
-- Tetris
-- Reversi
-- Tic-tac-toe
-- Snake
+clock set mode
+	A: select date/time field (y, m, d, h, m, save/exit)
+	B: increment the selected date/time field
+	hold A: exit
+	hold B: increment the selected date/time field repeatedly
 
-- Checkers
-- Connect Four
-- Go
-- Space Invaders
-- Pong
-- Minesweeper?
-- Memory?
-- Chess?
-- Fibonacci Checkers?
+tic-tac-to mode
+	A: select a square
+	B: choose square
+	hold A: exit
+	hold B: n/a
 
-Web Services:
-- Weather
-- Twitter Feed
-- News / RSS Feed
+life mode
+	A: 
+	B: change speed (slow, medium, fast)
+	hold A: exit
+	hold B: 
 
-Animations:
-- Plasma
-- Text
-- Solid Colors
-
-Other
-- Drawing
-- Game of Life
-- VU Meter
-- Mood light
+mood mode
+	A: change mood (plasma A-D)
+	B: change speed (slow, medium, fast)
+	hold A: exit
+	hold B: 
