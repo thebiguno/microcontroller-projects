@@ -8,6 +8,10 @@
  * Battery backup is in use (VBATEN=1)
  */
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
+	
 struct mcp79410_time_t {
 	uint8_t  second;
 	uint8_t  minute;
@@ -38,5 +42,9 @@ uint8_t mcp79410_read_sram(uint8_t offset);
 void mcp79410_write_sram(uint8_t data, uint8_t offset);
 
 void mcp79410_set_trim(int8_t trim);
+
+#if defined (__cplusplus)
+}
+#endif
 
 #endif

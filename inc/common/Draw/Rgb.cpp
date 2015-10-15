@@ -1,4 +1,4 @@
-#include <Math.h>
+#include <math.h>
 #include "Rgb.h"
 
 using namespace digitalcave;

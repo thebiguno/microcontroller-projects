@@ -25,7 +25,6 @@ http://wavedrom.com/editor.html
 ]}
 */
 
-
 /*
  * Sends values to a chain of WS2811 or WS2812 leds.
  * values a pointer to the first RGB triple (WS2811) or GRB triple (WS2812)
@@ -281,3 +280,5 @@ void ws281x_set(const void *values) {
 	sei();
 	_delay_us(16);  // hold the line low for 16 microseconds to send the reset signal.
 }
+
+

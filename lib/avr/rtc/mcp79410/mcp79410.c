@@ -2,6 +2,10 @@
 #include "twi.h"
 #include "bcd.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void mcp79410_get(struct mcp79410_time_t *time) {
 	// register, unused...
 	// seconds, minutes, hours, dow, date, month, year
@@ -93,4 +97,8 @@ void mcp79410_write_sram(uint8_t b, uint8_t offset) {
 void mcp79410_set_trim(int8_t trim) {
 	uint8_t data[2] = { 0x09, trim };
 	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
-}	
+}
+
+#ifdef __cplusplus
+}
+#endif
