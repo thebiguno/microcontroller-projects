@@ -16,7 +16,6 @@ Life::~Life() {
 
 void Life::run() {
 	uint8_t running = 1;
-	uint8_t overflow = 128;
 	
 	reset();
 	
@@ -73,9 +72,7 @@ void Life::run() {
 			reset();
 		}
 		
-		for (int i = 0; i < overflow; i++) {
-			_delay_ms(1);
-		}
+		_delay_ms(128);
 	}
 }
 

@@ -6,9 +6,7 @@
 
 using namespace digitalcave;
 
-extern uint8_t sample;
 extern Matrix matrix;
-extern Buttons buttons;
 
 Plasma::Plasma() {
 }
@@ -19,8 +17,6 @@ Plasma::~Plasma() {
 void Plasma::run() {
 	uint8_t running = 1;
 
-	uint8_t overflow = 128;
-	
 	const float k = 10.0;
 	float v = 0.0;
 	float xx;
@@ -72,5 +68,7 @@ void Plasma::run() {
 		}
 		matrix.flush();
 		time++;
+		
+		_delay_ms(128);
 	}
 }

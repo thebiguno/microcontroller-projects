@@ -2,6 +2,7 @@
 #define Life_H
 
 #include "Module.h"
+#include "Matrix.h"
 #include <stdint.h>
 
 #define LIFE_HASH_COUNT			20
@@ -10,8 +11,8 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
-		uint8_t state[12][12];
-		uint8_t tempstate[12][12];
+		uint8_t state[MATRIX_WIDTH][MATRIX_HEIGHT];
+		uint8_t tempstate[MATRIX_WIDTH][MATRIX_HEIGHT];
 		uint32_t hashes[LIFE_HASH_COUNT];
 		uint8_t running = 0;
 		uint8_t matches = 0;

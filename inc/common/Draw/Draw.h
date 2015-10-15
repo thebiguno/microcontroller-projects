@@ -31,12 +31,14 @@
 namespace digitalcave {
 	class Draw {
 	private:
-		uint8_t overlay = DRAW_OVERLAY_REPLACE;
 		uint8_t font_glyph_byte_ct;
 		uint8_t font_width;
 		uint8_t font_height;
 		uint8_t* font;
 		uint8_t* font_codepage;
+
+	protected:
+		uint8_t overlay = DRAW_OVERLAY_REPLACE;
 		
 	public:	
 		virtual void setPixel(int16_t x, int16_t y);

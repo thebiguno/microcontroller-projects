@@ -2,37 +2,8 @@
 
 using namespace digitalcave;
 
-static uint8_t twi_master_tx_writer(uint16_t i){
-	if (i == 0){
-		return depth;
-	}
-	else {
-		uint8_t result = 0x00;
-		if (depth == 0) {
-			// return the byte as is
-			// ggggrrrr
-			result = ((uint8_t*) buffer)[i-1];
-		} else if (depth == 1) {
-			uint16_t idx = (i - 1) * 2;
-			//xxxxggrr xxxxggrr -> ggrrggrr
-			//combine two bytes in the buffer into on byte in the message
-			result = (((uint8_t*) buffer)[idx] << 4) & 0xC0; // bits 6,7
-			result |= (((uint8_t*) buffer)[idx] << 4) & 0x30; // bits 4,5
-			idx++;
-			result |= ((uint8_t*) buffer)[idx] & 0x0C; // bits 2,3
-			result |= ((uint8_t*) buffer)[idx] & 0x03; // bits 0,1
-			// result = 0xc4;
-		} else if (depth == 2) {
-			// TODO
-//			result = 0x33;
-		}
-		return result;
-	}
-}
-
 Matrix::Matrix() {
 	twi_init();
-	twi_attach_master_tx_writer(twi_master_tx_writer);
 }
 
 Matrix::~Matrix() {
