@@ -6,6 +6,7 @@
 
 #define MATRIX_WIDTH 24
 #define MATRIX_HEIGHT 16
+#define MATRIX_LENGTH MATRIX_WIDTH * MATRIX_HEIGHT
 
 namespace digitalcave {
 	class Matrix : public Draw {

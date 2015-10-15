@@ -1,16 +1,12 @@
 #include "Life.h"
 #include <Draw.h>
-#include <Buttons.h>
 #include "Matrix.h"
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
-extern uint8_t sample;
 extern Matrix matrix;
-extern Hsv hsv;
-extern Buttons buttons;
 
 Life::Life() {
 }
@@ -115,14 +111,12 @@ uint32_t Life::getStateHash() {
 }
 
 void Life::flush() {
-	hsv.addHue(1);
-	Rgb rgb = Rgb(hsv);
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			if (state[x][y] > 0) {
-				matrix.setColor(rgb);
+				matrix.setColor(255,0); // TODO
 			} else {
-				matrix.setColor(0,0,0);
+				matrix.setColor(0,0);
 			}
 			matrix.setPixel(x, y);
 		}
@@ -131,7 +125,6 @@ void Life::flush() {
 }
 
 void Life::reset() {
-	matrix.setColor(Rgb(hsv));
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			matrix.setPixel(x, y);

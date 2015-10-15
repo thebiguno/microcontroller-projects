@@ -4,7 +4,7 @@ using namespace digitalcave;
 
 static uint8_t twi_master_tx_writer(uint16_t i){
 	if (i == 0){
-		return mode;
+		return depth;
 	}
 	else {
 		uint8_t result = 0x00;
@@ -22,7 +22,7 @@ static uint8_t twi_master_tx_writer(uint16_t i){
 			result |= ((uint8_t*) buffer)[idx] & 0x0C; // bits 2,3
 			result |= ((uint8_t*) buffer)[idx] & 0x03; // bits 0,1
 			// result = 0xc4;
-		} else if (mode == 2) {
+		} else if (depth == 2) {
 			// TODO
 //			result = 0x33;
 		}
@@ -67,34 +67,25 @@ void Matrix::setPixel(int16_t x, int16_t y) {
 	
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT || x < 0 || y < 0) return;  //Bounds check
 
-	if (overlay == OVERLAY_REPLACE){
+	if (overlay == DRAW_OVERLAY_REPLACE){
 		buffer[x][y] = color;
 	}
-	else if (overlay == OVERLAY_OR){
+	else if (overlay == DRAW_OVERLAY_OR){
 		buffer[x][y] |= color;
 	}
-	else if (overlay == OVERLAY_NAND){
+	else if (overlay == DRAW_OVERLAY_NAND){
 		buffer[x][y] &= ~color;
 	}
-	else if (overlay == OVERLAY_XOR){
+	else if (overlay == DRAW_OVERLAY_XOR){
 		buffer[x][y] ^= color;
 	}
-}
-
-uint8_t Matrix::getPixel(int16_t x, int16_t y) {
-	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT || x < 0 || y < 0) return
-	return buffer[x][y];
-}
-
-uint8_t* Matrix::getBuffer() {
-	return (uint8_t*) buffer;
 }
 
 void Matrix::flush() {
 	if (changed) {
 		uint16_t l = MATRIX_LENGTH;
-		if (mode == 0x01) l = l >> 1;
-		else if (mode == 0x02) l = l >> 2;
+		if (depth == 0x01) l = l >> 1;
+		else if (depth == 0x02) l = l >> 2;
 		l++;
 		twi_write_to(MATRIX_DRIVER_SLAVE_ADDRESS, (uint8_t*) buffer, l, TWI_BLOCK, TWI_STOP);
 		this->changed = 0;
