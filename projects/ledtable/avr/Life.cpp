@@ -1,7 +1,6 @@
 #include "Life.h"
-#include "lib/analog/analog.h"
-#include "lib/draw/draw.h"
-#include "lib/Button/Buttons.h"
+#include <Draw.h>
+#include <Buttons.h>
 #include "Matrix.h"
 #include <util/delay.h>
 #include <stdlib.h>
@@ -109,11 +108,6 @@ void Life::run() {
 		for (int i = 0; i < overflow; i++) {
 			_delay_ms(1);
 		}
-		
-		for (int i = 0; i < overflow; i++) {
-			_delay_ms(1);
-		}
-
 	}
 }
 

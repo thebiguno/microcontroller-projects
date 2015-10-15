@@ -1,7 +1,7 @@
 #ifndef Life_H
 #define Life_H
 
-#include <Module.h>
+#include "Module.h"
 #include <stdint.h>
 
 #define LIFE_HASH_COUNT			20
