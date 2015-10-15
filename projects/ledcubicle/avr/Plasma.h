@@ -6,8 +6,11 @@
 
 namespace digitalcave {
 	class Plasma : public Module {
+	private:
+		uint8_t baseColor;
+		
 	public:
-		Plasma();
+		Plasma(uint8_t baseColor);
 		~Plasma();
 		void run();
 	};

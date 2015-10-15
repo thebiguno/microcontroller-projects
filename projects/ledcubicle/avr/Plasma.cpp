@@ -8,14 +8,15 @@ using namespace digitalcave;
 
 extern Matrix matrix;
 
-Plasma::Plasma() {
+Plasma::Plasma(uint8_t baseColor) {
+	this->baseColor = baseColor;
 }
 
 Plasma::~Plasma() {
 }
 
 void Plasma::run() {
-	uint8_t running = 1;
+	uint8_t running = 255;
 
 	const float k = 10.0;
 	float v = 0.0;
@@ -27,7 +28,7 @@ void Plasma::run() {
 	uint8_t g;
 	float time = 0;
 	
-	while (running > 0) {
+	while (running) {
 		// plasma
 		// http://www.bidouille.org/prog/plasma
 
@@ -44,16 +45,16 @@ void Plasma::run() {
 				v += sin(sqrt(100.0*(cx*cx+cy*cy)+1.0)+time);
 				v /= 2.0;
 		
-				if (running == 1) {
+				if (baseColor == 0) {
 					r = 64.0*(.5+.5*sin(M_PI*v));
 					g = 64.0*(.5+.5*cos(M_PI*v));
-				} else if (running == 2) {
+				} else if (baseColor == 1) {
 					r = 64.0;
 					g = 64.0*(.5+.5*cos(M_PI*v));
-				} else if (running == 3) {
+				} else if (baseColor == 2) {
 					r = 64.0*(.5+.5*sin(M_PI*v));
 					g = 64.0*(.5+.5*sin(M_PI*v+2*M_PI/3));
-				} else if (running == 4) {
+				} else if (baseColor == 4) {
 					float c = 64.0*(.5+.5*sin(M_PI*v*5.0));
 					r = c;
 					g = c;
@@ -69,6 +70,8 @@ void Plasma::run() {
 		matrix.flush();
 		time++;
 		
-		_delay_ms(128);
+		_delay_ms(127);
+		
+		running--;
 	}
 }

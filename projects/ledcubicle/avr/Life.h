@@ -11,6 +11,7 @@
 namespace digitalcave {
 	class Life : public Module {
 	private:
+		uint8_t baseColor;
 		uint8_t state[MATRIX_WIDTH][MATRIX_HEIGHT];
 		uint8_t tempstate[MATRIX_WIDTH][MATRIX_HEIGHT];
 		uint32_t hashes[LIFE_HASH_COUNT];
@@ -18,7 +19,7 @@ namespace digitalcave {
 		uint8_t matches = 0;
 	
 	public:
-		Life();
+		Life(uint8_t baseColor);
 		~Life();
 		void run();
 

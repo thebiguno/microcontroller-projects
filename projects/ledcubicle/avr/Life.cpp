@@ -8,14 +8,15 @@ using namespace digitalcave;
 
 extern Matrix matrix;
 
-Life::Life() {
+Life::Life(uint8_t baseColor) {
+	this->baseColor = baseColor;
 }
 
 Life::~Life() {
 }
 
 void Life::run() {
-	uint8_t running = 1;
+	uint8_t running = 255;
 	
 	reset();
 	
@@ -73,6 +74,8 @@ void Life::run() {
 		}
 		
 		_delay_ms(128);
+		
+		running--;
 	}
 }
 
