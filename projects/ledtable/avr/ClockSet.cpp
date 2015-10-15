@@ -1,7 +1,7 @@
 #include "ClockSet.h"
 #include "lib/Button/Buttons.h"
-#include "lib/Draw/Hsv.h"
-#include "lib/Draw/Rgb.h"
+#include <Hsv.h>
+#include <Rgb.h>
 #include "Matrix.h"
 #include "lib/rtc/mcp79410/mcp79410.h"
 #include <util/delay.h>

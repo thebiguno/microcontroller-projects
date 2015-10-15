@@ -1,8 +1,8 @@
 #include "Clock.h"
 #include "ClockSet.h"
-#include "lib/Button/Buttons.h"
-#include "lib/Draw/Hsv.h"
-#include "lib/Draw/Rgb.h"
+#include <Buttons.h>
+#include <Hsv.h>
+#include <Rgb.h>
 #include "Matrix.h"
 #include "lib/rtc/mcp79410/mcp79410.h"
 #include <util/delay.h>
@@ -38,10 +38,7 @@ void Clock::run() {
 	while (running) {
 		mcp79410_get(&time);
 		
-		if (sample) {
-			// this will be 1 every 12 ms
-			tick++;
-		}
+		tick++; // this code should take about 100 ms
 		
 		if (time.second != second) {
 			// change the hue every second
@@ -51,8 +48,6 @@ void Clock::run() {
 			tick = 0;
 		}
 		
-		ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
-		
 		if (running == 1) {
 			field[0] = time.hour / 12;
 			field[1] = time.hour - (12 * field[0]);
@@ -60,6 +55,8 @@ void Clock::run() {
 			field[3] = time.minute - (10 * field[2]);
 		}
 		else if (running == 2) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 100); 
+
 			// This method was first proposed in the 1850s by John W. Nystrom
 			// milliseconds to hexadecimal (FF.FF)
 			field[0] = ms / 5400000;			// 1/16 day (hex hour) = 1 h 30 m
@@ -73,6 +70,8 @@ void Clock::run() {
 			field[3] = ms / 13183593;			// 1/65536 day (hex second) ~= 1.32 seconds
 		}
 		else if (running == 3) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+
 			// milliseconds to octal (777.777)
 			field[0] = ms / 10800000;			// 1/8 day = 3 h
 			ms -= 10800000 * (uint32_t) field[0];
@@ -84,6 +83,8 @@ void Clock::run() {
 			field[3] = ms / 2109375;			// 1/4096 day ~= 21 s
 		}
 		else if (running == 4) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+
 			//milliseconds to dozenal (BBB.BB)
 			field[0] = ms / 7200000;			// 1/12 day = 2 h (shichen)
 			ms -= 7200000 * (uint32_t) field[0];
@@ -94,6 +95,8 @@ void Clock::run() {
 			field[3] = ms / 4167;				// 1/20736 day ~= 4.167 s
 		}
 		if (running == 5) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+
 			//milliseconds to senary (555.555)
 			field[0] = ms / 14400000;		// 1/6 day = 4 h
 			ms -= 14400000 * (uint32_t) field[0];
@@ -106,6 +109,8 @@ void Clock::run() {
 			field[3] = floor(ms / 666666666);		// 1/1296 day = 66.6 s
 		}
 		else if (running == 6) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+
 			//milliseconds to vigesimal (19.19.19.19)
 			field[0] = ms / 4320000;			// 1/20 day = 1 h 12 m
 			ms -= 4320000 * (uint32_t) field[0];
@@ -116,6 +121,8 @@ void Clock::run() {
 			field[3] = ms / 540;				// 1/160000 day = .54 s
 		}
 		else if (running == 7) {
+			ms = (time.hour * 3600000) + (time.minute * 60000) + (time.second * 1000) + (tick * 12); 
+
 			//this method was introduced during the French Revolution in 1793
 			//milliseconds to decimal (999.99)
 			field[0] = ms / 8640000;			// 1/10 day (deciday) = 2 h 24 m (shi)
@@ -159,9 +166,9 @@ void Clock::run() {
 		
 		matrix.setColor(Rgb(hsv));
 		matrix.character(0,0, c[0], 0);
-		matrix.character(7,0, c[1], 0);
-		matrix.character(0,7, c[2], 0);
-		matrix.character(7,7, c[3], 0);
+		matrix.character(6,0, c[1], 0);
+		matrix.character(0,6, c[2], 0);
+		matrix.character(6,6, c[3], 0);
 
 		matrix.flush();
 		
@@ -180,10 +187,37 @@ void Clock::run() {
 			running = 0;
 		}
 		else if (released && 0x01) {
-			// change clock (trad, vig, dec, hex, oct, doz, sen)
+			// change clock (trad, hexidecimal, octal, dozenal, senary, vigesimal, decimal)
 			running++;
 			running %= 8;
 			if (running == 0) running = 1;
+			
+			matrix.setColor(0,0,0);
+			matrix.rectangle(0,0,11,11,DRAW_FILLED);
+			if (running == 1) {
+				matrix.text(0, 0, "HH", 0);
+				matrix.text(0, 0, "MM", 0);
+			} else if (running == 2) {
+				matrix.text(0, 0, "FF", 0);
+				matrix.text(0, 0, "FF", 0);
+			} else if (running == 3) {
+				matrix.text(0, 0, "77", 0);
+				matrix.text(0, 0, "77", 0);
+			} else if (running == 4) {
+				matrix.text(0, 0, "BB", 0);
+				matrix.text(0, 0, "BB", 0);
+			} else if (running == 5) {
+				matrix.text(0, 0, "55", 0);
+				matrix.text(0, 0, "55", 0);
+			} else if (running == 6) {
+				matrix.text(0, 0, "JJ", 0);
+				matrix.text(0, 0, "JJ", 0);
+			} else if (running == 7) {
+				matrix.text(0, 0, "99", 0);
+				matrix.text(0, 0, "99", 0);
+			}
+			matrix.flush();
+			_delay_ms(1000);
 		}
 		else if (held && 0x02) {
 			// set date/time
@@ -194,6 +228,6 @@ void Clock::run() {
 			// noop
 		}
 		
-		_delay_ms(100);
+		_delay_ms(99);
 	}
 }

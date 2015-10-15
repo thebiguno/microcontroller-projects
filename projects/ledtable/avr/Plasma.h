@@ -2,7 +2,6 @@
 #define Plasma_H
 
 #include "Module.h"
-#include "Matrix.h"
 #include <stdint.h>
 
 namespace digitalcave {

@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "Matrix.h"
 
 using namespace digitalcave;
 
