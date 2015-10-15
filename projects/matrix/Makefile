@@ -1,5 +1,3 @@
-include build/variables.mk
-
 PROJECT=matrix
 MMCU=atmega48
 F_CPU=24000000
@@ -9,7 +7,7 @@ COMPILER=avr-g++
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 
-AVRDUDE_PROGRAMMER=usbtiny
+PROGRAMMER=usbtiny
 
 CFLAGS=-mmcu=$(MMCU) -pedantic -Os -Wall -DTWI_BUFFER_LENGTH=385 -DTWI_DISABLE_SLAVE_TX -DTWI_DISABLE_MASTER -DTWI_CUSTOM_BUFFERS -DTWI_SLAVE_RX_READER
 
