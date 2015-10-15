@@ -3,8 +3,6 @@ MMCU=atmega32u4
 F_CPU=16000000
 PROGRAMMER=dfu
 
-SOURCES=lib/draw/fonts/f_5x5.c lib/draw/fonts/cp_ascii_caps.c lib/twi/twi.c lib/ws281x/ws281x_w16.c lib/rtc/mcp79410/mcp79410.c
-
 # You can also define anything here and it will override 
 # the definitions in variables.mk
 

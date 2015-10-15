@@ -3,7 +3,7 @@
 
 #include <Draw.h>
 #include <Rgb.h>
-#include "lib/ws281x/ws2812.h"
+#include "lib/ws2812.h"
 
 #define MATRIX_WIDTH 12
 #define MATRIX_HEIGHT 12

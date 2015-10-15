@@ -1,6 +1,5 @@
 #include "Tictactoe.h"
 #include "Matrix.h"
-#include "lib/analog/analog.h"
 #include <Rgb.h>
 #include <Hsv.h>
 #include <Buttons.h>

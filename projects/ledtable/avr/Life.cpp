@@ -1,5 +1,4 @@
 #include "Life.h"
-#include "lib/analog/analog.h"
 #include <Draw.h>
 #include <Buttons.h>
 #include "Matrix.h"

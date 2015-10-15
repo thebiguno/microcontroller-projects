@@ -3,10 +3,10 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include "lib/Button/Buttons.h"
-#include "lib/ws281x/ws2812.h"
-#include "lib/draw/fonts/cp_ascii_caps.h"
-#include "lib/draw/fonts/f_5x5.h"
+#include <Buttons.h>
+#include "lib/ws2812.h"
+#include "lib/cp_ascii_caps.h"
+#include "lib/f_5x5.h"
 
 #include "Matrix.h"
 
