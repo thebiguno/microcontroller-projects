@@ -14,46 +14,32 @@
 
 #define MATRIX_LENGTH MATRIX_WIDTH * MATRIX_HEIGHT
 
-//Bit depths per channel
-#define MATRIX_MODE_4BIT	0x00
-#define MATRIX_MODE_2BIT	0x01
-#define MATRIX_MODE_1BIT	0x02	//TODO Implement
-
-#include "../draw.h"
+#include <Draw.h>
 #include "../../twi/twi.h"
 
-/*************
- * IMPORTANT *
- *************
- *
- * You must include a driver, which includes the following API functions.
- */
+namespace digitalcave {
+	class Matrix : public Draw {
+	private:
+		uint8_t changed;
+		uint8_t color;
+		uint8_t depth;
+		uint8_t buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
+		
+	public:
+		Matrix();
+		~Matrix();
+		
+		void setPixel(int16_t x, int16_t y);
+		uint8_t getPixel(int16_t x, int16_t y);
+		uint8_t* getBuffer();
 
-/*
- * Initializes the code to write to the matrix driver; specifically, this sets up the TWI hardware.  If you are using 
- * the TWI library elsewhere you can skip this step.
- */
-void matrix_init();
-
- /*
- * Writes the buffer to the LED matrix, using the TWI library.
- */
-void matrix_write_buffer();
-
-/*
- * Sets the mode of the matrix driver.  Default is 0x00 (raw buffer copy).  Other modes include
- * 4 bit gradient, 4 bit high contrast, 2 bit modes of various color combinations, and 1 bit modes
- * of various combinations.  See matrix driver code for details.
- */
-void matrix_set_mode(uint8_t new_mode);
-
-/*
- * Raw access to the working buffer.  Use at your own risk.
- */
-uint8_t* matrix_get_buffer();
-
-/*
- * Finished API methods
- */
+		void flush();
+		
+		/* value depends on depth */
+		void setColor(uint8_t c);
+		/* 0: 4 bit; 1: 2 bit */
+		void setDepth(uint8_t d);
+	};
+}
 
 #endif

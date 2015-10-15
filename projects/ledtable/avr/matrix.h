@@ -1,8 +1,8 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "lib/Draw/Draw.h"
-#include "lib/Draw/Rgb.h"
+#include <Draw.h>
+#include <Rgb.h>
 #include "lib/ws281x/ws2812.h"
 
 #define MATRIX_WIDTH 12

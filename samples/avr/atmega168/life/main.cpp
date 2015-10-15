@@ -6,8 +6,7 @@
  */
 
 #include "lib/analog/analog.h"
-#include "lib/draw/draw.h"
-#include "lib/draw/matrix/matrix.h"
+#include "lib/Draw/matrix/Matrix.h"
 #include "lib/timer/timer.h"
 #include "lib/draw/fonts/cp_ascii_caps.h"
 #include "lib/draw/fonts/f_3x5.h"
@@ -24,6 +23,12 @@
 #define RECENT_HASH_COUNT			20
 #define RECENT_HASH_MATCH_COUNT			20
 
+// Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
+#ifdef PROGMEM
+#undef PROGMEM
+#define PROGMEM __attribute__((section(".progmem.data")))
+#endif
+
 //We write to the scratch buffer, and then flush to the matrix buffer.  We have to
 // do this so that we can check for the current neighborhood, even as we are scanning
 // through rows.  If we just used the matrix buffer, then as soon as we write a value
@@ -33,6 +38,10 @@ static uint8_t scratch_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 static uint32_t recent_hashes[RECENT_HASH_COUNT];
 static uint8_t recent_hash_match_count = 0;
 
+using namespace digitalcave;
+
+Matrix matrix;
+
 void set_scratch(uint8_t x, uint8_t y, uint8_t value){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
 	scratch_buffer[x][y] = value;
@@ -40,14 +49,14 @@ void set_scratch(uint8_t x, uint8_t y, uint8_t value){
 
 uint8_t get_neighbor_count(uint8_t x, uint8_t y){
 	uint8_t count = 0;
-	if (get_pixel(x - 1, y - 1)) count++;
-	if (get_pixel(x - 1, y)) count++;
-	if (get_pixel(x - 1, y + 1)) count++;
-	if (get_pixel(x, y - 1)) count++;
-	if (get_pixel(x, y + 1)) count++;
-	if (get_pixel(x + 1, y - 1)) count++;
-	if (get_pixel(x + 1, y)) count++;
-	if (get_pixel(x + 1, y + 1)) count++;
+	if (matrix.getPixel(x - 1, y - 1)) count++;
+	if (matrix.getPixel(x - 1, y)) count++;
+	if (matrix.getPixel(x - 1, y + 1)) count++;
+	if (matrix.getPixel(x, y - 1)) count++;
+	if (matrix.getPixel(x, y + 1)) count++;
+	if (matrix.getPixel(x + 1, y - 1)) count++;
+	if (matrix.getPixel(x + 1, y)) count++;
+	if (matrix.getPixel(x + 1, y + 1)) count++;
 	return count;
 }
 
@@ -55,7 +64,7 @@ uint32_t get_board_hash(){
 	uint32_t hash = 0;
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-			hash += x * y * (get_pixel(x, y) ? 1 : 0);
+			hash += x * y * (matrix.getPixel(x, y) ? 1 : 0);
 		}
 	}
 	
@@ -73,15 +82,18 @@ void clear_scratch(){
 void flush(){
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 	for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
-		set_pixel(x, y, scratch_buffer[x][y], OVERLAY_REPLACE);
+		matrix.setColor(scratch_buffer[x][y]);
+		matrix.setPixel(x, y);
 	}
     }
 }
 
-void flash_palette(uint8_t value){
-	draw_rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED, value, OVERLAY_REPLACE);
-	draw_text(2, 5, (char*) "START", 3, 5, ORIENTATION_NORMAL, font_3x5, codepage_ascii_caps, GRN_3, OVERLAY_REPLACE);
-	matrix_write_buffer();
+void flash_palette(uint8_t color) {
+	matrix.setColor(color);
+	matrix.rectangle(0, 0, MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1, DRAW_FILLED);
+	matrix.setColor(GRN_3);
+	matrix.text(2, 5, (char*) "START", DRAW_ORIENTATION_NORMAL);
+	matrix.flush();
 }
 
 void setup(){
@@ -103,7 +115,7 @@ void setup(){
 	//Clear board
 	clear_scratch();
 	flush();
-	matrix_write_buffer();
+	matrix.flush();
 	_delay_ms(100);
 
 	//Random start positions
@@ -120,15 +132,16 @@ void setup(){
 	}
 	
 	flush();
-	matrix_write_buffer();
+	matrix.flush();
 }
 
 int main (void){
 	timer_init();
 	uint8_t analog_pins[1] = {5};
 	analog_init(analog_pins, 1, ANALOG_INTERNAL);
-	matrix_init();
-	matrix_set_mode(MATRIX_MODE_2BIT);
+	
+	matrix.setDepth(1); // 2 bits per color
+	matrix.setFont(font_3x5, codepage_ascii_caps, 3, 5);
 	
 	setup();
 		
@@ -136,7 +149,7 @@ int main (void){
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++){
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++){
 				uint8_t count = get_neighbor_count(x, y);
-				uint8_t alive = get_pixel(x, y);
+				uint8_t alive = matrix.getPixel(x, y);
 				if (alive) {
 					if (count < 2) set_scratch(x, y, 0x00);
 					else if (count <= 3){
@@ -180,7 +193,7 @@ int main (void){
 		}
 		
 		flush();
-		matrix_write_buffer();
+		matrix.flush();
 		
 		//Store board hash
 		for (uint8_t i = RECENT_HASH_COUNT - 1; i > 0; i--){
