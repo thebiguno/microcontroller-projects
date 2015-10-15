@@ -142,13 +142,10 @@ int main (void){
 			
 			analog_read_a(starting_sensor_values);
 			analog_read_a(starting_sensor_values);
-			
+
 			display_times(0);
 			
-			if (pressed & START_BUTTON){	//The start button must begin as pressed...
-				while ((PINB & START_BUTTON) == 0){	//... then it must be released (remember this is active low, so we loop until it goes high (released)
-					display_times(0);
-				}
+			if (pressed & START_BUTTON){			//When the button is pressed, break out of the loop and start the timer
 				break;
 			}
 		}
