@@ -114,7 +114,9 @@ void Life::flush() {
     for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			if (state[x][y] > 0) {
-				matrix.setColor(255,0); // TODO
+				if (baseColor == 0) matrix.setColor(0,255);
+				else if (baseColor == 1) matrix.setColor(255,255);
+				else if (baseColor == 2) matrix.setColor(255,0);
 			} else {
 				matrix.setColor(0,0);
 			}
