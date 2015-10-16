@@ -6,14 +6,14 @@
 
 #define MATRIX_WIDTH 24
 #define MATRIX_HEIGHT 16
-#define MATRIX_LENGTH MATRIX_WIDTH * MATRIX_HEIGHT + 1
+#define MATRIX_BUFFER_LENGTH MATRIX_WIDTH * MATRIX_HEIGHT + 1
 #define MATRIX_DRIVER_SLAVE_ADDRESS 42
 
 namespace digitalcave {
 	class Matrix : public Draw {
 	private:
 		uint8_t changed;
-		uint8_t buffer[MATRIX_LENGTH];
+		uint8_t buffer[MATRIX_BUFFER_LENGTH];
 		uint8_t color;
 		
 	public:

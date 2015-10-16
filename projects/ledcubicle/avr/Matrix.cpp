@@ -40,7 +40,7 @@ void Matrix::setPixel(int16_t x, int16_t y) {
 
 void Matrix::flush() {
 	if (changed) {
-		twi_write_to(MATRIX_DRIVER_SLAVE_ADDRESS, buffer, MATRIX_LENGTH, TWI_BLOCK, TWI_STOP);
+		twi_write_to(MATRIX_DRIVER_SLAVE_ADDRESS, buffer, MATRIX_BUFFER_LENGTH, TWI_BLOCK, TWI_STOP);
 		this->changed = 0;
 	}
 }
