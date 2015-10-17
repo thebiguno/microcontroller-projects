@@ -11,8 +11,8 @@
 
 using namespace digitalcave;
 
+Matrix matrix;
 volatile uint8_t timer = 0;
-Matrix matrix = Matrix();
 uint8_t baseColor = 0; // 0 = green, 1 = yellow, 2 = red
 
 // Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
@@ -25,17 +25,19 @@ uint8_t wj[] PROGMEM = { 0x88, 0x0, 0x0, 0x88, 0x0, 0x0, 0x8b, 0x36, 0x4c, 0x88,
 
 int main() {
 	srandom(0);
-
+	
 	while (1) {
 		matrix.setColor(0,0);
 		matrix.rectangle(0,0,MATRIX_WIDTH,MATRIX_HEIGHT,DRAW_FILLED);
 
+/*
 		if (baseColor == 0) matrix.setColor(0,255);
 		else if (baseColor == 1) matrix.setColor(255,255);
 		else if (baseColor == 2) matrix.setColor(255,0);
-		
+*/	
 		matrix.bitmap(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT, 0, wj);
 		matrix.flush();
+/*
 		_delay_ms(3000);
 
 		Life life(baseColor);
@@ -46,5 +48,7 @@ int main() {
 		
 		baseColor++;
 		if (baseColor > 2) baseColor = 0;
+		
+*/
 	}
 }
