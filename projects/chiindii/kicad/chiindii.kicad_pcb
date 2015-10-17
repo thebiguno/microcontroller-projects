@@ -3,7 +3,7 @@
   (general
     (links 220)
     (no_connects 0)
-    (area -696.331476 -107.641232 157.879165 155.780001)
+    (area -696.331476 -107.641232 170.089891 166.144891)
     (thickness 1.6)
     (drawings 1797)
     (tracks 974)
@@ -68,8 +68,8 @@
     (mod_edge_width 0.15)
     (mod_text_size 1 1)
     (mod_text_width 0.15)
-    (pad_size 13 13)
-    (pad_drill 8.5)
+    (pad_size 13.5 13.5)
+    (pad_drill 9)
     (pad_to_mask_clearance 0)
     (aux_axis_origin 53.5 155.73)
     (grid_origin 53.5 155.73)
@@ -4449,7 +4449,7 @@
     )
   )
 
-  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 55E66213) (tstamp 55CBE044)
+  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 56212C28) (tstamp 55CBE044)
     (at 122 97.83 90)
     (path /55C2CC93)
     (fp_text reference MP4 (at 0 0.75 90) (layer F.SilkS) hide
@@ -4458,11 +4458,11 @@
     (fp_text value MOTOR (at 0 -0.75 90) (layer F.Fab) hide
       (effects (font (size 1.5 1.5) (thickness 0.15)))
     )
-    (pad 1 thru_hole circle (at 0 0 90) (size 12.5 12.5) (drill 8.5) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at 0 0 90) (size 12.5 12.5) (drill 9) (layers *.Cu *.Mask F.SilkS)
       (net 96 "Net-(MP4-Pad1)"))
   )
 
-  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 55E66213) (tstamp 55CBE03B)
+  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 56212C20) (tstamp 55CBE03B)
     (at 102.3 97.83 270)
     (path /55C2CB88)
     (fp_text reference MP3 (at 0 0.75 270) (layer F.SilkS) hide
@@ -4471,11 +4471,11 @@
     (fp_text value MOTOR (at 0 -0.75 270) (layer F.Fab) hide
       (effects (font (size 1.5 1.5) (thickness 0.15)))
     )
-    (pad 1 thru_hole circle (at 0 0 270) (size 12.5 12.5) (drill 8.5) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at 0 0 270) (size 12.5 12.5) (drill 9) (layers *.Cu *.Mask F.SilkS)
       (net 95 "Net-(MP3-Pad1)"))
   )
 
-  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 55E66213) (tstamp 55CBDFE5)
+  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 56212C1A) (tstamp 55CBDFE5)
     (at 82.775 97.805 270)
     (path /55C2CA7B)
     (fp_text reference MP2 (at 0 0.75 270) (layer F.SilkS) hide
@@ -4484,11 +4484,11 @@
     (fp_text value MOTOR (at 0 -0.75 270) (layer F.Fab) hide
       (effects (font (size 1.5 1.5) (thickness 0.15)))
     )
-    (pad 1 thru_hole circle (at 0 0 270) (size 12.5 12.5) (drill 8.5) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at 0 0 270) (size 12.5 12.5) (drill 9) (layers *.Cu *.Mask F.SilkS)
       (net 94 "Net-(MP2-Pad1)"))
   )
 
-  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 55E66213) (tstamp 55C2898A)
+  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 56212C13) (tstamp 55C2898A)
     (at 63.175 97.805 90)
     (path /55C2C3F3)
     (fp_text reference MP1 (at 0 0.75 90) (layer F.SilkS) hide
@@ -4497,11 +4497,11 @@
     (fp_text value MOTOR (at 0 -0.75 90) (layer F.Fab) hide
       (effects (font (size 1.5 1.5) (thickness 0.15)))
     )
-    (pad 1 thru_hole circle (at 0 0 90) (size 12.5 12.5) (drill 8.5) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at 0 0 90) (size 12.5 12.5) (drill 9) (layers *.Cu *.Mask F.SilkS)
       (net 93 "Net-(MP1-Pad1)"))
   )
 
-  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 55E66213) (tstamp 55E66B85)
+  (module chiindii:MOTOR_0820 (layer F.Cu) (tedit 56212C2F) (tstamp 55E66B85)
     (at 141.6 97.83)
     (path /55E66D35)
     (fp_text reference MP5 (at 0 0.75) (layer F.SilkS) hide
@@ -4510,7 +4510,7 @@
     (fp_text value MOTOR (at 0 -0.75) (layer F.Fab) hide
       (effects (font (size 1.5 1.5) (thickness 0.15)))
     )
-    (pad 1 thru_hole circle (at 0 0) (size 12.5 12.5) (drill 8.5) (layers *.Cu *.Mask F.SilkS)
+    (pad 1 thru_hole circle (at 0 0) (size 12.5 12.5) (drill 9) (layers *.Cu *.Mask F.SilkS)
       (net 97 "Net-(MP5-Pad1)"))
   )
 
