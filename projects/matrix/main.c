@@ -165,5 +165,7 @@ int main (void){
 		if (shift.cts()) {
 			load_shift_data();	//Start shifting
 		}
+		
+		_delay_ms(1);
 	}
 }
