@@ -2,16 +2,19 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
-typedef uint8_t pixel_t;
-
-#include "lib/draw/matrix/matrix.h"
-#include "lib/draw/draw.h"
 #include "lib/twi/twi.h"
 
 #include "ShiftRegister.h"
 
 #ifndef MATRIX_DRIVER_ADDRESS
 #define MATRIX_DRIVER_ADDRESS 42
+#endif
+#ifndef MATRIX_WIDTH
+#define MATRIX_WIDTH 24
+#endif
+
+#ifndef MATRIX_HEIGHT
+#define MATRIX_HEIGHT 16
 #endif
 
 static uint8_t buffer[MATRIX_WIDTH * MATRIX_HEIGHT];
@@ -84,7 +87,7 @@ static void load_shift_data(){
 
 //This is called for each byte that is received.  'data' is the byte read from TWI; 'i' is the index of the data in the transmission
 void slave_rx_reader(uint8_t data, uint16_t i){
-	static uint8_t mode = MATRIX_MODE_4BIT;
+	static uint8_t mode = 0;
 	static uint16_t max_length = 0x00;
 	//The first byte is mode; we copy the remaining bytes as follows:
 	// MATRIX_MODE_4BIT: 4 bit / channel mode GGGGRRRR (gives you 15 shades of red, 15 shades of green, plus black for 226 colors total, dc_max = 15)
@@ -97,10 +100,10 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 
 		//Determine the max buffer length (bounds checking, prevent buffer overflows if the master 
 		// sends too much / wrong mode / etc) and dc_max
-		if (mode == MATRIX_MODE_4BIT) {
+		if (mode == 0) {
 			max_length = MATRIX_WIDTH * MATRIX_HEIGHT;
 			dc_max = 15;
-		} else if (mode == MATRIX_MODE_2BIT) {
+		} else if (mode == 1) {
 			max_length = MATRIX_WIDTH * (MATRIX_HEIGHT >> 1);
 			dc_max = 3;
 		} else {
@@ -109,11 +112,11 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 		}
 	} else if (i <= max_length){	//Verify that the incoming byte will fit in the buffer, as determined by mode
 		i--;
-		if (mode == MATRIX_MODE_4BIT) {
+		if (mode == 0) {
 			//8 bit mode; raw copy of all values
 			// ggggrrrr -> ggggrrrr
 			buffer[i] = data;
-		} else if (mode == MATRIX_MODE_2BIT) {
+		} else if (mode == 1) {
 			//4 bit (10 color) mode
 			// ggrrggrr -> xxggxxrr xxggxxrr
 			uint16_t idx = i * 2;
@@ -140,6 +143,13 @@ void slave_rx_reader(uint8_t data, uint16_t i){
 }
 
 int main (void){
+	for (uint16_t i = 0; i < MATRIX_WIDTH * MATRIX_HEIGHT; i = i + 4) {
+		buffer[i] = 0x00;
+		buffer[i+1] = 0x0f;
+		buffer[i+2] = 0xf0;
+		buffer[i+3] = 0xff;
+	}
+	
 	twi_init();
 	twi_set_slave_address(MATRIX_DRIVER_ADDRESS);
 	twi_attach_slave_rx_reader(slave_rx_reader);
