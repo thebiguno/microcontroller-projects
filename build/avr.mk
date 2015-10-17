@@ -101,7 +101,9 @@ ifeq 'arduino' '$(PROGRAMMER)'
 endif
 
 ifeq 'usbtiny' '$(PROGRAMMER)'
-	AVRDUDE_SPEED = -B 1
+	ifndef AVRDUDE_SPEED
+		AVRDUDE_SPEED = -B 1
+	endif
 endif
 
 ifeq 'avrispmkII' '$(PROGRAMMER)'
