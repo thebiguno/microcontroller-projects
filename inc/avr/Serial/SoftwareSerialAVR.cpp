@@ -59,7 +59,7 @@ SoftwareSerialAVR::SoftwareSerialAVR(volatile uint8_t* port, uint8_t pin, uint32
 			delayCyclesLong = 95;
 	}
 #else
-#error Invalid F_CPU value.  Please select 
+#warning Invalid F_CPU value for SolftwareSerial.  SoftwareSerial will not work properly.
 #endif
 }
 
