@@ -56,10 +56,12 @@ int main(){
 	//Turn on the audio chip
 	Samples::setMasterVolume(0.7);	//TODO Load from EEPROM
 	
+	Serial.begin(9600);
+	
 	while (1){
 		menuState.poll();
 		
-		for (uint8_t i = 0; i < 8; i++){		//TODO Change 8 to PAD_COUNT
+		for (uint8_t i = 0; i < PAD_COUNT; i++){
 			pads[i].poll();
 		}
 	}

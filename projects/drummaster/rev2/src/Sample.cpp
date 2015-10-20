@@ -45,7 +45,7 @@ Sample::Sample(uint8_t index): index(index), lastChannel(0xFF) {
 void Sample::play(uint8_t channel, uint8_t rawValue){
 	lastChannel = channel;
 	setGain(rawValue);
-	Serial.println(index);
+	//Serial.println(index);
 	//samples[index].play("SN_9_A.RAW");			//TODO Change to be dynamic
 	samples[index].play("RD_0_A.RAW");			//TODO Change to be dynamic
 }

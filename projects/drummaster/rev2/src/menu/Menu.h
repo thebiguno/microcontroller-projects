@@ -20,7 +20,7 @@
 #define DISPLAY_ROWS					4
 #define DISPLAY_COLS					20
 
-#define ENC_PUSH						15
+#define ENC_PUSH						8
 #define ENC_A							21
 #define ENC_B							20
 
