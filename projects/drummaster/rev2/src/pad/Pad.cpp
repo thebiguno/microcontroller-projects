@@ -12,7 +12,7 @@ Pad::Pad(uint8_t channel) : channel(channel), lastSample(NULL), lastPlayTime(0),
 void Pad::poll(){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, 0);
-	digitalWriteFast(DRAIN_EN, 0);
+	digitalWriteFast(DRAIN_EN, 1);			//Active low
 	
 	//TODO Unsure of whether this delay is needed... experimentation is required.
 	delayMicroseconds(1);
@@ -28,7 +28,7 @@ void Pad::poll(){
 
 	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
 	if (lastPlayTime + DOUBLE_HIT_THRESHOLD > millis()){
-		digitalWriteFast(DRAIN_EN, 1);
+		digitalWriteFast(DRAIN_EN, 0);
 		delayMicroseconds(100);
 		return;
 	}
@@ -42,10 +42,10 @@ void Pad::poll(){
 	//... read value...
 	uint8_t rawValue = adc.analogRead(ADC_INPUT);
 	if (rawValue > MIN_VALUE){
-		Serial.print("Channel ");
-		Serial.println(channel);
-		Serial.print(" read rawValue ");
-		Serial.println(rawValue);
+		//Serial.print("Channel ");
+		//Serial.println(channel);
+		//Serial.print(" read rawValue ");
+		//Serial.println(rawValue);
 	}
 	
 	//... and disable MUX again
@@ -76,7 +76,7 @@ void Pad::poll(){
 		return;
 	}
 	else if (rawValue > peakRawValue){
-		Serial.println("Volume not stable");
+		//Serial.println("Volume not stable");
 		//Is the result is still increasing?  If so, wait for it to stabilize
 		peakRawValue = rawValue;
 		return;
@@ -88,13 +88,15 @@ void Pad::poll(){
 	}
 	else {
 		//The result has stabilized and it is large enough to play a sample.
-		//Reset the peak value by turning on the drain MUX
-		digitalWriteFast(DRAIN_EN, 1);
+		//Reset the peak value by turning on the drain MUX (active low)
+		digitalWriteFast(DRAIN_EN, 0);
 
 		
 		//Start the sample playback
 
-		Serial.print("Playing at rawValue ");
+		Serial.print("Playing ");
+		Serial.print(channel);
+		Serial.print(" at rawValue ");
 		Serial.print(peakRawValue);
 		Serial.print("; time = ");
 		Serial.println(millis());
@@ -104,7 +106,7 @@ void Pad::poll(){
 		lastRawValue = peakRawValue;
 		peakRawValue = 0;
 		
-		Serial.println((uint32_t) lastSample);
+		//Serial.println((uint32_t) lastSample);
 		//Wait for a bit to let the peak drain
 		//delay(1);
 	}

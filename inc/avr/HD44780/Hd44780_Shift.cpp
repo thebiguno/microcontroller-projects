@@ -15,6 +15,10 @@
 
 using namespace digitalcave;
 
+#ifndef SPE
+#warning The specified MCU does not appear to have support for hardware SPI.  Please verify that the registers are supported.
+#else
+
 Hd44780_Shift::Hd44780_Shift(volatile uint8_t *e_port, uint8_t e_pin, volatile uint8_t *rs_port, uint8_t rs_pin, volatile uint8_t *spi_port, uint8_t mosi_pin, uint8_t sclk_pin, uint8_t function) {
 	this->e_port = e_port;
 	this->e_bv = _BV(e_pin);
@@ -52,3 +56,5 @@ void Hd44780_Shift::latch() {
 	*this->e_port &= ~this->e_bv;
 	_delay_us(40);
 }
+
+#endif

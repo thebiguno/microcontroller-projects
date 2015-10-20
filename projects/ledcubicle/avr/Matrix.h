@@ -25,9 +25,6 @@ namespace digitalcave {
 		
 		void setDepth(uint8_t d);
 		void setColor(uint8_t gr);
-		/* sets the color value to a scaled color */
-		/* int 4 bit depth the value is divided by 16 (0-16 -> 0000, ... 240-255 -> 1111) */
-		/* in 2 bit depth the value is divided 64 (0-63 -> 00, 64-127 -> 01, 128-191 -> 10, 192-255 -> 11) */
 		void setColor(uint8_t r, uint8_t g);
 	};
 }

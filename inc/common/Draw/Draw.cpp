@@ -94,7 +94,7 @@ void Draw::bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t o
 		byteCount++;
 		bitCounter = bitCount - 1; // the padding is at the front of the first byte, so don't start at bit 0
 	}
-
+/*	TODO This needs to move to AVR-specific class
 	if (orientation == DRAW_ORIENTATION_0){
 		for(int16_t iy = y; iy < y + height; iy++){
 			for(int16_t ix = x; ix < x + width; ix++){
@@ -153,6 +153,7 @@ void Draw::bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t o
 			}
 		}
 	}
+*/
 }
 
 void Draw::text(int16_t x, int16_t y, const char* text, uint8_t orientation) {

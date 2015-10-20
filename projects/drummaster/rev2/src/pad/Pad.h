@@ -11,7 +11,7 @@
 #define DOUBLE_HIT_THRESHOLD		50
 
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					10
+#define MIN_VALUE					15
 
 namespace digitalcave {
 
