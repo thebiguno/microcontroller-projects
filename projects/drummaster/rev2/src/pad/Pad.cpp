@@ -11,8 +11,8 @@ Pad::Pad(uint8_t channel) : channel(channel), lastSample(NULL), lastPlayTime(0),
 
 void Pad::poll(){
 	//Disable both MUXs
-	digitalWriteFast(ADC_EN, 0);
-	digitalWriteFast(DRAIN_EN, 1);			//Active low
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 	
 	//TODO Unsure of whether this delay is needed... experimentation is required.
 	delayMicroseconds(1);
@@ -28,13 +28,13 @@ void Pad::poll(){
 
 	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
 	if (lastPlayTime + DOUBLE_HIT_THRESHOLD > millis()){
-		digitalWriteFast(DRAIN_EN, 0);
+		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 		delayMicroseconds(100);
 		return;
 	}
 	
 	//Enable ADC MUX...
-	digitalWriteFast(ADC_EN, 1);
+	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//TODO Unsure of whether this delay is needed... experimentation is required.
 	delayMicroseconds(10);
@@ -49,7 +49,7 @@ void Pad::poll(){
 	}
 	
 	//... and disable MUX again
-	digitalWriteFast(ADC_EN, 0);
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
 	//Double trigger detection.  If this hit is within DOUBLE_HIT_THRESHOLD millis of the last
 	// hit, then we will either adjust the previously played sample to match this new (louder)
@@ -88,8 +88,8 @@ void Pad::poll(){
 	}
 	else {
 		//The result has stabilized and it is large enough to play a sample.
-		//Reset the peak value by turning on the drain MUX (active low)
-		digitalWriteFast(DRAIN_EN, 0);
+		//Reset the peak value by turning on the drain MUX
+		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 
 		
 		//Start the sample playback

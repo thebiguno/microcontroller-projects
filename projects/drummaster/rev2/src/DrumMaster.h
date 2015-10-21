@@ -34,4 +34,8 @@
 #define ADC_EN							5
 #define ADC_INPUT						A14
 
+//The MUXs we use are active low for enable pin... 
+#define MUX_ENABLE						0
+#define MUX_DISABLE						1
+
 #endif
