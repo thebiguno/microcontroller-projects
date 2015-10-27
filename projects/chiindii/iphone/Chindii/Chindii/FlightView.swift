@@ -27,7 +27,7 @@ class FlightView: UIView {
 		let context = UIGraphicsGetCurrentContext()
 		CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
 		CGContextSetRGBFillColor(context, 0.0, 0.0, 0.0, 1.0)
-		CGContextSetLineCap(context, kCGLineCapSquare)
+		CGContextSetLineCap(context, CGLineCap.Square)
 		CGContextSetLineWidth(context, 1.0);
 		CGContextSetAllowsAntialiasing(context, true)
 		CGContextSetShouldAntialias(context, true)
@@ -166,29 +166,29 @@ class FlightView: UIView {
 
 	}
 	
-	override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			let point = (touch as! UITouch).locationInView(self)
+			let point = (touch ).locationInView(self)
 			
 			for i in 0..<2 {
 				let r = buttons[i]
 				pressed[i] = r.contains(point)
 			}
-			gTouch(touch as! UITouch);
-			pitchRollTouch(touch as! UITouch)
+			gTouch(touch );
+			pitchRollTouch(touch )
 		}
 
 		setNeedsDisplay()
 	}
-	override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			gTouch(touch as! UITouch);
-			pitchRollTouch(touch as! UITouch)
+			gTouch(touch );
+			pitchRollTouch(touch )
 		}
 		
 		setNeedsDisplay()
 	}
-	override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for i in 0..<2 {
 			pressed[i] = false
 		}

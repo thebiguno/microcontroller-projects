@@ -14,9 +14,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "195"
-            endingLineNumber = "195"
-            landmarkName = "touchesEnded(_:withEvent:)"
-            landmarkType = "5">
+            endingLineNumber = "195">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -62,9 +60,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "216"
-            endingLineNumber = "216"
-            landmarkName = "pitchRollTouch(_:)"
-            landmarkType = "5">
+            endingLineNumber = "216">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
