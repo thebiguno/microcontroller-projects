@@ -1,7 +1,6 @@
 PROJECT=life
 MMCU=atmega168
 F_CPU=20000000
-SOURCES=main.c lib/Draw/matrix/Matrix.c lib/twi/twi.c lib/analog/analog_synchronous.c lib/timer/timer_1.c lib/draw/fonts/f_3x5.c lib/draw/fonts/cp_ascii_caps.c
 
 PROGRAMMER=usbtiny
 
