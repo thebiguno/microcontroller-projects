@@ -63,7 +63,7 @@ void draw_bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t or
 	uint8_t glyphByteCount = ((width * height) >> 3); //(w*h)/8, int math
 	uint8_t glyphBitCount = (width * height) & 0x7; //(w*h)%8
 	
-	uint8_t bitCounter = 8;
+	uint8_t bitCounter = 7;
 	uint8_t byteCounter = 0;
 
 	if (glyphBitCount != 0) {
