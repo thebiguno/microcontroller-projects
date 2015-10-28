@@ -21,8 +21,8 @@
 #define RED_2	0x02
 #define RED_1	0x01
 
-#define RECENT_HASH_COUNT			50
-#define RECENT_HASH_MATCH_COUNT			50
+#define RECENT_HASH_COUNT			40
+#define RECENT_HASH_MATCH_COUNT			40
 
 uint8_t nameplate[] PROGMEM = {0x88, 0x1, 0x10, 0x88, 0x1, 0x10, 0x88, 0x3, 0xb8, 0x8a, 0x99, 0x10, 0xaa, 0xa9, 0x10, 0xa9, 0xa9, 0x10, 0x50, 0x99, 0x10, 0x3, 0x0, 0x0, 0xe, 0x40, 0x0, 0x11, 0x40, 0x0, 0x11, 0x4c, 0xce, 0x11, 0x51, 0x29, 0x11, 0x59, 0x29, 0x11, 0x4d, 0x29, 0x11, 0x45, 0x29, 0xe, 0x58, 0xc9};
 
@@ -96,7 +96,8 @@ void show_name(uint8_t value){
 
 void setup(){
 	//Show name plate
-	for(uint8_t i = 0; i < 10; i++){
+	for(uint8_t i = 0; i < 5; i++){
+		show_name(GRN_1); _delay_ms(100);
 		show_name(GRN_2); _delay_ms(100);
 		show_name(GRN_3); _delay_ms(100);
 		show_name(RED_1 | GRN_3); _delay_ms(100);
@@ -106,6 +107,8 @@ void setup(){
 		show_name(RED_3 | GRN_1); _delay_ms(100);
 		show_name(RED_3); _delay_ms(100);
 		show_name(RED_2); _delay_ms(100);
+		show_name(RED_1); _delay_ms(100);
+		show_name(RED_2); _delay_ms(100);
 		show_name(RED_3); _delay_ms(100);
 		show_name(RED_3 | GRN_1); _delay_ms(100);
 		show_name(RED_3 | GRN_2); _delay_ms(100);
@@ -113,6 +116,7 @@ void setup(){
 		show_name(RED_2 | GRN_3); _delay_ms(100);
 		show_name(RED_1 | GRN_3); _delay_ms(100);
 		show_name(GRN_3); _delay_ms(100);
+		show_name(GRN_2); _delay_ms(100);
 	}
 	
 	//Clear board
