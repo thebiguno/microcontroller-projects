@@ -86,6 +86,7 @@ void Draw::text(int16_t x, int16_t y, const char* text, uint8_t orientation) {
 	while (text[i]) {
 		this->character(x, y, text[i], orientation);
 		i++;
+		x += this->font_width + 1;
 	}
 }
 void Draw::character(int16_t x, int16_t y, char c, uint8_t orientation) {
