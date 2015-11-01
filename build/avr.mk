@@ -187,6 +187,13 @@ else
 		-U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m $(EXTENDED_FUSE_WRITE)
 endif
 
+start:
+ifeq 'dfu' '$(PROGRAMMER)'
+	$(DFU) $(MMCU) start
+else
+	echo "Cannor start in AVR Dude Programmer mode"
+endif
+
 readfuse: 
 ifeq 'dfu' '$(PROGRAMMER)'
 	echo "Cannot read fuses in DFU Programmer mode"
