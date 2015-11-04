@@ -77,21 +77,21 @@ uint8_t Button::sample(uint32_t time) {
 }
 
 uint8_t Button::pressEvent() {
-	return state & STATE_PRESS;
+	return state & STATE_PRESS ? 1 : 0;
 }
 
 uint8_t Button::releaseEvent() {
-	return state & STATE_RELEASE;
+	return state & STATE_RELEASE ? 1 : 0;
 }
 
 uint8_t Button::longPressEvent() {
-	return state & STATE_LONGPRESS;
+	return state & STATE_LONGPRESS ? 1 : 0;
 }
 
 uint8_t Button::longReleaseEvent() {
-	return state & STATE_LONGRELEASE;
+	return state & STATE_LONGRELEASE ? 1 : 0;
 }
 
 uint8_t Button::repeatPressEvent() {
-	return state & STATE_REPEATPRESS;
+	return state & STATE_REPEATPRESS ? 1 : 0;
 }
