@@ -167,7 +167,7 @@ $(PROJECT).asm: $(PROJECT).elf
 
 %.hex: %.elf
 	@echo "[HEX]\t$@"
-	@$(SIZE) "$<"
+	@$(SIZE) -d -C --mcu=$(MMCU) "$<"
 	@$(OBJCOPY) -O ihex -R .eeprom "$<" "$@"
 
 # compiler generated dependency info
