@@ -5,7 +5,8 @@ using namespace digitalcave;
 #define STATE_PRESS			0x01
 #define STATE_RELEASE		0x02
 #define STATE_LONGPRESS		0x04
-#define STATE_REPEATPRESS	0x08
+#define STATE_LONGRELEASE	0x08
+#define STATE_REPEATPRESS	0x10
 
 void Button::init(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime, uint16_t repeatPressTime){
 	this->pressTime = pressTime;
@@ -59,13 +60,11 @@ uint8_t Button::sample(uint32_t time) {
 		}
 	}
 	else {
-		if (releaseCounter == 0xFFFF){
-			
-		}
-		else {
+		if (releaseCounter != 0xFFFF){
 			releaseCounter += elapsedTime;
 			if (releaseCounter >= releaseTime){
-				state |= STATE_RELEASE;
+				if (longPressCounter == 0xFFFF) state |= STATE_LONGRELEASE;
+				else state |= STATE_RELEASE;
 				releaseCounter = 0xFFFF;
 				pressCounter = 0x00;
 				longPressCounter = 0x00;
@@ -87,6 +86,10 @@ uint8_t Button::releaseEvent() {
 
 uint8_t Button::longPressEvent() {
 	return state & STATE_LONGPRESS;
+}
+
+uint8_t Button::longReleaseEvent() {
+	return state & STATE_LONGRELEASE;
 }
 
 uint8_t Button::repeatPressEvent() {

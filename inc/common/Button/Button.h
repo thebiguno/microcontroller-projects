@@ -66,6 +66,11 @@ namespace digitalcave {
  		 * Returns non-zero if this button was newly marked as long pressed; zero otherwise.
 		 */
 		uint8_t longPressEvent();
+
+		/*
+ 		 * Returns non-zero if this button was newly marked as long pressed; zero otherwise.
+		 */
+		uint8_t longReleaseEvent();
 		
 		/*
  		 * Returns non-zero if this button was newly marked as repeat pressed; zero otherwise.
