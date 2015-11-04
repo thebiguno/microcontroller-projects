@@ -134,21 +134,32 @@ int main (void){
 			finish_times[i] = 0;
 		}
 		
-		//Wait until race starts, showing 00:00
+		//Wait until the gate is primed.  Show 0000 during this time.
 		while(1){
-
-			b.sample();
-			pressed = b.repeat();
+			pressed = b.sample();
 			
-			analog_read_a(starting_sensor_values);
-			analog_read_a(starting_sensor_values);
-
 			display_times(0);
 			
 			if (pressed & START_BUTTON){			//When the button is pressed, break out of the loop and start the timer
 				break;
 			}
 		}
+
+		//When the gate goes low (open) the race has started.
+		while(1){
+			b.sample();
+			pressed = b.released();
+			
+			display_times(0);
+			
+			if (pressed & START_BUTTON){			//When the button is released, calibrate sensor levels, break out of the loop, and start the timer
+				analog_read_a(starting_sensor_values);
+				analog_read_a(starting_sensor_values);
+				
+				break;
+			}
+		}
+
 		
 		//Start the timer
 		timer_init();
