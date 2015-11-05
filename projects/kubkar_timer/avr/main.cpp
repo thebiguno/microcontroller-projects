@@ -67,6 +67,8 @@ inline uint8_t extract_digit(uint16_t number, uint8_t digit){
  * if you want to show zero times.)
  */
 void display_times(uint16_t default_value){
+	if (default_value > 9999) default_value = 9999;
+	
 	//To keep the digit-enabling math simpler, we reverse the logical order of 
 	// the digits.  Digit 3 is the 1's place; digit 2 is the 10's place, etc.
 	static uint8_t digit = 0;
@@ -134,18 +136,29 @@ int main (void){
 			finish_times[i] = 0;
 		}
 		
-		//Wait until race starts, showing 00:00
+		//Wait for timer to arm (switch goes high); show 8888 on display
 		while(1){
 
-			b.sample();
-			pressed = b.repeat();
+			pressed = b.sample();
 			
-			analog_read_a(starting_sensor_values);
-			analog_read_a(starting_sensor_values);
-
-			display_times(0);
+			display_times(8888);
 			
 			if (pressed & START_BUTTON){			//When the button is pressed, break out of the loop and start the timer
+				break;
+			}
+		}
+		
+		//Wait for timer to start (switch goes low); show 0000 on display
+		while(1){
+
+			pressed = b.sample();
+			
+			display_times(0);
+			
+			if (!(pressed & START_BUTTON)){			//When the button is pressed, break out of the loop, read analog values, and start the timer
+				analog_read_a(starting_sensor_values);
+				analog_read_a(starting_sensor_values);
+
 				break;
 			}
 		}
@@ -154,7 +167,7 @@ int main (void){
 		timer_init();
 		time = 0;
 		
-		//Wait for the races to finish, the stop button to be pressed, or the time to run out (99.99 seconds).
+		//Wait for the races to finish, the stop button to be pressed, or the time to run out (9999 ms).
 		while(1){
 			display_times(time);
 
