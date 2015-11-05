@@ -15,30 +15,26 @@ class FlightView: UIView {
 	// white: 1.0, 1.0, 0.8
 	// red:   0.9, 0.4, 0.3
 	// blue:  0.5, 0.7, 0.8
-	
+
 	var buttons = [CGRect]()
 	var pressed = [false, false]
 	
 	var g = 0		// a value between -6 and +6 representing g force values between -1.5 and +1.5 (.25 g steps)
 	var pitch = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	var roll = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
-
+	
 	override func drawRect(rect: CGRect) {
 		let context = UIGraphicsGetCurrentContext()
 		CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
 		CGContextSetRGBFillColor(context, 0.0, 0.0, 0.0, 1.0)
-		CGContextSetLineCap(context, kCGLineCapSquare)
+		CGContextSetLineCap(context, CGLineCap.Square)
 		CGContextSetLineWidth(context, 1.0);
 		CGContextSetAllowsAntialiasing(context, true)
 		CGContextSetShouldAntialias(context, true)
 		
 		CGContextFillRect(context, rect)
 
-		let width = rect.width
-		let height = rect.height
 		let radius = rect.height / 2.0 - 20
-		let centerX = width / 2
-		let centerY = height / 2
 		
 		// draw the throttle position
 		for i in -6..<7 {
@@ -103,7 +99,7 @@ class FlightView: UIView {
 		
 		
 		// translate to the centre to draw the horizon
-		CGContextTranslateCTM(context, centerX, centerY)
+		CGContextTranslateCTM(context, center.x, center.y)
 
 		// draw the artifical horizon main circle (same in both orientations)
 		let r = CGRect(x: -radius, y: -radius, width: radius * 2, height: radius * 2)
@@ -153,6 +149,7 @@ class FlightView: UIView {
 		// draw the artifical horizon
 		// TODO, this has to move with the pitch / roll telemetry
 		
+		/*
 		CGContextTranslateCTM(context, 0, CGFloat(-pitch*20))
 		CGContextRotateCTM(context, CGFloat(M_PI / 6 / 6) * CGFloat(-roll));
 		
@@ -163,32 +160,43 @@ class FlightView: UIView {
 		CGContextMoveToPoint(context, +10, 0)
 		CGContextAddLineToPoint(context, +60, 0)
 		CGContextStrokePath(context)
+		*/
+		
+		CGContextSetRGBStrokeColor(context, 1.0, 1.0, 0.8, 1.0)
+
+		CGContextMoveToPoint(context, -radius, 0)
+		CGContextAddQuadCurveToPoint(context, CGFloat(roll*2), CGFloat(pitch*2), radius, 0)
+		CGContextStrokePath(context)
+
+		CGContextMoveToPoint(context, 0, -radius)
+		CGContextAddQuadCurveToPoint(context, CGFloat(roll*2), CGFloat(pitch*2), 0, radius)
+		CGContextStrokePath(context)
 
 	}
 	
-	override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			let point = (touch as! UITouch).locationInView(self)
+			let point = (touch ).locationInView(self)
 			
 			for i in 0..<2 {
 				let r = buttons[i]
 				pressed[i] = r.contains(point)
 			}
-			gTouch(touch as! UITouch);
-			pitchRollTouch(touch as! UITouch)
+			gTouch(touch );
+			pitchRollTouch(touch)
 		}
 
 		setNeedsDisplay()
 	}
-	override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			gTouch(touch as! UITouch);
-			pitchRollTouch(touch as! UITouch)
+			gTouch(touch );
+			pitchRollTouch(touch)
 		}
 		
 		setNeedsDisplay()
 	}
-	override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+	override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for i in 0..<2 {
 			pressed[i] = false
 		}
@@ -211,21 +219,8 @@ class FlightView: UIView {
 	
 	func pitchRollTouch(touch: UITouch) {
 		let point = touch.locationInView(self)
-
-		for x in -6..<7 {
-			let bx = bounds.width / 2 - CGFloat(x*20) - (x > 0 ? 0 : 20)
-			let h = CGFloat(x == 0 ? 40 : 20)
-			
-			for y in -6..<7 {
-				let by = bounds.height / 2 - CGFloat(y*20) - (y >= 0 ? 20 : 0)
-				let w = CGFloat(y == 0 ? 40 : 20)
-				
-				let rect = CGRect(x: bx, y: by, width: w, height: h);
-				if (rect.contains(point)) {
-					roll = x;
-					pitch = y;
-				}
-			}
-		}
+		
+		roll = Int(point.x - center.x)
+		pitch = Int(point.y - center.y)
 	}
 }

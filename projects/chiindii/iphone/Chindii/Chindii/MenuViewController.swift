@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MenuViewController: UITableViewController, UITableViewDataSource {
+class MenuViewController: UITableViewController {
 	
 	var items = [String]()
 	

@@ -15,7 +15,7 @@ import os
 import sys
 import time
 
-buf = list("\x01CXXXXMX RXWXUXDX/bckup99% dd\xDFdd\xDF")
+buf = list("\x01CXXXXMX RXWXUXDXRXHXDXBX  dd\xDFdd\xDF")
 dev = 0
 
 def main():
@@ -26,15 +26,8 @@ def main():
 		"net_upload": [], "net_download": [], "net_upload_last": psutil.net_io_counters().bytes_sent, "net_download_last": psutil.net_io_counters().bytes_recv
 	}
 	
-	mp_index = 0
 	temp_time = 0		#0 shows temperature, 1 shows time
 	timer = 0
-	mountpoints = [
-		{"label": "    / ", "mountpoint": "/"},
-		{"label": "/home ", "mountpoint": "/home"},
-		{"label": "/data ", "mountpoint": "/mnt/data"},
-		{"label": "/bkup ", "mountpoint": "/mnt/backup"}
-	]
 	
 	while True:
 		exception = False
@@ -125,24 +118,15 @@ def main():
 			buf[32] = time_string[5]
 
 		#Rotate through mount points and show percentage
-		mp = mountpoints[mp_index]
-		disk_percent = int(psutil.disk_usage(mp["mountpoint"]).percent)
-		buf[17] = mp["label"][0]
-		buf[18] = mp["label"][1]
-		buf[19] = mp["label"][2]
-		buf[20] = mp["label"][3]
-		buf[21] = mp["label"][4]
-		buf[22] = mp["label"][5]
-		buf[23] = str(disk_percent / 10)
-		buf[24] = str(disk_percent % 10)
+		buf[18] = writeBarGraph(int(psutil.disk_usage("/").percent / 12.5))
+		buf[20] = writeBarGraph(int(psutil.disk_usage("/home").percent / 12.5))
+		buf[22] = writeBarGraph(int(psutil.disk_usage("/mnt/data").percent / 12.5))
+		buf[24] = writeBarGraph(int(psutil.disk_usage("/mnt/backup").percent / 12.5))
 		
 		timer = timer + 1
-		if (timer >= 5):
+		if (timer >= 1):
 			timer = 0;
-			mp_index = mp_index + 1
 			temp_time = temp_time + 1
-			if (mp_index >= len(mountpoints)):
-				mp_index = 0;
 			if (temp_time > 1):
 				temp_time = 0;
 
