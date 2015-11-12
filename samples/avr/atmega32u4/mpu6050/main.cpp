@@ -3,10 +3,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "lib/Mpu6050.h"
+#include "lib/Mpu6050/Mpu6050.h"
 
-#include "lib/serial.h"
-#include "lib/twi.h"
+#include "lib/usb/serial.h"
+#include "lib/twi/twi.h"
+
+using namespace digitalcave;
 
 int main (){
 	
@@ -22,6 +24,7 @@ int main (){
 	_delay_ms(1000);
 	
 	Mpu6050 mpu6050;
+	mpu6050.calibrate();
 
 	char temp[64];
 	
