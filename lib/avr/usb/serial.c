@@ -417,7 +417,10 @@ void usb_serial_flush_input(void)
 }
 
 // transmit a character.  0 returned on success, -1 on error
-int8_t usb_serial_putchar(uint8_t c)
+int8_t usb_serial_write_c(char c){
+	return usb_serial_write_b((uint8_t) c);
+}
+int8_t usb_serial_write_b(uint8_t c)
 {
 	uint8_t timeout, intr_state;
 
@@ -468,7 +471,10 @@ int8_t usb_serial_putchar(uint8_t c)
 
 // transmit a character, but do not wait if the buffer is full,
 //   0 returned on success, -1 on buffer full or error 
-int8_t usb_serial_putchar_nowait(uint8_t c)
+int8_t usb_serial_write_c_nowait(uint8_t c){
+	return usb_serial_write_b_nowait((uint8_t) c);
+}
+int8_t usb_serial_write_b_nowait(uint8_t c)
 {
 	uint8_t intr_state;
 
