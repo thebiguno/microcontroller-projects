@@ -129,12 +129,9 @@ int main (){
 		twi_write_to(MPU_ADDR, data, 1, TWI_BLOCK, TWI_STOP);	//Go to register MPU6050_ACCEL_XOUT_H
 		twi_read_from(MPU_ADDR, data, 14, TWI_STOP);			//Read 14 bytes (Accel X/Y/Z, temperature, Gyro X/Y/Z, 16 bits each)
 
-		int16_t accelX = data[0];
-		int16_t accelY = data[2];
-		int16_t accelZ = data[4];
-//		int16_t accelX = (data[0] << 8) | data[1];
-//		int16_t accelY = (data[2] << 8) | data[3];
-//		int16_t accelZ = (data[4] << 8) | data[5];
+		int16_t accelX = (data[0] << 8) | data[1];
+		int16_t accelY = (data[2] << 8) | data[3];
+		int16_t accelZ = (data[4] << 8) | data[5];
 		int16_t temperature = ((int16_t) (data[6] << 8) | data[7]) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
 		int16_t gyroX = (data[8] << 8) | data[9];
 		int16_t gyroY = (data[10] << 8) | data[11];
