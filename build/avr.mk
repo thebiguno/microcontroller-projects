@@ -62,7 +62,7 @@ CFLAGS += -std=gnu99
 CXXFLAGS += -std=gnu++11
 
 # linker options
-LDFLAGS = -mmcu=$(MMCU) -Os -Wl,--gc-sections
+LDFLAGS += -mmcu=$(MMCU) -Os -Wl,--gc-sections
 
 CC = avr-gcc
 CXX = avr-g++
