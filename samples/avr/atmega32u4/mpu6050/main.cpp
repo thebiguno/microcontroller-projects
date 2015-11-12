@@ -137,7 +137,7 @@ int main (){
 		double gyroY = ((data[10] << 8) | data[11]) * 0.00762939453125;
 		double gyroZ = ((data[12] << 8) | data[13]) * 0.00762939453125;
 		
-		snprintf(temp, sizeof(temp), "\n-\nA:\nX: %.02f\nY: %.02f\nZ: %.02f\nG:\nX: %.02f\nY: %.02f\nZ: %.02f\nT: %.02f\n                                                       ", accelX, accelY, accelZ, gyroX, gyroY, gyroZ, temperature);
+		snprintf(temp, sizeof(temp), "\n\nAX: %.02f\nY: %.02f\nZ: %.02f\nGX: %.02f\nY: %.02f\nZ: %.02f\nT: %.0f\n                                                       ", accelX, accelY, accelZ, gyroX, gyroY, gyroZ, temperature);
 		
 		usb_serial_flush_input();
 		usb_serial_write((uint8_t*) temp, sizeof(temp));
