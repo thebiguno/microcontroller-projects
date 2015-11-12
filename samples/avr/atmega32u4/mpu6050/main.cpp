@@ -122,22 +122,22 @@ int main (){
 	char temp[64];
 	data[0] = MPU6050_PWR_MGMT_1;
 	data[1] = 0x00;
-	twi_write_to(MPU_ADDR, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep
+	twi_write_to(MPU_ADDR, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep	
 	
 	while (1){
 		data[0] = MPU6050_ACCEL_XOUT_H;
 		twi_write_to(MPU_ADDR, data, 1, TWI_BLOCK, TWI_STOP);	//Go to register MPU6050_ACCEL_XOUT_H
 		twi_read_from(MPU_ADDR, data, 14, TWI_STOP);			//Read 14 bytes (Accel X/Y/Z, temperature, Gyro X/Y/Z, 16 bits each)
 
-		int16_t accelX = (data[0] << 8) | data[1];
-		int16_t accelY = (data[2] << 8) | data[3];
-		int16_t accelZ = (data[4] << 8) | data[5];
-		int16_t temperature = ((int16_t) (data[6] << 8) | data[7]) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
-		int16_t gyroX = (data[8] << 8) | data[9];
-		int16_t gyroY = (data[10] << 8) | data[11];
-		int16_t gyroZ = (data[12] << 8) | data[13];
+		double accelX = ((data[0] << 8) | data[1]) * 0.00006103515625;		// 2g / 32678
+		double accelY = ((data[2] << 8) | data[3]) * 0.00006103515625;
+		double accelZ = ((data[4] << 8) | data[5]) * 0.00006103515625;
+		double temperature = ((int16_t) (data[6] << 8) | data[7]) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
+		double gyroX = ((data[8] << 8) | data[9]) * 0.00762939453125;		//250 deg/s / 32768
+		double gyroY = ((data[10] << 8) | data[11]) * 0.00762939453125;
+		double gyroZ = ((data[12] << 8) | data[13]) * 0.00762939453125;
 		
-		snprintf(temp, sizeof(temp), "\n-\nA:\nX: %d\nY: %d\nZ: %d\nG:\nX: %d\nY: %d\nZ: %d\nT: %d\n                                                       ", accelX, accelY, accelZ, gyroX, gyroY, gyroZ, temperature);
+		snprintf(temp, sizeof(temp), "\n-\nA:\nX: %.02f\nY: %.02f\nZ: %.02f\nG:\nX: %.02f\nY: %.02f\nZ: %.02f\nT: %.02f\n                                                       ", accelX, accelY, accelZ, gyroX, gyroY, gyroZ, temperature);
 		
 		usb_serial_flush_input();
 		usb_serial_write((uint8_t*) temp, sizeof(temp));
