@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+#include "Serial_OSX.h"
+#include <unistd.h>
+
+using namespace digitalcave;
+
+int main(int c, char* argv[]) {
+	Serial_OSX serial(argv[1], 115200);
+
+	uint8_t i;
+	for (uint8_t o = 0; o <= 255; o++) {
+		serial.write(o);
+		while(!serial.read(&i));
+		if (o != i) printf("Not Equal");
+	}
+	return 0;
+}
