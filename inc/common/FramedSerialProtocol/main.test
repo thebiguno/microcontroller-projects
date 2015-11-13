@@ -18,6 +18,7 @@ uint8_t Console::read(uint8_t *b){
 }
 uint8_t Console::write(uint8_t b){
 	printf("Console write: 0x%02x\n", b);
+	return 1;
 }
 
 int main(){
@@ -39,7 +40,6 @@ int main(){
 	
 	protocol.write(&arrayStream, &outgoing);
 	protocol.write(&console, &outgoing);
-	printf("Foo\n");
 	protocol.read(&arrayStream, &incoming);
 	
 	printf("Incoming message:\n");
