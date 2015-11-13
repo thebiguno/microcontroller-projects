@@ -83,6 +83,7 @@
 
 #define THROTTLE_COUNT							2
 #define COMMUNICATION_COUNT						10
+#define START_COUNT								20
 #define DIGITAL_POLL_COUNT						30
 #define CONTRAST_COUNT							40
 #define ANALOG_POLL_COUNT						50
@@ -126,6 +127,7 @@ uint8_t contrast_counter = 0xFF;
 uint8_t throttle_counter = 0;
 uint8_t battery_counter = 0;
 uint8_t bootloader_counter = 0;
+uint8_t start_counter = 0;
 uint8_t analog_poll_counter = 0;
 uint8_t digital_poll_counter = 0;
 uint8_t communication_counter = 0;
@@ -224,6 +226,19 @@ int main (void){
 		uint16_t buttons = psx.buttons();
 		uint16_t changed = psx.changed();
 		
+		//Hold down square + cross and push left stick all the way down for a second or so to send the 'start' button press
+		if (psx.button(PSB_CROSS) && psx.button(PSB_SQUARE) && psx.stick(PSS_LY) == 0xFF){
+			if (start_counter >= START_COUNT){
+				buttons |= PSB_START;
+				changed |= PSB_START;
+				start_counter = 0;
+			}
+			start_counter++;
+		}
+		else {
+			start_counter = 0;
+		}
+		
 		//Digital transmission section
 		if (changed){
 			for (uint8_t x = 0; x < 16; x++){
@@ -243,6 +258,7 @@ int main (void){
 			digital_poll_counter = 0;
 		}
 		
+		//Button repeat
 		if (digital_poll_counter > DIGITAL_POLL_COUNT){
 			if (buttons){
 				for (uint8_t x = 0; x < 16; x++){
