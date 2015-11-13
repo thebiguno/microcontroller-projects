@@ -65,10 +65,14 @@
 #define MESSAGE_UC_JOYSTICK_DISABLE				0x17
 #define MESSAGE_UC_SET_POLL_FREQUENCY			0x18
 #define MESSAGE_UC_SET_ANALOG_FREQUENCY			0x19
+#define MESSAGE_UC_THROTTLE_MOVE				0x1A
 
 
 #define ADC_THROTTLE							13
 #define ADC_BATTERY								12
+
+#define THROTTLE_THRESHOLD						8
+#define STICK_THRESHOLD							32
 
 #define BATTERY_FULL_THRESHOLD					170
 #define BATTERY_EMPTY_THRESHOLD 				140
@@ -93,10 +97,8 @@
 
 using namespace digitalcave;
 
-uint8_t last_LX = 0;
-uint8_t last_LY = 0;
-uint8_t last_RX = 0;
-uint8_t last_RY = 0;
+uint8_t last_stick[4] = {0, 0, 0, 0};
+uint8_t last_throttle = 0;
 
 Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
 	&PORTF, PORTF0,
@@ -259,12 +261,41 @@ int main (void){
 		}
 		
 		//Analog transmission section
-		if (changed){
-			//TODO write analog values
+		uint8_t send_throttle = 0;
+		uint8_t send_sticks = 0;
+		
+		if (analog_poll_counter > ANALOG_POLL_COUNT){
+			send_throttle = 1;
+			send_sticks = 1;
+		}
+		if (abs(psx.stick(PSS_LX) - last_stick[0]) > STICK_THRESHOLD
+				|| abs(psx.stick(PSS_LY) - last_stick[1]) > STICK_THRESHOLD
+				|| abs(psx.stick(PSS_RX) - last_stick[2]) > STICK_THRESHOLD
+				|| abs(psx.stick(PSS_RY) - last_stick[3]) > STICK_THRESHOLD){
+			send_sticks = 1;
+		}
+		if (abs(throttle_position - last_throttle) > THROTTLE_THRESHOLD){
+			send_throttle = 1;
+		}
+		
+		if (send_sticks){
+			last_stick[0] = psx.stick(PSS_LX);
+			last_stick[1] = psx.stick(PSS_LY);
+			last_stick[2] = psx.stick(PSS_RX);
+			last_stick[3] = psx.stick(PSS_RY);
+
+			FramedSerialMessage m(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
+			sendMessage(&m);
+			
 			analog_poll_counter = 0;
 		}
-		if (analog_poll_counter > ANALOG_POLL_COUNT){
-			//TODO write analog values
+		if (send_throttle){
+			last_throttle = throttle_position;
+			
+			FramedSerialMessage m(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
+			sendMessage(&m);
+			
+			analog_poll_counter = 0;
 		}
 
 //		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select        ", 14);
