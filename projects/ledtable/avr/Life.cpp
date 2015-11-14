@@ -1,16 +1,18 @@
 #include "Life.h"
 #include <Draw.h>
-#include <Buttons.h>
+#include <ButtonAVR.h>
 #include "Matrix.h"
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
-extern uint8_t sample;
+extern uint32_t ms;
+extern ButtonAVR b1;
+extern ButtonAVR b2;
+
 extern Matrix matrix;
 extern Hsv hsv;
-extern Buttons buttons;
 
 Life::Life() {
 }
@@ -21,9 +23,6 @@ Life::~Life() {
 void Life::run() {
 	uint8_t running = 1;
 	uint8_t overflow = 128;
-	
-	uint8_t released;
-	uint8_t held;
 	
 	reset();
 	
@@ -79,34 +78,23 @@ void Life::run() {
 		if (matches >= LIFE_MATCH_COUNT) {
 			reset();
 		}
-		
-		// sample buttons
-		if (sample) {
-			buttons.sample();
-			released = buttons.released();
-			held = buttons.held();
 
-			sample = 0;
-		}
-
-		// take action
-		if (held && 0x01) {
+		b1.sample(ms);
+		b2.sample(ms);
+		if (b1.longPressEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (released && 0x01) {
-			// noop
-		}
-		else if (held && 0x02) {
-			// noop
-		}
-		else if (released && 0x02) {
+		else if (b2.pressEvent()) {
 			// change speed
 			overflow += 64;
 		}
 		
-		for (int i = 0; i < overflow; i++) {
-			_delay_ms(1);
+		for (int i = 0; i < overflow; i = i + 16) {
+			_delay_ms(16);
+
+			b1.sample(ms);
+			b2.sample(ms);
 		}
 	}
 }

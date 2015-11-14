@@ -1,6 +1,6 @@
 #include "Clock.h"
 #include "ClockSet.h"
-#include <Buttons.h>
+#include <ButtonAVR.h>
 #include <Hsv.h>
 #include <Rgb.h>
 #include "Matrix.h"
@@ -9,10 +9,12 @@
 
 using namespace digitalcave;
 
+extern uint32_t ms;
+extern ButtonAVR b1;
+extern ButtonAVR b2;
+
 extern Hsv hsv;
 extern Matrix matrix;
-extern Buttons buttons;
-extern uint8_t sample;
 
 Clock::Clock() {
 }
@@ -28,9 +30,6 @@ void Clock::run() {
 	uint8_t tick = 0;
 	uint32_t ms;
 	
-	uint8_t released;
-	uint8_t held;
-
 	uint8_t field[4];
 	char c[4];
 
@@ -171,21 +170,14 @@ void Clock::run() {
 
 		matrix.flush();
 		
-		// sample buttons
-		if (sample) {
-			buttons.sample();
-			released = buttons.released();
-			held = buttons.held();
-
-			sample = 0;
-		}
-
-		// take action
-		if (held && 0x01) {
+		b1.sample(ms);
+		b2.sample(ms);
+		
+		if (b1.longPressEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (released && 0x01) {
+		else if (b1.pressEvent()) {
 			// change clock (trad, hexidecimal, octal, dozenal, senary, vigesimal, decimal)
 			running++;
 			running %= 8;
@@ -218,15 +210,12 @@ void Clock::run() {
 			matrix.flush();
 			_delay_ms(1000);
 		}
-		else if (held && 0x02) {
+		else if (b2.longPressEvent()) {
 			// set date/time
 			ClockSet cs = ClockSet();
 			cs.run();
 		}
-		else if (released && 0x02) {
-			// noop
-		}
-		
+	
 		_delay_ms(99);
 	}
 }
