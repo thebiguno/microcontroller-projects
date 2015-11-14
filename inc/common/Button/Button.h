@@ -53,6 +53,11 @@ namespace digitalcave {
 		uint8_t sample(uint32_t time);
 		
 		/*
+ 		 * Returns non-zero if this button was currently debounced and marked as pressed; zero otherwise.
+		 */
+		uint8_t press();
+		
+		/*
  		 * Returns non-zero if this button was newly debounced and marked as pressed; zero otherwise.
 		 */
 		uint8_t pressEvent();
@@ -62,6 +67,11 @@ namespace digitalcave {
 		 */
 		uint8_t releaseEvent();
 		
+		/*
+ 		 * Returns non-zero if this button was currently marked as long pressed; zero otherwise.
+		 */
+		uint8_t longPress();
+
 		/*
  		 * Returns non-zero if this button was newly marked as long pressed; zero otherwise.
 		 */
