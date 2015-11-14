@@ -62,7 +62,7 @@ CFLAGS += -std=gnu99
 CXXFLAGS += -std=gnu++11
 
 # linker options
-LDFLAGS = -mmcu=$(MMCU) -Os -Wl,--gc-sections
+LDFLAGS += -mmcu=$(MMCU) -Os -Wl,--gc-sections
 
 CC = avr-gcc
 CXX = avr-g++
@@ -120,8 +120,8 @@ endif
 # automatically create lists of the sources and objects
 LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/avr" -name '*.c')
 LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/avr" -name '*.cpp')
-C_FILES := $(shell find . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
-CPP_FILES := $(shell find . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
+C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
+CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
 
 # include paths for libraries
 L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/avr" -type d), -I$(lib))
@@ -167,7 +167,7 @@ $(PROJECT).asm: $(PROJECT).elf
 
 %.hex: %.elf
 	@echo "[HEX]\t$@"
-	@$(SIZE) "$<"
+	@$(SIZE) -d -C --mcu=$(MMCU) "$<"
 	@$(OBJCOPY) -O ihex -R .eeprom "$<" "$@"
 
 # compiler generated dependency info

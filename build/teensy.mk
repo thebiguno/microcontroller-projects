@@ -107,8 +107,8 @@ SIZE = $(abspath $(COMPILERPATH))/arm-none-eabi-size
 # automatically create lists of the sources and objects
 LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/teensy" -name '*.c')
 LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/teensy" -name '*.cpp')
-C_FILES := $(shell find . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
-CPP_FILES := $(shell find . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
+C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
+CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
 
 # include paths for libraries
 L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/teensy" -type d), -I$(lib))

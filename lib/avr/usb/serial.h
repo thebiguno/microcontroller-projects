@@ -66,6 +66,9 @@
 #define CDC_GET_LINE_CODING		0x21
 #define CDC_SET_CONTROL_LINE_STATE	0x22
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // setup
 void usb_init(void);			// initialize everything
@@ -78,9 +81,10 @@ uint8_t usb_serial_available();			// number of bytes in receive buffer
 void usb_serial_flush_input();			// discard any buffered input
 
 // transmitting data
-void usb_serial_write_c(char c);		// transmit a character
-void usb_serial_write_b(uint8_t b);		// transmit a byte
-int8_t usb_serial_putchar_nowait(uint8_t c);  // transmit a character, do not wait
+int8_t usb_serial_write_c(char c);		// transmit a character
+int8_t usb_serial_write_b(uint8_t b);		// transmit a byte
+int8_t usb_serial_write_c_nowait(uint8_t c);  // transmit a character, do not wait
+int8_t usb_serial_write_b_nowait(uint8_t c);  // transmit a byte, do not wait
 int8_t usb_serial_write(const uint8_t *buffer, uint16_t size); // transmit a buffer
 void usb_serial_flush_output(void);	// immediately transmit any buffered output
 
@@ -116,5 +120,9 @@ int8_t usb_serial_set_control(uint8_t signals); // set DSR, DCD, RI, etc
 // has calls to these functions.
 #define usb_debug_putchar(c)
 #define usb_debug_flush_output()
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
