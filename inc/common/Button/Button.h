@@ -63,7 +63,7 @@ namespace digitalcave {
 		uint8_t pressEvent();
 		
 		/*
- 		 * Returns non-zero if this button was newly debounced and marked as released; zero otherwise.
+ 		 * Returns non-zero if this button was newly debounced and marked as released (and if the timer has not already passed the longPress timeout); zero otherwise.
 		 */
 		uint8_t releaseEvent();
 		
@@ -78,7 +78,7 @@ namespace digitalcave {
 		uint8_t longPressEvent();
 
 		/*
- 		 * Returns non-zero if this button was newly marked as long pressed; zero otherwise.
+ 		 * Returns non-zero if this button was newly released after passing the long pressed threshold; zero otherwise.
 		 */
 		uint8_t longReleaseEvent();
 		
