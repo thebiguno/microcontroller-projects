@@ -68,18 +68,18 @@ void Tictactoe::run() {
 		b1.sample(ms);
 		b2.sample(ms);
 
-		if (b1.longPressEvent()) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (b1.pressEvent()) {
+		else if (b1.releaseEvent()) {
 			// select square
 			selection++;
 			while (state[selection] > 0) {
 				selection++;
 			}
 		}
-		else if (b2.pressEvent()) {
+		else if (b2.releaseEvent()) {
 			// choose square
 			if (state[selection] == 0) {
 				state[selection] = player;

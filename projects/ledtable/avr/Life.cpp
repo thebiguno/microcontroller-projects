@@ -81,11 +81,11 @@ void Life::run() {
 
 		b1.sample(ms);
 		b2.sample(ms);
-		if (b1.longPressEvent()) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (b2.pressEvent()) {
+		else if (b2.releaseEvent()) {
 			// change speed
 			overflow += 64;
 		}

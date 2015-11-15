@@ -173,11 +173,11 @@ void Clock::run() {
 		b1.sample(ms);
 		b2.sample(ms);
 		
-		if (b1.longPressEvent()) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (b1.pressEvent()) {
+		else if (b1.releaseEvent()) {
 			// change clock (trad, hexidecimal, octal, dozenal, senary, vigesimal, decimal)
 			running++;
 			running %= 8;
@@ -210,12 +210,10 @@ void Clock::run() {
 			matrix.flush();
 			_delay_ms(1000);
 		}
-		else if (b2.longPressEvent()) {
+		else if (b2.longReleaseEvent()) {
 			// set date/time
 			ClockSet cs = ClockSet();
 			cs.run();
 		}
-	
-		_delay_ms(99);
 	}
 }

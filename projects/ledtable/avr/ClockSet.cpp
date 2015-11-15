@@ -79,13 +79,13 @@ void ClockSet::run() {
 		b1.sample(ms);
 		b2.sample(ms);
 		
-		if (b1.longPressEvent()) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			time.second = 0;
 			mcp79410_set(&time);
 			running = 0;
 		}
-		if (b1.pressEvent()) {
+		if (b1.releaseEvent()) {
 			// change field
 			running++;
 			

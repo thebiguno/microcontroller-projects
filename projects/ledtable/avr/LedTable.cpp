@@ -20,8 +20,8 @@ using namespace digitalcave;
 Matrix matrix = Matrix();
 volatile uint32_t ms = 0;
 ButtonAVR b1 = ButtonAVR(&PORTF, 0x00, 100, 100, 2000, 2000);
-ButtonAVR b2 = ButtonAVR(&PORTF, 0x00, 100, 100, 2000, 2000);
-Hsv hsv = Hsv(0,0xff,0x0f);
+ButtonAVR b2 = ButtonAVR(&PORTF, 0x01, 100, 100, 2000, 2000);
+Hsv hsv = Hsv(0,0xff,0x1f);
 
 int main() {
 	srandom(0);
@@ -34,6 +34,11 @@ int main() {
 
 	uint8_t selected = 0;
 	
+	// input high (pullup)
+	DDRF = 0x00;
+	PORTF = 0xff;
+	
+	// output low
 	DDRB = 0xff;
 	PORTB = 0x00;
 
@@ -85,7 +90,7 @@ int main() {
 		}
 		else if (b1.releaseEvent()) {
 			selected++;
-			selected %= 4;
+			selected %= 5;
 		}
 		else if (b2.longReleaseEvent()) {
 			// increase brightness

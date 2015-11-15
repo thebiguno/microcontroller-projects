@@ -86,17 +86,17 @@ void Plasma::run() {
 		b1.sample(ms);
 		b2.sample(ms);
 		
-		if (b1.longPressEvent()) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (b1.pressEvent()) {
+		else if (b1.releaseEvent()) {
 			// change plasma
 			running++;
 			running %= 6;
 			if (running == 0) running = 1;
 		}
-		else if (b2.pressEvent()) {
+		else if (b2.releaseEvent()) {
 			// change speed
 			overflow += 64;
 		}
