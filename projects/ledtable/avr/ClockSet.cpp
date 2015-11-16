@@ -27,8 +27,9 @@ void ClockSet::run() {
 	uint8_t a;
 	uint8_t b;
 	
+	mcp79410_get(&time);
+
 	while (running) {
-		mcp79410_set(&time);
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
 		matrix.setColor(Rgb(hsv));
@@ -118,7 +119,5 @@ void ClockSet::run() {
 				time.minute %= 60;
 			}
 		}
-		
-		_delay_ms(100);
 	}
 }
