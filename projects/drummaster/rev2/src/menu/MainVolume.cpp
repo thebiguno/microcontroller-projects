@@ -22,7 +22,7 @@ Menu* MainVolume::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume / 100.0;
-		Samples::setMasterVolume(volume);
+		Sample::setMasterVolume(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume * 100));
 	display.write_text(1, 0, buf, 4);

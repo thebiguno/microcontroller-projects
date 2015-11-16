@@ -4,8 +4,6 @@ using namespace digitalcave;
 
 extern ADC adc;
 
-static Samples samples;
-
 Pad::Pad(uint8_t channel) : channel(channel), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
 }
 
@@ -100,7 +98,7 @@ void Pad::poll(){
 		Serial.print(peakRawValue);
 		Serial.print("; time = ");
 		Serial.println(millis());
-		lastSample = samples.findAvailableSample(channel, peakRawValue);
+		lastSample = Sample::findAvailableSample(channel, peakRawValue);
 		lastSample->play(channel, peakRawValue);
 		lastPlayTime = millis();
 		lastRawValue = peakRawValue;

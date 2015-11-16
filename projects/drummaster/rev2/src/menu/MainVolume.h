@@ -2,7 +2,7 @@
 #define MAINVOLUME_H
 
 #include "Menu.h"
-#include "../Samples.h"
+#include "../Sample.h"
 
 namespace digitalcave {
 

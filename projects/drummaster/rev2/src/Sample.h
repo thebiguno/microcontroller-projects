@@ -24,9 +24,23 @@
 
 namespace digitalcave {
 
+	/*
+	 * The Sample class handles playing back the actual sounds.  There are lots of aspects to it:
+	 * 1) Static objects / methods for hooking up the actual playback.  These are Teensy Audio 
+	 * classes, and include things like the main volume control, SPI playback objects, mixers,
+	 * and connections between everything.
+	 * 2) Static methods for finding an available Sample object and mapping between a channel / volume
+	 * tuple and a filename
+	 * 3) Methods to play a sample, set gain (volume) on a given channel, query state, stop playback, etc.
+	 */
 	class Sample {
 		private:
-			static AudioPlaySerialRaw samples[];
+			//Control object
+			static AudioControlSGTL5000 control;
+			static uint8_t controlEnabled;
+			
+			//SPI flash playback objects
+			static AudioPlaySerialRaw audioPlaySerialRaws[];
 			static AudioInputI2S input;
 
 			//Mixer
@@ -56,6 +70,10 @@ namespace digitalcave {
 			//Mixer to output
 			static AudioConnection mixerToOutput0;
 			static AudioConnection mixerToOutput1;
+			
+			//Static array of samples, along with index to keep track of current index (for sample constructor).
+			static uint8_t currentIndex;
+			static Sample samples[];
 
 			//This sample's index into mixer
 			uint8_t index;
@@ -67,10 +85,13 @@ namespace digitalcave {
 			uint8_t lastGain;
 			
 		public:
-			Sample(uint8_t index);
+			static void setMasterVolume(double volume);
+			static Sample* findAvailableSample(uint8_t channel, uint8_t volume);
+			static char* lookupSample(uint8_t channel, uint8_t volume);
+		
+			Sample();
 			
 			void play(uint8_t channel, uint8_t volume);
-			char* lookupSample(uint8_t channel, uint8_t volume);
 			uint8_t isPlaying();
 			uint32_t getPositionMillis();
 			void stop();

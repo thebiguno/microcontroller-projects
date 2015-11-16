@@ -54,7 +54,7 @@ int main(){
 	AudioMemory(16);
 	
 	//Turn on the audio chip
-	Samples::setMasterVolume(0.7);	//TODO Load from EEPROM
+	Sample::setMasterVolume(0.7);	//TODO Load from EEPROM
 	
 	Serial.begin(9600);
 	

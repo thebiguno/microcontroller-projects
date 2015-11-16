@@ -3,7 +3,7 @@
 
 #include <ADC.h>
 
-#include "../Samples.h"
+#include "../Sample.h"
 #include "../DrumMaster.h"
 
 
