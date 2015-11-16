@@ -2,15 +2,17 @@
 #include "Matrix.h"
 #include <Rgb.h>
 #include <Hsv.h>
-#include <Buttons.h>
+#include <ButtonAVR.h>
 #include <util/delay.h>
 #include <stdlib.h>
 
 using namespace digitalcave;
 
-extern uint8_t sample;
+extern uint32_t ms;
+extern ButtonAVR b1;
+extern ButtonAVR b2;
+
 extern Matrix matrix;
-extern Buttons buttons;
 extern Hsv hsv;
 
 Tictactoe::Tictactoe() {
@@ -27,9 +29,6 @@ void Tictactoe::run() {
 	uint8_t player = 1;
 
 	uint8_t selection = 0;
-	
-	uint8_t released;
-	uint8_t held;
 	
 	Hsv comp = Hsv(hsv);
 	comp.addHue(180);
@@ -66,30 +65,21 @@ void Tictactoe::run() {
 		blink++;
 		blink %= 2;
 
-		// sample buttons
-		if (sample) {
-			buttons.sample();
-			released = buttons.released();
-			held = buttons.held();
-			sample = 0;
-		}
+		b1.sample(ms);
+		b2.sample(ms);
 
-		// take action
-		if (held && 0x01) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
 		}
-		else if (released && 0x01) {
+		else if (b1.releaseEvent()) {
 			// select square
 			selection++;
 			while (state[selection] > 0) {
 				selection++;
 			}
 		}
-		else if (held && 0x02) {
-			// noop
-		}
-		else if (released && 0x02) {
+		else if (b2.releaseEvent()) {
 			// choose square
 			if (state[selection] == 0) {
 				state[selection] = player;
@@ -139,6 +129,11 @@ void Tictactoe::run() {
 			}
 		}
 		
-		_delay_ms(127);
+		for (uint8_t i; i < 127; i = i + 16) {
+			_delay_ms(16);
+
+			b1.sample(ms);
+			b2.sample(ms);
+		}
 	}
 }

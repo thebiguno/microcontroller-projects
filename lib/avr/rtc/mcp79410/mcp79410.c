@@ -29,19 +29,19 @@ void mcp79410_set(struct mcp79410_time_t *time) {
 	uint8_t data[7];
 
 	// disable the crystal input (ST = 0)
-	data[0] = 0x00;								// seconds register
-	data[1] = 0x00;								// ST = 0
+	data[0] = 0x00;								// RTCSEC register
+	data[1] = 0x00;								// ST = 0, seconds = 0
 	twi_write_to(0x6f, data, 2, TWI_BLOCK, TWI_STOP);
 
 	// wait for the oscilator to stop (OSCRUN == 0)
-	data[0] = 0x03;
-	data[1] = 0x20;
-	while (data[1] & 0x20) {
+	data[0] = 0x03;								// RTCWKDAY register
+	data[1] = 0x00;
+	while (data[1] & 0x20) {					// OSCRUN is bit 5
 		twi_read_from(0x6f, data, 2, TWI_STOP);
 	}
 	
 	// set the time fields
-	data[0] = 0x01;								// minutes register
+	data[0] = 0x01;								// RTCMIN register
 	data[1] = hex2bcd(time->minute);
 	data[2] = hex2bcd(time->hour);
 	data[3] = hex2bcd(time->wday) | 0x08,		// enable battery (VBATEN = 1) 

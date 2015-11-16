@@ -1,5 +1,5 @@
 #include "ClockSet.h"
-#include <Buttons.h>
+#include <ButtonAVR.h>
 #include <Hsv.h>
 #include <Rgb.h>
 #include "Matrix.h"
@@ -8,10 +8,12 @@
 
 using namespace digitalcave;
 
+extern uint32_t ms;
+extern ButtonAVR b1;
+extern ButtonAVR b2;
+
 extern Hsv hsv;
 extern Matrix matrix;
-extern Buttons buttons;
-extern uint8_t sample;
 
 ClockSet::ClockSet() {
 }
@@ -25,12 +27,9 @@ void ClockSet::run() {
 	uint8_t a;
 	uint8_t b;
 	
-	uint8_t released;
-	uint8_t held = 0;
-	uint8_t repeat;
+	mcp79410_get(&time);
 
 	while (running) {
-		mcp79410_set(&time);
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
 		matrix.setColor(Rgb(hsv));
@@ -78,22 +77,16 @@ void ClockSet::run() {
 
 		matrix.flush();
 		
-		if (sample) {
-			buttons.sample();
-			released = buttons.released();
-			held = buttons.held();
-			repeat = buttons.repeat();
-
-			sample = 0;
-		}
+		b1.sample(ms);
+		b2.sample(ms);
 		
-		if (held && 0x01) {
+		if (b1.longReleaseEvent()) {
 			// exit
 			time.second = 0;
 			mcp79410_set(&time);
 			running = 0;
 		}
-		if (released && 0x01) {
+		if (b1.releaseEvent()) {
 			// change field
 			running++;
 			
@@ -103,7 +96,7 @@ void ClockSet::run() {
 				running = 0;
 			}
 		}
-		else if ((released && 0x02) || (repeat && 0x02)) {
+		else if (b2.releaseEvent()) {
 			// increment field value
 			if (running == 1) {
 				time.year++;
@@ -126,7 +119,5 @@ void ClockSet::run() {
 				time.minute %= 60;
 			}
 		}
-		
-		_delay_ms(100);
 	}
 }

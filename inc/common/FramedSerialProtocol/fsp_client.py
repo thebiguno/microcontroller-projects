@@ -9,7 +9,7 @@ import serial, sys
 from time import sleep
 
 # Argument is serial port
-ser = serial.Serial(sys.argv[1], 38400)
+ser = serial.Serial(sys.argv[1], sys.argv[2])
 
 sleep(1);
 
@@ -27,7 +27,9 @@ chk = 0x00
 buf = {}
 
 while True:
-	b = ord(ser.read())
+	c = ser.read()
+	b = ord(c)
+	ser.write(c)
 	
 	if (err and b == START):
 		# recover from error condition

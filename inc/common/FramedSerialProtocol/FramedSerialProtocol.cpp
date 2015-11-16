@@ -49,6 +49,7 @@ void FramedSerialMessage::append(uint8_t b){
 
 FramedSerialProtocol::FramedSerialProtocol(uint8_t maxSize){
 	data = (uint8_t*) malloc(maxSize);
+	this->maxSize = maxSize;
 	position = 0;
 	length = 0;
 	command = 0;
@@ -76,14 +77,16 @@ void FramedSerialProtocol::escapeByte(Stream* stream, uint8_t b){
 
 uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 	uint8_t b;
-	while (stream->read(&b)){
+	while (stream->read(&b)){	
 		if (error > 0){
 			if (b == START) {
 				// recover from any previous error condition
 				error = NO_ERROR;
 				position = 0;
 			}
-			continue;
+			else {
+				continue;
+			}
 		}
 	
 		if (position > 0 && b == START) {
@@ -123,7 +126,7 @@ uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 				position++;
 				break;
 			default:
-				if (position > maxSize){
+				if ((position - 3) > maxSize){
 					//Max size exceeded
 					error = INCOMING_ERROR_EXCEED_MAX_LENGTH;
 				}
@@ -131,6 +134,8 @@ uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 					if (checksum == 0xff) {
 						FramedSerialMessage m(command, data, length - 1);
 						result->clone(&m);
+						position = 0;
+						checksum = 0;
 						return 1;
 					} else {
 						error = INCOMING_ERROR_INVALID_CHECKSUM;
@@ -139,7 +144,8 @@ uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 					checksum = 0;
 				}
 				else {
-					data[position++ - 3] = b;
+					data[position - 3] = b;
+					position++;
 				}
 				break;
 		}
