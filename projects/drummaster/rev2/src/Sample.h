@@ -6,6 +6,10 @@
 #include <play_serial_raw.h>
 #include <math.h>
 
+//The total number of samples allowed in the system.  Currently 12 seems to be right; more than this 
+// can cause slowdowns when playing back.  If this is set to more than 14, you need to change how the
+// mixer is set up, since currently we are using a 16 channel mixer with two channels reserved for 
+// passing through i2s audio from an external source.
 #define SAMPLE_COUNT				12
 
 //The base of the exponential curve for audio mapping.  Nothing particularly scientific here, I just 
@@ -27,20 +31,23 @@ namespace digitalcave {
 	/*
 	 * The Sample class handles playing back the actual sounds.  There are lots of aspects to it:
 	 * 1) Static objects / methods for hooking up the actual playback.  These are Teensy Audio 
-	 * classes, and include things like the main volume control, SPI playback objects, mixers,
-	 * and connections between everything.
+	 * classes, and include things like the main volume control, mixers, and connections 
+	 * between everything.
 	 * 2) Static methods for finding an available Sample object and mapping between a channel / volume
 	 * tuple and a filename
-	 * 3) Methods to play a sample, set gain (volume) on a given channel, query state, stop playback, etc.
+	 * 3) Private instance variables for SPI audio sample and the connection between it and the mixer
+ 	 * 4) Methods to play a sample, set gain (volume) on a given channel, query state, stop playback, etc.
+ 	 *
+ 	 * Note that the Sample objects can only be accessed via the singleton array samples[], via
+ 	 * the static findAvailableSample method.
 	 */
 	class Sample {
 		private:
 			//Control object
 			static AudioControlSGTL5000 control;
 			static uint8_t controlEnabled;
+			static uint8_t masterVolume;
 			
-			//SPI flash playback objects
-			static AudioPlaySerialRaw audioPlaySerialRaws[];
 			static AudioInputI2S input;
 
 			//Mixer
@@ -48,20 +55,6 @@ namespace digitalcave {
 
 			//Output
 			static AudioOutputI2S output;
-
-			//Samples to mixer
-			static AudioConnection sample0ToMixer;
-			static AudioConnection sample1ToMixer;
-			static AudioConnection sample2ToMixer;
-			static AudioConnection sample3ToMixer;
-			static AudioConnection sample4ToMixer;
-			static AudioConnection sample5ToMixer;
-			static AudioConnection sample6ToMixer;
-			static AudioConnection sample7ToMixer;
-			static AudioConnection sample8ToMixer;
-			static AudioConnection sample9ToMixer;
-			static AudioConnection sample10ToMixer;
-			static AudioConnection sample11ToMixer;
 
 			//Input passthrough to mixer
 			static AudioConnection inputToMixer0;
@@ -76,28 +69,54 @@ namespace digitalcave {
 			static Sample samples[];
 
 			//This sample's index into mixer
-			uint8_t index;
+			uint8_t mixerChannel;
 			
-			//The most recently played channel
-			uint8_t lastChannel;
+			//The most recently played pad index.
+			uint8_t lastPad;
 			
-			//The last (raw) gain value which has been set
-			uint8_t lastGain;
-			
-		public:
-			static void setMasterVolume(double volume);
-			static Sample* findAvailableSample(uint8_t channel, uint8_t volume);
-			static char* lookupSample(uint8_t channel, uint8_t volume);
-		
+			//SPI flash playback object
+			AudioPlaySerialRaw playSerialRaw;
+
+			//Connections from samples to mixer
+			AudioConnection sampleToMixer;
+
+			//The last volume value which has been set for this Sample
+			uint8_t volume;
+
+			//Constructing the objects should only happen during singleton array init.
 			Sample();
 			
-			void play(uint8_t channel, uint8_t volume);
+		public:
+			//Get the master volume.  This is a value from 0 to 255.
+			static uint8_t getMasterVolume();
+			
+			//Set the master volume (affects everything).  This is a value from 0 to 255.
+			static void setMasterVolume(uint8_t volume);
+			
+			//Find the best available Sample object from the singleton array
+			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
+			
+		
+			//Start playback using this sample's SPI playback object for the given filename
+			void play(char* filename, uint8_t pad, uint8_t volume);
+			
+			//Is the sample current playing?
 			uint8_t isPlaying();
+			
+			//If the sample is playing, return the position of the sample; otherwise return 0
 			uint32_t getPositionMillis();
+
+			//Stops playback
 			void stop();
-			uint8_t getGain();
-			void setGain(uint8_t volume);
-			uint8_t getLastChannel();
+
+			//Retrieves the current sample volume.  This is a value from 0 to 255.
+			uint8_t getVolume();
+
+			//Set the sample volume.  This is a value from 0 to 255.
+			void setVolume(uint8_t volume);
+
+			//Returns the index of the last pad which initiated playback.
+			uint8_t getLastPad();
 	};
 	
 }

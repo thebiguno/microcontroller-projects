@@ -17,8 +17,8 @@ namespace digitalcave {
 
 	class Pad {
 		protected:
-			//The hardware channel associated with this pad
-			uint8_t channel;
+			//The hardware index associated with this pad
+			uint8_t index;
 			
 			//The last sample object which was used to play this pad.  Used in the event that we need
 			// to adjust the playback on the last sample
@@ -41,12 +41,14 @@ namespace digitalcave {
 			
 		public:
 			//Create a new pad object referencing the specified hardware channel
-			Pad(uint8_t channel);
+			Pad(uint8_t index);
 			
 			//Reads the ADC for any current activity.  Uses peakVolume to determine if this is
 			// ready to be played.  Starts playing the sample if warranted.
 			void poll();
-
+			
+			//Find the correct sample, given a volume
+			char* lookupSample(uint8_t volume);
 	};
 	
 }

@@ -4,7 +4,12 @@ using namespace digitalcave;
 
 extern ADC adc;
 
-Pad::Pad(uint8_t channel) : channel(channel), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
+Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
+}
+
+
+char* Pad::lookupSample(uint8_t volume){
+	return (char*) "RD_0_A.RAW";
 }
 
 void Pad::poll(){
@@ -16,10 +21,10 @@ void Pad::poll(){
 	delayMicroseconds(1);
 	
 	//Set channel
-	digitalWriteFast(MUX0, channel & 0x01);
-	digitalWriteFast(MUX1, channel & 0x02);
-	digitalWriteFast(MUX2, channel & 0x04);
-	digitalWriteFast(MUX3, channel & 0x08);
+	digitalWriteFast(MUX0, index & 0x01);
+	digitalWriteFast(MUX1, index & 0x02);
+	digitalWriteFast(MUX2, index & 0x04);
+	digitalWriteFast(MUX3, index & 0x08);
 
 	//TODO Unsure of whether this delay is needed... experimentation is required.
 	delayMicroseconds(1);
@@ -58,7 +63,7 @@ void Pad::poll(){
 		if (lastSample != NULL && lastRawValue < rawValue){
 			Serial.println("Adjusted rawValue");
 			//Change the last volume to the higher (new) value and stop processing
-			lastSample->setGain(rawValue);
+			lastSample->setVolume(rawValue);
 			//TODO Change the sample + rawValue to match the highest value
 			//Serial.println("Adjusted last hit");
 			return;
@@ -93,13 +98,13 @@ void Pad::poll(){
 		//Start the sample playback
 
 		Serial.print("Playing ");
-		Serial.print(channel);
+		Serial.print(index);
 		Serial.print(" at rawValue ");
 		Serial.print(peakRawValue);
 		Serial.print("; time = ");
 		Serial.println(millis());
-		lastSample = Sample::findAvailableSample(channel, peakRawValue);
-		lastSample->play(channel, peakRawValue);
+		lastSample = Sample::findAvailableSample(index, peakRawValue);
+		lastSample->play(lookupSample(peakRawValue), index, peakRawValue);
 		lastPlayTime = millis();
 		lastRawValue = peakRawValue;
 		peakRawValue = 0;
