@@ -2,7 +2,7 @@ Each kit is located in the root of the SD card.  All samples within a kit are in
 
 The naming convension for samples is as follows:
 
-XX_V_N.raw
+XX_V_N.RAW
 
 where:
 	XX is the two letter drum name, as follows:
@@ -11,11 +11,9 @@ where:
 		T1 = Tom 1 (High)
 		T2 = Tom 2 (Med)
 		T3 = Tom 3 (Low)
-		DX = Drum X (Extra drum)
 		CR = Crash
 		SP = Splash
 		RD = Ride
-		CX = Cymbal X (Extra cymbal)
 		H1 = HiHat Fully Closed
 		H2 = HiHat Semi Closed
 		H3 = HiHat Half Open
@@ -23,7 +21,14 @@ where:
 		H5 = HiHat Fully Open
 		HC = HiHat Chic
 		HS = Hihat Foot Splash
-	V is the relative velocity (from 0-9, 0 being lowest velocity and 9 being highest)
-	N is the sample number, allowing multiple samples for the same drum + velocity (from a-z); if there are multiple samples, one will be randomly selected.
+		X0 = Extra pad 0
+		X1 = Extra pad 1
+	V is the relative velocity (hex digit from 0-F, 0 being lowest velocity and F being highest).  These 
+		do not need to be continuous; for instance, you can have one sample at volume 0 and another at 
+		volume F, and the software will choose the closest one.
+	N is the sample number, allowing multiple samples for the same drum + velocity (hex digit from 0-F); if
+		there are multiple samples, one will be randomly selected.  This is zero based, and need to be 
+		continuous; for instance, if you have a sample number 3 you must also have 2, 1, and 0.  If there 
+		is only one sample, it must have sample number 0.
 	
-All samples MUST be in mono signed 16 bit PCM RAW format.
+All samples MUST be in mono signed 16 bit PCM RAW format, and all filenames MUST be in all capital letters.

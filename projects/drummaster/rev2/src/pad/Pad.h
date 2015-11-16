@@ -4,7 +4,7 @@
 #include <ADC.h>
 
 #include "../Sample.h"
-#include "../DrumMaster.h"
+#include "../hardware.h"
 
 
 //Min time in millis between hits
@@ -20,6 +20,13 @@ namespace digitalcave {
 			//The hardware index associated with this pad
 			uint8_t index;
 			
+			//The number of sample files which can be played at each volume interval.
+			// We support 16 volumes (represented by a single hex digit 0..F in the filename).
+			// At each volume we can have up to 255 samples, which will be chosen randomly.
+			//This array is instantiated by calling updateSamples() method.
+			//Most of the time the value will be either 0 or 1.
+			uint8_t fileCountByVolume[16];
+			
 			//The last sample object which was used to play this pad.  Used in the event that we need
 			// to adjust the playback on the last sample
 			Sample* lastSample;
@@ -32,6 +39,10 @@ namespace digitalcave {
 			//The magnitude of the last value which was played.
 			uint8_t lastRawValue;
 			
+			//Variables used internally for getting sample filenames
+			char filenamePrefix[2];
+			char filenameResult[16];
+			
 			//We repeatedly read the ADC until we see two consecutive readings in which the latter
 			// is equal or less than the former (i.e. the value is either stable or going down).
 			// Until we see this, we do not start playing the sample and activate the drain.
@@ -39,16 +50,23 @@ namespace digitalcave {
 			// this value is reset.
 			uint8_t peakRawValue;
 			
+			//Returns the strike velocity.  Handles the ADC, draining, etc.
+			uint8_t readAdc();
+			
 		public:
 			//Create a new pad object referencing the specified hardware channel
 			Pad(uint8_t index);
 			
-			//Reads the ADC for any current activity.  Uses peakVolume to determine if this is
-			// ready to be played.  Starts playing the sample if warranted.
-			void poll();
+			//Reads the ADC for any current activity.  Starts playing the sample if warranted.
+			virtual void poll() = 0;
 			
-			//Find the correct sample, given a volume
-			char* lookupSample(uint8_t volume);
+			//Looks on the SPI flash chip for files according to the sample naming convention,
+			// and updates the fileCountByVolume array, which indicates which files are 
+			// available.
+			void updateSamples();
+			
+			//Find the correct sample, given a volume.
+			char* lookupFilename(uint8_t volume);
 	};
 	
 }

@@ -4,20 +4,6 @@ using namespace digitalcave;
 
 ADC adc;
 
-Pad pads[PAD_COUNT] = {
-	Pad(0),
-	Pad(1),
-	Pad(2),
-	Pad(3),
-	Pad(4),
-	Pad(5),
-	Pad(6),
-	Pad(7),
-	Pad(8),
-	Pad(9),
-	Pad(10)	//TODO This is HiHat
-};
-
 MainMenu mainMenu;
 MainVolume mainVolume;
 LoadSamples loadSamples;
@@ -53,6 +39,19 @@ int main(){
 	//Allocate enough memory for audio
 	AudioMemory(16);
 	
+	Pad* pads[PAD_COUNT];
+	pads[0] = new HiHat(0, 1);	//Hihat + Pedal
+	pads[1] = new Drum(2);		//Snare
+	pads[2] = new Drum(3);		//Bass
+	pads[3] = new Drum(4);		//Tom1
+	pads[4] = new Cymbal(5);	//Crash
+	pads[5] = new Drum(6);		//Tom2
+	pads[6] = new Drum(7);		//Tom3
+	pads[7] = new Cymbal(8);	//Splash
+	pads[8] = new Cymbal(9);	//Ride
+	pads[9] = new Drum(10);		//X0
+	pads[10] = new Drum(11);	//X1
+	
 	//Turn on the audio chip
 	Sample::setMasterVolume(0.7);	//TODO Load from EEPROM
 	
@@ -62,7 +61,7 @@ int main(){
 		menuState.poll();
 		
 		for (uint8_t i = 0; i < PAD_COUNT; i++){
-			pads[i].poll();
+			pads[i]->poll();
 		}
 	}
 }
