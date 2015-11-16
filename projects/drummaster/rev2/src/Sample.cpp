@@ -42,12 +42,14 @@ Sample::Sample(uint8_t index): index(index), lastChannel(0xFF) {
 	//Nothing to see here...
 }
 
-void Sample::play(uint8_t channel, uint8_t rawValue){
+char* Sample::lookupSample(uint8_t channel, uint8_t volume){
+	return (char*) "RD_0_A.RAW";
+}
+
+void Sample::play(uint8_t channel, uint8_t volume){
 	lastChannel = channel;
-	setGain(rawValue);
-	//Serial.println(index);
-	//samples[index].play("SN_9_A.RAW");			//TODO Change to be dynamic
-	samples[index].play("RD_0_A.RAW");			//TODO Change to be dynamic
+	setGain(volume);
+	samples[index].play(lookupSample(channel, volume));
 }
 
 uint8_t Sample::isPlaying(){

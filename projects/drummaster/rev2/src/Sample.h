@@ -70,6 +70,7 @@ namespace digitalcave {
 			Sample(uint8_t index);
 			
 			void play(uint8_t channel, uint8_t volume);
+			char* lookupSample(uint8_t channel, uint8_t volume);
 			uint8_t isPlaying();
 			uint32_t getPositionMillis();
 			void stop();
