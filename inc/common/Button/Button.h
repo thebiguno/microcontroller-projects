@@ -27,9 +27,29 @@ namespace digitalcave {
 		uint32_t lastTime;
 		
 		//Event state
-		uint8_t state;
+		uint8_t eventState;
+		//Pressed state
+		uint8_t pressedState;
 
 	public:
+		/*
+		 * Call these static methods, with 2 or more buttons passed in, to determine if all the buttons
+		 * are pressed.  This returns true when all but one button is already pressed, and the last button
+		 * is then marked as pressed.  You still need to sample() each button manually prior to calling this.
+		 */
+		static uint8_t allPressEvent(Button* b1, Button* b2);
+		static uint8_t allPressEvent(Button* b1, Button* b2, Button* b3);
+		static uint8_t allPressEvent(Button* b1, Button* b2, Button* b3, Button* b4);
+
+		/*
+		 * Call these static methods, with 2 or more buttons passed in, to determine if all the buttons
+		 * are long pressed.  This returns true when all but one button is already pressed, and the last button
+		 * is then marked as pressed.  You still need to sample() each button manually prior to calling this.
+		 */
+		static uint8_t allLongPressEvent(Button* b1, Button* b2);
+		static uint8_t allLongPressEvent(Button* b1, Button* b2, Button* b3);
+		static uint8_t allLongPressEvent(Button* b1, Button* b2, Button* b3, Button* b4);
+	
 		/*
 		 * Set the targets for press, release, longPress, and repeatPress.  Called from sub class' constructors
 		 * These values are how many ms must pass before the given event type is fired.  For instance,
@@ -45,13 +65,20 @@ namespace digitalcave {
 		 * should be called on a regular interval to ensure accurate debouncing.
 		 * Typically this method should be called every 10 to 12 ms for a stabilization period of 80 to 96 ms.
 		 *
-		 * This function returns zero if the button is currently released (and debounced) and non-zero if the button 
-		 * is currently * pressed (and debounced).  Note that this is *not* the same as pressEvent(), releaseEvent(), longPressEvent(), etc
-		 * as those return high only once, immediately after the state has changed, whereas this will always return
-		 * non-zero as long as the button is still pressed (and debounced).
+		 * This function returns zero if the button is currently released (and debounced), 1 if the button 
+		 * is currently pressed (and debounced), and 2 if the button is currently longPressed.  Note that this 
+		 * is *not* the same as pressEvent(), releaseEvent(), longPressEvent(), etc, as those return non-zero
+		 * only once, immediately after the state has changed, whereas this will always return non-zero as 
+		 * long as the button is still pressed (and debounced).
 		 */
 		uint8_t sample(uint32_t time);
-				
+		
+		/*
+		 * Returns button state.  0 is unpressed; 1 is pressed; 2 is longPressed.  This will always return the same value
+		 * as the last call to sample().
+		 */
+		uint8_t getState();
+		
 		/*
  		 * Returns non-zero if this button was newly debounced and marked as pressed; zero otherwise.
 		 */
