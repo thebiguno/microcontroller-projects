@@ -53,7 +53,7 @@ int main(){
 	pads[10] = new Drum(11);	//X1
 	
 	//Turn on the audio chip
-	Sample::setMasterVolume(0.7);	//TODO Load from EEPROM
+	Sample::setMasterVolume(180);	//TODO Load from EEPROM
 	
 	Serial.begin(9600);
 	

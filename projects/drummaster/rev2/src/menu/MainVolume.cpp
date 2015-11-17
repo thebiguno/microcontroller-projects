@@ -6,25 +6,25 @@ extern AudioControlSGTL5000 control;
 extern Menu mainMenu;
 
 MainVolume::MainVolume(){
-	encoderState = 70;
+	encoderState = volume;
 	encoder.write(encoderState);
 }
 
 Menu* MainVolume::handleAction(){
-	int8_t encoderVolume = encoder.read();
-	if (volume * 100 != encoderVolume){
-		if (encoderVolume > 100){
-			encoderVolume = 100;
-			encoder.write(100);
+	int16_t encoderVolume = encoder.read();
+	if (volume != encoderVolume){
+		if (encoderVolume > 255){
+			encoderVolume = 255;
+			encoder.write(255);
 		}
 		else if (encoderVolume < 0){
 			encoderVolume = 0;
 			encoder.write(0);
 		}
-		volume = encoderVolume / 100.0;
+		volume = encoderVolume;
 		Sample::setMasterVolume(volume);
 	}
-	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume * 100));
+	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);
 	
 	if (button.fallingEdge()){

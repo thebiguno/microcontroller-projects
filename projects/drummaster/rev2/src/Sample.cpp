@@ -43,7 +43,7 @@ void Sample::setMasterVolume(uint8_t volume){
 	}
 
 	masterVolume = volume;
-	control.volume(max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
+	control.volume(volume / 256.0);
 }
 
 Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
@@ -101,6 +101,7 @@ Sample::Sample():
 }
 
 void Sample::play(char* filename, uint8_t pad, uint8_t volume){
+	Serial.println(filename);
 	lastPad = pad;
 	setVolume(volume);
 	playSerialRaw.play(filename);
