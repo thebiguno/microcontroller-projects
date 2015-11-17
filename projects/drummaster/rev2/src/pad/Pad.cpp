@@ -4,6 +4,8 @@ using namespace digitalcave;
 
 extern ADC adc;
 
+uint8_t Pad::randomSeedCompleted = 0;
+
 Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
 	switch(index){
 		//cases 0 and 1 are handled in the HiHat subclass
@@ -89,6 +91,7 @@ void Pad::updateSamples(){
 char* Pad::lookupFilename(uint8_t volume){
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
 	// sample number.
+	volume = volume >> 4;		//Divide by 16 to get into the 16 buckets of the samples
 	int8_t offset = 1;
 	int8_t closestVolume = volume;
 	while (fileCountByVolume[closestVolume] == 0){
@@ -99,7 +102,7 @@ char* Pad::lookupFilename(uint8_t volume){
 		else offset += -1;
 	}
 	
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%x_%x.RAW", filenamePrefix, closestVolume, 0);	//TODO support random samples
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%x_%x.RAW", filenamePrefix, closestVolume, (uint8_t) random(fileCountByVolume[closestVolume]));
 	return filenameResult;
 }
 
@@ -199,6 +202,11 @@ uint8_t Pad::readAdc(){
 		lastPlayTime = millis();
 		lastRawValue = peakRawValue;
 		peakRawValue = 0;
+		
+		if (!randomSeedCompleted){
+			randomSeed(millis());
+			randomSeedCompleted = 1;
+		}
 		
 		return result;
 	}

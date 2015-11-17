@@ -17,6 +17,11 @@ namespace digitalcave {
 
 	class Pad {
 		protected:
+			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
+			// pad strike with the system time; this should allow for random numbers, as the timing of 
+			// the first pad strike will differ each time.
+			static uint8_t randomSeedCompleted;
+		
 			//The hardware index associated with this pad
 			uint8_t index;
 			
