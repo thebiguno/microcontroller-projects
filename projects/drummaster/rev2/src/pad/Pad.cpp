@@ -8,36 +8,38 @@ Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastR
 	switch(index){
 		//cases 0 and 1 are handled in the HiHat subclass
 		case 2:	//Snare
-			strncpy(filenamePrefix, "SN", 2);
+			strncpy(filenamePrefix, "SN", 3);
 			break;
 		case 3:	//Bass
-			strncpy(filenamePrefix, "BS", 2);
+			strncpy(filenamePrefix, "BS", 3);
 			break;
 		case 4:	//Tom1
-			strncpy(filenamePrefix, "T1", 2);
+			strncpy(filenamePrefix, "T1", 3);
 			break;
 		case 5:	//Crash
-			strncpy(filenamePrefix, "CR", 2);
+			strncpy(filenamePrefix, "CR", 3);
 			break;
 		case 6:	//Tom2
-			strncpy(filenamePrefix, "T2", 2);
+			strncpy(filenamePrefix, "T2", 3);
 			break;
 		case 7:	//Tom3
-			strncpy(filenamePrefix, "T3", 2);
+			strncpy(filenamePrefix, "T3", 3);
 			break;
 		case 8:	//Splash
-			strncpy(filenamePrefix, "SP", 2);
+			strncpy(filenamePrefix, "SP", 3);
 			break;
 		case 9:	//Ride
-			strncpy(filenamePrefix, "RD", 2);
+			strncpy(filenamePrefix, "RD", 3);
 			break;
 		case 10:	//X0
-			strncpy(filenamePrefix, "X0", 2);
+			strncpy(filenamePrefix, "X0", 3);
 			break;
 		case 11:	//X1
-			strncpy(filenamePrefix, "X1", 2);
+			strncpy(filenamePrefix, "X1", 3);
 			break;
 	}
+	
+	updateSamples();
 
 }
 

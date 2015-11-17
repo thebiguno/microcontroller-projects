@@ -40,7 +40,7 @@ namespace digitalcave {
 			uint8_t lastRawValue;
 			
 			//Variables used internally for getting sample filenames
-			char filenamePrefix[2];
+			char filenamePrefix[3];
 			char filenameResult[16];
 			
 			//We repeatedly read the ADC until we see two consecutive readings in which the latter

@@ -9,7 +9,7 @@ namespace digitalcave {
 	class MainVolume : public Menu {
 	
 		private:
-			float volume = 0.5;		//TODO save last volume to EEPROM
+			uint8_t volume = 180;		//TODO save last volume to EEPROM
 			
 		public:
 			MainVolume();
