@@ -3,7 +3,7 @@
 
 #include <Wire.h>
 
-#include "../DrumMaster.h"
+#include "../hardware.h"
 #include "Menu.h"
 
 namespace digitalcave {

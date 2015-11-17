@@ -8,13 +8,7 @@
 #include "pad/Cymbal.h"
 #include "pad/Drum.h"
 #include "pad/HiHat.h"
-#include "MenuState.h"
-
-#include "menu/MainMenu.h"
-#include "menu/MainVolume.h"
-#include "menu/LoadSamples.h"
-#include "menu/CalibratePads.h"
-#include "menu/CalibratePad.h"
+#include "menu/Menu.h"
 
 #include "hardware.h"
 

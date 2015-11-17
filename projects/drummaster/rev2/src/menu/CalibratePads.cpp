@@ -1,9 +1,8 @@
 #include "CalibratePads.h"
 
-using namespace digitalcave;
+#include "CalibratePad.h"
 
-extern Menu mainMenu;
-extern CalibratePad calibratePad;
+using namespace digitalcave;
 
 CalibratePads::CalibratePads(){
 }
@@ -58,12 +57,12 @@ Menu* CalibratePads::handleAction(){
 	if (button.fallingEdge()){
 		if (pad == SAMPLE_COUNT){
 			display.write_text(1, 0, "                    ", 20);
-			return &mainMenu;
+			return Menu::mainMenu;
 		}
 		else {
-			calibratePad.value = -1;
-			calibratePad.selectedPad = pad;
-			return &calibratePad;
+			((CalibratePad*) Menu::calibratePad)->value = -1;
+			((CalibratePad*) Menu::calibratePad)->selectedPad = pad;
+			return Menu::calibratePad;
 		}
 	}
 

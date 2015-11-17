@@ -1,5 +1,10 @@
 #include "Menu.h"
+
 #include "MainMenu.h"
+#include "MainVolume.h"
+#include "LoadSamples.h"
+#include "CalibratePads.h"
+#include "CalibratePad.h"
 
 using namespace digitalcave;
 
@@ -10,3 +15,26 @@ CharDisplay Menu::display(&hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 Encoder Menu::encoder(ENC_A, ENC_B);
 Bounce Menu::button(ENC_PUSH, 25);
 
+//Initialize static references to menu items
+Menu* Menu::mainMenu = new MainMenu();
+Menu* Menu::mainVolume = new MainVolume();
+Menu* Menu::loadSamples = new LoadSamples();
+Menu* Menu::calibratePads = new CalibratePads();
+Menu* Menu::calibratePad = new CalibratePad;
+
+Menu* Menu::current = Menu::mainMenu;
+
+void Menu::poll(){
+	current->button.update();
+	Menu* newMenu = current->handleAction();
+	current->display.refresh();
+	if (newMenu != NULL){
+		change(newMenu);
+	}
+}
+
+void Menu::change(Menu* newMenu){
+	current->encoderState = current->encoder.read();
+	current = newMenu;
+	newMenu->encoder.write(newMenu->encoderState);
+}
