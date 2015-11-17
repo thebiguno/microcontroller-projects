@@ -1,4 +1,5 @@
 #include "MainVolume.h"
+#include "../Sample.h"
 
 using namespace digitalcave;
 

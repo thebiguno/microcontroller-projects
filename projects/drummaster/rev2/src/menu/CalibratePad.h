@@ -11,12 +11,18 @@ namespace digitalcave {
 	class CalibratePad : public Menu {
 	
 		private:
-			uint16_t readValue(uint8_t address, uint8_t memoryAddress);
-			void writeValue(uint8_t address, uint8_t memoryAddress, uint16_t value);
+			static uint8_t getAddress(uint8_t channel);
+			static uint8_t getMemoryAddress(uint8_t channel);
+			
+			static uint16_t readValue(uint8_t channel);
+			static void writeValue(uint8_t channel, uint16_t value);
 			
 		public:
+			static void loadFromEeprom();
+			static void saveToEeprom();
+		
 			int16_t value = -1;
-			uint8_t selectedPad = 0;
+			uint8_t channel = 0;
 			
 			CalibratePad();
 			Menu* handleAction();

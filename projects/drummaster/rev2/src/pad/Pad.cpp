@@ -2,9 +2,14 @@
 
 using namespace digitalcave;
 
-extern ADC adc;
-
+ADC Pad::adc;
 uint8_t Pad::randomSeedCompleted = 0;
+
+void Pad::initAdc(){
+	adc.setResolution(8);
+	adc.setConversionSpeed(ADC_LOW_SPEED);
+	adc.setAveraging(16);
+}
 
 Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
 	switch(index){

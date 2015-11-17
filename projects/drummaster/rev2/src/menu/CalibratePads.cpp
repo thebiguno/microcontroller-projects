@@ -8,11 +8,11 @@ CalibratePads::CalibratePads(){
 }
 
 Menu* CalibratePads::handleAction(){
-	int8_t pad = encoder.read() / 2;
-	if (pad > SAMPLE_COUNT) encoder.write(0);
-	else if (pad < 0) encoder.write(SAMPLE_COUNT * 2);
+	int8_t channel = encoder.read() / 2;
+	if (channel >= (CHANNEL_COUNT + 1)) encoder.write(0);
+	else if (channel < 0) encoder.write(CHANNEL_COUNT * 2);
 	
-	switch(pad){
+	switch(channel){
 		case 0:
 			display.write_text(1, 0, "Hi Hat              ", 20);
 			break;
@@ -55,13 +55,13 @@ Menu* CalibratePads::handleAction(){
 	}
 	
 	if (button.fallingEdge()){
-		if (pad == SAMPLE_COUNT){
+		if (channel == CHANNEL_COUNT){
 			display.write_text(1, 0, "                    ", 20);
 			return Menu::mainMenu;
 		}
 		else {
 			((CalibratePad*) Menu::calibratePad)->value = -1;
-			((CalibratePad*) Menu::calibratePad)->selectedPad = pad;
+			((CalibratePad*) Menu::calibratePad)->channel = channel;
 			return Menu::calibratePad;
 		}
 	}

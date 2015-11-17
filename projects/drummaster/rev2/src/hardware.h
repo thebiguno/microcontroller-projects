@@ -23,6 +23,9 @@
 #define MUX_ENABLE						0
 #define MUX_DISABLE						1
 
-#define PAD_COUNT						11
+//The number of ADC channels on the system.  For the DrumMaster Rev 2.0 PCB, this is 12.
+#define CHANNEL_COUNT					12
+//The number of pads in the system.  This will probably be CHANNEL_COUNT - 1, since the hihat takes two channels
+#define PAD_COUNT						(CHANNEL_COUNT - 1)
 
 #endif

@@ -7,11 +7,8 @@ CalibratePad::CalibratePad(){
 
 Menu* CalibratePad::handleAction(){
 	
-	uint8_t address = POT_ADDRESS | (selectedPad >> 1);
-	uint8_t memoryAddress = (selectedPad & 0x01) << 4;
-	
 	if (value == -1){
-		value = readValue(address, memoryAddress);
+		value = readValue(channel);
 		encoder.write(value);
 	}
 	
@@ -20,9 +17,9 @@ Menu* CalibratePad::handleAction(){
 	
 	encoderState = encoder.read();
 	if (encoderState != value){
-		writeValue(address, memoryAddress, encoderState);
+		writeValue(channel, encoderState);
 		//We always read back the value for verification
-		value = readValue(address, memoryAddress);
+		value = readValue(channel);
 		encoder.write(value);
 	}
 	
@@ -34,7 +31,26 @@ Menu* CalibratePad::handleAction(){
 	return NULL;
 }
 
-uint16_t CalibratePad::readValue(uint8_t address, uint8_t memoryAddress){
+void CalibratePad::loadFromEeprom(){
+	
+}
+
+void CalibratePad::saveToEeprom(){
+	
+}
+
+uint8_t CalibratePad::getAddress(uint8_t channel){
+	return POT_ADDRESS | (channel >> 1);
+}
+
+uint8_t CalibratePad::getMemoryAddress(uint8_t channel){
+	return (channel & 0x01) << 4;
+}
+
+uint16_t CalibratePad::readValue(uint8_t channel){
+	uint8_t address = getAddress(channel);
+	uint8_t memoryAddress = getMemoryAddress(channel);
+	
 	Wire.beginTransmission(address);
 	Wire.write(memoryAddress | 0x0C);		//Read from given memory address
 	Wire.endTransmission(false);
@@ -42,7 +58,10 @@ uint16_t CalibratePad::readValue(uint8_t address, uint8_t memoryAddress){
 	return (Wire.read() << 8) | Wire.read();
 }
 
-void CalibratePad::writeValue(uint8_t address, uint8_t memoryAddress, uint16_t value){
+void CalibratePad::writeValue(uint8_t channel, uint16_t value){
+	uint8_t address = getAddress(channel);
+	uint8_t memoryAddress = getMemoryAddress(channel);
+	
 	Wire.beginTransmission(address);
 	Wire.write(memoryAddress | 0x00 | ((value >> 8) & 0x01));	//Write to the given memory address + bit 8 of message
 	Wire.write(value & 0xFF);	//Write bits 0 - 7 of message

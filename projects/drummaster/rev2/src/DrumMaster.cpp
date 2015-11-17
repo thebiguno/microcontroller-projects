@@ -2,8 +2,6 @@
 
 using namespace digitalcave;
 
-ADC adc;
-
 int main(){
 	//Enable pins
 	pinMode(MUX0, OUTPUT);
@@ -23,11 +21,6 @@ int main(){
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
 	
-	//Set up the ADC
-	adc.setResolution(8);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setAveraging(16);
-
 	//Allocate enough memory for audio
 	AudioMemory(16);
 		
