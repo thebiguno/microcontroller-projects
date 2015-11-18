@@ -196,10 +196,10 @@ uint8_t Pad::readAdc(){
 		
 		//Start the sample playback
 
-//		Serial.print("Playing ");
-//		Serial.print(index);
-//		Serial.print(" at rawValue ");
-//		Serial.print(peakRawValue);
+		Serial.print("Playing ");
+		Serial.print(index);
+		Serial.print(" at volume ");
+		Serial.println(peakRawValue);
 //		Serial.print("; time = ");
 //		Serial.println(millis());
 //		lastSample = Sample::findAvailableSample(index, peakRawValue);
