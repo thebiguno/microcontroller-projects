@@ -2,6 +2,7 @@
 #define CALIBRATEPAD_H
 
 #include <Wire.h>
+#include <EEPROM/EEPROM.h>
 
 #include "../hardware.h"
 #include "Menu.h"

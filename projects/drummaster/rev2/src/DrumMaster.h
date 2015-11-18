@@ -4,11 +4,13 @@
 #include <SD.h>
 #include <SerialFlash.h>
 #include <SPI.h>
+#include <EEPROM/EEPROM.h>
 
 #include "pad/Cymbal.h"
 #include "pad/Drum.h"
 #include "pad/HiHat.h"
 #include "menu/Menu.h"
+#include "menu/CalibratePad.h"
 
 #include "hardware.h"
 

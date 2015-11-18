@@ -27,6 +27,7 @@ Menu* MainVolume::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(1, 0, "    ", 4);
+		EEPROM.put(EEPROM_MAIN_VOLUME, volume);
 		return Menu::mainMenu;
 	}
 	

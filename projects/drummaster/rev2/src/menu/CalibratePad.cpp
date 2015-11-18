@@ -21,6 +21,8 @@ Menu* CalibratePad::handleAction(){
 		//We always read back the value for verification
 		value = readValue(channel);
 		encoder.write(value);
+		
+		saveToEeprom();
 	}
 	
 	if (button.fallingEdge()){
@@ -32,11 +34,19 @@ Menu* CalibratePad::handleAction(){
 }
 
 void CalibratePad::loadFromEeprom(){
-	
+	uint16_t values[CHANNEL_COUNT];
+	EEPROM.get(EEPROM_POTENTIOMETER, values);
+	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		writeValue(i, values[i]);
+	}
 }
 
 void CalibratePad::saveToEeprom(){
-	
+	uint16_t values[CHANNEL_COUNT];
+	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		values[i] = readValue(i);
+	}
+	EEPROM.put(EEPROM_POTENTIOMETER, values);
 }
 
 uint8_t CalibratePad::getAddress(uint8_t channel){
@@ -48,6 +58,7 @@ uint8_t CalibratePad::getMemoryAddress(uint8_t channel){
 }
 
 uint16_t CalibratePad::readValue(uint8_t channel){
+	if (channel >= CHANNEL_COUNT) return 0xFFFF;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);
 	
@@ -59,6 +70,7 @@ uint16_t CalibratePad::readValue(uint8_t channel){
 }
 
 void CalibratePad::writeValue(uint8_t channel, uint16_t value){
+	if (channel >= CHANNEL_COUNT) return;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);
 	

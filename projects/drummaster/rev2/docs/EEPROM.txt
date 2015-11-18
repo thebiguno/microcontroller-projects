@@ -1,23 +1,8 @@
-1k of EEPROM total.
+Potentiometer State: 12x2 = 24 bytes
+0x00 - 0x18:
 
-OpAmp State: 6 bytes
-0x00 - 0x05:
-6 bytes (3x2 bytes): Potentiometer State
+Master volume: 1 byte
+0x1A
 
-0x06:
-1 byte: Last used kit
-
-0x07:  Reserved
-
-Volume states start at 0x08, and iterate every 8 bytes (0x08, 0x10, 0x18, 0x20, etc).  Maximum of 127 kits.
-
-Volume State: 8 bytes
-Master Volume: 8 bits
-Snare / DR_Alt	4+4 bits
-Bass / Tom1	4+4 bits
-Tom2 / Tom3	4+4 bits
-HH / Ride	4+4 bits
-Crash / Splash	4+4 bits
-CY_Alt / Unused	4+4 bits
-Unused			8 bits
-
+Pad volume: 11x1 = 11 bytes
+0x20 - 0x2B

@@ -23,6 +23,9 @@ int main(){
 	
 	//Allocate enough memory for audio
 	AudioMemory(16);
+	
+	//Load settings from EEPROM
+	CalibratePad::loadFromEeprom();
 		
 	Pad* pads[PAD_COUNT];
 	pads[0] = new HiHat(0, 1);	//Hihat + Pedal
@@ -38,7 +41,9 @@ int main(){
 	pads[10] = new Drum(11);	//X1
 	
 	//Turn on the audio chip
-	Sample::setMasterVolume(180);	//TODO Load from EEPROM
+	uint8_t volume = 0x00;
+	volume = EEPROM.get(EEPROM_MAIN_VOLUME, volume);
+	Sample::setMasterVolume(volume);
 	
 	Serial.begin(9600);
 	

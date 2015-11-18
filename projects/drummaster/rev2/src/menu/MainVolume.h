@@ -1,7 +1,10 @@
 #ifndef MAINVOLUME_H
 #define MAINVOLUME_H
 
+#include <EEPROM/EEPROM.h>
+
 #include "Menu.h"
+#include "../hardware.h"
 
 namespace digitalcave {
 

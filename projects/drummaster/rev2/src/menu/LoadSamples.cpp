@@ -35,7 +35,10 @@ Menu* LoadSamples::handleAction(){
 		encoder.write(0);
 	}
 	
-	snprintf(buf, sizeof(buf), "%s                   ", folders[selectedFolder].c_str());
+	char kitName[32];
+	stpncpy(kitName, folders[selectedFolder].c_str(), sizeof(kitName));
+	
+	snprintf(buf, sizeof(buf), "%s                   ", kitName);
 	display.write_text(1, 0, buf, 20);
 	
 	if (button.fallingEdge()){
@@ -111,6 +114,7 @@ Menu* LoadSamples::handleAction(){
 			display.write_text(2, 0, "Load Samples Done   ", 20);
 			encoder.write(0);
 			display.refresh();
+			EEPROM.put(EEPROM_KIT_NAME, kitName);
 			delay(1000);
 			display.clear();
 		
