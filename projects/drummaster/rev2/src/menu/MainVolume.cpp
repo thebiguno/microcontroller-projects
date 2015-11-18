@@ -1,9 +1,7 @@
 #include "MainVolume.h"
+#include "../Sample.h"
 
 using namespace digitalcave;
-
-extern AudioControlSGTL5000 control;
-extern Menu mainMenu;
 
 MainVolume::MainVolume(){
 	encoderState = volume;
@@ -29,7 +27,7 @@ Menu* MainVolume::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(1, 0, "    ", 4);
-		return &mainMenu;
+		return Menu::mainMenu;
 	}
 	
 	return NULL;

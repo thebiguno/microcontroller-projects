@@ -16,7 +16,15 @@
 namespace digitalcave {
 
 	class Pad {
+		private:
+			static ADC adc;
+	
 		protected:
+			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
+			// pad strike with the system time; this should allow for random numbers, as the timing of 
+			// the first pad strike will differ each time.
+			static uint8_t randomSeedCompleted;
+		
 			//The hardware index associated with this pad
 			uint8_t index;
 			
@@ -54,6 +62,9 @@ namespace digitalcave {
 			uint8_t readAdc();
 			
 		public:
+			//Initialize the ADC
+			static void initAdc();
+		
 			//Create a new pad object referencing the specified hardware channel
 			Pad(uint8_t index);
 			

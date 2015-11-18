@@ -2,8 +2,6 @@
 
 using namespace digitalcave;
 
-extern Menu mainMenu;
-
 LoadSamples::LoadSamples(){
 }
 
@@ -96,7 +94,7 @@ Menu* LoadSamples::handleAction(){
 						display.refresh();
 						delay(1000);
 						display.clear();
-						return &mainMenu;
+						return Menu::mainMenu;
 					}
 				}
 				else {
@@ -105,7 +103,7 @@ Menu* LoadSamples::handleAction(){
 					display.refresh();
 					delay(1000);
 					display.clear();
-					return &mainMenu;
+					return Menu::mainMenu;
 				}
 				f.close();
 			}
@@ -121,7 +119,7 @@ Menu* LoadSamples::handleAction(){
 			display.write_text(1, 0, "                    ", 20);
 		}
 		
-		return &mainMenu;
+		return Menu::mainMenu;
 	}
 	return NULL;
 }

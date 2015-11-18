@@ -2,16 +2,6 @@
 
 using namespace digitalcave;
 
-ADC adc;
-
-MainMenu mainMenu;
-MainVolume mainVolume;
-LoadSamples loadSamples;
-CalibratePads calibratePads;
-CalibratePad calibratePad;
-
-MenuState menuState(&mainMenu);
-
 int main(){
 	//Enable pins
 	pinMode(MUX0, OUTPUT);
@@ -31,14 +21,9 @@ int main(){
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
 	
-	//Set up the ADC
-	adc.setResolution(8);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setAveraging(16);
-
 	//Allocate enough memory for audio
 	AudioMemory(16);
-	
+		
 	Pad* pads[PAD_COUNT];
 	pads[0] = new HiHat(0, 1);	//Hihat + Pedal
 	pads[1] = new Drum(2);		//Snare
@@ -58,7 +43,7 @@ int main(){
 	Serial.begin(9600);
 	
 	while (1){
-		menuState.poll();
+		Menu::poll();
 		
 		for (uint8_t i = 0; i < PAD_COUNT; i++){
 			pads[i]->poll();

@@ -29,7 +29,9 @@
 namespace digitalcave {
 
 	/*
-	 * The Sample class handles playing back the actual sounds.  There are lots of aspects to it:
+	 * The Sample class is a wrapper around the Teensy Audio 'AudioPlaySerialRaw' object, and 
+	 * handles playing back the actual sounds in addition to controlling existing playback.
+	 * There is a lots of tasks handled by this class:
 	 * 1) Static objects / methods for hooking up the actual playback.  These are Teensy Audio 
 	 * classes, and include things like the main volume control, mixers, and connections 
 	 * between everything.

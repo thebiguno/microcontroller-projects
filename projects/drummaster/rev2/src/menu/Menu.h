@@ -27,6 +27,8 @@
 namespace digitalcave {
 
 	class Menu {
+		private:
+			static Menu* current;
 	
 		protected:
 			static char buf[21];	//Temp space for string operations
@@ -36,6 +38,19 @@ namespace digitalcave {
 			static CharDisplay display;
 			static Encoder encoder;
 			static Bounce button;
+			
+			//All available menus
+			static Menu* mainMenu;
+			static Menu* mainVolume;
+			static Menu* loadSamples;
+			static Menu* calibratePads;
+			static Menu* calibratePad;
+			
+			//Calls the handleAction() method for the current menu
+			static void poll();
+
+			//Change state to the specified menu
+			static void change(Menu* newMenu);
 			
 			int16_t encoderState;
 
