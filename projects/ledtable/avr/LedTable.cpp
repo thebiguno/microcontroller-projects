@@ -7,6 +7,7 @@
 #include "lib/ws2812.h"
 #include "lib/cp_ascii_caps.h"
 #include "lib/f_5x5.h"
+#include "lib/twi.h"
 
 #include "Matrix.h"
 
@@ -26,10 +27,11 @@ Hsv hsv = Hsv(0,0xff,0x1f);
 int main() {
 	srandom(0);
 
-	TCCR0A = 0x0;			// normal mode
-	TCCR0B |= _BV(CS02);	// 256 prescaler
-	TIMSK0 = _BV(TOIE0);	// enable timer overflow interrupts
-	
+	TCCR0A = 0x00; // normal mode
+	TCCR0B = 0x05; // clk/1024
+	OCR0A = 156; // 10 ms
+	TIMSK0 = 0x02; // enable compare match A
+
 	sei();
 
 	uint8_t selected = 0;
@@ -43,6 +45,8 @@ int main() {
 	PORTB = 0x00;
 
 	matrix.setFont(font_5X5, codepage_ascii_caps, 5, 5);
+	
+	twi_init();
 	
 	while (1) {
 		matrix.setColor(0,0,0);
