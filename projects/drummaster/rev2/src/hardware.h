@@ -36,7 +36,7 @@
 //Line in volume is stored as a single byte
 #define EEPROM_LINE_IN_VOLUME			0x1B
 //Per-pad volumes are stored as 11x1 bytes, from address 0x20 to 0x2B
-#define EEPROM_CHANNEL_VOLUME			0x20
+#define EEPROM_PAD_VOLUME				0x20
 //Store the currently loaded kit name.  We use this to refer back to the SD card so that we can
 // write things like channel volume to disk as well as EEPROM.  This is 32 bytes from address 0x30 to 0x50
 #define EEPROM_KIT_NAME					0x30
