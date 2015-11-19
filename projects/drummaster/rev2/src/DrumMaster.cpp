@@ -48,6 +48,7 @@ int main(){
 	//Load settings from EEPROM
 	CalibratePad::loadPotentiometerFromEeprom();
 	MainVolume::loadVolumeFromEeprom();
+	LineInVolume::loadVolumeFromEeprom();
 	
 	while (1){
 		Menu::poll();

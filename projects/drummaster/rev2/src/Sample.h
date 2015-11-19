@@ -48,7 +48,6 @@ namespace digitalcave {
 			//Control object
 			static AudioControlSGTL5000 control;
 			static uint8_t controlEnabled;
-			static uint8_t masterVolume;
 			
 			static AudioInputI2S input;
 
@@ -89,11 +88,11 @@ namespace digitalcave {
 			Sample();
 			
 		public:
-			//Get the master volume.  This is a value from 0 to 255.
-			static uint8_t getMasterVolume();
-			
 			//Set the master volume (affects everything).  This is a value from 0 to 255.
 			static void setMasterVolume(uint8_t volume);
+			
+			//Set the line in volume.  This is a value from 0 to 255.  Keep this low unless using the line in.
+			static void setLineInVolume(uint8_t volume);
 			
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);

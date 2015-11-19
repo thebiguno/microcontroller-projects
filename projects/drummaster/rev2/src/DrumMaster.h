@@ -12,6 +12,7 @@
 #include "menu/Menu.h"
 #include "menu/CalibratePad.h"
 #include "menu/MainVolume.h"
+#include "menu/LineInVolume.h"
 
 #include "hardware.h"
 

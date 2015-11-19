@@ -33,6 +33,8 @@
 #define EEPROM_POTENTIOMETER			0x00
 //Main volume is stored as a single byte
 #define EEPROM_MAIN_VOLUME				0x1A
+//Line in volume is stored as a single byte
+#define EEPROM_LINE_IN_VOLUME			0x1B
 //Per-pad volumes are stored as 11x1 bytes, from address 0x20 to 0x2B
 #define EEPROM_CHANNEL_VOLUME			0x20
 //Store the currently loaded kit name.  We use this to refer back to the SD card so that we can

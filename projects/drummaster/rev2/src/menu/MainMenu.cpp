@@ -6,7 +6,7 @@ MainMenu::MainMenu(){
 }
 
 Menu* MainMenu::handleAction(){
-	#define MENU_COUNT 4
+	#define MENU_COUNT 5
 
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
@@ -20,6 +20,12 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 1:
+			display.write_text(0, 0, "Line In Volume      ", 20);
+			if (button.fallingEdge()){
+				return Menu::lineInVolume;
+			}
+			break;
+		case 2:
 			display.write_text(0, 0, "Channel Volume      ", 20);
 			if (button.fallingEdge()){
 				//TODO ChannelVolume object
@@ -27,13 +33,13 @@ Menu* MainMenu::handleAction(){
 				//down(channelVolume);
 			}
 			break;
-		case 2:
+		case 3:
 			display.write_text(0, 0, "Load Samples        ", 20);
 			if (button.fallingEdge()){
 				return Menu::loadSamples;
 			}
 			break;
-		case 3:
+		case 4:
 			display.write_text(0, 0, "Calibrate Pads      ", 20);
 			if (button.fallingEdge()){
 				return Menu::calibratePads;

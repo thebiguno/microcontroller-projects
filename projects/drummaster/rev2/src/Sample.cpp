@@ -7,7 +7,6 @@ using namespace digitalcave;
 //Audio board control object
 AudioControlSGTL5000 Sample::control;
 uint8_t Sample::controlEnabled = 0;
-uint8_t Sample::masterVolume = 0;
 
 //I2S input
 AudioInputI2S Sample::input;
@@ -32,18 +31,18 @@ Sample Sample::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-uint8_t Sample::getMasterVolume(){
-	return masterVolume;
-}
-
 void Sample::setMasterVolume(uint8_t volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
 	}
 
-	masterVolume = volume;
 	control.volume(volume / 256.0);
+}
+
+void Sample::setLineInVolume(uint8_t volume){
+	mixer.gain(SAMPLE_COUNT, volume / 256.0);
+	mixer.gain(SAMPLE_COUNT + 1, volume / 256.0);
 }
 
 Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){

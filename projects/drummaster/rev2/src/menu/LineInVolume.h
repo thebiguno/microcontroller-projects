@@ -1,5 +1,5 @@
-#ifndef MAINVOLUME_H
-#define MAINVOLUME_H
+#ifndef LINEINVOLUME_H
+#define LINEINVOLUME_H
 
 #include <EEPROM/EEPROM.h>
 
@@ -8,7 +8,7 @@
 
 namespace digitalcave {
 
-	class MainVolume : public Menu {
+	class LineInVolume : public Menu {
 	
 		private:
 			uint8_t volume;
@@ -17,7 +17,7 @@ namespace digitalcave {
 			static void loadVolumeFromEeprom();
 			static void saveVolumeToEeprom();
 			
-			MainVolume();
+			LineInVolume();
 			Menu* handleAction();
 	};
 }

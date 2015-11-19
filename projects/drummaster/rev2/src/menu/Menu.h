@@ -42,6 +42,7 @@ namespace digitalcave {
 			//All available menus
 			static Menu* mainMenu;
 			static Menu* mainVolume;
+			static Menu* lineInVolume;
 			static Menu* loadSamples;
 			static Menu* calibratePads;
 			static Menu* calibratePad;
