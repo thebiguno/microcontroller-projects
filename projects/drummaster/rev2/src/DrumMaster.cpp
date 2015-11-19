@@ -3,6 +3,14 @@
 using namespace digitalcave;
 
 int main(){
+	//Give the power some time to stabilize.  If we start too soon, the
+	// display can end up in a bad state.
+	delay(100);
+	
+	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
+	Serial.begin(9600);
+	Wire.begin();
+	
 	//Enable pins
 	pinMode(MUX0, OUTPUT);
 	pinMode(MUX1, OUTPUT);
@@ -24,9 +32,6 @@ int main(){
 	//Allocate enough memory for audio
 	AudioMemory(16);
 	
-	//Load settings from EEPROM
-	CalibratePad::loadFromEeprom();
-		
 	Pad* pads[PAD_COUNT];
 	pads[0] = new HiHat(0, 1);	//Hihat + Pedal
 	pads[1] = new Drum(2);		//Snare
@@ -40,12 +45,9 @@ int main(){
 	pads[9] = new Drum(10);		//X0
 	pads[10] = new Drum(11);	//X1
 	
-	//Turn on the audio chip
-	uint8_t volume = 0x00;
-	volume = EEPROM.get(EEPROM_MAIN_VOLUME, volume);
-	Sample::setMasterVolume(volume);
-	
-	Serial.begin(9600);
+	//Load settings from EEPROM
+	CalibratePad::loadPotentiometerFromEeprom();
+	MainVolume::loadVolumeFromEeprom();
 	
 	while (1){
 		Menu::poll();

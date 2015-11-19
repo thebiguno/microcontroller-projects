@@ -15,12 +15,12 @@ namespace digitalcave {
 			static uint8_t getAddress(uint8_t channel);
 			static uint8_t getMemoryAddress(uint8_t channel);
 			
-			static uint16_t readValue(uint8_t channel);
-			static void writeValue(uint8_t channel, uint16_t value);
+			static uint16_t readFromPotentiometer(uint8_t channel);
+			static void writeToPotentiometer(uint8_t channel, uint16_t value);
 			
 		public:
-			static void loadFromEeprom();
-			static void saveToEeprom();
+			static void loadPotentiometerFromEeprom();
+			static void savePotentiometerToEeprom();
 		
 			int16_t value = -1;
 			uint8_t channel = 0;

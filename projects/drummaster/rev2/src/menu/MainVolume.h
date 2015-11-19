@@ -11,9 +11,12 @@ namespace digitalcave {
 	class MainVolume : public Menu {
 	
 		private:
-			uint8_t volume = 180;		//TODO save last volume to EEPROM
+			static uint8_t volume;
 			
 		public:
+			static void loadVolumeFromEeprom();
+			static void saveVolumeToEeprom();
+			
 			MainVolume();
 			Menu* handleAction();
 	};

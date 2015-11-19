@@ -8,7 +8,7 @@ CalibratePad::CalibratePad(){
 Menu* CalibratePad::handleAction(){
 	
 	if (value == -1){
-		value = readValue(channel);
+		value = readFromPotentiometer(channel);
 		encoder.write(value);
 	}
 	
@@ -17,12 +17,12 @@ Menu* CalibratePad::handleAction(){
 	
 	encoderState = encoder.read();
 	if (encoderState != value){
-		writeValue(channel, encoderState);
+		writeToPotentiometer(channel, encoderState);
 		//We always read back the value for verification
-		value = readValue(channel);
+		value = readFromPotentiometer(channel);
 		encoder.write(value);
 		
-		saveToEeprom();
+		savePotentiometerToEeprom();
 	}
 	
 	if (button.fallingEdge()){
@@ -33,18 +33,18 @@ Menu* CalibratePad::handleAction(){
 	return NULL;
 }
 
-void CalibratePad::loadFromEeprom(){
+void CalibratePad::loadPotentiometerFromEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	EEPROM.get(EEPROM_POTENTIOMETER, values);
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
-		writeValue(i, values[i]);
+		writeToPotentiometer(i, values[i]);
 	}
 }
 
-void CalibratePad::saveToEeprom(){
+void CalibratePad::savePotentiometerToEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
-		values[i] = readValue(i);
+		values[i] = readFromPotentiometer(i);
 	}
 	EEPROM.put(EEPROM_POTENTIOMETER, values);
 }
@@ -57,7 +57,7 @@ uint8_t CalibratePad::getMemoryAddress(uint8_t channel){
 	return (channel & 0x01) << 4;
 }
 
-uint16_t CalibratePad::readValue(uint8_t channel){
+uint16_t CalibratePad::readFromPotentiometer(uint8_t channel){
 	if (channel >= CHANNEL_COUNT) return 0xFFFF;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);
@@ -66,10 +66,12 @@ uint16_t CalibratePad::readValue(uint8_t channel){
 	Wire.write(memoryAddress | 0x0C);		//Read from given memory address
 	Wire.endTransmission(false);
 	Wire.requestFrom(address, (uint8_t) 2);
-	return (Wire.read() << 8) | Wire.read();
+	uint16_t result = (Wire.read() << 8) | Wire.read();
+	Wire.endTransmission();
+	return result;
 }
 
-void CalibratePad::writeValue(uint8_t channel, uint16_t value){
+void CalibratePad::writeToPotentiometer(uint8_t channel, uint16_t value){
 	if (channel >= CHANNEL_COUNT) return;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);

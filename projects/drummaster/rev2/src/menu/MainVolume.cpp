@@ -3,9 +3,23 @@
 
 using namespace digitalcave;
 
+uint8_t MainVolume::volume;
+
 MainVolume::MainVolume(){
-	encoderState = volume;
-	encoder.write(encoderState);
+}
+
+void MainVolume::loadVolumeFromEeprom(){
+	volume = EEPROM.read(EEPROM_MAIN_VOLUME);
+	((MainVolume*) Menu::mainVolume)->encoderState = volume;
+	Serial.print("Loading volume ");
+	Serial.println(volume);	
+	Sample::setMasterVolume(volume);
+}
+
+void MainVolume::saveVolumeToEeprom(){
+	Serial.print("Saving volume ");
+	Serial.println(volume);
+	EEPROM.update(EEPROM_MAIN_VOLUME, volume);
 }
 
 Menu* MainVolume::handleAction(){
@@ -27,7 +41,7 @@ Menu* MainVolume::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(1, 0, "    ", 4);
-		EEPROM.put(EEPROM_MAIN_VOLUME, volume);
+		saveVolumeToEeprom();
 		return Menu::mainMenu;
 	}
 	

@@ -11,6 +11,7 @@
 #include "pad/HiHat.h"
 #include "menu/Menu.h"
 #include "menu/CalibratePad.h"
+#include "menu/MainVolume.h"
 
 #include "hardware.h"
 

@@ -50,7 +50,7 @@ Menu* CalibratePads::handleAction(){
 			display.write_text(1, 0, "X1                  ", 20);
 			break;
 		case 12:
-			display.write_text(1, 0, "<Cancel>            ", 20);
+			display.write_text(1, 0, "<Main Menu>         ", 20);
 			break;
 	}
 	
