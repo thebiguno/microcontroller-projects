@@ -35,8 +35,8 @@ void Clock::run() {
 		hsv.setHue(time.second * 6);
 
 		if (running == 1) {
-			field[0] = time.hour / 12;
-			field[1] = time.hour - (12 * field[0]);
+			field[0] = time.hour / 10;
+			field[1] = time.hour - (10 * field[0]);
 			field[2] = time.minute / 10;
 			field[3] = time.minute - (10 * field[2]);
 		}
