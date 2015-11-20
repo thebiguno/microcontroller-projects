@@ -4,8 +4,8 @@
 #include <Wire.h>
 
 #include "../DrumMaster.h"
+#include "../hardware.h"
 #include "Menu.h"
-#include "CalibratePad.h"
 
 namespace digitalcave {
 

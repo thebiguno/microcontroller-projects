@@ -32,18 +32,17 @@ int main(){
 	//Allocate enough memory for audio
 	AudioMemory(16);
 	
-	Pad* pads[PAD_COUNT];
-	pads[0] = new HiHat(0, 1);	//Hihat + Pedal
-	pads[1] = new Drum(2);		//Snare
-	pads[2] = new Drum(3);		//Bass
-	pads[3] = new Drum(4);		//Tom1
-	pads[4] = new Cymbal(5);	//Crash
-	pads[5] = new Drum(6);		//Tom2
-	pads[6] = new Drum(7);		//Tom3
-	pads[7] = new Cymbal(8);	//Splash
-	pads[8] = new Cymbal(9);	//Ride
-	pads[9] = new Drum(10);		//X0
-	pads[10] = new Drum(11);	//X1
+	Pad::pads[0] = new HiHat(0, 1);	//Hihat + Pedal
+	Pad::pads[1] = new Drum(2);		//Snare
+	Pad::pads[2] = new Drum(3);		//Bass
+	Pad::pads[3] = new Drum(4);		//Tom1
+	Pad::pads[4] = new Cymbal(5);	//Crash
+	Pad::pads[5] = new Drum(6);		//Tom2
+	Pad::pads[6] = new Drum(7);		//Tom3
+	Pad::pads[7] = new Cymbal(8);	//Splash
+	Pad::pads[8] = new Cymbal(9);	//Ride
+	Pad::pads[9] = new Drum(10);		//X0
+	Pad::pads[10] = new Drum(11);	//X1
 	
 	//Load settings from EEPROM
 	MainVolume::loadVolumeFromEeprom();
@@ -54,7 +53,7 @@ int main(){
 		Menu::poll();
 		
 		for (uint8_t i = 0; i < PAD_COUNT; i++){
-			pads[i]->poll();
+			Pad::pads[i]->poll();
 		}
 	}
 }

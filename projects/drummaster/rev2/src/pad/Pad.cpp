@@ -3,6 +3,7 @@
 using namespace digitalcave;
 
 ADC Pad::adc;
+Pad* Pad::pads[PAD_COUNT];
 uint8_t Pad::randomSeedCompleted = 0;
 
 void Pad::initAdc(){
@@ -50,6 +51,9 @@ Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastR
 
 }
 
+void Pad::setVolume(uint8_t volume){
+	this->volume = volume;
+}
 
 void Pad::updateSamples(){
 	//Reset fileCountByVolume

@@ -8,10 +8,10 @@ PadsVolume::PadsVolume() : selectedPad(0xFF){
 Menu* PadsVolume::handleAction(){
 	if (selectedPad == 0xFF){
 		int8_t pad = encoder.read() / 2;
-		if (pad >= (PADS_COUNT + 1)) encoder.write(0);
+		if (pad >= (PAD_COUNT + 1)) encoder.write(0);
 		else if (pad < 0) encoder.write(PAD_COUNT * 2);
 	
-		switch(channel){
+		switch(pad){
 			case 0:
 				display.write_text(1, 0, "Hi Hat              ", 20);
 				break;
@@ -59,13 +59,34 @@ Menu* PadsVolume::handleAction(){
 			}
 			else {
 				selectedPad = pad;
+				volume = EEPROM.read(EEPROM_PAD_VOLUME + selectedPad);
 			}
 		}
 	}
 	else {
-		uint8_t newVolume = encoder.read() / 2;
+		int16_t encoderVolume = encoder.read();
+		if (volume != encoderVolume){
+			if (encoderVolume > 255){
+				encoderVolume = 255;
+				encoder.write(255);
+			}
+			else if (encoderVolume < 0){
+				encoderVolume = 0;
+				encoder.write(0);
+			}
+			
+			volume = encoderVolume;
+			Pad::pads[selectedPad]->setVolume(volume);
+
+			snprintf(buf, sizeof(buf), "%d%%      ", (uint8_t) (volume / 64.0 * 100));
+			display.write_text(2, 0, buf, 5);
+		}
 		
-		
+		if (button.fallingEdge()){
+			EEPROM.update(EEPROM_PAD_VOLUME + selectedPad, volume);
+			display.write_text(2, 0, "                    ", 20);
+			selectedPad = 0xFF;
+		}
 	}
 	
 	return NULL;
