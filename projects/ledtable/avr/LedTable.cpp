@@ -132,6 +132,6 @@ int main() {
 	}
 }
 
-ISR(TIMER0_OVF_vect) {
+ISR(TIMER0_COMPA_vect) {
 	ms += 10;
 }
