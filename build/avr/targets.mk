@@ -134,6 +134,16 @@ else
 		-U flash:w:$(PROJECT).hex 
 endif
 
+readflash:
+ifeq 'dfu' '$(PROGRAMMER)'
+	echo "TODO"
+else
+	$(AVRDUDE_PREP_COMMANDS)
+	$(AVRDUDE) -F -p $(MMCU) -c $(PROGRAMMER) \
+		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
+		-U flash:r:$(PROJECT).hex:i 
+endif
+
 start:
 ifeq 'dfu' '$(PROGRAMMER)'
 	$(DFU) $(MMCU) start

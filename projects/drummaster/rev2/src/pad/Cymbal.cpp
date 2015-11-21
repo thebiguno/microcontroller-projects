@@ -9,6 +9,6 @@ void Cymbal::poll(){
 	uint8_t volume = readAdc();
 	if (volume){
 		lastSample = Sample::findAvailableSample(index, volume);
-		lastSample->play(lookupFilename(volume), index, volume);
+		lastSample->play(lookupFilename(volume), index, volume * (this->volume / 64.0));
 	}
 }

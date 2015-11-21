@@ -61,7 +61,14 @@ namespace digitalcave {
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
 			uint8_t readAdc();
 			
+			//The per-pad volume gain.  This number is divided by 64.0 and multiplied against the requested
+			// volume when playing a sample.  A value of 64 results in no change; less than 64 will reduce
+			// the volume, and greater than 64 will increase it.
+			uint8_t volume;
+			
 		public:
+			static Pad* pads[PAD_COUNT];
+			
 			//Initialize the ADC
 			static void initAdc();
 		
@@ -70,6 +77,9 @@ namespace digitalcave {
 			
 			//Reads the ADC for any current activity.  Starts playing the sample if warranted.
 			virtual void poll() = 0;
+			
+			//Set the per-pad volume.
+			void setVolume(uint8_t volume);
 			
 			//Looks on the SPI flash chip for files according to the sample naming convention,
 			// and updates the fileCountByVolume array, which indicates which files are 

@@ -78,6 +78,10 @@ uint8_t Button::sample(uint32_t time) {
 	return pressedState;
 }
 
+uint8_t Button::getState() {
+	return pressedState;
+}
+
 uint8_t Button::pressEvent() {
 	return eventState & STATE_PRESS ? 1 : 0;
 }
