@@ -1,0 +1,16 @@
+Definitions and Terminology:
+
+Pad: A single logical instrument in a drum set, which maps to one or more analog signals 
+	and zero or more digital signals.  This is the abstract class; sub classes include 
+	Drum, Cymbal, and HiHat.
+Drum: An instance of a pad which only responds to a single analog signal
+Cymbal: An instance of a pad which responds to a single analog signal and a single digital
+	signal (for 'mute' or 'choke').
+HiHat: An instance of a pad which responds to two analog signals (velocity and pedal position)
+	and a single digital signal (pedal 'tight')
+Signal: An analog or digital input, via the multiplexers.
+Channel: A single playback channel, containing a AudioPlaySerialRaw object.  There is a set 
+	maximum number of channels which can co-exist on the system before playback is compromised;
+	currently this maximum is about 12.
+Sample: A raw digital audio file, encoded in 16 bit PCM raw format.  One sample can be played
+	back in a Channel at any given time.

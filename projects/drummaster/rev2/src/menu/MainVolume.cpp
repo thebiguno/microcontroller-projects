@@ -1,5 +1,5 @@
 #include "MainVolume.h"
-#include "../Sample.h"
+#include "../Channel.h"
 
 using namespace digitalcave;
 
@@ -9,7 +9,7 @@ MainVolume::MainVolume(){
 void MainVolume::loadVolumeFromEeprom(){
 	((MainVolume*) Menu::mainVolume)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
 	((MainVolume*) Menu::mainVolume)->encoderState = ((MainVolume*) Menu::lineInVolume)->volume;
-	Sample::setMasterVolume(((MainVolume*) Menu::mainVolume)->volume);
+	Channel::setMasterVolume(((MainVolume*) Menu::mainVolume)->volume);
 }
 
 void MainVolume::saveVolumeToEeprom(){
@@ -28,7 +28,7 @@ Menu* MainVolume::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Sample::setMasterVolume(volume);
+		Channel::setMasterVolume(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);

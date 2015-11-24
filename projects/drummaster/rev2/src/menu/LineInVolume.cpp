@@ -1,5 +1,5 @@
 #include "LineInVolume.h"
-#include "../Sample.h"
+#include "../Channel.h"
 
 using namespace digitalcave;
 
@@ -9,7 +9,7 @@ LineInVolume::LineInVolume(){
 void LineInVolume::loadVolumeFromEeprom(){
 	((LineInVolume*) Menu::lineInVolume)->volume = EEPROM.read(EEPROM_LINE_IN_VOLUME);
 	((LineInVolume*) Menu::lineInVolume)->encoderState = ((LineInVolume*) Menu::lineInVolume)->volume;
-	Sample::setLineInVolume(((LineInVolume*) Menu::lineInVolume)->volume);
+	Channel::setLineInVolume(((LineInVolume*) Menu::lineInVolume)->volume);
 }
 
 void LineInVolume::saveVolumeToEeprom(){
@@ -28,7 +28,7 @@ Menu* LineInVolume::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Sample::setLineInVolume(volume);
+		Channel::setLineInVolume(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);

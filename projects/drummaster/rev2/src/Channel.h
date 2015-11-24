@@ -1,5 +1,5 @@
-#ifndef SAMPLE_H
-#define SAMPLE_H
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
 #include <Audio.h>
 #include <SerialFlash.h>
@@ -29,21 +29,21 @@
 namespace digitalcave {
 
 	/*
-	 * The Sample class is a wrapper around the Teensy Audio 'AudioPlaySerialRaw' object, and 
+	 * The Channel class is a wrapper around the Teensy Audio 'AudioPlaySerialRaw' object, and 
 	 * handles playing back the actual sounds in addition to controlling existing playback.
 	 * There is a lots of tasks handled by this class:
 	 * 1) Static objects / methods for hooking up the actual playback.  These are Teensy Audio 
 	 * classes, and include things like the main volume control, mixers, and connections 
 	 * between everything.
-	 * 2) Static methods for finding an available Sample object and mapping between a channel / volume
+	 * 2) Static methods for finding an available Channel object and mapping between a channel / volume
 	 * tuple and a filename
 	 * 3) Private instance variables for SPI audio sample and the connection between it and the mixer
  	 * 4) Methods to play a sample, set gain (volume) on a given channel, query state, stop playback, etc.
  	 *
- 	 * Note that the Sample objects can only be accessed via the singleton array samples[], via
- 	 * the static findAvailableSample method.
+ 	 * Note that the Channel objects can only be accessed via the singleton array samples[], via
+ 	 * the static findAvailableChannel method.
 	 */
-	class Sample {
+	class Channel {
 		private:
 			//Control object
 			static AudioControlSGTL5000 control;
@@ -67,10 +67,10 @@ namespace digitalcave {
 			
 			//Static array of samples, along with index to keep track of current index (for sample constructor).
 			static uint8_t currentIndex;
-			static Sample samples[];
+			static Channel samples[];
 
 			//This sample's index into mixer
-			uint8_t mixerChannel;
+			uint8_t mixerIndex;
 			
 			//The most recently played pad index.
 			uint8_t lastPad;
@@ -78,14 +78,14 @@ namespace digitalcave {
 			//SPI flash playback object
 			AudioPlaySerialRaw playSerialRaw;
 
-			//Connections from samples to mixer
-			AudioConnection sampleToMixer;
+			//Connections from playSerialRaw to mixer
+			AudioConnection playSerialRawToMixer;
 
-			//The last volume value which has been set for this Sample
+			//The last volume value which has been set for this Channel
 			uint8_t volume;
 
 			//Constructing the objects should only happen during singleton array init.
-			Sample();
+			Channel();
 			
 		public:
 			//Set the master volume (affects everything).  This is a value from 0 to 255.
@@ -94,8 +94,8 @@ namespace digitalcave {
 			//Set the line in volume.  This is a value from 0 to 255.  Keep this low unless using the line in.
 			static void setLineInVolume(uint8_t volume);
 			
-			//Find the best available Sample object from the singleton array
-			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
+			//Find the best available Channel object from the singleton array
+			static Channel* findAvailableChannel(uint8_t pad, uint8_t volume);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename
