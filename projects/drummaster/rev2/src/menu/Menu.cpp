@@ -3,6 +3,7 @@
 #include "MainMenu.h"
 #include "MainVolume.h"
 #include "LineInVolume.h"
+#include "PadsVolume.h"
 #include "LoadSamples.h"
 #include "CalibratePads.h"
 #include "CalibratePad.h"
@@ -20,6 +21,7 @@ Bounce Menu::button(ENC_PUSH, 25);
 Menu* Menu::mainMenu = new MainMenu();
 Menu* Menu::mainVolume = new MainVolume();
 Menu* Menu::lineInVolume = new LineInVolume();
+Menu* Menu::padsVolume = new PadsVolume();
 Menu* Menu::loadSamples = new LoadSamples();
 Menu* Menu::calibratePads = new CalibratePads();
 Menu* Menu::calibratePad = new CalibratePad;

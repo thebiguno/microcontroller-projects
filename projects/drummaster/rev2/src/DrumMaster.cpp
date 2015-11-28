@@ -5,7 +5,7 @@ using namespace digitalcave;
 int main(){
 	//Give the power some time to stabilize.  If we start too soon, the
 	// display can end up in a bad state.
-	delay(100);
+	delay(200);
 	
 	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
 	Serial.begin(9600);
@@ -41,7 +41,7 @@ int main(){
 	Pad::pads[6] = new Drum(7);		//Tom3
 	Pad::pads[7] = new Cymbal(8);	//Splash
 	Pad::pads[8] = new Cymbal(9);	//Ride
-	Pad::pads[9] = new Drum(10);		//X0
+	Pad::pads[9] = new Drum(10);	//X0
 	Pad::pads[10] = new Drum(11);	//X1
 	
 	//Load settings from EEPROM

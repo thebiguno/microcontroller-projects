@@ -13,6 +13,7 @@ namespace digitalcave {
 	
 		private:
 			uint8_t selectedPad;
+			uint8_t adjusting;	//zero for top level, one for adjusting pad
 			uint8_t volume;
 			
 		public:

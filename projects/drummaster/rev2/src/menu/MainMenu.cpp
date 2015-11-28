@@ -28,9 +28,7 @@ Menu* MainMenu::handleAction(){
 		case 2:
 			display.write_text(0, 0, "Channel Volume      ", 20);
 			if (button.fallingEdge()){
-				//TODO ChannelVolume object
-				//ChannelVolume channelVolume();
-				//down(channelVolume);
+				return Menu::padsVolume;
 			}
 			break;
 		case 3:

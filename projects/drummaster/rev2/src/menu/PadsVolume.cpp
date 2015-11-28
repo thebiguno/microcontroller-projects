@@ -2,16 +2,16 @@
 
 using namespace digitalcave;
 
-PadsVolume::PadsVolume() : selectedPad(0xFF){
+PadsVolume::PadsVolume() : selectedPad(0), adjusting(0){
 }
 
 Menu* PadsVolume::handleAction(){
-	if (selectedPad == 0xFF){
-		int8_t pad = encoder.read() / 2;
-		if (pad >= (PAD_COUNT + 1)) encoder.write(0);
-		else if (pad < 0) encoder.write(PAD_COUNT * 2);
+	if (adjusting == 0){
+		if ((encoder.read() / 2) >= (PAD_COUNT + 1)) encoder.write(0);
+		else if ((encoder.read() / 2) < 0) encoder.write(PAD_COUNT * 2);
+		selectedPad = encoder.read() / 2;
 	
-		switch(pad){
+		switch(selectedPad){
 			case 0:
 				display.write_text(1, 0, "Hi Hat              ", 20);
 				break;
@@ -53,17 +53,18 @@ Menu* PadsVolume::handleAction(){
 		display.write_text(2, 0, "                    ", 20);
 
 		if (button.fallingEdge()){
-			if (pad == PAD_COUNT){
+			if (selectedPad == PAD_COUNT){
 				display.write_text(1, 0, "                    ", 20);
 				return Menu::mainMenu;
 			}
 			else {
-				selectedPad = pad;
+				adjusting = 1;
 				volume = EEPROM.read(EEPROM_PAD_VOLUME + selectedPad);
+				encoder.write(volume);
 			}
 		}
 	}
-	else {
+	else {	//adjusting != 0
 		int16_t encoderVolume = encoder.read();
 		if (volume != encoderVolume){
 			if (encoderVolume > 255){
@@ -85,7 +86,8 @@ Menu* PadsVolume::handleAction(){
 		if (button.fallingEdge()){
 			EEPROM.update(EEPROM_PAD_VOLUME + selectedPad, volume);
 			display.write_text(2, 0, "                    ", 20);
-			selectedPad = 0xFF;
+			adjusting = 0;
+			encoder.write(selectedPad * 2);
 		}
 	}
 	
