@@ -1,11 +1,11 @@
-#include "CalibratePad.h"
+#include "ChannelCalibration.h"
 
 using namespace digitalcave;
 
-CalibratePad::CalibratePad(){
+ChannelCalibration::ChannelCalibration(){
 }
 
-Menu* CalibratePad::handleAction(){
+Menu* ChannelCalibration::handleAction(){
 	
 	if (value == -1){
 		value = readFromPotentiometer(channel);
@@ -33,7 +33,7 @@ Menu* CalibratePad::handleAction(){
 	return NULL;
 }
 
-void CalibratePad::loadPotentiometerFromEeprom(){
+void ChannelCalibration::loadPotentiometerFromEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	EEPROM.get(EEPROM_POTENTIOMETER, values);
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
@@ -41,7 +41,7 @@ void CalibratePad::loadPotentiometerFromEeprom(){
 	}
 }
 
-void CalibratePad::savePotentiometerToEeprom(){
+void ChannelCalibration::savePotentiometerToEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
 		values[i] = readFromPotentiometer(i);
@@ -49,15 +49,15 @@ void CalibratePad::savePotentiometerToEeprom(){
 	EEPROM.put(EEPROM_POTENTIOMETER, values);
 }
 
-uint8_t CalibratePad::getAddress(uint8_t channel){
+uint8_t ChannelCalibration::getAddress(uint8_t channel){
 	return POT_ADDRESS | (channel >> 1);
 }
 
-uint8_t CalibratePad::getMemoryAddress(uint8_t channel){
+uint8_t ChannelCalibration::getMemoryAddress(uint8_t channel){
 	return (channel & 0x01) << 4;
 }
 
-uint16_t CalibratePad::readFromPotentiometer(uint8_t channel){
+uint16_t ChannelCalibration::readFromPotentiometer(uint8_t channel){
 	if (channel >= CHANNEL_COUNT) return 0xFFFF;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);
@@ -71,7 +71,7 @@ uint16_t CalibratePad::readFromPotentiometer(uint8_t channel){
 	return result;
 }
 
-void CalibratePad::writeToPotentiometer(uint8_t channel, uint16_t value){
+void ChannelCalibration::writeToPotentiometer(uint8_t channel, uint16_t value){
 	if (channel >= CHANNEL_COUNT) return;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);

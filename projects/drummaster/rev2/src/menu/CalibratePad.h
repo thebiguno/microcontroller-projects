@@ -1,5 +1,5 @@
-#ifndef CALIBRATEPAD_H
-#define CALIBRATEPAD_H
+#ifndef CHANNEL_CALIBRATION_H
+#define CHANNEL_CALIBRATION_H
 
 #include <Wire.h>
 #include <EEPROM/EEPROM.h>
@@ -9,7 +9,7 @@
 
 namespace digitalcave {
 
-	class CalibratePad : public Menu {
+	class ChannelCalibration : public Menu {
 	
 		private:
 			static uint8_t getAddress(uint8_t channel);
@@ -25,7 +25,7 @@ namespace digitalcave {
 			int16_t value = -1;
 			uint8_t channel = 0;
 			
-			CalibratePad();
+			ChannelCalibration();
 			Menu* handleAction();
 	};
 }

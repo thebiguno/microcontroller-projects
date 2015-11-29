@@ -8,7 +8,7 @@ MainVolume::MainVolume(){
 
 void MainVolume::loadVolumeFromEeprom(){
 	((MainVolume*) Menu::mainVolume)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
-	((MainVolume*) Menu::mainVolume)->encoderState = ((MainVolume*) Menu::lineInVolume)->volume;
+	((MainVolume*) Menu::mainVolume)->encoderState = ((MainVolume*) Menu::mainVolume)->volume;
 	Channel::setMasterVolume(((MainVolume*) Menu::mainVolume)->volume);
 }
 

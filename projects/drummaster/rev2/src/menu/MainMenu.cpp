@@ -26,7 +26,7 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 2:
-			display.write_text(0, 0, "Channel Volume      ", 20);
+			display.write_text(0, 0, "Adjust Pad Volume   ", 20);
 			if (button.fallingEdge()){
 				return Menu::padsVolume;
 			}

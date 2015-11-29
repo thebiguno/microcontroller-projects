@@ -44,9 +44,10 @@ namespace digitalcave {
 			static Menu* mainVolume;
 			static Menu* lineInVolume;
 			static Menu* padsVolume;
+			static Menu* padVolume;
 			static Menu* loadSamples;
-			static Menu* calibratePads;
-			static Menu* calibratePad;
+			static Menu* channelsCalibration;
+			static Menu* channelCalibration;
 			
 			//Calls the handleAction() method for the current menu
 			static void poll();

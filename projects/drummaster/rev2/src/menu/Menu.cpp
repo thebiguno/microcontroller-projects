@@ -4,9 +4,10 @@
 #include "MainVolume.h"
 #include "LineInVolume.h"
 #include "PadsVolume.h"
+#include "PadVolume.h"
 #include "LoadSamples.h"
-#include "CalibratePads.h"
-#include "CalibratePad.h"
+#include "ChannelsCalibration.h"
+#include "ChannelCalibration.h"
 
 using namespace digitalcave;
 
@@ -22,6 +23,7 @@ Menu* Menu::mainMenu = new MainMenu();
 Menu* Menu::mainVolume = new MainVolume();
 Menu* Menu::lineInVolume = new LineInVolume();
 Menu* Menu::padsVolume = new PadsVolume();
+Menu* Menu::padVolume = new PadVolume();
 Menu* Menu::loadSamples = new LoadSamples();
 Menu* Menu::calibratePads = new CalibratePads();
 Menu* Menu::calibratePad = new CalibratePad;
