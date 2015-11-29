@@ -13,11 +13,14 @@ Menu* VolumePad::handleAction(){
 	
 	encoderState = encoder.read();
 	if (encoderState != value){
+		Serial.println("Diff!");
 		if (encoderState > 255){
+			Serial.println("Overflow!");
 			encoderState = 255;
 			encoder.write(255);
 		}
 		else if (encoderState < 0){
+			Serial.println("Underflow!");
 			encoderState = 0;
 			encoder.write(0);
 		}
@@ -26,11 +29,11 @@ Menu* VolumePad::handleAction(){
 		Pad::pads[pad]->setVolume(value);
 	}
 
-	snprintf(buf, sizeof(buf), "%d%%      ", (uint8_t) (value / 64.0 * 100));
+	snprintf(buf, sizeof(buf), "%d%%      ", (uint16_t) (value / 64.0 * 100));
 	display.write_text(2, 0, buf, 5);
 
 	if (button.fallingEdge()){
-		EEPROM.update(EEPROM_PAD_VOLUME + pad, value);
+		EEPROM.update(EEPROM_PAD_VOLUME + pad, (uint8_t) value);
 		display.write_text(2, 0, "                    ", 20);
 		return Menu::volumePadSelect;
 	}
