@@ -1,22 +1,22 @@
-#include "MainVolume.h"
+#include "VolumeLineOut.h"
 #include "../Channel.h"
 
 using namespace digitalcave;
 
-MainVolume::MainVolume(){
+VolumeLineOut::VolumeLineOut(){
 }
 
-void MainVolume::loadVolumeFromEeprom(){
-	((MainVolume*) Menu::mainVolume)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
-	((MainVolume*) Menu::mainVolume)->encoderState = ((MainVolume*) Menu::mainVolume)->volume;
-	Channel::setMasterVolume(((MainVolume*) Menu::mainVolume)->volume);
+void VolumeLineOut::loadVolumeFromEeprom(){
+	((VolumeLineOut*) Menu::volumeLineOut)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
+	((VolumeLineOut*) Menu::volumeLineOut)->encoderState = ((VolumeLineOut*) Menu::volumeLineOut)->volume;
+	Channel::setVolumeLineOut(((VolumeLineOut*) Menu::volumeLineOut)->volume);
 }
 
-void MainVolume::saveVolumeToEeprom(){
-	EEPROM.update(EEPROM_MAIN_VOLUME, ((MainVolume*) Menu::mainVolume)->volume);
+void VolumeLineOut::saveVolumeToEeprom(){
+	EEPROM.update(EEPROM_MAIN_VOLUME, ((VolumeLineOut*) Menu::volumeLineOut)->volume);
 }
 
-Menu* MainVolume::handleAction(){
+Menu* VolumeLineOut::handleAction(){
 	int16_t encoderVolume = encoder.read();
 	if (volume != encoderVolume){
 		if (encoderVolume > 255){
@@ -28,7 +28,7 @@ Menu* MainVolume::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Channel::setMasterVolume(volume);
+		Channel::setVolumeLineOut(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);

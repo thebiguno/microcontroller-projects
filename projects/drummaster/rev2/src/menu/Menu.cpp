@@ -1,13 +1,13 @@
 #include "Menu.h"
 
-#include "MainMenu.h"
-#include "MainVolume.h"
-#include "LineInVolume.h"
-#include "PadsVolume.h"
-#include "PadVolume.h"
+#include "CalibrateChannel.h"
+#include "CalibrateChannelSelect.h"
 #include "LoadSamples.h"
-#include "ChannelsCalibration.h"
-#include "ChannelCalibration.h"
+#include "MainMenu.h"
+#include "VolumeLineIn.h"
+#include "VolumeLineOut.h"
+#include "VolumePad.h"
+#include "VolumePadSelect.h"
 
 using namespace digitalcave;
 
@@ -19,14 +19,14 @@ Encoder Menu::encoder(ENC_A, ENC_B);
 Bounce Menu::button(ENC_PUSH, 25);
 
 //Initialize static references to menu items
-Menu* Menu::mainMenu = new MainMenu();
-Menu* Menu::mainVolume = new MainVolume();
-Menu* Menu::lineInVolume = new LineInVolume();
-Menu* Menu::padsVolume = new PadsVolume();
-Menu* Menu::padVolume = new PadVolume();
+Menu* Menu::calibrateChannel = new CalibrateChannel();
+Menu* Menu::calibrateChannelSelect = new CalibrateChannelSelect();
 Menu* Menu::loadSamples = new LoadSamples();
-Menu* Menu::calibratePads = new CalibratePads();
-Menu* Menu::calibratePad = new CalibratePad;
+Menu* Menu::mainMenu = new MainMenu();
+Menu* Menu::volumeLineIn = new VolumeLineIn();
+Menu* Menu::volumeLineOut = new VolumeLineOut();
+Menu* Menu::volumePad = new VolumePad();
+Menu* Menu::volumePadSelect = new VolumePadSelect();
 
 Menu* Menu::current = Menu::mainMenu;
 

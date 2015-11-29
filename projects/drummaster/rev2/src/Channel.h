@@ -88,11 +88,11 @@ namespace digitalcave {
 			Channel();
 			
 		public:
-			//Set the master volume (affects everything).  This is a value from 0 to 255.
-			static void setMasterVolume(uint8_t volume);
+			//Set the output volume.  This is a value from 0 to 255.
+			static void setVolumeLineOut(uint8_t volume);
 			
 			//Set the line in volume.  This is a value from 0 to 255.  Keep this low unless using the line in.
-			static void setLineInVolume(uint8_t volume);
+			static void setVolumeLineIn(uint8_t volume);
 			
 			//Find the best available Channel object from the singleton array
 			static Channel* findAvailableChannel(uint8_t pad, uint8_t volume);

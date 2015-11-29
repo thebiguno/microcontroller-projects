@@ -78,6 +78,9 @@ namespace digitalcave {
 			//Reads the ADC for any current activity.  Starts playing the sample if warranted.
 			virtual void poll() = 0;
 			
+			//Get the per-pad volume.
+			uint8_t getVolume();
+
 			//Set the per-pad volume.
 			void setVolume(uint8_t volume);
 			

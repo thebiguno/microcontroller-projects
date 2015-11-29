@@ -51,6 +51,10 @@ Pad::Pad(uint8_t index) : index(index), lastChannel(NULL), lastPlayTime(0), last
 
 }
 
+uint8_t Pad::getVolume(){
+	return volume;
+}
+
 void Pad::setVolume(uint8_t volume){
 	this->volume = volume;
 }

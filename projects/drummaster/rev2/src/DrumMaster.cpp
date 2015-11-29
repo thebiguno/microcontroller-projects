@@ -45,9 +45,10 @@ int main(){
 	Pad::pads[10] = new Drum(11);	//X1
 	
 	//Load settings from EEPROM
-	MainVolume::loadVolumeFromEeprom();
-	LineInVolume::loadVolumeFromEeprom();
-	CalibratePad::loadPotentiometerFromEeprom();
+	CalibrateChannel::loadPotentiometerFromEeprom();
+	VolumeLineIn::loadVolumeFromEeprom();
+	VolumeLineOut::loadVolumeFromEeprom();
+	VolumePad::loadPadVolumesFromEeprom();
 	
 	while (1){
 		Menu::poll();

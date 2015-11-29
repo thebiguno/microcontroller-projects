@@ -31,7 +31,7 @@ Channel Channel::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-void Channel::setMasterVolume(uint8_t volume){
+void Channel::setVolumeLineOut(uint8_t volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
@@ -40,7 +40,7 @@ void Channel::setMasterVolume(uint8_t volume){
 	control.volume(volume / 256.0);
 }
 
-void Channel::setLineInVolume(uint8_t volume){
+void Channel::setVolumeLineIn(uint8_t volume){
 	mixer.gain(SAMPLE_COUNT, volume / 256.0);
 	mixer.gain(SAMPLE_COUNT + 1, volume / 256.0);
 }

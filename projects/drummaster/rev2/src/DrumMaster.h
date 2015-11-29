@@ -9,10 +9,12 @@
 #include "pad/Cymbal.h"
 #include "pad/Drum.h"
 #include "pad/HiHat.h"
+
 #include "menu/Menu.h"
-#include "menu/CalibratePad.h"
-#include "menu/MainVolume.h"
-#include "menu/LineInVolume.h"
+#include "menu/CalibrateChannel.h"
+#include "menu/VolumeLineIn.h"
+#include "menu/VolumeLineOut.h"
+#include "menu/VolumePad.h"
 
 #include "hardware.h"
 

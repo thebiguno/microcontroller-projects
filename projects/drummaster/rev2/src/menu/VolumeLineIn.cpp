@@ -1,22 +1,22 @@
-#include "LineInVolume.h"
+#include "VolumeLineIn.h"
 #include "../Channel.h"
 
 using namespace digitalcave;
 
-LineInVolume::LineInVolume(){
+VolumeLineIn::VolumeLineIn(){
 }
 
-void LineInVolume::loadVolumeFromEeprom(){
-	((LineInVolume*) Menu::lineInVolume)->volume = EEPROM.read(EEPROM_LINE_IN_VOLUME);
-	((LineInVolume*) Menu::lineInVolume)->encoderState = ((LineInVolume*) Menu::lineInVolume)->volume;
-	Channel::setLineInVolume(((LineInVolume*) Menu::lineInVolume)->volume);
+void VolumeLineIn::loadVolumeFromEeprom(){
+	((VolumeLineIn*) Menu::volumeLineIn)->volume = EEPROM.read(EEPROM_LINE_IN_VOLUME);
+	((VolumeLineIn*) Menu::volumeLineIn)->encoderState = ((VolumeLineIn*) Menu::volumeLineIn)->volume;
+	Channel::setVolumeLineIn(((VolumeLineIn*) Menu::volumeLineIn)->volume);
 }
 
-void LineInVolume::saveVolumeToEeprom(){
-	EEPROM.update(EEPROM_LINE_IN_VOLUME, ((LineInVolume*) Menu::lineInVolume)->volume);
+void VolumeLineIn::saveVolumeToEeprom(){
+	EEPROM.update(EEPROM_LINE_IN_VOLUME, ((VolumeLineIn*) Menu::volumeLineIn)->volume);
 }
 
-Menu* LineInVolume::handleAction(){
+Menu* VolumeLineIn::handleAction(){
 	int16_t encoderVolume = encoder.read();
 	if (volume != encoderVolume){
 		if (encoderVolume > 255){
@@ -28,7 +28,7 @@ Menu* LineInVolume::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Channel::setLineInVolume(volume);
+		Channel::setVolumeLineIn(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);

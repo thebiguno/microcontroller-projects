@@ -1,11 +1,11 @@
-#include "ChannelCalibration.h"
+#include "CalibrateChannel.h"
 
 using namespace digitalcave;
 
-ChannelCalibration::ChannelCalibration(){
+CalibrateChannel::CalibrateChannel(){
 }
 
-Menu* ChannelCalibration::handleAction(){
+Menu* CalibrateChannel::handleAction(){
 	
 	if (value == -1){
 		value = readFromPotentiometer(channel);
@@ -27,13 +27,13 @@ Menu* ChannelCalibration::handleAction(){
 	
 	if (button.fallingEdge()){
 		display.write_text(2, 0, "                    ", 20);
-		return Menu::calibratePads;
+		return Menu::calibrateChannelSelect;
 	}
 	
 	return NULL;
 }
 
-void ChannelCalibration::loadPotentiometerFromEeprom(){
+void CalibrateChannel::loadPotentiometerFromEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	EEPROM.get(EEPROM_POTENTIOMETER, values);
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
@@ -41,7 +41,7 @@ void ChannelCalibration::loadPotentiometerFromEeprom(){
 	}
 }
 
-void ChannelCalibration::savePotentiometerToEeprom(){
+void CalibrateChannel::savePotentiometerToEeprom(){
 	uint16_t values[CHANNEL_COUNT];
 	for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
 		values[i] = readFromPotentiometer(i);
@@ -49,15 +49,15 @@ void ChannelCalibration::savePotentiometerToEeprom(){
 	EEPROM.put(EEPROM_POTENTIOMETER, values);
 }
 
-uint8_t ChannelCalibration::getAddress(uint8_t channel){
+uint8_t CalibrateChannel::getAddress(uint8_t channel){
 	return POT_ADDRESS | (channel >> 1);
 }
 
-uint8_t ChannelCalibration::getMemoryAddress(uint8_t channel){
+uint8_t CalibrateChannel::getMemoryAddress(uint8_t channel){
 	return (channel & 0x01) << 4;
 }
 
-uint16_t ChannelCalibration::readFromPotentiometer(uint8_t channel){
+uint16_t CalibrateChannel::readFromPotentiometer(uint8_t channel){
 	if (channel >= CHANNEL_COUNT) return 0xFFFF;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);
@@ -71,7 +71,7 @@ uint16_t ChannelCalibration::readFromPotentiometer(uint8_t channel){
 	return result;
 }
 
-void ChannelCalibration::writeToPotentiometer(uint8_t channel, uint16_t value){
+void CalibrateChannel::writeToPotentiometer(uint8_t channel, uint16_t value){
 	if (channel >= CHANNEL_COUNT) return;
 	uint8_t address = getAddress(channel);
 	uint8_t memoryAddress = getMemoryAddress(channel);

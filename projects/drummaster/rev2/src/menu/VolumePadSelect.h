@@ -1,21 +1,21 @@
-#ifndef PADS_VOLUME_H
-#define PADS_VOLUME_H
+#ifndef VOLUME_PAD_SELECT_H
+#define VOLUME_PAD_SELECT_H
 
 #include <Wire.h>
 
 #include "../DrumMaster.h"
 #include "../hardware.h"
 #include "Menu.h"
-#include "PadVolume.h"
+#include "VolumePad.h"
 
 namespace digitalcave {
 
-	class PadsVolume : public Menu {
+	class VolumePadSelect : public Menu {
 	
 		private:
 			
 		public:
-			PadsVolume();
+			VolumePadSelect();
 			Menu* handleAction();
 	};
 }
