@@ -3,7 +3,7 @@
 
 #include <ADC.h>
 
-#include "../Channel.h"
+#include "../Sample.h"
 #include "../hardware.h"
 
 
@@ -31,13 +31,13 @@ namespace digitalcave {
 			//The number of sample files which can be played at each volume interval.
 			// We support 16 volumes (represented by a single hex digit 0..F in the filename).
 			// At each volume we can have up to 255 samples, which will be chosen randomly.
-			//This array is instantiated by calling updateChannels() method.
+			//This array is instantiated by calling updateSamples() method.
 			//Most of the time the value will be either 0 or 1.
 			uint8_t fileCountByVolume[16];
 			
-			//The last channel which was used to play this pad.  Used in the event that we need
-			// to adjust the playback on the last channel
-			Channel* lastChannel;
+			//The last Sample which was used to play this pad.  Used in the event that we need
+			// to adjust the playback on the last Sample
+			Sample* lastSample;
 			
 			//The last time this pad was hit (and a sample started)
 			uint32_t lastPlayTime;
@@ -72,7 +72,7 @@ namespace digitalcave {
 			//Initialize the ADC
 			static void initAdc();
 		
-			//Create a new pad object referencing the specified hardware channel
+			//Create a new pad object referencing the specified hardware Sample
 			Pad(uint8_t index);
 			
 			//Reads the ADC for any current activity.  Starts playing the sample if warranted.
@@ -87,7 +87,7 @@ namespace digitalcave {
 			//Looks on the SPI flash chip for files according to the sample naming convention,
 			// and updates the fileCountByVolume array, which indicates which files are 
 			// available.
-			void updateChannels();
+			void updateSamples();
 			
 			//Find the correct sample, given a volume.
 			char* lookupFilename(uint8_t volume);

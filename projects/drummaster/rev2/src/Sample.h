@@ -1,5 +1,5 @@
-#ifndef CHANNEL_H
-#define CHANNEL_H
+#ifndef SAMPLE_H
+#define SAMPLE_H
 
 #include <Audio.h>
 #include <SerialFlash.h>
@@ -8,7 +8,7 @@
 
 //The total number of samples allowed in the system.  Currently 12 seems to be right; more than this 
 // can cause slowdowns when playing back.  If this is set to more than 14, you need to change how the
-// mixer is set up, since currently we are using a 16 channel mixer with two channels reserved for 
+// mixer is set up, since currently we are using a 16 Sample mixer with two Samples reserved for 
 // passing through i2s audio from an external source.
 #define SAMPLE_COUNT				12
 
@@ -29,21 +29,21 @@
 namespace digitalcave {
 
 	/*
-	 * The Channel class is a wrapper around the Teensy Audio 'AudioPlaySerialRaw' object, and 
+	 * The Sample class is a wrapper around the Teensy Audio 'AudioPlaySerialRaw' object, and 
 	 * handles playing back the actual sounds in addition to controlling existing playback.
 	 * There is a lots of tasks handled by this class:
 	 * 1) Static objects / methods for hooking up the actual playback.  These are Teensy Audio 
 	 * classes, and include things like the main volume control, mixers, and connections 
 	 * between everything.
-	 * 2) Static methods for finding an available Channel object and mapping between a channel / volume
+	 * 2) Static methods for finding an available Sample object and mapping between a Sample / volume
 	 * tuple and a filename
 	 * 3) Private instance variables for SPI audio sample and the connection between it and the mixer
- 	 * 4) Methods to play a sample, set gain (volume) on a given channel, query state, stop playback, etc.
+ 	 * 4) Methods to play a sample, set gain (volume) on a given Sample, query state, stop playback, etc.
  	 *
- 	 * Note that the Channel objects can only be accessed via the singleton array samples[], via
- 	 * the static findAvailableChannel method.
+ 	 * Note that the Sample objects can only be accessed via the singleton array samples[], via
+ 	 * the static findAvailableSample method.
 	 */
-	class Channel {
+	class Sample {
 		private:
 			//Control object
 			static AudioControlSGTL5000 control;
@@ -67,7 +67,7 @@ namespace digitalcave {
 			
 			//Static array of samples, along with index to keep track of current index (for sample constructor).
 			static uint8_t currentIndex;
-			static Channel samples[];
+			static Sample samples[];
 
 			//This sample's index into mixer
 			uint8_t mixerIndex;
@@ -81,11 +81,11 @@ namespace digitalcave {
 			//Connections from playSerialRaw to mixer
 			AudioConnection playSerialRawToMixer;
 
-			//The last volume value which has been set for this Channel
+			//The last volume value which has been set for this Sample
 			uint8_t volume;
 
 			//Constructing the objects should only happen during singleton array init.
-			Channel();
+			Sample();
 			
 		public:
 			//Set the output volume.  This is a value from 0 to 255.
@@ -94,8 +94,8 @@ namespace digitalcave {
 			//Set the line in volume.  This is a value from 0 to 255.  Keep this low unless using the line in.
 			static void setVolumeLineIn(uint8_t volume);
 			
-			//Find the best available Channel object from the singleton array
-			static Channel* findAvailableChannel(uint8_t pad, uint8_t volume);
+			//Find the best available Sample object from the singleton array
+			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename

@@ -12,7 +12,7 @@ void Pad::initAdc(){
 	adc.setAveraging(16);
 }
 
-Pad::Pad(uint8_t index) : index(index), lastChannel(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
+Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
 	switch(index){
 		//cases 0 and 1 are handled in the HiHat subclass
 		case 2:	//Snare
@@ -47,7 +47,7 @@ Pad::Pad(uint8_t index) : index(index), lastChannel(NULL), lastPlayTime(0), last
 			break;
 	}
 	
-	updateChannels();
+	updateSamples();
 
 }
 
@@ -59,7 +59,7 @@ void Pad::setVolume(uint8_t volume){
 	this->volume = volume;
 }
 
-void Pad::updateChannels(){
+void Pad::updateSamples(){
 	//Reset fileCountByVolume
 	for (uint8_t i = 0x00; i <= 0x0F; i++){
 		fileCountByVolume[i] = 0x00;
@@ -72,7 +72,7 @@ void Pad::updateChannels(){
 
 		if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
 			if (strlen(filename) != 10){
-				continue;	//Ensure the filename is in a valid format, XX_V_N.RAW.  See docs/Kit Channel Organization.txt for details
+				continue;	//Ensure the filename is in a valid format, XX_V_N.RAW.  See docs/Kit Sample Organization.txt for details
 			}
 			
 			//Ensure that the first two characters in the filename are valid for this pad's filename prefix.
@@ -86,10 +86,10 @@ void Pad::updateChannels(){
 			else continue;	//Invalid volume
 			
 			//Ensure that this filename's sample number is a valid hexadecimal character (0..F)
-			char fileChannel = filename[5];
+			char fileSample = filename[5];
 			uint8_t sample;
-			if (fileChannel >= '0' && fileChannel <= '9') sample = fileChannel - 0x30;
-			else if (fileChannel >= 'A' && fileChannel <= 'F') sample = fileChannel - 0x37;
+			if (fileSample >= '0' && fileSample <= '9') sample = fileSample - 0x30;
+			else if (fileSample >= 'A' && fileSample <= 'F') sample = fileSample - 0x37;
 			else continue;	//Invalid volume
 
 			//This is why we need to have the sample number continuous... we just record the highest sample number,
@@ -129,7 +129,7 @@ uint8_t Pad::readAdc(){
 	//TODO Unsure of whether this delay is needed... experimentation is required.
 	delayMicroseconds(1);
 	
-	//Set channel
+	//Set Sample
 	digitalWriteFast(MUX0, index & 0x01);
 	digitalWriteFast(MUX1, index & 0x02);
 	digitalWriteFast(MUX2, index & 0x04);
@@ -154,8 +154,8 @@ uint8_t Pad::readAdc(){
 	//... read value...
 	uint8_t rawValue = adc.analogRead(ADC_INPUT);
 //	if (rawValue > MIN_VALUE){
-//		//Serial.print("Channel ");
-//		//Serial.println(channel);
+//		//Serial.print("Sample ");
+//		//Serial.println(Sample);
 //		//Serial.print(" read rawValue ");
 //		//Serial.println(rawValue);
 //	}
@@ -169,10 +169,10 @@ uint8_t Pad::readAdc(){
 	if (rawValue > MIN_VALUE && lastPlayTime + DOUBLE_HIT_THRESHOLD > millis()){
 //		Serial.print("Double trigger detected; ");
 		lastPlayTime = millis();
-		if (lastChannel != NULL && lastRawValue < rawValue){
+		if (lastSample != NULL && lastRawValue < rawValue){
 //			Serial.println("Adjusted rawValue");
 			//Change the last volume to the higher (new) value and stop processing
-			lastChannel->setVolume(rawValue);
+			lastSample->setVolume(rawValue);
 			//TODO Change the sample + rawValue to match the highest value
 			//Serial.println("Adjusted last hit");
 			return 0;
@@ -210,8 +210,8 @@ uint8_t Pad::readAdc(){
 		Serial.println(peakRawValue);
 //		Serial.print("; time = ");
 //		Serial.println(millis());
-//		lastChannel = Channel::findAvailableChannel(index, peakRawValue);
-//		lastChannel->play(lookupFilename(peakRawValue), index, peakRawValue);
+//		lastSample = Sample::findAvailableSample(index, peakRawValue);
+//		lastSample->play(lookupFilename(peakRawValue), index, peakRawValue);
 		uint8_t result = peakRawValue;
 
 		lastPlayTime = millis();

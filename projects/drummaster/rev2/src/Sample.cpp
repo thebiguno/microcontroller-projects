@@ -1,37 +1,37 @@
-#include "Channel.h"
+#include "Sample.h"
 
 using namespace digitalcave;
 
 //All the audio junk.  Static members of the class.
 
 //Audio board control object
-AudioControlSGTL5000 Channel::control;
-uint8_t Channel::controlEnabled = 0;
+AudioControlSGTL5000 Sample::control;
+uint8_t Sample::controlEnabled = 0;
 
 //I2S input
-AudioInputI2S Channel::input;
+AudioInputI2S Sample::input;
 
 //Mixer
-AudioMixer16 Channel::mixer;
+AudioMixer16 Sample::mixer;
 
 //Output
-AudioOutputI2S Channel::output;
+AudioOutputI2S Sample::output;
 
 //Input passthrough to mixer
-AudioConnection Channel::inputToMixer0(input, 0, mixer, SAMPLE_COUNT);
-AudioConnection Channel::inputToMixer1(input, 1, mixer, SAMPLE_COUNT + 1);
+AudioConnection Sample::inputToMixer0(input, 0, mixer, SAMPLE_COUNT);
+AudioConnection Sample::inputToMixer1(input, 1, mixer, SAMPLE_COUNT + 1);
 
 //Mixer to output
-AudioConnection Channel::mixerToOutput0(mixer, 0, output, 0);
-AudioConnection Channel::mixerToOutput1(mixer, 0, output, 1);
+AudioConnection Sample::mixerToOutput0(mixer, 0, output, 0);
+AudioConnection Sample::mixerToOutput1(mixer, 0, output, 1);
 
 //Initialize samples array
-uint8_t Channel::currentIndex = 0;
-Channel Channel::samples[SAMPLE_COUNT];
+uint8_t Sample::currentIndex = 0;
+Sample Sample::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-void Channel::setVolumeLineOut(uint8_t volume){
+void Sample::setVolumeLineOut(uint8_t volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
@@ -40,19 +40,19 @@ void Channel::setVolumeLineOut(uint8_t volume){
 	control.volume(volume / 256.0);
 }
 
-void Channel::setVolumeLineIn(uint8_t volume){
+void Sample::setVolumeLineIn(uint8_t volume){
 	mixer.gain(SAMPLE_COUNT, volume / 256.0);
 	mixer.gain(SAMPLE_COUNT + 1, volume / 256.0);
 }
 
-Channel* Channel::findAvailableChannel(uint8_t pad, uint8_t volume){
+Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
 	//Oldest overall sample
-	uint8_t oldestChannel = 0;
-	uint16_t oldestChannelPosition = 0;
+	uint8_t oldestSample = 0;
+	uint16_t oldestSamplePosition = 0;
 
 	//Oldest sample played from the same pad, which was quieter than the new sound
-	uint8_t oldestChannelByPad = 0;
-	uint16_t oldestChannelByPadPosition = 0;
+	uint8_t oldestSampleByPad = 0;
+	uint16_t oldestSampleByPadPosition = 0;
 	uint8_t sampleByPadCount = 0;
 	
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
@@ -60,38 +60,38 @@ Channel* Channel::findAvailableChannel(uint8_t pad, uint8_t volume){
 			return &(samples[i]);	//If we have a sample object that is not playing currently, just use it.
 		}
 		else {
-			if (samples[i].getPositionMillis() > oldestChannelPosition){
-				oldestChannelPosition = samples[i].getPositionMillis();
-				oldestChannel = i;
+			if (samples[i].getPositionMillis() > oldestSamplePosition){
+				oldestSamplePosition = samples[i].getPositionMillis();
+				oldestSample = i;
 			}
 			if (samples[i].getLastPad() == pad
 					&& samples[i].getVolume() < volume
-					&& samples[i].getPositionMillis() > oldestChannelByPadPosition){
-				oldestChannelByPadPosition = samples[i].getPositionMillis();
-				oldestChannelByPad = i;
+					&& samples[i].getPositionMillis() > oldestSampleByPadPosition){
+				oldestSampleByPadPosition = samples[i].getPositionMillis();
+				oldestSampleByPad = i;
 				sampleByPadCount++;
 			}
 		}
 	}
 	
-	//If we get to here, there are no available channels, so we will have to stop a playing one.
+	//If we get to here, there are no available Samples, so we will have to stop a playing one.
 	// We try to pick the one which will cause the lease disruption.
 	if (sampleByPadCount >= 2){
 		//If there are at least 2 samples already playing for this pad, we can kill the oldest.
-		samples[oldestChannelByPad].stop();
-		return &(samples[oldestChannelByPad]);
+		samples[oldestSampleByPad].stop();
+		return &(samples[oldestSampleByPad]);
 	}
 	else {
-		//If there are no free samples and not enough playing samples in the current channel, we 
+		//If there are no free samples and not enough playing samples in the current Sample, we 
 		// just pick the oldest sound and stop it.
-		samples[oldestChannel].stop();
-		return &(samples[oldestChannel]);
+		samples[oldestSample].stop();
+		return &(samples[oldestSample]);
 	}
 }
 
 /***** Instance methods *****/
 
-Channel::Channel(): 
+Sample::Sample(): 
 		mixerIndex(currentIndex), 
 		lastPad(0xFF), 
 		playSerialRaw(),
@@ -99,34 +99,34 @@ Channel::Channel():
 	currentIndex++;	//Increment current index
 }
 
-void Channel::play(char* filename, uint8_t pad, uint8_t volume){
+void Sample::play(char* filename, uint8_t pad, uint8_t volume){
 	Serial.println(filename);
 	lastPad = pad;
 	setVolume(volume);
 	playSerialRaw.play(filename);
 }
 
-uint8_t Channel::isPlaying(){
+uint8_t Sample::isPlaying(){
 	return playSerialRaw.isPlaying();
 }
 
-uint32_t Channel::getPositionMillis(){
+uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
-void Channel::stop(){
+void Sample::stop(){
 	playSerialRaw.stop();
 }
 
-uint8_t Channel::getVolume(){
+uint8_t Sample::getVolume(){
 	return volume;
 }
 
-void Channel::setVolume(uint8_t volume){
+void Sample::setVolume(uint8_t volume){
 	this->volume = volume;
 	mixer.gain(mixerIndex, max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
 }
 
-uint8_t Channel::getLastPad(){
+uint8_t Sample::getLastPad(){
 	return lastPad;
 }

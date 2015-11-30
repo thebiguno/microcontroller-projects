@@ -1,5 +1,5 @@
 #include "VolumeLineOut.h"
-#include "../Channel.h"
+#include "../Sample.h"
 
 using namespace digitalcave;
 
@@ -9,7 +9,7 @@ VolumeLineOut::VolumeLineOut(){
 void VolumeLineOut::loadVolumeFromEeprom(){
 	((VolumeLineOut*) Menu::volumeLineOut)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
 	((VolumeLineOut*) Menu::volumeLineOut)->encoderState = ((VolumeLineOut*) Menu::volumeLineOut)->volume;
-	Channel::setVolumeLineOut(((VolumeLineOut*) Menu::volumeLineOut)->volume);
+	Sample::setVolumeLineOut(((VolumeLineOut*) Menu::volumeLineOut)->volume);
 }
 
 void VolumeLineOut::saveVolumeToEeprom(){
@@ -28,7 +28,7 @@ Menu* VolumeLineOut::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Channel::setVolumeLineOut(volume);
+		Sample::setVolumeLineOut(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
 	display.write_text(1, 0, buf, 4);
