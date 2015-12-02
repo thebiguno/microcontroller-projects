@@ -10,7 +10,7 @@
 // can cause slowdowns when playing back.  If this is set to more than 14, you need to change how the
 // mixer is set up, since currently we are using a 16 Sample mixer with two Samples reserved for 
 // passing through i2s audio from an external source.
-#define SAMPLE_COUNT				12
+#define SAMPLE_COUNT				10
 
 //The base of the exponential curve for audio mapping.  Nothing particularly scientific here, I just 
 // played with a bunch of graphs until I found one that looked and sounded right.  Take note of the
@@ -40,7 +40,7 @@ namespace digitalcave {
 	 * 3) Private instance variables for SPI audio sample and the connection between it and the mixer
  	 * 4) Methods to play a sample, set gain (volume) on a given Sample, query state, stop playback, etc.
  	 *
- 	 * Note that the Sample objects can only be accessed via the singleton array samples[], via
+ 	 * Note that the Sample objects can only be accessed from the singleton array samples[], via
  	 * the static findAvailableSample method.
 	 */
 	class Sample {
@@ -96,6 +96,9 @@ namespace digitalcave {
 			
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
+			
+			//Stops all currently playing samples for the selected pad
+			static void mutePad(uint8_t pad);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename

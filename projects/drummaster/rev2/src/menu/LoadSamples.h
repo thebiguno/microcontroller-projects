@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "../hardware.h"
+#include "../pad/Pad.h"
 #include "Menu.h"
 
 namespace digitalcave {

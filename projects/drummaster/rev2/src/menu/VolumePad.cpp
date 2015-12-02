@@ -13,14 +13,11 @@ Menu* VolumePad::handleAction(){
 	
 	encoderState = encoder.read();
 	if (encoderState != value){
-		Serial.println("Diff!");
 		if (encoderState > 255){
-			Serial.println("Overflow!");
 			encoderState = 255;
 			encoder.write(255);
 		}
 		else if (encoderState < 0){
-			Serial.println("Underflow!");
 			encoderState = 0;
 			encoder.write(0);
 		}
@@ -42,17 +39,13 @@ Menu* VolumePad::handleAction(){
 }
 
 void VolumePad::loadPadVolumesFromEeprom(){
-	uint16_t values[PAD_COUNT];
-	EEPROM.get(EEPROM_PAD_VOLUME, values);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		Pad::pads[i]->setVolume(values[i]);
+		Pad::pads[i]->setVolume(EEPROM.read(EEPROM_PAD_VOLUME + i));
 	}
 }
 
 void VolumePad::savePadVolumesToEeprom(){
-	uint16_t values[PAD_COUNT];
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		values[i] = Pad::pads[i]->getVolume();
+		EEPROM.update(EEPROM_PAD_VOLUME + i, Pad::pads[i]->getVolume());
 	}
-	EEPROM.put(EEPROM_PAD_VOLUME, values);
 }

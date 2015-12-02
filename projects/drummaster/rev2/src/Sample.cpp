@@ -100,7 +100,10 @@ Sample::Sample():
 }
 
 void Sample::play(char* filename, uint8_t pad, uint8_t volume){
-	Serial.println(filename);
+	Serial.print("Playing ");
+	Serial.print(filename);
+	Serial.print(" at volume ");
+	Serial.println(volume);
 	lastPad = pad;
 	setVolume(volume);
 	playSerialRaw.play(filename);
@@ -112,6 +115,14 @@ uint8_t Sample::isPlaying(){
 
 uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
+}
+
+void Sample::mutePad(uint8_t pad){
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
+		if (samples[i].lastPad == pad && samples[i].isPlaying()){
+			samples[i].stop();
+		}
+	}
 }
 
 void Sample::stop(){

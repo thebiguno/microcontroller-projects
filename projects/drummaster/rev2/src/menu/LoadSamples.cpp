@@ -114,6 +114,7 @@ Menu* LoadSamples::handleAction(){
 			display.write_text(2, 0, "Load Samples Done   ", 20);
 			encoder.write(0);
 			display.refresh();
+			Pad::updateAllSamples();		//Reload the sample mapping
 			EEPROM.put(EEPROM_KIT_NAME, kitName);
 			delay(1000);
 			display.clear();

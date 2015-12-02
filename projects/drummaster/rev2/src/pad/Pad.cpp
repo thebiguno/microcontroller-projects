@@ -1,54 +1,54 @@
 #include "Pad.h"
 
+#include "HiHat.h"
+#include "Drum.h"
+#include "Cymbal.h"
+
 using namespace digitalcave;
 
 ADC Pad::adc;
 Pad* Pad::pads[PAD_COUNT];
 uint8_t Pad::randomSeedCompleted = 0;
 
-void Pad::initAdc(){
-	adc.setResolution(8);
+//Initialize static pads array
+uint8_t Pad::currentIndex = 0;
+
+void Pad::init(){
+	adc.setResolution(12);
 	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setAveraging(16);
+	adc.setAveraging(8);
+	
+	pads[0] = new HiHat("HH", 0, 1, 15, 50);	//Hihat + Pedal
+	pads[1] = new Drum("SN", 2, 25);		//Snare
+	pads[2] = new Drum("BS", 3, 100);	//Bass
+	pads[3] = new Drum("T1", 4, 50);		//Tom1
+	pads[4] = new Cymbal("CR", 5, 14, 50);	//Crash
+	pads[5] = new Drum("T2", 6, 50);		//Tom2
+	pads[6] = new Drum("T3", 7, 50);		//Tom3
+	pads[7] = new Cymbal("SP", 8, 13, 50);	//Splash
+	pads[8] = new Cymbal("RD", 9, 12, 50);	//Ride
+	pads[9] = new Drum("X0", 10, 50);	//X0
+	pads[10] = new Drum("X1", 11, 50);	//X1
+	
+// 	Pad* Pad::pads[PAD_COUNT] = {
+// 		new HiHat("HH", 0, 1, 15, 50),	//Hihat + Pedal
+// 		new Drum("SN", 2, 25),			//Snare
+// 		new Drum("BS", 3, 100),			//Bass
+// 		new Drum("T1", 4, 50),			//Tom1
+// 		new Cymbal("CR", 5, 14, 50),	//Crash
+// 		new Drum("T2", 6, 50),			//Tom2
+// 		new Drum("T3", 7, 50),			//Tom3
+// 		new Cymbal("SP", 8, 13, 50),	//Splash
+// 		new Cymbal("RD", 9, 12, 50),	//Ride
+// 		new Drum("X0", 10, 50),			//X0
+// 		new Drum("X1", 11, 50)			//X1
+// 	};
 }
 
-Pad::Pad(uint8_t index) : index(index), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
-	switch(index){
-		//cases 0 and 1 are handled in the HiHat subclass
-		case 2:	//Snare
-			strncpy(filenamePrefix, "SN", 3);
-			break;
-		case 3:	//Bass
-			strncpy(filenamePrefix, "BS", 3);
-			break;
-		case 4:	//Tom1
-			strncpy(filenamePrefix, "T1", 3);
-			break;
-		case 5:	//Crash
-			strncpy(filenamePrefix, "CR", 3);
-			break;
-		case 6:	//Tom2
-			strncpy(filenamePrefix, "T2", 3);
-			break;
-		case 7:	//Tom3
-			strncpy(filenamePrefix, "T3", 3);
-			break;
-		case 8:	//Splash
-			strncpy(filenamePrefix, "SP", 3);
-			break;
-		case 9:	//Ride
-			strncpy(filenamePrefix, "RD", 3);
-			break;
-		case 10:	//X0
-			strncpy(filenamePrefix, "X0", 3);
-			break;
-		case 11:	//X1
-			strncpy(filenamePrefix, "X1", 3);
-			break;
-	}
-	
+Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : doubleHitThreshold(doubleHitThreshold), padIndex(currentIndex), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
+	strncpy(this->filenamePrefix, filenamePrefix, 3);
 	updateSamples();
-
+	currentIndex++;
 }
 
 uint8_t Pad::getVolume(){
@@ -57,6 +57,12 @@ uint8_t Pad::getVolume(){
 
 void Pad::setVolume(uint8_t volume){
 	this->volume = volume;
+}
+
+void Pad::updateAllSamples(){
+	for (uint8_t i = 0; i < PAD_COUNT; i++){
+		pads[i]->updateSamples();
+	}
 }
 
 void Pad::updateSamples(){
@@ -117,31 +123,50 @@ char* Pad::lookupFilename(uint8_t volume){
 		else offset += -1;
 	}
 	
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%x_%x.RAW", filenamePrefix, closestVolume, (uint8_t) random(fileCountByVolume[closestVolume]));
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, (uint8_t) random(fileCountByVolume[closestVolume]));
 	return filenameResult;
 }
 
-uint8_t Pad::readAdc(){
+uint8_t Pad::readSwitch(uint8_t muxIndex){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 	
-	//TODO Unsure of whether this delay is needed... experimentation is required.
-	delayMicroseconds(1);
+	//Set Sample
+	digitalWriteFast(MUX0, muxIndex & 0x01);
+	digitalWriteFast(MUX1, muxIndex & 0x02);
+	digitalWriteFast(MUX2, muxIndex & 0x04);
+	digitalWriteFast(MUX3, muxIndex & 0x08);
+	
+	//Enable ADC MUX...
+	digitalWriteFast(ADC_EN, MUX_ENABLE);
+
+	//... read value...
+	int16_t rawValue = adc.analogRead(ADC_INPUT);
+	
+	//... and disable MUX again
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+	
+	//If the rawValue is high, the button is not pressed (active low); if it is low, then
+	// the button is pressed.
+	return rawValue < 128;
+}
+
+uint8_t Pad::readPiezo(uint8_t muxIndex){
+	//Disable both MUXs
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 	
 	//Set Sample
-	digitalWriteFast(MUX0, index & 0x01);
-	digitalWriteFast(MUX1, index & 0x02);
-	digitalWriteFast(MUX2, index & 0x04);
-	digitalWriteFast(MUX3, index & 0x08);
-
-	//TODO Unsure of whether this delay is needed... experimentation is required.
-	delayMicroseconds(1);
+	digitalWriteFast(MUX0, muxIndex & 0x01);
+	digitalWriteFast(MUX1, muxIndex & 0x02);
+	digitalWriteFast(MUX2, muxIndex & 0x04);
+	digitalWriteFast(MUX3, muxIndex & 0x08);
 
 	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
-	if (lastPlayTime + DOUBLE_HIT_THRESHOLD > millis()){
+	if (lastPlayTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		delayMicroseconds(100);
+		//delayMicroseconds(100);
 		return 0;
 	}
 	
@@ -149,24 +174,18 @@ uint8_t Pad::readAdc(){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//TODO Unsure of whether this delay is needed... experimentation is required.
-	delayMicroseconds(10);
+	//delayMicroseconds(100);
 	
 	//... read value...
-	uint8_t rawValue = adc.analogRead(ADC_INPUT);
-//	if (rawValue > MIN_VALUE){
-//		//Serial.print("Sample ");
-//		//Serial.println(Sample);
-//		//Serial.print(" read rawValue ");
-//		//Serial.println(rawValue);
-//	}
+	int16_t rawValue = adc.analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
-	//Double trigger detection.  If this hit is within DOUBLE_HIT_THRESHOLD millis of the last
+	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
 	// hit, then we will either adjust the previously played sample to match this new (louder)
 	// volume, or we will ignore it.
-	if (rawValue > MIN_VALUE && lastPlayTime + DOUBLE_HIT_THRESHOLD > millis()){
+	if (rawValue > MIN_VALUE && lastPlayTime + doubleHitThreshold > millis()){
 //		Serial.print("Double trigger detected; ");
 		lastPlayTime = millis();
 		if (lastSample != NULL && lastRawValue < rawValue){
@@ -174,7 +193,10 @@ uint8_t Pad::readAdc(){
 			//Change the last volume to the higher (new) value and stop processing
 			lastSample->setVolume(rawValue);
 			//TODO Change the sample + rawValue to match the highest value
-			//Serial.println("Adjusted last hit");
+			Serial.print("Adjusted previous hit on ");
+			Serial.print(filenamePrefix);
+			Serial.print(" to ");
+			Serial.println(rawValue);
 			return 0;
 		}
 		else {
@@ -190,6 +212,22 @@ uint8_t Pad::readAdc(){
 		//Serial.println("Volume not stable");
 		//Is the result is still increasing?  If so, wait for it to stabilize
 		peakRawValue = rawValue;
+		lastPeakValueSampleTime = millis();
+// 		Serial.print("Setting peak value to ");
+// 		Serial.print(peakRawValue);
+// 		Serial.print(" (time is ");
+// 		Serial.print(millis());
+// 		Serial.println(")");
+	}
+	else if (rawValue > (peakRawValue - MIN_VALUE) && millis() - 3 < lastPeakValueSampleTime){
+		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within 3 ms of the last peak value increase
+// 		Serial.print("Peak value of ");
+// 		Serial.print(peakRawValue);
+// 		Serial.print(" is already higher than raw value of ");
+// 		Serial.print(rawValue);
+// 		Serial.print(" (time is ");
+// 		Serial.print(millis());
+// 		Serial.println(")");
 	}
 	else if (peakRawValue < MIN_VALUE){
 		//If the result has stabilized, but it is less than MIN_VALUE, then ignore it
@@ -201,17 +239,6 @@ uint8_t Pad::readAdc(){
 		//Reset the peak value by turning on the drain MUX
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 
-		
-		//Start the sample playback
-
-		Serial.print("Playing ");
-		Serial.print(index);
-		Serial.print(" at volume ");
-		Serial.println(peakRawValue);
-//		Serial.print("; time = ");
-//		Serial.println(millis());
-//		lastSample = Sample::findAvailableSample(index, peakRawValue);
-//		lastSample->play(lookupFilename(peakRawValue), index, peakRawValue);
 		uint8_t result = peakRawValue;
 
 		lastPlayTime = millis();

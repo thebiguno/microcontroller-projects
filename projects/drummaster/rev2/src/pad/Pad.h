@@ -6,10 +6,6 @@
 #include "../Sample.h"
 #include "../hardware.h"
 
-
-//Min time in millis between hits
-#define DOUBLE_HIT_THRESHOLD		50
-
 //Minimum ADC value to register as a hit
 #define MIN_VALUE					15
 
@@ -18,15 +14,21 @@ namespace digitalcave {
 	class Pad {
 		private:
 			static ADC adc;
+			
+			//Maximum time in ms in which a double hit will be ignored
+			uint8_t doubleHitThreshold;
 	
 		protected:
 			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
 			// pad strike with the system time; this should allow for random numbers, as the timing of 
 			// the first pad strike will differ each time.
 			static uint8_t randomSeedCompleted;
-		
-			//The hardware index associated with this pad
-			uint8_t index;
+			
+			//Index to keep track of current index (for pad constructor).
+			static uint8_t currentIndex;
+			
+			//The index into the pads array for this instance
+			uint8_t padIndex;
 			
 			//The number of sample files which can be played at each volume interval.
 			// We support 16 volumes (represented by a single hex digit 0..F in the filename).
@@ -56,10 +58,15 @@ namespace digitalcave {
 			// Until we see this, we do not start playing the sample and activate the drain.
 			// This variable keeps track of the max value so far.  Once the drain is activated,
 			// this value is reset.
-			uint8_t peakRawValue;
+			int16_t peakRawValue;
+			//The time that the peakRawValue was last set.
+			uint32_t lastPeakValueSampleTime;
 			
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
-			uint8_t readAdc();
+			uint8_t readPiezo(uint8_t muxIndex);
+			
+			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
+			uint8_t readSwitch(uint8_t muxIndex);
 			
 			//The per-pad volume gain.  This number is divided by 64.0 and multiplied against the requested
 			// volume when playing a sample.  A value of 64 results in no change; less than 64 will reduce
@@ -70,10 +77,10 @@ namespace digitalcave {
 			static Pad* pads[PAD_COUNT];
 			
 			//Initialize the ADC
-			static void initAdc();
+			static void init();
 		
 			//Create a new pad object referencing the specified hardware Sample
-			Pad(uint8_t index);
+			Pad(const char* filenamePrefix, uint8_t doubleHitThreshold);
 			
 			//Reads the ADC for any current activity.  Starts playing the sample if warranted.
 			virtual void poll() = 0;
@@ -83,6 +90,9 @@ namespace digitalcave {
 
 			//Set the per-pad volume.
 			void setVolume(uint8_t volume);
+			
+			//Calls updateSamples() for each Pad object defined.
+			static void updateAllSamples();
 			
 			//Looks on the SPI flash chip for files according to the sample naming convention,
 			// and updates the fileCountByVolume array, which indicates which files are 

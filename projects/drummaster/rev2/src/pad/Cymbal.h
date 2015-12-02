@@ -11,10 +11,12 @@ namespace digitalcave {
 	 */
 	class Cymbal : public Pad {
 		private:
+			uint8_t piezoMuxIndex;
+			uint8_t switchMuxIndex;
 			
 		public:
 			//Create a new pad object referencing the specified hardware channel
-			Cymbal(uint8_t index);
+			Cymbal(const char* filenamePrefix, uint8_t piezoIndex, uint8_t muteIndex, uint8_t doubleHitThreshold);
 			
 			//Implement virtual method
 			void poll();
