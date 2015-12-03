@@ -166,7 +166,7 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	// to prevent double triggering.
 	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		delayMicroseconds(100);
+		delayMicroseconds(10);
 		return 0;
 	}
 	
@@ -174,10 +174,15 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//TODO Unsure of whether this delay is needed... experimentation is required.
-	//delayMicroseconds(100);
+	delayMicroseconds(10);
 	
 	//... read value...
 	uint16_t currentValue = adc.analogRead(ADC_INPUT);
+	if (!randomSeedCompleted && currentValue > MIN_VALUE){
+		//Seed the randomizer based on the time of the first hit
+		randomSeed(millis());
+		randomSeedCompleted = 1;
+	}
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
@@ -190,49 +195,19 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 		strikeTime = millis();
 		peakValue = currentValue;
 	}
-	else if (currentValue > peakValue){
-		//Serial.println("Volume not stable");
-		//Is the result is still increasing?  If so, wait for it to stabilize
-		peakValue = currentValue;
-		//peakValueTime = millis();
-// 		Serial.print("Setting peak value to ");
-// 		Serial.print(peakValue);
-// 		Serial.print(" (time is ");
-// 		Serial.print(millis());
-// 		Serial.println(")");
-	}
-	else if (currentValue > (peakValue - MIN_VALUE) && millis() - MAX_RESPONSE_TIME < strikeTime){
-		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within MAX_RESPONSE_TIME ms of the last peak value increase
-// 		Serial.print("Peak value of ");
-// 		Serial.print(peakValue);
-// 		Serial.print(" is already higher than raw value of ");
-// 		Serial.print(currentValue);
-// 		Serial.print(" (time is ");
-// 		Serial.print(millis());
-// 		Serial.println(")");
-	}
-	else if (peakValue < MIN_VALUE){
-		//If the result has stabilized, but it is less than MIN_VALUE, then ignore it
-		//TODO do we need this?  Perhaps just take out MIN_VALUE altogether?
-		peakValue = 0;
-	}
-	else {
-		//The result has stabilized and it is large enough to play a sample.
-		//Reset the peak value by turning on the drain MUX
-		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-
-		uint8_t result = peakValue;
-
+	else if (peakValue > MIN_VALUE && millis() - strikeTime > MAX_RESPONSE_TIME){
+		//We have timed out; send whatever the peak value currently is
+		uint16_t result = peakValue;
 		playTime = millis();
-		//lastValue = peakValue;
 		peakValue = 0;
+		Serial.println(result);
 		
-		if (!randomSeedCompleted){
-			randomSeed(millis());
-			randomSeedCompleted = 1;
-		}
-		
+		//return 150;
 		return result;
+	}
+	else if (currentValue > peakValue){
+		//Volume is still increasing; record this as the new peak value
+		peakValue = currentValue;
 	}
 	
 	return 0;

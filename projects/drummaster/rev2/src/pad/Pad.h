@@ -25,17 +25,13 @@
 #define MUX_14		14
 #define MUX_15		15
 
-//Before a signal is considered stable, there must be STABILIZATION_COUNT samples
-// all within +/- STABILIZATION_DELTA of the previous one.
-#define STABILIZATION_COUNT			5
-#define STABILIZATION_DELTA			2
 
 //The maximum time (in ms) between a new hit being detected and when we return
 // the value.
-#define MAX_RESPONSE_TIME			3
+#define MAX_RESPONSE_TIME			1
 
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					8
+#define MIN_VALUE					16
 
 namespace digitalcave {
 
@@ -131,7 +127,7 @@ namespace digitalcave {
 			virtual void poll() = 0;
 			
 			//Start plating this pad at the specified volume.
-			void play(uint8_t volume);
+			void play(uint16_t volume);
 			
 			//Stops all samples which were started from this pad
 			void stop();
