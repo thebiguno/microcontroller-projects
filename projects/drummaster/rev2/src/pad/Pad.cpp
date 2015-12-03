@@ -46,7 +46,7 @@ Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), 
 	currentIndex++;
 }
 
-void Pad::play(uint8_t volume){
+void Pad::play(uint16_t volume){
 	lastSample = Sample::findAvailableSample(padIndex, volume);
 	lastSample->play(lookupFilename(volume), padIndex, volume * (padVolume / 64.0));
 }
@@ -177,69 +177,11 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	//delayMicroseconds(100);
 	
 	//... read value...
-	int16_t currentValue = adc.analogRead(ADC_INPUT);
+	uint16_t currentValue = adc.analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	
-	
-// 	if (currentValue <= MIN_VALUE){
-// 		stabilizationCounter = 0;
-// 	}
-// 	else if (abs(stabilizationValue - currentValue) <= STABILIZATION_DELTA){
-// 		stabilizationCounter++;
-// 		Serial.print("Read value ");
-// 		Serial.print(currentValue);
-// 		Serial.println(" within delta");
-// 	}
-// 	else {
-// 		stabilizationCounter = 0;
-// 		Serial.print("Read value ");
-// 		Serial.println(currentValue);
-// 	}
-// 	stabilizationValue = currentValue;
-// 	
-// 	if (stabilizationCounter >= STABILIZATION_COUNT){
-// 		//The result has stabilized and it is large enough to play a sample.
-// 		//Reset the peak value by turning on the drain MUX
-// 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-// 
-// 		playTime = millis();
-// 		
-// 		if (!randomSeedCompleted){
-// 			randomSeed(millis());
-// 			randomSeedCompleted = 1;
-// 		}
-// 		
-// 		return currentValue;
-// 	}
-// 	else {
-// 		return 0;
-// 	}
-	
-// 	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
-// 	// hit, then we will either adjust the previously played sample to match this new (louder)
-// 	// volume, or we will ignore it.
-// 	if (currentValue > MIN_VALUE && playTime + doubleHitThreshold > millis()){
-// //		Serial.print("Double trigger detected; ");
-// 		playTime = millis();
-// 		if (lastSample != NULL && lastValue < currentValue){
-// //			Serial.println("Adjusted currentValue");
-// 			//Change the last volume to the higher (new) value and stop processing
-// 			lastSample->setVolume(currentValue);
-// 			//TODO Change the sample + currentValue to match the highest value
-// 			Serial.print("Adjusted previous hit on ");
-// 			Serial.print(filenamePrefix);
-// 			Serial.print(" to ");
-// 			Serial.println(currentValue);
-// 			return 0;
-// 		}
-// 		else {
-// //			Serial.println("Ignoring");
-// 			return 0;
-// 		}
-// 	}
-	
+
 	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
