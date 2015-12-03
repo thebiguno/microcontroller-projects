@@ -3,7 +3,6 @@
 
 #include <Audio.h>
 #include <SerialFlash.h>
-#include <play_serial_raw.h>
 #include <math.h>
 
 #include "hardware.h"
@@ -78,7 +77,7 @@ namespace digitalcave {
 			uint8_t lastPad;
 			
 			//SPI flash playback object
-			AudioPlaySerialRaw playSerialRaw;
+			AudioPlaySerialflashRaw playSerialRaw;
 
 			//Connections from playSerialRaw to mixer
 			AudioConnection playSerialRawToMixer;

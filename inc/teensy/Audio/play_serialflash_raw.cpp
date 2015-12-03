@@ -25,11 +25,11 @@
  * THE SOFTWARE.
  */
 
-#include "play_serial_raw.h"
+#include "play_serialflash_raw.h"
 #include "spi_interrupt.h"
 
 
-void AudioPlaySerialRaw::begin(void)
+void AudioPlaySerialflashRaw::begin(void)
 {
 	playing = false;
 	file_offset = 0;
@@ -37,7 +37,7 @@ void AudioPlaySerialRaw::begin(void)
 }
 
 
-bool AudioPlaySerialRaw::play(const char *filename)
+bool AudioPlaySerialflashRaw::play(const char *filename)
 {
 	stop();
 	AudioStartUsingSPI();
@@ -54,7 +54,7 @@ bool AudioPlaySerialRaw::play(const char *filename)
 	return true;
 }
 
-void AudioPlaySerialRaw::stop(void)
+void AudioPlaySerialflashRaw::stop(void)
 {
 	__disable_irq();
 	if (playing) {
@@ -68,7 +68,7 @@ void AudioPlaySerialRaw::stop(void)
 }
 
 
-void AudioPlaySerialRaw::update(void)
+void AudioPlaySerialflashRaw::update(void)
 {
 	unsigned int i, n;
 	audio_block_t *block;
@@ -92,18 +92,19 @@ void AudioPlaySerialRaw::update(void)
 		rawfile.close();
 		AudioStopUsingSPI();
 		playing = false;
+		//Serial.println("Finished playing sample");		//TODO
 	}
 	release(block);
 }
 
 #define B2M (uint32_t)((double)4294967296000.0 / AUDIO_SAMPLE_RATE_EXACT / 2.0) // 97352592
 
-uint32_t AudioPlaySerialRaw::positionMillis(void)
+uint32_t AudioPlaySerialflashRaw::positionMillis(void)
 {
 	return ((uint64_t)file_offset * B2M) >> 32;
 }
 
-uint32_t AudioPlaySerialRaw::lengthMillis(void)
+uint32_t AudioPlaySerialflashRaw::lengthMillis(void)
 {
 	return ((uint64_t)file_size * B2M) >> 32;
 }

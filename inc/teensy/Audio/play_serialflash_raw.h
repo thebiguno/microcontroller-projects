@@ -1,6 +1,10 @@
-/* SPDIF for Teensy 3.X
- * Copyright (c) 2015, Frank Bösing, f.boesing@gmx.de,
- * Thanks to KPC & Paul Stoffregen!
+/* Audio Library for Teensy 3.X
+ * Copyright (c) 2014, Paul Stoffregen, paul@pjrc.com
+ * Modified to use SerialFlash instead of SD library by Wyatt Olson <wyatt@digitalcave.ca>
+ *
+ * Development of this audio library was funded by PJRC.COM, LLC by sales of
+ * Teensy and Audio Adaptor boards.  Please support PJRC's efforts to develop
+ * open source software by purchasing Teensy or other PJRC products.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +25,28 @@
  * THE SOFTWARE.
  */
 
-#ifndef output_SPDIF_h_
-#define output_SPDIF_h_
+#ifndef play_serial_raw_h_
+#define play_serial_raw_h_
 
-#include "AudioStream.h"
-#include "DMAChannel.h"
+#include <AudioStream.h>
+#include <SerialFlash.h>
 
-class AudioOutputSPDIF : public AudioStream
+class AudioPlaySerialflashRaw : public AudioStream
 {
 public:
-	AudioOutputSPDIF(void) : AudioStream(2, inputQueueArray) { begin(); }
-	virtual void update(void);
+	AudioPlaySerialflashRaw(void) : AudioStream(0, NULL) { begin(); }
 	void begin(void);
-	friend class AudioInputSPDIF;
-	static void mute_PCM(const bool mute);
-protected:
-	AudioOutputSPDIF(int dummy): AudioStream(2, inputQueueArray) {}
-	static void config_SPDIF(void);
-	static audio_block_t *block_left_1st;
-	static audio_block_t *block_right_1st;
-	static bool update_responsibility;
-	static DMAChannel dma;
-	static void isr(void);
+	bool play(const char *filename);
+	void stop(void);
+	bool isPlaying(void) { return playing; }
+	uint32_t positionMillis(void);
+	uint32_t lengthMillis(void);
+	virtual void update(void);
 private:
-	static uint32_t vucp;
-	static audio_block_t *block_left_2nd;
-	static audio_block_t *block_right_2nd;
-	static uint16_t block_left_offset;
-	static uint16_t block_right_offset;
-	audio_block_t *inputQueueArray[2];
+	SerialFlashFile rawfile;
+	uint32_t file_size;
+	volatile uint32_t file_offset;
+	volatile bool playing;
 };
-
 
 #endif
