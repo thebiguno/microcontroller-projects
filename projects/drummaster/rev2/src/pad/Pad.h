@@ -1,6 +1,8 @@
 #ifndef PAD_H
 #define PAD_H
 
+#include <math.h>
+
 #include <ADC.h>
 
 #include "../Sample.h"
@@ -23,8 +25,17 @@
 #define MUX_14		14
 #define MUX_15		15
 
+//Before a signal is considered stable, there must be STABILIZATION_COUNT samples
+// all within +/- STABILIZATION_DELTA of the previous one.
+#define STABILIZATION_COUNT			5
+#define STABILIZATION_DELTA			2
+
+//The maximum time (in ms) between a new hit being detected and when we return
+// the value.
+#define MAX_RESPONSE_TIME			3
+
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					15
+#define MIN_VALUE					8
 
 namespace digitalcave {
 
@@ -55,15 +66,19 @@ namespace digitalcave {
 			
 
 			/*** Variables used in reading the pizeo value ***/
-			//The last value read from the ADC and the time at which it was read
-			int16_t lastValue;
-			uint32_t lastValueTime;
-			//The peak value read from the ADC since we have last played a sample, and the time at which 
-			// it was read.  We repeatedly read the ADC, keeping track of the peak value, until the 
-			// readings have stabilized for a certain period of time.
+// 			//Stabilization counter and last value, to ensure accurate and stable readings
+// 			uint8_t stabilizationCounter;
+// 			int16_t stabilizationValue;
+
+			//The time at which this hit was first read.  We must return a value within
+			// at most MAX_RESPONSE_TIME ms from this time.
+			uint32_t strikeTime;
+			//The peak value read from the ADC for this particular strike.
+			// We repeatedly read the ADC, keeping track of the peak value, until the 
+			// readings have stabilized or the maximum time has passed.
 			int16_t peakValue;
-			uint32_t peakValueTime;
-			//The last time that a pizeo value was returned for sample playback
+			//uint32_t peakValueTime;
+			//The time at which the last value was considered stable and returned
 			uint32_t playTime;
 			
 			//Maximum time in ms after a sample has been played before we can play another one.

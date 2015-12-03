@@ -6,11 +6,13 @@
 #include <play_serial_raw.h>
 #include <math.h>
 
+#include "hardware.h"
+
 //The total number of samples allowed in the system.  Currently 12 seems to be right; more than this 
 // can cause slowdowns when playing back.  If this is set to more than 14, you need to change how the
 // mixer is set up, since currently we are using a 16 Sample mixer with two Samples reserved for 
 // passing through i2s audio from an external source.
-#define SAMPLE_COUNT				10
+#define SAMPLE_COUNT				12
 
 //The base of the exponential curve for audio mapping.  Nothing particularly scientific here, I just 
 // played with a bunch of graphs until I found one that looked and sounded right.  Take note of the

@@ -9,15 +9,15 @@ using namespace digitalcave;
 ADC Pad::adc;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	File	MUX Indices				Double Trigger Threshold
-	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	50),	//Hihat + Pedal
-	new Drum(	"SN",	MUX_2,					25),	//Snare
+	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
+	new Drum(	"SN",	MUX_2,					50),	//Snare
 	new Drum(	"BS",	MUX_3,					200),	//Bass
 	new Drum(	"T1",	MUX_4,					100),	//Tom1
 	new Cymbal(	"CR",	MUX_5, MUX_14,			100),	//Crash
 	new Drum(	"T2",	MUX_6,					100),	//Tom2
 	new Drum(	"T3",	MUX_7,					100),	//Tom3
 	new Cymbal(	"SP",	MUX_8, MUX_13,			100),	//Splash
-	new Cymbal(	"RD",	MUX_9, MUX_12,			50),	//Ride
+	new Cymbal(	"RD",	MUX_9, MUX_12,			75),	//Ride
 	new Drum(	"X0",	MUX_10,					100),	//X0
 	new Drum(	"X1",	MUX_11,					100)	//X1
 };
@@ -41,7 +41,7 @@ void Pad::updateAllSamples(){
 	}
 }
 
-Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
+Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
 	strncpy(this->filenamePrefix, filenamePrefix, 3);
 	currentIndex++;
 }
@@ -140,14 +140,14 @@ uint8_t Pad::readSwitch(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//... read value...
-	int16_t rawValue = adc.analogRead(ADC_INPUT);
+	int16_t currentValue = adc.analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
-	//If the rawValue is high, the button is not pressed (active low); if it is low, then
+	//If the currentValue is high, the button is not pressed (active low); if it is low, then
 	// the button is pressed.
-	return rawValue < 128;
+	return currentValue < 128;
 }
 
 uint8_t Pad::readPiezo(uint8_t muxIndex){
@@ -161,10 +161,12 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(MUX2, muxIndex & 0x04);
 	digitalWriteFast(MUX3, muxIndex & 0x08);
 
-	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
+	//If we are still within the double hit threshold time-span, re-enable the drain 
+	// each time we go through here.  This serves to both drain the stored charge and
+	// to prevent double triggering.
 	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//delayMicroseconds(100);
+		delayMicroseconds(100);
 		return 0;
 	}
 	
@@ -175,54 +177,94 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	//delayMicroseconds(100);
 	
 	//... read value...
-	int16_t rawValue = adc.analogRead(ADC_INPUT);
+	int16_t currentValue = adc.analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
-	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
-	// hit, then we will either adjust the previously played sample to match this new (louder)
-	// volume, or we will ignore it.
-	if (rawValue > MIN_VALUE && playTime + doubleHitThreshold > millis()){
-//		Serial.print("Double trigger detected; ");
-		playTime = millis();
-		if (lastSample != NULL && lastValue < rawValue){
-//			Serial.println("Adjusted rawValue");
-			//Change the last volume to the higher (new) value and stop processing
-			lastSample->setVolume(rawValue);
-			//TODO Change the sample + rawValue to match the highest value
-			Serial.print("Adjusted previous hit on ");
-			Serial.print(filenamePrefix);
-			Serial.print(" to ");
-			Serial.println(rawValue);
-			return 0;
-		}
-		else {
-//			Serial.println("Ignoring");
-			return 0;
-		}
-	}
 	
-	if (rawValue < MIN_VALUE && peakValue < MIN_VALUE){
+// 	if (currentValue <= MIN_VALUE){
+// 		stabilizationCounter = 0;
+// 	}
+// 	else if (abs(stabilizationValue - currentValue) <= STABILIZATION_DELTA){
+// 		stabilizationCounter++;
+// 		Serial.print("Read value ");
+// 		Serial.print(currentValue);
+// 		Serial.println(" within delta");
+// 	}
+// 	else {
+// 		stabilizationCounter = 0;
+// 		Serial.print("Read value ");
+// 		Serial.println(currentValue);
+// 	}
+// 	stabilizationValue = currentValue;
+// 	
+// 	if (stabilizationCounter >= STABILIZATION_COUNT){
+// 		//The result has stabilized and it is large enough to play a sample.
+// 		//Reset the peak value by turning on the drain MUX
+// 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+// 
+// 		playTime = millis();
+// 		
+// 		if (!randomSeedCompleted){
+// 			randomSeed(millis());
+// 			randomSeedCompleted = 1;
+// 		}
+// 		
+// 		return currentValue;
+// 	}
+// 	else {
+// 		return 0;
+// 	}
+	
+// 	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
+// 	// hit, then we will either adjust the previously played sample to match this new (louder)
+// 	// volume, or we will ignore it.
+// 	if (currentValue > MIN_VALUE && playTime + doubleHitThreshold > millis()){
+// //		Serial.print("Double trigger detected; ");
+// 		playTime = millis();
+// 		if (lastSample != NULL && lastValue < currentValue){
+// //			Serial.println("Adjusted currentValue");
+// 			//Change the last volume to the higher (new) value and stop processing
+// 			lastSample->setVolume(currentValue);
+// 			//TODO Change the sample + currentValue to match the highest value
+// 			Serial.print("Adjusted previous hit on ");
+// 			Serial.print(filenamePrefix);
+// 			Serial.print(" to ");
+// 			Serial.println(currentValue);
+// 			return 0;
+// 		}
+// 		else {
+// //			Serial.println("Ignoring");
+// 			return 0;
+// 		}
+// 	}
+	
+	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
-	else if (rawValue > peakValue){
+	else if (currentValue >= MIN_VALUE && peakValue < MIN_VALUE){
+		//A new hit has started; record the time
+		strikeTime = millis();
+		peakValue = currentValue;
+	}
+	else if (currentValue > peakValue){
 		//Serial.println("Volume not stable");
 		//Is the result is still increasing?  If so, wait for it to stabilize
-		peakValue = rawValue;
-		peakValueTime = millis();
+		peakValue = currentValue;
+		//peakValueTime = millis();
 // 		Serial.print("Setting peak value to ");
 // 		Serial.print(peakValue);
 // 		Serial.print(" (time is ");
 // 		Serial.print(millis());
 // 		Serial.println(")");
 	}
-	else if (rawValue > (peakValue - MIN_VALUE) && millis() - 3 < peakValueTime){
-		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within 3 ms of the last peak value increase
+	else if (currentValue > (peakValue - MIN_VALUE) && millis() - MAX_RESPONSE_TIME < strikeTime){
+		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within MAX_RESPONSE_TIME ms of the last peak value increase
 // 		Serial.print("Peak value of ");
 // 		Serial.print(peakValue);
 // 		Serial.print(" is already higher than raw value of ");
-// 		Serial.print(rawValue);
+// 		Serial.print(currentValue);
 // 		Serial.print(" (time is ");
 // 		Serial.print(millis());
 // 		Serial.println(")");
@@ -240,7 +282,7 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 		uint8_t result = peakValue;
 
 		playTime = millis();
-		lastValue = peakValue;
+		//lastValue = peakValue;
 		peakValue = 0;
 		
 		if (!randomSeedCompleted){
