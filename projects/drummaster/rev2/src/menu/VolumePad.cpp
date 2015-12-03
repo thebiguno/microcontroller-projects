@@ -7,7 +7,7 @@ VolumePad::VolumePad(){
 
 Menu* VolumePad::handleAction(){
 	if (value == -1){
-		value = Pad::pads[pad]->getVolume();
+		value = Pad::pads[pad]->getPadVolume();
 		encoder.write(value);
 	}
 	
@@ -23,7 +23,7 @@ Menu* VolumePad::handleAction(){
 		}
 		
 		value = encoderState;
-		Pad::pads[pad]->setVolume(value);
+		Pad::pads[pad]->setPadVolume(value);
 	}
 
 	snprintf(buf, sizeof(buf), "%d%%      ", (uint16_t) (value / 64.0 * 100));
@@ -40,12 +40,12 @@ Menu* VolumePad::handleAction(){
 
 void VolumePad::loadPadVolumesFromEeprom(){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		Pad::pads[i]->setVolume(EEPROM.read(EEPROM_PAD_VOLUME + i));
+		Pad::pads[i]->setPadVolume(EEPROM.read(EEPROM_PAD_VOLUME + i));
 	}
 }
 
 void VolumePad::savePadVolumesToEeprom(){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		EEPROM.update(EEPROM_PAD_VOLUME + i, Pad::pads[i]->getVolume());
+		EEPROM.update(EEPROM_PAD_VOLUME + i, Pad::pads[i]->getPadVolume());
 	}
 }

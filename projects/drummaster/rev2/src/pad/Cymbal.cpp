@@ -9,16 +9,13 @@ void Cymbal::poll(){
 	uint8_t muteSwitch = readSwitch(switchMuxIndex);
 	if (muteSwitch){
 		if (lastSample != NULL && lastSample->isPlaying()){
-			Serial.print("Mute pad ");
-			Serial.println(padIndex);
-			Sample::mutePad(padIndex);
+			stop();
 		}
 	}
 	else {
 		uint8_t volume = readPiezo(piezoMuxIndex);
 		if (volume){
-			lastSample = Sample::findAvailableSample(piezoMuxIndex, volume);
-			lastSample->play(lookupFilename(volume), padIndex, volume * (this->volume / 64.0));
+			play(volume);
 		}
 	}
 }

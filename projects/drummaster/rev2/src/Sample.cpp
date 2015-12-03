@@ -56,7 +56,7 @@ Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
 	uint8_t sampleByPadCount = 0;
 	
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
-		if (samples[i].isPlaying() == 0){
+		if (!samples[i].isPlaying()){
 			return &(samples[i]);	//If we have a sample object that is not playing currently, just use it.
 		}
 		else {
@@ -76,14 +76,16 @@ Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
 	
 	//If we get to here, there are no available Samples, so we will have to stop a playing one.
 	// We try to pick the one which will cause the lease disruption.
+	
+	//First, if there are at least 2 samples already playing for this pad at a lower volume than the 
+	// requested one, we can kill the oldest
 	if (sampleByPadCount >= 2){
-		//If there are at least 2 samples already playing for this pad, we can kill the oldest.
 		samples[oldestSampleByPad].stop();
 		return &(samples[oldestSampleByPad]);
 	}
+	//If there are no free samples and not enough playing samples in the current Sample, we 
+	// just pick the oldest sound and stop it.
 	else {
-		//If there are no free samples and not enough playing samples in the current Sample, we 
-		// just pick the oldest sound and stop it.
 		samples[oldestSample].stop();
 		return &(samples[oldestSample]);
 	}
@@ -117,7 +119,7 @@ uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
-void Sample::mutePad(uint8_t pad){
+void Sample::stop(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
 			samples[i].stop();

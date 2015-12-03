@@ -98,7 +98,7 @@ namespace digitalcave {
 			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
 			
 			//Stops all currently playing samples for the selected pad
-			static void mutePad(uint8_t pad);
+			static void stop(uint8_t pad);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename

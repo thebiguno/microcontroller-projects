@@ -7,7 +7,21 @@
 using namespace digitalcave;
 
 ADC Pad::adc;
-Pad* Pad::pads[PAD_COUNT];
+Pad* Pad::pads[PAD_COUNT] = {
+	//	Type	File	MUX Indices				Double Trigger Threshold
+	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	50),	//Hihat + Pedal
+	new Drum(	"SN",	MUX_2,					25),	//Snare
+	new Drum(	"BS",	MUX_3,					200),	//Bass
+	new Drum(	"T1",	MUX_4,					100),	//Tom1
+	new Cymbal(	"CR",	MUX_5, MUX_14,			100),	//Crash
+	new Drum(	"T2",	MUX_6,					100),	//Tom2
+	new Drum(	"T3",	MUX_7,					100),	//Tom3
+	new Cymbal(	"SP",	MUX_8, MUX_13,			100),	//Splash
+	new Cymbal(	"RD",	MUX_9, MUX_12,			50),	//Ride
+	new Drum(	"X0",	MUX_10,					100),	//X0
+	new Drum(	"X1",	MUX_11,					100)	//X1
+};
+
 uint8_t Pad::randomSeedCompleted = 0;
 
 //Initialize static pads array
@@ -18,51 +32,35 @@ void Pad::init(){
 	adc.setConversionSpeed(ADC_LOW_SPEED);
 	adc.setAveraging(8);
 	
-	pads[0] = new HiHat("HH", 0, 1, 15, 50);	//Hihat + Pedal
-	pads[1] = new Drum("SN", 2, 25);		//Snare
-	pads[2] = new Drum("BS", 3, 100);	//Bass
-	pads[3] = new Drum("T1", 4, 50);		//Tom1
-	pads[4] = new Cymbal("CR", 5, 14, 50);	//Crash
-	pads[5] = new Drum("T2", 6, 50);		//Tom2
-	pads[6] = new Drum("T3", 7, 50);		//Tom3
-	pads[7] = new Cymbal("SP", 8, 13, 50);	//Splash
-	pads[8] = new Cymbal("RD", 9, 12, 50);	//Ride
-	pads[9] = new Drum("X0", 10, 50);	//X0
-	pads[10] = new Drum("X1", 11, 50);	//X1
-	
-// 	Pad* Pad::pads[PAD_COUNT] = {
-// 		new HiHat("HH", 0, 1, 15, 50),	//Hihat + Pedal
-// 		new Drum("SN", 2, 25),			//Snare
-// 		new Drum("BS", 3, 100),			//Bass
-// 		new Drum("T1", 4, 50),			//Tom1
-// 		new Cymbal("CR", 5, 14, 50),	//Crash
-// 		new Drum("T2", 6, 50),			//Tom2
-// 		new Drum("T3", 7, 50),			//Tom3
-// 		new Cymbal("SP", 8, 13, 50),	//Splash
-// 		new Cymbal("RD", 9, 12, 50),	//Ride
-// 		new Drum("X0", 10, 50),			//X0
-// 		new Drum("X1", 11, 50)			//X1
-// 	};
-}
-
-Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : doubleHitThreshold(doubleHitThreshold), padIndex(currentIndex), lastSample(NULL), lastPlayTime(0), lastReadTime(0), lastRawValue(0), peakRawValue(0) {
-	strncpy(this->filenamePrefix, filenamePrefix, 3);
-	updateSamples();
-	currentIndex++;
-}
-
-uint8_t Pad::getVolume(){
-	return volume;
-}
-
-void Pad::setVolume(uint8_t volume){
-	this->volume = volume;
+	updateAllSamples();
 }
 
 void Pad::updateAllSamples(){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
 		pads[i]->updateSamples();
 	}
+}
+
+Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
+	strncpy(this->filenamePrefix, filenamePrefix, 3);
+	currentIndex++;
+}
+
+void Pad::play(uint8_t volume){
+	lastSample = Sample::findAvailableSample(padIndex, volume);
+	lastSample->play(lookupFilename(volume), padIndex, volume * (padVolume / 64.0));
+}
+
+void Pad::stop(){
+	Sample::stop(padIndex);
+}
+
+uint8_t Pad::getPadVolume(){
+	return padVolume;
+}
+
+void Pad::setPadVolume(uint8_t padVolume){
+	this->padVolume = padVolume;
 }
 
 void Pad::updateSamples(){
@@ -164,7 +162,7 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(MUX3, muxIndex & 0x08);
 
 	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
-	if (lastPlayTime + doubleHitThreshold > millis()){
+	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 		//delayMicroseconds(100);
 		return 0;
@@ -185,10 +183,10 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
 	// hit, then we will either adjust the previously played sample to match this new (louder)
 	// volume, or we will ignore it.
-	if (rawValue > MIN_VALUE && lastPlayTime + doubleHitThreshold > millis()){
+	if (rawValue > MIN_VALUE && playTime + doubleHitThreshold > millis()){
 //		Serial.print("Double trigger detected; ");
-		lastPlayTime = millis();
-		if (lastSample != NULL && lastRawValue < rawValue){
+		playTime = millis();
+		if (lastSample != NULL && lastValue < rawValue){
 //			Serial.println("Adjusted rawValue");
 			//Change the last volume to the higher (new) value and stop processing
 			lastSample->setVolume(rawValue);
@@ -205,45 +203,45 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 		}
 	}
 	
-	if (rawValue < MIN_VALUE && peakRawValue < MIN_VALUE){
+	if (rawValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
-	else if (rawValue > peakRawValue){
+	else if (rawValue > peakValue){
 		//Serial.println("Volume not stable");
 		//Is the result is still increasing?  If so, wait for it to stabilize
-		peakRawValue = rawValue;
-		lastPeakValueSampleTime = millis();
+		peakValue = rawValue;
+		peakValueTime = millis();
 // 		Serial.print("Setting peak value to ");
-// 		Serial.print(peakRawValue);
+// 		Serial.print(peakValue);
 // 		Serial.print(" (time is ");
 // 		Serial.print(millis());
 // 		Serial.println(")");
 	}
-	else if (rawValue > (peakRawValue - MIN_VALUE) && millis() - 3 < lastPeakValueSampleTime){
+	else if (rawValue > (peakValue - MIN_VALUE) && millis() - 3 < peakValueTime){
 		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within 3 ms of the last peak value increase
 // 		Serial.print("Peak value of ");
-// 		Serial.print(peakRawValue);
+// 		Serial.print(peakValue);
 // 		Serial.print(" is already higher than raw value of ");
 // 		Serial.print(rawValue);
 // 		Serial.print(" (time is ");
 // 		Serial.print(millis());
 // 		Serial.println(")");
 	}
-	else if (peakRawValue < MIN_VALUE){
+	else if (peakValue < MIN_VALUE){
 		//If the result has stabilized, but it is less than MIN_VALUE, then ignore it
 		//TODO do we need this?  Perhaps just take out MIN_VALUE altogether?
-		peakRawValue = 0;
+		peakValue = 0;
 	}
 	else {
 		//The result has stabilized and it is large enough to play a sample.
 		//Reset the peak value by turning on the drain MUX
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 
-		uint8_t result = peakRawValue;
+		uint8_t result = peakValue;
 
-		lastPlayTime = millis();
-		lastRawValue = peakRawValue;
-		peakRawValue = 0;
+		playTime = millis();
+		lastValue = peakValue;
+		peakValue = 0;
 		
 		if (!randomSeedCompleted){
 			randomSeed(millis());

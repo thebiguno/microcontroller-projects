@@ -8,7 +8,6 @@ Drum::Drum(const char* filenamePrefix, uint8_t piezoMuxIndex, uint8_t doubleHitT
 void Drum::poll(){
 	uint8_t volume = readPiezo(piezoMuxIndex);
 	if (volume){
-		lastSample = Sample::findAvailableSample(piezoMuxIndex, volume);
-		lastSample->play(lookupFilename(volume), padIndex, volume * (this->volume / 64.0));
+		play(volume);
 	}
 }

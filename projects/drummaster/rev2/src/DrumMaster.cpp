@@ -31,22 +31,9 @@ int main(){
 	
 	//Allocate enough memory for audio
 	AudioMemory(16);
-	
-	Serial.println("Foo Bar");
-	
+
+	//Set up ADC and build filename tables
 	Pad::init();
-	
-// 	Pad::pads[0] = new HiHat("HH", 0, 1, 15, 50);	//Hihat + Pedal
-// 	Pad::pads[1] = new Drum("SN", 2, 25);		//Snare
-// 	Pad::pads[2] = new Drum("BS", 3, 100);	//Bass
-// 	Pad::pads[3] = new Drum("T1", 4, 50);		//Tom1
-// 	Pad::pads[4] = new Cymbal("CR", 5, 14, 50);	//Crash
-// 	Pad::pads[5] = new Drum("T2", 6, 50);		//Tom2
-// 	Pad::pads[6] = new Drum("T3", 7, 50);		//Tom3
-// 	Pad::pads[7] = new Cymbal("SP", 8, 13, 50);	//Splash
-// 	Pad::pads[8] = new Cymbal("RD", 9, 12, 50);	//Ride
-// 	Pad::pads[9] = new Drum("X0", 10, 50);	//X0
-// 	Pad::pads[10] = new Drum("X1", 11, 50);	//X1
 	
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();
