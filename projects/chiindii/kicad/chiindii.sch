@@ -189,9 +189,9 @@ RADIO_RX
 Text Label 12000 4000 0    60   ~ 0
 MOTOR1
 Text Label 12000 3500 0    60   ~ 0
-MOTOR2
-Text Label 12000 2800 0    60   ~ 0
 MOTOR3
+Text Label 12000 2800 0    60   ~ 0
+MOTOR2
 Text Label 12000 2500 0    60   ~ 0
 MOTOR4
 $Comp
@@ -440,7 +440,7 @@ F 3 "" H 3250 5500 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 2650 5500 2    60   ~ 0
-MOTOR2
+MOTOR3
 $Comp
 L RSMALL R7
 U 1 1 55B966AA
@@ -519,7 +519,7 @@ F 3 "" H 1550 7150 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 950  7150 2    60   ~ 0
-MOTOR3
+MOTOR2
 $Comp
 L RSMALL R2
 U 1 1 55B96BE5

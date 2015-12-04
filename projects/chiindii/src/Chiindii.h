@@ -5,13 +5,13 @@
 #include <avr/io.h>
 
 #define MOTOR1_PORT		PORTE
-#define MOTOR1_PIN		PINE6
-#define MOTOR2_PORT		PORTD
-#define MOTOR2_PIN		PIND5
-#define MOTOR3_PORT		PORTC
-#define MOTOR3_PIN		PINC7
+#define MOTOR1_PIN		PORTE6
+#define MOTOR2_PORT		PORTC
+#define MOTOR2_PIN		PORTC7
+#define MOTOR3_PORT		PORTD
+#define MOTOR3_PIN		PORTD5
 #define MOTOR4_PORT		PORTB
-#define MOTOR4_PIN		PINB7
+#define MOTOR4_PIN		PORTB7
 
 
 #endif
