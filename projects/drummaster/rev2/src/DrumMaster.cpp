@@ -19,16 +19,6 @@ int main(){
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
 	
-	//Drain any charge which is currently in each channel
-	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
-		digitalWriteFast(MUX0, i & 0x01);
-		digitalWriteFast(MUX1, i & 0x02);
-		digitalWriteFast(MUX2, i & 0x04);
-		digitalWriteFast(MUX3, i & 0x08);
-		delay(10);
-	}
-	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 	Serial.println("1");
 	
 	//Init the display

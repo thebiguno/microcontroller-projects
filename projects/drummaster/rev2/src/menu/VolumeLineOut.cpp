@@ -9,7 +9,7 @@ VolumeLineOut::VolumeLineOut(){
 void VolumeLineOut::loadVolumeFromEeprom(){
 	((VolumeLineOut*) Menu::volumeLineOut)->volume = EEPROM.read(EEPROM_MAIN_VOLUME);
 	((VolumeLineOut*) Menu::volumeLineOut)->encoderState = ((VolumeLineOut*) Menu::volumeLineOut)->volume;
-	Sample::setVolumeLineOut(((VolumeLineOut*) Menu::volumeLineOut)->volume);
+	Sample::setVolumeLineOut(((VolumeLineOut*) Menu::volumeLineOut)->volume / 256.0 * 2);
 }
 
 void VolumeLineOut::saveVolumeToEeprom(){
@@ -28,9 +28,9 @@ Menu* VolumeLineOut::handleAction(){
 			encoder.write(0);
 		}
 		volume = encoderVolume;
-		Sample::setVolumeLineOut(volume);
+		Sample::setVolumeLineOut(volume / 256.0 * 2);
 	}
-	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
+	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 200));
 	display->write_text(1, 0, buf, 4);
 	
 	if (button.fallingEdge()){

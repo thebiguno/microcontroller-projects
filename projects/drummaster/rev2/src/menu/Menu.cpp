@@ -30,6 +30,9 @@ Menu* Menu::volumePadSelect = new VolumePadSelect();
 
 Menu* Menu::current = Menu::mainMenu;
 
+Menu::Menu() : encoderState(0){
+}
+
 void Menu::poll(){
 	current->button.update();
 	Menu* newMenu = current->handleAction();

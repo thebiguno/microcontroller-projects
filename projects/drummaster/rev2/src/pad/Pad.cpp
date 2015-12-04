@@ -6,7 +6,7 @@
 
 using namespace digitalcave;
 
-ADC Pad::adc;
+ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	File	MUX Indices				Double Trigger Threshold
 	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
@@ -28,10 +28,23 @@ uint8_t Pad::randomSeedCompleted = 0;
 uint8_t Pad::currentIndex = 0;
 
 void Pad::init(){
-	adc.setResolution(10);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setSamplingSpeed(ADC_VERY_LOW_SPEED);
-	adc.setAveraging(4);
+	//Drain any charge which is currently in each channel
+	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		digitalWriteFast(MUX0, i & 0x01);
+		digitalWriteFast(MUX1, i & 0x02);
+		digitalWriteFast(MUX2, i & 0x04);
+		digitalWriteFast(MUX3, i & 0x08);
+		delay(10);
+	}
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
+
+	//Initialize the ADC
+	adc = new ADC();
+	adc->setResolution(10);
+	adc->setConversionSpeed(ADC_LOW_SPEED);
+	adc->setSamplingSpeed(ADC_VERY_LOW_SPEED);
+	adc->setAveraging(4);
 	
 	updateAllSamples();
 }
@@ -47,7 +60,10 @@ Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), 
 	currentIndex++;
 }
 
-void Pad::play(uint16_t volume){
+void Pad::play(double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+
 	lastSample = Sample::findAvailableSample(padIndex, volume);
 	lastSample->play(lookupFilename(volume), padIndex, volume);
 }
@@ -56,12 +72,15 @@ void Pad::stop(){
 	Sample::stop(padIndex);
 }
 
-uint8_t Pad::getPadVolume(){
+double Pad::getPadVolume(){
 	return padVolume;
 }
 
-void Pad::setPadVolume(uint8_t padVolume){
-	this->padVolume = padVolume;
+void Pad::setPadVolume(double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+
+	padVolume = volume;
 }
 
 void Pad::updateSamples(){
@@ -108,12 +127,16 @@ void Pad::updateSamples(){
 	}
 }
 
-char* Pad::lookupFilename(uint8_t volume){
+char* Pad::lookupFilename(double volume){
+	//Limit volume from 0 to 1
+	if (volume < 0) volume = 0;
+	else if (volume >= 1.0) volume = 1.0;
+
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
 	// sample number.
-	volume = volume >> 4;		//Divide by 16 to get into the 16 buckets of the samples
+	
 	int8_t offset = 1;
-	int8_t closestVolume = volume;
+	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	while (fileCountByVolume[closestVolume] == 0){
 		closestVolume = volume + offset;
 		if (closestVolume >= 16) closestVolume = 16;
@@ -141,7 +164,7 @@ uint8_t Pad::readSwitch(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//... read value...
-	int16_t currentValue = adc.analogRead(ADC_INPUT);
+	int16_t currentValue = adc->analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
@@ -151,7 +174,7 @@ uint8_t Pad::readSwitch(uint8_t muxIndex){
 	return currentValue < 128;
 }
 
-uint16_t Pad::readPiezo(uint8_t muxIndex){
+double Pad::readPiezo(uint8_t muxIndex){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -180,7 +203,7 @@ uint16_t Pad::readPiezo(uint8_t muxIndex){
 	delayMicroseconds(10);
 	
 	//... read value...
-	uint16_t currentValue = adc.analogRead(ADC_INPUT);
+	uint16_t currentValue = adc->analogRead(ADC_INPUT);
 	if (!randomSeedCompleted && currentValue > MIN_VALUE){
 		//Seed the randomizer based on the time of the first hit
 		randomSeed(millis());
@@ -205,7 +228,7 @@ uint16_t Pad::readPiezo(uint8_t muxIndex){
 	
 	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
 		//We have timed out; send whatever the peak value currently is
-		uint16_t result = peakValue * (padVolume / 64.0);
+		double result = peakValue * padVolume;
 		playTime = millis();
 		peakValue = 0;
 		

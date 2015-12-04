@@ -91,27 +91,27 @@ namespace digitalcave {
 			AudioConnection playSerialRawToMixer;
 
 			//The last volume value which has been set for this Sample
-			uint8_t volume;
+			double volume;
 
 			//Constructing the objects should only happen during singleton array init.
 			Sample();
 			
 		public:
-			//Set the output volume.  This is a value from 0 to 255.
-			static void setVolumeLineOut(uint8_t volume);
+			//Set the output volume.  This is a gain value from 0 to 1.
+			static void setVolumeLineOut(double volume);
 			
-			//Set the line in volume.  This is a value from 0 to 255.  Keep this low unless using the line in.
-			static void setVolumeLineIn(uint8_t volume);
+			//Set the line in volume.  This is a gain value from 0 to 1.  Keep this low unless using the line in.
+			static void setVolumeLineIn(double volume);
 			
 			//Find the best available Sample object from the singleton array
-			static Sample* findAvailableSample(uint8_t pad, uint8_t volume);
+			static Sample* findAvailableSample(uint8_t pad, double volume);
 			
 			//Stops all currently playing samples for the selected pad
 			static void stop(uint8_t pad);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename
-			void play(char* filename, uint8_t pad, uint16_t volume);
+			void play(char* filename, uint8_t pad, double volume);
 			
 			//Is the sample current playing?
 			uint8_t isPlaying();
@@ -122,11 +122,11 @@ namespace digitalcave {
 			//Stops playback
 			void stop();
 
-			//Retrieves the current sample volume.  This is a value from 0 to 255.
-			uint8_t getVolume();
+			//Retrieves the current sample volume.  This is a floating point gain multiplier.
+			double getVolume();
 
 			//Set the sample volume.  This is a value from 0 to 255.
-			void setVolume(uint16_t volume);
+			void setVolume(double volume);
 
 			//Returns the index of the last pad which initiated playback.
 			uint8_t getLastPad();

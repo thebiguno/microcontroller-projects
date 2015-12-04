@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-VolumePadSelect::VolumePadSelect(){
+VolumePadSelect::VolumePadSelect() : Menu(){
 }
 
 Menu* VolumePadSelect::handleAction(){

@@ -38,7 +38,7 @@ namespace digitalcave {
 	class Pad {
 		private:
 			//ADC Object
-			static ADC adc;
+			static ADC* adc;
 			
 			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
 			// pad strike with the system time; this should allow for random numbers, as the timing of 
@@ -81,10 +81,8 @@ namespace digitalcave {
 			uint8_t doubleHitThreshold;
 
 			/*** Internal state ***/
-			//The per-pad volume gain.  This number is divided by 64.0 and multiplied against the requested
-			// volume when playing a sample.  A value of 64 results in no change (multiplier of 1); less than
-			// 64 will reduce the volume, and greater than 64 will increase it.
-			uint8_t padVolume;
+			//The per-pad volume gain.  Limited from 0 - 5.
+			double padVolume;
 			
 			/*** Private methods ***/
 			//Looks on the SPI flash chip for files according to the sample naming convention,
@@ -93,7 +91,7 @@ namespace digitalcave {
 			void updateSamples();
 			
 			//Find the correct sample, given a volume.
-			char* lookupFilename(uint8_t volume);
+			char* lookupFilename(double volume);
 			
 		protected:
 			//The last Sample which was used to play this pad.  Used in the event that we need
@@ -104,7 +102,7 @@ namespace digitalcave {
 			uint8_t padIndex;
 			
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
-			uint16_t readPiezo(uint8_t muxIndex);
+			double readPiezo(uint8_t muxIndex);
 			
 			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
 			uint8_t readSwitch(uint8_t muxIndex);
@@ -127,16 +125,16 @@ namespace digitalcave {
 			virtual void poll() = 0;
 			
 			//Start plating this pad at the specified volume.
-			void play(uint16_t volume);
+			void play(double volume);
 			
 			//Stops all samples which were started from this pad
 			void stop();
 			
 			//Get the per-pad volume.
-			uint8_t getPadVolume();
+			double getPadVolume();
 
 			//Set the per-pad volume.
-			void setPadVolume(uint8_t padVolume);
+			void setPadVolume(double padVolume);
 	};
 	
 }

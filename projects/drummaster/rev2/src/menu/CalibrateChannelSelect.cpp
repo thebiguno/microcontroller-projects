@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-CalibrateChannelSelect::CalibrateChannelSelect(){
+CalibrateChannelSelect::CalibrateChannelSelect() : Menu(){
 }
 
 Menu* CalibrateChannelSelect::handleAction(){

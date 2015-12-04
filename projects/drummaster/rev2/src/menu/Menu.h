@@ -20,6 +20,9 @@ namespace digitalcave {
 	
 		protected:
 			static char buf[21];	//Temp space for string operations
+			
+			//Constructor
+			Menu();
 
 		public:
 			static Hd44780_Teensy* hd44780;
@@ -48,7 +51,7 @@ namespace digitalcave {
 			//Check the encoder and button state to see if we need to do anything.
 			// Update the display as needed.  Return NULL to stay in the same 
 			// menu, or a Menu pointer to change to that menu item.
-			virtual Menu* handleAction();
+			virtual Menu* handleAction() = 0;
 	};
 }
 
