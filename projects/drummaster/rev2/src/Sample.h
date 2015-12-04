@@ -52,11 +52,18 @@ namespace digitalcave {
 			
 			static AudioInputI2S input;
 
-			//Mixer
-			static AudioMixer16 mixer;
+			//Mixers
+			static AudioMixer4 mixers[];	//4 mixers...
+			static AudioMixer4 mixer;		//... are channeled into one for final output
 
 			//Output
 			static AudioOutputI2S output;
+			
+			//Connect the mixers together
+			static AudioConnection mixer0ToMixer;
+			static AudioConnection mixer1ToMixer;
+			static AudioConnection mixer2ToMixer;
+			static AudioConnection mixer3ToMixer;
 
 			//Input passthrough to mixer
 			static AudioConnection inputToMixer0;
@@ -72,6 +79,7 @@ namespace digitalcave {
 
 			//This sample's index into mixer
 			uint8_t mixerIndex;
+			uint8_t mixerChannel;
 			
 			//The most recently played pad index.
 			uint8_t lastPad;

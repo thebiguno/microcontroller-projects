@@ -11,15 +11,22 @@ uint8_t Sample::controlEnabled = 0;
 //I2S input
 AudioInputI2S Sample::input;
 
-//Mixer
-AudioMixer16 Sample::mixer;
+//Mixers
+AudioMixer4 Sample::mixers[4];
+AudioMixer4 Sample::mixer;
+
+//Mixer connections
+AudioConnection Sample::mixer0ToMixer(mixers[0], 0, mixer, 0);
+AudioConnection Sample::mixer1ToMixer(mixers[1], 0, mixer, 1);
+AudioConnection Sample::mixer2ToMixer(mixers[2], 0, mixer, 2);
+AudioConnection Sample::mixer3ToMixer(mixers[3], 0, mixer, 3);
 
 //Output
 AudioOutputI2S Sample::output;
 
-//Input passthrough to mixer
-AudioConnection Sample::inputToMixer0(input, 0, mixer, SAMPLE_COUNT);
-AudioConnection Sample::inputToMixer1(input, 1, mixer, SAMPLE_COUNT + 1);
+//Input passthrough to mixers[3], channels 2 and 3
+AudioConnection Sample::inputToMixer0(input, 0, mixers[3], 2);
+AudioConnection Sample::inputToMixer1(input, 1, mixers[3], 3);
 
 //Mixer to output
 AudioConnection Sample::mixerToOutput0(mixer, 0, output, 0);
@@ -41,8 +48,8 @@ void Sample::setVolumeLineOut(uint8_t volume){
 }
 
 void Sample::setVolumeLineIn(uint8_t volume){
-	mixer.gain(SAMPLE_COUNT, volume / 256.0);
-	mixer.gain(SAMPLE_COUNT + 1, volume / 256.0);
+	mixers[3].gain(2, volume / 256.0);
+	mixers[3].gain(3, volume / 256.0);
 }
 
 Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
@@ -99,10 +106,11 @@ Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
 /***** Instance methods *****/
 
 Sample::Sample(): 
-		mixerIndex(currentIndex), 
+		mixerIndex((currentIndex >> 2) & 0x03), 
+		mixerChannel(currentIndex & 0x03),
 		lastPad(0xFF), 
 		playSerialRaw(),
-		playSerialRawToMixer(playSerialRaw, 0, mixer, currentIndex) {
+		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel) {
 	currentIndex++;	//Increment current index
 }
 
@@ -144,7 +152,7 @@ uint8_t Sample::getVolume(){
 void Sample::setVolume(uint16_t volume){
 	if (volume >= 255) volume = 255;
 	this->volume = volume;
-	mixer.gain(mixerIndex, max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
+	mixers[mixerIndex].gain(mixerChannel, max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
 }
 
 uint8_t Sample::getLastPad(){

@@ -11,17 +11,31 @@
 #define CS_SD							10
 
 //Pin assignments
+//ADC input
+#define ADC_INPUT						A14
+//Data lines shared for MUX and display
 #define MUX0							0
 #define MUX1							1
 #define MUX2							2
 #define MUX3							3
+//MUX enable
 #define DRAIN_EN						4
 #define ADC_EN							5
-#define ADC_INPUT						A14
+//Display
+#define PIN_RS							16
+#define PIN_E							17
+//Encoder
+#define ENC_PUSH						8
+#define ENC_A							21
+#define ENC_B							20
 
 //The MUXs we use are active low for enable pin... 
 #define MUX_ENABLE						0
 #define MUX_DISABLE						1
+
+//Display dimensions
+#define DISPLAY_COLS					20
+#define DISPLAY_ROWS					4
 
 //The number of ADC channels on the system.  For the DrumMaster Rev 2.0 PCB, this is 12.
 #define CHANNEL_COUNT					12

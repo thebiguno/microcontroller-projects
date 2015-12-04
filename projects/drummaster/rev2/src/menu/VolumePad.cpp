@@ -27,11 +27,11 @@ Menu* VolumePad::handleAction(){
 	}
 
 	snprintf(buf, sizeof(buf), "%d%%      ", (uint16_t) (value / 64.0 * 100));
-	display.write_text(2, 0, buf, 5);
+	display->write_text(2, 0, buf, 5);
 
 	if (button.fallingEdge()){
 		EEPROM.update(EEPROM_PAD_VOLUME + pad, (uint8_t) value);
-		display.write_text(2, 0, "                    ", 20);
+		display->write_text(2, 0, "                    ", 20);
 		return Menu::volumePadSelect;
 	}
 	

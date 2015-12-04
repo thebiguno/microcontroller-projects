@@ -31,10 +31,10 @@ Menu* VolumeLineOut::handleAction(){
 		Sample::setVolumeLineOut(volume);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / 256.0 * 100));
-	display.write_text(1, 0, buf, 4);
+	display->write_text(1, 0, buf, 4);
 	
 	if (button.fallingEdge()){
-		display.write_text(1, 0, "    ", 4);
+		display->write_text(1, 0, "    ", 4);
 		saveVolumeToEeprom();
 		return Menu::mainMenu;
 	}

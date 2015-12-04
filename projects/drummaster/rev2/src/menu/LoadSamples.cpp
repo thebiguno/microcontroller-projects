@@ -39,7 +39,7 @@ Menu* LoadSamples::handleAction(){
 	stpncpy(kitName, folders[selectedFolder].c_str(), sizeof(kitName));
 	
 	snprintf(buf, sizeof(buf), "%s                   ", kitName);
-	display.write_text(1, 0, buf, 20);
+	display->write_text(1, 0, buf, 20);
 	
 	if (button.fallingEdge()){
 		if (selectedFolder != 0){
@@ -48,8 +48,8 @@ Menu* LoadSamples::handleAction(){
 			uint32_t size = SerialFlash.capacity(id);
 	
 			snprintf(buf, sizeof(buf), "Erasing %dMB          ", (uint16_t) (size >> 20));
-			display.write_text(2, 0, buf, 20);
-			display.refresh();
+			display->write_text(2, 0, buf, 20);
+			display->refresh();
 			SerialFlash.eraseAll();
 	
 			//Show progress while erasing...
@@ -59,8 +59,8 @@ Menu* LoadSamples::handleAction(){
 				if (millis() - last_millis > 500) {
 					last_millis = millis();
 					snprintf(buf, sizeof(buf), "Erasing %dMB%c%c%c       ", (uint16_t) (size >> 20), (i > 0 ? '.' : ' '), (i > 1 ? '.' : ' '), (i > 2 ? '.' : ' '));
-					display.write_text(2, 0, buf, 20);
-					display.refresh();
+					display->write_text(2, 0, buf, 20);
+					display->refresh();
 					i = (i + 1) & 0x03;
 				}
 			}
@@ -73,8 +73,8 @@ Menu* LoadSamples::handleAction(){
 				const char *filename = f.name();
 				uint32_t length = f.size();
 				snprintf(buf, sizeof(buf), "Copying %s           ", filename);
-				display.write_text(2, 0, buf, 20);
-				display.refresh();
+				display->write_text(2, 0, buf, 20);
+				display->refresh();
 		
 				// Create the file on the Flash chip and copy data
 				if (SerialFlash.create(filename, length)) {
@@ -92,36 +92,36 @@ Menu* LoadSamples::handleAction(){
 						ff.close();
 					} 
 					else {
-						display.clear();
-						display.write_text(2, 0, "Flash Error Open    ", 20);
-						display.refresh();
+						display->clear();
+						display->write_text(2, 0, "Flash Error Open    ", 20);
+						display->refresh();
 						delay(1000);
-						display.clear();
+						display->clear();
 						return Menu::mainMenu;
 					}
 				}
 				else {
-					display.clear();
-					display.write_text(2, 0, "Flash Error Create  ", 20);
-					display.refresh();
+					display->clear();
+					display->write_text(2, 0, "Flash Error Create  ", 20);
+					display->refresh();
 					delay(1000);
-					display.clear();
+					display->clear();
 					return Menu::mainMenu;
 				}
 				f.close();
 			}
 			folder.close();
-			display.write_text(2, 0, "Load Samples Done   ", 20);
+			display->write_text(2, 0, "Load Samples Done   ", 20);
 			encoder.write(0);
-			display.refresh();
+			display->refresh();
 			Pad::updateAllSamples();		//Reload the sample mapping
 			EEPROM.put(EEPROM_KIT_NAME, kitName);
 			delay(1000);
-			display.clear();
+			display->clear();
 		
 		}
 		else {
-			display.write_text(1, 0, "                    ", 20);
+			display->write_text(1, 0, "                    ", 20);
 		}
 		
 		return Menu::mainMenu;

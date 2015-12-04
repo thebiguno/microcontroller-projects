@@ -14,31 +14,31 @@ Menu* MainMenu::handleAction(){
 	
 	switch(menuItem){
 		case 0:
-			display.write_text(0, 0, "Line Out Volume     ", 20);
+			display->write_text(0, 0, "Line Out Volume     ", 20);
 			if (button.fallingEdge()){
 				return Menu::volumeLineOut;
 			}
 			break;
 		case 1:
-			display.write_text(0, 0, "Line In Volume      ", 20);
+			display->write_text(0, 0, "Line In Volume      ", 20);
 			if (button.fallingEdge()){
 				return Menu::volumeLineIn;
 			}
 			break;
 		case 2:
-			display.write_text(0, 0, "Pads Volume         ", 20);
+			display->write_text(0, 0, "Pads Volume         ", 20);
 			if (button.fallingEdge()){
 				return Menu::volumePadSelect;
 			}
 			break;
 		case 3:
-			display.write_text(0, 0, "Load Samples        ", 20);
+			display->write_text(0, 0, "Load Samples        ", 20);
 			if (button.fallingEdge()){
 				return Menu::loadSamples;
 			}
 			break;
 		case 4:
-			display.write_text(0, 0, "Calibrate Channels  ", 20);
+			display->write_text(0, 0, "Calibrate Channels  ", 20);
 			if (button.fallingEdge()){
 				return Menu::calibrateChannelSelect;
 			}

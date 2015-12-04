@@ -5,7 +5,7 @@ using namespace digitalcave;
 int main(){
 	//Give the power some time to stabilize.  If we start too soon, the
 	// display can end up in a bad state.
-	delay(200);
+	delay(100);
 	
 	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
 	Serial.begin(9600);
@@ -18,6 +18,10 @@ int main(){
 	pinMode(MUX3, OUTPUT);
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
+	
+	//Init the display
+	Menu::hd44780 = new Hd44780_Teensy(Menu::hd44780->FUNCTION_LINE_2 | Menu::hd44780->FUNCTION_SIZE_5x8, PIN_RS, PIN_E, MUX0, MUX1, MUX2, MUX3);
+	Menu::display = new CharDisplay(Menu::hd44780, DISPLAY_ROWS, DISPLAY_COLS);
 	
 	//Encoder pushbutton
 	pinMode(ENC_PUSH, INPUT_PULLUP);
