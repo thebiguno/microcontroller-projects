@@ -36,7 +36,7 @@ Menu::Menu() : encoderState(0){
 void Menu::poll(){
 	current->button.update();
 	Menu* newMenu = current->handleAction();
-	current->display->refresh();
+	display->refresh();
 	if (newMenu != NULL){
 		change(newMenu);
 	}

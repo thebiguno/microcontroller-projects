@@ -7,10 +7,6 @@ int main(){
 	// display can end up in a bad state.
 	delay(100);
 	
-	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
-	Serial.begin(9600);
-	Wire.begin();
-	
 	//Enable pins
 	pinMode(MUX0, OUTPUT);
 	pinMode(MUX1, OUTPUT);
@@ -19,15 +15,15 @@ int main(){
 	pinMode(DRAIN_EN, OUTPUT);
 	pinMode(ADC_EN, OUTPUT);
 	
-	Serial.println("1");
-	
 	//Init the display
 	Menu::hd44780 = new Hd44780_Teensy(Menu::hd44780->FUNCTION_LINE_2 | Menu::hd44780->FUNCTION_SIZE_5x8, PIN_RS, PIN_E, MUX0, MUX1, MUX2, MUX3);
 	Menu::display = new CharDisplay(Menu::hd44780, DISPLAY_ROWS, DISPLAY_COLS);
-	Serial.println("2");
+	Menu::display->write_text(0, 0, "Loading...          ", 20);
+	Menu::display->refresh();
 	
-	//Encoder pushbutton
-	pinMode(ENC_PUSH, INPUT_PULLUP);
+	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
+	Serial.begin(9600);
+	Wire.begin();
 	
 	//Audio shield SD / flash setup
 	SPI.setMOSI(MOSI);
@@ -35,22 +31,21 @@ int main(){
 	SPI.setSCK(SCK);
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
-	Serial.println("3");
+	
+	//Set up ADC and build filename tables
+	Pad::init();
+	
+	//Encoder pushbutton
+	pinMode(ENC_PUSH, INPUT_PULLUP);
 	
 	//Allocate enough memory for audio
 	AudioMemory(16);
-	Serial.println("4");
 
-	//Set up ADC and build filename tables
-	Pad::init();
-	Serial.println("5");
-	
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();
 	VolumeLineIn::loadVolumeFromEeprom();
 	VolumeLineOut::loadVolumeFromEeprom();
 	VolumePad::loadPadVolumesFromEeprom();
-	Serial.println("6");
 	
 	while (1){
 		Menu::poll();
