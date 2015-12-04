@@ -9,7 +9,7 @@ void Cymbal::poll(){
 	uint8_t muteSwitch = readSwitch(switchMuxIndex);
 	if (muteSwitch){
 		if (lastSample != NULL && lastSample->isPlaying()){
-			stop();
+			fade();
 		}
 	}
 	else {

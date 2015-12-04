@@ -68,8 +68,8 @@ void Pad::play(double volume){
 	lastSample->play(lookupFilename(volume), padIndex, volume);
 }
 
-void Pad::stop(){
-	Sample::stop(padIndex);
+void Pad::fade(){
+	Sample::fade(padIndex);
 }
 
 double Pad::getPadVolume(){

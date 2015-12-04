@@ -127,8 +127,8 @@ namespace digitalcave {
 			//Start plating this pad at the specified volume.
 			void play(double volume);
 			
-			//Stops all samples which were started from this pad
-			void stop();
+			//Stops all samples which were started from this pad by fading out
+			void fade();
 			
 			//Get the per-pad volume.
 			double getPadVolume();

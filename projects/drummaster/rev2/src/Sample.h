@@ -84,11 +84,15 @@ namespace digitalcave {
 			//The most recently played pad index.
 			uint8_t lastPad;
 			
+			//Allow for fade out when muting cymbals
+			AudioEffectEnvelope envelope;
+			
 			//SPI flash playback object
 			AudioPlaySerialflashRaw playSerialRaw;
 
-			//Connections from playSerialRaw to mixer
-			AudioConnection playSerialRawToMixer;
+			//Connections from playSerialRaw to envelope to mixer
+			AudioConnection playSerialRawToEnvelope;
+			AudioConnection envelopeToMixer;
 
 			//The last volume value which has been set for this Sample
 			double volume;
@@ -106,8 +110,8 @@ namespace digitalcave {
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, double volume);
 			
-			//Stops all currently playing samples for the selected pad
-			static void stop(uint8_t pad);
+			//Stops all currently playing samples for the selected pad, fading out
+			static void fade(uint8_t pad);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename

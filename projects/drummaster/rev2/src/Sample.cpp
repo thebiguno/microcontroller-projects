@@ -160,10 +160,19 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 Sample::Sample(): 
 		mixerIndex((currentIndex >> 2) & 0x03), 
 		mixerChannel(currentIndex & 0x03),
-		lastPad(0xFF), 
+		lastPad(0xFF),
+		envelope(),
 		playSerialRaw(),
-		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel) {
+		playSerialRawToEnvelope(playSerialRaw, 0, envelope, 0),
+		envelopeToMixer(envelope, 0, mixers[mixerIndex], mixerChannel) {
 	currentIndex++;	//Increment current index
+	
+	envelope.delay(0);
+	envelope.attack(0);
+	envelope.hold(0);
+	envelope.decay(0);
+	envelope.sustain(1.0);
+	envelope.release(50);
 }
 
 void Sample::play(char* filename, uint8_t pad, double volume){
@@ -188,7 +197,7 @@ uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
-void Sample::stop(uint8_t pad){
+void Sample::fade(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
 			samples[i].stop();
