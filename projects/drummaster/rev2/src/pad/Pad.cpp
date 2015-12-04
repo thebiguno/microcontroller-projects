@@ -228,7 +228,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 	
 	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
 		//We have timed out; send whatever the peak value currently is
-		double result = peakValue * padVolume;
+		double result = peakValue / 256.0 * padVolume;
 		playTime = millis();
 		peakValue = 0;
 		

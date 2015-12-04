@@ -2,10 +2,10 @@
 
 using namespace digitalcave;
 
-VolumePad::VolumePad(){
-}
+#define GAIN_DIVISOR		(256.0 / 5)
 
-#define GAIN_DIVISOR		(256.0 * 5)
+VolumePad::VolumePad() : value(-1), pad(0) {
+}
 
 void VolumePad::loadPadVolumesFromEeprom(){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){

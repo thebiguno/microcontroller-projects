@@ -13,7 +13,7 @@ void Cymbal::poll(){
 		}
 	}
 	else {
-		uint16_t volume = readPiezo(piezoMuxIndex);
+		double volume = readPiezo(piezoMuxIndex);
 		if (volume){
 			play(volume);
 		}
