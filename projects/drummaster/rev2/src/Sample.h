@@ -103,7 +103,7 @@ namespace digitalcave {
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename
-			void play(char* filename, uint8_t pad, uint8_t volume);
+			void play(char* filename, uint8_t pad, uint16_t volume);
 			
 			//Is the sample current playing?
 			uint8_t isPlaying();
@@ -118,7 +118,7 @@ namespace digitalcave {
 			uint8_t getVolume();
 
 			//Set the sample volume.  This is a value from 0 to 255.
-			void setVolume(uint8_t volume);
+			void setVolume(uint16_t volume);
 
 			//Returns the index of the last pad which initiated playback.
 			uint8_t getLastPad();

@@ -6,7 +6,7 @@ Drum::Drum(const char* filenamePrefix, uint8_t piezoMuxIndex, uint8_t doubleHitT
 }
 
 void Drum::poll(){
-	uint8_t volume = readPiezo(piezoMuxIndex);
+	uint16_t volume = readPiezo(piezoMuxIndex);
 	if (volume){
 		play(volume);
 	}

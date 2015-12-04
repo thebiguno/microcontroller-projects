@@ -28,9 +28,10 @@ uint8_t Pad::randomSeedCompleted = 0;
 uint8_t Pad::currentIndex = 0;
 
 void Pad::init(){
-	adc.setResolution(12);
+	adc.setResolution(10);
 	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setAveraging(8);
+	adc.setSamplingSpeed(ADC_VERY_LOW_SPEED);
+	adc.setAveraging(4);
 	
 	updateAllSamples();
 }
@@ -48,7 +49,7 @@ Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), 
 
 void Pad::play(uint16_t volume){
 	lastSample = Sample::findAvailableSample(padIndex, volume);
-	lastSample->play(lookupFilename(volume), padIndex, volume * (padVolume / 64.0));
+	lastSample->play(lookupFilename(volume), padIndex, volume);
 }
 
 void Pad::stop(){
@@ -150,7 +151,7 @@ uint8_t Pad::readSwitch(uint8_t muxIndex){
 	return currentValue < 128;
 }
 
-uint8_t Pad::readPiezo(uint8_t muxIndex){
+uint16_t Pad::readPiezo(uint8_t muxIndex){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -166,6 +167,8 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	// to prevent double triggering.
 	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+		//Give a bit of time to drain.  To keep constant delays, this should
+		// be the same as the delay prior to the ADC reading.
 		delayMicroseconds(10);
 		return 0;
 	}
@@ -173,7 +176,7 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	//Enable ADC MUX...
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
-	//TODO Unsure of whether this delay is needed... experimentation is required.
+	//A short delay here seems to help to read a stable volume.  10us appears fine.
 	delayMicroseconds(10);
 	
 	//... read value...
@@ -190,24 +193,23 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
-	else if (currentValue >= MIN_VALUE && peakValue < MIN_VALUE){
+	else if (currentValue >= MIN_VALUE && peakValue == 0){
 		//A new hit has started; record the time
 		strikeTime = millis();
 		peakValue = currentValue;
 	}
-	else if (peakValue > MIN_VALUE && millis() - strikeTime > MAX_RESPONSE_TIME){
-		//We have timed out; send whatever the peak value currently is
-		uint16_t result = peakValue;
-		playTime = millis();
-		peakValue = 0;
-		Serial.println(result);
-		
-		//return 150;
-		return result;
-	}
 	else if (currentValue > peakValue){
 		//Volume is still increasing; record this as the new peak value
 		peakValue = currentValue;
+	}
+	
+	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
+		//We have timed out; send whatever the peak value currently is
+		uint16_t result = peakValue * (padVolume / 64.0);
+		playTime = millis();
+		peakValue = 0;
+		
+		return result;
 	}
 	
 	return 0;

@@ -106,7 +106,7 @@ Sample::Sample():
 	currentIndex++;	//Increment current index
 }
 
-void Sample::play(char* filename, uint8_t pad, uint8_t volume){
+void Sample::play(char* filename, uint8_t pad, uint16_t volume){
 	Serial.print("Playing ");
 	Serial.print(filename);
 	Serial.print(" at volume ");
@@ -141,7 +141,8 @@ uint8_t Sample::getVolume(){
 	return volume;
 }
 
-void Sample::setVolume(uint8_t volume){
+void Sample::setVolume(uint16_t volume){
+	if (volume >= 255) volume = 255;
 	this->volume = volume;
 	mixer.gain(mixerIndex, max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
 }

@@ -28,7 +28,7 @@
 
 //The maximum time (in ms) between a new hit being detected and when we return
 // the value.
-#define MAX_RESPONSE_TIME			1
+#define MAX_RESPONSE_TIME			2
 
 //Minimum ADC value to register as a hit
 #define MIN_VALUE					16
@@ -72,7 +72,7 @@ namespace digitalcave {
 			//The peak value read from the ADC for this particular strike.
 			// We repeatedly read the ADC, keeping track of the peak value, until the 
 			// readings have stabilized or the maximum time has passed.
-			int16_t peakValue;
+			uint16_t peakValue;
 			//uint32_t peakValueTime;
 			//The time at which the last value was considered stable and returned
 			uint32_t playTime;
@@ -104,7 +104,7 @@ namespace digitalcave {
 			uint8_t padIndex;
 			
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
-			uint8_t readPiezo(uint8_t muxIndex);
+			uint16_t readPiezo(uint8_t muxIndex);
 			
 			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
 			uint8_t readSwitch(uint8_t muxIndex);
