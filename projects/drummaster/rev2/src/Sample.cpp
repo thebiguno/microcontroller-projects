@@ -45,13 +45,13 @@ void Sample::setVolumeLineOut(double volume){
 	}
 
 	if (volume < 0.0) volume = 0.0;
-	else if (volume > 2.0) volume = 2.0;
+	else if (volume > 1.0) volume = 1.0;
 	control.volume(volume);
 }
 
 void Sample::setVolumeLineIn(double volume){
 	if (volume < 0.0) volume = 0.0;
-	else if (volume > 2.0) volume = 2.0;
+	else if (volume > 1.0) volume = 1.0;
 
 	mixers[3].gain(2, volume);
 	mixers[3].gain(3, volume);
@@ -71,6 +71,7 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	// stop them if there are no available samples.
 	for (uint8_t sampleIndex = 0; sampleIndex < SAMPLE_COUNT; sampleIndex++){
 		if (!samples[sampleIndex].isPlaying()){
+			samples[sampleIndex].stop();
 			return &(samples[sampleIndex]);	//If we have a sample object that is not playing currently, just use it.
 		}
 		else {
@@ -186,11 +187,12 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 	
 	lastPad = pad;
 	setVolume(volume);
+	envelope.noteOn();
 	playSerialRaw.play(filename);
 }
 
 uint8_t Sample::isPlaying(){
-	return playSerialRaw.isPlaying();
+	return lastPad != 0xFF && playSerialRaw.isPlaying();
 }
 
 uint32_t Sample::getPositionMillis(){
@@ -200,9 +202,14 @@ uint32_t Sample::getPositionMillis(){
 void Sample::fade(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
-			samples[i].stop();
+			samples[i].fade();
 		}
 	}
+}
+
+void Sample::fade(){
+	envelope.noteOff();
+	lastPad = 0xFF;		//Once we start fading, it is valid to re-use this sample object
 }
 
 void Sample::stop(){

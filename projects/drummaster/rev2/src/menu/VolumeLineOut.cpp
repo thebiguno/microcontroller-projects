@@ -3,7 +3,7 @@
 
 using namespace digitalcave;
 
-#define GAIN_DIVISOR		(256.0 / 2)
+#define GAIN_DIVISOR		(256.0)
 
 VolumeLineOut::VolumeLineOut(){
 }

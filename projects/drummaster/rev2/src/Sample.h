@@ -123,6 +123,9 @@ namespace digitalcave {
 			//If the sample is playing, return the position of the sample; otherwise return 0
 			uint32_t getPositionMillis();
 
+			//Stops playback over time
+			void fade();
+			
 			//Stops playback
 			void stop();
 
