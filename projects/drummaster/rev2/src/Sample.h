@@ -85,14 +85,15 @@ namespace digitalcave {
 			uint8_t lastPad;
 			
 			//Allow for fade out when muting cymbals
-			AudioEffectEnvelope envelope;
+// 			AudioEffectEnvelope envelope;
 			
 			//SPI flash playback object
 			AudioPlaySerialflashRaw playSerialRaw;
 
 			//Connections from playSerialRaw to envelope to mixer
-			AudioConnection playSerialRawToEnvelope;
-			AudioConnection envelopeToMixer;
+// 			AudioConnection playSerialRawToEnvelope;
+// 			AudioConnection envelopeToMixer;
+			AudioConnection playSerialRawToMixer;
 
 			//The last volume value which has been set for this Sample
 			double volume;

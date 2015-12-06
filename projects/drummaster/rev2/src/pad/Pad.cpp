@@ -96,6 +96,8 @@ void Pad::updateSamples(){
 
 		if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
 			if (strlen(filename) != 10){
+				Serial.print(filename);
+				Serial.println(" is not a valid sample filename.");
 				continue;	//Ensure the filename is in a valid format, XX_V_N.RAW.  See docs/Kit Sample Organization.txt for details
 			}
 			
@@ -119,7 +121,13 @@ void Pad::updateSamples(){
 			//This is why we need to have the sample number continuous... we just record the highest sample number,
 			// rather than looking through all of them.
 			//TODO Should we show an error if the samples are not continuous?
-			if (fileCountByVolume[volume] < (sample + 1)) fileCountByVolume[volume] = (sample + 1);
+			if (fileCountByVolume[volume] < (sample + 1)) {
+				fileCountByVolume[volume] = (sample + 1);
+// 				Serial.print("Found sample number ");
+// 				Serial.print(sample + 1);
+// 				Serial.print(" for prefix ");
+// 				Serial.println(filenamePrefix);
+			}
 		} 
 		else {
 			break; // no more files
@@ -145,7 +153,15 @@ char* Pad::lookupFilename(double volume){
 		else offset += -1;
 	}
 	
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, (uint8_t) random(fileCountByVolume[closestVolume]));
+	uint8_t randomNumber = 0; //((uint8_t) random(fileCountByVolume[closestVolume])) & 0x0F;
+	closestVolume = closestVolume & 0x0F;
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, randomNumber);
+
+// 	Serial.print("fileCountByVolume[closestVolume] = ");
+// 	Serial.print(fileCountByVolume[closestVolume]);
+// 	Serial.print("; randomNumber = ");
+// 	Serial.println(randomNumber);
+
 	return filenameResult;
 }
 

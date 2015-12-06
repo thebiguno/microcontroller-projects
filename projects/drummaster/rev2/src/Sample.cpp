@@ -91,40 +91,40 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	//If we get to here, there are no available samples, so we will have to stop one that
 	// is currently playing.  We try to pick the one which will cause the lease disruption.
 	
-	//First, if there are at least 4 samples already playing for this pad, we can just kill 
-	// the quietest one, assuming it is quieter than 3/4 of the current one.
-	if (sampleCounts[pad] >= 4 && quietestSampleVolumes[pad] < (volume * 0.75)){
-		Serial.print("Stopping sample from pad ");
-		Serial.print(pad);
-		Serial.println(" as option 1");
-		samples[quietestSample[pad]].stop();
-		return &(samples[quietestSample[pad]]);
-	}
-	
-	//Next, we look for other pads with at least 6 samples, and kill the quietest
-	// one, if the volume is less than half of the new one.
-	for(uint8_t i = 0; i < PAD_COUNT; i++){
-		if (sampleCounts[i] >= 6 && quietestSampleVolumes[i] < (volume * 0.5)){
-			Serial.print("Stopping sample from pad ");
-			Serial.print(i);
-			Serial.println(" as option 2");
-			samples[quietestSample[i]].stop();
-			return &(samples[quietestSample[i]]);
-		}
-	}
-	
-	//Next we look for any pad that has at least 4 samples, and kill the quietest one
-	// regardless of its volume relative to the new one.
-	for(uint8_t i = 0; i < PAD_COUNT; i++){
-		if (sampleCounts[i] >= 4){
-			Serial.print("Stopping sample from pad ");
-			Serial.print(i);
-			Serial.println(" as option 3");
-			samples[quietestSample[i]].stop();
-			return &(samples[quietestSample[i]]);
-		}
-	}
-	
+	//First, if there are at least 6 samples already playing for this pad, we can just kill 
+	// the quietest one, assuming it is quieter than 1/2 of the current one.
+// 	if (sampleCounts[pad] >= 6 && quietestSampleVolumes[pad] < (volume * 0.5)){
+// 		Serial.print("Stopping sample from pad ");
+// 		Serial.print(pad);
+// 		Serial.println(" as option 1");
+// 		samples[quietestSample[pad]].stop();
+// 		return &(samples[quietestSample[pad]]);
+// 	}
+// 	
+// 	//Next, we look for other pads with at least 6 samples, and kill the quietest
+// 	// one, if the volume is less than half of the new one.
+// 	for(uint8_t i = 0; i < PAD_COUNT; i++){
+// 		if (sampleCounts[i] >= 6 && quietestSampleVolumes[i] < (volume * 0.5)){
+// 			Serial.print("Stopping sample from pad ");
+// 			Serial.print(i);
+// 			Serial.println(" as option 2");
+// 			samples[quietestSample[i]].stop();
+// 			return &(samples[quietestSample[i]]);
+// 		}
+// 	}
+// 	
+// 	//Next we look for any pad that has at least 4 samples, and kill the quietest one
+// 	// regardless of its volume relative to the new one.
+// 	for(uint8_t i = 0; i < PAD_COUNT; i++){
+// 		if (sampleCounts[i] >= 4){
+// 			Serial.print("Stopping sample from pad ");
+// 			Serial.print(i);
+// 			Serial.println(" as option 3");
+// 			samples[quietestSample[i]].stop();
+// 			return &(samples[quietestSample[i]]);
+// 		}
+// 	}
+// 	
 	//If there are any pads which have at least 2 samples with the same sample for
 	// both the oldest and the quietest, then stop that one.
 	for(uint8_t i = 0; i < PAD_COUNT; i++){
@@ -162,18 +162,17 @@ Sample::Sample():
 		mixerIndex((currentIndex >> 2) & 0x03), 
 		mixerChannel(currentIndex & 0x03),
 		lastPad(0xFF),
-		envelope(),
+//		envelope(),
 		playSerialRaw(),
-		playSerialRawToEnvelope(playSerialRaw, 0, envelope, 0),
-		envelopeToMixer(envelope, 0, mixers[mixerIndex], mixerChannel) {
+		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel){
 	currentIndex++;	//Increment current index
 	
-	envelope.delay(0);
-	envelope.attack(0);
-	envelope.hold(0);
-	envelope.decay(0);
-	envelope.sustain(1.0);
-	envelope.release(50);
+// 	envelope.delay(0);
+// 	envelope.attack(0);
+// 	envelope.hold(0);
+// 	envelope.decay(0);
+// 	envelope.sustain(1.0);
+// 	envelope.release(50);
 }
 
 void Sample::play(char* filename, uint8_t pad, double volume){
@@ -187,7 +186,7 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 	
 	lastPad = pad;
 	setVolume(volume);
-	envelope.noteOn();
+//	envelope.noteOn();
 	playSerialRaw.play(filename);
 }
 
@@ -208,7 +207,8 @@ void Sample::fade(uint8_t pad){
 }
 
 void Sample::fade(){
-	envelope.noteOff();
+	//envelope.noteOff();
+	playSerialRaw.stop();	//TODO figure out how to fade here...
 	lastPad = 0xFF;		//Once we start fading, it is valid to re-use this sample object
 }
 
