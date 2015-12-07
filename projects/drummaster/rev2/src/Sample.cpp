@@ -191,7 +191,7 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 }
 
 uint8_t Sample::isPlaying(){
-	return lastPad != 0xFF && playSerialRaw.isPlaying();
+	return playSerialRaw.isPlaying();
 }
 
 uint32_t Sample::getPositionMillis(){
@@ -208,8 +208,12 @@ void Sample::fade(uint8_t pad){
 
 void Sample::fade(){
 	//envelope.noteOff();
-	playSerialRaw.stop();	//TODO figure out how to fade here...
-	lastPad = 0xFF;		//Once we start fading, it is valid to re-use this sample object
+	volume = volume * 0.99;
+	mixers[mixerIndex].gain(mixerChannel, volume);
+	if (volume <= 0.001){
+		playSerialRaw.stop();	//TODO figure out how to fade here...
+		lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
+	}
 }
 
 void Sample::stop(){

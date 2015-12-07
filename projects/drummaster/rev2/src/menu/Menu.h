@@ -39,6 +39,7 @@ namespace digitalcave {
 			static Menu* loadSamples;
 			static Menu* calibrateChannel;
 			static Menu* calibrateChannelSelect;
+			static Menu* stats;
 			
 			//Calls the handleAction() method for the current menu
 			static void poll();

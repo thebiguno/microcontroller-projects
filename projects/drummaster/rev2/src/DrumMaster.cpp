@@ -36,7 +36,7 @@ int main(){
 	pinMode(ENC_PUSH, INPUT_PULLUP);
 	
 	//Allocate enough memory for audio
-	AudioMemory(32);
+	AudioMemory(AUDIO_MEMORY);
 
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();
@@ -47,25 +47,11 @@ int main(){
 	//Set up ADC and build filename tables
 	Pad::init();
 	
-	uint32_t last_time = 0;
 	while (1){
 		Menu::poll();
 		
 		for (uint8_t i = 0; i < PAD_COUNT; i++){
 			Pad::pads[i]->poll();
-		}
-		
-		if(millis() - last_time >= 1000) {
-			Serial.print("Proc = ");
-			Serial.print(AudioProcessorUsage());
-			Serial.print(" (");    
-			Serial.print(AudioProcessorUsageMax());
-			Serial.print("),  Mem = ");
-			Serial.print(AudioMemoryUsage());
-			Serial.print(" (");    
-			Serial.print(AudioMemoryUsageMax());
-			Serial.println(")");
-			last_time = millis();
 		}
 	}
 }

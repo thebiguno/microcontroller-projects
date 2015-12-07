@@ -6,7 +6,7 @@ MainMenu::MainMenu(){
 }
 
 Menu* MainMenu::handleAction(){
-	#define MENU_COUNT 5
+	#define MENU_COUNT 6
 
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
@@ -41,6 +41,12 @@ Menu* MainMenu::handleAction(){
 			display->write_text(0, 0, "Calibrate Channels  ", 20);
 			if (button.fallingEdge()){
 				return Menu::calibrateChannelSelect;
+			}
+			break;
+		case 5:
+			display->write_text(0, 0, "System Stats        ", 20);
+			if (button.fallingEdge()){
+				return Menu::stats;
 			}
 			break;
 	}

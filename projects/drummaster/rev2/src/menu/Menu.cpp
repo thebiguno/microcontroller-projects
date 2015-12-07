@@ -4,6 +4,7 @@
 #include "CalibrateChannelSelect.h"
 #include "LoadSamples.h"
 #include "MainMenu.h"
+#include "Stats.h"
 #include "VolumeLineIn.h"
 #include "VolumeLineOut.h"
 #include "VolumePad.h"
@@ -23,6 +24,7 @@ Menu* Menu::calibrateChannel = new CalibrateChannel();
 Menu* Menu::calibrateChannelSelect = new CalibrateChannelSelect();
 Menu* Menu::loadSamples = new LoadSamples();
 Menu* Menu::mainMenu = new MainMenu();
+Menu* Menu::stats = new Stats();
 Menu* Menu::volumeLineIn = new VolumeLineIn();
 Menu* Menu::volumeLineOut = new VolumeLineOut();
 Menu* Menu::volumePad = new VolumePad();

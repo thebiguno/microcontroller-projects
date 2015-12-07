@@ -7,26 +7,6 @@
 
 #include "hardware.h"
 
-//The total number of samples allowed in the system.  Currently 12 seems to be right; more than this 
-// can cause slowdowns when playing back.  If this is set to more than 14, you need to change how the
-// mixer is set up, since currently we are using a 16 Sample mixer with two Samples reserved for 
-// passing through i2s audio from an external source.
-#define SAMPLE_COUNT				10
-
-//The base of the exponential curve for audio mapping.  Nothing particularly scientific here, I just 
-// played with a bunch of graphs until I found one that looked and sounded right.  Take note of the
-// max value here (i.e. what is the number EXPONENTIAL_BASE^256); this is the maximum value that can 
-// be output from the forumula.  You must pick VOLUME_DIVISOR to be a number which is larger than 
-// the maximum.  I find that picking the maximum to be about 80% of VOLUME_DIVISOR works well enough.
-#define EXPONENTIAL_BASE			1.020
-//The volume divisor converts a number from EXPONENTIAL_BASE^rawValue to 0..1 (with a bit of headroom 
-// to prevent clipping)
-#define VOLUME_DIVISOR				(pow(EXPONENTIAL_BASE, 256) * 1.2)
-//The linear part of the curve.  We take the max of (rawValue / LINEAR_DIVISOR) and (EXPONENTIAL_BASE^rawValue)
-// as the final value (which is then scaled by the VOLUME_DIVISOR).  This value just keeps a non-zero
-// value for very low velocity hits.
-#define LINEAR_DIVISOR				8.0
-
 namespace digitalcave {
 
 	/*
@@ -124,7 +104,10 @@ namespace digitalcave {
 			//If the sample is playing, return the position of the sample; otherwise return 0
 			uint32_t getPositionMillis();
 
-			//Stops playback over time
+			//Stops playback over time.  This is meant to be called repeatedly; each time
+			// through it reduces playback by a very small amount (99% of the previous volume).
+			// By calling it repeatedly we get a logarithmic falloff which simulates 
+			// a choked cymbal
 			void fade();
 			
 			//Stops playback

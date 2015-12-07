@@ -11,7 +11,7 @@ Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	File	MUX Indices				Double Trigger Threshold
 	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
 	new Drum(	"SN",	MUX_2,					50),	//Snare
-	new Drum(	"BS",	MUX_3,					200),	//Bass
+	new Drum(	"BS",	MUX_3,					150),	//Bass
 	new Drum(	"T1",	MUX_4,					100),	//Tom1
 	new Cymbal(	"CR",	MUX_5, MUX_14,			100),	//Crash
 	new Drum(	"T2",	MUX_6,					100),	//Tom2
@@ -208,7 +208,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 		//Give a bit of time to drain.  To keep constant delays, this should
 		// be the same as the delay prior to the ADC reading.
-		delayMicroseconds(10);
+		delayMicroseconds(5);
 		return 0;
 	}
 	
@@ -216,7 +216,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//A short delay here seems to help to read a stable volume.  10us appears fine.
-	delayMicroseconds(10);
+	delayMicroseconds(5);
 	
 	//... read value...
 	uint16_t currentValue = adc->analogRead(ADC_INPUT);
