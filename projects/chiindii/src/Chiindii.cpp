@@ -23,6 +23,9 @@ int main(){
 	//Main program loop
 	while (1) {
 		MOTOR1_PORT ^= _BV(MOTOR1_PIN);
+		MOTOR2_PORT ^= _BV(MOTOR2_PIN);
+		MOTOR3_PORT ^= _BV(MOTOR3_PIN);
+		MOTOR4_PORT ^= _BV(MOTOR4_PIN);
 		
 		PORTB ^= _BV(0) | _BV(1);
 		PORTF ^= _BV(5) | _BV(6) | _BV(7);
