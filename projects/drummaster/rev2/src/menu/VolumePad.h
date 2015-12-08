@@ -17,8 +17,8 @@ namespace digitalcave {
 			static void loadPadVolumesFromEeprom();
 			static void savePadVolumesToEeprom();
 			
-			int16_t value = -1;
-			uint8_t pad = 0;
+			int16_t value;
+			uint8_t pad;
 
 			VolumePad();
 			Menu* handleAction();

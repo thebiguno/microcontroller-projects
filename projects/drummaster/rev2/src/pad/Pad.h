@@ -1,6 +1,8 @@
 #ifndef PAD_H
 #define PAD_H
 
+#include <math.h>
+
 #include <ADC.h>
 
 #include "../Sample.h"
@@ -23,15 +25,20 @@
 #define MUX_14		14
 #define MUX_15		15
 
+
+//The maximum time (in ms) between a new hit being detected and when we return
+// the value.
+#define MAX_RESPONSE_TIME			2
+
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					15
+#define MIN_VALUE					16
 
 namespace digitalcave {
 
 	class Pad {
 		private:
 			//ADC Object
-			static ADC adc;
+			static ADC* adc;
 			
 			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
 			// pad strike with the system time; this should allow for random numbers, as the timing of 
@@ -55,25 +62,27 @@ namespace digitalcave {
 			
 
 			/*** Variables used in reading the pizeo value ***/
-			//The last value read from the ADC and the time at which it was read
-			int16_t lastValue;
-			uint32_t lastValueTime;
-			//The peak value read from the ADC since we have last played a sample, and the time at which 
-			// it was read.  We repeatedly read the ADC, keeping track of the peak value, until the 
-			// readings have stabilized for a certain period of time.
-			int16_t peakValue;
-			uint32_t peakValueTime;
-			//The last time that a pizeo value was returned for sample playback
+// 			//Stabilization counter and last value, to ensure accurate and stable readings
+// 			uint8_t stabilizationCounter;
+// 			int16_t stabilizationValue;
+
+			//The time at which this hit was first read.  We must return a value within
+			// at most MAX_RESPONSE_TIME ms from this time.
+			uint32_t strikeTime;
+			//The peak value read from the ADC for this particular strike.
+			// We repeatedly read the ADC, keeping track of the peak value, until the 
+			// readings have stabilized or the maximum time has passed.
+			uint16_t peakValue;
+			//uint32_t peakValueTime;
+			//The time at which the last value was considered stable and returned
 			uint32_t playTime;
 			
 			//Maximum time in ms after a sample has been played before we can play another one.
 			uint8_t doubleHitThreshold;
 
 			/*** Internal state ***/
-			//The per-pad volume gain.  This number is divided by 64.0 and multiplied against the requested
-			// volume when playing a sample.  A value of 64 results in no change (multiplier of 1); less than
-			// 64 will reduce the volume, and greater than 64 will increase it.
-			uint8_t padVolume;
+			//The per-pad volume gain.  Limited from 0 - 5.
+			double padVolume;
 			
 			/*** Private methods ***/
 			//Looks on the SPI flash chip for files according to the sample naming convention,
@@ -82,7 +91,7 @@ namespace digitalcave {
 			void updateSamples();
 			
 			//Find the correct sample, given a volume.
-			char* lookupFilename(uint8_t volume);
+			char* lookupFilename(double volume);
 			
 		protected:
 			//The last Sample which was used to play this pad.  Used in the event that we need
@@ -93,7 +102,7 @@ namespace digitalcave {
 			uint8_t padIndex;
 			
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
-			uint8_t readPiezo(uint8_t muxIndex);
+			double readPiezo(uint8_t muxIndex);
 			
 			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
 			uint8_t readSwitch(uint8_t muxIndex);
@@ -116,16 +125,16 @@ namespace digitalcave {
 			virtual void poll() = 0;
 			
 			//Start plating this pad at the specified volume.
-			void play(uint8_t volume);
+			void play(double volume);
 			
-			//Stops all samples which were started from this pad
-			void stop();
+			//Stops all samples which were started from this pad by fading out
+			void fade();
 			
 			//Get the per-pad volume.
-			uint8_t getPadVolume();
+			double getPadVolume();
 
 			//Set the per-pad volume.
-			void setPadVolume(uint8_t padVolume);
+			void setPadVolume(double padVolume);
 	};
 	
 }

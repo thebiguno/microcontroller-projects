@@ -6,18 +6,18 @@
 
 using namespace digitalcave;
 
-ADC Pad::adc;
+ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	File	MUX Indices				Double Trigger Threshold
-	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	50),	//Hihat + Pedal
-	new Drum(	"SN",	MUX_2,					25),	//Snare
-	new Drum(	"BS",	MUX_3,					200),	//Bass
+	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
+	new Drum(	"SN",	MUX_2,					50),	//Snare
+	new Drum(	"BS",	MUX_3,					150),	//Bass
 	new Drum(	"T1",	MUX_4,					100),	//Tom1
 	new Cymbal(	"CR",	MUX_5, MUX_14,			100),	//Crash
 	new Drum(	"T2",	MUX_6,					100),	//Tom2
 	new Drum(	"T3",	MUX_7,					100),	//Tom3
 	new Cymbal(	"SP",	MUX_8, MUX_13,			100),	//Splash
-	new Cymbal(	"RD",	MUX_9, MUX_12,			50),	//Ride
+	new Cymbal(	"RD",	MUX_9, MUX_12,			75),	//Ride
 	new Drum(	"X0",	MUX_10,					100),	//X0
 	new Drum(	"X1",	MUX_11,					100)	//X1
 };
@@ -28,9 +28,23 @@ uint8_t Pad::randomSeedCompleted = 0;
 uint8_t Pad::currentIndex = 0;
 
 void Pad::init(){
-	adc.setResolution(12);
-	adc.setConversionSpeed(ADC_LOW_SPEED);
-	adc.setAveraging(8);
+	//Drain any charge which is currently in each channel
+	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		digitalWriteFast(MUX0, i & 0x01);
+		digitalWriteFast(MUX1, i & 0x02);
+		digitalWriteFast(MUX2, i & 0x04);
+		digitalWriteFast(MUX3, i & 0x08);
+		delay(10);
+	}
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
+
+	//Initialize the ADC
+	adc = new ADC();
+	adc->setResolution(10);
+	adc->setConversionSpeed(ADC_LOW_SPEED);
+	adc->setSamplingSpeed(ADC_VERY_LOW_SPEED);
+	adc->setAveraging(4);
 	
 	updateAllSamples();
 }
@@ -41,26 +55,32 @@ void Pad::updateAllSamples(){
 	}
 }
 
-Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
+Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
 	strncpy(this->filenamePrefix, filenamePrefix, 3);
 	currentIndex++;
 }
 
-void Pad::play(uint8_t volume){
+void Pad::play(double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+
 	lastSample = Sample::findAvailableSample(padIndex, volume);
-	lastSample->play(lookupFilename(volume), padIndex, volume * (padVolume / 64.0));
+	lastSample->play(lookupFilename(volume), padIndex, volume);
 }
 
-void Pad::stop(){
-	Sample::stop(padIndex);
+void Pad::fade(){
+	Sample::fade(padIndex);
 }
 
-uint8_t Pad::getPadVolume(){
+double Pad::getPadVolume(){
 	return padVolume;
 }
 
-void Pad::setPadVolume(uint8_t padVolume){
-	this->padVolume = padVolume;
+void Pad::setPadVolume(double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+
+	padVolume = volume;
 }
 
 void Pad::updateSamples(){
@@ -76,6 +96,8 @@ void Pad::updateSamples(){
 
 		if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
 			if (strlen(filename) != 10){
+				Serial.print(filename);
+				Serial.println(" is not a valid sample filename.");
 				continue;	//Ensure the filename is in a valid format, XX_V_N.RAW.  See docs/Kit Sample Organization.txt for details
 			}
 			
@@ -99,7 +121,13 @@ void Pad::updateSamples(){
 			//This is why we need to have the sample number continuous... we just record the highest sample number,
 			// rather than looking through all of them.
 			//TODO Should we show an error if the samples are not continuous?
-			if (fileCountByVolume[volume] < (sample + 1)) fileCountByVolume[volume] = (sample + 1);
+			if (fileCountByVolume[volume] < (sample + 1)) {
+				fileCountByVolume[volume] = (sample + 1);
+// 				Serial.print("Found sample number ");
+// 				Serial.print(sample + 1);
+// 				Serial.print(" for prefix ");
+// 				Serial.println(filenamePrefix);
+			}
 		} 
 		else {
 			break; // no more files
@@ -107,12 +135,16 @@ void Pad::updateSamples(){
 	}
 }
 
-char* Pad::lookupFilename(uint8_t volume){
+char* Pad::lookupFilename(double volume){
+	//Limit volume from 0 to 1
+	if (volume < 0) volume = 0;
+	else if (volume >= 1.0) volume = 1.0;
+
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
 	// sample number.
-	volume = volume >> 4;		//Divide by 16 to get into the 16 buckets of the samples
+	
 	int8_t offset = 1;
-	int8_t closestVolume = volume;
+	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	while (fileCountByVolume[closestVolume] == 0){
 		closestVolume = volume + offset;
 		if (closestVolume >= 16) closestVolume = 16;
@@ -121,7 +153,15 @@ char* Pad::lookupFilename(uint8_t volume){
 		else offset += -1;
 	}
 	
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, (uint8_t) random(fileCountByVolume[closestVolume]));
+	uint8_t randomNumber = 0; //((uint8_t) random(fileCountByVolume[closestVolume])) & 0x0F;
+	closestVolume = closestVolume & 0x0F;
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, randomNumber);
+
+// 	Serial.print("fileCountByVolume[closestVolume] = ");
+// 	Serial.print(fileCountByVolume[closestVolume]);
+// 	Serial.print("; randomNumber = ");
+// 	Serial.println(randomNumber);
+
 	return filenameResult;
 }
 
@@ -140,17 +180,17 @@ uint8_t Pad::readSwitch(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
 	//... read value...
-	int16_t rawValue = adc.analogRead(ADC_INPUT);
+	int16_t currentValue = adc->analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
-	//If the rawValue is high, the button is not pressed (active low); if it is low, then
+	//If the currentValue is high, the button is not pressed (active low); if it is low, then
 	// the button is pressed.
-	return rawValue < 128;
+	return currentValue < 128;
 }
 
-uint8_t Pad::readPiezo(uint8_t muxIndex){
+double Pad::readPiezo(uint8_t muxIndex){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -161,92 +201,52 @@ uint8_t Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(MUX2, muxIndex & 0x04);
 	digitalWriteFast(MUX3, muxIndex & 0x08);
 
-	//If we are still within the double hit threshold timespan, re-enable the drain for a few microseconds each time we go through here.
+	//If we are still within the double hit threshold time-span, re-enable the drain 
+	// each time we go through here.  This serves to both drain the stored charge and
+	// to prevent double triggering.
 	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//delayMicroseconds(100);
+		//Give a bit of time to drain.  To keep constant delays, this should
+		// be the same as the delay prior to the ADC reading.
+		delayMicroseconds(5);
 		return 0;
 	}
 	
 	//Enable ADC MUX...
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
-	//TODO Unsure of whether this delay is needed... experimentation is required.
-	//delayMicroseconds(100);
+	//A short delay here seems to help to read a stable volume.  10us appears fine.
+	delayMicroseconds(5);
 	
 	//... read value...
-	int16_t rawValue = adc.analogRead(ADC_INPUT);
+	uint16_t currentValue = adc->analogRead(ADC_INPUT);
+	if (!randomSeedCompleted && currentValue > MIN_VALUE){
+		//Seed the randomizer based on the time of the first hit
+		randomSeed(millis());
+		randomSeedCompleted = 1;
+	}
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	
-	//Double trigger detection.  If this hit is within doubleHitThreshold millis of the last
-	// hit, then we will either adjust the previously played sample to match this new (louder)
-	// volume, or we will ignore it.
-	if (rawValue > MIN_VALUE && playTime + doubleHitThreshold > millis()){
-//		Serial.print("Double trigger detected; ");
-		playTime = millis();
-		if (lastSample != NULL && lastValue < rawValue){
-//			Serial.println("Adjusted rawValue");
-			//Change the last volume to the higher (new) value and stop processing
-			lastSample->setVolume(rawValue);
-			//TODO Change the sample + rawValue to match the highest value
-			Serial.print("Adjusted previous hit on ");
-			Serial.print(filenamePrefix);
-			Serial.print(" to ");
-			Serial.println(rawValue);
-			return 0;
-		}
-		else {
-//			Serial.println("Ignoring");
-			return 0;
-		}
-	}
-	
-	if (rawValue < MIN_VALUE && peakValue < MIN_VALUE){
+
+	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
-	else if (rawValue > peakValue){
-		//Serial.println("Volume not stable");
-		//Is the result is still increasing?  If so, wait for it to stabilize
-		peakValue = rawValue;
-		peakValueTime = millis();
-// 		Serial.print("Setting peak value to ");
-// 		Serial.print(peakValue);
-// 		Serial.print(" (time is ");
-// 		Serial.print(millis());
-// 		Serial.println(")");
+	else if (currentValue >= MIN_VALUE && peakValue == 0){
+		//A new hit has started; record the time
+		strikeTime = millis();
+		peakValue = currentValue;
 	}
-	else if (rawValue > (peakValue - MIN_VALUE) && millis() - 3 < peakValueTime){
-		//Currently read volume is less than the peak, but within MIN_VALUE of the peak and within 3 ms of the last peak value increase
-// 		Serial.print("Peak value of ");
-// 		Serial.print(peakValue);
-// 		Serial.print(" is already higher than raw value of ");
-// 		Serial.print(rawValue);
-// 		Serial.print(" (time is ");
-// 		Serial.print(millis());
-// 		Serial.println(")");
+	else if (currentValue > peakValue){
+		//Volume is still increasing; record this as the new peak value
+		peakValue = currentValue;
 	}
-	else if (peakValue < MIN_VALUE){
-		//If the result has stabilized, but it is less than MIN_VALUE, then ignore it
-		//TODO do we need this?  Perhaps just take out MIN_VALUE altogether?
-		peakValue = 0;
-	}
-	else {
-		//The result has stabilized and it is large enough to play a sample.
-		//Reset the peak value by turning on the drain MUX
-		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-
-		uint8_t result = peakValue;
-
+	
+	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
+		//We have timed out; send whatever the peak value currently is
+		double result = peakValue / 256.0 * padVolume;
 		playTime = millis();
-		lastValue = peakValue;
 		peakValue = 0;
-		
-		if (!randomSeedCompleted){
-			randomSeed(millis());
-			randomSeedCompleted = 1;
-		}
 		
 		return result;
 	}

@@ -13,7 +13,7 @@ Menu* CalibrateChannel::handleAction(){
 	}
 	
 	snprintf(buf, sizeof(buf), "%d                   ", value >> 1);
-	display.write_text(2, 0, buf, 20);
+	display->write_text(2, 0, buf, 20);
 	
 	encoderState = encoder.read();
 	if (encoderState != value){
@@ -26,7 +26,7 @@ Menu* CalibrateChannel::handleAction(){
 	}
 	
 	if (button.fallingEdge()){
-		display.write_text(2, 0, "                    ", 20);
+		display->write_text(2, 0, "                    ", 20);
 		return Menu::calibrateChannelSelect;
 	}
 	

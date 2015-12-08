@@ -11,7 +11,7 @@ char* HiHat::lookupFilename(uint8_t volume){
 }
 
 void HiHat::poll(){
-	uint8_t volume = readPiezo(piezoMuxIndex);
+	double volume = readPiezo(piezoMuxIndex);
 	if (volume){
 		play(volume);
 	}

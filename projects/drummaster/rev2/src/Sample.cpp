@@ -11,15 +11,22 @@ uint8_t Sample::controlEnabled = 0;
 //I2S input
 AudioInputI2S Sample::input;
 
-//Mixer
-AudioMixer16 Sample::mixer;
+//Mixers
+AudioMixer4 Sample::mixers[4];
+AudioMixer4 Sample::mixer;
+
+//Mixer connections
+AudioConnection Sample::mixer0ToMixer(mixers[0], 0, mixer, 0);
+AudioConnection Sample::mixer1ToMixer(mixers[1], 0, mixer, 1);
+AudioConnection Sample::mixer2ToMixer(mixers[2], 0, mixer, 2);
+AudioConnection Sample::mixer3ToMixer(mixers[3], 0, mixer, 3);
 
 //Output
 AudioOutputI2S Sample::output;
 
-//Input passthrough to mixer
-AudioConnection Sample::inputToMixer0(input, 0, mixer, SAMPLE_COUNT);
-AudioConnection Sample::inputToMixer1(input, 1, mixer, SAMPLE_COUNT + 1);
+//Input passthrough to mixers[3], channels 2 and 3
+AudioConnection Sample::inputToMixer0(input, 0, mixers[3], 2);
+AudioConnection Sample::inputToMixer1(input, 1, mixers[3], 3);
 
 //Mixer to output
 AudioConnection Sample::mixerToOutput0(mixer, 0, output, 0);
@@ -31,83 +38,155 @@ Sample Sample::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-void Sample::setVolumeLineOut(uint8_t volume){
+void Sample::setVolumeLineOut(double volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
 	}
 
-	control.volume(volume / 256.0);
+	if (volume < 0.0) volume = 0.0;
+	else if (volume > 1.0) volume = 1.0;
+	control.volume(volume);
 }
 
-void Sample::setVolumeLineIn(uint8_t volume){
-	mixer.gain(SAMPLE_COUNT, volume / 256.0);
-	mixer.gain(SAMPLE_COUNT + 1, volume / 256.0);
+void Sample::setVolumeLineIn(double volume){
+	if (volume < 0.0) volume = 0.0;
+	else if (volume > 1.0) volume = 1.0;
+
+	mixers[3].gain(2, volume);
+	mixers[3].gain(3, volume);
 }
 
-Sample* Sample::findAvailableSample(uint8_t pad, uint8_t volume){
-	//Oldest overall sample
-	uint8_t oldestSample = 0;
-	uint16_t oldestSamplePosition = 0;
-
-	//Oldest sample played from the same pad, which was quieter than the new sound
-	uint8_t oldestSampleByPad = 0;
-	uint16_t oldestSampleByPadPosition = 0;
-	uint8_t sampleByPadCount = 0;
+Sample* Sample::findAvailableSample(uint8_t pad, double volume){
+	//Oldest samples played on any pad, keeping track of how many are currently
+	// playing on each pad.
+	uint8_t sampleCounts[PAD_COUNT] = {0};
+	uint8_t quietestSample[PAD_COUNT] = {0};
+	double quietestSampleVolumes[PAD_COUNT] = {0};
+	uint8_t oldestSample[PAD_COUNT] = {0};
+	uint16_t oldestSamplePositions[PAD_COUNT] = {0};
 	
-	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
-		if (!samples[i].isPlaying()){
-			return &(samples[i]);	//If we have a sample object that is not playing currently, just use it.
+	//Loop through all samples.  If we find one that is not currently playing, play it.
+	// Build a structure keeping track of the quietest / oldest samples so that we can
+	// stop them if there are no available samples.
+	for (uint8_t sampleIndex = 0; sampleIndex < SAMPLE_COUNT; sampleIndex++){
+		if (!samples[sampleIndex].isPlaying()){
+			samples[sampleIndex].stop();
+			return &(samples[sampleIndex]);	//If we have a sample object that is not playing currently, just use it.
 		}
 		else {
-			if (samples[i].getPositionMillis() > oldestSamplePosition){
-				oldestSamplePosition = samples[i].getPositionMillis();
-				oldestSample = i;
+			uint8_t sampleLastPad = samples[sampleIndex].getLastPad();
+			sampleCounts[sampleLastPad]++;
+			if (oldestSamplePositions[sampleLastPad] < samples[sampleIndex].getPositionMillis()){
+				oldestSamplePositions[sampleLastPad] = samples[sampleIndex].getPositionMillis();
+				oldestSample[sampleLastPad] = sampleIndex;
 			}
-			if (samples[i].getLastPad() == pad
-					&& samples[i].getVolume() < volume
-					&& samples[i].getPositionMillis() > oldestSampleByPadPosition){
-				oldestSampleByPadPosition = samples[i].getPositionMillis();
-				oldestSampleByPad = i;
-				sampleByPadCount++;
+			if (quietestSampleVolumes[sampleLastPad] < samples[sampleIndex].getVolume()){
+				quietestSampleVolumes[sampleLastPad] = samples[sampleIndex].getVolume();
+				quietestSample[sampleLastPad] = sampleIndex;
 			}
 		}
 	}
 	
-	//If we get to here, there are no available Samples, so we will have to stop a playing one.
-	// We try to pick the one which will cause the lease disruption.
+	//If we get to here, there are no available samples, so we will have to stop one that
+	// is currently playing.  We try to pick the one which will cause the lease disruption.
 	
-	//First, if there are at least 2 samples already playing for this pad at a lower volume than the 
-	// requested one, we can kill the oldest
-	if (sampleByPadCount >= 2){
-		samples[oldestSampleByPad].stop();
-		return &(samples[oldestSampleByPad]);
+	//First, if there are at least 6 samples already playing for this pad, we can just kill 
+	// the quietest one, assuming it is quieter than 1/2 of the current one.
+// 	if (sampleCounts[pad] >= 6 && quietestSampleVolumes[pad] < (volume * 0.5)){
+// 		Serial.print("Stopping sample from pad ");
+// 		Serial.print(pad);
+// 		Serial.println(" as option 1");
+// 		samples[quietestSample[pad]].stop();
+// 		return &(samples[quietestSample[pad]]);
+// 	}
+// 	
+// 	//Next, we look for other pads with at least 6 samples, and kill the quietest
+// 	// one, if the volume is less than half of the new one.
+// 	for(uint8_t i = 0; i < PAD_COUNT; i++){
+// 		if (sampleCounts[i] >= 6 && quietestSampleVolumes[i] < (volume * 0.5)){
+// 			Serial.print("Stopping sample from pad ");
+// 			Serial.print(i);
+// 			Serial.println(" as option 2");
+// 			samples[quietestSample[i]].stop();
+// 			return &(samples[quietestSample[i]]);
+// 		}
+// 	}
+// 	
+// 	//Next we look for any pad that has at least 4 samples, and kill the quietest one
+// 	// regardless of its volume relative to the new one.
+// 	for(uint8_t i = 0; i < PAD_COUNT; i++){
+// 		if (sampleCounts[i] >= 4){
+// 			Serial.print("Stopping sample from pad ");
+// 			Serial.print(i);
+// 			Serial.println(" as option 3");
+// 			samples[quietestSample[i]].stop();
+// 			return &(samples[quietestSample[i]]);
+// 		}
+// 	}
+// 	
+	//If there are any pads which have at least 2 samples with the same sample for
+	// both the oldest and the quietest, then stop that one.
+	for(uint8_t i = 0; i < PAD_COUNT; i++){
+		if (sampleCounts[i] >= 2 && quietestSample[i] == oldestSample[i]){
+			Serial.print("Stopping sample from pad ");
+			Serial.print(i);
+			Serial.println(" as option 4");
+			samples[quietestSample[i]].stop();
+			return &(samples[quietestSample[i]]);
+		}
 	}
-	//If there are no free samples and not enough playing samples in the current Sample, we 
-	// just pick the oldest sound and stop it.
-	else {
-		samples[oldestSample].stop();
-		return &(samples[oldestSample]);
+
+	//If there are no free samples and not enough playing samples from the current pad, we 
+	// just find the pad which has the most playing samples, and stop the oldest.  Not the
+	// best option, but you gotta do something...
+	uint8_t highestPad = 0;
+	uint8_t highestPadSampleCount = 0;
+	for(uint8_t i = 0; i < PAD_COUNT; i++){
+		if (highestPadSampleCount < sampleCounts[i]){
+			highestPadSampleCount = sampleCounts[i];
+			highestPad = i;
+		}
 	}
+	Serial.print("Stopping sample from pad ");
+	Serial.print(highestPad);
+	Serial.println(" as option 5");
+
+	samples[oldestSample[highestPad]].stop();
+	return &(samples[oldestSample[highestPad]]);
 }
 
 /***** Instance methods *****/
 
 Sample::Sample(): 
-		mixerIndex(currentIndex), 
-		lastPad(0xFF), 
+		mixerIndex((currentIndex >> 2) & 0x03), 
+		mixerChannel(currentIndex & 0x03),
+		lastPad(0xFF),
+//		envelope(),
 		playSerialRaw(),
-		playSerialRawToMixer(playSerialRaw, 0, mixer, currentIndex) {
+		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel){
 	currentIndex++;	//Increment current index
+	
+// 	envelope.delay(0);
+// 	envelope.attack(0);
+// 	envelope.hold(0);
+// 	envelope.decay(0);
+// 	envelope.sustain(1.0);
+// 	envelope.release(50);
 }
 
-void Sample::play(char* filename, uint8_t pad, uint8_t volume){
+void Sample::play(char* filename, uint8_t pad, double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+
 	Serial.print("Playing ");
 	Serial.print(filename);
 	Serial.print(" at volume ");
 	Serial.println(volume);
+	
 	lastPad = pad;
 	setVolume(volume);
+//	envelope.noteOn();
 	playSerialRaw.play(filename);
 }
 
@@ -119,25 +198,39 @@ uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
-void Sample::stop(uint8_t pad){
+void Sample::fade(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
-			samples[i].stop();
+			samples[i].fade();
 		}
+	}
+}
+
+void Sample::fade(){
+	//envelope.noteOff();
+	volume = volume * 0.99;
+	mixers[mixerIndex].gain(mixerChannel, volume);
+	if (volume <= 0.001){
+		playSerialRaw.stop();	//TODO figure out how to fade here...
+		lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
 	}
 }
 
 void Sample::stop(){
 	playSerialRaw.stop();
+	lastPad = 0xFF;
 }
 
-uint8_t Sample::getVolume(){
+double Sample::getVolume(){
 	return volume;
 }
 
-void Sample::setVolume(uint8_t volume){
+void Sample::setVolume(double volume){
+	if (volume < 0) volume = 0;
+	else if (volume >= 5.0) volume = 5.0;
+	
 	this->volume = volume;
-	mixer.gain(mixerIndex, max(volume / LINEAR_DIVISOR, pow(EXPONENTIAL_BASE, volume)) / VOLUME_DIVISOR);
+	mixers[mixerIndex].gain(mixerChannel, volume);
 }
 
 uint8_t Sample::getLastPad(){

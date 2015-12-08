@@ -25,7 +25,7 @@
  */
 
 #include "analyze_fft1024.h"
-#include "utility/sqrt_integer.h"
+#include "sqrt_integer.h"
 #include "utility/dspinst.h"
 
 
@@ -61,6 +61,7 @@ void AudioAnalyzeFFT1024::update(void)
 	block = receiveReadOnly();
 	if (!block) return;
 
+#if defined(KINETISK)
 	switch (state) {
 	case 0:
 		blocklist[0] = block;
@@ -122,6 +123,9 @@ void AudioAnalyzeFFT1024::update(void)
 		state = 4;
 		break;
 	}
+#else
+	release(block);
+#endif
 }
 
 

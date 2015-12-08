@@ -9,11 +9,11 @@ void Cymbal::poll(){
 	uint8_t muteSwitch = readSwitch(switchMuxIndex);
 	if (muteSwitch){
 		if (lastSample != NULL && lastSample->isPlaying()){
-			stop();
+			fade();
 		}
 	}
 	else {
-		uint8_t volume = readPiezo(piezoMuxIndex);
+		double volume = readPiezo(piezoMuxIndex);
 		if (volume){
 			play(volume);
 		}

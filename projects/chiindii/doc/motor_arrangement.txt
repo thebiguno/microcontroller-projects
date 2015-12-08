@@ -1,0 +1,9 @@
+The Chiindii motors are arranged clockwise in ascending numeric order, starting at the
+front left of the craft.
+
+The motor spin directions are as follows:
+Motor 1 and 3: CW
+Motor 2 and 4: CCW
+
+When using the Hubsan motors, the CW motors are the ones with Red (+) and Blue (-), while
+the CCW motors are the ones with White (+) and Black (-).
