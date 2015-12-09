@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-HiHat::HiHat(const char* filenamePrefix, uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold) : Pad(filenamePrefix, doubleHitThreshold), piezoMuxIndex(piezoMuxIndex), pedalMuxIndex(pedalMuxIndex), switchMuxIndex(switchMuxIndex) {
+HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold) : Pad(doubleHitThreshold), piezoMuxIndex(piezoMuxIndex), pedalMuxIndex(pedalMuxIndex), switchMuxIndex(switchMuxIndex) {
 }
 
 char* HiHat::lookupFilename(uint8_t volume){

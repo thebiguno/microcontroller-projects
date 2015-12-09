@@ -1,5 +1,5 @@
-#ifndef MAPPINGS_H
-#define MAPPINGS_H
+#ifndef MAPPING_H
+#define MAPPING_H
 
 #include <stdint.h>
 
@@ -14,27 +14,32 @@
 #define STATE_MAPPING		4
 
 //The size of the buffer used when reading in kit mappings
-#define BUFFER_SIZE		256
+#define BUFFER_SIZE		128
 
 //The size of the strings for kit name and filename prefix.  Includes null char at the end.
 #define KITNAME_STRING_SIZE		21
-#define FILENAME_STRING_SIZE	33
+#define FILENAME_STRING_SIZE	6
 
 namespace digitalcave {
 
-	class Mappings {
+	class Mapping {
 		private:
-			static char kitName[KITNAME_STRING_SIZE];				//Used as return pointer for getKitName
-			static char fileNames[PAD_COUNT][FILENAME_STRING_SIZE];	//First index is pad, second is filename
+			uint8_t kitIndex;
+			char kitName[KITNAME_STRING_SIZE];
+			char filenamePrefixes[PAD_COUNT][FILENAME_STRING_SIZE];
+			
 
 		public:
-			//Loads the kit mappings from SPI flash, and returns the kit name at the given index.
+			//Loads the kit mappings from SPI flash, and returns the total count of all kits defined.
 			// Once loaded, you can then call getFilename() to get the filename prefixes needed
 			// to load into each pad.
-			static char* loadKit(uint8_t kitIndex);
+			static uint8_t loadKit(uint8_t kitIndex, Mapping* mapping);
 			
-			//Returns the filename prefix for the given pad.
-			static char* getFilename(uint8_t padIndex);
+			uint8_t getKitIndex();
+			
+			char* getKitName();
+			
+			char* getFilenamePrefix(uint8_t padIndex);
 	};
 	
 }

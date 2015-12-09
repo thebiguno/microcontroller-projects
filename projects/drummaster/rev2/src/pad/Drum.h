@@ -14,7 +14,7 @@ namespace digitalcave {
 			
 		public:
 			//Create a new pad object referencing the specified hardware channel
-			Drum(const char* filenamePrefix, uint8_t piezoMuxIndex, uint8_t doubleHitThreshold);
+			Drum(uint8_t piezoMuxIndex, uint8_t doubleHitThreshold);
 
 			//Implement virtual method
 			void poll();

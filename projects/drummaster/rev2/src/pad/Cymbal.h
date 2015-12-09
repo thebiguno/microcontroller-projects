@@ -16,7 +16,7 @@ namespace digitalcave {
 			
 		public:
 			//Create a new pad object referencing the specified hardware channel
-			Cymbal(const char* filenamePrefix, uint8_t piezoIndex, uint8_t muteIndex, uint8_t doubleHitThreshold);
+			Cymbal(uint8_t piezoIndex, uint8_t muteIndex, uint8_t doubleHitThreshold);
 			
 			//Implement virtual method
 			void poll();

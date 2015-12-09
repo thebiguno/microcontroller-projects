@@ -7,6 +7,7 @@
 
 #include "../Sample.h"
 #include "../hardware.h"
+#include "../util/Mapping.h"
 
 #define MUX_0		0
 #define MUX_1		1
@@ -49,16 +50,13 @@ namespace digitalcave {
 			static uint8_t currentIndex;
 
 			/*** Variables used in determining proper file name ***/
-			//The number of sample files which can be played at each volume interval.
-			// We support 16 volumes (represented by a single hex digit 0..F in the filename).
-			// At each volume we can have up to 255 samples, which will be chosen randomly.
-			//This array is instantiated by calling updateSamples() method.
-			//Most of the time the value will be either 0 or 1.
-			uint8_t fileCountByVolume[16];
+			//Bit mask showing which samples are available at a given volume.
+			//This value is instantiated by calling loadSamples() method.
+			uint16_t sampleVolumes;
 
 			//Variables used internally for getting sample filenames
-			char filenamePrefix[3];
-			char filenameResult[16];
+			char filenamePrefix[FILENAME_STRING_SIZE];
+			char filenameResult[FILENAME_STRING_SIZE + 6];
 			
 
 			/*** Variables used in reading the pizeo value ***/
@@ -88,7 +86,7 @@ namespace digitalcave {
 			//Looks on the SPI flash chip for files according to the sample naming convention,
 			// and updates the fileCountByVolume array, which indicates which files are 
 			// available.
-			void updateSamples();
+			void loadSamples(char* filenamePrefix);
 			
 			//Find the correct sample, given a volume.
 			char* lookupFilename(double volume);
@@ -115,11 +113,11 @@ namespace digitalcave {
 			//Initialize the ADC
 			static void init();
 		
-			//Calls updateSamples() for each Pad object defined.
-			static void updateAllSamples();
+			//Calls loadSamples() for each Pad object defined.
+			static void loadAllSamples(uint8_t kitIndex);
 			
 			//Constructor
-			Pad(const char* filenamePrefix, uint8_t doubleHitThreshold);
+			Pad(uint8_t doubleHitThreshold);
 			
 			//Method called repeatedly from main code
 			virtual void poll() = 0;

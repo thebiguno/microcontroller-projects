@@ -1,12 +1,17 @@
-#include "Mappings.h"
+#include "Mapping.h"
 
 using namespace digitalcave;
 
-char* Mappings::loadKit(uint8_t index){
+uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
+	Serial.print("Loading kit index ");
+	Serial.println(index);
 	uint8_t state = STATE_NEWLINE;
 
 	//We read the file until index == kitIndex, then load the kit file names at that location
 	int8_t kitIndex = -1;
+	
+	//Init the kit index to invalid number
+	mapping->kitIndex = 0xFF;
 
 	//These are the indices into the kit name string and the mapping lines
 	uint8_t kitNameIndex = 0;
@@ -18,14 +23,16 @@ char* Mappings::loadKit(uint8_t index){
 	//This is the current pad index.  Looked up based on the mapping key.  0xFF implies not set.
 	uint8_t padIndex = 0xFF;
 
-	SerialFlashFile mappingsFile = SerialFlash.open("Mappings.txt");
-	if (!mappingsFile) return NULL;
+	SerialFlashFile mappingsFile = SerialFlash.open("MAPPINGS.TXT");
+	if (!mappingsFile) {
+		return 0;
+	}
 	
 	char buffer[BUFFER_SIZE];		//Temporary buffer for reading data
-	uint8_t count;			//Result of file.read(); if this is less than requested, then the file has ended.
-	while (count != BUFFER_SIZE){
+	uint8_t count = BUFFER_SIZE;	//Result of file.read(); if this is less than requested, then the file has ended.
+	while (count == BUFFER_SIZE){
 		count = mappingsFile.read(buffer, BUFFER_SIZE);
-		
+	
 		for (uint8_t i = 0; i < count; i++){
 			if (state == STATE_INVALID){
 				//When we are in an invalid state, the only way out is to read a newline.
@@ -39,10 +46,11 @@ char* Mappings::loadKit(uint8_t index){
 					kitIndex++;
 					if (kitIndex == index){
 						kitNameIndex = 0;
+						mapping->kitIndex = kitIndex;
 						for (uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
-							Mappings::kitName[j] = 0x00;	//Null out string
+							mapping->kitName[j] = 0x00;	//Null out string
 						}
-						Mappings::kitName[kitNameIndex++] = buffer[i];
+						mapping->kitName[kitNameIndex++] = buffer[i];
 						state = STATE_KITNAME;
 					}
 					else {
@@ -82,9 +90,9 @@ char* Mappings::loadKit(uint8_t index){
 			}
 			else if (state == STATE_KITNAME){
 				//Alphanumeric continues a kitname
-				if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9')){
+				if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == ' ' || buffer[i] == '.' || buffer[i] == ','){
 					if (kitNameIndex < KITNAME_STRING_SIZE - 1){
-						Mappings::kitName[kitNameIndex++] = buffer[i];
+						mapping->kitName[kitNameIndex++] = buffer[i];
 					}
 				}
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
@@ -103,8 +111,8 @@ char* Mappings::loadKit(uint8_t index){
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
 					state = STATE_NEWLINE;
 				}
-				//Some character other than A-Z, a-z, 0-9, comma, period, colon
-				else if (!((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == ':')){
+				//Some character other than A-Z, 0-9, comma, period, colon, dash, underscore
+				else if (!((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == ':' || buffer[i] == '-' || buffer[i] == '_')){
 					state = STATE_INVALID;
 				}
 				//First char of mapping key
@@ -133,7 +141,7 @@ char* Mappings::loadKit(uint8_t index){
 				else if (mappingIndex == 2){
 					if (buffer[i] == ':') {
 						for (uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
-							Mappings::fileNames[padIndex][j] = 0x00;	//Null out string
+							mapping->filenamePrefixes[padIndex][j] = 0x00;	//Null out string
 						}
 					}
 					else {
@@ -143,7 +151,7 @@ char* Mappings::loadKit(uint8_t index){
 				//Filling up filename
 				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ','){
 					if ((mappingIndex - 4) < FILENAME_STRING_SIZE - 1){
-						Mappings::fileNames[padIndex][mappingIndex - 4] = buffer[i];
+						mapping->filenamePrefixes[padIndex][mappingIndex - 4] = buffer[i];
 					}
 				}
 				//Something else
@@ -159,14 +167,23 @@ char* Mappings::loadKit(uint8_t index){
 	mappingsFile.close();
 	
 	//If we have read at least to the requested kit name, return
-	if (kitIndex >= index){
-		return Mappings::kitName;
-	}
-	else {
-		return NULL;
-	}
+	Serial.println();
+	Serial.print("Returning kit name ");
+	Serial.print(mapping->kitName);
+	Serial.print(" with total kit count of ");
+	Serial.println(kitIndex + 1);
+	return kitIndex + 1;
 }
 
-char* Mappings::getFilename(uint8_t padIndex){
-	return Mappings::fileNames[padIndex];
+uint8_t Mapping::getKitIndex(){
+	return kitIndex;
+}
+
+char* Mapping::getKitName(){
+	return kitName;
+}
+
+char* Mapping::getFilenamePrefix(uint8_t padIndex){
+	if (padIndex < PAD_COUNT) return filenamePrefixes[padIndex];
+	else return NULL;
 }

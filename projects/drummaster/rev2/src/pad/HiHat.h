@@ -17,7 +17,7 @@ namespace digitalcave {
 	
 	public:
 			//Create a new pad object referencing the specified hardware channel
-			HiHat(const char* filenamePrefix, uint8_t piezoIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold);
+			HiHat(uint8_t piezoIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold);
 
 			//Override filename lookup to support hihat pedal
 			char* lookupFilename(uint8_t volume);

@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-Cymbal::Cymbal(const char* filenamePrefix, uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold) : Pad(filenamePrefix, doubleHitThreshold), piezoMuxIndex(piezoMuxIndex), switchMuxIndex(switchMuxIndex){
+Cymbal::Cymbal(uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold) : Pad(doubleHitThreshold), piezoMuxIndex(piezoMuxIndex), switchMuxIndex(switchMuxIndex){
 }
 
 void Cymbal::poll(){

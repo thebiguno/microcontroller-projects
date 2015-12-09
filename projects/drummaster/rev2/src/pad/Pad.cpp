@@ -8,18 +8,18 @@ using namespace digitalcave;
 
 ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
-	//	Type	File	MUX Indices				Double Trigger Threshold
-	new HiHat(	"HH",	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
-	new Drum(	"SN",	MUX_2,					50),	//Snare
-	new Drum(	"BS",	MUX_3,					150),	//Bass
-	new Drum(	"T1",	MUX_4,					100),	//Tom1
-	new Cymbal(	"CR",	MUX_5, MUX_14,			100),	//Crash
-	new Drum(	"T2",	MUX_6,					100),	//Tom2
-	new Drum(	"T3",	MUX_7,					100),	//Tom3
-	new Cymbal(	"SP",	MUX_8, MUX_13,			100),	//Splash
-	new Cymbal(	"RD",	MUX_9, MUX_12,			75),	//Ride
-	new Drum(	"X0",	MUX_10,					100),	//X0
-	new Drum(	"X1",	MUX_11,					100)	//X1
+	//	Type	MUX Indices				Double Trigger Threshold
+	new HiHat(	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
+	new Drum(	MUX_2,					50),	//Snare
+	new Drum(	MUX_3,					150),	//Bass
+	new Drum(	MUX_4,					100),	//Tom1
+	new Cymbal(	MUX_5, MUX_14,			100),	//Crash
+	new Drum(	MUX_6,					100),	//Tom2
+	new Drum(	MUX_7,					100),	//Tom3
+	new Cymbal(	MUX_8, MUX_13,			100),	//Splash
+	new Cymbal(	MUX_9, MUX_12,			75),	//Ride
+	new Drum(	MUX_10,					100),	//X0
+	new Drum(	MUX_11,					100)	//X1
 };
 
 uint8_t Pad::randomSeedCompleted = 0;
@@ -46,17 +46,11 @@ void Pad::init(){
 	adc->setSamplingSpeed(ADC_VERY_LOW_SPEED);
 	adc->setAveraging(4);
 	
-	updateAllSamples();
+	uint8_t kitIndex = 0;	//TODO Load from EEPROM
+	loadAllSamples(kitIndex);
 }
 
-void Pad::updateAllSamples(){
-	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		pads[i]->updateSamples();
-	}
-}
-
-Pad::Pad(const char* filenamePrefix, uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
-	strncpy(this->filenamePrefix, filenamePrefix, 3);
+Pad::Pad(uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
 	currentIndex++;
 }
 
@@ -83,56 +77,72 @@ void Pad::setPadVolume(double volume){
 	padVolume = volume;
 }
 
-void Pad::updateSamples(){
-	//Reset fileCountByVolume
-	for (uint8_t i = 0x00; i <= 0x0F; i++){
-		fileCountByVolume[i] = 0x00;
+void Pad::loadAllSamples(uint8_t kitIndex){
+	Serial.println("loadAllSamples start");
+	Mapping mapping;
+	uint8_t totalMappingsCount = Mapping::loadKit(kitIndex, &mapping);
+	if (kitIndex >= totalMappingsCount) Mapping::loadKit(0, &mapping);
+
+	for (uint8_t i = 0; i < PAD_COUNT; i++){
+		pads[i]->loadSamples(mapping.getFilenamePrefix(i));
 	}
+	Serial.println("loadAllSamples end");
+}
+
+void Pad::loadSamples(char* fileNamePrefix){
+	Serial.println("loadSamples start");
+	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE);
+	
+	Serial.print("filenamePrefix: ");
+	Serial.println(this->filenamePrefix);
+
+	//Reset sampleVolumes
+	sampleVolumes = 0x00;
 
 	SerialFlash.opendir();
 	while (1) {
-		char filename[64];
+		char filename[16];
 		unsigned long filesize;
 
 		if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
-			if (strlen(filename) != 10){
-				Serial.print(filename);
-				Serial.println(" is not a valid sample filename.");
-				continue;	//Ensure the filename is in a valid format, XX_V_N.RAW.  See docs/Kit Sample Organization.txt for details
+			uint8_t filenamePrefixLength = strlen(filenamePrefix);
+			if (filenamePrefixLength > 6) filenamePrefixLength = 6;
+			
+			//Check that this filename starts with the currently assigned filename prefix
+			if (strncmp(filenamePrefix, filename, filenamePrefixLength) != 0) {
+				Serial.print("filenamePrefix: ");
+				Serial.println(filenamePrefix);
+				continue;
 			}
 			
-			//Ensure that the first two characters in the filename are valid for this pad's filename prefix.
-			if (strncmp(filenamePrefix, filename, 2) != 0) continue;
-			
-			//Ensure this filename's volume is a valid hexadecimal character (0..F)
-			char fileVolume = filename[3];
+			//Check that the filename volume is valid (0..F).  The volume is the character immediately after the prefix.
+			char fileVolume = filename[filenamePrefixLength];
 			uint8_t volume;
 			if (fileVolume >= '0' && fileVolume <= '9') volume = fileVolume - 0x30;
 			else if (fileVolume >= 'A' && fileVolume <= 'F') volume = fileVolume - 0x37;
 			else continue;	//Invalid volume
+			Serial.print("sampleVolume: ");
+			Serial.println(volume);
+			sampleVolumes |= _BV(volume);
 			
-			//Ensure that this filename's sample number is a valid hexadecimal character (0..F)
-			char fileSample = filename[5];
-			uint8_t sample;
-			if (fileSample >= '0' && fileSample <= '9') sample = fileSample - 0x30;
-			else if (fileSample >= 'A' && fileSample <= 'F') sample = fileSample - 0x37;
-			else continue;	//Invalid volume
-
-			//This is why we need to have the sample number continuous... we just record the highest sample number,
-			// rather than looking through all of them.
-			//TODO Should we show an error if the samples are not continuous?
-			if (fileCountByVolume[volume] < (sample + 1)) {
-				fileCountByVolume[volume] = (sample + 1);
-// 				Serial.print("Found sample number ");
-// 				Serial.print(sample + 1);
-// 				Serial.print(" for prefix ");
-// 				Serial.println(filenamePrefix);
+			//If this is a hihat pad, we also are expecting another value immediately after the volume.  Verify that it
+			// is valid, but don't actually store it (that is done in the HiHat class)
+			//TODO Do we actually need to do this?
+			if (padIndex == 0){
+				char hihatPosition = filename[filenamePrefixLength + 1];
+				if ((hihatPosition >= '0' && hihatPosition <= '9') || (fileVolume >= 'A' && fileVolume <= 'F')){
+					//Valid
+				}
+				else {
+					continue;	//Invalid hihat position
+				}
 			}
 		} 
 		else {
 			break; // no more files
 		}
 	}
+	Serial.println("loadSamples end");
 }
 
 char* Pad::lookupFilename(double volume){
@@ -140,12 +150,17 @@ char* Pad::lookupFilename(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 1.0) volume = 1.0;
 
+	if (sampleVolumes == 0x00) {
+		Serial.println("No filename found");
+		return NULL;
+	}
+	
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
 	// sample number.
 	
 	int8_t offset = 1;
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
-	while (fileCountByVolume[closestVolume] == 0){
+	while ((sampleVolumes & _BV(closestVolume)) == 0){
 		closestVolume = volume + offset;
 		if (closestVolume >= 16) closestVolume = 16;
 		if (closestVolume < 0) closestVolume = 0;
@@ -153,15 +168,12 @@ char* Pad::lookupFilename(double volume){
 		else offset += -1;
 	}
 	
-	uint8_t randomNumber = 0; //((uint8_t) random(fileCountByVolume[closestVolume])) & 0x0F;
 	closestVolume = closestVolume & 0x0F;
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%X_%X.RAW", filenamePrefix, closestVolume, randomNumber);
+	snprintf(filenameResult, sizeof(filenameResult), "%s%X.RAW", filenamePrefix, closestVolume);
 
-// 	Serial.print("fileCountByVolume[closestVolume] = ");
-// 	Serial.print(fileCountByVolume[closestVolume]);
-// 	Serial.print("; randomNumber = ");
-// 	Serial.println(randomNumber);
-
+	Serial.print("Returning: ");
+	Serial.println(filenameResult);
+	
 	return filenameResult;
 }
 

@@ -6,7 +6,7 @@ MainMenu::MainMenu(){
 }
 
 Menu* MainMenu::handleAction(){
-	#define MENU_COUNT 6
+	#define MENU_COUNT 7
 
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
@@ -26,15 +26,15 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 2:
-			display->write_text(0, 0, "Pads Volume         ", 20);
+			display->write_text(0, 0, "Kit Select          ", 20);
 			if (button.fallingEdge()){
-				return Menu::volumePadSelect;
+				return Menu::kitSelect;
 			}
 			break;
 		case 3:
-			display->write_text(0, 0, "Load Samples        ", 20);
+			display->write_text(0, 0, "Pads Volume         ", 20);
 			if (button.fallingEdge()){
-				return Menu::loadSamples;
+				return Menu::volumePadSelect;
 			}
 			break;
 		case 4:
@@ -44,6 +44,12 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 5:
+			display->write_text(0, 0, "Load From SD        ", 20);
+			if (button.fallingEdge()){
+				return Menu::loadFromSD;
+			}
+			break;
+		case 6:
 			display->write_text(0, 0, "System Stats        ", 20);
 			if (button.fallingEdge()){
 				return Menu::stats;

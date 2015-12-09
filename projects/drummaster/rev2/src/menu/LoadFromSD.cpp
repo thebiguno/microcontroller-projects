@@ -1,48 +1,27 @@
-#include "LoadSamples.h"
+#include "LoadFromSD.h"
 
 using namespace digitalcave;
 
-LoadSamples::LoadSamples(){
+LoadFromSD::LoadFromSD(){
 }
 
-void LoadSamples::ensureFoldersLoaded(){
-	if (folders.size() == 0){
-		folders.push_back(String("<Cancel>"));
-		
-		File rootdir = SD.open("/");
-		while (1){
-			File f = rootdir.openNextFile();
-			if (!f) break;
-			if (f.isDirectory()) {
-				folders.push_back(String(f.name()));
-			}
-			f.close();
-		}
-		rootdir.close();
-	}
-}
+Menu* LoadFromSD::handleAction(){
+	int8_t format = encoder.read() / 2;
 
-Menu* LoadSamples::handleAction(){
-	ensureFoldersLoaded();
-	
-	int8_t selectedFolder = encoder.read() / 2;
-	if (selectedFolder < 0){
-		selectedFolder = folders.size() - 1;
-		encoder.write((folders.size() - 1) * 2);
+	if (format < 0) {
+		format = 1;
+		encoder.write(2);
 	}
-	else if (selectedFolder >= (int32_t) folders.size()){
-		selectedFolder = 0;
+	else if (format > 1){
+		format = 0;
 		encoder.write(0);
 	}
 	
-	char kitName[32];
-	stpncpy(kitName, folders[selectedFolder].c_str(), sizeof(kitName));
-	
-	snprintf(buf, sizeof(buf), "%s                   ", kitName);
-	display->write_text(1, 0, buf, 20);
+	if (format) display->write_text(1, 0, "<Format and Load>   ", 20);
+	else        display->write_text(1, 0, "<Cancel>            ", 20);
 	
 	if (button.fallingEdge()){
-		if (selectedFolder != 0){
+		if (format){
 			uint8_t id[3];
 			SerialFlash.readID(id);
 			uint32_t size = SerialFlash.capacity(id);
@@ -65,7 +44,7 @@ Menu* LoadSamples::handleAction(){
 				}
 			}
 
-			File folder = SD.open(folders[selectedFolder].c_str());
+			File folder = SD.open("/");
 			while (1) {
 				// open a file from the SD card
 				File f = folder.openNextFile();
@@ -111,11 +90,11 @@ Menu* LoadSamples::handleAction(){
 				f.close();
 			}
 			folder.close();
-			display->write_text(2, 0, "Load Samples Done   ", 20);
+			display->write_text(2, 0, "Load From SD Done   ", 20);
 			encoder.write(0);
 			display->refresh();
-			Pad::updateAllSamples();		//Reload the sample mapping
-			EEPROM.put(EEPROM_KIT_NAME, kitName);
+			EEPROM.update(EEPROM_KIT_INDEX, 0);
+			Pad::loadAllSamples(0);		//Reload the sample mapping
 			delay(1000);
 			display->clear();
 		
