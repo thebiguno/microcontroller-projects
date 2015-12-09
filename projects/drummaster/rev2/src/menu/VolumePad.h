@@ -2,6 +2,7 @@
 #define VOLUME_PAD_H
 
 #include <Wire.h>
+#include <EEPROM/EEPROM.h>
 
 #include "../DrumMaster.h"
 #include "../hardware.h"

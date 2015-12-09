@@ -18,7 +18,7 @@
 
 //The size of the strings for kit name and filename prefix.  Includes null char at the end.
 #define KITNAME_STRING_SIZE		21
-#define FILENAME_STRING_SIZE	6
+#define FILENAME_STRING_SIZE	7
 
 namespace digitalcave {
 

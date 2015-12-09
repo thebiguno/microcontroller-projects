@@ -12,6 +12,7 @@
 
 #include "menu/Menu.h"
 #include "menu/CalibrateChannel.h"
+#include "menu/KitSelect.h"
 #include "menu/VolumeLineIn.h"
 #include "menu/VolumeLineOut.h"
 #include "menu/VolumePad.h"

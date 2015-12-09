@@ -45,9 +45,6 @@ void Pad::init(){
 	adc->setConversionSpeed(ADC_LOW_SPEED);
 	adc->setSamplingSpeed(ADC_VERY_LOW_SPEED);
 	adc->setAveraging(4);
-	
-	uint8_t kitIndex = 0;	//TODO Load from EEPROM
-	loadAllSamples(kitIndex);
 }
 
 Pad::Pad(uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
@@ -78,7 +75,7 @@ void Pad::setPadVolume(double volume){
 }
 
 void Pad::loadAllSamples(uint8_t kitIndex){
-	Serial.println("loadAllSamples start");
+// 	Serial.println("loadAllSamples start");
 	Mapping mapping;
 	uint8_t totalMappingsCount = Mapping::loadKit(kitIndex, &mapping);
 	if (kitIndex >= totalMappingsCount) Mapping::loadKit(0, &mapping);
@@ -86,16 +83,18 @@ void Pad::loadAllSamples(uint8_t kitIndex){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
 		pads[i]->loadSamples(mapping.getFilenamePrefix(i));
 	}
-	Serial.println("loadAllSamples end");
+// 	Serial.println("loadAllSamples end");
 }
 
-void Pad::loadSamples(char* fileNamePrefix){
-	Serial.println("loadSamples start");
+void Pad::loadSamples(char* filenamePrefix){
+// 	Serial.println("loadSamples start");
+	
+	//The filename prefix must be at least three chars
+	if (strlen(filenamePrefix) < 3) return;
+	
+	Serial.println(filenamePrefix);
 	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE);
 	
-	Serial.print("filenamePrefix: ");
-	Serial.println(this->filenamePrefix);
-
 	//Reset sampleVolumes
 	sampleVolumes = 0x00;
 
@@ -110,19 +109,27 @@ void Pad::loadSamples(char* fileNamePrefix){
 			
 			//Check that this filename starts with the currently assigned filename prefix
 			if (strncmp(filenamePrefix, filename, filenamePrefixLength) != 0) {
-				Serial.print("filenamePrefix: ");
-				Serial.println(filenamePrefix);
 				continue;
 			}
 			
+// 			Serial.print(filename);
+// 			Serial.print(" starts with ");
+// 			Serial.print(filenamePrefixLength);
+// 			Serial.print(" characters of ");
+// 			Serial.println(filenamePrefix);
+			
 			//Check that the filename volume is valid (0..F).  The volume is the character immediately after the prefix.
-			char fileVolume = filename[filenamePrefixLength];
+			char fileVolume = filename[filenamePrefixLength + 1];
 			uint8_t volume;
 			if (fileVolume >= '0' && fileVolume <= '9') volume = fileVolume - 0x30;
 			else if (fileVolume >= 'A' && fileVolume <= 'F') volume = fileVolume - 0x37;
-			else continue;	//Invalid volume
-			Serial.print("sampleVolume: ");
-			Serial.println(volume);
+			else {
+// 				Serial.print("Invalid volume ");
+// 				Serial.println(fileVolume);
+				continue;	//Invalid volume
+			}
+// 			Serial.print("sampleVolume: ");
+// 			Serial.println(volume);
 			sampleVolumes |= _BV(volume);
 			
 			//If this is a hihat pad, we also are expecting another value immediately after the volume.  Verify that it
@@ -142,7 +149,7 @@ void Pad::loadSamples(char* fileNamePrefix){
 			break; // no more files
 		}
 	}
-	Serial.println("loadSamples end");
+// 	Serial.println("loadSamples end");
 }
 
 char* Pad::lookupFilename(double volume){
@@ -151,7 +158,7 @@ char* Pad::lookupFilename(double volume){
 	else if (volume >= 1.0) volume = 1.0;
 
 	if (sampleVolumes == 0x00) {
-		Serial.println("No filename found");
+// 		Serial.println("No filename found");
 		return NULL;
 	}
 	
@@ -169,10 +176,10 @@ char* Pad::lookupFilename(double volume){
 	}
 	
 	closestVolume = closestVolume & 0x0F;
-	snprintf(filenameResult, sizeof(filenameResult), "%s%X.RAW", filenamePrefix, closestVolume);
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
 
-	Serial.print("Returning: ");
-	Serial.println(filenameResult);
+// 	Serial.print("Returning: ");
+// 	Serial.println(filenameResult);
 	
 	return filenameResult;
 }

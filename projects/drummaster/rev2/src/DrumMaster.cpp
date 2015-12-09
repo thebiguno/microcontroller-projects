@@ -40,6 +40,7 @@ int main(){
 
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();
+	KitSelect::loadKitIndexFromEeprom();
 	VolumeLineIn::loadVolumeFromEeprom();
 	VolumePad::loadPadVolumesFromEeprom();
 	VolumeLineOut::loadVolumeFromEeprom();

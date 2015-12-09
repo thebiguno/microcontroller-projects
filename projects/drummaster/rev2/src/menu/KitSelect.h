@@ -1,8 +1,11 @@
 #ifndef KITSELECT_H
 #define KITSELECT_H
 
-#include "../util/Mapping.h"
+#include <EEPROM/EEPROM.h>
+
 #include "Menu.h"
+#include "../pad/Pad.h"
+#include "../util/Mapping.h"
 #include "../hardware.h"
 
 namespace digitalcave {
@@ -14,6 +17,9 @@ namespace digitalcave {
 			Mapping mapping;
 			
 		public:
+			static void loadKitIndexFromEeprom();
+			static void saveKitIndexToEeprom();
+
 			KitSelect();
 			Menu* handleAction();
 	};
