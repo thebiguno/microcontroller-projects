@@ -60,10 +60,6 @@ namespace digitalcave {
 			
 
 			/*** Variables used in reading the pizeo value ***/
-// 			//Stabilization counter and last value, to ensure accurate and stable readings
-// 			uint8_t stabilizationCounter;
-// 			int16_t stabilizationValue;
-
 			//The time at which this hit was first read.  We must return a value within
 			// at most MAX_RESPONSE_TIME ms from this time.
 			uint32_t strikeTime;

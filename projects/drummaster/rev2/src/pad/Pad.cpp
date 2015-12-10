@@ -28,23 +28,30 @@ uint8_t Pad::randomSeedCompleted = 0;
 uint8_t Pad::currentIndex = 0;
 
 void Pad::init(){
-	//Drain any charge which is currently in each channel
-	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
-		digitalWriteFast(MUX0, i & 0x01);
-		digitalWriteFast(MUX1, i & 0x02);
-		digitalWriteFast(MUX2, i & 0x04);
-		digitalWriteFast(MUX3, i & 0x08);
-		delay(10);
-	}
-	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
-
 	//Initialize the ADC
 	adc = new ADC();
 	adc->setResolution(10);
 	adc->setConversionSpeed(ADC_LOW_SPEED);
 	adc->setSamplingSpeed(ADC_VERY_LOW_SPEED);
 	adc->setAveraging(4);
+	
+	//Drain any charge which is currently in each channel
+	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+	digitalWriteFast(ADC_EN, MUX_ENABLE);
+	for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
+		digitalWriteFast(MUX0, i & 0x01);
+		digitalWriteFast(MUX1, i & 0x02);
+		digitalWriteFast(MUX2, i & 0x04);
+		digitalWriteFast(MUX3, i & 0x08);
+		
+		do {
+			delay(10);
+// 			Serial.print("Draining channel ");
+// 			Serial.println(i);
+		} while(adc->analogRead(ADC_INPUT) > MIN_VALUE);
+	}
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 }
 
 Pad::Pad(uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
@@ -87,13 +94,19 @@ void Pad::loadAllSamples(uint8_t kitIndex){
 }
 
 void Pad::loadSamples(char* filenamePrefix){
-// 	Serial.println("loadSamples start");
+	//Clear the filenames
+	for (uint8_t i = 0; i < sizeof(this->filenamePrefix); i++){
+		this->filenamePrefix[i] = 0x00;
+	}
+	for (uint8_t i = 0; i < sizeof(this->filenameResult); i++){
+		this->filenameResult[i] = 0x00;
+	}	
 	
 	//The filename prefix must be at least three chars
 	if (strlen(filenamePrefix) < 3) return;
 	
-	Serial.println(filenamePrefix);
-	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE);
+// 	Serial.println(filenamePrefix);
+ 	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE - 1);
 	
 	//Reset sampleVolumes
 	sampleVolumes = 0x00;
@@ -157,7 +170,8 @@ char* Pad::lookupFilename(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 1.0) volume = 1.0;
 
-	if (sampleVolumes == 0x00) {
+	Serial.println(filenamePrefix);
+	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
 // 		Serial.println("No filename found");
 		return NULL;
 	}
@@ -165,15 +179,22 @@ char* Pad::lookupFilename(double volume){
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
 	// sample number.
 	
-	int8_t offset = 1;
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
-	while ((sampleVolumes & _BV(closestVolume)) == 0){
-		closestVolume = volume + offset;
-		if (closestVolume >= 16) closestVolume = 16;
-		if (closestVolume < 0) closestVolume = 0;
-		if (offset > 0) offset *= -1;
-		else offset += -1;
+	
+	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
+	// most this will take 16 tries (since there are 16 buckets)
+	for(uint8_t i = 0; i < 16; i++){
+		if (((closestVolume + i) <= 0x0F) && (sampleVolumes & _BV(closestVolume + i))) {
+			closestVolume = closestVolume + i;
+			break;
+		}
+		else if (((closestVolume - i) >= 0x00) && (sampleVolumes & _BV(closestVolume - i))) {
+			closestVolume = closestVolume - i;
+			break;
+		}
 	}
+// 	Serial.print("closestVolume = ");
+// 	Serial.println(closestVolume);
 	
 	closestVolume = closestVolume & 0x0F;
 	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);

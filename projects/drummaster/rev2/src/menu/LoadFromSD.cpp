@@ -17,7 +17,7 @@ Menu* LoadFromSD::handleAction(){
 		encoder.write(0);
 	}
 	
-	if (format) display->write_text(1, 0, "<Format and Load>   ", 20);
+	if (format) display->write_text(1, 0, "Start               ", 20);
 	else        display->write_text(1, 0, "<Cancel>            ", 20);
 	
 	if (button.fallingEdge()){

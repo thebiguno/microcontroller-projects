@@ -31,7 +31,7 @@ int main(){
 	SPI.setSCK(SCK);
 	SerialFlash.begin(CS_FLASH);
 	SD.begin(CS_SD);
-	
+
 	//Encoder pushbutton
 	pinMode(ENC_PUSH, INPUT_PULLUP);
 	

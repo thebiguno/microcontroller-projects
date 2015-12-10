@@ -100,8 +100,8 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				}
 			}
 			else if (state == STATE_KITNAME){
-				//Alphanumeric continues a kitname
-				if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == ' ' || buffer[i] == '.' || buffer[i] == ','){
+				//Any valid ASCII character continues a kitname
+				if (buffer[i] >= 0x20 && buffer[i] <= 0x7E){
 					if (kitNameIndex < KITNAME_STRING_SIZE - 1){
 						mapping->kitName[kitNameIndex++] = buffer[i];
 					}
