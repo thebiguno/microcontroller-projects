@@ -8,18 +8,18 @@ using namespace digitalcave;
 
 ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
-	//	Type	MUX Indices				Double Trigger Threshold
-	new HiHat(	MUX_0, MUX_1, MUX_15,	75),	//Hihat + Pedal
-	new Drum(	MUX_2,					50),	//Snare
-	new Drum(	MUX_3,					150),	//Bass
-	new Drum(	MUX_4,					100),	//Tom1
-	new Cymbal(	MUX_5, MUX_14,			100),	//Crash
-	new Drum(	MUX_6,					100),	//Tom2
-	new Drum(	MUX_7,					100),	//Tom3
-	new Cymbal(	MUX_8, MUX_13,			100),	//Splash
-	new Cymbal(	MUX_9, MUX_12,			75),	//Ride
-	new Drum(	MUX_10,					100),	//X0
-	new Drum(	MUX_11,					100)	//X1
+	//	Type	MUX Indices				DT		Fade
+	new HiHat(	MUX_0, MUX_1, MUX_15,	75),			//Hihat + Pedal
+	new Drum(	MUX_2,					50),			//Snare
+	new Drum(	MUX_3,					150),			//Bass
+	new Drum(	MUX_4,					100),			//Tom1
+	new Cymbal(	MUX_5, MUX_14,			100,	0.98),	//Crash
+	new Drum(	MUX_6,					100),			//Tom2
+	new Drum(	MUX_7,					100),			//Tom3
+	new Cymbal(	MUX_8, MUX_13,			100,	0.97),	//Splash
+	new Cymbal(	MUX_9, MUX_12,			75,		0.99),	//Ride
+	new Drum(	MUX_10,					100),			//X0
+	new Drum(	MUX_11,					100)			//X1
 };
 
 uint8_t Pad::randomSeedCompleted = 0;
@@ -66,8 +66,8 @@ void Pad::play(double volume){
 	lastSample->play(lookupFilename(volume), padIndex, volume);
 }
 
-void Pad::fade(){
-	Sample::fade(padIndex);
+void Pad::fade(double gain){
+	Sample::fade(padIndex, gain);
 }
 
 double Pad::getPadVolume(){

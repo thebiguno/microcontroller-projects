@@ -198,17 +198,17 @@ uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
-void Sample::fade(uint8_t pad){
+void Sample::fade(uint8_t pad, double gain){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
-			samples[i].fade();
+			samples[i].fade(gain);
 		}
 	}
 }
 
-void Sample::fade(){
+void Sample::fade(double gain){
 	//envelope.noteOff();
-	volume = volume * 0.99;
+	volume = volume * gain;
 	mixers[mixerIndex].gain(mixerChannel, volume);
 	if (volume <= 0.001){
 		playSerialRaw.stop();	//TODO figure out how to fade here...

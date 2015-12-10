@@ -2,14 +2,19 @@
 
 using namespace digitalcave;
 
-Cymbal::Cymbal(uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold) : Pad(doubleHitThreshold), piezoMuxIndex(piezoMuxIndex), switchMuxIndex(switchMuxIndex){
+Cymbal::Cymbal(uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold, double fadeGain) : 
+	Pad(doubleHitThreshold),
+	piezoMuxIndex(piezoMuxIndex),
+	switchMuxIndex(switchMuxIndex), 
+	fadeGain(fadeGain)
+	{
 }
 
 void Cymbal::poll(){
 	uint8_t muteSwitch = readSwitch(switchMuxIndex);
 	if (muteSwitch){
 		if (lastSample != NULL && lastSample->isPlaying()){
-			fade();
+			fade(fadeGain);
 		}
 	}
 	else {

@@ -122,7 +122,7 @@ namespace digitalcave {
 			void play(double volume);
 			
 			//Stops all samples which were started from this pad by fading out
-			void fade();
+			void fade(double gain);
 			
 			//Get the per-pad volume.
 			double getPadVolume();

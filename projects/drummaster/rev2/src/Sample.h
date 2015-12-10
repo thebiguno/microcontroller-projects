@@ -92,7 +92,7 @@ namespace digitalcave {
 			static Sample* findAvailableSample(uint8_t pad, double volume);
 			
 			//Stops all currently playing samples for the selected pad, fading out
-			static void fade(uint8_t pad);
+			static void fade(uint8_t pad, double gain);
 			
 		
 			//Start playback using this sample's SPI playback object for the given filename
@@ -105,10 +105,10 @@ namespace digitalcave {
 			uint32_t getPositionMillis();
 
 			//Stops playback over time.  This is meant to be called repeatedly; each time
-			// through it reduces playback by a very small amount (99% of the previous volume).
-			// By calling it repeatedly we get a logarithmic falloff which simulates 
-			// a choked cymbal
-			void fade();
+			// through it reduces playback by a very small amount (e.g. gain of 0.99 means 99%
+			// of the previous volume). By calling it repeatedly we get a logarithmic falloff
+			// which simulates a choked cymbal
+			void fade(double gain);
 			
 			//Stops playback
 			void stop();
