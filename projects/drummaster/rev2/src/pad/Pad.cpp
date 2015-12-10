@@ -45,10 +45,10 @@ void Pad::init(){
 		digitalWriteFast(MUX3, i & 0x08);
 		
 		do {
-			delay(10);
+			delay(50);
 // 			Serial.print("Draining channel ");
 // 			Serial.println(i);
-		} while(adc->analogRead(ADC_INPUT) > MIN_VALUE);
+		} while(adc->analogRead(ADC_INPUT) > 3);
 	}
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -167,7 +167,7 @@ char* Pad::lookupFilename(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 1.0) volume = 1.0;
 
-	Serial.println(filenamePrefix);
+//	Serial.println(filenamePrefix);
 	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
 // 		Serial.println("No filename found");
 		return NULL;

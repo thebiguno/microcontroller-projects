@@ -186,15 +186,15 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 	kitIndex++;
 	
 	//If we have read at least to the requested kit name, return
-	Serial.println();
-	Serial.print("Returning kit name: ");
-	Serial.println(mapping->kitName);
+// 	Serial.println();
+// 	Serial.print("Returning kit name: ");
+// 	Serial.println(mapping->kitName);
 // 	Serial.println("Mappings:");
 // 	for(uint8_t i = 0; i < PAD_COUNT; i++){
 // 		Serial.println(mapping->filenamePrefixes[i]);
 // 	}
-	Serial.print("Total kits: ");
-	Serial.println(kitIndex);
+// 	Serial.print("Total kits: ");
+// 	Serial.println(kitIndex);
 	return kitIndex;
 }
 

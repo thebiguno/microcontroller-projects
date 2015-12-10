@@ -29,18 +29,20 @@ Menu* KitSelect::handleAction(){
 			encoder.write(0);
 		}
 		else if (mapping.getKitIndex() == 0xFF){
+			display->clear();
 			display->write_text(1, 0, "<Main Menu>         ", 20);
 			encoder.write(totalKitCount * 2);
 		}
 		else {
 			snprintf(buf, sizeof(buf), "%s                   ", mapping.getKitName());
-			display->write_text(1, 0, buf, 20);
+			display->write_text(1, 0, "Load                ", 20);
+			display->write_text(2, 0, buf, 20);
 		}
 	}
 	
 	if (button.fallingEdge()){
 		if (mapping.getKitIndex() == 0xFF){
-			display->write_text(1, 0, "                    ", 20);
+			display->clear();
 			lastKitIndex = 0xFF;
 			return Menu::mainMenu;
 		}
@@ -49,7 +51,7 @@ Menu* KitSelect::handleAction(){
 			Pad::loadAllSamples(mapping.getKitIndex(), &mapping);
 			saveKitIndexToEeprom();
 			VolumePad::loadPadVolumesFromEeprom();
-			display->write_text(1, 0, "                    ", 20);
+			display->clear();
 			lastKitIndex = 0xFF;
 			return Menu::mainMenu;
 		}
