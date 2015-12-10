@@ -21,6 +21,8 @@ int main(){
 	Menu::display->write_text(0, 0, "Loading...          ", 20);
 	Menu::display->refresh();
 	
+	delay(250);
+	
 	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
 	Serial.begin(9600);
 	Wire.begin();

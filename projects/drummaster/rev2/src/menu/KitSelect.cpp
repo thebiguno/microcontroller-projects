@@ -8,11 +8,11 @@ KitSelect::KitSelect() : lastKitIndex(0xFF){
 void KitSelect::loadKitIndexFromEeprom(){
 	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
 	((KitSelect*) Menu::kitSelect)->encoderState = kitIndex * 2;
-	Pad::loadAllSamples(kitIndex);
+	Pad::loadAllSamples(kitIndex, ((KitSelect*) Menu::kitSelect)->getMapping());
 }
 
 void KitSelect::saveKitIndexToEeprom(){
-	EEPROM.update(EEPROM_KIT_INDEX, ((KitSelect*) Menu::kitSelect)->mapping.getKitIndex());
+	EEPROM.update(EEPROM_KIT_INDEX, ((KitSelect*) Menu::kitSelect)->getMapping()->getKitIndex());
 }
 
 Menu* KitSelect::handleAction(){
@@ -45,12 +45,18 @@ Menu* KitSelect::handleAction(){
 			return Menu::mainMenu;
 		}
 		else {
-			Pad::loadAllSamples(mapping.getKitIndex());
+			VolumePad::savePadVolumesToEeprom();
+			Pad::loadAllSamples(mapping.getKitIndex(), &mapping);
 			saveKitIndexToEeprom();
+			VolumePad::loadPadVolumesFromEeprom();
 			display->write_text(1, 0, "                    ", 20);
 			lastKitIndex = 0xFF;
 			return Menu::mainMenu;
 		}
 	}
 	return NULL;
+}
+
+Mapping* KitSelect::getMapping(){
+	return &mapping;
 }

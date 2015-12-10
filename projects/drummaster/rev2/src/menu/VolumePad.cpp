@@ -8,20 +8,34 @@ VolumePad::VolumePad() : value(-1), pad(0) {
 }
 
 void VolumePad::loadPadVolumesFromEeprom(){
+	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+	Serial.print("Loading volumes for kit index = ");
+	Serial.println(kitIndex);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		Pad::pads[i]->setPadVolume(EEPROM.read(EEPROM_PAD_VOLUME + i) / GAIN_DIVISOR);
+		Pad::pads[i]->setPadVolume(EEPROM.read(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex)) / GAIN_DIVISOR);
+		Serial.print("Loading value ");
+		Serial.print(EEPROM.read(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex)));
+		Serial.print(" from address ");
+		Serial.println(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
 	}
 }
 
 void VolumePad::savePadVolumesToEeprom(){
+	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+	Serial.print("Saving volumes for kit index = ");
+	Serial.println(kitIndex);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		EEPROM.update(EEPROM_PAD_VOLUME + i, Pad::pads[i]->getPadVolume() * GAIN_DIVISOR);
+		Serial.print("Saving value ");
+		Serial.print(Pad::pads[i]->getPadVolume() * GAIN_DIVISOR);
+		Serial.print(" to address ");
+		Serial.println(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
+		EEPROM.update(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex), Pad::pads[i]->getPadVolume() * GAIN_DIVISOR);
 	}
 }
 
 Menu* VolumePad::handleAction(){
 	if (value == -1){
-		value = Pad::pads[pad]->getPadVolume();
+		value = Pad::pads[pad]->getPadVolume() * GAIN_DIVISOR;
 		encoder.write(value);
 	}
 	

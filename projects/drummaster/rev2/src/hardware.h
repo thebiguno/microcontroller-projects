@@ -60,7 +60,10 @@
 #define EEPROM_LINE_IN_VOLUME			0x1B
 //Store the currently loaded kit index
 #define EEPROM_KIT_INDEX				0x1C
-//Per-pad volumes are stored as 11x1 bytes, from address 0x20 to 0x2B
+
+//Per-pad volumes are stored as 11x1 bytes, starting at address 0x20 to 0x2B.  They are indexed by kit number,
+// with kit 0 starting at 0x20, kit 1 starting at 0x20 + PAD_COUNT, and in general starting at 
+// EEPROM_PAD_VOLUME + (PAD_COUNT * kit_index).
 #define EEPROM_PAD_VOLUME				0x20
 
 #endif

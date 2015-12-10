@@ -94,7 +94,7 @@ Menu* LoadFromSD::handleAction(){
 			encoder.write(0);
 			display->refresh();
 			EEPROM.update(EEPROM_KIT_INDEX, 0);
-			Pad::loadAllSamples(0);		//Reload the sample mapping
+			Pad::loadAllSamples(0, ((KitSelect*) Menu::kitSelect)->getMapping());		//Reload the sample mapping
 			delay(1000);
 			display->clear();
 		

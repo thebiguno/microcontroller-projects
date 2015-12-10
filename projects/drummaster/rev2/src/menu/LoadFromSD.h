@@ -10,6 +10,7 @@
 #include "../hardware.h"
 #include "../pad/Pad.h"
 #include "Menu.h"
+#include "KitSelect.h"
 
 namespace digitalcave {
 

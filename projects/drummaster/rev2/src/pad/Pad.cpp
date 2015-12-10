@@ -81,16 +81,13 @@ void Pad::setPadVolume(double volume){
 	padVolume = volume;
 }
 
-void Pad::loadAllSamples(uint8_t kitIndex){
-// 	Serial.println("loadAllSamples start");
-	Mapping mapping;
-	uint8_t totalMappingsCount = Mapping::loadKit(kitIndex, &mapping);
-	if (kitIndex >= totalMappingsCount) Mapping::loadKit(0, &mapping);
+void Pad::loadAllSamples(uint8_t kitIndex, Mapping* mapping){
+	uint8_t totalMappingsCount = Mapping::loadKit(kitIndex, mapping);
+	if (kitIndex >= totalMappingsCount) Mapping::loadKit(0, mapping);
 
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		pads[i]->loadSamples(mapping.getFilenamePrefix(i));
+		pads[i]->loadSamples(mapping->getFilenamePrefix(i));
 	}
-// 	Serial.println("loadAllSamples end");
 }
 
 void Pad::loadSamples(char* filenamePrefix){

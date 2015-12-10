@@ -110,7 +110,7 @@ namespace digitalcave {
 			static void init();
 		
 			//Calls loadSamples() for each Pad object defined.
-			static void loadAllSamples(uint8_t kitIndex);
+			static void loadAllSamples(uint8_t kitIndex, Mapping* mapping);
 			
 			//Constructor
 			Pad(uint8_t doubleHitThreshold);

@@ -4,6 +4,7 @@
 #include <EEPROM/EEPROM.h>
 
 #include "Menu.h"
+#include "VolumePad.h"
 #include "../pad/Pad.h"
 #include "../util/Mapping.h"
 #include "../hardware.h"
@@ -22,6 +23,7 @@ namespace digitalcave {
 
 			KitSelect();
 			Menu* handleAction();
+			Mapping* getMapping();
 	};
 }
 
