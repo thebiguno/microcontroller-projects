@@ -29,8 +29,8 @@ Menu* KitSelect::handleAction(){
 			encoder.write(0);
 		}
 		else if (mapping.getKitIndex() == 0xFF){
-			display->clear();
 			display->write_text(1, 0, "<Main Menu>         ", 20);
+			display->write_text(2, 0, "                    ", 20);
 			encoder.write(totalKitCount * 2);
 		}
 		else {
