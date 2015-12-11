@@ -1,5 +1,5 @@
-#ifndef LOADFROMSD_H
-#define LOADFROMSD_H
+#ifndef LOADSAMPLESFROMSD_H
+#define LOADSAMPLESFROMSD_H
 
 #include <EEPROM/EEPROM.h>
 #include <SD.h>
@@ -14,14 +14,14 @@
 
 namespace digitalcave {
 
-	class LoadFromSD : public Menu {
+	class LoadSamplesFromSD : public Menu {
 	
 		private:
 			std::vector<String> folders;
 			void ensureFoldersLoaded();
 			
 		public:
-			LoadFromSD();
+			LoadSamplesFromSD();
 			Menu* handleAction();
 	};
 }
