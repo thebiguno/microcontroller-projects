@@ -54,7 +54,13 @@ void Pad::init(){
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
 }
 
-Pad::Pad(uint8_t doubleHitThreshold) : playTime(0), doubleHitThreshold(doubleHitThreshold), lastSample(NULL), padIndex(currentIndex) {
+Pad::Pad(uint8_t doubleHitThreshold) : 
+		strikeTime(0),
+		peakValue(0),
+		playTime(0),
+		doubleHitThreshold(doubleHitThreshold),
+		lastSample(NULL),
+		padIndex(currentIndex) {
 	currentIndex++;
 }
 
