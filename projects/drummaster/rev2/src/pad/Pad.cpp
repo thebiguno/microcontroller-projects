@@ -10,7 +10,7 @@ ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	MUX Indices				DT		Fade
 	new HiHat(	MUX_0, MUX_1, MUX_15,	75),			//Hihat + Pedal
-	new Drum(	MUX_2,					50),			//Snare
+	new Drum(	MUX_2,					75),			//Snare
 	new Drum(	MUX_3,					150),			//Bass
 	new Drum(	MUX_4,					100),			//Tom1
 	new Cymbal(	MUX_5, MUX_14,			100,	0.98),	//Crash
@@ -200,7 +200,7 @@ char* Pad::lookupFilename(double volume){
 // 	Serial.println(closestVolume);
 	
 	closestVolume = closestVolume & 0x0F;
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
+	snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, padIndex == 0 ? "0" : "_", closestVolume);
 
 // 	Serial.print("Returning: ");
 // 	Serial.println(filenameResult);
