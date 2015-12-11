@@ -37,7 +37,8 @@ namespace digitalcave {
 			static Menu* kitSelect;
 			static Menu* volumePad;
 			static Menu* volumePadSelect;
-			static Menu* loadFromSD;
+			static Menu* loadMappingsFromSD;
+			static Menu* loadSamplesFromSD;
 			static Menu* calibrateChannel;
 			static Menu* calibrateChannelSelect;
 			static Menu* stats;

@@ -2,7 +2,8 @@
 
 #include "CalibrateChannel.h"
 #include "CalibrateChannelSelect.h"
-#include "LoadFromSD.h"
+#include "LoadMappingsFromSD.h"
+#include "LoadSamplesFromSD.h"
 #include "KitSelect.h"
 #include "MainMenu.h"
 #include "Stats.h"
@@ -23,7 +24,8 @@ Bounce Menu::button(ENC_PUSH, 25);
 //Initialize static references to menu items
 Menu* Menu::calibrateChannel = new CalibrateChannel();
 Menu* Menu::calibrateChannelSelect = new CalibrateChannelSelect();
-Menu* Menu::loadFromSD = new LoadFromSD();
+Menu* Menu::loadMappingsFromSD = new LoadMappingsFromSD();
+Menu* Menu::loadSamplesFromSD = new LoadSamplesFromSD();
 Menu* Menu::kitSelect = new KitSelect();
 Menu* Menu::mainMenu = new MainMenu();
 Menu* Menu::stats = new Stats();

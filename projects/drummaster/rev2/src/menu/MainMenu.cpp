@@ -6,7 +6,7 @@ MainMenu::MainMenu(){
 }
 
 Menu* MainMenu::handleAction(){
-	#define MENU_COUNT 7
+	#define MENU_COUNT 8
 
 	int8_t menuItem = encoder.read() / 2;
 	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
@@ -44,12 +44,18 @@ Menu* MainMenu::handleAction(){
 			}
 			break;
 		case 5:
-			display->write_text(0, 0, "Load From SD        ", 20);
+			display->write_text(0, 0, "Load Kit Mappings   ", 20);
 			if (button.fallingEdge()){
-				return Menu::loadFromSD;
+				return Menu::loadMappingsFromSD;
 			}
 			break;
 		case 6:
+			display->write_text(0, 0, "Load Samples        ", 20);
+			if (button.fallingEdge()){
+				return Menu::loadSamplesFromSD;
+			}
+			break;
+		case 7:
 			display->write_text(0, 0, "System Stats        ", 20);
 			if (button.fallingEdge()){
 				return Menu::stats;
