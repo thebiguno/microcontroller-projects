@@ -4,6 +4,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
 #ifndef TIMER_BITS
 #define TIMER_BITS 64
 #endif
@@ -34,5 +38,8 @@ uint64_t timer_micros();
 uint32_t timer_micros();
 #endif
 
+#if defined (__cplusplus)
+}
+#endif
 
 #endif

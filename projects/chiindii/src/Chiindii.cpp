@@ -4,11 +4,12 @@
 
 #include <PID.h>
 
-#include "Chiindii.h"
-
 #include "lib/Mpu6050/Mpu6050.h"
 #include "lib/timer/timer.h"
-#include "lib/pwm/pwm.h"
+
+#include "Chiindii.h"
+
+#include "pwm/pwm.h"
 
 using namespace digitalcave;
 
@@ -21,11 +22,11 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
-	volatile uint8_t *motor_ports[] = { &MOTOR1_PORT, &MOTOR2_PORT, &MOTOR3_PORT, &MOTOR4_PORT };
-	uint8_t motor_pins[] = { MOTOR1_PIN, MOTOR2_PIN, MOTOR3_PIN, MOTOR4_PIN };
-	
 	timer_init();
-	pwm_init(motor_ports, motor_pins, 4, 200); // 200 us = 5 kHz
+	pwm_init(&MOTOR1_PORT, MOTOR1_PIN, 
+		&MOTOR2_PORT, MOTOR2_PIN,
+		&MOTOR3_PORT, MOTOR3_PIN,
+		&MOTOR4_PORT, MOTOR4_PIN);
 	
 	Mpu6050 mpu6050;
 //	mpu6050.calibrate();
@@ -47,9 +48,12 @@ int main(){
 	double throttle = 0;
 	vector_t rate_sp;
 	vector_t rate;
+	
+	uint8_t motor = 0;
 
 	//Main program loop
 	while (1) {
+/*
 		vector_t accel = mpu6050.getAccel();
 		vector_t gyro = mpu6050.getGyro();
 
@@ -58,10 +62,15 @@ int main(){
 		rate_y.compute(rate_sp.y, gyro.y, &rate.y, time);
 		rate_z.compute(rate_sp.z, gyro.z, &rate.z, time);
 		drive_motors(throttle, rate);
+*/
 		
 		PORTB ^= _BV(0) | _BV(1);
 		PORTF ^= _BV(5) | _BV(6) | _BV(7);
-		_delay_ms(1000);
+
+		pwm_set_values(motor, motor + 16, motor + 32, motor + 48);
+		motor++;
+		
+		_delay_ms(100);
 	}
 }
 
@@ -71,9 +80,5 @@ void drive_motors(double throttle, vector_t rate) {
 	double m3 = throttle + rate.x + rate.y - rate.z;
 	double m4 = throttle - rate.x + rate.y + rate.z;
 
-	pwm_set_phase_batch(0, (uint32_t) m1);
-	pwm_set_phase_batch(1, (uint32_t) m2);
-	pwm_set_phase_batch(2, (uint32_t) m3);
-	pwm_set_phase_batch(3, (uint32_t) m4);
-	pwm_apply_batch();
+	pwm_set_values(m1, m2, m3, m4);
 } 

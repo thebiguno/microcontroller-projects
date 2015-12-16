@@ -64,6 +64,7 @@ CXXFLAGS += -std=gnu++11
 # linker options
 LDFLAGS += -mmcu=$(MMCU) -Os -Wl,--gc-sections
 
+AS = avr-as
 CC = avr-gcc
 CXX = avr-g++
 OBJCOPY = avr-objcopy
@@ -120,15 +121,16 @@ endif
 # automatically create lists of the sources and objects
 LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/avr" -name '*.c')
 LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/avr" -name '*.cpp')
+S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./build/*")
 C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
 CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
 
 # include paths for libraries
 L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/avr" -type d), -I$(lib))
 
-SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
+SOURCES := $(S_FILES:.S=.o) $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
-$(info $(SOURCES))
+#$(info $(SOURCES))
 
 all: hex
 
@@ -146,6 +148,11 @@ else
 		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
 		-U flash:w:$(PROJECT).hex 
 endif
+
+$(BUILDDIR)/%.o: %.S
+	@echo "[AS]\t$<"
+	@mkdir -p "$(dir $@)"
+	@$(CC) $(CDEFS) $(CPPFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(BUILDDIR)/%.o: %.c
 	@echo "[CC]\t$<"
