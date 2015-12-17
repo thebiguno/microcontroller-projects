@@ -9,7 +9,7 @@
 
 #include "Chiindii.h"
 
-#include "pwm/pwm.h"
+#include "motor/motor.h"
 
 using namespace digitalcave;
 
@@ -23,10 +23,6 @@ int main(){
 	MCUCR = _BV(JTD);
 	
 	timer_init();
-	pwm_init(&MOTOR1_PORT, MOTOR1_PIN, 
-		&MOTOR2_PORT, MOTOR2_PIN,
-		&MOTOR3_PORT, MOTOR3_PIN,
-		&MOTOR4_PORT, MOTOR4_PIN);
 	
 	Mpu6050 mpu6050;
 //	mpu6050.calibrate();
@@ -39,17 +35,13 @@ int main(){
 	DDRF |= _BV(5) | _BV(6) | _BV(7);
 	DDRB |= _BV(0) | _BV(1);
 	
-	//Set motor pins as output
-	*(&MOTOR1_PORT - 0x01) |= _BV(MOTOR1_PIN);
-	*(&MOTOR2_PORT - 0x01) |= _BV(MOTOR2_PIN);
-	*(&MOTOR3_PORT - 0x01) |= _BV(MOTOR3_PIN);
-	*(&MOTOR4_PORT - 0x01) |= _BV(MOTOR4_PIN);
-	
 	double throttle = 0;
 	vector_t rate_sp;
 	vector_t rate;
 	
-	uint8_t motor = 0;
+	motor_start();
+	
+	uint16_t motor = 0;
 
 	//Main program loop
 	while (1) {
@@ -63,14 +55,14 @@ int main(){
 		rate_z.compute(rate_sp.z, gyro.z, &rate.z, time);
 		drive_motors(throttle, rate);
 */
-		
 		PORTB ^= _BV(0) | _BV(1);
 		PORTF ^= _BV(5) | _BV(6) | _BV(7);
 
-		pwm_set_values(motor, motor + 16, motor + 32, motor + 48);
+		motor_set(motor, motor, motor, motor);
 		motor++;
+		if (motor >= 0x03FF) motor = 0;
 		
-		_delay_ms(100);
+		_delay_ms(10);
 	}
 }
 
@@ -80,5 +72,5 @@ void drive_motors(double throttle, vector_t rate) {
 	double m3 = throttle + rate.x + rate.y - rate.z;
 	double m4 = throttle - rate.x + rate.y + rate.z;
 
-	pwm_set_values(m1, m2, m3, m4);
+	motor_set(m1, m2, m3, m4);
 } 
