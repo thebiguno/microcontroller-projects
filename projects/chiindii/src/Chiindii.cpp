@@ -60,7 +60,7 @@ int main(){
 
 		motor_set(motor, motor, motor, motor);
 		motor++;
-		if (motor >= 0x03FF) motor = 0;
+		if (motor >= 0x1FF) motor = 0;
 		
 		_delay_ms(10);
 	}
