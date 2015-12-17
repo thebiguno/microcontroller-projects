@@ -32,8 +32,9 @@ int main(){
 	PID rate_y(1, 0, 0, DIRECTION_NORMAL, 1, 0); // 1 = 1 ms
 	PID rate_z(1, 0, 0, DIRECTION_NORMAL, 1, 0); // 1 = 1 ms
 	
-	DDRF |= _BV(5) | _BV(6) | _BV(7);
-	DDRB |= _BV(0) | _BV(1);
+	*(&LED_PORT - 1) |= RED | GREEN | BLUE;
+	LED_PORT |= RED | GREEN | BLUE;	//Tuen off active low LED
+//	DDRB |= _BV(0) | _BV(1);
 	
 	double throttle = 0;
 	vector_t rate_sp;
@@ -55,8 +56,21 @@ int main(){
 		rate_z.compute(rate_sp.z, gyro.z, &rate.z, time);
 		drive_motors(throttle, rate);
 */
-		PORTB ^= _BV(0) | _BV(1);
-		PORTF ^= _BV(5) | _BV(6) | _BV(7);
+//		PORTB ^= _BV(0) | _BV(1);
+//		PORTF ^= _BV(5) | _BV(6) | _BV(7);
+
+		//LED warning for low battery
+		LED_PORT |= RED | GREEN | BLUE;	//Turn all lights off
+		uint8_t battery_level = battery_read();
+		if (battery_level < 2) {
+			LED_PORT &= ~RED;
+		}
+		else if (battery_level < 10){
+			LED_PORT &= ~(RED | GREEN);
+		}
+		else {
+			LED_PORT &= ~GREEN;
+		}
 
 		motor_set(motor, motor, motor, motor);
 		motor++;

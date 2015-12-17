@@ -4,6 +4,8 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
+#include "battery/battery.h"
+
 #define MOTOR1_PORT		PORTE
 #define MOTOR1_PIN		PORTE6
 #define MOTOR2_PORT		PORTC
@@ -13,5 +15,8 @@
 #define MOTOR4_PORT		PORTB
 #define MOTOR4_PIN		PORTB7
 
-
+#define LED_PORT		PORTF
+#define GREEN			_BV(5)
+#define BLUE			_BV(6)
+#define RED				_BV(7)
 #endif
