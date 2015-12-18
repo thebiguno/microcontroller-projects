@@ -9,23 +9,41 @@ HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxInde
 	Cymbal(piezoMuxIndex, switchMuxIndex, doubleHitThreshold, fadeGain),
 	averagePedalPosition(0),
 	lastPedalSwitch(0),
+	lastChicTime(0),
+	lastChicVolume(0),
 	pedalMuxIndex(pedalMuxIndex){
 }
 
 void HiHat::poll(){
-	pedalPosition = readPedal(pedalMuxIndex);
 	pedalSwitch = readSwitch(switchMuxIndex);
+	pedalPosition = readPedal(pedalMuxIndex, pedalSwitch);
 
 	//Keep a running average of 128 previous pedal positions
 	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> 7);
 	
-	//We have just tightly closed the pedal; play the chic sound.  The volume will depend on how fast it was
-	// closed (i.e. what the average position was prior to the close)
+	//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
+	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 	if (!lastPedalSwitch && pedalSwitch){
+		Serial.println("Possibly playing chic");
 		double volume = (averagePedalPosition >> 7) / 16.0;
 		Sample::stop(padIndex);
+		if (volume > 0.1){
+			Serial.println("Playing chic");
+			lastSample = Sample::findAvailableSample(padIndex, volume);
+			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
+			lastChicTime = millis();
+			lastChicVolume = volume;
+		}
+	}
+	lastPedalSwitch = pedalSwitch;
+	
+	if (pedalPosition > 3 && lastChicTime + 50 > millis()){
+		Serial.println("Playing splash");
+		double volume = lastChicVolume;
+		Sample::stop(padIndex);
 		lastSample = Sample::findAvailableSample(padIndex, volume);
-		lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
+		lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_SPLASH), padIndex, volume);
+		lastChicTime = 0;
 	}
 	
 	double volume = readPiezo(piezoMuxIndex);
@@ -35,7 +53,9 @@ void HiHat::poll(){
 }
 
 
-uint8_t HiHat::readPedal(uint8_t muxIndex){
+uint8_t HiHat::readPedal(uint8_t muxIndex, uint8_t switchState){
+	if (switchState) return 0x00;		//Switch state 1 means tightly closed
+	
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -61,13 +81,12 @@ uint8_t HiHat::readPedal(uint8_t muxIndex){
 	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 	delayMicroseconds(10);
 	
+	//We reserve position 0 for tightly closed (from the switch parameter)
+	if (currentValue == 0) currentValue = 1;
+	
 	//currentValue is a 10 bit ADC variable; we want to return a 4 bit value from 0x00-0x0F.
 	// Thus we need to right shift 6 bits (10 - 4 = 6).  We do a bitwise and just to be safe.
 	return (currentValue >> 6) & 0x0F;
-}
-
-char* HiHat::lookupFilename(double volume){
-	return lookupFilename(volume, 0);
 }
 
 inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex, uint16_t* sampleVolumes){
@@ -83,6 +102,10 @@ inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex
 	}
 	
 	return 0xFF;
+}
+
+char* HiHat::lookupFilename(double volume){
+	return lookupFilename(volume, 0);
 }
 
 char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
@@ -101,6 +124,8 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 	else {
 		//Find the closes match in pedal position.
 		int8_t closestPedalPosition = pedalPosition;	//Pedal position is already a 4 bit number
+		Serial.print("Pedal position = ");
+		Serial.println(pedalPosition);
 
 		//Pedal position is more important than velocity; thus, we look for the closest match on
 		// position first, and then once we find any sample closest to the selected pedal position,
@@ -111,12 +136,18 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 				//Remember what pedal position we are looking at
 				closestPedalPosition = closestPedalPosition + i;
 				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+				Serial.print("Closest volume A = ");
+				Serial.println(closestVolume);
+				break;
 			}
 			//Likewise on the low side.
 			if (((closestPedalPosition - i) <= 0x0F) && (sampleVolumes[closestPedalPosition - i])) {
 				//Remember what pedal position we are looking at
 				closestPedalPosition = closestPedalPosition - i;
 				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+				Serial.print("Closest volume B = ");
+				Serial.println(closestVolume);
+				break;
 			}
 		}
 		

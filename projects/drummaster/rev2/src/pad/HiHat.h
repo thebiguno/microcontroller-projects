@@ -17,6 +17,8 @@ namespace digitalcave {
 			
 			uint16_t averagePedalPosition;		//Running average of previous pedal positions
 			uint8_t lastPedalSwitch;
+			uint32_t lastChicTime;
+			double lastChicVolume;
 			
 			/*** Variables used in determining proper file name ***/
 			//Multi dimensional bit mask showing which samples are available
@@ -38,7 +40,7 @@ namespace digitalcave {
 			
 			//Returns the pedal position as a number between 0x00 and 0x0F.  This includes the scaling 
 			// logic needed to calibrate the pedal to actual positions.
-			uint8_t readPedal(uint8_t muxIndex);
+			uint8_t readPedal(uint8_t muxIndex, uint8_t switchState);
 			
 			//Override of the loadSamples function, needed to account for hihat pedal position 
 			// in addition to velocity.
