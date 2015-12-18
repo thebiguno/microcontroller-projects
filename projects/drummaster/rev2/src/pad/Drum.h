@@ -9,7 +9,7 @@ namespace digitalcave {
 	 * A Drum object is a type of Pad which supports an analog input channel (strike velocity)
 	 */
 	class Drum : public Pad {
-		private:
+		protected:
 			uint8_t piezoMuxIndex;
 			
 		public:

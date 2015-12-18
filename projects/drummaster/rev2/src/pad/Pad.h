@@ -26,7 +26,6 @@
 #define MUX_14		14
 #define MUX_15		15
 
-
 //The maximum time (in ms) between a new hit being detected and when we return
 // the value.
 #define MAX_RESPONSE_TIME			2
@@ -38,9 +37,6 @@ namespace digitalcave {
 
 	class Pad {
 		private:
-			//ADC Object
-			static ADC* adc;
-			
 			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
 			// pad strike with the system time; this should allow for random numbers, as the timing of 
 			// the first pad strike will differ each time.
@@ -48,17 +44,7 @@ namespace digitalcave {
 			
 			//Index to keep track of current index (for pad constructor).
 			static uint8_t currentIndex;
-
-			/*** Variables used in determining proper file name ***/
-			//Bit mask showing which samples are available at a given volume.
-			//This value is instantiated by calling loadSamples() method.
-			uint16_t sampleVolumes;
-
-			//Variables used internally for getting sample filenames
-			char filenamePrefix[FILENAME_STRING_SIZE];
-			char filenameResult[FILENAME_STRING_SIZE + 6];
 			
-
 			/*** Variables used in reading the pizeo value ***/
 			//The time at which this hit was first read.  We must return a value within
 			// at most MAX_RESPONSE_TIME ms from this time.
@@ -84,23 +70,33 @@ namespace digitalcave {
 			// available.
 			void loadSamples(char* filenamePrefix);
 			
-			//Find the correct sample, given a volume.
-			char* lookupFilename(double volume);
-			
+
+
 		protected:
+			//ADC Object
+			static ADC* adc;
+			
+			/*** Variables used in determining proper file name ***/
+			//Bit mask showing which samples are available at a given volume.
+			//This value is instantiated by calling loadSamples() method.
+			uint16_t sampleVolumes;
+
+			//Variables used internally for getting sample filenames
+			char filenamePrefix[FILENAME_STRING_SIZE];
+			char filenameResult[FILENAME_STRING_SIZE + 6];
+			
 			//The last Sample which was used to play this pad.  Used in the event that we need
 			// to adjust the playback on the last Sample
 			Sample* lastSample;
 
 			//The index into the pads array for this instance
 			uint8_t padIndex;
-			
+
+			//Find the correct sample, given a volume.
+			virtual char* lookupFilename(double volume);
+
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
 			double readPiezo(uint8_t muxIndex);
-			
-			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
-			uint8_t readSwitch(uint8_t muxIndex);
-
 			
 		public:
 			//All pads in the system.

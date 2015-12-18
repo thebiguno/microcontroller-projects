@@ -9,7 +9,7 @@ using namespace digitalcave;
 ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	MUX Indices				DT		Fade
-	new HiHat(	MUX_0, MUX_1, MUX_15,	50),			//Hihat + Pedal
+	new HiHat(	MUX_0, MUX_1, MUX_15,	50,		0.99),	//Hihat + Pedal
 	new Drum(	MUX_2,					50),			//Snare
 	new Drum(	MUX_3,					100),			//Bass
 	new Drum(	MUX_4,					75),			//Tom1
@@ -44,11 +44,11 @@ void Pad::init(){
 		digitalWriteFast(MUX2, i & 0x04);
 		digitalWriteFast(MUX3, i & 0x08);
 		
-		do {
-			delay(50);
+		for(uint8_t i = 0; i < 5 && adc->analogRead(ADC_INPUT) > 3; i++) {
+			delay(10);
 // 			Serial.print("Draining channel ");
 // 			Serial.println(i);
-		} while(adc->analogRead(ADC_INPUT) > 3);
+		}
 	}
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -173,15 +173,13 @@ char* Pad::lookupFilename(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 1.0) volume = 1.0;
 
-//	Serial.println(filenamePrefix);
 	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
 // 		Serial.println("No filename found");
 		return NULL;
 	}
 	
 	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
-	// sample number.
-	
+	// sample number.	
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
 	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
@@ -196,41 +194,10 @@ char* Pad::lookupFilename(double volume){
 			break;
 		}
 	}
-// 	Serial.print("closestVolume = ");
-// 	Serial.println(closestVolume);
-	
-	closestVolume = closestVolume & 0x0F;
-	snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, padIndex == 0 ? "0" : "_", closestVolume);
 
-// 	Serial.print("Returning: ");
-// 	Serial.println(filenameResult);
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
 	
 	return filenameResult;
-}
-
-uint8_t Pad::readSwitch(uint8_t muxIndex){
-	//Disable both MUXs
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
-	
-	//Set Sample
-	digitalWriteFast(MUX0, muxIndex & 0x01);
-	digitalWriteFast(MUX1, muxIndex & 0x02);
-	digitalWriteFast(MUX2, muxIndex & 0x04);
-	digitalWriteFast(MUX3, muxIndex & 0x08);
-	
-	//Enable ADC MUX...
-	digitalWriteFast(ADC_EN, MUX_ENABLE);
-
-	//... read value...
-	int16_t currentValue = adc->analogRead(ADC_INPUT);
-	
-	//... and disable MUX again
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	
-	//If the currentValue is high, the button is not pressed (active low); if it is low, then
-	// the button is pressed.
-	return currentValue < 128;
 }
 
 double Pad::readPiezo(uint8_t muxIndex){

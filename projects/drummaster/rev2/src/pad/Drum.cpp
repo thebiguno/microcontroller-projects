@@ -2,7 +2,9 @@
 
 using namespace digitalcave;
 
-Drum::Drum(uint8_t piezoMuxIndex, uint8_t doubleHitThreshold) : Pad(doubleHitThreshold), piezoMuxIndex(piezoMuxIndex){
+Drum::Drum(uint8_t piezoMuxIndex, uint8_t doubleHitThreshold) : 
+	Pad(doubleHitThreshold), 
+	piezoMuxIndex(piezoMuxIndex){
 }
 
 void Drum::poll(){
