@@ -198,6 +198,14 @@ uint32_t Sample::getPositionMillis(){
 	return playSerialRaw.isPlaying() ? playSerialRaw.positionMillis() : 0;
 }
 
+void Sample::stop(uint8_t pad){
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
+		if (samples[i].lastPad == pad && samples[i].isPlaying()){
+			samples[i].stop();
+		}
+	}
+}
+
 void Sample::fade(uint8_t pad, double gain){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){

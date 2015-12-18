@@ -93,7 +93,9 @@ namespace digitalcave {
 			
 			//Stops all currently playing samples for the selected pad, fading out
 			static void fade(uint8_t pad, double gain);
-			
+
+			//Stops all currently playing samples for the selected pad immediately
+			static void stop(uint8_t pad);
 		
 			//Start playback using this sample's SPI playback object for the given filename
 			void play(char* filename, uint8_t pad, double volume);

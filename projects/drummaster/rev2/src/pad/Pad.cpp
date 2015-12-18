@@ -108,7 +108,6 @@ void Pad::loadSamples(char* filenamePrefix){
 	//The filename prefix must be at least three chars
 	if (strlen(filenamePrefix) < 3) return;
 	
-// 	Serial.println(filenamePrefix);
  	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE - 1);
 	
 	//Reset sampleVolumes
@@ -128,44 +127,26 @@ void Pad::loadSamples(char* filenamePrefix){
 				continue;
 			}
 			
-// 			Serial.print(filename);
-// 			Serial.print(" starts with ");
-// 			Serial.print(filenamePrefixLength);
-// 			Serial.print(" characters of ");
-// 			Serial.println(filenamePrefix);
+			//Check that there is an underscore character immediately after the filename prefix.
+			if (filename[filenamePrefixLength] != '_'){
+				continue;	//Invalid filename, missing '_' before volume.
+			}
 			
-			//Check that the filename volume is valid (0..F).  The volume is the character immediately after the prefix.
+			//Check that the filename volume is valid (0..F).  The volume is the second character after the prefix.
 			char fileVolume = filename[filenamePrefixLength + 1];
 			uint8_t volume;
 			if (fileVolume >= '0' && fileVolume <= '9') volume = fileVolume - 0x30;
 			else if (fileVolume >= 'A' && fileVolume <= 'F') volume = fileVolume - 0x37;
 			else {
-// 				Serial.print("Invalid volume ");
-// 				Serial.println(fileVolume);
 				continue;	//Invalid volume
 			}
-// 			Serial.print("sampleVolume: ");
-// 			Serial.println(volume);
+
 			sampleVolumes |= _BV(volume);
-			
-			//If this is a hihat pad, we also are expecting another value immediately after the volume.  Verify that it
-			// is valid, but don't actually store it (that is done in the HiHat class)
-			//TODO Do we actually need to do this?
-			if (padIndex == 0){
-				char hihatPosition = filename[filenamePrefixLength + 1];
-				if ((hihatPosition >= '0' && hihatPosition <= '9') || (fileVolume >= 'A' && fileVolume <= 'F')){
-					//Valid
-				}
-				else {
-					continue;	//Invalid hihat position
-				}
-			}
 		} 
 		else {
 			break; // no more files
 		}
 	}
-// 	Serial.println("loadSamples end");
 }
 
 char* Pad::lookupFilename(double volume){
@@ -174,12 +155,10 @@ char* Pad::lookupFilename(double volume){
 	else if (volume >= 1.0) volume = 1.0;
 
 	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
-// 		Serial.println("No filename found");
 		return NULL;
 	}
 	
-	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
-	// sample number.	
+	//We find the closest match in fileCountByVolume
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
 	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
@@ -194,9 +173,11 @@ char* Pad::lookupFilename(double volume){
 			break;
 		}
 	}
+	
+	closestVolume = closestVolume & 0x0F;
 
 	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
-	
+
 	return filenameResult;
 }
 

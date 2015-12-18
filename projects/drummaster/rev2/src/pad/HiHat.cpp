@@ -2,17 +2,30 @@
 
 using namespace digitalcave;
 
+#define HIHAT_SPECIAL_CHIC			16
+#define HIHAT_SPECIAL_SPLASH		17
+
 HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold, double fadeGain) : 
 	Cymbal(piezoMuxIndex, switchMuxIndex, doubleHitThreshold, fadeGain),
+	averagePedalPosition(0),
+	lastPedalSwitch(0),
 	pedalMuxIndex(pedalMuxIndex){
 }
 
 void HiHat::poll(){
-	double pedalPosition = readPedal(pedalMuxIndex);
-	uint8_t pedalSwitch = readSwitch(switchMuxIndex);
-	if (pedalSwitch){
+	pedalPosition = readPedal(pedalMuxIndex);
+	pedalSwitch = readSwitch(switchMuxIndex);
 
-		
+	//Keep a running average of 128 previous pedal positions
+	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> 7);
+	
+	//We have just tightly closed the pedal; play the chic sound.  The volume will depend on how fast it was
+	// closed (i.e. what the average position was prior to the close)
+	if (!lastPedalSwitch && pedalSwitch){
+		double volume = (averagePedalPosition >> 7) / 16.0;
+		Sample::stop(padIndex);
+		lastSample = Sample::findAvailableSample(padIndex, volume);
+		lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
 	}
 	
 	double volume = readPiezo(piezoMuxIndex);
@@ -22,7 +35,7 @@ void HiHat::poll(){
 }
 
 
-double HiHat::readPedal(uint8_t muxIndex){
+uint8_t HiHat::readPedal(uint8_t muxIndex){
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -43,56 +56,132 @@ double HiHat::readPedal(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	
 	//Enable drain for a bit to ensure quick response times (since the HiHat 
-	// Pedal channel goes through peak detection circuit)
+	// Pedal channel goes through peak detection circuit... it would probably
+	// have been fine to just use a switching channel instead of a filtered channel).
 	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 	delayMicroseconds(10);
 	
-	return currentValue;
+	//currentValue is a 10 bit ADC variable; we want to return a 4 bit value from 0x00-0x0F.
+	// Thus we need to right shift 6 bits (10 - 4 = 6).  We do a bitwise and just to be safe.
+	return (currentValue >> 6) & 0x0F;
 }
 
 char* HiHat::lookupFilename(double volume){
-	Serial.println("Using HiHat function");
+	return lookupFilename(volume, 0);
+}
+
+inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex, uint16_t* sampleVolumes){
+	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
+	// most this will take 16 tries (since there are 16 buckets)
+	for(uint8_t j = 0; j < 16; j++){
+		if (((closestVolume + j) <= 0x0F) && (sampleVolumes[pedalPositionIndex] & _BV(closestVolume + j))) {
+			return closestVolume + j;
+		}
+		else if (((closestVolume - j) >= 0x00) && (sampleVolumes[pedalPositionIndex] & _BV(closestVolume - j))) {
+			return closestVolume - j;
+		}
+	}
+	
+	return 0xFF;
+}
+
+char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 	//Limit volume from 0 to 1
 	if (volume < 0) volume = 0;
 	else if (volume >= 1.0) volume = 1.0;
 
-//	Serial.println(filenamePrefix);
-	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
-// 		Serial.println("No filename found");
-		return NULL;
-	}
-	
-	//We find the closest match in fileCountByVolume, and if there is more than one, returns a random
-	// sample number.
-	
+	//We find the closest match in sampleVolumes for volume (and possibly pedal position if this is not a special sound)
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
-	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
-	// most this will take 16 tries (since there are 16 buckets)
-	for(uint8_t i = 0; i < 16; i++){
-		if (((closestVolume + i) <= 0x0F) && (sampleVolumes & _BV(closestVolume + i))) {
-			closestVolume = closestVolume + i;
-			break;
-		}
-		else if (((closestVolume - i) >= 0x00) && (sampleVolumes & _BV(closestVolume - i))) {
-			closestVolume = closestVolume - i;
-			break;
-		}
+	if (hihatSpecial == HIHAT_SPECIAL_CHIC || hihatSpecial == HIHAT_SPECIAL_SPLASH){
+		closestVolume = getClosestVolume(closestVolume, hihatSpecial, sampleVolumes);
+		
+		snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, hihatSpecial == HIHAT_SPECIAL_CHIC ? "K" : "P", closestVolume);
 	}
-// 	Serial.print("closestVolume = ");
-// 	Serial.println(closestVolume);
-	
-	closestVolume = closestVolume & 0x0F;
-	char hihatVariable[2] = {'0', 0x00};
-// 	if (hiHatState == 0) hiHatVariable = "_";
-// 	else if (hiHatState == 0xFF) hiHatVariable = "K";
-// 	else if (hiHatState <{
-// 		
-// 	}
-	snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, hihatVariable, closestVolume);
+	else {
+		//Find the closes match in pedal position.
+		int8_t closestPedalPosition = pedalPosition;	//Pedal position is already a 4 bit number
 
-// 	Serial.print("Returning: ");
-// 	Serial.println(filenameResult);
+		//Pedal position is more important than velocity; thus, we look for the closest match on
+		// position first, and then once we find any sample closest to the selected pedal position,
+		// we then look to find the closest velocity sample within that position.
+		for(uint8_t i = 0; i < 16; i++){
+			//First we check if there is anything in the sampleVolumes array at this index; if so, we go with it.
+			if (((closestPedalPosition + i) <= 0x0F) && (sampleVolumes[closestPedalPosition + i])) {
+				//Remember what pedal position we are looking at
+				closestPedalPosition = closestPedalPosition + i;
+				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+			}
+			//Likewise on the low side.
+			if (((closestPedalPosition - i) <= 0x0F) && (sampleVolumes[closestPedalPosition - i])) {
+				//Remember what pedal position we are looking at
+				closestPedalPosition = closestPedalPosition - i;
+				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+			}
+		}
+		
+		snprintf(filenameResult, sizeof(filenameResult), "%s%X%X.RAW", filenamePrefix, closestPedalPosition, closestVolume);
+	}
 	
 	return filenameResult;
+}
+
+void HiHat::loadSamples(char* filenamePrefix){
+	//Clear the filenames
+	for (uint8_t i = 0; i < sizeof(this->filenamePrefix); i++){
+		this->filenamePrefix[i] = 0x00;
+	}
+	for (uint8_t i = 0; i < sizeof(this->filenameResult); i++){
+		this->filenameResult[i] = 0x00;
+	}	
+	
+	//The filename prefix must be at least three chars
+	if (strlen(filenamePrefix) < 3) return;
+	
+	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE - 1);
+	
+	//Reset sampleVolumes
+	for (uint8_t i = 0; i < 16; i++){
+		sampleVolumes[i] = 0x00;
+	}
+
+	SerialFlash.opendir();
+	while (1) {
+		char filename[16];
+		unsigned long filesize;
+
+		if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
+			uint8_t filenamePrefixLength = strlen(filenamePrefix);
+			if (filenamePrefixLength > 6) filenamePrefixLength = 6;
+			
+			//Check that this filename starts with the currently assigned filename prefix
+			if (strncmp(filenamePrefix, filename, filenamePrefixLength) != 0) {
+				continue;
+			}
+			
+			//Check that the filename pedal position is valid (0..F).  The pedal position is the first character after the prefix.
+			char filePedalPosition = filename[filenamePrefixLength];
+			uint8_t pedalPosition;
+			if (filePedalPosition >= '0' && filePedalPosition <= '9') pedalPosition = filePedalPosition - 0x30;
+			else if (filePedalPosition >= 'A' && filePedalPosition <= 'F') pedalPosition = filePedalPosition - 0x37;
+			else if (filePedalPosition == 'K') pedalPosition = HIHAT_SPECIAL_CHIC;
+			else if (filePedalPosition == 'P') pedalPosition = HIHAT_SPECIAL_SPLASH;
+			else {
+				continue;	//Invalid volume
+			}
+			
+			//Check that the filename volume is valid (0..F).  The volume is the second character after the prefix.
+			char fileVolume = filename[filenamePrefixLength + 1];
+			uint8_t volume;
+			if (fileVolume >= '0' && fileVolume <= '9') volume = fileVolume - 0x30;
+			else if (fileVolume >= 'A' && fileVolume <= 'F') volume = fileVolume - 0x37;
+			else {
+				continue;	//Invalid volume
+			}
+			sampleVolumes[pedalPosition] |= _BV(volume);
+		} 
+		else {
+			break; // no more files
+		}
+	}
 }

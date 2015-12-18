@@ -64,23 +64,16 @@ namespace digitalcave {
 			//The per-pad volume gain.  Limited from 0 - 5.
 			double padVolume;
 			
-			/*** Private methods ***/
-			//Looks on the SPI flash chip for files according to the sample naming convention,
-			// and updates the fileCountByVolume array, which indicates which files are 
-			// available.
-			void loadSamples(char* filenamePrefix);
-			
+			/*** Variables used in determining proper file name ***/
+			//Bit mask showing which samples are available at a given volume.
+			//This value is instantiated by calling loadSamples() method.
+			uint16_t sampleVolumes;
 
 
 		protected:
 			//ADC Object
 			static ADC* adc;
 			
-			/*** Variables used in determining proper file name ***/
-			//Bit mask showing which samples are available at a given volume.
-			//This value is instantiated by calling loadSamples() method.
-			uint16_t sampleVolumes;
-
 			//Variables used internally for getting sample filenames
 			char filenamePrefix[FILENAME_STRING_SIZE];
 			char filenameResult[FILENAME_STRING_SIZE + 6];
@@ -92,11 +85,16 @@ namespace digitalcave {
 			//The index into the pads array for this instance
 			uint8_t padIndex;
 
+			//Returns the strike velocity.  Handles the ADC, draining, etc.
+			double readPiezo(uint8_t muxIndex);
+			
 			//Find the correct sample, given a volume.
 			virtual char* lookupFilename(double volume);
 
-			//Returns the strike velocity.  Handles the ADC, draining, etc.
-			double readPiezo(uint8_t muxIndex);
+			//Looks on the SPI flash chip for files according to the sample naming convention,
+			// and updates the sampleVolumes bit mask, which indicates which files are 
+			// available.
+			virtual void loadSamples(char* filenamePrefix);
 			
 		public:
 			//All pads in the system.
