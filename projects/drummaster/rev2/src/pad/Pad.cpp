@@ -46,8 +46,6 @@ void Pad::init(){
 		
 		for(uint8_t i = 0; i < 5 && adc->analogRead(ADC_INPUT) > 3; i++) {
 			delay(10);
-// 			Serial.print("Draining channel ");
-// 			Serial.println(i);
 		}
 	}
 	digitalWriteFast(ADC_EN, MUX_DISABLE);

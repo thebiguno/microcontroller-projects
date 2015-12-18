@@ -24,11 +24,9 @@ void HiHat::poll(){
 	//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
 	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 	if (!lastPedalSwitch && pedalSwitch){
-		Serial.println("Possibly playing chic");
 		double volume = (averagePedalPosition >> 7) / 16.0;
 		Sample::stop(padIndex);
 		if (volume > 0.1){
-			Serial.println("Playing chic");
 			lastSample = Sample::findAvailableSample(padIndex, volume);
 			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
 			lastChicTime = millis();
@@ -38,7 +36,6 @@ void HiHat::poll(){
 	lastPedalSwitch = pedalSwitch;
 	
 	if (pedalPosition > 3 && lastChicTime + 50 > millis()){
-		Serial.println("Playing splash");
 		double volume = lastChicVolume;
 		Sample::stop(padIndex);
 		lastSample = Sample::findAvailableSample(padIndex, volume);
@@ -116,7 +113,8 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 	//We find the closest match in sampleVolumes for volume (and possibly pedal position if this is not a special sound)
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
-	if (hihatSpecial == HIHAT_SPECIAL_CHIC || hihatSpecial == HIHAT_SPECIAL_SPLASH){
+	if ((hihatSpecial == HIHAT_SPECIAL_CHIC && sampleVolumes[HIHAT_SPECIAL_CHIC]) 
+			|| (hihatSpecial == HIHAT_SPECIAL_SPLASH && sampleVolumes[HIHAT_SPECIAL_SPLASH])){
 		closestVolume = getClosestVolume(closestVolume, hihatSpecial, sampleVolumes);
 		
 		snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, hihatSpecial == HIHAT_SPECIAL_CHIC ? "K" : "P", closestVolume);
@@ -124,8 +122,6 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 	else {
 		//Find the closes match in pedal position.
 		int8_t closestPedalPosition = pedalPosition;	//Pedal position is already a 4 bit number
-		Serial.print("Pedal position = ");
-		Serial.println(pedalPosition);
 
 		//Pedal position is more important than velocity; thus, we look for the closest match on
 		// position first, and then once we find any sample closest to the selected pedal position,
@@ -136,8 +132,6 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 				//Remember what pedal position we are looking at
 				closestPedalPosition = closestPedalPosition + i;
 				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
-				Serial.print("Closest volume A = ");
-				Serial.println(closestVolume);
 				break;
 			}
 			//Likewise on the low side.
@@ -145,8 +139,6 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 				//Remember what pedal position we are looking at
 				closestPedalPosition = closestPedalPosition - i;
 				closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
-				Serial.print("Closest volume B = ");
-				Serial.println(closestVolume);
 				break;
 			}
 		}
@@ -172,7 +164,7 @@ void HiHat::loadSamples(char* filenamePrefix){
 	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE - 1);
 	
 	//Reset sampleVolumes
-	for (uint8_t i = 0; i < 16; i++){
+	for (uint8_t i = 0; i < 18; i++){
 		sampleVolumes[i] = 0x00;
 	}
 

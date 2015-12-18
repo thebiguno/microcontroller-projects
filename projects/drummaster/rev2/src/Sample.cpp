@@ -129,9 +129,9 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	// both the oldest and the quietest, then stop that one.
 	for(uint8_t i = 0; i < PAD_COUNT; i++){
 		if (sampleCounts[i] >= 2 && quietestSample[i] == oldestSample[i]){
-			Serial.print("Stopping sample from pad ");
-			Serial.print(i);
-			Serial.println(" as option 4");
+// 			Serial.print("Stopping sample from pad ");
+// 			Serial.print(i);
+// 			Serial.println(" as option 4");
 			samples[quietestSample[i]].stop();
 			return &(samples[quietestSample[i]]);
 		}
@@ -148,9 +148,9 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 			highestPad = i;
 		}
 	}
-	Serial.print("Stopping sample from pad ");
-	Serial.print(highestPad);
-	Serial.println(" as option 5");
+// 	Serial.print("Stopping sample from pad ");
+// 	Serial.print(highestPad);
+// 	Serial.println(" as option 5");
 
 	samples[oldestSample[highestPad]].stop();
 	return &(samples[oldestSample[highestPad]]);
