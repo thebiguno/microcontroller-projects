@@ -9,21 +9,25 @@ Cymbal::Cymbal(uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitT
 }
 
 void Cymbal::poll(){
-	uint8_t muteSwitch = readSwitch(switchMuxIndex);
-	if (muteSwitch){
-		if (lastSample != NULL && lastSample->isPlaying()){
-			fade(fadeGain);
-		}
+	readSwitch(switchMuxIndex);
+	if (!lastSwitchValue && switchValue){
+		Sample::startFade(padIndex, fadeGain);
 	}
-	else {
-		double volume = readPiezo(piezoMuxIndex);
-		if (volume){
-			play(volume);
-		}
+	else if (lastSwitchValue && !switchValue){
+		Sample::stopFade(padIndex);
 	}
+
+	double volume = readPiezo(piezoMuxIndex);
+	if (volume){
+		play(volume);
+	}
+	
+	Sample::processFade(padIndex);
 }
 
-uint8_t Cymbal::readSwitch(uint8_t muxIndex){
+void Cymbal::readSwitch(uint8_t muxIndex){
+	lastSwitchValue = switchValue;
+	
 	//Disable both MUXs
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
@@ -45,5 +49,5 @@ uint8_t Cymbal::readSwitch(uint8_t muxIndex){
 	
 	//If the currentValue is high, the button is not pressed (active low); if it is low, then
 	// the button is pressed.
-	return currentValue < 768;
+	switchValue = currentValue < 768;
 }

@@ -37,11 +37,6 @@ namespace digitalcave {
 
 	class Pad {
 		private:
-			//Set this to 1 once the ramdom number generator has been seeded.  We seed it on the first 
-			// pad strike with the system time; this should allow for random numbers, as the timing of 
-			// the first pad strike will differ each time.
-			static uint8_t randomSeedCompleted;
-			
 			//Index to keep track of current index (for pad constructor).
 			static uint8_t currentIndex;
 			
@@ -114,9 +109,6 @@ namespace digitalcave {
 			
 			//Start plating this pad at the specified volume.
 			void play(double volume);
-			
-			//Stops all samples which were started from this pad by fading out
-			void fade(double gain);
 			
 			//Get the per-pad volume.
 			double getPadVolume();

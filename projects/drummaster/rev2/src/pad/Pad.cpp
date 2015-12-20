@@ -9,7 +9,7 @@ using namespace digitalcave;
 ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	MUX Indices				DT		Fade
-	new HiHat(	MUX_0, MUX_1, MUX_15,	50,		0.99),	//Hihat + Pedal
+	new HiHat(	MUX_0, MUX_1, MUX_15,	50,		1.00),	//Hihat + Pedal
 	new Drum(	MUX_2,					50),			//Snare
 	new Drum(	MUX_3,					100),			//Bass
 	new Drum(	MUX_4,					75),			//Tom1
@@ -21,8 +21,6 @@ Pad* Pad::pads[PAD_COUNT] = {
 	new Drum(	MUX_10,					100),			//X0
 	new Drum(	MUX_11,					100)			//X1
 };
-
-uint8_t Pad::randomSeedCompleted = 0;
 
 //Initialize static pads array
 uint8_t Pad::currentIndex = 0;
@@ -45,7 +43,7 @@ void Pad::init(){
 		digitalWriteFast(MUX3, i & 0x08);
 		
 		for(uint8_t i = 0; i < 5 && adc->analogRead(ADC_INPUT) > 3; i++) {
-			delay(10);
+			delay(1);
 		}
 	}
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
@@ -68,10 +66,6 @@ void Pad::play(double volume){
 
 	lastSample = Sample::findAvailableSample(padIndex, volume);
 	lastSample->play(lookupFilename(volume), padIndex, volume);
-}
-
-void Pad::fade(double gain){
-	Sample::fade(padIndex, gain);
 }
 
 double Pad::getPadVolume(){
@@ -209,11 +203,6 @@ double Pad::readPiezo(uint8_t muxIndex){
 	
 	//... read value...
 	uint16_t currentValue = adc->analogRead(ADC_INPUT);
-	if (!randomSeedCompleted && currentValue > MIN_VALUE){
-		//Seed the randomizer based on the time of the first hit
-		randomSeed(millis());
-		randomSeedCompleted = 1;
-	}
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);

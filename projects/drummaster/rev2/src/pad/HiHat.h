@@ -12,12 +12,14 @@ namespace digitalcave {
 	class HiHat : public Cymbal {
 		private:
 			/*** Maintain state of pedal position and tightly closed state. ***/
+			//Last measured pedal position
 			uint8_t pedalPosition;
-			uint8_t pedalSwitch;
+			//Running average of previous pedal positions; this must be divided to get the actual value
+			uint16_t averagePedalPosition;
 			
-			uint16_t averagePedalPosition;		//Running average of previous pedal positions
-			uint8_t lastPedalSwitch;
+			//Time that the last chic was played
 			uint32_t lastChicTime;
+			//Volume that the last chic was played at
 			double lastChicVolume;
 			
 			/*** Variables used in determining proper file name ***/
@@ -30,6 +32,9 @@ namespace digitalcave {
 			//Actual implementation of lookupFilename, which takes special hihat
 			// effects such as splash and chic into account.
 			char* lookupFilename(double volume, uint8_t hihatSpecial);
+			
+			//Return the average pedal position
+			uint8_t getAveragePedalPosition();
 
 	
 		protected:
@@ -40,7 +45,7 @@ namespace digitalcave {
 			
 			//Returns the pedal position as a number between 0x00 and 0x0F.  This includes the scaling 
 			// logic needed to calibrate the pedal to actual positions.
-			uint8_t readPedal(uint8_t muxIndex, uint8_t switchState);
+			void readPedal(uint8_t muxIndex);
 			
 			//Override of the loadSamples function, needed to account for hihat pedal position 
 			// in addition to velocity.

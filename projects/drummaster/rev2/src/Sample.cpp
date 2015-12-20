@@ -162,17 +162,11 @@ Sample::Sample():
 		mixerIndex((currentIndex >> 2) & 0x03), 
 		mixerChannel(currentIndex & 0x03),
 		lastPad(0xFF),
-//		envelope(),
+		fadeGain(0),
+		fading(0),
 		playSerialRaw(),
 		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel){
 	currentIndex++;	//Increment current index
-	
-// 	envelope.delay(0);
-// 	envelope.attack(0);
-// 	envelope.hold(0);
-// 	envelope.decay(0);
-// 	envelope.sustain(1.0);
-// 	envelope.release(50);
 }
 
 void Sample::play(char* filename, uint8_t pad, double volume){
@@ -206,27 +200,41 @@ void Sample::stop(uint8_t pad){
 	}
 }
 
-void Sample::fade(uint8_t pad, double gain){
+void Sample::startFade(uint8_t pad, double gain){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
-			samples[i].fade(gain);
+			samples[i].fading = 1;
+			samples[i].fadeGain = gain;
 		}
 	}
 }
 
-void Sample::fade(double gain){
-	//envelope.noteOff();
-	volume = volume * gain;
-	mixers[mixerIndex].gain(mixerChannel, volume);
-	if (volume <= 0.001){
-		playSerialRaw.stop();	//TODO figure out how to fade here...
-		lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
+void Sample::stopFade(uint8_t pad){
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
+		if (samples[i].lastPad == pad && samples[i].isPlaying()){
+			samples[i].fading = 0;
+		}
+	}
+}
+
+void Sample::processFade(uint8_t pad){
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
+		Sample* s = &samples[i];
+		if (s->lastPad == pad && s->isPlaying() && s->fading){
+			s->volume = s->volume * s->fadeGain;
+			mixers[s->mixerIndex].gain(s->mixerChannel, s->volume);
+			if (s->volume <= 0.001){
+				s->playSerialRaw.stop();
+				s->lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
+			}
+		}
 	}
 }
 
 void Sample::stop(){
 	playSerialRaw.stop();
 	lastPad = 0xFF;
+	fading = 0;
 }
 
 double Sample::getVolume(){

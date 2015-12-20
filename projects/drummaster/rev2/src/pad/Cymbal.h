@@ -16,9 +16,14 @@ namespace digitalcave {
 			//The gain applied to the fade algorithm for this cymbal.  0.99 results in a 
 			// fairly long fade out; 0.97 is much quicker.
 			double fadeGain;
+			
+			//The current switch value.
+			uint8_t switchValue;
+			//The last switch state is stored here when the new one is read.
+			uint8_t lastSwitchValue;
 		
-			//Returns the switch state: 0 for open (not pressed), 1 for closed (pressed)
-			uint8_t readSwitch(uint8_t muxIndex);
+			//Updates the switchValue and lastSwitchValue variables; 0 for open (not pressed), 1 for closed (pressed)
+			void readSwitch(uint8_t muxIndex);
 
 		public:
 			//Create a new pad object referencing the specified hardware channel

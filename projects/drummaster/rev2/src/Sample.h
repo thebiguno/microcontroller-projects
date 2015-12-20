@@ -57,6 +57,11 @@ namespace digitalcave {
 			static uint8_t currentIndex;
 			static Sample samples[];
 
+			//Stops all currently playing samples for the selected pad immediately.  Normally you should
+			// use fade() for this rather than stopping abruptly.
+			static void stop(uint8_t pad);
+		
+
 			//This sample's index into mixer
 			uint8_t mixerIndex;
 			uint8_t mixerChannel;
@@ -65,14 +70,13 @@ namespace digitalcave {
 			uint8_t lastPad;
 			
 			//Allow for fade out when muting cymbals
-// 			AudioEffectEnvelope envelope;
+			double fadeGain;
+			uint8_t fading;
 			
 			//SPI flash playback object
 			AudioPlaySerialflashRaw playSerialRaw;
 
-			//Connections from playSerialRaw to envelope to mixer
-// 			AudioConnection playSerialRawToEnvelope;
-// 			AudioConnection envelopeToMixer;
+			//Connection from playSerialRaw to mixer
 			AudioConnection playSerialRawToMixer;
 
 			//The last volume value which has been set for this Sample
@@ -91,12 +95,15 @@ namespace digitalcave {
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, double volume);
 			
-			//Stops all currently playing samples for the selected pad, fading out
-			static void fade(uint8_t pad, double gain);
+			//Starts fading out all currently playing samples for the selected pad.
+			static void startFade(uint8_t pad, double gain);
+			
+			//Stops a previously started fade
+			static void stopFade(uint8_t pad);
+			
+			//Call this repeatedly to handle the actual fading (since using an envelope object uses way too much CPU)
+			static void processFade(uint8_t pad);
 
-			//Stops all currently playing samples for the selected pad immediately
-			static void stop(uint8_t pad);
-		
 			//Start playback using this sample's SPI playback object for the given filename
 			void play(char* filename, uint8_t pad, double volume);
 			
@@ -105,12 +112,6 @@ namespace digitalcave {
 			
 			//If the sample is playing, return the position of the sample; otherwise return 0
 			uint32_t getPositionMillis();
-
-			//Stops playback over time.  This is meant to be called repeatedly; each time
-			// through it reduces playback by a very small amount (e.g. gain of 0.99 means 99%
-			// of the previous volume). By calling it repeatedly we get a logarithmic falloff
-			// which simulates a choked cymbal
-			void fade(double gain);
 			
 			//Stops playback
 			void stop();

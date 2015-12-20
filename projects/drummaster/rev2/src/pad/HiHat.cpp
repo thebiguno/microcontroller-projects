@@ -8,36 +8,31 @@ using namespace digitalcave;
 HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold, double fadeGain) : 
 	Cymbal(piezoMuxIndex, switchMuxIndex, doubleHitThreshold, fadeGain),
 	averagePedalPosition(0),
-	lastPedalSwitch(0),
 	lastChicTime(0),
 	lastChicVolume(0),
 	pedalMuxIndex(pedalMuxIndex){
 }
 
 void HiHat::poll(){
-	pedalSwitch = readSwitch(switchMuxIndex);
-	pedalPosition = readPedal(pedalMuxIndex, pedalSwitch);
+	readSwitch(switchMuxIndex);
+	readPedal(pedalMuxIndex);
 
-	//Keep a running average of 128 previous pedal positions
-	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> 7);
-	
 	//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
 	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
-	if (!lastPedalSwitch && pedalSwitch){
-		double volume = (averagePedalPosition >> 7) / 16.0;
-		Sample::stop(padIndex);
-		if (volume > 0.1){
+	if (!lastSwitchValue && switchValue){
+		double volume = getAveragePedalPosition() / 16.0;
+		Sample::startFade(padIndex, fadeGain - volume / 20);
+		if (volume > 0.1 && lastChicTime + 100 < millis()){
 			lastSample = Sample::findAvailableSample(padIndex, volume);
 			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
 			lastChicTime = millis();
 			lastChicVolume = volume;
 		}
 	}
-	lastPedalSwitch = pedalSwitch;
 	
-	if (pedalPosition > 3 && lastChicTime + 50 > millis()){
+	if (pedalPosition > 3 && lastChicTime + 75 > millis()){
 		double volume = lastChicVolume;
-		Sample::stop(padIndex);
+		//Sample::startFade(padIndex, fadeGain);
 		lastSample = Sample::findAvailableSample(padIndex, volume);
 		lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_SPLASH), padIndex, volume);
 		lastChicTime = 0;
@@ -47,43 +42,54 @@ void HiHat::poll(){
 	if (volume){
 		play(volume);
 	}
+	
+	Sample::processFade(padIndex);
 }
 
+uint8_t HiHat::getAveragePedalPosition(){
+	return averagePedalPosition >> 6;
+}
 
-uint8_t HiHat::readPedal(uint8_t muxIndex, uint8_t switchState){
-	if (switchState) return 0x00;		//Switch state 1 means tightly closed
-	
-	//Disable both MUXs
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
-	
-	//Set Sample
-	digitalWriteFast(MUX0, muxIndex & 0x01);
-	digitalWriteFast(MUX1, muxIndex & 0x02);
-	digitalWriteFast(MUX2, muxIndex & 0x04);
-	digitalWriteFast(MUX3, muxIndex & 0x08);
-	
-	//Enable ADC MUX...
-	digitalWriteFast(ADC_EN, MUX_ENABLE);
+void HiHat::readPedal(uint8_t muxIndex){
+	if (switchValue) {
+		pedalPosition = 0x00;		//Switch state 1 means tightly closed
+	}
+	else {
+		//Disable both MUXs
+		digitalWriteFast(ADC_EN, MUX_DISABLE);
+		digitalWriteFast(DRAIN_EN, MUX_DISABLE);
+		
+		//Set Sample
+		digitalWriteFast(MUX0, muxIndex & 0x01);
+		digitalWriteFast(MUX1, muxIndex & 0x02);
+		digitalWriteFast(MUX2, muxIndex & 0x04);
+		digitalWriteFast(MUX3, muxIndex & 0x08);
+		
+		//Enable ADC MUX...
+		digitalWriteFast(ADC_EN, MUX_ENABLE);
 
-	//... read value...
-	int16_t currentValue = adc->analogRead(ADC_INPUT);
-	
-	//... and disable MUX again
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	
-	//Enable drain for a bit to ensure quick response times (since the HiHat 
-	// Pedal channel goes through peak detection circuit... it would probably
-	// have been fine to just use a switching channel instead of a filtered channel).
-	digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-	delayMicroseconds(10);
-	
-	//We reserve position 0 for tightly closed (from the switch parameter)
-	if (currentValue == 0) currentValue = 1;
-	
-	//currentValue is a 10 bit ADC variable; we want to return a 4 bit value from 0x00-0x0F.
-	// Thus we need to right shift 6 bits (10 - 4 = 6).  We do a bitwise and just to be safe.
-	return (currentValue >> 6) & 0x0F;
+		//... read value...
+		int16_t currentValue = adc->analogRead(ADC_INPUT);
+		
+		//... and disable MUX again
+		digitalWriteFast(ADC_EN, MUX_DISABLE);
+		
+		//Enable drain for a bit to ensure quick response times (since the HiHat 
+		// Pedal channel goes through peak detection circuit... it would probably
+		// have been fine to just use a switching channel instead of a filtered channel).
+		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+		delayMicroseconds(10);
+		
+		//We reserve position 0 for tightly closed (from the switch parameter)
+		if (currentValue == 0) currentValue = 1;
+		
+		//currentValue is a 10 bit ADC variable; we want to return a 4 bit value from 0x00-0x0F.
+		// Thus we need to right shift 6 bits (10 - 4 = 6).  We do a bitwise and just to be safe.
+		pedalPosition = (currentValue >> 6) & 0x0F;
+	}
+
+	//Keep a running average of 64 previous pedal positions
+	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> 6);
 }
 
 inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex, uint16_t* sampleVolumes){
@@ -142,7 +148,7 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 				break;
 			}
 		}
-		
+
 		snprintf(filenameResult, sizeof(filenameResult), "%s%X%X.RAW", filenamePrefix, closestPedalPosition, closestVolume);
 	}
 	
