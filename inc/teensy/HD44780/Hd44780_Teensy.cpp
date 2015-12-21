@@ -67,11 +67,11 @@ void Hd44780_Teensy::write_nibble(uint8_t b, uint8_t mode){
 	else digitalWriteFast(this->pin_d7, 0);
 
 	//Toggle E
-	delayMicroseconds(64);
+	delayMicroseconds(50);
 	digitalWriteFast(this->pin_e, 1);	//Set E high to clock in data
-	delayMicroseconds(150);
+	delayMicroseconds(50);
 	digitalWriteFast(this->pin_e, 0);	//Re-set E back low
-	delayMicroseconds(40);
+	delayMicroseconds(50);
 	
 
 }

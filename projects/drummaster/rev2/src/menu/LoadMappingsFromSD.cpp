@@ -2,18 +2,18 @@
 
 using namespace digitalcave;
 
-LoadMappingsFromSD::LoadMappingsFromSD() : Menu(2){
+LoadMappingsFromSD::LoadMappingsFromSD() : Menu(2, 1){
 }
 
 Menu* LoadMappingsFromSD::handleAction(){
 	display->write_text(0, 0, "Load Mappings        ", 20);
 	
 	display->write_text(getMenuPosition(1) + 1, 0, ' ');
-	display->write_text(getMenuPosition() + 1, 0, (char) 0x7E);
+	display->write_text(getMenuPosition(0) + 1, 0, (char) 0x7E);
 	display->write_text(1, 1, "Start               ", 19);
 	display->write_text(2, 1, "Cancel              ", 19);
 
-	if (button.pressEvent() && getMenuPosition() == 0){
+	if (button.pressEvent() && getMenuPosition(0) == 0){
 		display->write_text(1, 0, "Erasing Mappings.txt ", 20);
 		display->clearRow(2);
 		display->refresh();
@@ -89,7 +89,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 		display->clear();
 		return Menu::mainMenu;
 	}
-	else if (button.longPressEvent() || (button.pressEvent() && getMenuPosition() == 1)){
+	else if (button.longPressEvent() || (button.pressEvent() && getMenuPosition(0) == 1)){
 		display->clear();
 		return Menu::mainMenu;
 	}

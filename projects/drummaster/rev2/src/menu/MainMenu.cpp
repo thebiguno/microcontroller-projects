@@ -14,7 +14,7 @@ static const char* labels[MENU_COUNT] = {
 	"System Stats        "
 };
 
-MainMenu::MainMenu() : Menu(MENU_COUNT){
+MainMenu::MainMenu() : Menu(MENU_COUNT, 1){
 }
 
 Menu* MainMenu::handleAction(){
@@ -22,11 +22,11 @@ Menu* MainMenu::handleAction(){
 	
 	display->write_text(2, 0, (char) 0x7E);
 	display->write_text(1, 1, labels[getMenuPosition(-1)], 19);
-	display->write_text(2, 1, labels[getMenuPosition()], 19);
+	display->write_text(2, 1, labels[getMenuPosition(0)], 19);
 	display->write_text(3, 1, labels[getMenuPosition(1)], 19);
 	
 	if (button.releaseEvent()){
-		switch(getMenuPosition()){
+		switch(getMenuPosition(0)){
 			case 0:
 				return Menu::volumeLineOut;
 			case 1:

@@ -15,7 +15,6 @@ namespace digitalcave {
 	
 		private:
 			int8_t kitIndex;
-			int8_t lastKitIndex;
 			
 		public:
 			static void loadKitIndexFromEeprom();

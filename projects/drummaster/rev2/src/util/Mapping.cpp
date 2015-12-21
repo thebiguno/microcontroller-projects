@@ -102,6 +102,8 @@ void Mapping::loadMappings(){
 					}
 				}
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
+					Serial.print("Kit name: ");
+					Serial.println(mappings[kitIndex].kitName);
 					state = STATE_NEWLINE;
 				}
 				else {
@@ -157,7 +159,7 @@ void Mapping::loadMappings(){
 				//Filling up filename
 				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == '-' || buffer[i] == '_'){
 					if ((mappingIndex - 3) < FILENAME_STRING_SIZE - 1){
-// 						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
+ 						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
 					}
 				}
 				//Something else
@@ -174,8 +176,10 @@ void Mapping::loadMappings(){
 	kitCount = kitIndex + 1;
 }
 
-Mapping* Mapping::getMappings(){
-	return mappings;
+Mapping* Mapping::getMapping(uint8_t index){
+	if (index < kitCount) return &mappings[index];
+	else if (kitCount > 0) return &mappings[kitCount - 1];
+	else return &mappings[0];
 }
 
 uint8_t Mapping::getKitCount(){

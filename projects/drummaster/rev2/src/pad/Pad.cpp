@@ -82,13 +82,14 @@ void Pad::setPadVolume(double volume){
 void Pad::loadAllSamples(uint8_t kitIndex){
 	if (kitIndex >= Mapping::getKitCount()) kitIndex = 0;
 
-	Mapping* mappings = Mapping::getMappings();
+	Mapping* mapping = Mapping::getMapping(kitIndex);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		pads[i]->loadSamples(mappings[kitIndex].getFilenamePrefix(i));
+		pads[i]->loadSamples(mapping->getFilenamePrefix(i));
 	}
 }
 
 void Pad::loadSamples(char* filenamePrefix){
+	Serial.println(filenamePrefix);
 	//Clear the filenames
 	for (uint8_t i = 0; i < sizeof(this->filenamePrefix); i++){
 		this->filenamePrefix[i] = 0x00;

@@ -38,8 +38,8 @@ namespace digitalcave {
 			// getMappings() to get the filename prefixes needed to load into each pad.
 			static void loadMappings();
 			
-			//Returns the mappings previously loaded with loadKits()
-			static Mapping* getMappings();
+			//Returns the specified mapping which was previously loaded with loadKits()
+			static Mapping* getMapping(uint8_t index);
 			
 			//Returns the total number of kits defined in MAPPINGS.TXT
 			static uint8_t getKitCount();

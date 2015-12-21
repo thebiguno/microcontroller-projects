@@ -17,7 +17,7 @@ static const char* labels[CHANNEL_COUNT] = {
 	" X1                 "
 };
 
-CalibrateChannel::CalibrateChannel() : Menu(255){
+CalibrateChannel::CalibrateChannel() : Menu(255, 0){
 }
 
 Menu* CalibrateChannel::handleAction(){
@@ -32,9 +32,9 @@ Menu* CalibrateChannel::handleAction(){
 	snprintf(buf, sizeof(buf), "%d                   ", value >> 1);
 	display->write_text(2, 0, buf, 20);
 	
-	encoderState = getMenuPosition();
-	if (getMenuPosition() != value){
-		writeToPotentiometer(channel, getMenuPosition());
+	encoderState = getMenuPosition(0);
+	if (getMenuPosition(0) != value){
+		writeToPotentiometer(channel, getMenuPosition(0));
 		//We always read back the value for verification
 		value = readFromPotentiometer(channel);
 		setMenuPosition(value);

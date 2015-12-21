@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-#define GAIN_DIVISOR		(256.0 / 5)
+#define GAIN_DIVISOR		(100.0 / 5)
 
 static const char* labels[PAD_COUNT] = {
 	"Hi Hat             ",
@@ -18,7 +18,7 @@ static const char* labels[PAD_COUNT] = {
 	"X1                 "
 };
 
-VolumePad::VolumePad() : Menu(PAD_COUNT), value(-1), pad(0) {
+VolumePad::VolumePad() : Menu(101, 0), value(-1), pad(0) {
 }
 
 void VolumePad::loadPadVolumesFromEeprom(){
@@ -36,26 +36,29 @@ void VolumePad::savePadVolumesToEeprom(){
 }
 
 Menu* VolumePad::handleAction(){
-	display->write_text(0, 0, "Calibrate Channels   ", 20);
-	display->write_text(1, 0, labels[pad], 20);
+	display->write_text(0, 0, "Pad Volume Adjust   ", 20);
+	display->write_text(1, 1, labels[pad], 20);
 	
 	if (value == -1){
 		value = Pad::pads[pad]->getPadVolume() * GAIN_DIVISOR;
 		setMenuPosition(value);
 	}
 	
-	snprintf(buf, sizeof(buf), "%d%%                ", (uint16_t) (value / GAIN_DIVISOR * 100));
+	snprintf(buf, sizeof(buf), "%d%%                  ", (uint16_t) (value / GAIN_DIVISOR * 100));
 	display->write_text(2, 0, buf, 20);
 	
-	encoderState = getMenuPosition();
-	if (getMenuPosition() != value){
-		value = getMenuPosition();
+	encoderState = getMenuPosition(0);
+	if (getMenuPosition(0) != value){
+		value = getMenuPosition(0);
 		Pad::pads[pad]->setPadVolume(value / GAIN_DIVISOR);
 	}
 
 	if (button.releaseEvent()){
 		savePadVolumesToEeprom();
-		display->clearRow(2);
+		return Menu::volumePadSelect;
+	}
+	else if (button.longPressEvent()){
+		loadPadVolumesFromEeprom();
 		return Menu::volumePadSelect;
 	}
 	

@@ -19,7 +19,7 @@ char Menu::buf[21];
 Hd44780_Teensy* Menu::hd44780 = NULL;
 CharDisplay* Menu::display = NULL;
 Encoder Menu::encoder(ENC_A, ENC_B);
-ButtonTeensy Menu::button(ENC_PUSH, 25, 25, 1000, 1000);
+ButtonTeensy Menu::button(ENC_PUSH, 25, 25, 500, 500);
 
 //Initialize static references to menu items
 Menu* Menu::calibrateChannel = new CalibrateChannel();
@@ -36,8 +36,9 @@ Menu* Menu::volumePadSelect = new VolumePadSelect();
 
 Menu* Menu::current = Menu::mainMenu;
 
-Menu::Menu(uint16_t menuCount) : 
+Menu::Menu(uint16_t menuCount, uint8_t loop) : 
 	menuCount(menuCount), 
+	loop(loop),
 	encoderState(0){
 }
 
@@ -45,8 +46,15 @@ void Menu::poll(){
 	current->button.sample(millis());
 	
 	//Ensure valid menu entry is selected
-	if ((encoder.read() / 2) >= current->menuCount) encoder.write(0);
-	else if ((encoder.read() / 2) < 0) encoder.write((current->menuCount - 1) * 2);
+	if (current->menuCount == 0) encoder.write(0);
+	if (current->loop){
+		if ((encoder.read() / 2) >= current->menuCount) encoder.write(0);
+		else if ((encoder.read() / 2) < 0) encoder.write((current->menuCount - 1) * 2);
+	}
+	else {
+		if ((encoder.read() / 2) >= current->menuCount) encoder.write((current->menuCount - 1) * 2);
+		else if ((encoder.read() / 2) < 0) encoder.write(0);
+	}
 
 	Menu* newMenu = current->handleAction();
 	display->refresh();
@@ -56,22 +64,32 @@ void Menu::poll(){
 }
 
 void Menu::change(Menu* newMenu){
-	current->encoderState = current->encoder.read();
+	current->encoderState = encoder.read();
 	current = newMenu;
-	newMenu->encoder.write(newMenu->encoderState);
+	encoder.write(newMenu->encoderState);
 	display->clear();
 }
 
-int16_t Menu::getMenuPosition(){
-	return encoder.read() / 2;
+void Menu::setMenuCount(uint16_t menuCount){
+	this->menuCount = menuCount;
 }
 
 int16_t Menu::getMenuPosition(int8_t offset){
 	int16_t value = (encoder.read() / 2) + offset;
-	while (value < 0) {
-		value += menuCount;
+	if (loop){
+		while (value < 0) {
+			value += menuCount;
+		}
+		
+		if (menuCount > 0) value = value % menuCount;
+		else value = 0;
 	}
-	return value % menuCount;
+	else {
+		if (value < 0 || menuCount == 0) value = 0;
+		else if (value >= menuCount) value = menuCount - 1;
+	}
+	
+	return value;
 }
 
 void Menu::setMenuPosition(int16_t position){

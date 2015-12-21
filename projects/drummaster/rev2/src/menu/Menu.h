@@ -21,6 +21,8 @@ namespace digitalcave {
 			
 			//The number of menu items for this menu.  This determines looping from the encoder.
 			uint16_t menuCount;
+			//Do we loop from the last menu item to the first?
+			uint8_t loop;
 	
 		protected:
 			static char buf[21];	//Temp space for string operations
@@ -28,8 +30,8 @@ namespace digitalcave {
 			int16_t encoderState;
 			
 			//Constructor
-			Menu();
-
+			Menu(uint16_t menuCount, uint8_t loop);
+			
 		public:
 			static Hd44780_Teensy* hd44780;
 			static CharDisplay* display;
@@ -54,10 +56,10 @@ namespace digitalcave {
 			//Change state to the specified menu
 			static void change(Menu* newMenu);
 			
-			Menu(uint16_t menuCount);
+			//Change the menu count after initialization
+			void setMenuCount(uint16_t menuCount);
 			
 			//Returns the currently selected menu item (or an offset from it), based on encoder state
-			int16_t getMenuPosition();
 			int16_t getMenuPosition(int8_t offset);
 			//Sets the currently selected menu item, based on encoder state
 			void setMenuPosition(int16_t position);

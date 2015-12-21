@@ -2,14 +2,14 @@
 
 using namespace digitalcave;
 
-LoadSamplesFromSD::LoadSamplesFromSD() : Menu(2){
+LoadSamplesFromSD::LoadSamplesFromSD() : Menu(2, 1){
 }
 
 Menu* LoadSamplesFromSD::handleAction(){
 	display->write_text(0, 0, "Load Samples         ", 20);
 	
 	display->write_text(getMenuPosition(1) + 1, 0, ' ');
-	display->write_text(getMenuPosition() + 1, 0, (char) 0x7E);
+	display->write_text(getMenuPosition(0) + 1, 0, (char) 0x7E);
 	display->write_text(1, 1, "Start               ", 19);
 	display->write_text(2, 1, "Cancel              ", 19);
 

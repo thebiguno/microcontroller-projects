@@ -8,16 +8,15 @@ using namespace digitalcave;
 #define STATE_LONGRELEASE	0x08
 #define STATE_REPEATPRESS	0x10
 
-void Button::init(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime, uint16_t repeatPressTime){
-	this->pressTime = pressTime;
-	this->releaseTime = releaseTime;
-	this->longPressTime = longPressTime;
-	this->repeatPressTime = repeatPressTime;
-	
-	this->pressCounter = 0x00;
-	this->releaseCounter = 0xFFFF;
-	this->longPressCounter = 0x00;
-	this->repeatPressCounter = 0x00;
+Button::Button(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime, uint16_t repeatPressTime) :
+	pressTime(pressTime),
+	releaseTime(releaseTime),
+	longPressTime(longPressTime),
+	repeatPressTime(repeatPressTime),
+	pressCounter(0x00),
+	releaseCounter(0xFFFF),
+	longPressCounter(0x00),
+	repeatPressCounter(0x00){
 }
 
 uint8_t Button::sample(uint32_t time) {

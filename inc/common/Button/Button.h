@@ -30,6 +30,14 @@ namespace digitalcave {
 		uint8_t eventState;
 		//Pressed state
 		uint8_t pressedState;
+		
+	protected:
+		/*
+		 * Set the targets for press, release, longPress, and repeatPress. 
+		 * These values are how many ms must pass before the given event type is fired.
+		 */
+		Button(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime, uint16_t repeatPressTime);
+
 
 	public:
 		/*
@@ -50,16 +58,6 @@ namespace digitalcave {
 		static uint8_t allLongPressEvent(Button* b1, Button* b2, Button* b3);
 		static uint8_t allLongPressEvent(Button* b1, Button* b2, Button* b3, Button* b4);
 	
-		/*
-		 * Set the targets for press, release, longPress, and repeatPress.  Called from sub class' constructors
-		 * These values are how many ms must pass before the given event type is fired.  For instance,
-		 * if pressCount is 10, we expect to have 10 calls to sample() all read a button press before the press
-		 * is reported.  If you know how frequently sample() is called, you can then calculate the total time for
-		 * debounce: if sample() is called every 10ms, and pressCount is 10, then you have a 100ms debounce period
-		 * for button pressing.
-		 */
-		void init(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime, uint16_t repeatPressTime);
-
 		/*
 		 * Samples the pin (by calling read()), and increments counters accordingly.  This method
 		 * should be called on a regular interval to ensure accurate debouncing.

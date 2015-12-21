@@ -42,7 +42,6 @@ int main(){
 	CalibrateChannel::loadPotentiometerFromEeprom();
 	KitSelect::loadKitIndexFromEeprom();
 	VolumeLineIn::loadVolumeFromEeprom();
-	VolumePad::loadPadVolumesFromEeprom();
 	VolumeLineOut::loadVolumeFromEeprom();
 	
 	//Set up ADC and build filename tables
