@@ -2,31 +2,49 @@
 
 using namespace digitalcave;
 
-CalibrateChannel::CalibrateChannel(){
+static const char* labels[CHANNEL_COUNT] = {
+	" Hi Hat             ",
+	" Hi Hat Pedal       ",
+	" Snare              ",
+	" Bass               ",
+	" Tom 1              ",
+	" Crash              ",
+	" Tom 2              ",
+	" Tom 3              ",
+	" Splash             ",
+	" Ride               ",
+	" X0                 ",
+	" X1                 "
+};
+
+CalibrateChannel::CalibrateChannel() : Menu(255){
 }
 
 Menu* CalibrateChannel::handleAction(){
+	display->write_text(0, 0, "Calibrate Channels   ", 20);
+	display->write_text(1, 0, labels[channel], 20);
 	
 	if (value == -1){
 		value = readFromPotentiometer(channel);
-		encoder.write(value);
+		setMenuPosition(value);
 	}
 	
 	snprintf(buf, sizeof(buf), "%d                   ", value >> 1);
 	display->write_text(2, 0, buf, 20);
 	
-	encoderState = encoder.read();
-	if (encoderState != value){
-		writeToPotentiometer(channel, encoderState);
+	encoderState = getMenuPosition();
+	if (getMenuPosition() != value){
+		writeToPotentiometer(channel, getMenuPosition());
 		//We always read back the value for verification
 		value = readFromPotentiometer(channel);
-		encoder.write(value);
+		setMenuPosition(value);
 		
-		savePotentiometerToEeprom();
 	}
 	
-	if (button.fallingEdge()){
-		display->write_text(2, 0, "                    ", 20);
+	if (button.longPressEvent()){
+		display->clear();
+		savePotentiometerToEeprom();
+
 		return Menu::calibrateChannelSelect;
 	}
 	

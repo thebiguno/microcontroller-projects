@@ -17,23 +17,32 @@
 #define BUFFER_SIZE		128
 
 //The size of the strings for kit name and filename prefix.  Includes null char at the end.
-#define KITNAME_STRING_SIZE		21
+#define KITNAME_STRING_SIZE		20
 #define FILENAME_STRING_SIZE	7
+//Maximum number of kits.  Allocates enough memory to load all these kits, so keep the number low
+#define KIT_COUNT				8
 
 namespace digitalcave {
 
 	class Mapping {
 		private:
+			static Mapping mappings[KIT_COUNT];
+			static uint8_t kitCount;
+			
 			uint8_t kitIndex;
 			char kitName[KITNAME_STRING_SIZE];
 			char filenamePrefixes[PAD_COUNT][FILENAME_STRING_SIZE];
 			
-
 		public:
-			//Loads the kit mappings from SPI flash, and returns the total count of all kits defined.
-			// Once loaded, you can then call getFilename() to get the filename prefixes needed
-			// to load into each pad.
-			static uint8_t loadKit(uint8_t kitIndex, Mapping* mapping);
+			//Loads the kit mappings from SPI flash.  Once loaded, you can then call 
+			// getMappings() to get the filename prefixes needed to load into each pad.
+			static void loadMappings();
+			
+			//Returns the mappings previously loaded with loadKits()
+			static Mapping* getMappings();
+			
+			//Returns the total number of kits defined in MAPPINGS.TXT
+			static uint8_t getKitCount();
 			
 			uint8_t getKitIndex();
 			

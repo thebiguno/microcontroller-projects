@@ -4,10 +4,12 @@
 
 using namespace digitalcave;
 
-Stats::Stats() : lastUpdate(0), forceUpdate(1) {
+Stats::Stats() : Menu(1), lastUpdate(0), forceUpdate(1) {
 }
 
 Menu* Stats::handleAction(){
+	display->write_text(0, 0, "System Status        ", 20);
+	
 	if (millis() - lastUpdate > 5000 || forceUpdate){
 		snprintf(buf, sizeof(buf), "CPU: %3d%% Mem: %3d%%      ", (uint8_t) AudioProcessorUsage(), (uint8_t) ((double) AudioMemoryUsage() / AUDIO_MEMORY * 100));
 		display->write_text(1, 0, buf, 20);
@@ -17,7 +19,7 @@ Menu* Stats::handleAction(){
 		forceUpdate = 0;
 	}
 	
-	if (button.fallingEdge()){
+	if (button.releaseEvent() || button.longPressEvent()){
 		display->clear();
 		forceUpdate = 1;
 		return Menu::mainMenu;

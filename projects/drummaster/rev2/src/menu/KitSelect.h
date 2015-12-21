@@ -14,8 +14,8 @@ namespace digitalcave {
 	class KitSelect : public Menu {
 	
 		private:
+			int8_t kitIndex;
 			int8_t lastKitIndex;
-			Mapping mapping;
 			
 		public:
 			static void loadKitIndexFromEeprom();
@@ -23,7 +23,6 @@ namespace digitalcave {
 
 			KitSelect();
 			Menu* handleAction();
-			Mapping* getMapping();
 	};
 }
 

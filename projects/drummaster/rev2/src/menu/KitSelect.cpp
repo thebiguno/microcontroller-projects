@@ -2,63 +2,43 @@
 
 using namespace digitalcave;
 
-KitSelect::KitSelect() : lastKitIndex(0xFF){
+KitSelect::KitSelect() : Menu(Mapping::getKitCount()){
 }
 
 void KitSelect::loadKitIndexFromEeprom(){
 	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
 	((KitSelect*) Menu::kitSelect)->encoderState = kitIndex * 2;
-	Pad::loadAllSamples(kitIndex, ((KitSelect*) Menu::kitSelect)->getMapping());
+	Mapping::loadMappings();
+	Pad::loadAllSamples(kitIndex);
 }
 
 void KitSelect::saveKitIndexToEeprom(){
-	EEPROM.update(EEPROM_KIT_INDEX, ((KitSelect*) Menu::kitSelect)->getMapping()->getKitIndex());
+	EEPROM.update(EEPROM_KIT_INDEX, ((KitSelect*) Menu::kitSelect)->kitIndex);
 }
 
 Menu* KitSelect::handleAction(){
-	int8_t kitIndex = encoder.read() / 2;
-	if (kitIndex != lastKitIndex){
-		lastKitIndex = kitIndex;
-		
-		uint8_t totalKitCount = Mapping::loadKit(kitIndex, &mapping);
+	display->write_text(0, 0, "Select Kit Mapping   ", 20);	
 	
-		if (kitIndex < 0){
-			encoder.write(totalKitCount * 2);
-		}
-		else if (kitIndex > totalKitCount){
-			encoder.write(0);
-		}
-		else if (mapping.getKitIndex() == 0xFF){
-			display->write_text(1, 0, "<Main Menu>         ", 20);
-			display->write_text(2, 0, "                    ", 20);
-			encoder.write(totalKitCount * 2);
-		}
-		else {
-			snprintf(buf, sizeof(buf), "%s                   ", mapping.getKitName());
-			display->write_text(1, 0, "Load                ", 20);
-			display->write_text(2, 0, buf, 20);
-		}
-	}
-	
-	if (button.fallingEdge()){
-		if (mapping.getKitIndex() == 0xFF){
-			display->clear();
-			lastKitIndex = 0xFF;
-			return Menu::mainMenu;
-		}
-		else {
-			VolumePad::savePadVolumesToEeprom();
-			Pad::loadAllSamples(mapping.getKitIndex(), &mapping);
-			saveKitIndexToEeprom();
-			VolumePad::loadPadVolumesFromEeprom();
-			display->clear();
-			lastKitIndex = 0xFF;
-			return Menu::mainMenu;
-		}
-	}
-	return NULL;
-}
+	display->write_text(2, 0, (char) 0x7E);
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMappings()[getMenuPosition(-1)].getKitName());
+	display->write_text(1, 1, buf, 19);
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMappings()[getMenuPosition()].getKitName());
+	display->write_text(2, 1, buf, 19);
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMappings()[getMenuPosition(1)].getKitName());
+	display->write_text(3, 1, buf, 19);
 
-Mapping* KitSelect::getMapping(){
-	return &mapping;
+	if (button.releaseEvent()){
+		VolumePad::savePadVolumesToEeprom();
+		Pad::loadAllSamples(kitIndex);
+		saveKitIndexToEeprom();
+		VolumePad::loadPadVolumesFromEeprom();
+		display->clear();
+		return Menu::mainMenu;
+	}
+	else if (button.longPressEvent()){
+		display->clear();
+		return Menu::mainMenu;
+	}
+
+	return NULL;
 }

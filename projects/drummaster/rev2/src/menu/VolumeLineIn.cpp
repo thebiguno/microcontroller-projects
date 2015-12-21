@@ -5,7 +5,7 @@ using namespace digitalcave;
 
 #define GAIN_DIVISOR		(256.0)
 
-VolumeLineIn::VolumeLineIn(){
+VolumeLineIn::VolumeLineIn() : Menu(256){
 }
 
 void VolumeLineIn::loadVolumeFromEeprom(){
@@ -19,24 +19,17 @@ void VolumeLineIn::saveVolumeToEeprom(){
 }
 
 Menu* VolumeLineIn::handleAction(){
-	int16_t encoderVolume = encoder.read();
-	if (volume != encoderVolume){
-		if (encoderVolume > 255){
-			encoderVolume = 255;
-			encoder.write(255);
-		}
-		else if (encoderVolume < 0){
-			encoderVolume = 0;
-			encoder.write(0);
-		}
-		volume = encoderVolume;
+	display->write_text(0, 0, "Line In Volume       ", 20);
+
+	if (volume != getMenuPosition()){
+		volume = getMenuPosition();
 		Sample::setVolumeLineIn(volume / GAIN_DIVISOR);
 	}
 	snprintf(buf, sizeof(buf), "%d%%     ", (uint8_t) (volume / GAIN_DIVISOR * 100));
 	display->write_text(1, 0, buf, 4);
 	
-	if (button.fallingEdge()){
-		display->write_text(1, 0, "    ", 4);
+	if (button.longPressEvent()){
+		display->clear();
 		saveVolumeToEeprom();
 		return Menu::mainMenu;
 	}

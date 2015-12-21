@@ -76,6 +76,11 @@ namespace digitalcave {
 			void clear();
 			
 			/*
+			 * Writes spaces to the entire given line.  Refresh is not called automatically.
+			 */
+			void clearRow(uint8_t row);
+			
+			/*
 			 * Writes all dirty characters from the buffer to the display, and marks
 			 * the buffer as clean.
 			 */

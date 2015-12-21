@@ -19,7 +19,7 @@ char Menu::buf[21];
 Hd44780_Teensy* Menu::hd44780 = NULL;
 CharDisplay* Menu::display = NULL;
 Encoder Menu::encoder(ENC_A, ENC_B);
-Bounce Menu::button(ENC_PUSH, 25);
+ButtonTeensy Menu::button(ENC_PUSH, 25, 25, 1000, 1000);
 
 //Initialize static references to menu items
 Menu* Menu::calibrateChannel = new CalibrateChannel();
@@ -36,11 +36,18 @@ Menu* Menu::volumePadSelect = new VolumePadSelect();
 
 Menu* Menu::current = Menu::mainMenu;
 
-Menu::Menu() : encoderState(0){
+Menu::Menu(uint16_t menuCount) : 
+	menuCount(menuCount), 
+	encoderState(0){
 }
 
 void Menu::poll(){
-	current->button.update();
+	current->button.sample(millis());
+	
+	//Ensure valid menu entry is selected
+	if ((encoder.read() / 2) >= current->menuCount) encoder.write(0);
+	else if ((encoder.read() / 2) < 0) encoder.write((current->menuCount - 1) * 2);
+
 	Menu* newMenu = current->handleAction();
 	display->refresh();
 	if (newMenu != NULL){
@@ -52,4 +59,22 @@ void Menu::change(Menu* newMenu){
 	current->encoderState = current->encoder.read();
 	current = newMenu;
 	newMenu->encoder.write(newMenu->encoderState);
+	display->clear();
 }
+
+int16_t Menu::getMenuPosition(){
+	return encoder.read() / 2;
+}
+
+int16_t Menu::getMenuPosition(int8_t offset){
+	int16_t value = (encoder.read() / 2) + offset;
+	while (value < 0) {
+		value += menuCount;
+	}
+	return value % menuCount;
+}
+
+void Menu::setMenuPosition(int16_t position){
+	encoder.write((int16_t) position * 2);
+}
+

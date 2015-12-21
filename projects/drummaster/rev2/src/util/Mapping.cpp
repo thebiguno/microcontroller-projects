@@ -2,26 +2,26 @@
 
 using namespace digitalcave;
 
-uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
-// 	Serial.print("Loading kit index ");
-// 	Serial.println(index);
+Mapping Mapping::mappings[KIT_COUNT];
+uint8_t Mapping::kitCount;
+
+void Mapping::loadMappings(){
 	uint8_t state = STATE_NEWLINE;
 
-	//We read the file until index == kitIndex, then load the kit file names at that location
 	int8_t kitIndex = -1;
 	
-	//Init the mapping object
-// 	Serial.println("Clearing mapping");
-	mapping->kitIndex = 0xFF;
-	for(uint8_t i = 0; i < KITNAME_STRING_SIZE; i++){
-		mapping->kitName[i] = 0x00;
-	}
-	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		for(uint8_t j = 0; j < FILENAME_STRING_SIZE; j++){
-			mapping->filenamePrefixes[i][j] = 0x00;
+	//Init the mapping objects
+	for(uint8_t i = 0; i < KIT_COUNT; i++){
+		mappings[i].kitIndex = 0xFF;
+		for(uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
+			mappings[i].kitName[j] = 0x00;
+		}
+		for (uint8_t j = 0; j < PAD_COUNT; j++){
+			for(uint8_t k = 0; k < FILENAME_STRING_SIZE; k++){
+				mappings[i].filenamePrefixes[j][k] = 0x00;
+			}
 		}
 	}
-// 	Serial.println("Done clearing mapping");
 
 	//These are the indices into the kit name string and the mapping lines
 	uint8_t kitNameIndex = 0;
@@ -35,7 +35,8 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 
 	SerialFlashFile mappingsFile = SerialFlash.open("MAPPINGS.TXT");
 	if (!mappingsFile) {
-		return 0;
+		kitCount = 0;
+		return;
 	}
 	
 	char buffer[BUFFER_SIZE];		//Temporary buffer for reading data
@@ -54,31 +55,25 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				//Alphanumeric starts a kitname
 				if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= 'a' && buffer[i] <= 'z') || (buffer[i] >= '0' && buffer[i] <= '9')){
 					kitIndex++;
-					if (kitIndex == index){
-						kitNameIndex = 0;
-						mapping->kitIndex = kitIndex;
-						for (uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
-							mapping->kitName[j] = 0x00;	//Null out string
-						}
-						mapping->kitName[kitNameIndex++] = buffer[i];
-						state = STATE_KITNAME;
+					if (kitIndex >= KIT_COUNT){
+						mappingsFile.close();
+						kitCount = kitIndex + 1;
+						return;
 					}
-					else {
-						state = STATE_COMMENT;		//Not really a comment, but we want to ignore it anyway
+					kitNameIndex = 0;
+					mappings[kitIndex].kitIndex = kitIndex;
+					for (uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
+						mappings[kitIndex].kitName[j] = 0x00;	//Null out string
 					}
+					mappings[kitIndex].kitName[kitNameIndex++] = buffer[i];
+					state = STATE_KITNAME;
 				}
-				//Tab starts a mapping, if we are on the right kit index
+				//Tab starts a mapping
 				else if (buffer[i] == '\t'){
-					if (kitIndex == index){
-						state = STATE_MAPPING;
-						mapping->kitIndex = index;
-						mappingIndex = 0;
-						lastMappingKey = 0xFF;
-						padIndex = 0xFF;
-					}
-					else {
-						state = STATE_COMMENT;		//Not really a comment, but we want to ignore it anyway
-					}
+					state = STATE_MAPPING;
+					mappingIndex = 0;
+					lastMappingKey = 0xFF;
+					padIndex = 0xFF;
 				}
 				//Hash starts a comment
 				else if (buffer[i] == '#'){
@@ -103,12 +98,10 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				//Any valid ASCII character continues a kitname
 				if (buffer[i] >= 0x20 && buffer[i] <= 0x7E){
 					if (kitNameIndex < KITNAME_STRING_SIZE - 1){
-						mapping->kitName[kitNameIndex++] = buffer[i];
+						mappings[kitIndex].kitName[kitNameIndex++] = buffer[i];
 					}
 				}
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
-// 					Serial.print("Kit name: ");
-// 					Serial.println(mapping->kitName);
 					state = STATE_NEWLINE;
 				}
 				else {
@@ -122,10 +115,6 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				}
 				//Newline
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
-// 					Serial.print("Mapping ");
-// 					Serial.print(padIndex);
-// 					Serial.print(": ");
-// 					Serial.println(mapping->filenamePrefixes[padIndex]);
 					state = STATE_NEWLINE;
 				}
 				//Some character other than A-Z, 0-9, comma, period, colon, dash, underscore
@@ -158,7 +147,7 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				else if (mappingIndex == 2){
 					if (buffer[i] == ':') {
 						for (uint8_t j = 0; j < FILENAME_STRING_SIZE; j++){
-							mapping->filenamePrefixes[padIndex][j] = 0x00;	//Null out string
+							mappings[kitIndex].filenamePrefixes[padIndex][j] = 0x00;	//Null out string
 						}
 					}
 					else {
@@ -168,7 +157,7 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 				//Filling up filename
 				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == '-' || buffer[i] == '_'){
 					if ((mappingIndex - 3) < FILENAME_STRING_SIZE - 1){
-						mapping->filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
+// 						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
 					}
 				}
 				//Something else
@@ -182,20 +171,15 @@ uint8_t Mapping::loadKit(uint8_t index, Mapping* mapping){
 	}
 	
 	mappingsFile.close();
-	
-	kitIndex++;
-	
-	//If we have read at least to the requested kit name, return
-// 	Serial.println();
-// 	Serial.print("Returning kit name: ");
-// 	Serial.println(mapping->kitName);
-// 	Serial.println("Mappings:");
-// 	for(uint8_t i = 0; i < PAD_COUNT; i++){
-// 		Serial.println(mapping->filenamePrefixes[i]);
-// 	}
-// 	Serial.print("Total kits: ");
-// 	Serial.println(kitIndex);
-	return kitIndex;
+	kitCount = kitIndex + 1;
+}
+
+Mapping* Mapping::getMappings(){
+	return mappings;
+}
+
+uint8_t Mapping::getKitCount(){
+	return kitCount;
 }
 
 uint8_t Mapping::getKitIndex(){

@@ -79,6 +79,13 @@ void CharDisplay::clear(){
 	}
 }
 
+void CharDisplay::clearRow(uint8_t row){
+	if (row >= 4) return;
+	for (uint8_t c = 0; c < 20; c++){
+		this->write_text(row, c, ' ');
+	}
+}
+
 void CharDisplay::refresh(){
 	uint8_t changed = 0;
 	for(uint8_t r = 0; r < this->rows; r++){

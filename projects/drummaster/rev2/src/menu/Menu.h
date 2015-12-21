@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include <Bounce.h>
+#include <ButtonTeensy.h>
 #include <CharDisplay.h>
 #include <Encoder.h>
 #include <Hd44780_Teensy.h>
@@ -17,9 +17,15 @@ namespace digitalcave {
 	class Menu {
 		private:
 			static Menu* current;
+			static Encoder encoder;
+			
+			//The number of menu items for this menu.  This determines looping from the encoder.
+			uint16_t menuCount;
 	
 		protected:
 			static char buf[21];	//Temp space for string operations
+			
+			int16_t encoderState;
 			
 			//Constructor
 			Menu();
@@ -27,8 +33,7 @@ namespace digitalcave {
 		public:
 			static Hd44780_Teensy* hd44780;
 			static CharDisplay* display;
-			static Encoder encoder;
-			static Bounce button;
+			static ButtonTeensy button;
 			
 			//All available menus
 			static Menu* mainMenu;
@@ -49,7 +54,13 @@ namespace digitalcave {
 			//Change state to the specified menu
 			static void change(Menu* newMenu);
 			
-			int16_t encoderState;
+			Menu(uint16_t menuCount);
+			
+			//Returns the currently selected menu item (or an offset from it), based on encoder state
+			int16_t getMenuPosition();
+			int16_t getMenuPosition(int8_t offset);
+			//Sets the currently selected menu item, based on encoder state
+			void setMenuPosition(int16_t position);
 
 			//Check the encoder and button state to see if we need to do anything.
 			// Update the display as needed.  Return NULL to stay in the same 

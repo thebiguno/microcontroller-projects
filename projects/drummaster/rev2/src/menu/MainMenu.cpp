@@ -2,65 +2,48 @@
 
 using namespace digitalcave;
 
-MainMenu::MainMenu(){
+#define MENU_COUNT 8
+static const char* labels[MENU_COUNT] = {
+	"Line Out Volume     ",
+	"Line In Volume      ",
+	"Kit Select          ",
+	"Pads Volume         ",
+	"Calibrate Channels  ",
+	"Load Kit Mappings   ",
+	"Load Samples        ",
+	"System Stats        "
+};
+
+MainMenu::MainMenu() : Menu(MENU_COUNT){
 }
 
 Menu* MainMenu::handleAction(){
-	#define MENU_COUNT 8
-
-	int8_t menuItem = encoder.read() / 2;
-	if (menuItem < 0) encoder.write((MENU_COUNT - 1) * 2);		//Loop to end
-	else if (menuItem >= MENU_COUNT) encoder.write(0);
+	display->write_text(0, 0, "Drum Master  rev 2.0", 20);
 	
-	switch(menuItem){
-		case 0:
-			display->write_text(0, 0, "Line Out Volume     ", 20);
-			if (button.fallingEdge()){
+	display->write_text(2, 0, (char) 0x7E);
+	display->write_text(1, 1, labels[getMenuPosition(-1)], 19);
+	display->write_text(2, 1, labels[getMenuPosition()], 19);
+	display->write_text(3, 1, labels[getMenuPosition(1)], 19);
+	
+	if (button.releaseEvent()){
+		switch(getMenuPosition()){
+			case 0:
 				return Menu::volumeLineOut;
-			}
-			break;
-		case 1:
-			display->write_text(0, 0, "Line In Volume      ", 20);
-			if (button.fallingEdge()){
+			case 1:
 				return Menu::volumeLineIn;
-			}
-			break;
-		case 2:
-			display->write_text(0, 0, "Kit Select          ", 20);
-			if (button.fallingEdge()){
+			case 2:
 				return Menu::kitSelect;
-			}
-			break;
-		case 3:
-			display->write_text(0, 0, "Pads Volume         ", 20);
-			if (button.fallingEdge()){
+			case 3:
 				return Menu::volumePadSelect;
-			}
-			break;
-		case 4:
-			display->write_text(0, 0, "Calibrate Channels  ", 20);
-			if (button.fallingEdge()){
+			case 4:
 				return Menu::calibrateChannelSelect;
-			}
-			break;
-		case 5:
-			display->write_text(0, 0, "Load Kit Mappings   ", 20);
-			if (button.fallingEdge()){
+			case 5:
 				return Menu::loadMappingsFromSD;
-			}
-			break;
-		case 6:
-			display->write_text(0, 0, "Load Samples        ", 20);
-			if (button.fallingEdge()){
+			case 6:
 				return Menu::loadSamplesFromSD;
-			}
-			break;
-		case 7:
-			display->write_text(0, 0, "System Stats        ", 20);
-			if (button.fallingEdge()){
+			case 7:
 				return Menu::stats;
-			}
-			break;
+		}
 	}
 	
 	return NULL;

@@ -79,12 +79,12 @@ void Pad::setPadVolume(double volume){
 	padVolume = volume;
 }
 
-void Pad::loadAllSamples(uint8_t kitIndex, Mapping* mapping){
-	uint8_t totalMappingsCount = Mapping::loadKit(kitIndex, mapping);
-	if (kitIndex >= totalMappingsCount) Mapping::loadKit(0, mapping);
+void Pad::loadAllSamples(uint8_t kitIndex){
+	if (kitIndex >= Mapping::getKitCount()) kitIndex = 0;
 
+	Mapping* mappings = Mapping::getMappings();
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
-		pads[i]->loadSamples(mapping->getFilenamePrefix(i));
+		pads[i]->loadSamples(mappings[kitIndex].getFilenamePrefix(i));
 	}
 }
 

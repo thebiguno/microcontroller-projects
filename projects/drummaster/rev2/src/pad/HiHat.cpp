@@ -21,7 +21,7 @@ void HiHat::poll(){
 	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 	if (!lastSwitchValue && switchValue){
 		double volume = getAveragePedalPosition() / 16.0;
-		Sample::startFade(padIndex, fadeGain - volume / 20);
+		Sample::startFade(padIndex, fadeGain - volume / 20 - 0.005);		//The faster the hihat is closed, the faster the samples fade out.
 		if (volume > 0.1 && lastChicTime + 100 < millis()){
 			lastSample = Sample::findAvailableSample(padIndex, volume);
 			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
