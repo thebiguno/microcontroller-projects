@@ -51,6 +51,8 @@ namespace digitalcave {
 			//uint32_t peakValueTime;
 			//The time at which the last value was considered stable and returned
 			uint32_t playTime;
+			//The last piezo value which was returned
+			double lastPiezo;
 			
 			//Maximum time in ms after a sample has been played before we can play another one.
 			uint8_t doubleHitThreshold;

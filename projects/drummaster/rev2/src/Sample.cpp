@@ -173,10 +173,12 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 
-	Serial.print("Playing ");
+	Serial.print(millis() % 1000);
+	Serial.print(" - Playing ");
 	Serial.print(filename);
 	Serial.print(" at volume ");
 	Serial.println(volume);
+	
 	
 	lastPad = pad;
 	setVolume(volume);

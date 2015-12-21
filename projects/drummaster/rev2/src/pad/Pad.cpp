@@ -10,16 +10,16 @@ ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	MUX Indices				DT		Fade
 	new HiHat(	MUX_0, MUX_1, MUX_15,	50,		1.00),	//Hihat + Pedal
-	new Drum(	MUX_2,					50),			//Snare
-	new Drum(	MUX_3,					100),			//Bass
-	new Drum(	MUX_4,					75),			//Tom1
-	new Cymbal(	MUX_5, MUX_14,			100,	0.98),	//Crash
-	new Drum(	MUX_6,					75),			//Tom2
-	new Drum(	MUX_7,					75),			//Tom3
-	new Cymbal(	MUX_8, MUX_13,			100,	0.97),	//Splash
-	new Cymbal(	MUX_9, MUX_12,			75,		0.99),	//Ride
-	new Drum(	MUX_10,					100),			//X0
-	new Drum(	MUX_11,					100)			//X1
+	new Drum(	MUX_2,					30),			//Snare
+	new Drum(	MUX_3,					50),			//Bass
+	new Drum(	MUX_4,					50),			//Tom1
+	new Cymbal(	MUX_5, MUX_14,			50,	0.98),		//Crash
+	new Drum(	MUX_6,					50),			//Tom2
+	new Drum(	MUX_7,					50),			//Tom3
+	new Cymbal(	MUX_8, MUX_13,			30,	0.97),		//Splash
+	new Cymbal(	MUX_9, MUX_12,			50,		0.99),	//Ride
+	new Drum(	MUX_10,					50),			//X0
+	new Drum(	MUX_11,					50)				//X1
 };
 
 //Initialize static pads array
@@ -54,6 +54,7 @@ Pad::Pad(uint8_t doubleHitThreshold) :
 		strikeTime(0),
 		peakValue(0),
 		playTime(0),
+		lastPiezo(0),
 		doubleHitThreshold(doubleHitThreshold),
 		lastSample(NULL),
 		padIndex(currentIndex) {
@@ -190,20 +191,29 @@ double Pad::readPiezo(uint8_t muxIndex){
 	// to prevent double triggering.
 	if (playTime + doubleHitThreshold > millis()){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//Give a bit of time to drain.  To keep constant delays, this should
-		// be the same as the delay prior to the ADC reading.
-		delayMicroseconds(5);
+		//Give a bit of time to drain.
+		delayMicroseconds(500);
 		return 0;
 	}
 	
 	//Enable ADC MUX...
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
-	//A short delay here seems to help to read a stable volume.  10us appears fine.
-	delayMicroseconds(5);
+	//A short delay here seems to help to read a stable volume.  Low single digit microsecond range seems about right.
+	delayMicroseconds(3);
 	
 	//... read value...
 	uint16_t currentValue = adc->analogRead(ADC_INPUT);
+	
+	//If we are within 4x the double hit threshold time-span, and the currently read value is less than
+	// one quarter of the previous one, then we assume this is just a ghost double trigger.  Re-enable the drain 
+	// each time we go through here.
+	if (playTime + (doubleHitThreshold * 4) > millis() && ((currentValue - MIN_VALUE) / 256.0 * padVolume) < (lastPiezo / 4)){
+		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+		//Give a bit of time to drain.
+		delayMicroseconds(100);
+		return 0;
+	}
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
@@ -226,6 +236,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 		double result = (peakValue - MIN_VALUE) / 256.0 * padVolume;
 		playTime = millis();
 		peakValue = 0;
+		lastPiezo = result;
 		
 		return result;
 	}

@@ -13,7 +13,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 	display->write_text(1, 1, "Start               ", 19);
 	display->write_text(2, 1, "Cancel              ", 19);
 
-	if (button.pressEvent() && getMenuPosition(0) == 0){
+	if (button.releaseEvent() && getMenuPosition(0) == 0){
 		display->write_text(1, 0, "Erasing Mappings.txt ", 20);
 		display->clearRow(2);
 		display->refresh();
@@ -67,7 +67,6 @@ Menu* LoadMappingsFromSD::handleAction(){
 				display->write_text(1, 0, "Flash Error Create  ", 20);
 				display->refresh();
 				delay(1000);
-				display->clear();
 				return Menu::mainMenu;
 			}
 			f.close();
@@ -76,7 +75,6 @@ Menu* LoadMappingsFromSD::handleAction(){
 			display->write_text(1, 0, "File Not Found      ", 20);
 			display->refresh();
 			delay(1000);
-			display->clear();
 			return Menu::mainMenu;
 		}
 
@@ -86,11 +84,9 @@ Menu* LoadMappingsFromSD::handleAction(){
 		EEPROM.update(EEPROM_KIT_INDEX, 0);
 		Pad::loadAllSamples(0);
 		delay(1000);
-		display->clear();
 		return Menu::mainMenu;
 	}
-	else if (button.longPressEvent() || (button.pressEvent() && getMenuPosition(0) == 1)){
-		display->clear();
+	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 1)){
 		return Menu::mainMenu;
 	}
 		
