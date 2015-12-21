@@ -48,6 +48,8 @@ COMPILERPATH = $(TOOLSPATH)/arm/bin
 # Settings below this point usually do not need to be edited
 #************************************************************************
 
+CDEFS += 
+
 # CPPFLAGS = compiler options for C and C++
 CPPFLAGS = -Wall -g -Os -mthumb -ffunction-sections -fdata-sections -nostdlib -MMD $(OPTIONS) -DTEENSYDUINO=124 -DF_CPU=$(F_CPU) -Isrc
 
@@ -129,17 +131,17 @@ flash: hex
 $(BUILDDIR)/%.o: %.c
 	@echo "[CC]\t$<"
 	@mkdir -p "$(dir $@)"
-	@$(CC) $(CPPFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
+	@$(CC) $(CDEFS) $(CPPFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(BUILDDIR)/%.o: %.cpp
 	@echo "[CXX]\t$<"
 	@mkdir -p "$(dir $@)"
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -c "$<"
+	$(CXX) $(CDEFS) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(BUILDDIR)/%.o: %.ino
 	@echo "[CXX]\t$<"
 	@mkdir -p "$(dir $@)"
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -x c++ -include Arduino.h -c "$<"
+	@$(CXX) $(CDEFS) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -x c++ -include Arduino.h -c "$<"
 
 $(PROJECT).elf: $(OBJS) $(LDSCRIPT)
 	@echo "[LD]\t$@"
