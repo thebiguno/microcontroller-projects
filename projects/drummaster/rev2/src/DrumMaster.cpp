@@ -37,6 +37,9 @@ int main(){
 	
 	//Allocate enough memory for audio
 	AudioMemory(AUDIO_MEMORY);
+	
+	//Load kit mappings from flash
+	Mapping::loadMappings();
 
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();

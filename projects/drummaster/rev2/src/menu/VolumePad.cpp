@@ -21,16 +21,24 @@ static const char* labels[PAD_COUNT] = {
 VolumePad::VolumePad() : Menu(101, 0), value(-1), pad(0) {
 }
 
-void VolumePad::loadPadVolumesFromEeprom(){
-	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+void VolumePad::loadPadVolumesFromEeprom(uint8_t kitIndex){
+// 	Serial.print("Load Pad Volumes from index ");
+// 	Serial.println(kitIndex);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
+// 		Serial.print(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
+// 		Serial.print(" = ");
 		Pad::pads[i]->setPadVolume(EEPROM.read(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex)) / GAIN_DIVISOR);
+// 		Serial.println(Pad::pads[i]->getPadVolume());
 	}
 }
 
-void VolumePad::savePadVolumesToEeprom(){
-	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+void VolumePad::savePadVolumesToEeprom(uint8_t kitIndex){
+// 	Serial.print("Save Pad Volumes to index ");
+// 	Serial.println(kitIndex);
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
+// 		Serial.print(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
+// 		Serial.print(" = ");
+// 		Serial.println(Pad::pads[i]->getPadVolume());
 		EEPROM.update(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex), Pad::pads[i]->getPadVolume() * GAIN_DIVISOR);
 	}
 }
@@ -54,11 +62,13 @@ Menu* VolumePad::handleAction(){
 	}
 
 	if (button.releaseEvent()){
-		savePadVolumesToEeprom();
+		uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+		savePadVolumesToEeprom(kitIndex);
 		return Menu::volumePadSelect;
 	}
 	else if (button.longPressEvent()){
-		loadPadVolumesFromEeprom();
+		uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+		loadPadVolumesFromEeprom(kitIndex);
 		return Menu::volumePadSelect;
 	}
 	

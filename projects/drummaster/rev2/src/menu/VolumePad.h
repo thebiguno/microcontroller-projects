@@ -15,8 +15,8 @@ namespace digitalcave {
 		private:
 			
 		public:
-			static void loadPadVolumesFromEeprom();
-			static void savePadVolumesToEeprom();
+			static void loadPadVolumesFromEeprom(uint8_t kitIndex);
+			static void savePadVolumesToEeprom(uint8_t kitIndex);
 			
 			int16_t value;
 			uint8_t pad;
