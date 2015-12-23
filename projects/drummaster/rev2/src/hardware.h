@@ -42,9 +42,9 @@
 
 //The total number of samples allowed in the system.  Currently 10 or possibly 11 seems to be right; more than this 
 // can cause skips when playing back.  If this is set to more than 14, you need to change how the
-// mixer is set up, since currently we are using a 16 Sample mixer with two Samples reserved for 
+// mixer is set up, since currently we are using 16 mixer channels with two channels reserved for 
 // passing through i2s audio from an external source.
-#define SAMPLE_COUNT					11
+#define SAMPLE_COUNT					14
 
 //The number of ADC channels on the system.  For the DrumMaster Rev 2.0 PCB, this is 12.
 #define CHANNEL_COUNT					12
