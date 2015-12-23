@@ -37,6 +37,7 @@ public:
 	AudioPlaySerialflashRaw(void) : AudioStream(0, NULL) { begin(); }
 	void begin(void);
 	bool play(const char *filename);
+	bool play(const char *filename, uint32_t positionMillis);
 	void stop(void);
 	bool isPlaying(void) { return playing; }
 	uint32_t positionMillis(void);

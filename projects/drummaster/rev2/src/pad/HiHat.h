@@ -12,8 +12,10 @@ namespace digitalcave {
 	class HiHat : public Cymbal {
 		private:
 			/*** Maintain state of pedal position and tightly closed state. ***/
-			//Last measured pedal position
+			//Measured pedal position with previous value
 			uint8_t pedalPosition;
+			uint8_t lastPedalPosition;
+			
 			//Running average of previous pedal positions; this must be divided to get the actual value
 			uint16_t averagePedalPosition;
 			
@@ -28,6 +30,9 @@ namespace digitalcave {
 			// pedal position or special effect (as entries in the array).
 			//This value is instantiated by calling loadSamples() method.
 			uint16_t sampleVolumes[18];
+			
+			//The last time the sample was changed based on pedal position
+			uint32_t lastSampleChange;
 
 			//Actual implementation of lookupFilename, which takes special hihat
 			// effects such as splash and chic into account.

@@ -1,5 +1,8 @@
 #include "Sample.h"
 
+#define FADE_OUT		1
+#define FADE_IN			2
+
 using namespace digitalcave;
 
 //All the audio junk.  Static members of the class.
@@ -156,20 +159,38 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	return &(samples[oldestSample[highestPad]]);
 }
 
+void Sample::getSamplesByPad(uint8_t pad, Sample** result, uint8_t* count){
+	*count = 0;
+	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
+		if (samples[i].lastPad == pad && samples[i].isPlaying()){
+// 			Serial.print("Sample match at index ");
+// 			Serial.println(i);
+			result[*count] = &(samples[i]);
+			*count = *count + 1;
+		}
+	}
+}
+
+
 /***** Instance methods *****/
 
 Sample::Sample(): 
 		mixerIndex((currentIndex >> 2) & 0x03), 
 		mixerChannel(currentIndex & 0x03),
 		lastPad(0xFF),
-		fadeGain(0),
+		fadeGain(1),
 		fading(0),
 		playSerialRaw(),
-		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel){
+		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel),
+		volume(0),
+		special(0){
 	currentIndex++;	//Increment current index
 }
 
 void Sample::play(char* filename, uint8_t pad, double volume){
+	play(filename, pad, volume, 0, 1);
+}
+void Sample::play(char* filename, uint8_t pad, double volume, uint32_t positionMillis, double fadeInGain){
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 
@@ -179,15 +200,26 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 	Serial.print(" at volume ");
 	Serial.println(volume);
 	
+	fading = 0;
+	fadeGain = 1;
 	
 	lastPad = pad;
 	setVolume(volume);
-//	envelope.noteOn();
-	playSerialRaw.play(filename);
+	if (positionMillis > 0) { //We want to fade in when not starting at the beginning of the file, to prevent audio artifacts
+		mixers[mixerIndex].gain(mixerChannel, 0.01);
+		startFade(fadeInGain);
+	}
+	playSerialRaw.play(filename, positionMillis);
+	
+	strncpy(this->filename, filename, sizeof(this->filename));
 }
 
 uint8_t Sample::isPlaying(){
 	return playSerialRaw.isPlaying();
+}
+
+uint8_t Sample::isFadingOut(){
+	return playSerialRaw.isPlaying() && fading == FADE_OUT;
 }
 
 uint32_t Sample::getPositionMillis(){
@@ -205,9 +237,30 @@ void Sample::stop(uint8_t pad){
 void Sample::startFade(uint8_t pad, double gain){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
-			samples[i].fading = 1;
-			samples[i].fadeGain = gain;
+			samples[i].startFade(gain);
 		}
+	}
+}
+
+void Sample::startFade(double gain){
+	if (gain > 1) {
+		fading = FADE_IN;
+		fadeVolume = 0.01;
+		if (gain > 1 && gain > fadeGain) fadeGain = gain;	//If we are already fading, keep the highest value
+		Serial.print("Fading in sample at rate ");
+		Serial.println(fadeGain);
+	}
+	else if (gain < 1){
+		fading = FADE_OUT;
+		fadeVolume = volume;
+		if (gain < 1 && gain < fadeGain) fadeGain = gain;	//If we are already fading, keep the highest value
+		Serial.print("Fading out sample at rate ");
+		Serial.println(fadeGain);
+	}
+	else {
+		Serial.println("No fade selected");
+		fading = 0;
+		fadeGain = 1;
 	}
 }
 
@@ -215,6 +268,7 @@ void Sample::stopFade(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		if (samples[i].lastPad == pad && samples[i].isPlaying()){
 			samples[i].fading = 0;
+			samples[i].fadeGain = 1;
 		}
 	}
 }
@@ -223,11 +277,17 @@ void Sample::processFade(uint8_t pad){
 	for (uint8_t i = 0; i < SAMPLE_COUNT; i++){
 		Sample* s = &samples[i];
 		if (s->lastPad == pad && s->isPlaying() && s->fading){
-			s->volume = s->volume * s->fadeGain;
-			mixers[s->mixerIndex].gain(s->mixerChannel, s->volume);
-			if (s->volume <= 0.001){
+			s->fadeVolume = s->fadeVolume * s->fadeGain;
+// 			Serial.print("Fade volume: ");
+// 			Serial.println(s->fadeVolume);
+			mixers[s->mixerIndex].gain(s->mixerChannel, s->fadeVolume);
+			if (s->fading == FADE_OUT && s->fadeVolume <= 0.001){
 				s->playSerialRaw.stop();
 				s->lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
+			}
+			else if (s->fading == FADE_IN && s->fadeVolume >= s->volume){
+				s->fading = 0;
+				s->setVolume(s->volume);
 			}
 		}
 	}
@@ -253,4 +313,16 @@ void Sample::setVolume(double volume){
 
 uint8_t Sample::getLastPad(){
 	return lastPad;
+}
+
+char* Sample::getFilename(){
+	return filename;
+}
+
+uint8_t Sample::getSpecial(){
+	return special;
+}
+
+void Sample::setSpecial(uint8_t special){
+	this->special = special;
 }

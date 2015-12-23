@@ -10,13 +10,13 @@ ADC* Pad::adc = NULL;
 Pad* Pad::pads[PAD_COUNT] = {
 	//	Type	MUX Indices				DT		Fade
 	new HiHat(	MUX_0, MUX_1, MUX_15,	50,		1.00),	//Hihat + Pedal
-	new Drum(	MUX_2,					30),			//Snare
+	new Drum(	MUX_2,					50),			//Snare
 	new Drum(	MUX_3,					50),			//Bass
 	new Drum(	MUX_4,					50),			//Tom1
-	new Cymbal(	MUX_5, MUX_14,			50,	0.98),		//Crash
+	new Cymbal(	MUX_5, MUX_14,			50,		0.98),	//Crash
 	new Drum(	MUX_6,					50),			//Tom2
 	new Drum(	MUX_7,					50),			//Tom3
-	new Cymbal(	MUX_8, MUX_13,			30,	0.97),		//Splash
+	new Cymbal(	MUX_8, MUX_13,			50,	0.97),		//Splash
 	new Cymbal(	MUX_9, MUX_12,			50,		0.99),	//Ride
 	new Drum(	MUX_10,					50),			//X0
 	new Drum(	MUX_11,					50)				//X1
@@ -56,7 +56,6 @@ Pad::Pad(uint8_t doubleHitThreshold) :
 		playTime(0),
 		lastPiezo(0),
 		doubleHitThreshold(doubleHitThreshold),
-		lastSample(NULL),
 		padIndex(currentIndex) {
 	currentIndex++;
 }
@@ -65,8 +64,7 @@ void Pad::play(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 
-	lastSample = Sample::findAvailableSample(padIndex, volume);
-	lastSample->play(lookupFilename(volume), padIndex, volume);
+	Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume), padIndex, volume);
 }
 
 double Pad::getPadVolume(){

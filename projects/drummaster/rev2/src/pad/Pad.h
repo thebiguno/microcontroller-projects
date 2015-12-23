@@ -75,10 +75,6 @@ namespace digitalcave {
 			char filenamePrefix[FILENAME_STRING_SIZE];
 			char filenameResult[FILENAME_STRING_SIZE + 6];
 			
-			//The last Sample which was used to play this pad.  Used in the event that we need
-			// to adjust the playback on the last Sample
-			Sample* lastSample;
-
 			//The index into the pads array for this instance
 			uint8_t padIndex;
 
