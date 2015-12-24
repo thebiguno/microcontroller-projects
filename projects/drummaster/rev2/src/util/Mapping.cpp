@@ -20,6 +20,7 @@ void Mapping::loadMappings(){
 			for(uint8_t k = 0; k < FILENAME_STRING_SIZE; k++){
 				mappings[i].filenamePrefixes[j][k] = 0x00;
 			}
+			mappings[i].custom[j] = 0xFF;
 		}
 	}
 
@@ -102,8 +103,6 @@ void Mapping::loadMappings(){
 					}
 				}
 				else if (buffer[i] == '\n' || buffer[i] == '\r'){
-					Serial.print("Kit name: ");
-					Serial.println(mappings[kitIndex].kitName);
 					state = STATE_NEWLINE;
 				}
 				else {
@@ -162,12 +161,29 @@ void Mapping::loadMappings(){
  						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
 					}
 				}
+				//This one has a custom mapping!
+				else if (buffer[i] == ':'){
+					state = STATE_CUSTOM;
+				}
 				//Something else
 				else {
 					state = STATE_INVALID;
 				}
 				
 				mappingIndex++;
+			}
+			else if (state == STATE_CUSTOM){
+				if (buffer[i] >= '0' && buffer[i] <= '9'){
+					mappings[kitIndex].custom[padIndex] = buffer[i] - 0x30;
+				}
+				//Newline
+				else if (buffer[i] == '\n' || buffer[i] == '\r'){
+					state = STATE_NEWLINE;
+				}
+				//Something else
+				else {
+					state = STATE_INVALID;
+				}
 			}
 		}
 	}
@@ -197,4 +213,9 @@ char* Mapping::getKitName(){
 char* Mapping::getFilenamePrefix(uint8_t padIndex){
 	if (padIndex < PAD_COUNT) return filenamePrefixes[padIndex];
 	else return NULL;
+}
+
+uint8_t Mapping::getCustom(uint8_t padIndex){
+	if (padIndex < PAD_COUNT) return custom[padIndex];
+	else return 0xFF;
 }

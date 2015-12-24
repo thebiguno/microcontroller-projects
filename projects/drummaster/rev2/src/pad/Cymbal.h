@@ -29,6 +29,9 @@ namespace digitalcave {
 			//Create a new pad object referencing the specified hardware channel
 			Cymbal(uint8_t piezoIndex, uint8_t muteIndex, uint8_t doubleHitThreshold, double fadeGain);
 			
+			//Returns the fade gain (either override or default)
+			double getFadeGain();
+			
 			//Implement virtual method
 			void poll();
 	};

@@ -81,6 +81,9 @@ namespace digitalcave {
 			//Returns the strike velocity.  Handles the ADC, draining, etc.
 			double readPiezo(uint8_t muxIndex);
 			
+			//Fade override.  0-9 are valid values, anything else is ignored.
+			uint8_t fadeOverride;
+			
 			//Find the correct sample, given a volume.
 			virtual char* lookupFilename(double volume);
 

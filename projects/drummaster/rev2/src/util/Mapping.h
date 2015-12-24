@@ -12,6 +12,7 @@
 #define STATE_COMMENT		2
 #define STATE_KITNAME		3
 #define STATE_MAPPING		4
+#define STATE_CUSTOM		5
 
 //The size of the buffer used when reading in kit mappings
 #define BUFFER_SIZE		128
@@ -32,6 +33,7 @@ namespace digitalcave {
 			uint8_t kitIndex;
 			char kitName[KITNAME_STRING_SIZE];
 			char filenamePrefixes[PAD_COUNT][FILENAME_STRING_SIZE];
+			uint8_t custom[PAD_COUNT];
 			
 		public:
 			//Loads the kit mappings from SPI flash.  Once loaded, you can then call 
@@ -49,6 +51,8 @@ namespace digitalcave {
 			char* getKitName();
 			
 			char* getFilenamePrefix(uint8_t padIndex);
+			
+			uint8_t getCustom(uint8_t padIndex);
 	};
 	
 }

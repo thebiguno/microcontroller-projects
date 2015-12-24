@@ -33,7 +33,7 @@ void HiHat::poll(){
 			lastChicVolume = volume;
 		}
 		else {
-			Sample::startFade(padIndex, 0.95);
+			Sample::startFade(padIndex, getFadeGain());
 		}
 	}
 
