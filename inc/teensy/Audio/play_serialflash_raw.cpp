@@ -36,12 +36,8 @@ void AudioPlaySerialflashRaw::begin(void)
 	file_size = 0;
 }
 
-#define B2M (uint32_t)((double)4294967296000.0 / AUDIO_SAMPLE_RATE_EXACT / 2.0) // 97352592
 
-bool AudioPlaySerialflashRaw::play(const char *filename){
-	return play(filename, 0);
-}
-bool AudioPlaySerialflashRaw::play(const char *filename, uint32_t positionMillis)
+bool AudioPlaySerialflashRaw::play(const char *filename)
 {
 	stop();
 	AudioStartUsingSPI();
@@ -52,19 +48,9 @@ bool AudioPlaySerialflashRaw::play(const char *filename, uint32_t positionMillis
 		return false;
 	}
 	file_size = rawfile.size();
-	if (positionMillis == 0) file_offset = 0;
-	else file_offset = (((uint64_t) positionMillis << 32) / B2M) & ~((uint32_t) ((AUDIO_BLOCK_SAMPLES * 2) - 1));
+	file_offset = 0;
 	//Serial.println("able to open file");
-// 	Serial.print("File offset: ");
-// 	Serial.println(file_offset);
 	playing = true;
-	
-	if (file_offset > file_size){
-		stop();
-	}
-	else {
-		rawfile.seek(file_offset);
-	}
 	return true;
 }
 
@@ -110,6 +96,8 @@ void AudioPlaySerialflashRaw::update(void)
 	}
 	release(block);
 }
+
+#define B2M (uint32_t)((double)4294967296000.0 / AUDIO_SAMPLE_RATE_EXACT / 2.0) // 97352592
 
 uint32_t AudioPlaySerialflashRaw::positionMillis(void)
 {

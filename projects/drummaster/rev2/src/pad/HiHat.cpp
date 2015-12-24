@@ -5,7 +5,8 @@ using namespace digitalcave;
 #define HIHAT_SPECIAL_CHIC			16
 #define HIHAT_SPECIAL_SPLASH		17
 
-#define AVERAGE_PEDAL_POSITION_DIVISOR_EXP		7
+//2 raised to this number is how many samples we keep in the running pedal position average
+#define AVERAGE_PEDAL_COUNT_EXP		6
 
 HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold, double fadeGain) : 
 		Cymbal(piezoMuxIndex, switchMuxIndex, doubleHitThreshold, fadeGain),
@@ -24,12 +25,10 @@ void HiHat::poll(){
 	//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
 	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 	if ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1)){
-// 		Serial.print(millis());
-		Serial.println("Playing chic and stopping other sounds");
 		double volume = (getAveragePedalPosition() / 16.0 - 0.3) * 2;
-		if (volume > 0 && lastChicTime + 50 < millis()){
+		if (volume > 0 && lastChicTime + 200 < millis()){
 			Sample::startFade(padIndex, 0.8);
-			Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume);
+			Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume, 1);
 			lastChicTime = millis();
 			lastChicVolume = volume;
 		}
@@ -38,64 +37,6 @@ void HiHat::poll(){
 		}
 	}
 
-	//Convert a closed HH sample into an open one (of varying degree) if it was done very recently
-	Sample* samples[SAMPLE_COUNT];
-	uint8_t count;
-	Sample::getSamplesByPad(padIndex, samples, &count);
-	
-	if (pedalPosition != lastPedalPosition){
-		Sample* samples[SAMPLE_COUNT];
-		uint8_t count;
-		Sample::getSamplesByPad(padIndex, samples, &count);
-		
-		for (uint8_t sampleIndex = 0; sampleIndex < count; sampleIndex++){
-			Sample* sample = samples[sampleIndex];
-			if (!sample->isFadingOut()		//If the sample is already fading out, don't touch it
-					&& strcmp(sample->getFilename(), lookupFilename(sample->getVolume(), HIHAT_SPECIAL_CHIC))){ //File is not Chic
-
-				int16_t fileCompare = strcmp(sample->getFilename(), lookupFilename(sample->getVolume()));
-				if (fileCompare > 0 //File is a tighter HH position
-						&& pedalPosition > 4){		//We don't want to mess with the lower pedal positions
-					lastSampleChange = millis();
-					double volume = sample->getVolume();
-					uint32_t position = sample->getPositionMillis();
-					Serial.print("Changing sample from ");
-					Serial.print(sample->getFilename());
-					Serial.print(" ");
-					Serial.println(lookupFilename(volume));
-					//Serial.println(1.0 - 0.16 / (pedalPosition + 1));
-					sample->startFade(1.0 - 0.16 / (pedalPosition + 1));	//The more closed it is, the faster we fade out
-					Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume), padIndex, volume, position, 1.02);
-				}
-				else if (fileCompare < 0 && sample->getPositionMillis() < 25){
-	// 				Serial.print("Pedal position: ");
-	// 				Serial.println(pedalPosition);
-	// 				Serial.print("Last sample: ");
-	// 				Serial.println(sample->getFilename());
-					lastSampleChange = millis();
-					double volume = sample->getVolume();
-					uint32_t position = sample->getPositionMillis();
-					Serial.print("Changing sample from ");
-					Serial.print(sample->getFilename());
-					Serial.print(" ");
-					Serial.println(lookupFilename(volume));
-					//Serial.println(1.0 - 0.16 / (pedalPosition + 1));
-					sample->startFade(0.97);
-					Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume), padIndex, volume, position, 1);
-				}
-			}
-		}
-	}
-	
-// 	//Play footsplash
-// 	if (pedalPosition > 3 && lastChicTime + 75 > millis()){
-// 		double volume = lastChicVolume;
-// 		//Sample::startFade(padIndex, fadeGain);
-// 		lastSample = Sample::findAvailableSample(padIndex, volume);
-// 		lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_SPLASH), padIndex, volume);
-// 		lastChicTime = 0;
-// 	}
-	
 	double volume = readPiezo(piezoMuxIndex);
 	if (volume > 0){
 		if (volume >= 5.0) volume = 5.0;
@@ -107,7 +48,7 @@ void HiHat::poll(){
 }
 
 uint8_t HiHat::getAveragePedalPosition(){
-	return averagePedalPosition >> AVERAGE_PEDAL_POSITION_DIVISOR_EXP;
+	return averagePedalPosition >> AVERAGE_PEDAL_COUNT_EXP;
 }
 
 void HiHat::readPedal(uint8_t muxIndex){
@@ -150,8 +91,8 @@ void HiHat::readPedal(uint8_t muxIndex){
 		pedalPosition = (currentValue >> 6) & 0x0F;
 	}
 
-	//Keep a running average of 2^AVERAGE_PEDAL_POSITION_DIVISOR_EXP previous pedal positions
-	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> AVERAGE_PEDAL_POSITION_DIVISOR_EXP);
+	//Keep a running average of 2^AVERAGE_PEDAL_COUNT_EXP previous pedal positions
+	averagePedalPosition = averagePedalPosition + pedalPosition - (averagePedalPosition >> AVERAGE_PEDAL_COUNT_EXP);
 }
 
 inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex, uint16_t* sampleVolumes){

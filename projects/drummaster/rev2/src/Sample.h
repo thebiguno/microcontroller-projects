@@ -85,11 +85,9 @@ namespace digitalcave {
 
 			//The last volume value which has been set for this Sample
 			double volume;
-			//The current mixer volume.  After fading this will be 'volume'.
-			double fadeVolume;
 			
-			//Anything that pads need to store here.  For instance, HiHat stores pedal position.
-			uint8_t special;
+			//Ignore fade requests.
+			uint8_t ignoreFade;
 			
 			//Constructing the objects should only happen during singleton array init.
 			Sample();
@@ -104,10 +102,6 @@ namespace digitalcave {
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, double volume);
 			
-			//Returns all samples currently playing for the given pad.  Pass in an array of pointers, 
-			// which is populated along with count variable showing how many are returned.
-			static void getSamplesByPad(uint8_t pad, Sample** result, uint8_t* count);
-			
 			//Starts fading out all currently playing samples for the selected pad.
 			static void startFade(uint8_t pad, double gain);
 			
@@ -119,13 +113,10 @@ namespace digitalcave {
 			
 			//Start playback using this sample's SPI playback object for the given filename
 			void play(char* filename, uint8_t pad, double volume);
-			void play(char* filename, uint8_t pad, double volume, uint32_t positionMillis, double fadeInGain);
+			void play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade);
 			
 			//Is the sample current playing?
 			uint8_t isPlaying();
-			
-			//Is the sample currently playing and fading out?
-			uint8_t isFadingOut();
 			
 			//If the sample is playing, return the position of the sample; otherwise return 0
 			uint32_t getPositionMillis();
@@ -147,10 +138,6 @@ namespace digitalcave {
 			
 			//Returns the last filename which was played on this sample
 			char* getFilename();
-			
-			//Get / set special value;
-			uint8_t getSpecial();
-			void setSpecial(uint8_t special);
 	};
 	
 }
