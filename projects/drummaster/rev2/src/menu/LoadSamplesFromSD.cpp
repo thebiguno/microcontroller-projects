@@ -10,20 +10,17 @@ Menu* LoadSamplesFromSD::handleAction(){
 	
 	display->write_text(getMenuPosition(1) + 1, 0, ' ');
 	display->write_text(getMenuPosition(0) + 1, 0, (char) 0x7E);
-	display->write_text(1, 1, "Start               ", 19);
-	display->write_text(2, 1, "Cancel              ", 19);
+	display->write_text(1, 1, "Cancel              ", 19);
+	display->write_text(2, 1, "Start               ", 19);
 
-	if (button.longPressEvent()){
-		display->clear();
-		return Menu::mainMenu;
-	}
-	else if (button.releaseEvent()){
+	if (button.releaseEvent() && getMenuPosition(0) == 1){
 		uint8_t id[3];
 		SerialFlash.readID(id);
 		uint32_t size = SerialFlash.capacity(id);
 
 		snprintf(buf, sizeof(buf), "Erasing %dMB          ", (uint16_t) (size >> 20));
 		display->write_text(1, 0, buf, 20);
+		display->clearRow(2);
 		display->refresh();
 		SerialFlash.eraseAll();
 
@@ -64,7 +61,8 @@ Menu* LoadSamplesFromSD::handleAction(){
 				} 
 				else {
 					display->clear();
-					display->write_text(1, 0, "Flash Error Open    ", 20);
+					display->write_text(1, 0, "Flash error open    ", 20);
+					display->write_text(1, 0, "MAPPINGS.txt        ", 20);
 					display->refresh();
 					delay(2000);
 					display->clear();
@@ -73,7 +71,9 @@ Menu* LoadSamplesFromSD::handleAction(){
 			}
 			else {
 				display->clear();
-				display->write_text(1, 0, "Flash Error Create  ", 20);
+				display->write_text(1, 0, "Flash error create; ", 20);
+				display->write_text(2, 0, "is there room on the", 20);
+				display->write_text(3, 0, "flash chip?         ", 20);
 				display->refresh();
 				delay(2000);
 				display->clear();
@@ -82,8 +82,9 @@ Menu* LoadSamplesFromSD::handleAction(){
 			f.close();
 		}
 		else {
-			display->write_text(1, 0, "File Not Found:     ", 20);
-			display->write_text(2, 0, "MAPPING.TXT         ", 20);
+			display->write_text(1, 0, "File not found;     ", 20);
+			display->write_text(2, 0, "ensure MAPPINGS.TXT ", 20);
+			display->write_text(3, 0, "is on SD card.      ", 20);
 			display->refresh();
 			delay(2000);
 			display->clear();
@@ -119,18 +120,22 @@ Menu* LoadSamplesFromSD::handleAction(){
 					} 
 					else {
 						display->clear();
-						display->write_text(1, 0, "Flash Error Open    ", 20);
+						display->write_text(1, 0, "Flash error open    ", 20);
+						snprintf(buf, sizeof(buf), "%s                  ", filename);
+						display->write_text(2, 0, buf, 20);
 						display->refresh();
-						delay(1000);
+						delay(2000);
 						display->clear();
 						return Menu::mainMenu;
 					}
 				}
 				else {
 					display->clear();
-					display->write_text(1, 0, "Flash Error Create  ", 20);
+					display->write_text(1, 0, "Flash error create; ", 20);
+					display->write_text(2, 0, "is there room on the", 20);
+					display->write_text(3, 0, "flash chip?         ", 20);
 					display->refresh();
-					delay(1000);
+					delay(2000);
 					display->clear();
 					return Menu::mainMenu;
 				}
@@ -138,7 +143,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 			f.close();
 		}
 		folder.close();
-		display->write_text(1, 0, "Load From SD Done   ", 20);
+		display->write_text(1, 0, "Load from SD done.  ", 20);
 		setMenuPosition(0);
 		display->refresh();
 		EEPROM.update(EEPROM_KIT_INDEX, 0);
@@ -147,6 +152,10 @@ Menu* LoadSamplesFromSD::handleAction(){
 		delay(1000);
 		display->clear();
 		
+		return Menu::mainMenu;
+	}
+	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
+		display->clear();
 		return Menu::mainMenu;
 	}
 	return NULL;

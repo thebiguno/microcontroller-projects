@@ -10,24 +10,23 @@ Menu* LoadMappingsFromSD::handleAction(){
 	
 	display->write_text(getMenuPosition(1) + 1, 0, ' ');
 	display->write_text(getMenuPosition(0) + 1, 0, (char) 0x7E);
-	display->write_text(1, 1, "Start               ", 19);
-	display->write_text(2, 1, "Cancel              ", 19);
+	display->write_text(1, 1, "Cancel              ", 19);
+	display->write_text(2, 1, "Start               ", 19);
 
-	if (button.releaseEvent() && getMenuPosition(0) == 0){
+	if (button.releaseEvent() && getMenuPosition(0) == 1){
 		display->write_text(1, 0, "Erasing Mappings.txt ", 20);
 		display->clearRow(2);
 		display->refresh();
+		delay(500);
 
 		if (SD.exists("/MAPPINGS.TXT")){
 			if (SerialFlash.exists("MAPPINGS.TXT")){
 				SerialFlash.remove("MAPPINGS.TXT");
 				if (SerialFlash.exists("MAPPINGS.TXT")){
-					display->write_text(1, 0, "Delete Failed.      ", 20);
-					display->write_text(2, 0, "Try formatting flash", 20);
-					display->write_text(2, 0, "using Load Samples. ", 20);
+					display->write_text(1, 0, "Delete failed; try  ", 20);
+					display->write_text(2, 0, "calling Load Samples", 20);
 					display->refresh();
 					delay(1000);
-					display->clear();
 					return Menu::mainMenu;
 				}
 			}
@@ -52,33 +51,34 @@ Menu* LoadMappingsFromSD::handleAction(){
 						count = count + n;
 					}
 					ff.close();
+					delay(500);
 				} 
 				else {
-					display->clear();
-					display->write_text(1, 0, "Flash Error Open    ", 20);
+					display->write_text(1, 0, "Flash error open    ", 20);
 					display->refresh();
-					delay(1000);
-					display->clear();
+					delay(2000);
 					return Menu::mainMenu;
 				}
 			}
 			else {
-				display->clear();
-				display->write_text(1, 0, "Flash Error Create  ", 20);
+				display->write_text(1, 0, "Flash error create; ", 20);
+				display->write_text(2, 0, "try Load Samples    ", 20);
 				display->refresh();
-				delay(1000);
+				delay(2000);
 				return Menu::mainMenu;
 			}
 			f.close();
 		}
 		else {
-			display->write_text(1, 0, "File Not Found      ", 20);
+			display->write_text(1, 0, "File not found;     ", 20);
+			display->write_text(2, 0, "ensure MAPPINGS.TXT ", 20);
+			display->write_text(3, 0, "is on SD card.      ", 20);
 			display->refresh();
-			delay(1000);
+			delay(2000);
 			return Menu::mainMenu;
 		}
 
-		display->write_text(1, 0, "Load From SD Done   ", 20);
+		display->write_text(1, 0, "Load from SD done.  ", 20);
 		display->refresh();
 		setMenuPosition(0);
 		EEPROM.update(EEPROM_KIT_INDEX, 0);
@@ -86,7 +86,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 		delay(1000);
 		return Menu::mainMenu;
 	}
-	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 1)){
+	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
 		return Menu::mainMenu;
 	}
 		
