@@ -40,12 +40,21 @@ int main(){
 	
 	//Load kit mappings from flash
 	Mapping::loadMappings();
-
+	
 	//Load settings from EEPROM
 	CalibrateChannel::loadPotentiometerFromEeprom();
 	KitSelect::loadKitIndexFromEeprom();
 	VolumeLineIn::loadVolumeFromEeprom();
 	VolumeLineOut::loadVolumeFromEeprom();
+
+	if (Mapping::getKitCount() == 0){
+		Menu::display->write_text(0, 0, "No Mappings Found...", 20);
+		Menu::display->write_text(1, 0, "Please load samples ", 20);
+		Menu::display->write_text(2, 0, "from the SD card    ", 20);
+		Menu::display->refresh();
+		delay(2000);
+		Menu::display->clear();
+	}
 	
 	//Set up ADC and build filename tables
 	Pad::init();

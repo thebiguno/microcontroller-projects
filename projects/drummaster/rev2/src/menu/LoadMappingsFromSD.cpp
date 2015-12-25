@@ -26,6 +26,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 					display->write_text(1, 0, "Delete failed; try  ", 20);
 					display->write_text(2, 0, "calling Load Samples", 20);
 					display->refresh();
+					Mapping::loadMappings();
 					delay(1000);
 					return Menu::mainMenu;
 				}
@@ -56,6 +57,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 				else {
 					display->write_text(1, 0, "Flash error open    ", 20);
 					display->refresh();
+					Mapping::loadMappings();
 					delay(2000);
 					return Menu::mainMenu;
 				}
@@ -64,6 +66,7 @@ Menu* LoadMappingsFromSD::handleAction(){
 				display->write_text(1, 0, "Flash error create; ", 20);
 				display->write_text(2, 0, "try Load Samples    ", 20);
 				display->refresh();
+				Mapping::loadMappings();
 				delay(2000);
 				return Menu::mainMenu;
 			}
@@ -74,12 +77,14 @@ Menu* LoadMappingsFromSD::handleAction(){
 			display->write_text(2, 0, "ensure MAPPINGS.TXT ", 20);
 			display->write_text(3, 0, "is on SD card.      ", 20);
 			display->refresh();
+			Mapping::loadMappings();
 			delay(2000);
 			return Menu::mainMenu;
 		}
 
 		display->write_text(1, 0, "Load from SD done.  ", 20);
 		display->refresh();
+		Mapping::loadMappings();
 		setMenuPosition(0);
 		EEPROM.update(EEPROM_KIT_INDEX, 0);
 		Pad::loadAllSamples(0);

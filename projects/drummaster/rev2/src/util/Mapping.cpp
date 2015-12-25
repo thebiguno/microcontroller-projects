@@ -1,5 +1,7 @@
 #include "Mapping.h"
 
+#include "../menu/Menu.h"
+
 using namespace digitalcave;
 
 Mapping Mapping::mappings[KIT_COUNT];
@@ -37,6 +39,15 @@ void Mapping::loadMappings(){
 	SerialFlashFile mappingsFile = SerialFlash.open("MAPPINGS.TXT");
 	if (!mappingsFile) {
 		kitCount = 0;
+		
+		Menu::display->clear();
+		Menu::display->write_text(0, 0, "No Mappings Found...", 20);
+		Menu::display->write_text(1, 0, "Please load samples ", 20);
+		Menu::display->write_text(2, 0, "from the SD card    ", 20);
+		Menu::display->refresh();
+		delay(2000);
+		Menu::display->clear();
+
 		return;
 	}
 	

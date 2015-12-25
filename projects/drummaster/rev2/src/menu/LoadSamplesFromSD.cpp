@@ -124,6 +124,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 						snprintf(buf, sizeof(buf), "%s                  ", filename);
 						display->write_text(2, 0, buf, 20);
 						display->refresh();
+						Mapping::loadMappings();
 						delay(2000);
 						display->clear();
 						return Menu::mainMenu;
@@ -135,6 +136,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 					display->write_text(2, 0, "is there room on the", 20);
 					display->write_text(3, 0, "flash chip?         ", 20);
 					display->refresh();
+					Mapping::loadMappings();
 					delay(2000);
 					display->clear();
 					return Menu::mainMenu;
