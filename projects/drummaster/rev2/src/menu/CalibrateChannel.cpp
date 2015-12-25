@@ -41,9 +41,15 @@ Menu* CalibrateChannel::handleAction(){
 		
 	}
 	
-	if (button.longPressEvent()){
+	if (button.releaseEvent()){
 		display->clear();
 		savePotentiometerToEeprom();
+
+		return Menu::calibrateChannelSelect;
+	}
+	else if (button.longPressEvent()){
+		display->clear();
+		loadPotentiometerFromEeprom();
 
 		return Menu::calibrateChannelSelect;
 	}
