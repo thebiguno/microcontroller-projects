@@ -8,7 +8,7 @@
 
 namespace digitalcave {
 
-	class VolumeLineOut : public Menu {
+	class VolumeHeadphones : public Menu {
 	
 		private:
 			uint8_t volume;
@@ -17,7 +17,7 @@ namespace digitalcave {
 			static void loadVolumeFromEeprom();
 			static void saveVolumeToEeprom();
 			
-			VolumeLineOut();
+			VolumeHeadphones();
 			Menu* handleAction();
 	};
 }

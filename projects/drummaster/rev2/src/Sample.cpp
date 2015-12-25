@@ -11,26 +11,23 @@ uint8_t Sample::controlEnabled = 0;
 //I2S input
 AudioInputI2S Sample::input;
 
-//Mixers
-AudioMixer4 Sample::mixers[4];
-AudioMixer4 Sample::mixer;
-
-//Mixer connections
-AudioConnection Sample::mixer0ToMixer(mixers[0], 0, mixer, 0);
-AudioConnection Sample::mixer1ToMixer(mixers[1], 0, mixer, 1);
-AudioConnection Sample::mixer2ToMixer(mixers[2], 0, mixer, 2);
-AudioConnection Sample::mixer3ToMixer(mixers[3], 0, mixer, 3);
-
 //Output
 AudioOutputI2S Sample::output;
 
-//Input passthrough to mixers[3], channels 2 and 3
-AudioConnection Sample::inputToMixer0(input, 0, mixers[3], 2);
-AudioConnection Sample::inputToMixer1(input, 1, mixers[3], 3);
+//Mixers
+AudioMixer16 Sample::sampleMixer;
+AudioMixer4 Sample::outputMixer;
 
-//Mixer to output
-AudioConnection Sample::mixerToOutput0(mixer, 0, output, 0);
-AudioConnection Sample::mixerToOutput1(mixer, 0, output, 1);
+//Sample mixer to output mixer
+AudioConnection Sample::sampleMixerToOutputMixer(sampleMixer, 0, outputMixer, 2);
+
+//Pass through line in to outputMixer
+AudioConnection Sample::inputToOutputMixer0(input, 0, outputMixer, 0);
+AudioConnection Sample::inputToOutputMixer1(input, 1, outputMixer, 1);
+
+//Output Mixer to output
+AudioConnection Sample::mixerToOutput0(outputMixer, 0, output, 0);
+AudioConnection Sample::mixerToOutput1(outputMixer, 0, output, 1);
 
 //Initialize samples array
 uint8_t Sample::currentIndex = 0;
@@ -38,7 +35,7 @@ Sample Sample::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-void Sample::setVolumeLineOut(double volume){
+void Sample::setVolumeHeadphones(double volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
@@ -51,10 +48,10 @@ void Sample::setVolumeLineOut(double volume){
 
 void Sample::setVolumeLineIn(double volume){
 	if (volume < 0.0) volume = 0.0;
-	else if (volume > 1.0) volume = 1.0;
+	else if (volume > 2.0) volume = 2.0;
 
-	mixers[3].gain(2, volume);
-	mixers[3].gain(3, volume);
+	outputMixer.gain(0, volume);
+	outputMixer.gain(1, volume);
 }
 
 Sample* Sample::findAvailableSample(uint8_t pad, double volume){
@@ -160,13 +157,12 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 /***** Instance methods *****/
 
 Sample::Sample(): 
-		mixerIndex((currentIndex >> 2) & 0x03), 
-		mixerChannel(currentIndex & 0x03),
+		index(currentIndex & 0x0F), 
+		playSerialRaw(),
+		playSerialRawToMixer(playSerialRaw, 0, sampleMixer, index),
 		lastPad(0xFF),
 		fadeGain(1),
 		fading(0),
-		playSerialRaw(),
-		playSerialRawToMixer(playSerialRaw, 0, mixers[mixerIndex], mixerChannel),
 		volume(0){
 	currentIndex++;	//Increment current index
 }
@@ -250,7 +246,7 @@ void Sample::processFade(uint8_t pad){
 		Sample* s = &samples[i];
 		if (s->lastPad == pad && s->isPlaying() && s->fading){
 			s->volume = s->volume * s->fadeGain;
-			mixers[s->mixerIndex].gain(s->mixerChannel, s->volume);
+			sampleMixer.gain(s->index, s->volume);
 			if (s->volume <= 0.001){
 				s->playSerialRaw.stop();
 				s->lastPad = 0xFF;		//Once we have finished fading, we consider it valid to re-use this sample object
@@ -274,7 +270,7 @@ void Sample::setVolume(double volume){
 	else if (volume >= 5.0) volume = 5.0;
 	
 	this->volume = volume;
-	mixers[mixerIndex].gain(mixerChannel, volume);
+	sampleMixer.gain(index, volume);
 }
 
 uint8_t Sample::getLastPad(){

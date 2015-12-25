@@ -34,21 +34,18 @@ namespace digitalcave {
 			static AudioInputI2S input;
 
 			//Mixers
-			static AudioMixer4 mixers[];	//4 mixers...
-			static AudioMixer4 mixer;		//... are channeled into one for final output
+			static AudioMixer16 sampleMixer;	//Up to 16 channels used
+			static AudioMixer4 outputMixer;		//Channel 0 and 1 are from line in; channel 2 is from sampleMixer.
 
 			//Output
 			static AudioOutputI2S output;
 			
 			//Connect the mixers together
-			static AudioConnection mixer0ToMixer;
-			static AudioConnection mixer1ToMixer;
-			static AudioConnection mixer2ToMixer;
-			static AudioConnection mixer3ToMixer;
+			static AudioConnection sampleMixerToOutputMixer;
 
 			//Input passthrough to mixer
-			static AudioConnection inputToMixer0;
-			static AudioConnection inputToMixer1;
+			static AudioConnection inputToOutputMixer0;
+			static AudioConnection inputToOutputMixer1;
 
 			//Mixer to output
 			static AudioConnection mixerToOutput0;
@@ -62,10 +59,14 @@ namespace digitalcave {
 			// use fade() for this rather than stopping abruptly.
 			static void stop(uint8_t pad);
 		
-
 			//This sample's index into mixer
-			uint8_t mixerIndex;
-			uint8_t mixerChannel;
+			uint8_t index;
+			
+			//SPI flash playback object
+			AudioPlaySerialflashRaw playSerialRaw;
+
+			//Connection from playSerialRaw to mixer
+			AudioConnection playSerialRawToMixer;
 			
 			//The most recently played pad index.
 			uint8_t lastPad;
@@ -73,12 +74,6 @@ namespace digitalcave {
 			//Allow for fade out when muting cymbals
 			double fadeGain;
 			uint8_t fading;
-			
-			//SPI flash playback object
-			AudioPlaySerialflashRaw playSerialRaw;
-
-			//Connection from playSerialRaw to mixer
-			AudioConnection playSerialRawToMixer;
 			
 			//The last filename which was played
 			char filename[FILENAME_STRING_SIZE + 6];
@@ -93,10 +88,10 @@ namespace digitalcave {
 			Sample();
 			
 		public:
-			//Set the output volume.  This is a gain value from 0 to 1.
-			static void setVolumeLineOut(double volume);
+			//Set the headphone volume.  This is a gain value from 0 to 1.
+			static void setVolumeHeadphones(double volume);
 			
-			//Set the line in volume.  This is a gain value from 0 to 1.  Keep this low unless using the line in.
+			//Set the line in volume.  This is a gain value from 0 to 2.  Keep this low unless using the line in.
 			static void setVolumeLineIn(double volume);
 			
 			//Find the best available Sample object from the singleton array

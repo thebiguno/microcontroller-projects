@@ -40,7 +40,7 @@ namespace digitalcave {
 			//All available menus
 			static Menu* mainMenu;
 			static Menu* volumeLineIn;
-			static Menu* volumeLineOut;
+			static Menu* volumeHeadphones;
 			static Menu* kitSelect;
 			static Menu* volumePad;
 			static Menu* volumePadSelect;

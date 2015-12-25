@@ -1,18 +1,23 @@
 Pad			Function				Connector
 
-Snare:		Signal / GND			White
-Bass:		Signal / GND			White
-Tom1:		Signal / GND			White
-Tom2:		Signal / GND			White
-Tom3:		Signal / GND			White
+Snare:		Signal / GND			Yellow
+Bass:		Signal / GND			Yellow
+Tom1:		Signal / GND			Yellow
+Tom2:		Signal / GND			Yellow
+Tom3:		Signal / GND			Yellow
 
-HiHat:		Signal / GND			Yellow
+X0:			Signal / GND			Yellow
+X1:			Signal / GND			Yellow
+
+HiHat:		Signal / GND			White
 
 HiHat Pdl:	Signal / GND			Yellow
-			VCC / Mute				Red
-Crash:		Signal / GND			Yellow
-			VCC / Mute				Red
-Ride:		Signal / GND			Yellow
-			VCC / Mute				Red
-Splash:		Signal / GND			Yellow
-			VCC / Mute				Red
+			Switch / GND			White
+			VCC / GND				Red
+			
+Crash:		Signal / GND			White
+			Mute / GND				Red
+Ride:		Signal / GND			White
+			Mute / GND				Red
+Splash:		Signal / GND			White
+			Mute / GND				Red

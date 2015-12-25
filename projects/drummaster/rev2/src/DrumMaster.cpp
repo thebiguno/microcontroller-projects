@@ -45,7 +45,7 @@ int main(){
 	CalibrateChannel::loadPotentiometerFromEeprom();
 	KitSelect::loadKitIndexFromEeprom();
 	VolumeLineIn::loadVolumeFromEeprom();
-	VolumeLineOut::loadVolumeFromEeprom();
+	VolumeHeadphones::loadVolumeFromEeprom();
 
 	if (Mapping::getKitCount() == 0){
 		Menu::display->write_text(0, 0, "No Mappings Found...", 20);

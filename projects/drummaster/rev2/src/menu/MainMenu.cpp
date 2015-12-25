@@ -28,7 +28,7 @@ Menu* MainMenu::handleAction(){
 	if (button.releaseEvent()){
 		switch(getMenuPosition(0)){
 			case 0:
-				return Menu::volumeLineOut;
+				return Menu::volumeHeadphones;
 			case 1:
 				return Menu::volumeLineIn;
 			case 2:

@@ -5,7 +5,7 @@ using namespace digitalcave;
 
 #define GAIN_DIVISOR		(100.0)
 
-VolumeLineIn::VolumeLineIn() : Menu(101, 0){
+VolumeLineIn::VolumeLineIn() : Menu(201, 0){
 }
 
 void VolumeLineIn::loadVolumeFromEeprom(){

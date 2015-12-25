@@ -8,7 +8,7 @@
 #include "MainMenu.h"
 #include "Stats.h"
 #include "VolumeLineIn.h"
-#include "VolumeLineOut.h"
+#include "VolumeHeadphones.h"
 #include "VolumePad.h"
 #include "VolumePadSelect.h"
 
@@ -30,7 +30,7 @@ Menu* Menu::kitSelect = new KitSelect();
 Menu* Menu::mainMenu = new MainMenu();
 Menu* Menu::stats = new Stats();
 Menu* Menu::volumeLineIn = new VolumeLineIn();
-Menu* Menu::volumeLineOut = new VolumeLineOut();
+Menu* Menu::volumeHeadphones = new VolumeHeadphones();
 Menu* Menu::volumePad = new VolumePad();
 Menu* Menu::volumePadSelect = new VolumePadSelect();
 
