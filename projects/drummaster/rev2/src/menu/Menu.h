@@ -19,10 +19,8 @@ namespace digitalcave {
 			static Menu* current;
 			static Encoder encoder;
 			
-			//The number of menu items for this menu.  This determines looping from the encoder.
+			//The number of menu items for this menu.
 			uint16_t menuCount;
-			//Do we loop from the last menu item to the first?
-			uint8_t loop;
 	
 		protected:
 			static char buf[21];	//Temp space for string operations
@@ -30,7 +28,10 @@ namespace digitalcave {
 			int16_t encoderState;
 			
 			//Constructor
-			Menu(uint16_t menuCount, uint8_t loop);
+			Menu(uint16_t menuCount);
+			
+			//Draw the arrow depending on the position offset
+			void writeSelection(int8_t positionOffset);
 			
 		public:
 			static Hd44780_Teensy* hd44780;
@@ -38,16 +39,17 @@ namespace digitalcave {
 			static ButtonTeensy button;
 			
 			//All available menus
-			static Menu* mainMenu;
-			static Menu* volumeLineIn;
-			static Menu* volumeHeadphones;
-			static Menu* kitSelect;
-			static Menu* volumePad;
-			static Menu* volumePadSelect;
-			static Menu* loadMappingsFromSD;
-			static Menu* loadSamplesFromSD;
 			static Menu* calibrateChannel;
 			static Menu* calibrateChannelSelect;
+			static Menu* kitSelect;
+			static Menu* loadMappingsFromSD;
+			static Menu* loadSamplesFromSD;
+			static Menu* mainMenu;
+			static Menu* settings;
+			static Menu* volumeHeadphones;
+			static Menu* volumeLineIn;
+			static Menu* volumePad;
+			static Menu* volumePadSelect;
 			static Menu* stats;
 			
 			//Calls the handleAction() method for the current menu
@@ -63,6 +65,8 @@ namespace digitalcave {
 			int16_t getMenuPosition(int8_t offset);
 			//Sets the currently selected menu item, based on encoder state
 			void setMenuPosition(int16_t position);
+			//Returns 1, -1, or 0 depending on whether we are at the beginning, end, or middle of a menu
+			int8_t getPositionOffset();
 
 			//Check the encoder and button state to see if we need to do anything.
 			// Update the display as needed.  Return NULL to stay in the same 

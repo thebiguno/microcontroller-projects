@@ -19,7 +19,7 @@ void Mapping::loadMappings(){
 			mappings[i].kitName[j] = 0x00;
 		}
 		for (uint8_t j = 0; j < PAD_COUNT; j++){
-			for(uint8_t k = 0; k < FILENAME_STRING_SIZE; k++){
+			for(uint8_t k = 0; k < FILENAME_PREFIX_STRING_SIZE; k++){
 				mappings[i].filenamePrefixes[j][k] = 0x00;
 			}
 			mappings[i].custom[j] = 0xFF;
@@ -158,7 +158,7 @@ void Mapping::loadMappings(){
 				//Separator character (colon)
 				else if (mappingIndex == 2){
 					if (buffer[i] == ':') {
-						for (uint8_t j = 0; j < FILENAME_STRING_SIZE; j++){
+						for (uint8_t j = 0; j < FILENAME_PREFIX_STRING_SIZE; j++){
 							mappings[kitIndex].filenamePrefixes[padIndex][j] = 0x00;	//Null out string
 						}
 					}
@@ -168,7 +168,7 @@ void Mapping::loadMappings(){
 				}
 				//Filling up filename
 				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == '-' || buffer[i] == '_'){
-					if ((mappingIndex - 3) < FILENAME_STRING_SIZE - 1){
+					if ((mappingIndex - 3) < FILENAME_PREFIX_STRING_SIZE - 1){
  						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
 					}
 				}

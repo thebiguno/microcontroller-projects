@@ -5,7 +5,7 @@ using namespace digitalcave;
 
 #define GAIN_DIVISOR		(100.0)
 
-VolumeHeadphones::VolumeHeadphones() : Menu(101, 0){
+VolumeHeadphones::VolumeHeadphones() : Menu(101){
 }
 
 void VolumeHeadphones::loadVolumeFromEeprom(){

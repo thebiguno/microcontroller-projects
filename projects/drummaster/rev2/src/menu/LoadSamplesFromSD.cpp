@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-LoadSamplesFromSD::LoadSamplesFromSD() : Menu(2, 1){
+LoadSamplesFromSD::LoadSamplesFromSD() : Menu(2){
 }
 
 Menu* LoadSamplesFromSD::handleAction(){

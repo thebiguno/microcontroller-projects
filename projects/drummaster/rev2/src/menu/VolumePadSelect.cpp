@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-static const char* labels[PAD_COUNT] = {
+static const char* labels[] = {
 	"Hi Hat             ",
 	"Snare              ",
 	"Bass               ",
@@ -16,16 +16,18 @@ static const char* labels[PAD_COUNT] = {
 	"X1                 "
 };
 
-VolumePadSelect::VolumePadSelect() : Menu(PAD_COUNT, 1){
+VolumePadSelect::VolumePadSelect() : Menu(PAD_COUNT){
 }
 
 Menu* VolumePadSelect::handleAction(){
 	display->write_text(0, 0, "Pad Volume Adjust   ", 20);
 	
-	display->write_text(2, 0, (char) 0x7E);
-	display->write_text(1, 1, labels[getMenuPosition(-1)], 19);
-	display->write_text(2, 1, labels[getMenuPosition(0)], 19);
-	display->write_text(3, 1, labels[getMenuPosition(1)], 19);
+	int8_t positionOffset = getPositionOffset();
+	writeSelection(positionOffset);
+
+	display->write_text(1, 1, labels[getMenuPosition(positionOffset - 1)], 19);
+	display->write_text(2, 1, labels[getMenuPosition(positionOffset)], 19);
+	display->write_text(3, 1, labels[getMenuPosition(positionOffset + 1)], 19);
 	
 	if (button.releaseEvent()){
 		((VolumePad*) Menu::volumePad)->value = -1;

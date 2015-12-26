@@ -7,7 +7,7 @@ using namespace digitalcave;
 #define STRINGIFY(x) XSTRINGIFY(x)
 #define XSTRINGIFY(x) #x
 
-Stats::Stats() : Menu(1, 0), lastUpdate(0), forceUpdate(1) {
+Stats::Stats() : Menu(1), lastUpdate(0), forceUpdate(1) {
 }
 
 Menu* Stats::handleAction(){

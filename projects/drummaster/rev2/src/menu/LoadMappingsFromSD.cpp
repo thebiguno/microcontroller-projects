@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-LoadMappingsFromSD::LoadMappingsFromSD() : Menu(2, 1){
+LoadMappingsFromSD::LoadMappingsFromSD() : Menu(2){
 }
 
 Menu* LoadMappingsFromSD::handleAction(){

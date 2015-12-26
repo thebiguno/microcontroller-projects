@@ -175,7 +175,7 @@ void HiHat::loadSamples(char* filenamePrefix){
 	//The filename prefix must be at least three chars
 	if (strlen(filenamePrefix) < 3) return;
 	
-	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_STRING_SIZE - 1);
+	strncpy(this->filenamePrefix, filenamePrefix, FILENAME_PREFIX_STRING_SIZE - 1);
 	
 	//Reset sampleVolumes
 	for (uint8_t i = 0; i < 18; i++){

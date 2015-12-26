@@ -18,7 +18,7 @@ static const char* labels[PAD_COUNT] = {
 	"X1                 "
 };
 
-VolumePad::VolumePad() : Menu(101, 0), value(-1), pad(0) {
+VolumePad::VolumePad() : Menu(101), value(-1), pad(0) {
 }
 
 void VolumePad::loadPadVolumesFromEeprom(uint8_t kitIndex){

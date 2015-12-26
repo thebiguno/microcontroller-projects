@@ -17,11 +17,11 @@
 //The size of the buffer used when reading in kit mappings
 #define BUFFER_SIZE		128
 
-//The size of the strings for kit name and filename prefix.  Includes null char at the end.
-#define KITNAME_STRING_SIZE		20
-#define FILENAME_STRING_SIZE	7
+//The size of the strings for kit name.  Includes null char at the end.
+#define KITNAME_STRING_SIZE				20
+
 //Maximum number of kits.  Allocates enough memory to load all these kits, so keep the number low
-#define KIT_COUNT				8
+#define KIT_COUNT						8
 
 namespace digitalcave {
 
@@ -32,7 +32,7 @@ namespace digitalcave {
 			
 			uint8_t kitIndex;
 			char kitName[KITNAME_STRING_SIZE];
-			char filenamePrefixes[PAD_COUNT][FILENAME_STRING_SIZE];
+			char filenamePrefixes[PAD_COUNT][FILENAME_PREFIX_STRING_SIZE];
 			uint8_t custom[PAD_COUNT];
 			
 		public:

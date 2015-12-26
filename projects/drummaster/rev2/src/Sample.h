@@ -5,7 +5,6 @@
 #include <SerialFlash.h>
 #include <math.h>
 
-#include "util/Mapping.h"
 #include "hardware.h"
 
 namespace digitalcave {
@@ -76,7 +75,7 @@ namespace digitalcave {
 			uint8_t fading;
 			
 			//The last filename which was played
-			char filename[FILENAME_STRING_SIZE + 6];
+			char filename[FILENAME_STRING_SIZE];
 
 			//The last volume value which has been set for this Sample
 			double volume;

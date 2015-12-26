@@ -6,6 +6,7 @@
 #include "LoadSamplesFromSD.h"
 #include "KitSelect.h"
 #include "MainMenu.h"
+#include "Settings.h"
 #include "Stats.h"
 #include "VolumeLineIn.h"
 #include "VolumeHeadphones.h"
@@ -28,6 +29,7 @@ Menu* Menu::loadMappingsFromSD = new LoadMappingsFromSD();
 Menu* Menu::loadSamplesFromSD = new LoadSamplesFromSD();
 Menu* Menu::kitSelect = new KitSelect();
 Menu* Menu::mainMenu = new MainMenu();
+Menu* Menu::settings = new Settings();
 Menu* Menu::stats = new Stats();
 Menu* Menu::volumeLineIn = new VolumeLineIn();
 Menu* Menu::volumeHeadphones = new VolumeHeadphones();
@@ -36,9 +38,8 @@ Menu* Menu::volumePadSelect = new VolumePadSelect();
 
 Menu* Menu::current = Menu::mainMenu;
 
-Menu::Menu(uint16_t menuCount, uint8_t loop) : 
+Menu::Menu(uint16_t menuCount) : 
 	menuCount(menuCount), 
-	loop(loop),
 	encoderState(0){
 }
 
@@ -47,14 +48,10 @@ void Menu::poll(){
 	
 	//Ensure valid menu entry is selected
 	if (current->menuCount == 0) encoder.write(0);
-	if (current->loop){
-		if ((encoder.read() / 2) >= current->menuCount) encoder.write(0);
-		else if ((encoder.read() / 2) < 0) encoder.write((current->menuCount - 1) * 2);
-	}
-	else {
-		if ((encoder.read() / 2) >= current->menuCount) encoder.write((current->menuCount - 1) * 2);
-		else if ((encoder.read() / 2) < 0) encoder.write(0);
-	}
+
+	//Prevent overflow
+	if ((encoder.read() / 2) >= current->menuCount) encoder.write((current->menuCount - 1) * 2);
+	else if ((encoder.read() / 2) < 0) encoder.write(0);
 
 	Menu* newMenu = current->handleAction();
 	display->refresh();
@@ -76,18 +73,8 @@ void Menu::setMenuCount(uint16_t menuCount){
 
 int16_t Menu::getMenuPosition(int8_t offset){
 	int16_t value = (encoder.read() / 2) + offset;
-	if (loop){
-		while (value < 0) {
-			value += menuCount;
-		}
-		
-		if (menuCount > 0) value = value % menuCount;
-		else value = 0;
-	}
-	else {
-		if (value < 0 || menuCount == 0) value = 0;
-		else if (value >= menuCount) value = menuCount - 1;
-	}
+	if (value < 0 || menuCount == 0) value = 0;
+	else if (value >= menuCount) value = menuCount - 1;
 	
 	return value;
 }
@@ -96,3 +83,18 @@ void Menu::setMenuPosition(int16_t position){
 	encoder.write((int16_t) position * 2);
 }
 
+int8_t Menu::getPositionOffset(){
+	if (getMenuPosition(0) == 0){
+		return 1;
+	}
+	else if (getMenuPosition(0) == menuCount - 1){
+		return -1;
+	}
+	return 0;
+}
+
+void Menu::writeSelection(int8_t positionOffset){
+	display->write_text(1, 0, positionOffset == 1 ? (char) 0x7E : ' ');
+	display->write_text(2, 0, positionOffset == 0 ? (char) 0x7E : ' ');
+	display->write_text(3, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+}

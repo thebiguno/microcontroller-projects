@@ -72,8 +72,8 @@ namespace digitalcave {
 			static ADC* adc;
 			
 			//Variables used internally for getting sample filenames
-			char filenamePrefix[FILENAME_STRING_SIZE];
-			char filenameResult[FILENAME_STRING_SIZE + 6];
+			char filenamePrefix[FILENAME_PREFIX_STRING_SIZE];
+			char filenameResult[FILENAME_STRING_SIZE];
 			
 			//The index into the pads array for this instance
 			uint8_t padIndex;

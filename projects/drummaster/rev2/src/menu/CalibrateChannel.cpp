@@ -17,7 +17,7 @@ static const char* labels[CHANNEL_COUNT] = {
 	" X1                 "
 };
 
-CalibrateChannel::CalibrateChannel() : Menu(255, 0){
+CalibrateChannel::CalibrateChannel() : Menu(255){
 }
 
 Menu* CalibrateChannel::handleAction(){

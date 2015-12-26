@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-KitSelect::KitSelect() : Menu(0, 1){
+KitSelect::KitSelect() : Menu(0){
 }
 
 void KitSelect::loadKitIndexFromEeprom(){
@@ -20,13 +20,15 @@ void KitSelect::saveKitIndexToEeprom(){
 
 Menu* KitSelect::handleAction(){
 	display->write_text(0, 0, "Select Kit Mapping   ", 20);	
-	
-	display->write_text(2, 0, (char) 0x7E);
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(-1))->getKitName());
+
+	int8_t positionOffset = getPositionOffset();
+	writeSelection(positionOffset);
+
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(positionOffset - 1))->getKitName());
 	display->write_text(1, 1, buf, 19);
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(0))->getKitName());
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(positionOffset))->getKitName());
 	display->write_text(2, 1, buf, 19);
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(1))->getKitName());
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(getMenuPosition(positionOffset + 1))->getKitName());
 	display->write_text(3, 1, buf, 19);
 	
 	if (kitIndex != getMenuPosition(0)){

@@ -41,16 +41,20 @@
 #define AUDIO_MEMORY					32
 
 //The total number of samples allowed in the system.  Currently 11 seems to be right (for 96Mhz),
-// or 14+ (for 120MHz); check system stats to see CPU usage when all samplse are playing. 90%+ usage
+// or 14 / 15 (for 120MHz); check system stats to see CPU usage when all samplse are playing. 90%+ usage
 // can cause skips when playing back.  If this is set to more than 16, you need to change how the
 // mixer is set up, since currently we are using 16 mixer channels with two channels reserved for 
 // passing through i2s audio from an external source.
-#define SAMPLE_COUNT					16
+#define SAMPLE_COUNT					14
 
 //The number of ADC channels on the system.  For the DrumMaster Rev 2.0 PCB, this is 12.
 #define CHANNEL_COUNT					12
 //The number of pads in the system.  This will probably be CHANNEL_COUNT - 1, since the hihat takes two channels
 #define PAD_COUNT						(CHANNEL_COUNT - 1)
+
+//String sizes for filename prefixes (6 chars + null) and complete filenames (8.3 format = 12 + null)
+#define FILENAME_PREFIX_STRING_SIZE		7
+#define FILENAME_STRING_SIZE			(FILENAME_PREFIX_STRING_SIZE + 6)
 
 //EEPROM starting addresses
 //We need to persist 12x2 bytes for the pots; this is from address 0x00 to 0x18
