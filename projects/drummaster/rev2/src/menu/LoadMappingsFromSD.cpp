@@ -8,8 +8,15 @@ LoadMappingsFromSD::LoadMappingsFromSD() : Menu(2){
 Menu* LoadMappingsFromSD::handleAction(){
 	display->write_text(0, 0, "Load Mappings        ", 20);
 	
-	display->write_text(getMenuPosition(1) + 1, 0, ' ');
-	display->write_text(getMenuPosition(0) + 1, 0, (char) 0x7E);
+	if (getMenuPosition(0) == 0){
+		display->write_text(1, 0, ' ');
+		display->write_text(2, 0, (char) 0x7E);
+	}
+	else {
+		display->write_text(1, 0, (char) 0x7E);
+		display->write_text(2, 0, ' ');
+	}
+
 	display->write_text(1, 1, "Cancel              ", 19);
 	display->write_text(2, 1, "Start               ", 19);
 

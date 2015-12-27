@@ -4,6 +4,7 @@
 #include "CalibrateChannelSelect.h"
 #include "LoadMappingsFromSD.h"
 #include "LoadSamplesFromSD.h"
+#include "LoadSamplesFromSerial.h"
 #include "KitSelect.h"
 #include "MainMenu.h"
 #include "Settings.h"
@@ -27,6 +28,7 @@ Menu* Menu::calibrateChannel = new CalibrateChannel();
 Menu* Menu::calibrateChannelSelect = new CalibrateChannelSelect();
 Menu* Menu::loadMappingsFromSD = new LoadMappingsFromSD();
 Menu* Menu::loadSamplesFromSD = new LoadSamplesFromSD();
+Menu* Menu::loadSamplesFromSerial = new LoadSamplesFromSerial();
 Menu* Menu::kitSelect = new KitSelect();
 Menu* Menu::mainMenu = new MainMenu();
 Menu* Menu::settings = new Settings();
@@ -44,7 +46,7 @@ Menu::Menu(uint16_t menuCount) :
 }
 
 void Menu::poll(){
-	current->button.sample(millis());
+	button.sample(millis());
 	
 	//Ensure valid menu entry is selected
 	if (current->menuCount == 0) encoder.write(0);

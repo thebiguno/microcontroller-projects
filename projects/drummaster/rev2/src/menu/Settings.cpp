@@ -1,23 +1,19 @@
-#include "MainMenu.h"
+#include "Settings.h"
 
 using namespace digitalcave;
 
 static const char* labels[] = {
-	"Headphones Volume   ",
-	"Line In Volume      ",
-	"Kit Select          ",
 	"Pads Volume         ",
 	"Calibrate Channels  ",
-	"Load Kit Mappings   ",
-	"Load Samples        ",
-	"Load From Serial    ",
+	"Load Kits           ",
+	"Load Samples + Kits ",
 	"System Stats        "
 };
 
-MainMenu::MainMenu() : Menu(sizeof(labels) / sizeof(labels[0])){
+Settings::Settings() : Menu(sizeof(labels)){
 }
 
-Menu* MainMenu::handleAction(){
+Menu* Settings::handleAction(){
 	display->write_text(0, 0, "Drum Master  rev 2.0", 20);
 	
 	int8_t positionOffset = getPositionOffset();
@@ -30,22 +26,14 @@ Menu* MainMenu::handleAction(){
 	if (button.releaseEvent()){
 		switch(getMenuPosition(0)){
 			case 0:
-				return Menu::volumeHeadphones;
-			case 1:
-				return Menu::volumeLineIn;
-			case 2:
-				return Menu::kitSelect;
-			case 3:
 				return Menu::volumePadSelect;
-			case 4:
+			case 1:
 				return Menu::calibrateChannelSelect;
-			case 5:
+			case 2:
 				return Menu::loadMappingsFromSD;
-			case 6:
+			case 3:
 				return Menu::loadSamplesFromSD;
-			case 7:
-				return Menu::loadSamplesFromSerial;
-			case 8:
+			case 4:
 				return Menu::stats;
 		}
 	}

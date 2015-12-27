@@ -44,6 +44,7 @@ namespace digitalcave {
 			static Menu* kitSelect;
 			static Menu* loadMappingsFromSD;
 			static Menu* loadSamplesFromSD;
+			static Menu* loadSamplesFromSerial;
 			static Menu* mainMenu;
 			static Menu* settings;
 			static Menu* volumeHeadphones;

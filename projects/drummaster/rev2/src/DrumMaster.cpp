@@ -22,7 +22,7 @@ int main(){
 	Menu::display->refresh();
 	
 	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
-	Serial.begin(9600);
+	Serial.begin(115200);
 	Wire.begin();
 	
 	//Audio shield SD / flash setup
@@ -47,15 +47,6 @@ int main(){
 	VolumeLineIn::loadVolumeFromEeprom();
 	VolumeHeadphones::loadVolumeFromEeprom();
 
-	if (Mapping::getKitCount() == 0){
-		Menu::display->write_text(0, 0, "No Mappings Found...", 20);
-		Menu::display->write_text(1, 0, "Please load samples ", 20);
-		Menu::display->write_text(2, 0, "from the SD card    ", 20);
-		Menu::display->refresh();
-		delay(2000);
-		Menu::display->clear();
-	}
-	
 	//Set up ADC and build filename tables
 	Pad::init();
 	
