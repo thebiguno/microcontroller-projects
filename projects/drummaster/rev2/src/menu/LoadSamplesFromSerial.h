@@ -2,7 +2,6 @@
 #define LOADSAMPLESSFROMSERIAL_H
 
 #include <EEPROM/EEPROM.h>
-#include <SD.h>
 #include <SerialFlash.h>
 
 #include <vector>

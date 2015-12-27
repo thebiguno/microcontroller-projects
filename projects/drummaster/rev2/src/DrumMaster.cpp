@@ -22,7 +22,7 @@ int main(){
 	Menu::display->refresh();
 	
 	//while(!Serial);		//Wait for a serial console before continuing.  Only needed for debugging at startup.
-	Serial.begin(115200);
+	Serial.begin(9600);	//Teensy serial is always at full USB speed and buffered... the baud rate here is required but ignore
 	Wire.begin();
 	
 	//Audio shield SD / flash setup

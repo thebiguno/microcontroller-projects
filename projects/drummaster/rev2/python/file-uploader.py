@@ -9,7 +9,7 @@ import serial, sys, os, time
 #Special bytes
 BYTE_START = "\x7e"
 BYTE_ESCAPE = "\x7d"
-BYTE_FILENAME_END = "\x7c"
+BYTE_SEPARATOR = "\x7c"
 
 
 ser = serial.Serial(sys.argv[1])
@@ -34,6 +34,7 @@ for i, filename in enumerate(sys.argv):
 		
 
 		f = open(filename, "rb")
+		fileLength = os.path.getsize(filename)
 		try:
 			encoded = []
 			#Start byte
@@ -42,7 +43,14 @@ for i, filename in enumerate(sys.argv):
 			for byte in os.path.basename(filename):
 				encoded.append(byte)
 			#End of filename
-			encoded.append(BYTE_FILENAME_END)
+			encoded.append(BYTE_SEPARATOR)
+			
+			#File length (uint32_t)
+			encoded.append(chr((fileLength >> 24) & 0xFF));
+			encoded.append(chr((fileLength >> 16) & 0xFF));
+			encoded.append(chr((fileLength >> 8) & 0xFF));
+			encoded.append(chr((fileLength >> 0) & 0xFF));
+			encoded.append(BYTE_SEPARATOR)
 			
 			#Binary data, with escaping
 			for byte in f.read():
@@ -60,6 +68,6 @@ for i, filename in enumerate(sys.argv):
 			f.close()
 			
 		endTime = time.time();
-		print(" (" + str(round(endTime - startTime, 2)) + " seconds)");
+		print(" (" + str(round(fileLength / 1024 / (endTime - startTime), 2)) + " KB/s)");
 
 print("All files uploaded")

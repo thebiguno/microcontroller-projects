@@ -6,7 +6,7 @@ LoadSamplesFromSD::LoadSamplesFromSD() : Menu(2){
 }
 
 Menu* LoadSamplesFromSD::handleAction(){
-	display->write_text(0, 0, "Load Samples         ", 20);
+	display->write_text(0, 0, "Load From SD         ", 20);
 	
 	if (getMenuPosition(0) == 0){
 		display->write_text(1, 0, ' ');
@@ -17,10 +17,10 @@ Menu* LoadSamplesFromSD::handleAction(){
 		display->write_text(2, 0, ' ');
 	}
 
-	display->write_text(1, 1, "Cancel              ", 19);
-	display->write_text(2, 1, "Start               ", 19);
+	display->write_text(1, 1, "Start               ", 19);
+	display->write_text(2, 1, "Cancel              ", 19);
 
-	if (button.releaseEvent() && getMenuPosition(0) == 1){
+	if (button.releaseEvent() && getMenuPosition(0) == 0){
 		uint8_t id[3];
 		SerialFlash.readID(id);
 		uint32_t size = SerialFlash.capacity(id);
@@ -163,7 +163,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 		
 		return Menu::mainMenu;
 	}
-	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
+	else if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 1)){
 		display->clear();
 		return Menu::mainMenu;
 	}

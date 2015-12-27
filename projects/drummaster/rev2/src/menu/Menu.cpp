@@ -2,7 +2,6 @@
 
 #include "CalibrateChannel.h"
 #include "CalibrateChannelSelect.h"
-#include "LoadMappingsFromSD.h"
 #include "LoadSamplesFromSD.h"
 #include "LoadSamplesFromSerial.h"
 #include "KitSelect.h"
@@ -26,7 +25,6 @@ ButtonTeensy Menu::button(ENC_PUSH, 25, 25, 500, 500);
 //Initialize static references to menu items
 Menu* Menu::calibrateChannel = new CalibrateChannel();
 Menu* Menu::calibrateChannelSelect = new CalibrateChannelSelect();
-Menu* Menu::loadMappingsFromSD = new LoadMappingsFromSD();
 Menu* Menu::loadSamplesFromSD = new LoadSamplesFromSD();
 Menu* Menu::loadSamplesFromSerial = new LoadSamplesFromSerial();
 Menu* Menu::kitSelect = new KitSelect();

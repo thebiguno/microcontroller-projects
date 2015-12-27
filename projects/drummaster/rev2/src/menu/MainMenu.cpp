@@ -8,8 +8,7 @@ static const char* labels[] = {
 	"Kit Select          ",
 	"Pads Volume         ",
 	"Calibrate Channels  ",
-	"Load Kit Mappings   ",
-	"Load Samples        ",
+	"Load From SD        ",
 	"Load From Serial    ",
 	"System Stats        "
 };
@@ -40,12 +39,10 @@ Menu* MainMenu::handleAction(){
 			case 4:
 				return Menu::calibrateChannelSelect;
 			case 5:
-				return Menu::loadMappingsFromSD;
-			case 6:
 				return Menu::loadSamplesFromSD;
-			case 7:
+			case 6:
 				return Menu::loadSamplesFromSerial;
-			case 8:
+			case 7:
 				return Menu::stats;
 		}
 	}

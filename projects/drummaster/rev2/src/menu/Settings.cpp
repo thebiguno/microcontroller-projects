@@ -5,8 +5,8 @@ using namespace digitalcave;
 static const char* labels[] = {
 	"Pads Volume         ",
 	"Calibrate Channels  ",
-	"Load Kits           ",
-	"Load Samples + Kits ",
+	"Load From SD        ",
+	"Load From Serial    ",
 	"System Stats        "
 };
 
@@ -30,9 +30,9 @@ Menu* Settings::handleAction(){
 			case 1:
 				return Menu::calibrateChannelSelect;
 			case 2:
-				return Menu::loadMappingsFromSD;
-			case 3:
 				return Menu::loadSamplesFromSD;
+			case 3:
+				return Menu::loadSamplesFromSerial;
 			case 4:
 				return Menu::stats;
 		}
