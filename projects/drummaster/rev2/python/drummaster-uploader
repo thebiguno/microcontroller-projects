@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/python
 #
 # Reads from a serial port sending ascii data.
 #
@@ -6,27 +6,39 @@
 
 import serial, sys, os, time
 
+if (len(sys.argv) <= 2):
+	print("Usage: '" + sys.argv[0] + " <port> <files>' where:\n\t<port> is the TTY USB port connected to Drum Master\n\t<files> is a list of .RAW files with one MAPPERS.TXT file.")
+	sys.exit()
+
 #Special bytes
 BYTE_START = "\x7e"
 BYTE_ESCAPE = "\x7d"
 BYTE_SEPARATOR = "\x7c"
 
+#Flash size (in MB)
+FLASH_SIZE = 64
 
-ser = serial.Serial(sys.argv[1])
-
+totalFileSize = 0;
 mappingsFileSelected = False
 for i, filename in enumerate(sys.argv):
-	if (os.path.basename(filename) == "MAPPINGS.TXT"):
-		mappingsFileSelected = True
-		break
+	if (i >= 2):
+		totalFileSize = totalFileSize + os.path.getsize(filename)
+		if (os.path.basename(filename) == "MAPPINGS.TXT"):
+			mappingsFileSelected = True
 
 if (mappingsFileSelected == False):
 	print("You must include a mappings file (MAPPINGS.TXT) in the upload selection")
 	sys.exit()
+	
+flashSizeBytes = FLASH_SIZE * 1024 * 1024
+if (totalFileSize > flashSizeBytes):
+	print("Too many files selsected.\n\tTotal flash size:\t" + "{:>14,}".format(flashSizeBytes) + " bytes\n\tTotal file size:\t" + "{:>14,}".format(totalFileSize) + " bytes")
+	sys.exit()
 
+ser = serial.Serial(sys.argv[1])
 print("Uploading " + str(len(sys.argv) - 2) + " files...")
 for i, filename in enumerate(sys.argv):
-	if i >= 2:
+	if (i >= 2):
 		startTime = time.time();
 		sys.stdout.write(str(i - 1) + ": ")
 		sys.stdout.write(filename)

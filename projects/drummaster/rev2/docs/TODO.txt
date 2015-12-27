@@ -1,3 +1,2 @@
 -Change menu system to have a main screen w/ volume and kit adjustments, plus Settings
--USB Mass Storage for SD card access?
 -Investigate Line Out vs. Headphone volume / line levels, and add line out jack
