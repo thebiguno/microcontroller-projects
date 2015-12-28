@@ -10,6 +10,7 @@ static const char* labels[] = {
 	"Calibrate Channels  ",
 	"Load From SD        ",
 	"Load From Serial    ",
+	"Reset EEPROM        ",
 	"System Stats        "
 };
 
@@ -43,6 +44,8 @@ Menu* MainMenu::handleAction(){
 			case 6:
 				return Menu::loadSamplesFromSerial;
 			case 7:
+				return Menu::resetEeprom;
+			case 8:
 				return Menu::stats;
 		}
 	}

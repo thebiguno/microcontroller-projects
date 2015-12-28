@@ -9,14 +9,14 @@ VolumeHeadphones::VolumeHeadphones() : Menu(101){
 }
 
 void VolumeHeadphones::loadVolumeFromEeprom(){
-	uint8_t volume = EEPROM.read(EEPROM_MAIN_VOLUME);
+	uint8_t volume = EEPROM.read(EEPROM_HEADPHONE_VOLUME);
 	((VolumeHeadphones*) Menu::volumeHeadphones)->volume = volume;
 	((VolumeHeadphones*) Menu::volumeHeadphones)->encoderState = volume * 2;
 	Sample::setVolumeHeadphones(volume / GAIN_DIVISOR);
 }
 
 void VolumeHeadphones::saveVolumeToEeprom(){
-	EEPROM.update(EEPROM_MAIN_VOLUME, ((VolumeHeadphones*) Menu::volumeHeadphones)->volume);
+	EEPROM.update(EEPROM_HEADPHONE_VOLUME, ((VolumeHeadphones*) Menu::volumeHeadphones)->volume);
 }
 
 Menu* VolumeHeadphones::handleAction(){

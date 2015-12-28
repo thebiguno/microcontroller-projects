@@ -6,6 +6,7 @@
 #include "LoadSamplesFromSerial.h"
 #include "KitSelect.h"
 #include "MainMenu.h"
+#include "ResetEeprom.h"
 #include "Settings.h"
 #include "Stats.h"
 #include "VolumeLineIn.h"
@@ -29,6 +30,7 @@ Menu* Menu::loadSamplesFromSD = new LoadSamplesFromSD();
 Menu* Menu::loadSamplesFromSerial = new LoadSamplesFromSerial();
 Menu* Menu::kitSelect = new KitSelect();
 Menu* Menu::mainMenu = new MainMenu();
+Menu* Menu::resetEeprom = new ResetEeprom();
 Menu* Menu::settings = new Settings();
 Menu* Menu::stats = new Stats();
 Menu* Menu::volumeLineIn = new VolumeLineIn();
@@ -95,6 +97,11 @@ int8_t Menu::getPositionOffset(){
 
 void Menu::writeSelection(int8_t positionOffset){
 	display->write_text(1, 0, positionOffset == 1 ? (char) 0x7E : ' ');
-	display->write_text(2, 0, positionOffset == 0 ? (char) 0x7E : ' ');
-	display->write_text(3, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+	if (menuCount == 2){
+		display->write_text(2, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+	}
+	else if (menuCount > 2){
+		display->write_text(2, 0, positionOffset == 0 ? (char) 0x7E : ' ');
+		display->write_text(3, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+	}
 }

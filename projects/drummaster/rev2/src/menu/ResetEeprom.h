@@ -1,8 +1,7 @@
-#ifndef LOADSAMPLESFROMSERIAL_H
-#define LOADSAMPLESSFROMSERIAL_H
+#ifndef RESET_EEPROM_H
+#define RESET_EEPROM_H
 
 #include <EEPROM/EEPROM.h>
-#include <SerialFlash.h>
 
 #include "../hardware.h"
 #include "../pad/Pad.h"
@@ -11,13 +10,12 @@
 
 namespace digitalcave {
 
-	class LoadSamplesFromSerial : public Menu {
+	class ResetEeprom : public Menu {
 	
 		private:
-			Menu* flushError();
 			
 		public:
-			LoadSamplesFromSerial();
+			ResetEeprom();
 			Menu* handleAction();
 	};
 }

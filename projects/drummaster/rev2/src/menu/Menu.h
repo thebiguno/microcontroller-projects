@@ -45,6 +45,7 @@ namespace digitalcave {
 			static Menu* loadSamplesFromSD;
 			static Menu* loadSamplesFromSerial;
 			static Menu* mainMenu;
+			static Menu* resetEeprom;
 			static Menu* settings;
 			static Menu* volumeHeadphones;
 			static Menu* volumeLineIn;

@@ -29,7 +29,7 @@ Menu* CalibrateChannel::handleAction(){
 		setMenuPosition(value);
 	}
 	
-	snprintf(buf, sizeof(buf), "%d                   ", value >> 1);
+	snprintf(buf, sizeof(buf), "%d                   ", value);
 	display->write_text(2, 0, buf, 20);
 	
 	encoderState = getMenuPosition(0);
