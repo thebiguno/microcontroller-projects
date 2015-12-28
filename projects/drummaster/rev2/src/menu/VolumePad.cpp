@@ -27,7 +27,12 @@ void VolumePad::loadPadVolumesFromEeprom(uint8_t kitIndex){
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
 // 		Serial.print(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
 // 		Serial.print(" = ");
-		Pad::pads[i]->setPadVolume(EEPROM.read(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex)) / GAIN_DIVISOR);
+		uint8_t value = EEPROM.read(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex));
+		if (value == 0xFF) {
+			value = GAIN_DIVISOR;	//100%
+			EEPROM.update(EEPROM_PAD_VOLUME + i + (PAD_COUNT * kitIndex), value);
+		}
+		Pad::pads[i]->setPadVolume(value / GAIN_DIVISOR);
 // 		Serial.println(Pad::pads[i]->getPadVolume());
 	}
 }
