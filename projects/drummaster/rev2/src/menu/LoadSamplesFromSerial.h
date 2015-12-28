@@ -16,6 +16,7 @@ namespace digitalcave {
 	class LoadSamplesFromSerial : public Menu {
 	
 		private:
+			Menu* flushError();
 			
 		public:
 			LoadSamplesFromSerial();

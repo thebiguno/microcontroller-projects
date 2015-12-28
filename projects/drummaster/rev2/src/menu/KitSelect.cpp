@@ -7,6 +7,10 @@ KitSelect::KitSelect() : Menu(0){
 
 void KitSelect::loadKitIndexFromEeprom(){
 	uint8_t kitIndex = EEPROM.read(EEPROM_KIT_INDEX);
+	if (kitIndex > Mapping::getKitCount()){
+		kitIndex = 0;
+		EEPROM.update(EEPROM_KIT_INDEX, kitIndex);
+	}
 	((KitSelect*) Menu::kitSelect)->encoderState = kitIndex * 2;
 	((KitSelect*) Menu::kitSelect)->kitIndex = kitIndex;
 	((KitSelect*) Menu::kitSelect)->setMenuCount(Mapping::getKitCount());
