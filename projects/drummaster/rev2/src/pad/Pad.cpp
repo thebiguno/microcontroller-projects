@@ -56,7 +56,8 @@ Pad::Pad(uint8_t doubleHitThreshold) :
 		playTime(0),
 		lastPiezo(0),
 		doubleHitThreshold(doubleHitThreshold),
-		padIndex(currentIndex) {
+		padIndex(currentIndex),
+		lastSample(NULL) {
 	currentIndex++;
 }
 
@@ -64,7 +65,111 @@ void Pad::play(double volume){
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 
-	Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume), padIndex, volume);
+	lastSample = Sample::findAvailableSample(padIndex, volume);
+	lastSample->play(lookupFilename(volume), padIndex, volume);
+}
+
+double Pad::readPiezo(uint8_t muxIndex){
+	//Disable both MUXs
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
+	
+	//Set Sample
+	digitalWriteFast(MUX0, muxIndex & 0x01);
+	digitalWriteFast(MUX1, muxIndex & 0x02);
+	digitalWriteFast(MUX2, muxIndex & 0x04);
+	digitalWriteFast(MUX3, muxIndex & 0x08);
+	
+	//Enable ADC MUX...
+	digitalWriteFast(ADC_EN, MUX_ENABLE);
+
+	//A short delay here seems to help to read a stable volume.  Low single digit microsecond range seems about right.
+	delayMicroseconds(3);
+	
+	//... read value...
+	uint16_t currentValue = adc->analogRead(ADC_INPUT);
+	
+	//If we are within double trigger threshold, AND the currentValue is greater than the last played value, 
+	// then we adjust the volume of the last played sample.  We don't enable thr drain this time through;
+	// if the volume is stable then it will be enabled next time around, and if it is still increasing we
+	// want to go through here again.
+	if (playTime + doubleHitThreshold > millis() && currentValue > lastRaw && lastSample != NULL){
+		double adjustedVolume = (currentValue - MIN_VALUE) / 256.0 * padVolume;
+		lastSample->setVolume(adjustedVolume);
+		lastRaw = currentValue;
+		return 0;
+	}
+	
+	//If we are still within the double hit threshold, OR if we are within 4x the double hit threshold 
+	// time-span AND the currently read value is less than one quarter of the previous one, then we 
+	// assume this is just a ghost double trigger.  Re-enable the drain each time we go through here.
+	if (playTime + doubleHitThreshold > millis() 
+			|| (playTime + (doubleHitThreshold * 4) > millis() && ((currentValue - MIN_VALUE) / 256.0 * padVolume) < (lastPiezo / 4))){
+		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+		//Give a bit of time to drain.
+		delayMicroseconds(100);
+		return 0;
+	}
+	
+	//... and disable MUX again
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+
+	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
+		//No hit in progress
+	}
+	else if (currentValue >= MIN_VALUE && peakValue == 0){
+		//A new hit has started; record the time
+		strikeTime = millis();
+		peakValue = currentValue;
+	}
+	else if (currentValue > peakValue){
+		//Volume is still increasing; record this as the new peak value
+		peakValue = currentValue;
+	}
+	
+	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
+		//We have timed out; send whatever the peak value currently is
+		double result = (peakValue - MIN_VALUE) / 256.0 * padVolume;
+		lastRaw = peakValue;
+		playTime = millis();
+		peakValue = 0;
+		lastPiezo = result;
+		return result;
+	}
+	
+	return 0;
+}
+
+char* Pad::lookupFilename(double volume){
+	//Limit volume from 0 to 1
+	if (volume < 0) volume = 0;
+	else if (volume >= 1.0) volume = 1.0;
+
+	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
+		return NULL;
+	}
+	
+	//We find the closest match in fileCountByVolume
+	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
+	
+	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
+	// most this will take 16 tries (since there are 16 buckets)
+	for(uint8_t i = 0; i < 16; i++){
+		if (((closestVolume + i) <= 0x0F) && (sampleVolumes & _BV(closestVolume + i))) {
+			closestVolume = closestVolume + i;
+			break;
+		}
+		else if (((closestVolume - i) >= 0x00) && (sampleVolumes & _BV(closestVolume - i))) {
+			closestVolume = closestVolume - i;
+			break;
+		}
+	}
+	
+	closestVolume = closestVolume & 0x0F;
+
+	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
+
+	return filenameResult;
 }
 
 double Pad::getPadVolume(){
@@ -139,105 +244,4 @@ void Pad::loadSamples(char* filenamePrefix){
 			break; // no more files
 		}
 	}
-}
-
-char* Pad::lookupFilename(double volume){
-	//Limit volume from 0 to 1
-	if (volume < 0) volume = 0;
-	else if (volume >= 1.0) volume = 1.0;
-
-	if (sampleVolumes == 0x00 || strlen(filenamePrefix) == 0x00) {
-		return NULL;
-	}
-	
-	//We find the closest match in fileCountByVolume
-	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
-	
-	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
-	// most this will take 16 tries (since there are 16 buckets)
-	for(uint8_t i = 0; i < 16; i++){
-		if (((closestVolume + i) <= 0x0F) && (sampleVolumes & _BV(closestVolume + i))) {
-			closestVolume = closestVolume + i;
-			break;
-		}
-		else if (((closestVolume - i) >= 0x00) && (sampleVolumes & _BV(closestVolume - i))) {
-			closestVolume = closestVolume - i;
-			break;
-		}
-	}
-	
-	closestVolume = closestVolume & 0x0F;
-
-	snprintf(filenameResult, sizeof(filenameResult), "%s_%X.RAW", filenamePrefix, closestVolume);
-
-	return filenameResult;
-}
-
-double Pad::readPiezo(uint8_t muxIndex){
-	//Disable both MUXs
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-	digitalWriteFast(DRAIN_EN, MUX_DISABLE);
-	
-	//Set Sample
-	digitalWriteFast(MUX0, muxIndex & 0x01);
-	digitalWriteFast(MUX1, muxIndex & 0x02);
-	digitalWriteFast(MUX2, muxIndex & 0x04);
-	digitalWriteFast(MUX3, muxIndex & 0x08);
-
-	//If we are still within the double hit threshold time-span, re-enable the drain 
-	// each time we go through here.  This serves to both drain the stored charge and
-	// to prevent double triggering.
-	if (playTime + doubleHitThreshold > millis()){
-		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//Give a bit of time to drain.
-		delayMicroseconds(500);
-		return 0;
-	}
-	
-	//Enable ADC MUX...
-	digitalWriteFast(ADC_EN, MUX_ENABLE);
-
-	//A short delay here seems to help to read a stable volume.  Low single digit microsecond range seems about right.
-	delayMicroseconds(3);
-	
-	//... read value...
-	uint16_t currentValue = adc->analogRead(ADC_INPUT);
-	
-	//If we are within 4x the double hit threshold time-span, and the currently read value is less than
-	// one quarter of the previous one, then we assume this is just a ghost double trigger.  Re-enable the drain 
-	// each time we go through here.
-	if (playTime + (doubleHitThreshold * 4) > millis() && ((currentValue - MIN_VALUE) / 256.0 * padVolume) < (lastPiezo / 4)){
-		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//Give a bit of time to drain.
-		delayMicroseconds(100);
-		return 0;
-	}
-	
-	//... and disable MUX again
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-
-	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
-		//No hit in progress
-	}
-	else if (currentValue >= MIN_VALUE && peakValue == 0){
-		//A new hit has started; record the time
-		strikeTime = millis();
-		peakValue = currentValue;
-	}
-	else if (currentValue > peakValue){
-		//Volume is still increasing; record this as the new peak value
-		peakValue = currentValue;
-	}
-	
-	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
-		//We have timed out; send whatever the peak value currently is
-		double result = (peakValue - MIN_VALUE) / 256.0 * padVolume;
-		playTime = millis();
-		peakValue = 0;
-		lastPiezo = result;
-		
-		return result;
-	}
-	
-	return 0;
 }

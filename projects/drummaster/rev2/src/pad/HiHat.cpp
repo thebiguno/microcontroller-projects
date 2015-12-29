@@ -28,7 +28,8 @@ void HiHat::poll(){
 		double volume = (getAveragePedalPosition() / 16.0 - 0.3) * 2;
 		if (volume > 0 && lastChicTime + 200 < millis()){
 			Sample::startFade(padIndex, 0.8);
-			Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume, 1);
+			lastSample = Sample::findAvailableSample(padIndex, volume);
+			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume, 1);
 			lastChicTime = millis();
 			lastChicVolume = volume;
 		}
@@ -41,7 +42,8 @@ void HiHat::poll(){
 	if (volume > 0){
 		if (volume >= 5.0) volume = 5.0;
 
-		Sample::findAvailableSample(padIndex, volume)->play(lookupFilename(volume), padIndex, volume);
+		lastSample = Sample::findAvailableSample(padIndex, volume);
+		lastSample->play(lookupFilename(volume), padIndex, volume);
 	}
 	
 	Sample::processFade(padIndex);

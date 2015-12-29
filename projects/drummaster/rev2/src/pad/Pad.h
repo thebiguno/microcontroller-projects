@@ -51,8 +51,9 @@ namespace digitalcave {
 			//uint32_t peakValueTime;
 			//The time at which the last value was considered stable and returned
 			uint32_t playTime;
-			//The last piezo value which was returned
+			//The last piezo value which was returned / the last raw value used to obtain the piezo value
 			double lastPiezo;
+			uint16_t lastRaw;
 			
 			//Maximum time in ms after a sample has been played before we can play another one.
 			uint8_t doubleHitThreshold;
@@ -83,6 +84,9 @@ namespace digitalcave {
 			
 			//Fade override.  0-9 are valid values, anything else is ignored.
 			uint8_t fadeOverride;
+			
+			//The last sample which was played (we can adjust the volume on this if needed)
+			Sample* lastSample;
 			
 			//Find the correct sample, given a volume.
 			virtual char* lookupFilename(double volume);
