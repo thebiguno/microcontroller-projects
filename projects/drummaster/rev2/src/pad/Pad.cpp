@@ -83,12 +83,12 @@ double Pad::readPiezo(uint8_t muxIndex){
 	//Enable ADC MUX...
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 
-	//A short delay here seems to help to read a stable volume.  Low single digit microsecond range seems about right.
-	delayMicroseconds(3);
-	
 	//... read value...
 	uint16_t currentValue = adc->analogRead(ADC_INPUT);
 	
+	//... and disable MUX again
+	digitalWriteFast(ADC_EN, MUX_DISABLE);
+
 	//If we are within double trigger threshold, AND the currentValue is greater than the last played value, 
 	// then we adjust the volume of the last played sample.  We don't enable thr drain this time through;
 	// if the volume is stable then it will be enabled next time around, and if it is still increasing we
@@ -106,14 +106,9 @@ double Pad::readPiezo(uint8_t muxIndex){
 	if (playTime + doubleHitThreshold > millis() 
 			|| (playTime + (doubleHitThreshold * 4) > millis() && ((currentValue - MIN_VALUE) / 256.0 * padVolume) < (lastPiezo / 4))){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		//Give a bit of time to drain.
-		delayMicroseconds(100);
 		return 0;
 	}
 	
-	//... and disable MUX again
-	digitalWriteFast(ADC_EN, MUX_DISABLE);
-
 	if (currentValue < MIN_VALUE && peakValue < MIN_VALUE){
 		//No hit in progress
 	}
