@@ -6,7 +6,7 @@ using namespace digitalcave;
 #define HIHAT_SPECIAL_SPLASH		17
 
 //2 raised to this number is how many samples we keep in the running pedal position average
-#define AVERAGE_PEDAL_COUNT_EXP		6
+#define AVERAGE_PEDAL_COUNT_EXP		8
 
 HiHat::HiHat(uint8_t piezoMuxIndex, uint8_t pedalMuxIndex, uint8_t switchMuxIndex, uint8_t doubleHitThreshold, double fadeGain) : 
 		Cymbal(piezoMuxIndex, switchMuxIndex, doubleHitThreshold, fadeGain),
@@ -25,7 +25,7 @@ void HiHat::poll(){
 	//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
 	// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 	if ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1)){
-		double volume = (getAveragePedalPosition() / 16.0 - 0.3) * 2;
+		double volume = (getAveragePedalPosition() / 16.0 - 0.2);
 		if (volume > 0 && lastChicTime + 200 < millis()){
 			Sample::startFade(padIndex, 0.8);
 			lastSample = Sample::findAvailableSample(padIndex, volume);
@@ -83,7 +83,6 @@ void HiHat::readPedal(uint8_t muxIndex){
 		// Pedal channel goes through peak detection circuit... it would probably
 		// have been fine to just use a switching channel instead of a filtered channel).
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
-		delayMicroseconds(10);
 		
 		//We reserve position 0 for tightly closed (from the switch parameter)
 		if (currentValue == 0) currentValue = 1;
