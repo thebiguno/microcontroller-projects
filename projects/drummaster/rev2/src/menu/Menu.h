@@ -19,6 +19,9 @@ namespace digitalcave {
 			static Menu* current;
 			static Encoder encoder;
 			
+			//The last time we refreshed the menu.  We don't refresh every time through.
+			static uint32_t lastTime;
+			
 			//The number of menu items for this menu.
 			uint16_t menuCount;
 	

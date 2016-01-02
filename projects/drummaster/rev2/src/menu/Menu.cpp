@@ -22,6 +22,7 @@ Hd44780_Teensy* Menu::hd44780 = NULL;
 CharDisplay* Menu::display = NULL;
 Encoder Menu::encoder(ENC_A, ENC_B);
 ButtonTeensy Menu::button(ENC_PUSH, 25, 25, 500, 500);
+uint32_t Menu::lastTime = 0;
 
 //Initialize static references to menu items
 Menu* Menu::calibrateChannel = new CalibrateChannel();
@@ -46,19 +47,23 @@ Menu::Menu(uint16_t menuCount) :
 }
 
 void Menu::poll(){
-	button.sample(millis());
-	
-	//Ensure valid menu entry is selected
-	if (current->menuCount == 0) encoder.write(0);
+	if (lastTime + 50 < millis()){
+		button.sample(millis());
+		
+		//Ensure valid menu entry is selected
+		if (current->menuCount == 0) encoder.write(0);
 
-	//Prevent overflow
-	if ((encoder.read() / 2) >= current->menuCount) encoder.write((current->menuCount - 1) * 2);
-	else if ((encoder.read() / 2) < 0) encoder.write(0);
+		//Prevent overflow
+		if ((encoder.read() / 2) >= current->menuCount) encoder.write((current->menuCount - 1) * 2);
+		else if ((encoder.read() / 2) < 0) encoder.write(0);
 
-	Menu* newMenu = current->handleAction();
-	display->refresh();
-	if (newMenu != NULL){
-		change(newMenu);
+		Menu* newMenu = current->handleAction();
+		display->refresh();
+		if (newMenu != NULL){
+			change(newMenu);
+		}
+		
+		lastTime = millis();
 	}
 }
 
