@@ -37,7 +37,7 @@ Menu* LoadSamplesFromSerial::handleAction(){
 	display->write_text(3, 1, labels[getMenuPosition(positionOffset + 1)], 19);
 
 	if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 	else if (button.releaseEvent() && (getMenuPosition(0) == 1 || getMenuPosition(0) == 2)){
 		display->clearRow(2);
@@ -226,6 +226,7 @@ Menu* LoadSamplesFromSerial::handleAction(){
 		KitSelect::loadKitIndexFromEeprom();
 		delay(1000);
 
+		//Success returns to main menu
 		return Menu::mainMenu;
 	}
 		
@@ -250,5 +251,6 @@ Menu* LoadSamplesFromSerial::flushError(){
 			lastReceiveTime = millis();
 		}
 	}
-	return Menu::mainMenu;	
+	//Error returns to settings
+	return Menu::settings;	
 }

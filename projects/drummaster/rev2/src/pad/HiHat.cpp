@@ -84,12 +84,12 @@ void HiHat::readPedal(uint8_t muxIndex){
 		// have been fine to just use a switching channel instead of a filtered channel).
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
 		
-		//We reserve position 0 for tightly closed (from the switch parameter)
-		if (currentValue == 0) currentValue = 1;
-		
 		//currentValue is a 10 bit ADC variable; we want to return a 4 bit value from 0x00-0x0F.
 		// Thus we need to right shift 6 bits (10 - 4 = 6).  We do a bitwise and just to be safe.
 		pedalPosition = (currentValue >> 6) & 0x0F;
+		
+		//We reserve position 0 for tightly closed (from the switch parameter)
+		if (pedalPosition == 0) pedalPosition = 1;
 	}
 
 	//Keep a running average of 2^AVERAGE_PEDAL_COUNT_EXP previous pedal positions

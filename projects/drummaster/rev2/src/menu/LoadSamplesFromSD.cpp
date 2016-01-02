@@ -23,7 +23,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 
 	if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
 		display->clear();
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 	else if (button.releaseEvent() && (getMenuPosition(0) == 1 || getMenuPosition(0) == 2)){
 		display->clearRow(2);
@@ -94,7 +94,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 						setMenuPosition(0);
 						Mapping::loadMappings();
 						delay(2000);
-						return Menu::mainMenu;
+						return Menu::settings;
 					}
 				}
 				else {
@@ -105,7 +105,7 @@ Menu* LoadSamplesFromSD::handleAction(){
 					setMenuPosition(0);
 					Mapping::loadMappings();
 					delay(2000);
-					return Menu::mainMenu;
+					return Menu::settings;
 				}
 			}
 			f.close();

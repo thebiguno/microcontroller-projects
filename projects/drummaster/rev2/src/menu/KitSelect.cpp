@@ -23,13 +23,6 @@ void KitSelect::saveKitIndexToEeprom(){
 }
 
 Menu* KitSelect::handleAction(){
-	//Constant text
-	display->write_text(0, 0, "    Drum  Master    ", 20);
-	display->write_text(2, 0, "Vol. ", 5);
-	display->write_text(2, 9, "%    ", 5);
-	display->write_text(2, 18, "% ", 2);
-	display->write_text(3, 1, "Settings           ", 19);
-
 	//Change value
 	if (Mapping::getSelectedKit() != getMenuPosition(0)){
 		Mapping::setSelectedKit(getMenuPosition(0));
@@ -37,15 +30,22 @@ Menu* KitSelect::handleAction(){
 		VolumePad::loadPadVolumesFromEeprom(Mapping::getSelectedKit());
 	}
 	
+	//Constant text
+	display->write_text(0, 0, "    Drum  Master    ", 20);
+	display->write_text(2, 0, "Volume: ", 8);
+	display->write_text(2, 12, "% ", 2);
+	display->write_text(2, 18, "% ", 2);
+	display->write_text(3, 1, "Settings           ", 19);
+
 	//Dynamic text
 	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
 	display->write_text(1, 1, buf, 19);
 	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeHeadphones());
-	display->write_text(2, 0, buf, 3);
+	display->write_text(2, 9, buf, 3);
 	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeLineIn());
 	display->write_text(2, 15, buf, 3);
-	
 
+	//Change menus
 	if (button.releaseEvent()){
 		saveKitIndexToEeprom();
 		return Menu::mainMenu;

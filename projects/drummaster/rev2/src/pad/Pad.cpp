@@ -82,9 +82,12 @@ double Pad::readPiezo(uint8_t muxIndex){
 	
 	//Enable ADC MUX...
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
+	
+	//Wait a bit to ensure a good signal from the MUX
+	delayMicroseconds(1);
 
-	//... read value...
-	uint16_t currentValue = adc->analogRead(ADC_INPUT);
+	//... read value (9 bit)...
+	uint16_t currentValue = adc->analogRead(ADC_INPUT) >> 1;
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);

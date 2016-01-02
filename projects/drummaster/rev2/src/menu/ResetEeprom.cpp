@@ -20,13 +20,13 @@ Menu* ResetEeprom::handleAction(){
 	display->write_text(2, 1, labels[getMenuPosition(positionOffset + 1)], 19);
 
 	if (button.longPressEvent() || (button.releaseEvent() && getMenuPosition(0) == 0)){
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 	else if (button.releaseEvent() && getMenuPosition(0) == 1){
-		//Reset pot calibration to 200
+		//Reset pot calibration to 100
 		uint16_t values[CHANNEL_COUNT];
 		for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
-			values[i] = 200;
+			values[i] = 100;
 		}
 		EEPROM.put(EEPROM_POTENTIOMETER, values);
 		
@@ -53,7 +53,7 @@ Menu* ResetEeprom::handleAction(){
 		VolumeLineIn::loadVolumeFromEeprom();
 		VolumeHeadphones::loadVolumeFromEeprom();
 		
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 		
 	return NULL;

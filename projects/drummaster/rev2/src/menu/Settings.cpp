@@ -3,9 +3,6 @@
 using namespace digitalcave;
 
 static const char* labels[] = {
-	"Headphones Volume   ",
-	"Line In Volume      ",
-	"Kit Select          ",
 	"Pads Volume         ",
 	"Calibrate Channels  ",
 	"Load From SD        ",
@@ -30,24 +27,21 @@ Menu* Settings::handleAction(){
 	if (button.releaseEvent()){
 		switch(getMenuPosition(0)){
 			case 0:
-				return Menu::volumeHeadphones;
-			case 1:
-				return Menu::volumeLineIn;
-			case 2:
-				return Menu::kitSelect;
-			case 3:
 				return Menu::volumePadSelect;
-			case 4:
+			case 1:
 				return Menu::calibrateChannelSelect;
-			case 5:
+			case 2:
 				return Menu::loadSamplesFromSD;
-			case 6:
+			case 3:
 				return Menu::loadSamplesFromSerial;
-			case 7:
+			case 4:
 				return Menu::resetEeprom;
-			case 8:
+			case 5:
 				return Menu::stats;
 		}
+	}
+	else if (button.longPressEvent()){
+		return Menu::mainMenu;
 	}
 	
 	return NULL;

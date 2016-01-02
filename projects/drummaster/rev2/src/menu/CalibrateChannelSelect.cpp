@@ -37,7 +37,7 @@ Menu* CalibrateChannelSelect::handleAction(){
 	}
 	else if (button.longPressEvent()){
 		display->clear();
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 
 	return NULL;

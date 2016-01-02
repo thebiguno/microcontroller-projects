@@ -27,7 +27,7 @@ Menu* Stats::handleAction(){
 	if (button.releaseEvent() || button.longPressEvent()){
 		display->clear();
 		forceUpdate = 1;
-		return Menu::mainMenu;
+		return Menu::settings;
 	}
 	
 	return NULL;
