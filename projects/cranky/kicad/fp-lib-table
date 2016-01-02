@@ -1,4 +1,2 @@
 (fp_lib_table
-  (lib (name custom)(type Legacy)(uri ${KIPRJMOD}/../../../lib/kicad/modules/custom.mod)(options "")(descr ""))
-  (lib (name DigitalCave)(type KiCad)(uri /Users/warren/Documents/Warren/Projects/dcprojects/lib/kicad/modules/DigitalCave.pretty)(options "")(descr ""))
 )
