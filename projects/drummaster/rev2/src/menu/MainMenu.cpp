@@ -1,52 +1,73 @@
 #include "MainMenu.h"
+#include "../Sample.h"
+#include "../util/Mapping.h"
 
 using namespace digitalcave;
 
-static const char* labels[] = {
-	"Headphones Volume   ",
-	"Line In Volume      ",
-	"Kit Select          ",
-	"Pads Volume         ",
-	"Calibrate Channels  ",
-	"Load From SD        ",
-	"Load From Serial    ",
-	"Reset EEPROM        ",
-	"System Stats        "
-};
-
-MainMenu::MainMenu() : Menu(sizeof(labels) / sizeof(labels[0])){
+MainMenu::MainMenu() : Menu(4){
 }
 
-Menu* MainMenu::handleAction(){
-	display->write_text(0, 0, "Drum Master  rev 2.0", 20);
-	
-	int8_t positionOffset = getPositionOffset();
-	writeSelection(positionOffset);
+/* 
+ * Display layout:
+ *  01234567890123456789
+ * 0    Drum  Master    
+ * 1>Kit Name (19 Chars)
+ * 2Vol. >xxx%    >xxx%
+ * 3>Settings
+ */
 
-	display->write_text(1, 1, labels[getMenuPosition(positionOffset - 1)], 19);
-	display->write_text(2, 1, labels[getMenuPosition(positionOffset)], 19);
-	display->write_text(3, 1, labels[getMenuPosition(positionOffset + 1)], 19);
+Menu* MainMenu::handleAction(){
+	//Constant text
+	display->write_text(0, 0, "    Drum  Master    ", 20);
+	display->write_text(2, 0, "Vol. ", 5);
+	display->write_text(2, 9, "%    ", 5);
+	display->write_text(2, 18, "% ", 2);
+	display->write_text(3, 1, "Settings           ", 19);
+
+	//Dynamic text
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
+	display->write_text(1, 1, buf, 19);
+	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeHeadphones());
+	display->write_text(2, 0, buf, 3);
+	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeLineIn());
+	display->write_text(2, 15, buf, 3);
+	
+	//Menu positioning
+	if (getMenuPosition(0) == 0){
+		display->write_text(1, 0, (char) 0x7E);
+		display->write_text(2, 5, ' ');
+		display->write_text(2, 14, ' ');
+		display->write_text(3, 0, ' ');
+	}
+	else if (getMenuPosition(0) == 1){
+		display->write_text(1, 0, ' ');
+		display->write_text(2, 5, (char) 0x7E);
+		display->write_text(2, 14, ' ');
+		display->write_text(3, 0, ' ');
+	}
+	else if (getMenuPosition(0) == 2){
+		display->write_text(1, 0, ' ');
+		display->write_text(2, 5, ' ');
+		display->write_text(2, 14, (char) 0x7E);
+		display->write_text(3, 0, ' ');
+	}
+	else if (getMenuPosition(0) == 3){
+		display->write_text(1, 0, ' ');
+		display->write_text(2, 5, ' ');
+		display->write_text(2, 14, ' ');
+		display->write_text(3, 0, (char) 0x7E);
+	}
 	
 	if (button.releaseEvent()){
 		switch(getMenuPosition(0)){
 			case 0:
-				return Menu::volumeHeadphones;
-			case 1:
-				return Menu::volumeLineIn;
-			case 2:
 				return Menu::kitSelect;
+			case 1:
+				return Menu::volumeHeadphones;
+			case 2:
+				return Menu::volumeLineIn;
 			case 3:
-				return Menu::volumePadSelect;
-			case 4:
-				return Menu::calibrateChannelSelect;
-			case 5:
-				return Menu::loadSamplesFromSD;
-			case 6:
-				return Menu::loadSamplesFromSerial;
-			case 7:
-				return Menu::resetEeprom;
-			case 8:
-				return Menu::stats;
+				return Menu::settings;
 		}
 	}
 	

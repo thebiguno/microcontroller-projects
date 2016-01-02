@@ -29,6 +29,7 @@ namespace digitalcave {
 		private:
 			static Mapping mappings[KIT_COUNT];
 			static uint8_t kitCount;
+			static uint8_t selectedKit;
 			
 			uint8_t kitIndex;
 			char kitName[KITNAME_STRING_SIZE];
@@ -45,6 +46,10 @@ namespace digitalcave {
 			
 			//Returns the total number of kits defined in MAPPINGS.TXT
 			static uint8_t getKitCount();
+			
+			//Get / set the selected kit index
+			static uint8_t getSelectedKit();
+			static void setSelectedKit(uint8_t kitIndex);
 			
 			uint8_t getKitIndex();
 			

@@ -8,6 +8,7 @@ namespace digitalcave {
 	class MainMenu : public Menu {
 	
 		private:
+			uint8_t selection;
 
 		public:
 			MainMenu();

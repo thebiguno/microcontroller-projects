@@ -3,18 +3,22 @@
 using namespace digitalcave;
 
 static const char* labels[] = {
+	"Headphones Volume   ",
+	"Line In Volume      ",
+	"Kit Select          ",
 	"Pads Volume         ",
 	"Calibrate Channels  ",
 	"Load From SD        ",
 	"Load From Serial    ",
+	"Reset EEPROM        ",
 	"System Stats        "
 };
 
-Settings::Settings() : Menu(sizeof(labels)){
+Settings::Settings() : Menu(sizeof(labels) / sizeof(labels[0])){
 }
 
 Menu* Settings::handleAction(){
-	display->write_text(0, 0, "Drum Master  rev 2.0", 20);
+	display->write_text(0, 0, "Settings            ", 20);
 	
 	int8_t positionOffset = getPositionOffset();
 	writeSelection(positionOffset);
@@ -26,14 +30,22 @@ Menu* Settings::handleAction(){
 	if (button.releaseEvent()){
 		switch(getMenuPosition(0)){
 			case 0:
-				return Menu::volumePadSelect;
+				return Menu::volumeHeadphones;
 			case 1:
-				return Menu::calibrateChannelSelect;
+				return Menu::volumeLineIn;
 			case 2:
-				return Menu::loadSamplesFromSD;
+				return Menu::kitSelect;
 			case 3:
-				return Menu::loadSamplesFromSerial;
+				return Menu::volumePadSelect;
 			case 4:
+				return Menu::calibrateChannelSelect;
+			case 5:
+				return Menu::loadSamplesFromSD;
+			case 6:
+				return Menu::loadSamplesFromSerial;
+			case 7:
+				return Menu::resetEeprom;
+			case 8:
 				return Menu::stats;
 		}
 	}

@@ -7,6 +7,8 @@ using namespace digitalcave;
 //Audio board control object
 AudioControlSGTL5000 Sample::control;
 uint8_t Sample::controlEnabled = 0;
+uint8_t Sample::volumeHeadphones;
+uint8_t Sample::volumeLineIn;
 
 //I2S input
 AudioInputI2S Sample::input;
@@ -35,23 +37,32 @@ Sample Sample::samples[SAMPLE_COUNT];
 
 /***** Static methods *****/
 
-void Sample::setVolumeHeadphones(double volume){
+uint8_t Sample::getVolumeHeadphones(){
+	return volumeHeadphones;
+}
+
+void Sample::setVolumeHeadphones(uint8_t volume){
 	if (!controlEnabled){
 		control.enable();
 		controlEnabled = 1;
 	}
 
-	if (volume < 0.0) volume = 0.0;
-	else if (volume > 1.0) volume = 1.0;
-	control.volume(volume);
+	if (volume > 100) volume = 100;
+	control.volume(volume / 100.0);
+	volumeHeadphones = volume;
 }
 
-void Sample::setVolumeLineIn(double volume){
-	if (volume < 0.0) volume = 0.0;
-	else if (volume > 2.0) volume = 2.0;
+uint8_t Sample::getVolumeLineIn(){
+	return volumeLineIn;
+}
 
-	outputMixer.gain(0, volume);
-	outputMixer.gain(1, volume);
+void Sample::setVolumeLineIn(uint8_t volume){
+	if (volume > 200) volume = 200;
+
+	outputMixer.gain(0, volume / 100.0);
+	outputMixer.gain(1, volume / 100.0);
+	
+	volumeLineIn = volume;
 }
 
 Sample* Sample::findAvailableSample(uint8_t pad, double volume){

@@ -53,6 +53,10 @@ namespace digitalcave {
 			//Static array of samples, along with index to keep track of current index (for sample constructor).
 			static uint8_t currentIndex;
 			static Sample samples[];
+			
+			//Volumes for line in and headphones
+			static uint8_t volumeHeadphones;
+			static uint8_t volumeLineIn;
 
 			//Stops all currently playing samples for the selected pad immediately.  Normally you should
 			// use fade() for this rather than stopping abruptly.
@@ -87,11 +91,14 @@ namespace digitalcave {
 			Sample();
 			
 		public:
-			//Set the headphone volume.  This is a gain value from 0 to 1.
-			static void setVolumeHeadphones(double volume);
+			//Get / set the headphone volume.  This is a value from 0 to 100 (internally divided by 100).
+			static uint8_t getVolumeHeadphones();
+			static void setVolumeHeadphones(uint8_t volume);
 			
-			//Set the line in volume.  This is a gain value from 0 to 2.  Keep this low unless using the line in.
-			static void setVolumeLineIn(double volume);
+			//Get / set the line in volume.  This is a value from 0 to 200 (internally divided by 100).  Keep this low unless using the line in.
+			static uint8_t getVolumeLineIn();
+			static void setVolumeLineIn(uint8_t volume);
+			
 			
 			//Find the best available Sample object from the singleton array
 			static Sample* findAvailableSample(uint8_t pad, double volume);

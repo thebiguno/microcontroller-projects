@@ -6,6 +6,7 @@ using namespace digitalcave;
 
 Mapping Mapping::mappings[KIT_COUNT];
 uint8_t Mapping::kitCount;
+uint8_t Mapping::selectedKit;
 
 void Mapping::loadMappings(){
 	uint8_t state = STATE_NEWLINE;
@@ -212,6 +213,15 @@ Mapping* Mapping::getMapping(uint8_t index){
 uint8_t Mapping::getKitCount(){
 	return kitCount;
 }
+
+uint8_t Mapping::getSelectedKit(){
+	return selectedKit;
+}
+void Mapping::setSelectedKit(uint8_t kitIndex){
+	if (kitIndex >= kitCount) kitIndex = kitCount - 1;
+	selectedKit = kitIndex;
+}
+
 
 uint8_t Mapping::getKitIndex(){
 	return kitIndex;

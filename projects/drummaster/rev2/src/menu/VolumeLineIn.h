@@ -11,7 +11,6 @@ namespace digitalcave {
 	class VolumeLineIn : public Menu {
 	
 		private:
-			uint8_t volume;
 			
 		public:
 			static void loadVolumeFromEeprom();

@@ -14,7 +14,6 @@ namespace digitalcave {
 	class KitSelect : public Menu {
 	
 		private:
-			int8_t kitIndex;
 			
 		public:
 			static void loadKitIndexFromEeprom();
