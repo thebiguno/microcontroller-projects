@@ -46,6 +46,33 @@ Menu::Menu(uint16_t menuCount) :
 	encoderState(0){
 }
 
+void Menu::initDisplay(){
+	//Give the power some time to stabilize.  If we start too soon, the
+	// display can end up in a bad state.
+	delay(50);
+	
+	hd44780 = new Hd44780_Teensy(Menu::hd44780->FUNCTION_LINE_2 | Menu::hd44780->FUNCTION_SIZE_5x8, PIN_RS, PIN_E, MUX0, MUX1, MUX2, MUX3);
+	display = new CharDisplay(Menu::hd44780, DISPLAY_ROWS, DISPLAY_COLS);
+	display->write_text(0, 0, "Loading...          ", 20);
+	display->refresh();
+	
+	{
+		uint8_t custom[64] = {
+			0x08,0x0C,0x1E,0x1F,0x1E,0x0C,0x08,0x00,	// 0 - ARROW_BOLD
+			0x08,0x0C,0x06,0x03,0x06,0x0C,0x08,0x00,	// 1 - ARROW_NORMAL
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 2
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 3
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 4
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 5
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	// 6
+			0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00		// 7
+		};
+		hd44780->set_cgram_address(0x00);
+		delay(64);
+		hd44780->write_bytes(custom, 64);
+	}
+}
+
 void Menu::poll(){
 	if (lastTime + 100 < millis()){
 		button.sample(millis());
@@ -101,12 +128,12 @@ int8_t Menu::getPositionOffset(){
 }
 
 void Menu::writeSelection(int8_t positionOffset){
-	display->write_text(1, 0, positionOffset == 1 ? (char) 0x7E : ' ');
+	display->write_text(1, 0, positionOffset == 1 ? ARROW_NORMAL : ' ');
 	if (menuCount == 2){
-		display->write_text(2, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+		display->write_text(2, 0, positionOffset == -1 ? ARROW_NORMAL : ' ');
 	}
 	else if (menuCount > 2){
-		display->write_text(2, 0, positionOffset == 0 ? (char) 0x7E : ' ');
-		display->write_text(3, 0, positionOffset == -1 ? (char) 0x7E : ' ');
+		display->write_text(2, 0, positionOffset == 0 ? ARROW_NORMAL : ' ');
+		display->write_text(3, 0, positionOffset == -1 ? ARROW_NORMAL : ' ');
 	}
 }

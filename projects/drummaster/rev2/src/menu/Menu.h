@@ -12,6 +12,9 @@
 
 #include "../hardware.h"
 
+#define ARROW_BOLD		0x00
+#define ARROW_NORMAL	0x01
+
 namespace digitalcave {
 
 	class Menu {
@@ -29,6 +32,9 @@ namespace digitalcave {
 		protected:
 			static char buf[21];	//Temp space for string operations
 			
+			static Hd44780_Teensy* hd44780;
+			static ButtonTeensy button;
+			
 			int16_t encoderState;
 			
 			//Constructor
@@ -38,9 +44,7 @@ namespace digitalcave {
 			void writeSelection(int8_t positionOffset);
 			
 		public:
-			static Hd44780_Teensy* hd44780;
 			static CharDisplay* display;
-			static ButtonTeensy button;
 			
 			//All available menus
 			static Menu* calibrateChannel;
@@ -56,6 +60,8 @@ namespace digitalcave {
 			static Menu* volumePad;
 			static Menu* volumePadSelect;
 			static Menu* stats;
+			
+			static void initDisplay();
 			
 			//Calls the handleAction() method for the current menu
 			static void poll();

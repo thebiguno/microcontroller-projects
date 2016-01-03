@@ -34,19 +34,19 @@ Menu* MainMenu::handleAction(){
 	
 	//Menu positioning
 	if (getMenuPosition(0) == 0){
-		display->write_text(1, 0, (char) 0x7E);
+		display->write_text(1, 0, ARROW_NORMAL);
 		display->write_text(2, 8, ' ');
 		display->write_text(2, 14, ' ');
 	}
 	else if (getMenuPosition(0) == 1){
 		display->write_text(1, 0, ' ');
-		display->write_text(2, 8, (char) 0x7E);
+		display->write_text(2, 8, ARROW_NORMAL);
 		display->write_text(2, 14, ' ');
 	}
 	else if (getMenuPosition(0) == 2){
 		display->write_text(1, 0, ' ');
 		display->write_text(2, 8, ' ');
-		display->write_text(2, 14, (char) 0x7E);
+		display->write_text(2, 14, ARROW_NORMAL);
 	}
 	
 	//Change menus

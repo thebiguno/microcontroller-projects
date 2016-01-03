@@ -29,6 +29,7 @@ Menu* VolumeHeadphones::handleAction(){
 	display->write_text(2, 12, "% ", 2);
 	display->write_text(2, 18, "% ", 2);
 	display->write_text(3, 1, "Settings           ", 19);
+	display->write_text(2, 8, ARROW_BOLD);
 
 	//Dynamic text
 	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
