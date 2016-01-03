@@ -31,7 +31,7 @@
 #define MAX_RESPONSE_TIME			1
 
 //Minimum ADC value to register as a hit
-#define MIN_VALUE					3
+#define MIN_VALUE					7
 
 namespace digitalcave {
 
