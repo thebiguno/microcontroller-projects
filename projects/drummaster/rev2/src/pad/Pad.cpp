@@ -84,10 +84,10 @@ double Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_ENABLE);
 	
 	//Wait a bit to ensure a good signal from the MUX
-	delayMicroseconds(1);
+	delayMicroseconds(5);
 
-	//... read value (9 bit)...
-	uint16_t currentValue = adc->analogRead(ADC_INPUT) >> 1;
+	//... read value...
+	uint16_t currentValue = adc->analogRead(ADC_INPUT);
 	
 	//... and disable MUX again
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
@@ -109,6 +109,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 	if (playTime + doubleHitThreshold > millis() 
 			|| (playTime + (doubleHitThreshold * 4) > millis() && ((currentValue - MIN_VALUE) / 256.0 * padVolume) < (lastPiezo / 4))){
 		digitalWriteFast(DRAIN_EN, MUX_ENABLE);
+		delayMicroseconds(50);
 		return 0;
 	}
 	

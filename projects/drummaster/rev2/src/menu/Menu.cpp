@@ -47,7 +47,7 @@ Menu::Menu(uint16_t menuCount) :
 }
 
 void Menu::poll(){
-	if (lastTime + 50 < millis()){
+	if (lastTime + 100 < millis()){
 		button.sample(millis());
 		
 		//Ensure valid menu entry is selected

@@ -26,7 +26,7 @@ Menu* ResetEeprom::handleAction(){
 		//Reset pot calibration to 100
 		uint16_t values[CHANNEL_COUNT];
 		for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
-			values[i] = 100;
+			values[i] = 170;
 		}
 		EEPROM.put(EEPROM_POTENTIOMETER, values);
 		
