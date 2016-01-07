@@ -58,6 +58,7 @@ Menu* LoadSamplesFromSerial::handleAction(){
 			uint8_t i = 0;
 			uint16_t time = 0;
 			while (!SerialFlash.ready()) {
+				delay(100);	//Don't clobber the chip constantly polling for completion
 				if (millis() - last_millis > 1000) {
 					time++;
 					last_millis = millis();
