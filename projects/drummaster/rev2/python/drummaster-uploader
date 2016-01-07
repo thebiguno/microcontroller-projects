@@ -16,7 +16,7 @@ BYTE_ESCAPE = "\x7d"
 BYTE_SEPARATOR = "\x7c"
 
 #Flash size (in MB)
-FLASH_SIZE = 64
+FLASH_SIZE = 128
 
 totalFileSize = 0;
 mappingsFileSelected = False
