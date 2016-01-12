@@ -38,7 +38,7 @@ int main(){
 	
 	double throttle = 0;
 	vector_t rate_sp;
-	vector_t rate;
+	vector_t rate_pv;
 	
 	motor_start();
 	
@@ -46,16 +46,16 @@ int main(){
 
 	//Main program loop
 	while (1) {
-/*
-		vector_t accel = mpu6050.getAccel();
+
+//		vector_t accel = mpu6050.getAccel();
 		vector_t gyro = mpu6050.getGyro();
 
 		uint32_t time = timer_millis();
-		rate_x.compute(rate_sp.x, gyro.x, &rate.x, time);
-		rate_y.compute(rate_sp.y, gyro.y, &rate.y, time);
-		rate_z.compute(rate_sp.z, gyro.z, &rate.z, time);
-		drive_motors(throttle, rate);
-*/
+		rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+		drive_motors(throttle, rate_pv);
+
 //		PORTB ^= _BV(0) | _BV(1);
 //		PORTF ^= _BV(5) | _BV(6) | _BV(7);
 
@@ -80,11 +80,11 @@ int main(){
 	}
 }
 
-void drive_motors(double throttle, vector_t rate) {
-	double m1 = throttle - rate.x - rate.y - rate.z;
-	double m2 = throttle + rate.x - rate.y + rate.z;
-	double m3 = throttle + rate.x + rate.y - rate.z;
-	double m4 = throttle - rate.x + rate.y + rate.z;
+void drive_motors(double throttle, vector_t rate_pv) {
+	double m1 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
+	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
+	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
+	double m4 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
 
 	motor_set(m1, m2, m3, m4);
 } 
