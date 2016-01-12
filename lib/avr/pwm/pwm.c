@@ -126,6 +126,7 @@ void pwm_init(volatile uint8_t *ports[],
 	}
 				
 	TCCR1A = 0x00;
+	TCCR1B &= ~(_BV(CS12) | _BV(CS11) | _BV(CS10));
 	TCCR1B |= _prescaler_mask;
 	
 	//OCR1A controls the PWM period
@@ -147,6 +148,7 @@ void pwm_init(volatile uint8_t *ports[],
 void pwm_start(){
 	TCNT1 = 0x00;	//Restart timer counter
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);	//Enable output compare match interrupt enable
+	TCCR1B &= ~(_BV(CS12) | _BV(CS11) | _BV(CS10));
 	TCCR1B |= _prescaler_mask;	//Enable
 }
 
