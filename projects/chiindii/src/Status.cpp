@@ -10,13 +10,13 @@ void Status::poll(uint32_t time) {
 
 	uint32_t currentPeriod = time - lastTime;
 	if (currentPeriod < 250 && (status & 0x1)) {
-		LED_PORT &= RED;
+		LED_PORT &= ~RED;
 	} else if (currentPeriod < 500 && (status & 0x2)) {
-		LED_PORT &= GREEN;
+		LED_PORT &= ~GREEN;
 	} else if (currentPeriod < 750 && (status & 0x4)) {
-		LED_PORT &= BLUE;
+		LED_PORT &= ~BLUE;
 	} else if (status == 0) {
-		LED_PORT &= ~(RED | GREEN | BLUE)
+		LED_PORT &= (RED | GREEN | BLUE)
 	}
 	if (currentPeriod > 1000) {
 		lastTime = time;
