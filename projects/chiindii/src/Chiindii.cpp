@@ -38,17 +38,13 @@ int main(){
 	Complementary c_y(0.075, 10, 0);
 	Complementary c_z(0.075, 10, 0);
 	
-	*(&LED_PORT - 1) |= RED | GREEN | BLUE;
-	LED_PORT |= RED | GREEN | BLUE;	//Tuen off active low LED
-//	DDRB |= _BV(0) | _BV(1);
-	
 	double throttle = 0;
+	vector_t gyro;
+	vector_t accel;
 	vector_t rate_sp;
-	vector_t rate_mv;
 	vector_t rate_pv;
 	vector_t angle_sp;
 	vector_t angle_mv;
-	vector_t angle_pv;
 	uint32_t time;
 	
 	motor_start();
@@ -65,23 +61,30 @@ int main(){
 
 		time = timer_millis();
 		
-		angle_mv = mpu6050.getAccel();
-		rate_mv = mpu6050.getGyro();
-
-		c_x.compute(rate_mv.x, angle_mv.x, &angle_pv.x, time);
-		c_y.compute(rate_mv.y, angle_mv.y, &angle_pv.y, time);
-		c_z.compute(rate_mv.z, angle_mv.z, &angle_pv.z, time);
-
+		accel = mpu6050.getAccel();
+		gyro = mpu6050.getGyro();
 		uint32_t time = timer_millis();
-		rate_x.compute(rate_sp.x, rate_mv.x, &rate_pv.x, time);
-		rate_y.compute(rate_sp.y, rate_mv.y, &rate_pv.y, time);
-		rate_z.compute(rate_sp.z, rate_mv.z, &rate_pv.z, time);
+
+		// complementary tuning
+		// filter gyro rate and accel vector into absolute measured angle relative to horizontal
+		c_x.compute(gyro.x, atan2(accel.z, accel.x), &angle_mv.x, time);
+		c_y.compute(gyro.y, atan2(accel.z, accel.y), &angle_mv.y, time);
+
+		// angle pid
+		// compute a rate set point given an angle set point and current measured angle
+		// TODO don't compute this when tuning rate pid
+		angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
+		angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+
+		// rate pid
+		// computes the desired change rate
+		rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+		
 		drive_motors(throttle, rate_pv);
 
-//		PORTB ^= _BV(0) | _BV(1);
-//		PORTF ^= _BV(5) | _BV(6) | _BV(7);
-
-		//LED warning for low battery
+		// LED warning for low battery
 		LED_PORT |= RED | GREEN | BLUE;	//Turn all lights off
 		uint8_t battery_level = battery_read();
 		if (battery_level < 2) {

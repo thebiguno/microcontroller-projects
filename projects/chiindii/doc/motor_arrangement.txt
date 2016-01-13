@@ -7,3 +7,20 @@ Motor 2 and 4: CCW
 
 When using the Hubsan motors, the CW motors are the ones with Red (+) and Blue (-), while
 the CCW motors are the ones with White (+) and Black (-).
+
+roll is rotating about the x axis
+pitch is rotating about the y axis
+
+LED conditions
+blue	no comms
+red		low battery
+green	unarmed (safe to pick up)
+white	armed and with to other error condition (running strobe)
+
+the timing of the LED conditions is as follows
+http://wavedrom.com/editor.html
+{signal: [
+  {name: 'errors', wave: 'x3450x', data: ['comm', 'batt', 'safe'] },
+  {name: 'strobe', wave: 'x0..1x' },
+  {name: 'time',   wave: 'x====x', data: ['.25s', '.25s', '.25s', '.25'] }
+]}
