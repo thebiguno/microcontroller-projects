@@ -22,9 +22,9 @@ MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION = 0x37
 MESSAGE_SEND_MAGNETOMETER_CALIBRATION = 0x38
 MESSAGE_START_MAGNETOMETER_CALIBRATION = 0x39
 
-MODE_CALIBRATION_JOINTS = 0x01
-MODE_CALIBRATION_FEET = 0x02
-MODE_CALIBRATION_MAGNETOMETER = 0x03
+MODE_CALIBRATION_RATE_PID = 0x01
+MODE_CALIBRATION_COMPLEMENTARY = 0x02
+MODE_CALIBRATION_ANGLE_PID = 0x03
 
 ########## Main program here ##########
 
@@ -48,7 +48,7 @@ Chiindii Calibration: Please selection an option below:
 		elif (choice == "C" or choice == "c"):
 			doComplementaryCalibration(ser)
 		elif (choice == "A" or choice == "a"):
-			doAttitudePidCalibration(ser)
+			doAnglePidCalibration(ser)
 		elif (choice == "L" or choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
@@ -63,123 +63,90 @@ Chiindii Calibration: Please selection an option below:
 		
 ########## Primary functions here ##########
 
-def doLegCalibration(ser, mode):
+def doRatePidCalibration(ser, mode):
 	requestMessage = 0x00
 	sendMessage = 0x00
-	if (mode == MODE_CALIBRATION_JOINTS):
-		requestMessage = MESSAGE_REQUEST_JOINT_CALIBRATION
-		sendMessage = MESSAGE_SEND_JOINT_CALIBRATION
 		raw_input("""
-Joint calibration allows builders to ensure that each joint (coxa, femur, and tibia) 
-is set to the correct neutral angle, despite tolerances between each servo, mounting horn,
-etc.  For the Inverse Kinematics engine to work accurately, it is essential that each
-joint is as close to nominal as possible.
-When entering this mode, Stubby should be lifted off the ground by its main body.  Each
-leg will return to its neutral position (i.e. the position where each servo is sent a 
-1500us PWM signal).  A protractor can then be used to measure each joint, according
-to the diagrams available at:
-https://github.com/thebiguno/stubby/raw/master/doc/diagrams.pdf
-The calibration units for this mode are tens of mirco seconds (us), modifying the PWM signal 
-directly.  For instance, if the drive calculations indicate that a servo should be sent a 1200us 
-PWM signal to achieve the desired angle, and there is a calibration value of 3, the actual
-signal will be 1230us.
-See http://stubby.digitalcave.ca/stubby/calibration.jsp for additional instructions on 
-calibration, including pictures.
-Press enter to set the logs to their PWM neutral positions, and to begin calibration.
+Rate PID calibration allows Chiindii to quickly an accurately achieve the requested rotational
+rate of change.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
+derivitive) for a total of nine parameters.
+Tune each axis in turn by requesting a fixed rate of change (for example 1 degree / second)
+and increasing the proportional parameter until the the observed rate of change starts to
+occilate around the requested rate.  At that point begin to increase the integral parameter
+until the observed rate of change stops occilating.  Continue tuning until the observed rate
+of change is stable and matches the requested rate of change for a variety of requested rates.
+Place Chiindii into the jig, and press enter.
 """)
-	elif (mode == MODE_CALIBRATION_FEET):
-		requestMessage = MESSAGE_REQUEST_FOOT_CALIBRATION
-		sendMessage = MESSAGE_SEND_FOOT_CALIBRATION
-		raw_input("""
-Foot calibration allows builders to fine-tune the x,y,z position of each foot.  Positive
-x values will move the foot to the right; positive y values will move the foot forward;
-positive z values will move the foot up.
-When starting calibration, Stubby should be lifted off the ground by its main body.  Each
-leg will return to its default Inverse Kinematics-calculated position (i.e. the positions
-used in the Leg array constructor in Stubby.cpp).  You can then visually inspect each
-leg to ensure that it is positioned properly.  (Most likely, no changes are going to be 
-required in this mode.  If any changes are needed, it will likely be to the Z axis only, 
-and it will likely only require a few mm of changes).
-The calibration units for this mode are mm.  For instance, if the calibration value for
-the z axis was set to 3, the foot would be 3mm higher than if it calibration value was 
-set to 0.
-See http://stubby.digitalcave.ca/stubby/calibration.jsp for additional instructions on 
-calibration, including pictures.
-Press enter to set the logs to their default positions, and to begin calibration.
-""")
-	else:
-		print("Invalid mode detected")
-		return
-		
 	
 	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, requestMessage, [])
+	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
 	response = readMessage(ser)
 	if (response == False):
 		print("Communication failure")
 		return
-	elif (response["command"] != sendMessage):
+	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_RATE_PID):
 		print("Invalid response detected")
 		return
-
 	d = response["data"]
 	while True:
-		print("\nPlease select a leg to modify")
-		print("	0) Front Left")
-		print("	1) Middle Left")
-		print("	2) Rear Left")
-		print("	3) Rear Right")
-		print("	4) Middle Right")
-		print("	5) Front Right")
-		print("	R) Reset all joint values to 0")
-		print("	Q) Return to main menu")
+		print("\nPlease select a axis to modify")
+		print("	P) Pitch")
+		print("	R) Roll")
+		print("	Y) Yaw")
+		print("	Q) Return to the main menu")
 		
-		leg = raw_input("Selected Option: ")
-		if (digit.match(leg) and int(leg) >= 0 and int(leg) <= 5):
-			leg = int(leg)
-			while True:
-				if (mode == MODE_CALIBRATION_JOINTS):
-					print("\nPlease select a joint to modify")
-					print("	0) Tibia")
-					print("	1) Femur")
-					print("	2) Coxa")
-					print("	Q) Return to leg selection menu")
-				elif (mode == MODE_CALIBRATION_FEET):
-					print("\nPlease select a foot co-ordinate to modify")
-					print("	0) X")
-					print("	1) Y")
-					print("	2) Z")
-					print("	Q) Return to leg selection menu")
-					
-				joint = raw_input("Selected Option: ")
-				if (digit.match(joint) and int(joint) >= 0 and int(joint) <= 2):
-					joint = int(joint)
-					print("\nPress '+' to increment, '-' to decrement, a valid number (-128 to 127), or 'Q' to return to joint selection.")
-					while True:
-						key = raw_input("Selected Option (current value: " + str(to_int8_t(d[leg * 3 + int(joint)])) + "): ")
-						if (key == "+"):
-							d[leg * 3 + int(joint)] = to_uint8_t(to_int8_t(d[leg * 3 + int(joint)] + 1))
-						elif (key == "-"):
-							d[leg * 3 + int(joint)] = to_uint8_t(to_int8_t(d[leg * 3 + int(joint)] - 1))
-						elif (integer.match(key) and int(key) >= -128 and int(key) <= 127):
-							d[leg * 3 + int(joint)] = to_uint8_t(int(key))
-						elif (key == "Q" or key == "q"):
-							break;
-						else:
-							print("Invalid value")
-						writeMessage(ser, sendMessage, d)
-						
-				elif (joint == "Q" or joint == "q"):
-					break;
-				else:
-					print("Invalid joint selected.")
-		elif (leg == "R" or leg == "r"):
-			writeMessage(ser, MESSAGE_RESET_CALIBRATION, [mode])
-		elif (leg == "Q" or leg == "q"):
-			print("Exiting to main menu")
-			return
+		axis = raw_input("Select axis: ")
+		
+		if (axis == "Q" or axis == "q"):
+			break
+		elif (axis == "P" or axis == "p" or axis == "R" or axis == "r" or axis == "Y" or axis == "y"):
+			## translate axis into number for indexing into tuning array
+			if (axis == "P" or axis == "p"): axis = 0
+			elif (axis == "R" or axis == "r"): axis = 1
+			else: axis = 2
+			
+			print("\nPlease select a parameter to modify")
+			print("	S) Rate Set Point (deg/sec)")
+			print("	P) Proportional")
+			print("	I) Integral")
+			print("	D) Derivitive")
+			print("	Q) Return to axis selection")
+			
+			param = raw_input("Select parameter: ")
+			
+			if (param == "Q" or param == "q"):
+				break
+			elif (param == "R" or param == "r"):
+				print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+				while True:
+					value = raw_input("value (" + str(to_float_t(rate_sp) + "): ")
+					if (float.match(value)):
+						rate_sp = to_float_t(float(value))
+						writeMessage(ser, MESSAGE_SEND_RATE_SP, rate_sp)
+					elif (value == "Q" or value == "q"):
+						break;
+					else:
+						print("Invalid value, please try again\n")
+			elif (param == "P" or param == "p" or param == "I" or param == "i" or param == "D" or param == "d"):
+				## translate param into number for indexing into tuning array
+				if (param == "P" or param == "p"): param = 0
+				elif (param == "I" or param == "i"): param = 1
+				else: param = 2
+				
+				print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+				while True:
+					value = raw_input("value (" + str(to_float_t(d[axis * 3 + param])) + "): ")
+					if (float.match(value)):
+						d[axis * 3 + param] = to_float_t(float(value))
+						writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
+					elif (value == "Q" or value == "q"):
+						break;
+					else:
+						print("Invalid value, please try again\n")
+			else
+				print("Invalid parameter, please try again\n")
 		else:
-			print("Invalid leg selected.")
+			print("Invalid axis, please try again\n")
 
 def doMagnetometerCalibration(ser):
 	raw_input("""
