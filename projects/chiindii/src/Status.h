@@ -2,8 +2,12 @@
 #define STATUS_h
 
 #include <stdint.h>
+#include <avr/io.h>
 
-using namespace digitalcave;
+#define LED_PORT		PORTF
+#define GREEN			_BV(5)
+#define BLUE			_BV(6)
+#define RED				_BV(7)
 
 namespace digitalcave {
 	class Status {
@@ -17,12 +21,12 @@ namespace digitalcave {
 
 			void poll(uint32_t time);
 
-			void Status::batteryLow();
-			void Status::batteryOK();
-			void Status::armed();
-			void Status::unarmed();
-			void Status::commInterrupt();
-			void Status::commOK();
+			void batteryLow();
+			void batteryOK();
+			void armed();
+			void unarmed();
+			void commInterrupt();
+			void commOK();
 	};
 }
 #endif

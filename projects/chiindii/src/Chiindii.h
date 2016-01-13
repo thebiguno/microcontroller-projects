@@ -15,8 +15,4 @@
 #define MOTOR4_PORT		PORTB
 #define MOTOR4_PIN		PORTB7
 
-#define LED_PORT		PORTF
-#define GREEN			_BV(5)
-#define BLUE			_BV(6)
-#define RED				_BV(7)
 #endif

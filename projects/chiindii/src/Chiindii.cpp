@@ -9,6 +9,7 @@
 
 #include "Chiindii.h"
 #include "Complementary.h"
+#include "Status.h"
 
 #include "motor/motor.h"
 
@@ -28,10 +29,15 @@ int main(){
 	Mpu6050 mpu6050;
 //	mpu6050.calibrate();
 
+	Status status;
+
 	// TODO supply proper kp, ki, kd
 	PID rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
 	PID rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
 	PID rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0);
+	
+	PID angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
+	PID angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
 	
 	// TODO supply proper tau
 	Complementary c_x(0.075, 10, 0); // 10 = 10 ms
@@ -49,8 +55,6 @@ int main(){
 	
 	motor_start();
 	
-	uint16_t motor = 0;
-	
 	// TODO get angle setpoint from controller
 	angle_sp.x = 2;
 	angle_sp.y = 0;
@@ -63,7 +67,7 @@ int main(){
 		
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
-		uint32_t time = timer_millis();
+		time = timer_millis();
 
 		// complementary tuning
 		// filter gyro rate and accel vector into absolute measured angle relative to horizontal
@@ -82,25 +86,21 @@ int main(){
 		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 		
-		drive_motors(throttle, rate_pv);
-
-		// LED warning for low battery
-		LED_PORT |= RED | GREEN | BLUE;	//Turn all lights off
 		uint8_t battery_level = battery_read();
-		if (battery_level < 2) {
-			LED_PORT &= ~RED;
+		if (battery_level > BATTERY_WARNING_LEVEL) {
+			status.batteryOK();
+		} else {
+			status.batteryLow();
 		}
-		else if (battery_level < 10){
-			LED_PORT &= ~(RED | GREEN);
-		}
-		else {
-			LED_PORT &= ~GREEN;
+		
+		status.poll(time);
+
+		if (battery_level > BATTERY_DAMAGE_LEVEL) {
+			drive_motors(throttle, rate_pv);
+		} else {
+			motor_set(0, 0, 0, 0);
 		}
 
-		motor_set(motor, motor, motor, motor);
-		motor++;
-		if (motor >= 0x1FF) motor = 0;
-		
 		_delay_ms(10);
 	}
 }
