@@ -14,7 +14,7 @@ using namespace digitalcave;
 
 PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t period, uint32_t time){
 	setOutputLimits(0, 255);
-	setPeriod(100);
+	setPeriod(period);
 	setDirection(direction);
 	setTunings(kp, ki, kd);
 

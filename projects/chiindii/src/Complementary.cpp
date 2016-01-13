@@ -5,7 +5,7 @@
  * This Library is licensed under a GPLv3 License
  **********************************************************************************************/
 
-#include "PID.h"
+#include "Complementary.h"
 
 using namespace digitalcave;
 
@@ -17,7 +17,7 @@ Complementary::Complementary(double tau, uint32_t period, uint32_t time){
 	else lastTime = 0;
 }
 
-uint8_t PID::compute(double rate, double angle, double* output, uint32_t time){
+uint8_t Complementary::compute(double rate, double angle, double* output, uint32_t time){
 	uint32_t currentPeriod = time - lastTime;
 	if (currentPeriod >= period){
 		double periodSec = currentPeriod / 1000.0;	//Period in seconds; used to normalize ki / kd values across different periods
@@ -34,10 +34,10 @@ uint8_t PID::compute(double rate, double angle, double* output, uint32_t time){
 }
 
 
-void PID::setTunings(double tau) {
+void Complementary::setTuning(double tau) {
 	this->tau = tau;
 }
 	
-void PID::setPeriod(uint16_t period){
+void Complementary::setPeriod(uint16_t period){
 	this->period = period;
 }

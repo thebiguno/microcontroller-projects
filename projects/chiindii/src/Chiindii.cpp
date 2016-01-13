@@ -8,6 +8,7 @@
 #include "lib/timer/timer.h"
 
 #include "Chiindii.h"
+#include "Complementary.h"
 
 #include "motor/motor.h"
 
@@ -43,19 +44,29 @@ int main(){
 	
 	double throttle = 0;
 	vector_t rate_sp;
+	vector_t rate_mv;
 	vector_t rate_pv;
 	vector_t angle_sp;
+	vector_t angle_mv;
 	vector_t angle_pv;
+	uint32_t time;
 	
 	motor_start();
 	
 	uint16_t motor = 0;
+	
+	// TODO get angle setpoint from controller
+	angle_sp.x = 2;
+	angle_sp.y = 0;
+	angle_sp.z = 0;
 
 	//Main program loop
 	while (1) {
 
-		vector_t angle_mv = mpu6050.getAccel();
-		vector_t rate_mv = mpu6050.getGyro();
+		time = timer_millis();
+		
+		angle_mv = mpu6050.getAccel();
+		rate_mv = mpu6050.getGyro();
 
 		c_x.compute(rate_mv.x, angle_mv.x, &angle_pv.x, time);
 		c_y.compute(rate_mv.y, angle_mv.y, &angle_pv.y, time);
