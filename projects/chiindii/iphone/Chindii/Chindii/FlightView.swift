@@ -164,13 +164,25 @@ class FlightView: UIView {
 		
 		CGContextSetRGBStrokeColor(context, 1.0, 1.0, 0.8, 1.0)
 
-		CGContextMoveToPoint(context, -radius, 0)
-		CGContextAddQuadCurveToPoint(context, CGFloat(roll*2), CGFloat(pitch*2), radius, 0)
-		CGContextStrokePath(context)
+		let arcradius = CGFloat(abs(pitch) / 2) + CGFloat((2 * radius) * (2 * radius)) / CGFloat(8 * abs(pitch))
+//		CGContextMoveToPoint(context, -radius, 0)
+//		CGContextAddArcToPoint(context, 0, CGFloat(pitch), radius, 0, arcradius)
 
-		CGContextMoveToPoint(context, 0, -radius)
-		CGContextAddQuadCurveToPoint(context, CGFloat(roll*2), CGFloat(pitch*2), 0, radius)
-		CGContextStrokePath(context)
+		let adj = arcradius + CGFloat(pitch)
+		let op = radius
+		print(tan(op / adj) * 57.296)
+		let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(0), y: adj + CGFloat(pitch)), radius: arcradius, startAngle: CGFloat(3*M_PI/2) - tan(op / adj), endAngle: CGFloat(3*M_PI/2) + tan(op / adj), clockwise: true)
+//		let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(0), y: arcradius + CGFloat(pitch)), radius: arcradius, startAngle: 0, endAngle: CGFloat(M_PI), clockwise: false)
+		path.stroke()
+		
+//		CGContextMoveToPoint(context, -radius, 0)
+//		CGContextAddQuadCurveToPoint(context, -radius, CGFloat(pitch), 0, CGFloat(pitch))
+//		CGContextAddQuadCurveToPoint(context, radius, CGFloat(pitch), radius, 0)
+//		CGContextStrokePath(context)
+
+//		CGContextMoveToPoint(context, 0, -radius)
+//		CGContextAddQuadCurveToPoint(context, CGFloat(roll), CGFloat(pitch), 0, arcradius)
+//		CGContextStrokePath(context)
 
 	}
 	
