@@ -34,6 +34,7 @@ uint8_t debug;
 SerialAVR serial(32400, 8, 0, 1, 0, 32); // TODO verify buffer size
 FramedSerialProtocol protocol(32);
 FramedSerialMessage inbound(0x00, 32);
+Mpu6050 mpu6050;
 
 int main(){
 	//Set clock to run at full speed
@@ -44,7 +45,6 @@ int main(){
 	
 	timer_init();
 
-	Mpu6050 mpu6050;
 //	mpu6050.calibrate();
 
 	Status status;
@@ -178,7 +178,7 @@ void dispatch() {
 	}
 	//This is a Calibration API message (namespace 0x3X)
 	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
-		calibration.dispatch(inbound);
+		calibration.dispatch(protocol, &serial, inbound, &mpu6050);
 	}
 	else {
 		//TODO Send debug message 'unknown command' or similar

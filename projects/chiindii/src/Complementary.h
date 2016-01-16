@@ -28,12 +28,12 @@ namespace digitalcave {
 			uint8_t compute(double rate, double angle, double* output, uint32_t time);
 			
 			// Change tuning
-			void setTuning(double tau);
+			void setTau(double tau);
 		
 			// Set the period (ms) at which the PID calculation is performed.
 			void setPeriod(uint16_t newPeriod);
 			
-			void getTau();
+			double getTau();
 	};
 }
 #endif
