@@ -12,8 +12,6 @@
 #define MESSAGE_ANGLE 0x22
 #define MESSAGE_ZERO 0x23
 
-#define EEPROM_OFFSET	0
-
 namespace digitalcave {
 	class Direct {
 			

@@ -68,7 +68,7 @@ namespace digitalcave {
 			void run();
 			
 			vector_t getAngleSp();
-			vector_t getRateSP();
+			vector_t getRateSp();
 			
 			PID getRateX();
 			PID getRateY();
@@ -76,10 +76,11 @@ namespace digitalcave {
 			PID getAngleX();
 			PID getAngleY();
 			Complementary getCompX();
-			Complementary getComyY();
+			Complementary getCompY();
 			
 			void setMode(uint8_t mode);
 			void setThrottle(double throttle);
+			Mpu6050 getMpu6050();
 			
 			void getStatus();
 	};
