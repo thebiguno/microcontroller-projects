@@ -36,13 +36,13 @@ namespace digitalcave {
 			
 		private:
 			uint8_t mode;
+			uint8_t debug;
 			double throttle;
 			vector_t angle_sp;
 			vector_t rate_sp;
 			
 			SerialAVR serial;
 			FramedSerialProtocol protocol;
-			FramedSerialMessage message;
 			Mpu6050 mpu6050;
 
 			PID rate_x;
@@ -59,8 +59,8 @@ namespace digitalcave {
 			
 			Status status;
 			
-			void driveMotors();
-			void dispatch();
+			void driveMotors(vector_t rate_pv);
+			void dispatch(FramedSerialMessage *message);
 			
 		public:
 			Chiindii();

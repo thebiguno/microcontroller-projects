@@ -16,8 +16,6 @@
 
 using namespace digitalcave;
 
-void drive_motors(double throttle, vector_t rate);
-
 int main(){
 	//Set clock to run at full speed
 	clock_prescale_set(clock_div_1);
@@ -34,6 +32,8 @@ int main(){
 }
 
 void Chiindii::run() {
+	FramedSerialMessage message(0,32);
+	
 	calibration.read(); // load PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
@@ -46,6 +46,10 @@ void Chiindii::run() {
 	
 	//Main program loop
 	while (1) {
+		if (protocol.read(&serial, &message)) {
+			dispatch(message);
+		}
+
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
 		time = timer_millis();
@@ -91,7 +95,7 @@ void Chiindii::run() {
 		if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 			status.armed();
 			if (battery_level > BATTERY_DAMAGE_LEVEL) {
-				drive_motors(throttle, rate_pv);
+				driveMotors(rate_pv);
 			} else {
 				motor_set(0, 0, 0, 0);
 			}
@@ -128,7 +132,7 @@ Chiindii::Chiindii() :
 	mode = MODE_UNARMED;
 }
 
-void Chiindii::driveMotors() {
+void Chiindii::driveMotors(vector_t rate_pv) {
 	double m1 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
 	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
 	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
@@ -137,25 +141,10 @@ void Chiindii::driveMotors() {
 	motor_set(m1, m2, m3, m4);
 } 
 
-void Chiindii::dispatch() {
-	uint8_t cmd = message.getCommand();
-	uint8_t *data = message.getData();
-	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
-		if (data[0] == 'U') {
-			controller = CONTROLLER_UC;
-		}
-		else if (data[0] == 'D') {
-			controller = CONTROLLER_DIRECT;
-		}
-		else if (data[0] == 'C') {
-			controller = CONTROLLER_CALIBRATION;
-		}
-		//TODO Put any other supported control modes here.
-		else {
-			controller = CONTROLLER_NONE;
-		}
-	}
-	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG) {
+void Chiindii::dispatch(FramedSerialMessage *message) {
+	uint8_t cmd = message->getCommand();
+
+	if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG) {
 		debug = 0x01;
 		FramedSerialMessage msg(MESSAGE_REQUEST_ENABLE_DEBUG, 0);
 		protocol.write(&serial, &msg);
@@ -166,15 +155,15 @@ void Chiindii::dispatch() {
 		protocol.write(&serial, &msg);
 	}
 	//This is a Universal Controller message (namespace 0x1X)
-	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
+	else if ((cmd & 0xF0) == 0x10){
 		uc.dispatch(message);
 	}
 	//This is a Direct API message (namespace 0x2X)
-	else if (controller == CONTROLLER_DIRECT && (cmd & 0xF0) == 0x20){
+	else if ((cmd & 0xF0) == 0x20){
 		direct.dispatch(message);
 	}
 	//This is a Calibration API message (namespace 0x3X)
-	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
+	else if ( (cmd & 0xF0) == 0x30){
 		calibration.dispatch(message);
 	}
 	else {
