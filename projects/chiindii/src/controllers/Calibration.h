@@ -5,12 +5,8 @@
 #include <avr/eeprom.h>
 
 #include <FramedSerialProtocol.h>
-#include <SerialAVR.h>
-#include <PID.h>
 
-#include "../Complementary.h"
-#include "../lib/Mpu6050/Mpu6050.h"
-#include "../lib/timer/timer.h"
+#include "../Chiindii.h"
 
 //Universal Controller messages are in 0x3X space...
 #define MESSAGE_SAVE_CALIBRATION 0x30
@@ -30,18 +26,12 @@
 namespace digitalcave {
 	class Calibration {
 		private:
-			PID *rate_x;
-			PID *rate_y;
-			PID *rate_z;
-			PID *angle_x;
-			PID *angle_y;
-			Complementary *c_x;
-			Complementary *c_y;
+			Chiindii *chiindii;
 			
 		public:
-			Calibration(PID *rate_x, PID *rate_y, PID *rate_z, PID *angle_x, PID *angle_y, Complementary *c_x, Complementary *c_y);
+			Calibration(Chiindii *chiindii);
 
-			void dispatch(FramedSerialProtocol* protocol, Serial* serial, FramedSerialMessage* message, Mpu6050* mpu6050);
+			void dispatch(FramedSerialMessage* message);
 			void read();
 			void write();
 	};

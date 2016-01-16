@@ -24,14 +24,8 @@ using namespace digitalcave;
 
  */
 
-Calibration::Calibration(PID *rate_x, PID *rate_y, PID *rate_z, PID *angle_x, PID *angle_y, Complementary *c_x, Complementary *c_y) {
-	this->rate_x = rate_x;
-	this->rate_y = rate_y;
-	this->rate_z = rate_z;
-	this->angle_x = angle_x;
-	this->angle_y = angle_y;
-	this->c_x = c_x;
-	this->c_y = c_y;
+Calibration::Calibration(Chiindii *chiindii) {
+	this->chiindii = chiindii;
 }
 
 void Calibration::read() {
@@ -41,32 +35,32 @@ void Calibration::read() {
 	kp = eeprom_read_float((float*) EEPROM_OFFSET + 0);
 	ki = eeprom_read_float((float*) EEPROM_OFFSET + 4);
 	kd = eeprom_read_float((float*) EEPROM_OFFSET + 8);
-	rate_x->setTunings(kp, ki, kd);
+	chiindii->getRateX().setTunings(kp, ki, kd);
 	
 	kp = eeprom_read_float((float*) EEPROM_OFFSET + 12);
 	ki = eeprom_read_float((float*) EEPROM_OFFSET + 16);
 	kd = eeprom_read_float((float*) EEPROM_OFFSET + 20);
-	rate_y->setTunings(kp, ki, kd);
+	chiindii->getRateY().setTunings(kp, ki, kd);
 	
 	kp = eeprom_read_float((float*) EEPROM_OFFSET + 24);
 	ki = eeprom_read_float((float*) EEPROM_OFFSET + 28);
 	kd = eeprom_read_float((float*) EEPROM_OFFSET + 32);
-	rate_z->setTunings(kp, ki, kd);
+	chiindii->getRateZ().setTunings(kp, ki, kd);
 	
 	kp = eeprom_read_float((float*) EEPROM_OFFSET + 36);
 	ki = eeprom_read_float((float*) EEPROM_OFFSET + 40);
 	kd = eeprom_read_float((float*) EEPROM_OFFSET + 44);
-	angle_x->setTunings(kp, ki, kd);
+	chiindii->getAngleX().setTunings(kp, ki, kd);
 
 	kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
 	ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
 	kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
-	angle_y->setTunings(kp, ki, kd);
+	chiindii->getRateY().setTunings(kp, ki, kd);
 	
 	t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
-	c_x->setTau(t);
+	chiindii->getCompX().setTau(t);
 	t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
-	c_y->setTau(t);
+	chiindii->getComyY().setTau(t);
 }
 
 void Calibration::write() {
@@ -104,44 +98,51 @@ void Calibration::dispatch(FramedSerialProtocol* protocol, Serial* serial, Frame
 		this->read();
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_RATE_PID){
+		PID x = chiindii.getRateX();
+		PID y = chiindii.getRateY();
+		PID z = chiindii.getRateZ();
 		double data[] = { 
-			rate_x->getKp(), rate_x->getKi(), rate_x->getKd(),
-			rate_y->getKp(), rate_y->getKi(), rate_y->getKd(),
-			rate_z->getKp(), rate_z->getKi(), rate_z->getKd()
+			x.getKp(), x.getKi(), x->getKd(),
+			y->getKp(), y->getKi(), y->getKd(),
+			z->getKp(), z->getKi(), z->getKd()
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_RATE_PID, (uint8_t*) data, 36);
 		protocol->write(serial, &response);
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
+		PID x = chiindii.getAngleX();
+		PID y = chiindii.getAngleY();
 		double data[] = { 
-			angle_x->getKp(), angle_x->getKi(), angle_x->getKd(),
-			angle_y->getKp(), angle_y->getKi(), angle_y->getKd()
+			x->getKp(), x->getKi(), x->getKd(),
+			y->getKp(), y->getKi(), y->getKd()
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 24);
 		protocol->write(serial, &response);
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
+		Complementary x = chiindii.getCompX();
+		Complementary y = chiindii.getCompY();
 		double data[] = { 
-			c_x->getTau(), c_y->getTau()
+			x->getTau(), y->getTau()
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_RATE_PID, (uint8_t*) data, 8);
 		protocol->write(serial, &response);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) message->getData();
-		rate_x->setTunings(data[0], data[1], data[2]);
-		rate_y->setTunings(data[3], data[4], data[5]);
-		rate_z->setTunings(data[6], data[7], data[8]);
+		chiindii.getRateX().setTunings(data[0], data[1], data[2]);
+		chiindii.getRateY().setTunings(data[3], data[4], data[5]);
+		chiindii.getRateZ().setTunings(data[6], data[7], data[8]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) message->getData();
-		angle_x->setTunings(data[0], data[1], data[2]);
-		angle_y->setTunings(data[3], data[4], data[5]);
+		chiindii.getAngleX().setTunings(data[0], data[1], data[2]);
+		chiindii.getAngleY().setTunings(data[3], data[4], data[5]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
 		double* data = (double*) message->getData();
-		c_x->setTau(data[0]);
-		c_y->setTau(data[1]);
+		chiindii.getCompX().setTau(data[0]);
+		chiindii.getCompY().setTau(data[1]);
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
 		uint8_t time;

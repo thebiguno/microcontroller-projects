@@ -10,11 +10,6 @@
 #include "lib/timer/timer.h"
 
 #include "Chiindii.h"
-#include "Complementary.h"
-#include "Status.h"
-
-#include "controllers/UniversalController.h"
-#include "controllers/Calibration.h"
 
 #include "battery/battery.h"
 #include "motor/motor.h"
@@ -22,19 +17,6 @@
 using namespace digitalcave;
 
 void drive_motors(double throttle, vector_t rate);
-
-double throttle = 0;
-vector_t rate_sp;
-vector_t angle_sp;
-
-uint8_t mode = MODE_UNARMED;
-uint8_t controller;
-uint8_t debug;
-
-SerialAVR serial(32400, 8, 0, 1, 0, 32); // TODO verify buffer size
-FramedSerialProtocol protocol(32);
-FramedSerialMessage inbound(0x00, 32);
-Mpu6050 mpu6050;
 
 int main(){
 	//Set clock to run at full speed
@@ -47,19 +29,11 @@ int main(){
 
 //	mpu6050.calibrate();
 
-	Status status;
+	Chiindii chiindii;
+	chiindii.run();
+}
 
-	PID rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
-	PID rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
-	PID rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0);
-	
-	PID angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
-	PID angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
-	
-	Complementary c_x(0.075, 10, 0); // 10 = 10 ms
-	Complementary c_y(0.075, 10, 0);
-	
-	Calibration calibration(&rate_x, &rate_y, &rate_z, &angle_x, &angle_y, &c_x, &c_y);
+void Chiindii::run() {
 	calibration.read(); // load PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
@@ -131,7 +105,30 @@ int main(){
 	}
 }
 
-void drive_motors(double throttle, vector_t rate_pv) {
+Chiindii::Chiindii() : 
+	serial(32400, 8, 0, 1, 0, 32),
+	protocol(32),
+	message(0, 32),
+	
+	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	
+	angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	
+	c_x(0.075, 10, 0),
+	c_y(0.075, 10, 0),
+	
+	direct(this),
+	uc(this),
+	calibration(this)
+{
+	throttle = 0;
+	mode = MODE_UNARMED;
+}
+
+void Chiindii::driveMotors() {
 	double m1 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
 	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
 	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
@@ -140,9 +137,9 @@ void drive_motors(double throttle, vector_t rate_pv) {
 	motor_set(m1, m2, m3, m4);
 } 
 
-void dispatch() {
-	uint8_t cmd = inbound.getCommand();
-	uint8_t *data = inbound.getData();
+void Chiindii::dispatch() {
+	uint8_t cmd = message.getCommand();
+	uint8_t *data = message.getData();
 	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
 		if (data[0] == 'U') {
 			controller = CONTROLLER_UC;
@@ -170,15 +167,15 @@ void dispatch() {
 	}
 	//This is a Universal Controller message (namespace 0x1X)
 	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
-		uc.dispatch(inbound);
+		uc.dispatch(message);
 	}
 	//This is a Direct API message (namespace 0x2X)
 	else if (controller == CONTROLLER_DIRECT && (cmd & 0xF0) == 0x20){
-		direct.dispatch(inbound);
+		direct.dispatch(message);
 	}
 	//This is a Calibration API message (namespace 0x3X)
 	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
-		calibration.dispatch(protocol, &serial, inbound, &mpu6050);
+		calibration.dispatch(message);
 	}
 	else {
 		//TODO Send debug message 'unknown command' or similar
