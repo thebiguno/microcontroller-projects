@@ -4,7 +4,7 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
-#include "battery/battery.h"
+#include "lib/universal_controller/client.h"
 
 #define MOTOR1_PORT		PORTE
 #define MOTOR1_PIN		PORTE6
@@ -15,9 +15,14 @@
 #define MOTOR4_PORT		PORTB
 #define MOTOR4_PIN		PORTB7
 
-#define MODE_UNARMED
-#define MODE_ARMED_RATE
-#define MODE_ARMED_ANGLE
-#define MODE_TUNING_COMP
+#define MODE_UNARMED		0x00
+#define MODE_ARMED_RATE		0x01
+#define MODE_ARMED_ANGLE	0x02
+
+#define CONTROLLER_NONE			0x00
+#define CONTROLLER_UC			0x01
+#define CONTROLLER_DIRECT		0x02
+#define CONTROLLER_CALIBRATION	0x03
+
 
 #endif

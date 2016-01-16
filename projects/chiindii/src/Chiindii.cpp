@@ -11,15 +11,19 @@
 #include "Complementary.h"
 #include "Status.h"
 
+#include "battery/battery.h"
 #include "motor/motor.h"
 
 using namespace digitalcave;
 
 void drive_motors(double throttle, vector_t rate);
 
-extern double throttle = 0;
-extern vector_t rate_sp;
-extern vector_t angle_sp;
+double throttle = 0;
+vector_t rate_sp;
+vector_t angle_sp;
+
+uint8_t mode = MODE_UNARMED;
+uint8_t controller;
 
 int main(){
 	//Set clock to run at full speed
@@ -71,7 +75,7 @@ int main(){
 		c_x.compute(gyro.x, angle_mv.x, &angle_mv.x, time);
 		c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 
-		if (mode == ARMED_ANGLE) {
+		if (mode == MODE_ARMED_ANGLE) {
 			angle_sp.x = 0; // TODO get this from the controller
 			angle_sp.y = 0;
 
@@ -99,7 +103,7 @@ int main(){
 			status.batteryLow();
 		}
 		
-		if (mode == ARMED_RATE || model == ARMED_ANGLE) {
+		if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 			status.armed();
 			if (battery_level > BATTERY_DAMAGE_LEVEL) {
 				drive_motors(throttle, rate_pv);
@@ -135,8 +139,8 @@ void dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		if (message[0] == 'U'){
 			controller = CONTROLLER_UC;
 		}
-		else if (message[0] == 'P'){
-			controller = CONTROLLER_PROCESSING;
+		else if (message[0] == 'D'){
+			controller = CONTROLLER_DIRECT;
 		}
 		else if (message[0] == 'C'){
 			controller = CONTROLLER_CALIBRATION;
@@ -154,7 +158,6 @@ void dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 		debug = 0x00;
 		doAcknowledgeCommand(MESSAGE_REQUEST_DISABLE_DEBUG);
 	}
-	else if (cmd == MESSAGE_REQUEST_
 	//This is a Universal Controller message (namespace 0x1X)
 	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
 		uc_dispatch_message(cmd, message, length);
