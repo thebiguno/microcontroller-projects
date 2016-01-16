@@ -32,6 +32,8 @@ namespace digitalcave {
 		
 			// Set the period (ms) at which the PID calculation is performed.
 			void setPeriod(uint16_t newPeriod);
+			
+			void getTau();
 	};
 }
 #endif

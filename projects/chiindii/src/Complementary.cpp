@@ -41,3 +41,7 @@ void Complementary::setTuning(double tau) {
 void Complementary::setPeriod(uint16_t period){
 	this->period = period;
 }
+
+double Complementary::getTau() {
+	return tau;
+}
