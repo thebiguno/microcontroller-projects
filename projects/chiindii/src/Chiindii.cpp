@@ -3,6 +3,8 @@
 #include <util/delay.h>
 
 #include <PID.h>
+#include <SerialAVR.h>
+#include <FramedSerialProtocol.h>
 
 #include "lib/Mpu6050/Mpu6050.h"
 #include "lib/timer/timer.h"
@@ -10,6 +12,9 @@
 #include "Chiindii.h"
 #include "Complementary.h"
 #include "Status.h"
+
+#include "controllers/UniversalController.h"
+#include "controllers/Calibration.h"
 
 #include "battery/battery.h"
 #include "motor/motor.h"
@@ -24,6 +29,11 @@ vector_t angle_sp;
 
 uint8_t mode = MODE_UNARMED;
 uint8_t controller;
+uint8_t debug;
+
+SerialAVR serial(32400, 8, 0, 1, 0, 32); // TODO verify buffer size
+FramedSerialProtocol protocol(32);
+FramedSerialMessage inbound(0x00, 32);
 
 int main(){
 	//Set clock to run at full speed
@@ -33,13 +43,12 @@ int main(){
 	MCUCR = _BV(JTD);
 	
 	timer_init();
-	
+
 	Mpu6050 mpu6050;
 //	mpu6050.calibrate();
 
 	Status status;
 
-	// TODO supply proper kp, ki, kd
 	PID rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
 	PID rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
 	PID rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0);
@@ -47,9 +56,11 @@ int main(){
 	PID angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0); // 10 = 10 ms
 	PID angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0);
 	
-	// TODO supply proper tau
 	Complementary c_x(0.075, 10, 0); // 10 = 10 ms
 	Complementary c_y(0.075, 10, 0);
+	
+	Calibration calibration(&rate_x, &rate_y, &rate_z, &angle_x, &angle_y, &c_x, &c_y);
+	calibration.read(); // load PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
 	vector_t accel;
@@ -129,20 +140,17 @@ void drive_motors(double throttle, vector_t rate_pv) {
 	motor_set(m1, m2, m3, m4);
 } 
 
-
-
-/*
- * Called from ISR; keep things as short as possible.
- */
-void dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
+void dispatch() {
+	uint8_t cmd = inbound.getCommand();
+	uint8_t *data = inbound.getData();
 	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
-		if (message[0] == 'U'){
+		if (data[0] == 'U') {
 			controller = CONTROLLER_UC;
 		}
-		else if (message[0] == 'D'){
+		else if (data[0] == 'D') {
 			controller = CONTROLLER_DIRECT;
 		}
-		else if (message[0] == 'C'){
+		else if (data[0] == 'C') {
 			controller = CONTROLLER_CALIBRATION;
 		}
 		//TODO Put any other supported control modes here.
@@ -150,25 +158,27 @@ void dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
 			controller = CONTROLLER_NONE;
 		}
 	}
-	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG){
+	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG) {
 		debug = 0x01;
-		doAcknowledgeCommand(MESSAGE_REQUEST_ENABLE_DEBUG);
+		FramedSerialMessage msg(MESSAGE_REQUEST_ENABLE_DEBUG, 0);
+		protocol.write(&serial, &msg);
 	}
-	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG){
+	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG) {
 		debug = 0x00;
-		doAcknowledgeCommand(MESSAGE_REQUEST_DISABLE_DEBUG);
+		FramedSerialMessage msg(MESSAGE_REQUEST_DISABLE_DEBUG, 0);
+		protocol.write(&serial, &msg);
 	}
 	//This is a Universal Controller message (namespace 0x1X)
 	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
-		uc_dispatch_message(cmd, message, length);
+		uc.dispatch(inbound);
 	}
-	//This is a Processing API message (namespace 0x2X)
-	else if (controller == CONTROLLER_PROCESSING && (cmd & 0xF0) == 0x20){
-		processing_dispatch_message(cmd, message, length);
+	//This is a Direct API message (namespace 0x2X)
+	else if (controller == CONTROLLER_DIRECT && (cmd & 0xF0) == 0x20){
+		direct.dispatch(inbound);
 	}
 	//This is a Calibration API message (namespace 0x3X)
 	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
-		calibration_dispatch_message(cmd, message, length);
+		calibration.dispatch(inbound);
 	}
 	else {
 		//TODO Send debug message 'unknown command' or similar

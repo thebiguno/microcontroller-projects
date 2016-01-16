@@ -24,7 +24,14 @@ using namespace digitalcave;
 
  */
 
-Calibration::Calibration(PID *rate_x, PID *rate_y, PID *rate_z, PID *angle_x, PID *angle_y, Complementary *c_x, Complementary *c_y){
+Calibration::Calibration(PID *rate_x, PID *rate_y, PID *rate_z, PID *angle_x, PID *angle_y, Complementary *c_x, Complementary *c_y) {
+	this->rate_x = rate_x;
+	this->rate_y = rate_y;
+	this->rate_z = rate_z;
+	this->angle_x = angle_x;
+	this->angle_y = angle_y;
+	this->c_x = c_x;
+	this->c_y = c_y;
 }
 
 void Calibration::read() {

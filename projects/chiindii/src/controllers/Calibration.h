@@ -1,9 +1,10 @@
-#ifndef CALIBRATION_h
-#define CALIBRATION_h
+#ifndef CALIBRATION_H
+#define CALIBRATION_H
 
 #include <stdint.h>
 #include <FramedSerialProtocol.h>
 
+//Universal Controller messages are in 0x3X space...
 #define MESSAGE_SAVE_CALIBRATION 0x30
 #define MESSAGE_LOAD_CALIBRATION 0x31
 #define MESSAGE_RESET_CALIBRATION 0x32
@@ -18,19 +19,22 @@
 #define EEPROM_OFFSET	0
 
 namespace digitalcave {
-	class Status {
+	class Calibration {
 		private:
 			PID *rate_x;
 			PID *rate_y;
 			PID *rate_z;
-			PID *rate_x;
-			PID *rate_y;
-			Complementary *c;
+			PID *angle_x;
+			PID *angle_y;
+			Complementary *c_x;
+			Complementary *c_y;
 			
 		public:
-			Calibration();
+			Calibration(PID *rate_x, PID *rate_y, PID *rate_z, PID *angle_x, PID *angle_y, Complementary *c_x, Complementary *c_y);
 
 			void dispatch(FramedSerialMessage* message);
+			void read();
+			void write();
 	};
 }
 #endif

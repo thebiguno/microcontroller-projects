@@ -4,8 +4,6 @@
 #include <util/delay.h>
 #include <avr/io.h>
 
-#include "lib/universal_controller/client.h"
-
 #define MOTOR1_PORT		PORTE
 #define MOTOR1_PIN		PORTE6
 #define MOTOR2_PORT		PORTC
