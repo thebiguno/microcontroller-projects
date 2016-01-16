@@ -85,3 +85,15 @@ void PID::setDirection(uint8_t direction){
 	}
 	this->direction = direction;
 }
+
+double PID::getKp() {
+	return kp;
+}
+
+double PID::getKi() {
+	return ki;
+}
+
+double PID::getKd() {
+	return kd;
+}
