@@ -13,14 +13,13 @@ integer = re.compile('^-?[0-9]+$')
 
 MESSAGE_SAVE_CALIBRATION = 0x30
 MESSAGE_LOAD_CALIBRATION = 0x31
-MESSAGE_RESET_CALIBRATION = 0x32
-MESSAGE_REQUEST_JOINT_CALIBRATION = 0x33
-MESSAGE_SEND_JOINT_CALIBRATION = 0x34
-MESSAGE_REQUEST_FOOT_CALIBRATION = 0x35
-MESSAGE_SEND_FOOT_CALIBRATION = 0x36
-MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION = 0x37
-MESSAGE_SEND_MAGNETOMETER_CALIBRATION = 0x38
-MESSAGE_START_MAGNETOMETER_CALIBRATION = 0x39
+MESSAGE_REQUEST_CALIBRATION_RATE_PID = 0x33
+MESSAGE_SEND_CALIBRATION_RATE_PID = 0x34
+MESSAGE_REQUEST_CALIBRATION_ANGLE_PID = 0x35
+MESSAGE_SEND_CALIBRATION_ANGLE_PID = 0x36
+MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY = 0x37
+MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
+MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
 
 MODE_CALIBRATION_RATE_PID = 0x01
 MODE_CALIBRATION_COMPLEMENTARY = 0x02
@@ -73,9 +72,15 @@ For Yaw, suspend the craft from the top so that it can freely yaw.
 		if (choice == "R" or choice == "r"):
 			doRatePidCalibration(ser)
 		elif (choice == "C" or choice == "c"):
-			doComplementaryCalibration(ser)
+			if (axis == 2):
+				print("Complementary filter tuning not applicable for Z axis")
+			else
+				doComplementaryCalibration(ser)
 		elif (choice == "A" or choice == "a"):
-			doAnglePidCalibration(ser)
+			if (axis == 2):
+				print("Angle PID tuning not application for Z axis")
+			else
+				doAnglePidCalibration(ser)
 		elif (choice == "L" or choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
@@ -91,8 +96,6 @@ For Yaw, suspend the craft from the top so that it can freely yaw.
 ########## Primary functions here ##########
 
 def doRatePidCalibration(ser, mode):
-	requestMessage = 0x00
-	sendMessage = 0x00
 		raw_input("""
 Rate PID calibration allows Chiindii to quickly an accurately achieve the requested rotational
 rate of change.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
@@ -161,9 +164,7 @@ Place Chiindii into the jig, and press enter.
 		else:
 			print("Invalid axis, please try again\n")
 
-def doRatePidCalibration(ser, mode):
-	requestMessage = 0x00
-	sendMessage = 0x00
+def doAnglePidCalibration(ser, mode):
 		raw_input("""
 Angle PID calibration allows Chiindii to quickly an accurately achieve the requested absolute
 angle.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
@@ -177,12 +178,12 @@ Place Chiindii into the jig, and press enter.
 """)
 	
 	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
+	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
 	response = readMessage(ser)
 	if (response == False):
 		print("Communication failure")
 		return
-	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_RATE_PID):
+	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_ANGLE_PID):
 		print("Invalid response detected")
 		return
 	d = response["data"]
@@ -234,8 +235,6 @@ Place Chiindii into the jig, and press enter.
 
 
 def doComplementaryFilterCalibration(ser, mode):
-	requestMessage = 0x00
-	sendMessage = 0x00
 		raw_input("""
 Complemenentary calibration allows Chiindii to integrate Gyro and Accelerometer
 data to reduce Gyro drift.  There is one paramater that called Tau which is the response
@@ -244,7 +243,7 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 """)
 	
 	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
+	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
 	response = readMessage(ser)
 	if (response == False):
 		print("Communication failure")
@@ -256,7 +255,7 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 	while True:
 		print("\nPlease select a parameter to modify")
 		print("	T) Tau")
-		print("	O) Output raw data")
+		print("	S) Send complementary tuning data")
 		print("	Q) Return to axis selection")
 		
 		param = raw_input("Select parameter: ")
@@ -274,8 +273,8 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		else if (param == "O" or param == "o"):
-			writeMessage(ser, MESSAGE_SEND_COMPLEMENTARY_OUTPUT, [axis])
+		else if (param == "S" or param == "s"):
+			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
 			while True:
 				rawValue = readMessage(ser)
 				if (rawValue == False):

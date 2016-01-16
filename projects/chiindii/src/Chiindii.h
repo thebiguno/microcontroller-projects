@@ -15,4 +15,9 @@
 #define MOTOR4_PORT		PORTB
 #define MOTOR4_PIN		PORTB7
 
+#define MODE_UNARMED
+#define MODE_ARMED_RATE
+#define MODE_ARMED_ANGLE
+#define MODE_TUNING_COMP
+
 #endif
