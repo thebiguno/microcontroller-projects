@@ -81,6 +81,16 @@ void Chiindii::run() {
 	
 	motor_start();
 	
+	motor_set(64,0,0,0);
+	_delay_ms(250);
+	motor_set(0,64,0,0);
+	_delay_ms(250);
+	motor_set(0,0,64,0);
+	_delay_ms(250);
+	motor_set(0,0,0,64);
+	_delay_ms(250);
+	motor_set(0,0,0,0);
+	
 	//Main program loop
 	while (1) {
 		time = timer_millis();
