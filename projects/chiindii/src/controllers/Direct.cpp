@@ -2,11 +2,11 @@
 
 using namespace digitalcave;
 
-Direct::Direct(Chiindii *chiindii) {
-	this->chiindii = chiindii;
+Direct::Direct(C) {
 }
 
 void Direct::dispatch(FramedSerialMessage* message) {
+	/*
 	uint8_t cmd = message.getCommand();
 	if (cmd == MESSAGE_THROTTLE){
 		// TODO
@@ -23,4 +23,5 @@ void Direct::dispatch(FramedSerialMessage* message) {
 		rate_sp.setY(data[1]);
 		rate_sp.setZ(data[2]);
 	}
+	*/
 }

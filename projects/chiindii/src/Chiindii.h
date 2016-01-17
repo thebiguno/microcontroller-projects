@@ -5,6 +5,11 @@
 #include <avr/io.h>
 
 #include <FramedSerialProtocol.h>
+#include <dctypes.h>
+#include <SerialAVR.h>
+#include <PID.h>
+
+#include "lib/Mpu6050/Mpu6050.h"
 
 #include "Complementary.h"
 #include "Status.h"
@@ -83,6 +88,7 @@ namespace digitalcave {
 			Mpu6050 getMpu6050();
 			
 			void getStatus();
+			void sendMessage(FramedSerialMessage *message);
 	};
 }
 #endif

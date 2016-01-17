@@ -52,11 +52,7 @@ Chiindii::Chiindii() :
 	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 10, 0),
-	c_y(0.075, 10, 0),
-	
-	direct(this),
-	uc(this),
-	calibration(this)
+	c_y(0.075, 10, 0)
 {
 	throttle = 0;
 	mode = MODE_UNARMED;
@@ -177,4 +173,8 @@ void Chiindii::dispatch(FramedSerialMessage *message) {
 	else {
 		//TODO Send debug message 'unknown command' or similar
 	}
+}
+
+void Chiindii::sendMessage(FramedSerialMessage *message) {
+	protocol.write(&serial, message);
 }

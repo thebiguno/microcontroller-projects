@@ -2,8 +2,7 @@
 
 using namespace digitalcave;
 
-UniversalController::UniversalController(Chiindii *chiindii) {
-	this->chiindii = chiindii;
+UniversalController::UniversalController() {
 }
 
 void UniversalController::dispatch(FramedSerialMessage* message) {

@@ -24,11 +24,11 @@ using namespace digitalcave;
 
  */
 
-Calibration::Calibration(Chiindii *chiindii) {
-	this->chiindii = chiindii;
+Calibration::Calibration() {
 }
 
 void Calibration::read() {
+	/*
 	double kp, ki, kd;
 	double t;
 	
@@ -60,10 +60,12 @@ void Calibration::read() {
 	t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
 	chiindii->getCompX().setTau(t);
 	t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
-	chiindii->getComyY().setTau(t);
+	chiindii->getCompY().setTau(t);
+	*/
 }
 
 void Calibration::write() {
+	/*
 	eeprom_update_float((float*) EEPROM_OFFSET + 0, rate_x->getKp());
 	eeprom_update_float((float*) EEPROM_OFFSET + 4, rate_x->getKi());
 	eeprom_update_float((float*) EEPROM_OFFSET + 8, rate_x->getKd());
@@ -86,9 +88,11 @@ void Calibration::write() {
 
 	eeprom_update_float((float*) EEPROM_OFFSET + 60, c_x->getTau());
 	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
+	*/
 }
 
-void Calibration::dispatch(FramedSerialProtocol* protocol, Serial* serial, FramedSerialMessage* message, Mpu6050* mpu6050) {
+void Calibration::dispatch(FramedSerialMessage* message) {
+	/*
 	uint8_t cmd = message->getCommand();
 	
 	if (cmd == MESSAGE_SAVE_CALIBRATION){
@@ -153,8 +157,8 @@ void Calibration::dispatch(FramedSerialProtocol* protocol, Serial* serial, Frame
 		
 		for (uint8_t i = 0; i < 1000; i++) {
 			time = timer_millis();
-			accel = mpu6050->getAccel();
-			gyro = mpu6050->getGyro();
+			accel = chiindii->getMpu6050().getAccel();
+			gyro = chiindii->getMpu6050().getGyro();
 
 // 			if (x
 			// compute the absolute angle relative to the horizontal
@@ -163,14 +167,16 @@ void Calibration::dispatch(FramedSerialProtocol* protocol, Serial* serial, Frame
 		
 			// complementary tuning
 			// filter gyro rate and measured angle increase the accuracy of the angle
-			c_x->compute(gyro.x, angle_mv.x, &angle_mv.x, time);
-			c_y->compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+			chiindii->getCompX().compute(gyro.x, angle_mv.x, &angle_mv.x, time);
+			chiindii->getCompX().compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 			
 // 			data
 			
 			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) data, 12);
+			chiindii.sendMessage(response);
 
 			_delay_ms(10);
 		}
 	}	
+	*/
 }

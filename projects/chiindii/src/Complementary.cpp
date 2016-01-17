@@ -11,7 +11,7 @@ using namespace digitalcave;
 
 Complementary::Complementary(double tau, uint32_t period, uint32_t time){
 	setPeriod(period);
-	setTuning(tau);
+	setTau(tau);
 
 	if (time > period) lastTime = time - period;
 	else lastTime = 0;
@@ -34,7 +34,7 @@ uint8_t Complementary::compute(double rate, double angle, double* output, uint32
 }
 
 
-void Complementary::setTuning(double tau) {
+void Complementary::setTau(double tau) {
 	this->tau = tau;
 }
 	

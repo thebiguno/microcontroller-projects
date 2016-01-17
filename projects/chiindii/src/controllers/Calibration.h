@@ -6,8 +6,6 @@
 
 #include <FramedSerialProtocol.h>
 
-#include "../Chiindii.h"
-
 //Universal Controller messages are in 0x3X space...
 #define MESSAGE_SAVE_CALIBRATION 0x30
 #define MESSAGE_LOAD_CALIBRATION 0x31
@@ -26,10 +24,9 @@
 namespace digitalcave {
 	class Calibration {
 		private:
-			Chiindii *chiindii;
 			
 		public:
-			Calibration(Chiindii *chiindii);
+			Calibration();
 
 			void dispatch(FramedSerialMessage* message);
 			void read();
