@@ -58,9 +58,9 @@ namespace digitalcave {
 			Complementary c_x;
 			Complementary c_y;
 		
+			Calibration calibration;
 			Direct direct;
 			UniversalController uc;
-			Calibration calibration;
 			
 			Status status;
 			
@@ -72,22 +72,22 @@ namespace digitalcave {
 
 			void run();
 			
-			vector_t getAngleSp();
-			vector_t getRateSp();
+			vector_t* getAngleSp();
+			vector_t* getRateSp();
 			
-			PID getRateX();
-			PID getRateY();
-			PID getRateZ();
-			PID getAngleX();
-			PID getAngleY();
-			Complementary getCompX();
-			Complementary getCompY();
+			PID* getRateX();
+			PID* getRateY();
+			PID* getRateZ();
+			PID* getAngleX();
+			PID* getAngleY();
+			Complementary* getCompX();
+			Complementary* getCompY();
+			Mpu6050* getMpu6050();
+			Status* getStatus();
 			
 			void setMode(uint8_t mode);
 			void setThrottle(double throttle);
-			Mpu6050 getMpu6050();
 			
-			void getStatus();
 			void sendMessage(FramedSerialMessage *message);
 	};
 }

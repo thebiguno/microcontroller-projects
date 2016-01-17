@@ -1,27 +1,31 @@
 #include "Direct.h"
 
+#include "../Chiindii.h"
+
 using namespace digitalcave;
 
-Direct::Direct(C) {
+Direct::Direct(Chiindii *chiindii) {
+	this->chiindii = chiindii;
 }
 
 void Direct::dispatch(FramedSerialMessage* message) {
-	/*
-	uint8_t cmd = message.getCommand();
+	uint8_t cmd = message->getCommand();
 	if (cmd == MESSAGE_THROTTLE){
-		// TODO
+		double* data = (double*) message->getData();
+		chiindii->setThrottle(data[0]);
 	}
 	else if (cmd == MESSAGE_ANGLE){
-		double[] data = (double[]) message.getData();
-		angle_sp.setX(data[0]);
-		angle_sp.setY(data[1]);
-		angle_sp.setZ(data[2]);
+		vector_t* sp = chiindii->getAngleSp();
+		double* data = (double*) message->getData();
+		sp->x = data[0];
+		sp->y = data[1];
+		sp->z = data[2];
 	}
 	else if (cmd == MESSAGE_RATE){
-		double[] data = (double[]) message.getData();
-		rate_sp.setX(data[0]);
-		rate_sp.setY(data[1]);
-		rate_sp.setZ(data[2]);
+		vector_t* sp = chiindii->getRateSp();
+		double* data = (double*) message->getData();
+		sp->x = data[0];
+		sp->y = data[1];
+		sp->z = data[2];
 	}
-	*/
 }

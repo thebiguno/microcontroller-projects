@@ -22,11 +22,14 @@
 #define EEPROM_OFFSET	0
 
 namespace digitalcave {
+	class Chiindii; // forward declaration
+
 	class Calibration {
 		private:
+			Chiindii *chiindii;
 			
 		public:
-			Calibration();
+			Calibration(Chiindii *chiindii);
 
 			void dispatch(FramedSerialMessage* message);
 			void read();

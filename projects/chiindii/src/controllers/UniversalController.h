@@ -75,11 +75,14 @@
 #include <FramedSerialProtocol.h>
 
 namespace digitalcave {
+	class Chiindii; // forward declaration
+
 	class UniversalController {
 		private:
-
+			Chiindii * chiindii;
+			
 		public:
-			UniversalController();
+			UniversalController(Chiindii *chiindii);
 
 			void dispatch(FramedSerialMessage* message);
 	};

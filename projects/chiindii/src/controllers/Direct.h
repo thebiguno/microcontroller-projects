@@ -11,11 +11,14 @@
 #define MESSAGE_ZERO 0x23
 
 namespace digitalcave {
+	class Chiindii; // forward declaration
+	
 	class Direct {
 		private:
-			
+			Chiindii *chiindii;
+
 		public:
-			Direct();
+			Direct(Chiindii *chiindii);
 
 			void dispatch(FramedSerialMessage* message);
 	};

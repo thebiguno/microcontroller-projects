@@ -30,15 +30,18 @@ int main(){
 	chiindii.run();
 }
 
-vector_t Chiindii::getAngleSp() { return angle_sp; }
-vector_t Chiindii::getRateSp() { return rate_sp; }
-PID Chiindii::getRateX() { return rate_x; }
-PID Chiindii::getRateY() { return rate_y; }
-PID Chiindii::getRateZ() { return rate_z; }
-PID Chiindii::getAngleX() { return angle_x; }
-PID Chiindii::getAngleY() { return angle_y; }
-Complementary Chiindii::getCompX() { return c_x; }
-Complementary Chiindii::getCompY() { return c_y; }
+vector_t* Chiindii::getAngleSp() { return &angle_sp; }
+vector_t* Chiindii::getRateSp() { return &rate_sp; }
+PID* Chiindii::getRateX() { return &rate_x; }
+PID* Chiindii::getRateY() { return &rate_y; }
+PID* Chiindii::getRateZ() { return &rate_z; }
+PID* Chiindii::getAngleX() { return &angle_x; }
+PID* Chiindii::getAngleY() { return &angle_y; }
+Complementary* Chiindii::getCompX() { return &c_x; }
+Complementary* Chiindii::getCompY() { return &c_y; }
+Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
+
+void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
 	serial(32400, 8, 0, 1, 0, 32),
@@ -52,7 +55,11 @@ Chiindii::Chiindii() :
 	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 10, 0),
-	c_y(0.075, 10, 0)
+	c_y(0.075, 10, 0),
+	
+	calibration(this),
+	direct(this),
+	uc(this)
 {
 	throttle = 0;
 	mode = MODE_UNARMED;
