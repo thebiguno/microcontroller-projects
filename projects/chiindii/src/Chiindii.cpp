@@ -68,7 +68,7 @@ Chiindii::Chiindii() :
 }
 
 void Chiindii::run() {
-	FramedSerialMessage message(0,40);
+	FramedSerialMessage request(0,40);
 	
 	calibration.read(); // load PID and comp tuning values from EEPROM
 	
@@ -82,8 +82,8 @@ void Chiindii::run() {
 	
 	//Main program loop
 	while (1) {
-		if (protocol.read(&serial, &message)) {
-			dispatch(&message);
+		if (protocol.read(&serial, &request)) {
+			dispatch(&request);
 		}
 
 		accel = mpu6050.getAccel();

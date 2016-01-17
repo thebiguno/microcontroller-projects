@@ -188,6 +188,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) outdata, 12);
 			chiindii->sendMessage(&response);
 
+			// TODO this delay should be the about same as the duration of the normal main loop
 			_delay_ms(10);
 		}
 	}	
