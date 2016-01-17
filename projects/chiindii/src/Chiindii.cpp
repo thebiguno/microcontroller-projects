@@ -76,19 +76,36 @@ void Chiindii::run() {
 	vector_t accel;
 	vector_t rate_pv;
 	vector_t angle_mv;
-	uint32_t time;
+	uint32_t time = 0;
+	uint32_t last_message_time = 0;
 	
 	motor_start();
 	
 	//Main program loop
 	while (1) {
+		time = timer_millis();
+
 		if (protocol.read(&serial, &request)) {
 			dispatch(&request);
+			last_message_time = time;
+			status.commOK();
+		} else if (time - last_message_time > 2000) { // TODO is 2 seconds OK?
+			mode = MODE_UNARMED;
+			status.commInterrupt();
+		}
+		
+		battery_level = battery_read();
+		if (battery_level > BATTERY_WARNING_LEVEL) {
+			status.batteryOK();
+		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
+			status.batteryLow();
+		} else {
+			mode = MODE_UNARMED;
+			status.batteryLow();
 		}
 
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
-		time = timer_millis();
 
 		// compute the absolute angle relative to the horizontal
 		angle_mv.x = atan2(accel.z, accel.x);
@@ -101,46 +118,28 @@ void Chiindii::run() {
 		c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 
 		if (mode == MODE_ARMED_ANGLE) {
-			angle_sp.x = 0; // TODO get this from the controller
-			angle_sp.y = 0;
-
 			// angle pid
 			// compute a rate set point given an angle set point and current measured angle
 			angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 			angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-		} else {
-			rate_sp.x = 0; // TODO get this from the controller
-			rate_sp.y = 0;
 		}
 		
-		rate_sp.z = 0; // TODO get this from the controller
-
 		// rate pid
 		// computes the desired change rate
 		rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
 		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 		
-		battery_level = battery_read();
-		if (battery_level > BATTERY_WARNING_LEVEL) {
-			status.batteryOK();
-		} else {
-			status.batteryLow();
-		}
-		
 		if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 			status.armed();
-			if (battery_level > BATTERY_DAMAGE_LEVEL) {
-				driveMotors(rate_pv);
-			} else {
-				motor_set(0, 0, 0, 0);
-			}
+			driveMotors(rate_pv);
 		} else {
 			status.unarmed();
 		}
 
 		status.poll(time);
 
+		// TODO what is the purpose of having a delay here?
 		_delay_ms(10);
 	}
 }
