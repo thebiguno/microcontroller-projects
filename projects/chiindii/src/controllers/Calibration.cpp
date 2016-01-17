@@ -100,8 +100,8 @@ void Calibration::write() {
 	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
 }
 
-void Calibration::dispatch(FramedSerialMessage* message) {
-	uint8_t cmd = message->getCommand();
+void Calibration::dispatch(FramedSerialMessage* request) {
+	uint8_t cmd = request->getCommand();
 	
 	if (cmd == MESSAGE_SAVE_CALIBRATION){
 		this->write();
@@ -141,18 +141,18 @@ void Calibration::dispatch(FramedSerialMessage* message) {
 		chiindii->sendMessage(&response);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
-		double* data = (double*) message->getData();
+		double* data = (double*) request->getData();
 		chiindii->getRateX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getRateY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
-		double* data = (double*) message->getData();
+		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
-		double* data = (double*) message->getData();
+		double* data = (double*) request->getData();
 		chiindii->getCompX()->setTau(data[0]);
 		chiindii->getCompY()->setTau(data[1]);
 	}

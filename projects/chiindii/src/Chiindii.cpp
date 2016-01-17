@@ -24,8 +24,6 @@ int main(){
 	
 	timer_init();
 
-//	mpu6050.calibrate();
-
 	Chiindii chiindii;
 	chiindii.run();
 }
@@ -40,6 +38,7 @@ PID* Chiindii::getAngleY() { return &angle_y; }
 Complementary* Chiindii::getCompX() { return &c_x; }
 Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
+uint8_t Chiindii::getBatteryLevel() { return battery_level; }
 
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
@@ -57,6 +56,7 @@ Chiindii::Chiindii() :
 	c_x(0.075, 10, 0),
 	c_y(0.075, 10, 0),
 	
+	general(this),
 	calibration(this),
 	direct(this),
 	uc(this)
@@ -119,7 +119,7 @@ void Chiindii::run() {
 		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 		
-		uint8_t battery_level = battery_read();
+		battery_level = battery_read();
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else {

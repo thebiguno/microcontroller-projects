@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <FramedSerialProtocol.h>
 
-//Universal Controller messages are in 0x2X space...
+//Direct messages are in 0x2X space...
 #define MESSAGE_THROTTLE 0x20
 #define MESSAGE_RATE 0x21
 #define MESSAGE_ANGLE 0x22

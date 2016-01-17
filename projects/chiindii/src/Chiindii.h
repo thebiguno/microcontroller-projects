@@ -13,6 +13,7 @@
 
 #include "Complementary.h"
 #include "Status.h"
+#include "controllers/General.h"
 #include "controllers/UniversalController.h"
 #include "controllers/Calibration.h"
 #include "controllers/Direct.h"
@@ -42,6 +43,7 @@ namespace digitalcave {
 		private:
 			uint8_t mode;
 			uint8_t debug;
+			uint8_t battery_level;
 			double throttle;
 			vector_t angle_sp;
 			vector_t rate_sp;
@@ -58,6 +60,7 @@ namespace digitalcave {
 			Complementary c_x;
 			Complementary c_y;
 		
+			General general;
 			Calibration calibration;
 			Direct direct;
 			UniversalController uc;
@@ -84,6 +87,8 @@ namespace digitalcave {
 			Complementary* getCompY();
 			Mpu6050* getMpu6050();
 			Status* getStatus();
+
+			uint8_t getBatteryLevel();
 			
 			void setMode(uint8_t mode);
 			void setThrottle(double throttle);
