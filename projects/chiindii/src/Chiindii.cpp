@@ -44,8 +44,8 @@ Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
-	serial(32400, 8, 0, 1, 0, 32),
-	protocol(32),
+	serial(32400),
+	protocol(40),
 	
 	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -66,7 +66,7 @@ Chiindii::Chiindii() :
 }
 
 void Chiindii::run() {
-	FramedSerialMessage message(0,32);
+	FramedSerialMessage message(0,40);
 	
 	calibration.read(); // load PID and comp tuning values from EEPROM
 	
