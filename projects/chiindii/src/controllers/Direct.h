@@ -5,10 +5,11 @@
 #include <FramedSerialProtocol.h>
 
 //Direct messages are in 0x2X space...
-#define MESSAGE_THROTTLE 0x20
-#define MESSAGE_RATE 0x21
-#define MESSAGE_ANGLE 0x22
-#define MESSAGE_ZERO 0x23
+#define MESSAGE_TOGGLE_ARMED 0x20
+#define MESSAGE_THROTTLE 0x21
+#define MESSAGE_RATE 0x22
+#define MESSAGE_ANGLE 0x23
+#define MESSAGE_ZERO 0x24
 
 namespace digitalcave {
 	class Chiindii; // forward declaration
