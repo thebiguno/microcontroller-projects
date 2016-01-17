@@ -17,6 +17,16 @@ SendBattery					Device -> Control		1 byte															None
 -- Direct Controller commands
 
 -- Calibration Controller commands
+LoadCalibration				Control -> Device		Null															None
+SaveCalibration				Control -> Device		Null															None
+RequestRatePID				Control -> Device		Null															9 double tuning params
+SendRatePID					Control -> Device		9 double tuning params (xp, xi, xd, yp, yi, yd, zp, zi, zd)		None
+RequestAnglePID				Control -> Device		Null															6 double tuning params
+SendAnglePID				Control -> Device		6 double tuning params (xp, xi, xd, yp, yi, yd)					None
+RequestComplementaryTau		Control -> Device		Null															2 double tuning params
+SendComplementaryTau		Control -> Device 		2 double tuning params (xt, yt)									None
+StartComplementaryTuning	Control -> Device		1 byte (0 = tune x, 1 = tune y)									Null
+SendComplementaryTuning		Device -> Control		3 doubles (gyro, accel, angle)									Null
 
 -- Universal Controller commands
 UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					None

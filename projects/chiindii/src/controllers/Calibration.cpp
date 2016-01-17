@@ -157,27 +157,35 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getCompY()->setTau(data[1]);
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
+		uint8_t* data = (uint8_t*) request->getData();
+		uint8_t axis = data[0];
+		
 		uint8_t time;
 		vector_t accel;
 		vector_t gyro;
-		double data[3];
+		double outdata[3];
 		vector_t angle_mv;
 		
 		for (uint8_t i = 0; i < 1000; i++) {
 			time = timer_millis();
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();
-
-			// compute the absolute angle relative to the horizontal
-			angle_mv.x = atan2(accel.z, accel.x);
-			angle_mv.y = atan2(accel.z, accel.y);
-		
-			// complementary tuning
-			// filter gyro rate and measured angle increase the accuracy of the angle
-			chiindii->getCompX()->compute(gyro.x, angle_mv.x, &angle_mv.x, time);
-			chiindii->getCompX()->compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 			
-			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) data, 12);
+			if (axis == 0) {
+				angle_mv.x = atan2(accel.z, accel.x);
+				chiindii->getCompX()->compute(gyro.x, angle_mv.x, &angle_mv.x, time);
+				outdata[0] = gyro.x;
+				outdata[1] = accel.x;
+				outdata[2] = angle_mv.x;
+			}
+			else {
+				angle_mv.y = atan2(accel.z, accel.y);
+				chiindii->getCompX()->compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+				outdata[0] = gyro.y;
+				outdata[1] = accel.y;
+				outdata[2] = angle_mv.y;
+			}
+			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) outdata, 12);
 			chiindii->sendMessage(&response);
 
 			_delay_ms(10);
