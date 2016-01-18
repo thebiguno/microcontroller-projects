@@ -83,6 +83,9 @@ void Chiindii::run() {
 	
 	motor_start();
 	
+	_delay_ms(1000);
+	status.armed();
+	_delay_ms(1000);
 	motor_set(64,0,0,0);
 	_delay_ms(250);
 	motor_set(0,64,0,0);
@@ -92,6 +95,7 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
+	status.unarmed();
 	
 	//Main program loop
 	while (1) {
@@ -150,9 +154,6 @@ void Chiindii::run() {
 		}
 
 		status.poll(time);
-
-		// TODO what is the purpose of having a delay here?
-		_delay_ms(10);
 	}
 }
 
