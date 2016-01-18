@@ -15,11 +15,11 @@ RequestBattery				Control -> Device		Null															Battery message
 SendBattery					Device -> Control		1 byte															None
 
 -- Direct Controller commands
-ToggleArmed					Control -> Device		Null															None
+Armed						Control -> Device		1 byte															None
 Throttle					Control -> Device		1 double														None
 Rate						Control -> Device		3 doubles (x, y, z)												None
 Angle						Control -> Device		3 doubles (x, y, z) where z is actually a rate					None
-Zero						Control -> Device		Null															None
+Level						Control -> Device		Null															None
 
 -- Calibration Controller commands
 LoadCalibration				Control -> Device		Null															None

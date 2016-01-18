@@ -10,12 +10,8 @@ Direct::Direct(Chiindii *chiindii) {
 
 void Direct::dispatch(FramedSerialMessage* request) {
 	uint8_t cmd = request->getCommand();
-	if (cmd == MESSAGE_TOGGLE_ARMED) {
-		if (chiindii->getMode() == MODE_UNARMED) {
-			chiindii->setMode(MODE_ARMED_ANGLE);
-		} else {
-			chiindii->setMode(MODE_UNARMED);
-		}
+	if (cmd == MESSAGE_ARMED) {
+		chiindii->setMode(request->getData()[0]);
 	}
 	else if (cmd == MESSAGE_THROTTLE){
 		double* data = (double*) request->getData();
@@ -34,14 +30,8 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		sp->x = data[0];
 		sp->y = data[1];
 		sp->z = data[2];
-		
-		if (data[0] == 0 && data[1] == 0 && data[2] == 0) {
-			chiindii->setMode(MODE_UNARMED);
-		} else {
-			chiindii->setMode(MODE_ARMED_RATE);
-		}
 	}
-	else if (cmd == MESSAGE_ZERO){
+	else if (cmd == MESSAGE_LEVEL){
 		chiindii->getMpu6050()->calibrate();
 	}
 
