@@ -75,7 +75,7 @@ Chiindii::Chiindii() :
 void Chiindii::run() {
 	FramedSerialMessage request(0,40);
 	
-	calibration.read(); // load PID and comp tuning values from EEPROM
+	//calibration.read(); // load PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
 	vector_t accel;
@@ -135,41 +135,41 @@ void Chiindii::run() {
 		// NOTE can't do this for Z axis without a magnetometer
 
 		//uint8_t size = snprintf(temp, sizeof(temp), "x=%d, y=%d\n", (uint16_t) (angle_mv.x * 57.2958), (uint16_t) (angle_mv.y * 57.2958));
-		uint8_t size = snprintf(temp, sizeof(temp), "Raw accel: x=%2.5f, y=%2.5f, z=%2.5f; Accel angle: x=%3f, y=%3f\n", accel.x, accel.y, accel.z, angle_mv.x * 57.2958, angle_mv.y * 57.2958);
-		usb_serial_write((const uint8_t*) temp, size);
+		uint8_t size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f,%3.3f,%3.3f,", angle_mv.x, angle_mv.y, gyro.x, gyro.y);
 		
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
-		c_x.compute(gyro.x, angle_mv.x, &angle_mv.x, time);
-		c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+		uint8_t computed = 0;
+		computed |= c_x.compute(gyro.x, angle_mv.x, &angle_mv.x, time);
+		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
-		size = snprintf(temp, sizeof(temp), "Computed angle: x=%3f, y=%3f\n", angle_mv.x * 57.2958, angle_mv.y * 57.2958);
-		usb_serial_write((const uint8_t*) temp, size);
+		if (computed){
+			usb_serial_write((const uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f\n", angle_mv.x, angle_mv.y);
+			usb_serial_write((const uint8_t*) temp, size);
 
-		if (mode == MODE_ARMED_ANGLE) {
-			// angle pid
-			// compute a rate set point given an angle set point and current measured angle
-			angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
-			angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-		}
+			if (mode == MODE_ARMED_ANGLE) {
+				// angle pid
+				// compute a rate set point given an angle set point and current measured angle
+				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
+				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+			}
 		
-		// rate pid
-		// computes the desired change rate
-		rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
-		rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
-		rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+			// rate pid
+			// computes the desired change rate
+			rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+			rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+			rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 		
-		if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
-			status.armed();
-			driveMotors(rate_pv);
-		} else {
-			status.disarmed();
+			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
+				status.armed();
+				driveMotors(rate_pv);
+			} else {
+				status.disarmed();
+			}
 		}
 
 		status.poll(time);
-
-		// TODO what is the purpose of having a delay here?
-		_delay_ms(10);
 	}
 }
 

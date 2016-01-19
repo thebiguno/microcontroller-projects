@@ -19,7 +19,7 @@ namespace digitalcave {
 		public:
 
 			//Constructor
-			Complementary(double tau, uint32_t period, uint32_t time);
+			Complementary(double tau, uint16_t period, uint32_t time);
 
 			// Perform the actual Complementary calculation.  It should be called repeatedly in the main loop. 
 			// ON/OFF and calculation frequency can be set using setMode and setSampleTime respectively.
