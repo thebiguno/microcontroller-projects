@@ -6,6 +6,7 @@ A home for my microcontroller projects, including Stubby the Hexapod and others.
 Some major projects include:
  * Stubby the Hexapod (http://stubby.digitalcave.ca/stubby/) (Now extracted into its own repo at https://github.com/thebiguno/stubby)
  * DrumMaster (http://drummaster.digitalcave.ca/drummaster/)
+ * Chiindii (http://chiindii.digitalcave.ca/chiindii/)
 
 Some of the AVR libraries included here are:
  * serial communications
