@@ -145,45 +145,6 @@ class FlightView: UIView {
 		CGContextStrokePath(context)
 		
 		CGContextSetLineDash(context, 0, [], 0)
-		
-		// draw the artifical horizon
-		// TODO, this has to move with the pitch / roll telemetry
-		
-		/*
-		CGContextTranslateCTM(context, 0, CGFloat(-pitch*20))
-		CGContextRotateCTM(context, CGFloat(M_PI / 6 / 6) * CGFloat(-roll));
-		
-		CGContextSetRGBStrokeColor(context, 1.0, 1.0, 0.8, 1.0)
-		CGContextAddEllipseInRect(context, CGRect(x: -10, y: -10, width: 20, height: 20))
-		CGContextMoveToPoint(context, -60, 0);
-		CGContextAddLineToPoint(context, -10, 0)
-		CGContextMoveToPoint(context, +10, 0)
-		CGContextAddLineToPoint(context, +60, 0)
-		CGContextStrokePath(context)
-		*/
-		
-		CGContextSetRGBStrokeColor(context, 1.0, 1.0, 0.8, 1.0)
-
-		let arcradius = CGFloat(abs(pitch) / 2) + CGFloat((2 * radius) * (2 * radius)) / CGFloat(8 * abs(pitch))
-//		CGContextMoveToPoint(context, -radius, 0)
-//		CGContextAddArcToPoint(context, 0, CGFloat(pitch), radius, 0, arcradius)
-
-		let adj = arcradius + CGFloat(pitch)
-		let op = radius
-		print(tan(op / adj) * 57.296)
-		let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(0), y: adj + CGFloat(pitch)), radius: arcradius, startAngle: CGFloat(3*M_PI/2) - tan(op / adj), endAngle: CGFloat(3*M_PI/2) + tan(op / adj), clockwise: true)
-//		let path = UIBezierPath(arcCenter: CGPoint(x: CGFloat(0), y: arcradius + CGFloat(pitch)), radius: arcradius, startAngle: 0, endAngle: CGFloat(M_PI), clockwise: false)
-		path.stroke()
-		
-//		CGContextMoveToPoint(context, -radius, 0)
-//		CGContextAddQuadCurveToPoint(context, -radius, CGFloat(pitch), 0, CGFloat(pitch))
-//		CGContextAddQuadCurveToPoint(context, radius, CGFloat(pitch), radius, 0)
-//		CGContextStrokePath(context)
-
-//		CGContextMoveToPoint(context, 0, -radius)
-//		CGContextAddQuadCurveToPoint(context, CGFloat(roll), CGFloat(pitch), 0, arcradius)
-//		CGContextStrokePath(context)
-
 	}
 	
 	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {

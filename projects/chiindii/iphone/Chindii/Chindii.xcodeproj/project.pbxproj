@@ -15,6 +15,9 @@
 		803D103E1B856D7400B8D958 /* ChindiiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D103D1B856D7400B8D958 /* ChindiiTests.swift */; };
 		803D10521B9950A900B8D958 /* FlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10511B9950A900B8D958 /* FlightView.swift */; };
 		803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803D10531B9E22A700B8D958 /* MenuViewController.swift */; };
+		8065DC0A1C4DE37400FEC634 /* DZBluetoothSerialHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC091C4DE37400FEC634 /* DZBluetoothSerialHandler.swift */; };
+		8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */; };
+		8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +43,9 @@
 		803D103D1B856D7400B8D958 /* ChindiiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChindiiTests.swift; sourceTree = "<group>"; };
 		803D10511B9950A900B8D958 /* FlightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightView.swift; sourceTree = "<group>"; };
 		803D10531B9E22A700B8D958 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		8065DC091C4DE37400FEC634 /* DZBluetoothSerialHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DZBluetoothSerialHandler.swift; sourceTree = "<group>"; };
+		8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialMessage.swift; sourceTree = "<group>"; };
+		8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,11 +92,14 @@
 				803D10271B856D7400B8D958 /* AppDelegate.swift */,
 				803D10291B856D7400B8D958 /* FlightViewController.swift */,
 				803D10531B9E22A700B8D958 /* MenuViewController.swift */,
+				8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */,
+				8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */,
 				803D102B1B856D7400B8D958 /* Main.storyboard */,
 				803D102E1B856D7400B8D958 /* Images.xcassets */,
 				803D10301B856D7400B8D958 /* LaunchScreen.xib */,
 				803D10251B856D7300B8D958 /* Supporting Files */,
 				803D10511B9950A900B8D958 /* FlightView.swift */,
+				8065DC091C4DE37400FEC634 /* DZBluetoothSerialHandler.swift */,
 			);
 			path = Chindii;
 			sourceTree = "<group>";
@@ -222,7 +231,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */,
+				8065DC0A1C4DE37400FEC634 /* DZBluetoothSerialHandler.swift in Sources */,
 				803D10521B9950A900B8D958 /* FlightView.swift in Sources */,
+				8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */,
 				803D102A1B856D7400B8D958 /* FlightViewController.swift in Sources */,
 				803D10281B856D7400B8D958 /* AppDelegate.swift in Sources */,
 				803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */,

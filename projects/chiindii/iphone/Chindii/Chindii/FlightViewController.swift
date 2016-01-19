@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreBluetooth
 
-class FlightViewController: UIViewController {
+class FlightViewController: UIViewController, DZBluetoothSerialDelegate {
 
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
 		if (toInterfaceOrientation.isPortrait) {
@@ -19,12 +20,22 @@ class FlightViewController: UIViewController {
 	override func viewDidLoad() {
         super.viewDidLoad()
 		
-        // Do any additional setup after loading the view, typically from a nib.
-    }
+		serial = DZBluetoothSerialHandler(delegate: self)
+		serial.writeWithResponse = false
+	}
 	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
+	func serialHandlerDidReceiveMessage(message: String) {
+	}
+	
+	func serialHandlerDidDisconnect(peripheral: CBPeripheral, error: NSError?) {
+	}
+	
+	func serialHandlerDidChangeState(newState: CBCentralManagerState) {
+	}
 	
 }
