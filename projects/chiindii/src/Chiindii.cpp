@@ -6,7 +6,7 @@
 #include <SerialAVR.h>
 
 #include "lib/Mpu6050/Mpu6050.h"
-#include "lib/timer/timer.h"
+#include "timer.h"
 
 #include "Chiindii.h"
 
@@ -23,6 +23,7 @@ int main(){
 	MCUCR = _BV(JTD);
 	
 	timer_init();
+	battery_init();
 
 	Chiindii chiindii;
 	chiindii.run();
@@ -63,7 +64,9 @@ Chiindii::Chiindii() :
 	general(this),
 	calibration(this),
 	direct(this),
-	uc(this)
+	uc(this),
+	
+	status()
 {
 	throttle = 0;
 	mode = MODE_UNARMED;
@@ -84,7 +87,7 @@ void Chiindii::run() {
 	motor_start();
 	
 	_delay_ms(1000);
-	status.armed();
+	LED_PORT |= RED | GREEN | BLUE;
 	_delay_ms(1000);
 	motor_set(64,0,0,0);
 	_delay_ms(250);
@@ -95,11 +98,17 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
+	LED_PORT &= ~(RED | GREEN | BLUE);
+
+	status.commInterrupt();
 	status.unarmed();
-	
+
 	//Main program loop
 	while (1) {
 		time = timer_millis();
+		
+		//LED_PORT ^= RED | GREEN | BLUE;
+		_delay_ms(50);
 
 		if (protocol.read(&serial, &request)) {
 			dispatch(&request);
@@ -120,6 +129,7 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 
+		/*
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
 
@@ -152,6 +162,7 @@ void Chiindii::run() {
 		} else {
 			status.unarmed();
 		}
+		*/
 
 		status.poll(time);
 	}

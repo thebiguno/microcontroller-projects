@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 class FramedSerialProtocol {
 	//Error codes
@@ -55,13 +56,51 @@ class FramedSerialProtocol {
 	* Process any available incoming bytes from the stream.  This function MUST be called from the main code repeatedly.
 	* If a message is completed with this call, then return 1 and update the message's internal values, otherwise return 0.
 	*/
-	func read(stream : NSData, result : FramedSerialMessage) -> Bool {
+	func read(peripheral : CBPeripheral, result : FramedSerialMessage) -> Bool {
 	
 	}
 	
 	//Call this to write the entire message into the provided stream.
-	func write(stream : NSData, message : FramedSerialMessage) {
+	func write(peripheral : CBPeripheral, message : FramedSerialMessage) {
+		let command = message.getCommand()
+		let data = message.getData()
+		let length = data.count;
 		
+		for service in peripheral!.services! {
+			for characteristic in service.characteristics! {
+				connectedPeripheral!.writeValue(message.dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: characteristic, type: writeType)
+			}
+		}
+		
+		for (var position = 0; position <= (length + 3); position++) {
+			switch(position){
+			case 0:
+				peripheral.writeValue(NSData([START], 1), forCharacteristic: CBCharacteristic, type: <#T##CBCharacteristicWriteType#>)
+				stream->write(START);
+				break;
+			case 1:
+				escapeByte(stream, length + 1);
+				break;
+			case 2:
+				escapeByte(stream, command);
+				break;
+			default:
+				if (position - 3 == length){
+					//Write checksum
+					uint8_t result = command;
+					
+					for (uint8_t i = 0; i < length; i++) {
+						result += data[i];
+					}
+					
+					escapeByte(stream, 0xff - result);
+				}
+				else {
+					escapeByte(stream, data[position - 3]);
+				}
+				break;
+			}
+		}
 	}
 	
 	/*
