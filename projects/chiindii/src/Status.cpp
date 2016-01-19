@@ -33,10 +33,10 @@ void Status::batteryLow() {
 void Status::batteryOK() {
 	status &= ~0x1;
 }
-void Status::armed() {
+void Status::disarmed() {
 	status |= 0x2;
 }
-void Status::unarmed() {
+void Status::armed() {
 	status &= ~0x2;
 }
 void Status::commInterrupt() {

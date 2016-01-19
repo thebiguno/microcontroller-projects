@@ -1,7 +1,7 @@
 #include "Calibration.h"
 
 #include "../Chiindii.h"
-#include "../timer.h"
+#include "../timer/timer.h"
 
 
 using namespace digitalcave;

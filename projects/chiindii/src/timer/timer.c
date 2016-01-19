@@ -15,8 +15,8 @@ static volatile uint32_t _timer_millis;
  */
 void timer_init(){
 	//Set up the timer to run at F_CPU / 256, in CTC mode
-	TCCR0A = 0x0;
-	TCCR0B |= _BV(WGM01) | _BV(CS02);
+	TCCR0A = _BV(WGM01);
+	TCCR0B = _BV(CS02);
 	
 	//Set compare value to be F_CPU / 1000 -- fire interrupt every millisecond
 	OCR0A = F_CPU / 256 / 1000;

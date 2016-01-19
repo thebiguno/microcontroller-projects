@@ -24,7 +24,7 @@ namespace digitalcave {
 			void batteryLow();
 			void batteryOK();
 			void armed();
-			void unarmed();
+			void disarmed();
 			void commInterrupt();
 			void commOK();
 	};

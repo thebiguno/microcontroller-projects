@@ -1,12 +1,14 @@
 #include <avr/io.h>
 #include <avr/power.h>
 #include <util/delay.h>
+#include <stdio.h>
 
 #include <PID.h>
 #include <SerialAVR.h>
 
 #include "lib/Mpu6050/Mpu6050.h"
-#include "timer.h"
+#include "timer/timer.h"
+#include "lib/usb/serial.h"
 
 #include "Chiindii.h"
 
@@ -22,8 +24,8 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
+	usb_init();
 	timer_init();
-	battery_init();
 
 	Chiindii chiindii;
 	chiindii.run();
@@ -48,7 +50,7 @@ void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
-	serial(38400),
+	serial(32400),
 	protocol(40),
 	
 	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -64,9 +66,7 @@ Chiindii::Chiindii() :
 	general(this),
 	calibration(this),
 	direct(this),
-	uc(this),
-	
-	status()
+	uc(this)
 {
 	throttle = 0;
 	mode = MODE_UNARMED;
@@ -86,9 +86,6 @@ void Chiindii::run() {
 	
 	motor_start();
 	
-	_delay_ms(1000);
-	LED_PORT |= RED | GREEN | BLUE;
-	_delay_ms(1000);
 	motor_set(64,0,0,0);
 	_delay_ms(250);
 	motor_set(0,64,0,0);
@@ -98,18 +95,12 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
-	LED_PORT &= ~(RED | GREEN | BLUE);
-
-	status.commInterrupt();
-	status.unarmed();
-
+	
 	//Main program loop
+	char temp[32];
 	while (1) {
 		time = timer_millis();
 		
-		//LED_PORT ^= RED | GREEN | BLUE;
-		_delay_ms(50);
-
 		if (protocol.read(&serial, &request)) {
 			dispatch(&request);
 			last_message_time = time;
@@ -120,6 +111,9 @@ void Chiindii::run() {
 		}
 		
 		battery_level = battery_read();
+		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
+		usb_serial_write((const uint8_t*) temp, size);
+
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
@@ -129,7 +123,6 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 
-		/*
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
 
@@ -160,11 +153,13 @@ void Chiindii::run() {
 			status.armed();
 			driveMotors(rate_pv);
 		} else {
-			status.unarmed();
+			status.disarmed();
 		}
-		*/
 
 		status.poll(time);
+
+		// TODO what is the purpose of having a delay here?
+		_delay_ms(10);
 	}
 }
 
