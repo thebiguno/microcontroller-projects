@@ -45,7 +45,7 @@ void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
-	serial(32400),
+	serial(38400),
 	protocol(40),
 	
 	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
