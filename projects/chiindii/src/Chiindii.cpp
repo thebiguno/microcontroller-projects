@@ -96,8 +96,11 @@ void Chiindii::run() {
 	_delay_ms(250);
 	motor_set(0,0,0,0);
 	
+	//TODO Remove this, put it in calibration, and save values to EEPROM
+	mpu6050.calibrate();
+	
 	//Main program loop
-	char temp[32];
+	char temp[128];
 	while (1) {
 		time = timer_millis();
 		
@@ -111,8 +114,8 @@ void Chiindii::run() {
 		}
 		
 		battery_level = battery_read();
-		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
-		usb_serial_write((const uint8_t*) temp, size);
+//		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
+//		usb_serial_write((const uint8_t*) temp, size);
 
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
@@ -127,14 +130,21 @@ void Chiindii::run() {
 		gyro = mpu6050.getGyro();
 
 		// compute the absolute angle relative to the horizontal
-		angle_mv.x = atan2(accel.z, accel.x);
-		angle_mv.y = atan2(accel.z, accel.y);
+		angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
+		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
 		// NOTE can't do this for Z axis without a magnetometer
+
+		//uint8_t size = snprintf(temp, sizeof(temp), "x=%d, y=%d\n", (uint16_t) (angle_mv.x * 57.2958), (uint16_t) (angle_mv.y * 57.2958));
+		uint8_t size = snprintf(temp, sizeof(temp), "Raw accel: x=%2.5f, y=%2.5f, z=%2.5f; Accel angle: x=%3f, y=%3f\n", accel.x, accel.y, accel.z, angle_mv.x * 57.2958, angle_mv.y * 57.2958);
+		usb_serial_write((const uint8_t*) temp, size);
 		
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
 		c_x.compute(gyro.x, angle_mv.x, &angle_mv.x, time);
 		c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+		
+		size = snprintf(temp, sizeof(temp), "Computed angle: x=%3f, y=%3f\n", angle_mv.x * 57.2958, angle_mv.y * 57.2958);
+		usb_serial_write((const uint8_t*) temp, size);
 
 		if (mode == MODE_ARMED_ANGLE) {
 			// angle pid
