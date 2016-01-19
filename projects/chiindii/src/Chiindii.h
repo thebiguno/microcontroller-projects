@@ -93,6 +93,9 @@ namespace digitalcave {
 			uint8_t getMode();
 			void setMode(uint8_t mode);
 			
+			uint8_t getDebug();
+			void setDebug(uint8_t debug);
+
 			void setThrottle(double throttle);
 			
 			void sendMessage(FramedSerialMessage *message);

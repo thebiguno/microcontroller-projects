@@ -41,6 +41,8 @@ Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
 uint8_t Chiindii::getBatteryLevel() { return battery_level; }
 uint8_t Chiindii::getMode() { return mode; }
 void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
+uint8_t Chiindii::getDebug() { return debug; }
+void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
@@ -81,6 +83,9 @@ void Chiindii::run() {
 	
 	motor_start();
 	
+	_delay_ms(1000);
+	status.armed();
+	_delay_ms(1000);
 	motor_set(64,0,0,0);
 	_delay_ms(250);
 	motor_set(0,64,0,0);
@@ -90,6 +95,7 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
+	status.unarmed();
 	
 	//Main program loop
 	while (1) {
@@ -148,9 +154,6 @@ void Chiindii::run() {
 		}
 
 		status.poll(time);
-
-		// TODO what is the purpose of having a delay here?
-		_delay_ms(10);
 	}
 }
 
@@ -163,30 +166,20 @@ void Chiindii::driveMotors(vector_t rate_pv) {
 	motor_set(m1, m2, m3, m4);
 } 
 
-void Chiindii::dispatch(FramedSerialMessage *message) {
-	uint8_t cmd = message->getCommand();
+void Chiindii::dispatch(FramedSerialMessage *request) {
+	uint8_t cmd = request->getCommand();
 
-	if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG) {
-		debug = 0x01;
-		FramedSerialMessage msg(MESSAGE_REQUEST_ENABLE_DEBUG, 0);
-		protocol.write(&serial, &msg);
+	if ((cmd & 0xF0) == 0x00){
+		general.dispatch(request);
 	}
-	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG) {
-		debug = 0x00;
-		FramedSerialMessage msg(MESSAGE_REQUEST_DISABLE_DEBUG, 0);
-		protocol.write(&serial, &msg);
-	}
-	//This is a Universal Controller message (namespace 0x1X)
 	else if ((cmd & 0xF0) == 0x10){
-		uc.dispatch(message);
+		uc.dispatch(request);
 	}
-	//This is a Direct API message (namespace 0x2X)
 	else if ((cmd & 0xF0) == 0x20){
-		direct.dispatch(message);
+		direct.dispatch(request);
 	}
-	//This is a Calibration API message (namespace 0x3X)
 	else if ( (cmd & 0xF0) == 0x30){
-		calibration.dispatch(message);
+		calibration.dispatch(request);
 	}
 	else {
 		//TODO Send debug message 'unknown command' or similar
