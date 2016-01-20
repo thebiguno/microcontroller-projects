@@ -24,6 +24,7 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
+	battery_init();
 	usb_init();
 	timer_init();
 
@@ -114,8 +115,8 @@ void Chiindii::run() {
 		}
 		
 		battery_level = battery_read();
-//		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
-//		usb_serial_write((const uint8_t*) temp, size);
+		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
+		usb_serial_write((const uint8_t*) temp, size);
 
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
@@ -134,8 +135,7 @@ void Chiindii::run() {
 		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
 		// NOTE can't do this for Z axis without a magnetometer
 
-		//uint8_t size = snprintf(temp, sizeof(temp), "x=%d, y=%d\n", (uint16_t) (angle_mv.x * 57.2958), (uint16_t) (angle_mv.y * 57.2958));
-		uint8_t size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f,%3.3f,%3.3f,", angle_mv.x, angle_mv.y, gyro.x, gyro.y);
+		//uint8_t size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f,%3.3f,%3.3f,", angle_mv.x, angle_mv.y, gyro.x, gyro.y);
 		
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
@@ -144,9 +144,9 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
-			usb_serial_write((const uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f\n", angle_mv.x, angle_mv.y);
-			usb_serial_write((const uint8_t*) temp, size);
+			//usb_serial_write((const uint8_t*) temp, size);
+			//size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f\n", angle_mv.x, angle_mv.y);
+			//usb_serial_write((const uint8_t*) temp, size);
 
 			if (mode == MODE_ARMED_ANGLE) {
 				// angle pid
