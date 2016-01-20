@@ -23,7 +23,7 @@ namespace digitalcave {
 			//Returns a vector of acceleration values (in g)
 			vector_t getAccel();
 			
-			//Returns a vector of gyroscope values (in deg / s)
+			//Returns a vector of gyroscope values (in rad / s)
 			vector_t getGyro();
 			
 			//Returns the temperature (in C)

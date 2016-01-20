@@ -1,3 +1,7 @@
+//Comment this out to remove debug code
+//#define DEBUG
+
+
 #include <avr/io.h>
 #include <avr/power.h>
 #include <util/delay.h>
@@ -8,7 +12,10 @@
 
 #include "lib/Mpu6050/Mpu6050.h"
 #include "timer/timer.h"
+
+#ifdef DEBUG
 #include "lib/usb/serial.h"
+#endif
 
 #include "Chiindii.h"
 
@@ -25,8 +32,10 @@ int main(){
 	MCUCR = _BV(JTD);
 	
 	battery_init();
-	usb_init();
 	timer_init();
+#ifdef DEBUG
+	usb_init();
+#endif
 
 	Chiindii chiindii;
 	chiindii.run();
@@ -61,8 +70,8 @@ Chiindii::Chiindii() :
 	angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
-	c_x(0.075, 10, 0),
-	c_y(0.075, 10, 0),
+	c_x(0.075, 3, 0),
+	c_y(0.075, 3, 0),
 	
 	general(this),
 	calibration(this),
@@ -76,7 +85,7 @@ Chiindii::Chiindii() :
 void Chiindii::run() {
 	FramedSerialMessage request(0,40);
 	
-	//calibration.read(); // load PID and comp tuning values from EEPROM
+	//calibration.read(); // TODO load PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
 	vector_t accel;
@@ -101,7 +110,9 @@ void Chiindii::run() {
 	mpu6050.calibrate();
 	
 	//Main program loop
+#ifdef DEBUG
 	char temp[128];
+#endif
 	while (1) {
 		time = timer_millis();
 		
@@ -115,9 +126,6 @@ void Chiindii::run() {
 		}
 		
 		battery_level = battery_read();
-		uint8_t size = snprintf(temp, sizeof(temp), "%d\n", battery_level);
-		usb_serial_write((const uint8_t*) temp, size);
-
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
@@ -135,7 +143,9 @@ void Chiindii::run() {
 		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
 		// NOTE can't do this for Z axis without a magnetometer
 
-		//uint8_t size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f,%3.3f,%3.3f,", angle_mv.x, angle_mv.y, gyro.x, gyro.y);
+#ifdef DEBUG
+		uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
+#endif
 		
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
@@ -144,9 +154,11 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
-			//usb_serial_write((const uint8_t*) temp, size);
-			//size = snprintf(temp, sizeof(temp), "%3.3f,%3.3f\n", angle_mv.x, angle_mv.y);
-			//usb_serial_write((const uint8_t*) temp, size);
+#ifdef DEBUG
+			usb_serial_write((const uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), "%3.5f\n", angle_mv.x);
+			usb_serial_write((const uint8_t*) temp, size);
+#endif
 
 			if (mode == MODE_ARMED_ANGLE) {
 				// angle pid

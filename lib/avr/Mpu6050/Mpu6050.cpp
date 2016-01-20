@@ -69,9 +69,9 @@ vector_t Mpu6050::getGyro(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Gyro X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.00762939453125 / M_PI_2;		//250 deg/s / 32768 / PI/2
-	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.00762939453125 / M_PI_2;
-	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.00762939453125 / M_PI_2;
+	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.00762939453125 * M_PI / 180;		//(250 deg/s / 32768) * PI/180
+	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.00762939453125 * M_PI / 180;
+	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.00762939453125 * M_PI / 180;
 	return result;
 }
 
