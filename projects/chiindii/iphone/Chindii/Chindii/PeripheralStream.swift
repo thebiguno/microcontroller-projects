@@ -9,14 +9,23 @@
 import Foundation
 import CoreBluetooth
 
-class PeripheralStream : CBPeripheralDelegate {
+class PeripheralStream : NSObject, CBPeripheralDelegate {
 	var connectedPeripheral : CBPeripheral
 	var characteristic : CBCharacteristic
 	var writeType : CBCharacteristicWriteType
-	var buffer : [UInt8]
+	var buffer : [UInt8] = []
 	
-	init() {
-		
+	override init() {
+		super.init()
+	}
+	
+	func write(b : UInt8) {
+		let data = NSData(bytes: [b], length: 1)
+		connectedPeripheral.writeValue(data, forCharacteristic: characteristic, type: writeType)
+	}
+	
+	func read() -> UInt8 {
+		return buffer.removeFirst()
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
@@ -38,7 +47,7 @@ class PeripheralStream : CBPeripheralDelegate {
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-		characteristic.value?.getBytes(buffer, length: characteristic.value?.length)
+		characteristic.value?.getBytes(&buffer, length: (characteristic.value?.length)!)
 	}
 	
 }

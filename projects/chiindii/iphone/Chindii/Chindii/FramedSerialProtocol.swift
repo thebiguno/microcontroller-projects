@@ -42,13 +42,12 @@ class FramedSerialProtocol {
 	}
 	
 	//Convenience method to escape the given byte if needed
-	func escapeByte(data : NSData, b : UInt8) {
+	func escapeByte(stream : PeripheralStream, b : UInt8) {
 		if (b == START || b == ESCAPE) {
-			data.
-			stream->write(ESCAPE);
-			stream->write(b ^ 0x20);
+			stream.write(ESCAPE)
+			stream.write(b ^ 0x20);
 		} else {
-			stream->write(b);
+			stream.write(b);
 		}
 	}
 	
@@ -56,47 +55,115 @@ class FramedSerialProtocol {
 	* Process any available incoming bytes from the stream.  This function MUST be called from the main code repeatedly.
 	* If a message is completed with this call, then return 1 and update the message's internal values, otherwise return 0.
 	*/
-	func read(peripheral : CBPeripheral, result : FramedSerialMessage) -> Bool {
-	
+	func read(stream : PeripheralStream, result : FramedSerialMessage) -> Bool {
+		var b = stream.read()
+		while (b != nil) {
+			if (error > 0) {
+				if (b == START) {
+					// recover from any previous error condition
+					error = NO_ERROR;
+					position = 0;
+				}
+				else {
+					continue;
+				}
+			}
+			
+			if (position > 0 && b == START) {
+				// unexpected start of frame
+				error = INCOMING_ERROR_UNEXPECTED_START_OF_FRAME;
+				continue;
+			}
+			if (position > 0 && b == ESCAPE) {
+				// unescape next byte
+				escape = 1;
+				continue;
+			}
+			if (escape) {
+				// unescape current byte
+				b = 0x20 ^ b;
+				escape = 0;
+			}
+			if (position > 1) { // start byte and length byte not included in checksum
+				checksum += b;
+			}
+			
+			switch(position) {
+			case 0: // start frame
+				position++;
+				break;
+			case 1: // length
+				if (b == 0){
+					error = INCOMING_ERROR_INVALID_LENGTH;
+				}
+				else {
+					length = b;
+					position++;
+				}
+				break;
+			case 2:
+				command = b;
+				position++;
+				break;
+			default:
+				if ((position - 3) > maxSize){
+					//Max size exceeded
+					error = INCOMING_ERROR_EXCEED_MAX_LENGTH;
+				}
+				else if (position == (length + 2)) {
+					if (checksum == 0xff) {
+						FramedSerialMessage m(command, data, length - 1);
+						result->clone(&m);
+						position = 0;
+						checksum = 0;
+						return 1;
+					} else {
+						error = INCOMING_ERROR_INVALID_CHECKSUM;
+					}
+					position = 0;
+					checksum = 0;
+				}
+				else {
+					data[position - 3] = b;
+					position++;
+				}
+				break;
+			}
+		}
+		
+		return 0;
 	}
 	
 	//Call this to write the entire message into the provided stream.
-	func write(peripheral : CBPeripheral, message : FramedSerialMessage) {
+	func write(stream : PeripheralStream, message : FramedSerialMessage) {
 		let command = message.getCommand()
 		let data = message.getData()
 		let length = data.count;
 		
-		for service in peripheral!.services! {
-			for characteristic in service.characteristics! {
-				connectedPeripheral!.writeValue(message.dataUsingEncoding(NSUTF8StringEncoding)!, forCharacteristic: characteristic, type: writeType)
-			}
-		}
-		
 		for (var position = 0; position <= (length + 3); position++) {
 			switch(position){
 			case 0:
-				peripheral.writeValue(NSData([START], 1), forCharacteristic: CBCharacteristic, type: <#T##CBCharacteristicWriteType#>)
-				stream->write(START);
+				stream.write(START);
 				break;
 			case 1:
-				escapeByte(stream, length + 1);
+				escapeByte(stream, b: UInt8(length + 1));
 				break;
 			case 2:
-				escapeByte(stream, command);
+				escapeByte(stream, b: command);
 				break;
 			default:
 				if (position - 3 == length){
 					//Write checksum
-					uint8_t result = command;
+					var result = command;
 					
-					for (uint8_t i = 0; i < length; i++) {
+					for var i = 0; i < length; i++ {
 						result += data[i];
 					}
 					
-					escapeByte(stream, 0xff - result);
+					escapeByte(stream, b: 0xff - result);
 				}
 				else {
-					escapeByte(stream, data[position - 3]);
+					escapeByte(stream, b: data[position - 3]);
 				}
 				break;
 			}
