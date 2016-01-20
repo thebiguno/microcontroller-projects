@@ -19,7 +19,8 @@
 #define MESSAGE_START_CALIBRATION_COMPLEMENTARY 0x39
 #define MESSAGE_SEND_TUNING_DATA 0x3A
 
-#define EEPROM_OFFSET	0
+#define EEPROM_MAGIC	0x00
+#define EEPROM_OFFSET	0x10
 
 namespace digitalcave {
 	class Chiindii; // forward declaration

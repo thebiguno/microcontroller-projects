@@ -6,7 +6,8 @@
 
 using namespace digitalcave;
 
-/* EEPROM format
+//1 byte read from EEPROM_MAGIC must be 0x42; otherwise we assume eeprom is invalid.
+/* EEPROM format.  Offsets read from EEPROM_OFFSET.  
 
  0 rate x p
  4 rate x i
@@ -33,38 +34,40 @@ Calibration::Calibration(Chiindii* chiindii) {
 }
 
 void Calibration::read() {
-	double kp, ki, kd;
-	double t;
+	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
+		double kp, ki, kd;
+		double t;
 	
-	kp = eeprom_read_float((float*) EEPROM_OFFSET + 0);
-	ki = eeprom_read_float((float*) EEPROM_OFFSET + 4);
-	kd = eeprom_read_float((float*) EEPROM_OFFSET + 8);
-	chiindii->getRateX()->setTunings(kp, ki, kd);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 0);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 4);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 8);
+		chiindii->getRateX()->setTunings(kp, ki, kd);
 	
-	kp = eeprom_read_float((float*) EEPROM_OFFSET + 12);
-	ki = eeprom_read_float((float*) EEPROM_OFFSET + 16);
-	kd = eeprom_read_float((float*) EEPROM_OFFSET + 20);
-	chiindii->getRateY()->setTunings(kp, ki, kd);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 12);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 16);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 20);
+		chiindii->getRateY()->setTunings(kp, ki, kd);
 	
-	kp = eeprom_read_float((float*) EEPROM_OFFSET + 24);
-	ki = eeprom_read_float((float*) EEPROM_OFFSET + 28);
-	kd = eeprom_read_float((float*) EEPROM_OFFSET + 32);
-	chiindii->getRateZ()->setTunings(kp, ki, kd);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 24);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 28);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 32);
+		chiindii->getRateZ()->setTunings(kp, ki, kd);
 	
-	kp = eeprom_read_float((float*) EEPROM_OFFSET + 36);
-	ki = eeprom_read_float((float*) EEPROM_OFFSET + 40);
-	kd = eeprom_read_float((float*) EEPROM_OFFSET + 44);
-	chiindii->getAngleX()->setTunings(kp, ki, kd);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 36);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 40);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 44);
+		chiindii->getAngleX()->setTunings(kp, ki, kd);
 
-	kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
-	ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
-	kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
-	chiindii->getRateY()->setTunings(kp, ki, kd);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
+		chiindii->getRateY()->setTunings(kp, ki, kd);
 	
-	t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
-	chiindii->getCompX()->setTau(t);
-	t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
-	chiindii->getCompY()->setTau(t);
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
+		chiindii->getCompX()->setTau(t);
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
+		chiindii->getCompY()->setTau(t);
+	}
 }
 
 void Calibration::write() {
@@ -98,6 +101,9 @@ void Calibration::write() {
 	
 	Complementary* c_y = chiindii->getCompY();
 	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
+	
+	//Write the magic value to say that we have written valid bytes
+	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
 }
 
 void Calibration::dispatch(FramedSerialMessage* request) {

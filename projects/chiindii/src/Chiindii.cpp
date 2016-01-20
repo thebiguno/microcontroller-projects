@@ -85,7 +85,7 @@ Chiindii::Chiindii() :
 void Chiindii::run() {
 	FramedSerialMessage request(0,40);
 	
-	//calibration.read(); // TODO load PID and comp tuning values from EEPROM
+	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
 	vector_t accel;
