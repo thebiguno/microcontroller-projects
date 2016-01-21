@@ -3,8 +3,11 @@
 #include "../Chiindii.h"
 #include "../timer/timer.h"
 
-
 using namespace digitalcave;
+
+#ifdef DEBUG
+char temp[128];
+#endif
 
 //1 byte read from EEPROM_MAGIC must be 0x42; otherwise we assume eeprom is invalid.
 /* EEPROM format.  Offsets read from EEPROM_OFFSET.  
@@ -67,6 +70,11 @@ void Calibration::read() {
 		chiindii->getCompX()->setTau(t);
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
 		chiindii->getCompY()->setTau(t);
+		
+#ifdef DEBUG
+		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Read\n");
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
 	}
 }
 
@@ -104,6 +112,11 @@ void Calibration::write() {
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
+	
+#ifdef DEBUG
+		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Write\n");
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
 }
 
 void Calibration::dispatch(FramedSerialMessage* request) {
@@ -143,8 +156,13 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double data[] = { 
 			x->getTau(), y->getTau()
 		};
-		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_RATE_PID, (uint8_t*) data, 8);
+		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, (uint8_t*) data, 8);
 		chiindii->sendMessage(&response);
+		
+#ifdef DEBUG
+		uint8_t size = snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) request->getData();
@@ -161,6 +179,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double* data = (double*) request->getData();
 		chiindii->getCompX()->setTau(data[0]);
 		chiindii->getCompY()->setTau(data[1]);
+		
+#ifdef DEBUG
+		uint8_t size = snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
 		uint8_t* data = (uint8_t*) request->getData();
@@ -172,20 +195,20 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double outdata[3];
 		vector_t angle_mv;
 		
-		for (uint8_t i = 0; i < 1000; i++) {
+		for (uint8_t i = 0; i < 10; i++) {
 			time = timer_millis();
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();
 			
 			if (axis == 0) {
-				angle_mv.x = atan2(accel.z, accel.x);
+				angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
 				chiindii->getCompX()->compute(gyro.x, angle_mv.x, &angle_mv.x, time);
 				outdata[0] = gyro.x;
 				outdata[1] = accel.x;
 				outdata[2] = angle_mv.x;
 			}
 			else {
-				angle_mv.y = atan2(accel.z, accel.y);
+				angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
 				chiindii->getCompX()->compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 				outdata[0] = gyro.y;
 				outdata[1] = accel.y;

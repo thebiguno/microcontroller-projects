@@ -1,15 +1,17 @@
 # Chiindii Calibration Program
 #
-# Usage: <calibration.py> <port> <baud>
+# Usage: <calibration.py> <port>
 # Follow the on-screen prompts
 ###################
 
-import re, serial, sys
+import re, serial, struct, sys
 
 ########## Common variables ##########
 
-digit = re.compile('^[0-9]$')
-integer = re.compile('^-?[0-9]+$')
+axis = 0
+#digit = re.compile('^[0-9]$')
+#integer = re.compile('^-?[0-9]+$')
+floatregex = re.compile('^-?[0-9.]+$')
 
 MESSAGE_SAVE_CALIBRATION = 0x30
 MESSAGE_LOAD_CALIBRATION = 0x31
@@ -20,22 +22,22 @@ MESSAGE_SEND_CALIBRATION_ANGLE_PID = 0x36
 MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY = 0x37
 MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
 MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
+MESSAGE_SEND_TUNING_DATA = 0x3A
 
-MODE_CALIBRATION_RATE_PID = 0x01
-MODE_CALIBRATION_COMPLEMENTARY = 0x02
-MODE_CALIBRATION_ANGLE_PID = 0x03
+#MODE_CALIBRATION_RATE_PID = 0x01
+#MODE_CALIBRATION_COMPLEMENTARY = 0x02
+#MODE_CALIBRATION_ANGLE_PID = 0x03
 
 ########## Main program here ##########
 
 def main(ser):
-	axis = 0
+	#We need to pick an axis before anything else
+	chooseAxis(ser);
 	
 	while True:
-		writeMessage(ser, 0x00, [0x43])
 		print(
 """
 Chiindii Calibration: Please selection an option below:
-	X) Choose which axis to calibrate
 	R) Change Rate PID calibration
 	C) Change Complementary filter calibration
 	A) Change Angle PID calibration
@@ -45,41 +47,17 @@ Chiindii Calibration: Please selection an option below:
 """)
 		choice = raw_input("Selected Option: ")
 		
-		if (choice == "X" or choice == "x"):
-			print("""
-Each axis must be tuned independently since Chiindii must be placed into the jig
-in the proper orientation for that axis.
-For Pitch and Roll, attach the arms to the jig such that the craft can freely pitch or roll.
-For Yaw, suspend the craft from the top so that it can freely yaw.
-""")
-			print("\nPlease select a axis to calibrate")
-			print("	P) Pitch")
-			print("	R) Roll")
-			print("	Y) Yaw")
-			print("	Q) Return to the main menu")
-
-			axis = raw_input("Select axis: ")
-		
-			if (axis == "Q" or axis == "q"):
-				break
-			elif (axis == "P" or axis == "p" or axis == "R" or axis == "r" or axis == "Y" or axis == "y"):
-				## translate axis into number for indexing into tuning array
-				if (axis == "P" or axis == "p"): axis = 0
-				elif (axis == "R" or axis == "r"): axis = 1
-				else: axis = 2
-			else:
-				print("Invalid parameter, please try again\n")
 		if (choice == "R" or choice == "r"):
 			doRatePidCalibration(ser)
 		elif (choice == "C" or choice == "c"):
 			if (axis == 2):
 				print("Complementary filter tuning not applicable for Z axis")
-			else
+			else:
 				doComplementaryCalibration(ser)
 		elif (choice == "A" or choice == "a"):
 			if (axis == 2):
 				print("Angle PID tuning not application for Z axis")
-			else
+			else:
 				doAnglePidCalibration(ser)
 		elif (choice == "L" or choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
@@ -88,15 +66,43 @@ For Yaw, suspend the craft from the top so that it can freely yaw.
 			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
 			print("All values saved to EEPROM")
 		elif (choice == "Q" or choice == "q"):
-			writeMessage(ser, 0x00, [0x00])	#Exit calibration controller mode
 			sys.exit(0)
 		else:
 			print("Invalid selection, please try again\n")
 		
 ########## Primary functions here ##########
 
+def chooseAxis(ser):
+	while(True):
+		print("""
+Each axis must be tuned independently since Chiindii must be placed into the jig
+in the proper orientation for that axis.
+For Pitch and Roll, attach the arms to the jig such that the craft can freely pitch or roll.
+For Yaw, suspend the craft from the top so that it can freely yaw.
+
+Please select an axis to calibrate:
+	P) Pitch (Y)
+	R) Roll (X)
+	Y) Yaw (Z)
+	Q) Quit calibration
+""")
+
+		response = raw_input("Selected option: ")
+
+		if (response == "Q" or response == "q"):
+			sys.exit(0)
+		elif (response == "P" or response == "p" or response == "R" or response == "r" or response == "Y" or response == "y"):
+			## translate axis into number for indexing into tuning array
+			if (response == "P" or response == "p"): axis = 0
+			elif (response == "R" or response == "r"): axis = 1
+			else: axis = 2
+			return;
+		else:
+			print("Invalid parameter, please try again\n")
+
+
 def doRatePidCalibration(ser, mode):
-		raw_input("""
+	raw_input("""
 Rate PID calibration allows Chiindii to quickly an accurately achieve the requested rotational
 rate of change.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
 derivitive) for a total of nine parameters.
@@ -105,6 +111,7 @@ and increasing the proportional parameter until the the observed rate of change 
 occilate around the requested rate.  At that point begin to increase the integral parameter
 until the observed rate of change stops occilating.  Continue tuning until the observed rate
 of change is stable and matches the requested rate of change for a variety of requested rates.
+
 Place Chiindii into the jig, and press enter.
 """)
 	
@@ -134,9 +141,9 @@ Place Chiindii into the jig, and press enter.
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
 				value = raw_input("Rate: ")
-				if (float.match(value)):
+				if (floatregex.match(value)):
 					rate_sp = [0,0,0,0]
-					struct.pack_info("!f", rate_sp, 0, radians(float(value)))
+					struct.pack_info("<f", rate_sp, 0, radians(float(value)))
 					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, rate_sp)
 				elif (value == "Q" or value == "q"):
 					break;
@@ -154,7 +161,7 @@ Place Chiindii into the jig, and press enter.
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
 				value = raw_input("Value (" + str(to_float_t(d[axis * 3 + param])) + "): ")
-				if (float.match(value)):
+				if (floatregex.match(value)):
 					d[axis * 3 + param] = to_float_t(float(value))
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
 				elif (value == "Q" or value == "q"):
@@ -165,7 +172,7 @@ Place Chiindii into the jig, and press enter.
 			print("Invalid axis, please try again\n")
 
 def doAnglePidCalibration(ser, mode):
-		raw_input("""
+	raw_input("""
 Angle PID calibration allows Chiindii to quickly an accurately achieve the requested absolute
 angle.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
 derivitive) for a total of nine parameters.
@@ -174,6 +181,7 @@ and increasing the proportional parameter until the the observed angle starts to
 occilate around the angle.  At that point begin to increase the integral parameter
 until the observed angle stops occilating.  Continue tuning until the observed angle
 is stable and matches the requested angle for a variety of requested angles.
+
 Place Chiindii into the jig, and press enter.
 """)
 	
@@ -203,9 +211,9 @@ Place Chiindii into the jig, and press enter.
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
 				value = raw_input("Angle: ")
-				if (float.match(value)):
+				if (floatregex.match(value)):
 					angle_sp = [0,0,0,0]
-					struct.pack_info("!f", angle_sp, 0, radians(float(value)))
+					struct.pack_info("<f", angle_sp, 0, radians(float(value)))
 					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, angle_sp)
 				elif (value == "Q" or value == "q"):
 					break;
@@ -222,9 +230,9 @@ Place Chiindii into the jig, and press enter.
 			
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Value (" + str(struct.unpack_from("!f", d, axis * 12 + param * 4)) + "): ")
-				if (float.match(value)):
-					struct.pack_into("!f", d, axis * 12 + param * 4, value)
+				value = raw_input("Value (" + str(struct.unpack_from("<f", d, axis * 12 + param * 4)) + "): ")
+				if (floatregex.match(value)):
+					struct.pack_into("<f", d, axis * 12 + param * 4, value)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_ANGLE_PID, d)
 				elif (value == "Q" or value == "q"):
 					break;
@@ -234,57 +242,61 @@ Place Chiindii into the jig, and press enter.
 			print("Invalid axis, please try again\n")
 
 
-def doComplementaryFilterCalibration(ser, mode):
-		raw_input("""
+def doComplementaryCalibration(ser):
+	print("""
 Complemenentary calibration allows Chiindii to integrate Gyro and Accelerometer
 data to reduce Gyro drift.  There is one paramater that called Tau which is the response
 time of integration.  This allows a trade off between drift elimination and responsiveness.
 The tuning allows you to collect raw and integrated data which can be graphed.
 """)
-	
-	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-	response = readMessage(ser)
-	if (response == False):
-		print("Communication failure")
-		return
-	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY):
-		print("Invalid response detected")
-		return
-	d = response["data"]
 	while True:
 		print("\nPlease select a parameter to modify")
 		print("	T) Tau")
-		print("	S) Send complementary tuning data")
+		print("	S) Start reading live test data")
 		print("	Q) Return to axis selection")
 		
-		param = raw_input("Select parameter: ")
+		param = raw_input("Selected Option: ")
 		
 		if (param == "Q" or param == "q"):
 			break
 		elif (param == "T" or param == "t"):
-			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Tau (" + struct.unpack_from("!f", d, axis * 4) + "): ")
-				if (float.match(value)):
-					struct.pack_into("!f", d, axis * 4, float(value))
+				#Load the current calibration
+				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
+				response = readMessage(ser)
+				if (response == False):
+					print("Communication failure")
+					return
+				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY):
+					print("Invalid response detected: received command " + hex(response["command"]))
+					return
+				d = response["data"]
+				
+				print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+				value = raw_input("Tau (" + str(round(struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0], 3)) + "): ")
+				if (floatregex.match(value)):
+					
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						print i, ord(b)
+						d[i + (axis * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
 				elif (value == "Q" or value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		else if (param == "S" or param == "s"):
+		elif (param == "S" or param == "s"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
 			while True:
-				rawValue = readMessage(ser)
-				if (rawValue == False):
+				response = readMessage(ser)
+				if (response == False):
 					break
-				rawData = rawValue["data"]
+				d = buffer(str(bytearray(response["data"])))
 				
-				accel = struct.unpack_from("!f", rawData, 0);
-				gyro = struct.unpack_from("!f", rawData, 4);
-				comp = struct.unpack_from("!f", rawData, 8);
-				print(str(accel) + "\t" + str(gyro) + "\t" + str(comp))
+				accel = struct.unpack_from("<f", d, 0)[0];
+				gyro = struct.unpack_from("<f", d, 4)[0];
+				comp = struct.unpack_from("<f", d, 8)[0];
+				print(str(round(accel, 4)) + "\t" + str(round(gyro, 4)) + "\t" + str(round(comp, 4)))
 		else:
 			print("Invalid axis, please try again\n")
 
@@ -314,10 +326,10 @@ def readMessage(ser):
 	cmd = 0
 	chk = 0x00
 
-	buf = {}
+	buf = [0 for i in range(254)]		#max langth of message
 
 	while True:
-		rawArray = ser.read();
+		rawArray = ser.read()
 		if (len(rawArray) == 0):
 			return False;
 		
@@ -369,7 +381,7 @@ def readMessage(ser):
 					if (chk == 0xff):
 						result = {}
 						result["command"] = cmd
-						result["data"] = buf
+						result["data"] = buf[:length - 1]
 						result["length"] = length
 						return result
 					
