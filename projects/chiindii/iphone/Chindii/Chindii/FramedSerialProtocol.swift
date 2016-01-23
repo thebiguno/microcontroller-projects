@@ -9,7 +9,11 @@
 import Foundation
 import CoreBluetooth
 
-class FramedSerialProtocol {
+protocol FramedSerialProtocolDelegate: NSObjectProtocol {
+	func onMessage(message: FramedSerialMessage)
+}
+
+class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 	//Error codes
 	let NO_ERROR									= 0
 	let INCOMING_ERROR_UNEXPECTED_START_OF_FRAME	= 1
@@ -24,14 +28,16 @@ class FramedSerialProtocol {
 
 	//Incoming state
 	var position : Int			// Current position in the frame
-	var length : Int			// Frame length
+	var length : UInt8			// Frame length
 	var command : UInt8			// Incoming message command
 	var checksum : UInt8		// Checksum
 	var escape : Bool	 		// Escape byte seen, unescape next byte
 	var error : Int				// Error condition, ignore bytes until next frame start byte
 	var data : [UInt8]			// Incoming message
+	var delegate : FramedSerialProtocolDelegate
 	
-	init() {
+	init(delegate : FramedSerialProtocolDelegate) {
+		self.delegate = delegate;
 		position = 0
 		length = 0
 		command = 0
@@ -39,6 +45,8 @@ class FramedSerialProtocol {
 		escape = false
 		error = NO_ERROR
 		data = [UInt8]()
+
+		super.init()
 	}
 	
 	//Convenience method to escape the given byte if needed
@@ -51,13 +59,10 @@ class FramedSerialProtocol {
 		}
 	}
 	
-	/*
-	* Process any available incoming bytes from the stream.  This function MUST be called from the main code repeatedly.
-	* If a message is completed with this call, then return 1 and update the message's internal values, otherwise return 0.
-	*/
-	func read(stream : PeripheralStream, result : FramedSerialMessage) -> Bool {
-		var b = stream.read()
-		while (b != nil) {
+	func onMessage(message: [UInt8]) {
+		for var i = 0; i < message.count; i++ {
+			var b = message[i]
+
 			if (error > 0) {
 				if (b == START) {
 					// recover from any previous error condition
@@ -76,13 +81,13 @@ class FramedSerialProtocol {
 			}
 			if (position > 0 && b == ESCAPE) {
 				// unescape next byte
-				escape = 1;
+				escape = true;
 				continue;
 			}
 			if (escape) {
 				// unescape current byte
 				b = 0x20 ^ b;
-				escape = 0;
+				escape = false;
 			}
 			if (position > 1) { // start byte and length byte not included in checksum
 				checksum += b;
@@ -106,17 +111,11 @@ class FramedSerialProtocol {
 				position++;
 				break;
 			default:
-				if ((position - 3) > maxSize){
-					//Max size exceeded
-					error = INCOMING_ERROR_EXCEED_MAX_LENGTH;
-				}
-				else if (position == (length + 2)) {
+				if (position == Int(length + 2)) {
 					if (checksum == 0xff) {
-						FramedSerialMessage m(command, data, length - 1);
-						result->clone(&m);
+						delegate.onMessage(FramedSerialMessage(command : command, data : data))
 						position = 0;
 						checksum = 0;
-						return 1;
 					} else {
 						error = INCOMING_ERROR_INVALID_CHECKSUM;
 					}
@@ -130,8 +129,6 @@ class FramedSerialProtocol {
 				break;
 			}
 		}
-		
-		return 0;
 	}
 	
 	//Call this to write the entire message into the provided stream.

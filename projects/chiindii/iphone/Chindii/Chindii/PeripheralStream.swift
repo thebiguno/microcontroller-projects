@@ -13,22 +13,20 @@ protocol PeripheralStreamDelegate: NSObjectProtocol {
 	func onMessage(message: [UInt8])
 }
 
-
 class PeripheralStream : NSObject, CBPeripheralDelegate {
-	var connectedPeripheral : CBPeripheral
-	var characteristic : CBCharacteristic
-	var writeType : CBCharacteristicWriteType
+	var connectedPeripheral : CBPeripheral?
+	var characteristic : CBCharacteristic?
+	var writeType : CBCharacteristicWriteType?
 	let delegate : PeripheralStreamDelegate
 	
 	init(delegate : PeripheralStreamDelegate) {
-		super.init()
-		
 		self.delegate = delegate
+		super.init()
 	}
 	
 	func write(b : UInt8) {
 		let data = NSData(bytes: [b], length: 1)
-		connectedPeripheral.writeValue(data, forCharacteristic: characteristic, type: writeType)
+		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: writeType!)
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
@@ -50,7 +48,7 @@ class PeripheralStream : NSObject, CBPeripheralDelegate {
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-		var buffer : [UInt8]
+		var buffer = [UInt8]()
 		characteristic.value?.getBytes(&buffer, length: (characteristic.value?.length)!)
 		delegate.onMessage(buffer)
 	}
