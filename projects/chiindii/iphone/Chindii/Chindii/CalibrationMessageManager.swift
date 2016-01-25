@@ -31,7 +31,16 @@ class CalibrationMessageManager {
 	func dispatch(message : FramedSerialMessage) {
 		switch(message.command) {
 		case MESSAGE_SEND_CALIBRATION_RATE_PID:
-			app.config.xRateP = unpack(message.data.prefix(4))
+			app.config.rate = unpack(message.data)
+			break
+		case MESSAGE_SEND_CALIBRATION_ANGLE_PID:
+			app.config.rate = unpack(message.data)
+			break
+		case MESSAGE_SEND_CALIBRATION_COMPLEMENTARY:
+			app.config.comp = unpack(message.data)
+			break
+		default:
+			break;
 		}
 	}
 	
@@ -42,9 +51,10 @@ class CalibrationMessageManager {
 		return valueByteArray
 	}
 	
-	func unpack(bytes: [UInt8]) -> Float {
-		return bytes.withUnsafeBufferPointer {
-			return UnsafePointer($0.baseAddress).memory
-		}
+	func unpack<T>(bytes: [UInt8]) -> T {
+		let pointer = UnsafeMutablePointer<T>.alloc(sizeof(T.Type))
+		let data = NSData(bytes: bytes, length: bytes.count)
+		data.getBytes(pointer, length: sizeof(T.Type))
+		return pointer.move()
 	}
 }

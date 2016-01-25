@@ -8,15 +8,16 @@
 
 import Foundation
 
+struct Vector {
+	var x : Float = 0.0
+	var y : Float = 0.0
+	var z : Float = 0.0
+}
+
 class FlightModel {
 	var armed : Bool = false
-	var xAngle : Float = 0.0
-	var yAngle : Float = 0.0
+	var angle = Vector()
+	var rate = Vector()
 	var throttle : Float = 0.0
-	
-	var xRate : Float = 0.0
-	var yRate : Float = 0.0
-	var zRate : Float = 0.0
-	
 	var battery : UInt8 = 0
 }
