@@ -9,7 +9,7 @@
 import Foundation
 import CoreBluetooth
 
-protocol PeripheralStreamDelegate: NSObjectProtocol {
+public protocol PeripheralStreamDelegate: NSObjectProtocol {
 	func onMessage(message: [UInt8])
 }
 

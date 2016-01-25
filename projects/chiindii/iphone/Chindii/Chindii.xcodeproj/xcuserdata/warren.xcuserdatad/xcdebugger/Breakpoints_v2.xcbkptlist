@@ -14,9 +14,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "208"
-            endingLineNumber = "208"
-            landmarkName = "touchesMoved(_:withEvent:)"
-            landmarkType = "5">
+            endingLineNumber = "208">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -62,9 +60,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "214"
-            endingLineNumber = "214"
-            landmarkName = "touchesEnded(_:withEvent:)"
-            landmarkType = "5">
+            endingLineNumber = "214">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -81,22 +77,6 @@
             endingLineNumber = "37"
             landmarkName = "FramedSerialMessage"
             landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chindii/PeripheralStream.swift"
-            timestampString = "475272381.991072"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "write(_:)"
-            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
