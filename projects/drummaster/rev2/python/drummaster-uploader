@@ -7,7 +7,7 @@
 import serial, sys, os, time
 
 if (len(sys.argv) <= 2):
-	print("Usage: '" + sys.argv[0] + " <port> <files>' where:\n\t<port> is the TTY USB port connected to Drum Master\n\t<files> is a list of .RAW files with one MAPPERS.TXT file.")
+	print("Usage: '" + sys.argv[0] + " <port> <files>' where:\n\t<port> is the TTY USB port connected to Drum Master\n\t<files> is a list of audio files with one MAPPERS.TXT file.")
 	sys.exit()
 
 #Special bytes

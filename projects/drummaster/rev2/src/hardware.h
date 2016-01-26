@@ -7,7 +7,8 @@
 #define MOSI							7
 #define MISO							12
 #define SCK								14
-#define CS_FLASH						15
+//#define CS_FLASH						6		//Audio board flash chip
+#define CS_FLASH						15		//Drum Master board flash chip
 #define CS_SD							10
 
 //Pin assignments

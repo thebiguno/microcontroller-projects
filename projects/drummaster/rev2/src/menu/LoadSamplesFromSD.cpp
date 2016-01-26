@@ -36,11 +36,6 @@ Menu* LoadSamplesFromSD::handleAction(){
 			uint8_t id[3];
 			SerialFlash.readID(id);
 			uint32_t size = SerialFlash.capacity(id);
-
-			snprintf(buf, sizeof(buf), "Erasing %dMB          ", (uint16_t) (size >> 20));
-			display->write_text(1, 0, buf, 20);
-			display->clearRow(2);
-			display->refresh();
 			SerialFlash.eraseAll();
 
 			//Show progress while erasing...

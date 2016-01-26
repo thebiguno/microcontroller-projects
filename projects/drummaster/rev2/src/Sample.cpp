@@ -185,12 +185,6 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade){
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
-
-//  	Serial.print(millis() % 1000);
-	Serial.print("Playing ");
-	Serial.print(filename);
-	Serial.print(" at volume ");
-	Serial.println(volume);
 	
 	this->ignoreFade = ignoreFade;
 	fading = 0;
@@ -198,7 +192,24 @@ void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade
 	
 	lastPad = pad;
 	setVolume(volume);
-	playSerialRaw.play(filename);
+	//Try to find the proper filename, given supported extensions
+	if (!playSerialRaw.play(filename)){
+		uint8_t filenameLength = strlen(filename);
+		filename[filenameLength-3] = 'U';
+		filename[filenameLength-2] = 'L';
+		filename[filenameLength-1] = 'W';
+		if (!playSerialRaw.play(filename)){
+			Serial.println("File not found");
+			return;
+		}
+	}
+	
+
+//  	Serial.print(millis() % 1000);
+	Serial.print("Playing ");
+	Serial.print(filename);
+	Serial.print(" at volume ");
+	Serial.println(volume);
 	
 	strncpy(this->filename, filename, sizeof(this->filename));
 }

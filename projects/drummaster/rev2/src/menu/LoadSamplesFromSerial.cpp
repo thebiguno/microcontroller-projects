@@ -1,8 +1,8 @@
 #include "LoadSamplesFromSerial.h"
 
 //Buffer sizes
-#define USB_BUFFER_SIZE	128
-#define SD_BUFFER_SIZE	4096
+#define USB_BUFFER_SIZE		128
+#define FLASH_BUFFER_SIZE	4096
 
 //State machine
 #define STATE_START			0
@@ -90,7 +90,7 @@ Menu* LoadSamplesFromSerial::handleAction(){
 		char filename[FILENAME_STRING_SIZE];
 		
 		char usbBuffer[USB_BUFFER_SIZE];
-		uint8_t flashBuffer[SD_BUFFER_SIZE];
+		uint8_t flashBuffer[FLASH_BUFFER_SIZE];
 		
 		uint16_t flashBufferIndex = 0;
 		uint8_t filenameIndex = 0;
@@ -210,8 +210,8 @@ Menu* LoadSamplesFromSerial::handleAction(){
 					}
 					
 					//The buffer is filled; write to SD card
-					if (flashBufferIndex >= SD_BUFFER_SIZE){
-						flashFile.write(flashBuffer, SD_BUFFER_SIZE);
+					if (flashBufferIndex >= FLASH_BUFFER_SIZE){
+						flashFile.write(flashBuffer, FLASH_BUFFER_SIZE);
 						flashBufferIndex = 0;
 					}
 				}

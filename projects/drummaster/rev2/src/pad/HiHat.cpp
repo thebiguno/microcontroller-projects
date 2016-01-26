@@ -27,7 +27,7 @@ void HiHat::poll(){
 	if ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1)){
 		double volume = (getAveragePedalPosition() / 16.0 - 0.2);
 		if (volume > 0 && lastChicTime + 200 < millis()){
-			Sample::startFade(padIndex, 0.8);
+			Sample::startFade(padIndex, 0.95);
 			lastSample = Sample::findAvailableSample(padIndex, volume);
 			lastSample->play(lookupFilename(volume, HIHAT_SPECIAL_CHIC), padIndex, volume, 1);
 			lastChicTime = millis();
