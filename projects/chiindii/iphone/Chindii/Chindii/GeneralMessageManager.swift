@@ -29,6 +29,9 @@ class GeneralMessageManager {
 		switch(message.command) {
 		case MESSAGE_SEND_BATTERY:
 			app.flight.battery = message.data[0]
+			break;
+		default:
+			break;
 		}
 	}
 }

@@ -23,10 +23,7 @@ class DirectMessageManager {
 	}
 	
 	func dispatch(message : FramedSerialMessage) {
-		switch(message.command) {
-		case MESSAGE_SEND_BATTERY:
-			app.flight.battery = message.data[0]
-		}
+		
 	}
 
 }
