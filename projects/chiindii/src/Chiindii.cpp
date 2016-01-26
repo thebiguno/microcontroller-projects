@@ -1,11 +1,8 @@
-//Comment this out to remove debug code
-//#define DEBUG
-
+#include "Chiindii.h"
 
 #include <avr/io.h>
 #include <avr/power.h>
 #include <util/delay.h>
-#include <stdio.h>
 
 #include <PID.h>
 #include <SerialAVR.h>
@@ -13,16 +10,13 @@
 #include "lib/Mpu6050/Mpu6050.h"
 #include "timer/timer.h"
 
-#ifdef DEBUG
-#include "lib/usb/serial.h"
-#endif
-
-#include "Chiindii.h"
-
 #include "battery/battery.h"
 #include "motor/motor.h"
 
 using namespace digitalcave;
+
+//This cannot be a class variable, since it needs to be accessed by an ISR
+SerialAVR serial(38400, 8, 0, 1, 1, 64);
 
 int main(){
 	//Set clock to run at full speed
@@ -60,7 +54,6 @@ void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
-	serial(32400),
 	protocol(40),
 	
 	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -113,10 +106,16 @@ void Chiindii::run() {
 #ifdef DEBUG
 	char temp[128];
 #endif
+
+
 	while (1) {
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
+#ifdef DEBUG
+			uint8_t size = snprintf(temp, sizeof(temp), "Received Command: 0x%02x\n", request.getCommand());
+			usb_serial_write((const uint8_t*) temp, size);
+#endif
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
@@ -124,7 +123,7 @@ void Chiindii::run() {
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
-		
+
 		battery_level = battery_read();
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
@@ -144,7 +143,7 @@ void Chiindii::run() {
 		// NOTE can't do this for Z axis without a magnetometer
 
 #ifdef DEBUG
-		uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
+		//uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
 #endif
 		
 		// complementary tuning
@@ -155,9 +154,9 @@ void Chiindii::run() {
 		
 		if (computed){
 #ifdef DEBUG
-			usb_serial_write((const uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "%3.5f\n", angle_mv.x);
-			usb_serial_write((const uint8_t*) temp, size);
+			//usb_serial_write((const uint8_t*) temp, size);
+			//size = snprintf(temp, sizeof(temp), "%3.5f\n", angle_mv.x);
+			//usb_serial_write((const uint8_t*) temp, size);
 #endif
 
 			if (mode == MODE_ARMED_ANGLE) {
@@ -216,4 +215,8 @@ void Chiindii::dispatch(FramedSerialMessage *request) {
 
 void Chiindii::sendMessage(FramedSerialMessage *message) {
 	protocol.write(&serial, message);
+}
+
+ISR(USART1_RX_vect){
+	serial.isr();
 }

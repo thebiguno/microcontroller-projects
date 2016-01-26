@@ -19,6 +19,12 @@
 		8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */; };
 		8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */; };
 		80E9546D1C4EBD83007BDB81 /* PeripheralStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E9546C1C4EBD83007BDB81 /* PeripheralStream.swift */; };
+		80E954711C554357007BDB81 /* PeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954701C554357007BDB81 /* PeripheralManager.swift */; };
+		80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954721C557BC3007BDB81 /* ConfigModel.swift */; };
+		80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954741C557DB5007BDB81 /* FlightModel.swift */; };
+		80E954771C55869B007BDB81 /* GeneralMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954761C55869B007BDB81 /* GeneralMessageManager.swift */; };
+		80E954791C558AB0007BDB81 /* DirectMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954781C558AB0007BDB81 /* DirectMessageManager.swift */; };
+		80E9547B1C558ABA007BDB81 /* CalibrationMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E9547A1C558ABA007BDB81 /* CalibrationMessageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +54,12 @@
 		8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialMessage.swift; sourceTree = "<group>"; };
 		8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialProtocol.swift; sourceTree = "<group>"; };
 		80E9546C1C4EBD83007BDB81 /* PeripheralStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralStream.swift; sourceTree = "<group>"; };
+		80E954701C554357007BDB81 /* PeripheralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralManager.swift; sourceTree = "<group>"; };
+		80E954721C557BC3007BDB81 /* ConfigModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigModel.swift; sourceTree = "<group>"; };
+		80E954741C557DB5007BDB81 /* FlightModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightModel.swift; sourceTree = "<group>"; };
+		80E954761C55869B007BDB81 /* GeneralMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralMessageManager.swift; sourceTree = "<group>"; };
+		80E954781C558AB0007BDB81 /* DirectMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectMessageManager.swift; sourceTree = "<group>"; };
+		80E9547A1C558ABA007BDB81 /* CalibrationMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalibrationMessageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +115,12 @@
 				803D10251B856D7300B8D958 /* Supporting Files */,
 				803D10511B9950A900B8D958 /* FlightView.swift */,
 				8065DC091C4DE37400FEC634 /* DZBluetoothSerialHandler.swift */,
+				80E954701C554357007BDB81 /* PeripheralManager.swift */,
+				80E954721C557BC3007BDB81 /* ConfigModel.swift */,
+				80E954741C557DB5007BDB81 /* FlightModel.swift */,
+				80E954761C55869B007BDB81 /* GeneralMessageManager.swift */,
+				80E954781C558AB0007BDB81 /* DirectMessageManager.swift */,
+				80E9547A1C558ABA007BDB81 /* CalibrationMessageManager.swift */,
 			);
 			path = Chindii;
 			sourceTree = "<group>";
@@ -236,12 +254,18 @@
 			files = (
 				8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */,
 				80E9546D1C4EBD83007BDB81 /* PeripheralStream.swift in Sources */,
+				80E9547B1C558ABA007BDB81 /* CalibrationMessageManager.swift in Sources */,
 				8065DC0A1C4DE37400FEC634 /* DZBluetoothSerialHandler.swift in Sources */,
+				80E954711C554357007BDB81 /* PeripheralManager.swift in Sources */,
 				803D10521B9950A900B8D958 /* FlightView.swift in Sources */,
 				8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */,
 				803D102A1B856D7400B8D958 /* FlightViewController.swift in Sources */,
 				803D10281B856D7400B8D958 /* AppDelegate.swift in Sources */,
+				80E954771C55869B007BDB81 /* GeneralMessageManager.swift in Sources */,
 				803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */,
+				80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */,
+				80E954791C558AB0007BDB81 /* DirectMessageManager.swift in Sources */,
+				80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

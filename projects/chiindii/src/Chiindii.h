@@ -1,6 +1,9 @@
 #ifndef CHIINDII_H
 #define CHIINDII_H
 
+//Comment this out to remove debugging output on USB serial
+#define DEBUG
+
 #include <util/delay.h>
 #include <avr/io.h>
 
@@ -17,6 +20,11 @@
 #include "controllers/UniversalController.h"
 #include "controllers/Calibration.h"
 #include "controllers/Direct.h"
+
+#ifdef DEBUG
+#include "lib/usb/serial.h"
+#include <stdio.h>
+#endif
 
 #define MOTOR1_PORT		PORTE
 #define MOTOR1_PIN		PORTE6
@@ -48,7 +56,6 @@ namespace digitalcave {
 			vector_t angle_sp;
 			vector_t rate_sp;
 			
-			SerialAVR serial;
 			FramedSerialProtocol protocol;
 			Mpu6050 mpu6050;
 
