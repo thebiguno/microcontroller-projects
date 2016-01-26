@@ -21,3 +21,7 @@ uint8_t battery_read(){
 
 	return result;
 }
+
+uint8_t battery_pct() {
+	return (uint8_t) ((100.0 * ADCH) / 66.0) - 247.0;
+}

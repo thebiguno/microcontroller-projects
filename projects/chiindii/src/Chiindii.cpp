@@ -46,6 +46,7 @@ Complementary* Chiindii::getCompX() { return &c_x; }
 Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
 uint8_t Chiindii::getBatteryLevel() { return battery_level; }
+uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
 uint8_t Chiindii::getMode() { return mode; }
 void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
