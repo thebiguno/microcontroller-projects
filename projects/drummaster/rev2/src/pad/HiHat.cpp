@@ -128,7 +128,7 @@ char* HiHat::lookupFilename(double volume, uint8_t hihatSpecial){
 	if (hihatSpecial == HIHAT_SPECIAL_CHIC || hihatSpecial == HIHAT_SPECIAL_SPLASH){
 		closestVolume = getClosestVolume(closestVolume, hihatSpecial, sampleVolumes);
 		if (closestVolume == 0xFF){
-			snprintf(filenameResult, sizeof(filenameResult), " ");	//Nothing found.
+			return NULL;
 		}
 		else {
 			snprintf(filenameResult, sizeof(filenameResult), "%s%s%X.RAW", filenamePrefix, hihatSpecial == HIHAT_SPECIAL_CHIC ? "K" : "P", closestVolume);
