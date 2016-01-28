@@ -74,6 +74,10 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	uint8_t oldestSample[PAD_COUNT] = {0};
 	uint16_t oldestSamplePositions[PAD_COUNT] = {0};
 	
+	for (uint8_t i = 0; i < PAD_COUNT; i++){
+		quietestSampleVolumes[i] = 10.0;
+	}
+	
 	//Loop through all samples.  If we find one that is not currently playing, play it.
 	// Build a structure keeping track of the quietest / oldest samples so that we can
 	// stop them if there are no available samples.
@@ -89,7 +93,7 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 				oldestSamplePositions[sampleLastPad] = samples[sampleIndex].getPositionMillis();
 				oldestSample[sampleLastPad] = sampleIndex;
 			}
-			if (quietestSampleVolumes[sampleLastPad] < samples[sampleIndex].getVolume()){
+			if (quietestSampleVolumes[sampleLastPad] > samples[sampleIndex].getVolume()){
 				quietestSampleVolumes[sampleLastPad] = samples[sampleIndex].getVolume();
 				quietestSample[sampleLastPad] = sampleIndex;
 			}
@@ -99,16 +103,17 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	//If we get to here, there are no available samples, so we will have to stop one that
 	// is currently playing.  We try to pick the one which will cause the lease disruption.
 	
-	//First, if there are at least 6 samples already playing for this pad, we can just kill 
+	//First, if there are at least 4 samples already playing for this pad, we can just kill 
 	// the quietest one, assuming it is quieter than 1/2 of the current one.
-// 	if (sampleCounts[pad] >= 6 && quietestSampleVolumes[pad] < (volume * 0.5)){
-// 		Serial.print("Stopping sample from pad ");
-// 		Serial.print(pad);
-// 		Serial.println(" as option 1");
-// 		samples[quietestSample[pad]].stop();
-// 		return &(samples[quietestSample[pad]]);
-// 	}
-// 	
+	Serial.printf("count: %d, quietest: %f, current: %f\n", sampleCounts[pad], quietestSampleVolumes[pad], volume);
+	if (sampleCounts[pad] >= 4){
+		Serial.print("Stopping sample from pad ");
+		Serial.print(pad);
+		Serial.println(" as option 1");
+		samples[quietestSample[pad]].stop();
+		return &(samples[quietestSample[pad]]);
+	}
+	
 // 	//Next, we look for other pads with at least 6 samples, and kill the quietest
 // 	// one, if the volume is less than half of the new one.
 // 	for(uint8_t i = 0; i < PAD_COUNT; i++){
@@ -137,9 +142,9 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 	// both the oldest and the quietest, then stop that one.
 	for(uint8_t i = 0; i < PAD_COUNT; i++){
 		if (sampleCounts[i] >= 2 && quietestSample[i] == oldestSample[i]){
-// 			Serial.print("Stopping sample from pad ");
-// 			Serial.print(i);
-// 			Serial.println(" as option 4");
+			Serial.print("Stopping sample from pad ");
+			Serial.print(i);
+			Serial.println(" as option 4");
 			samples[quietestSample[i]].stop();
 			return &(samples[quietestSample[i]]);
 		}
@@ -156,9 +161,9 @@ Sample* Sample::findAvailableSample(uint8_t pad, double volume){
 			highestPad = i;
 		}
 	}
-// 	Serial.print("Stopping sample from pad ");
-// 	Serial.print(highestPad);
-// 	Serial.println(" as option 5");
+	Serial.print("Stopping sample from pad ");
+	Serial.print(highestPad);
+	Serial.println(" as option 5");
 
 	samples[oldestSample[highestPad]].stop();
 	return &(samples[oldestSample[highestPad]]);
@@ -199,7 +204,9 @@ void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade
 		filename[filenameLength-2] = 'L';
 		filename[filenameLength-1] = 'W';
 		if (!playSerialRaw.play(filename)){
-			Serial.println("File not found");
+			filename[filenameLength-4] = 0;
+			Serial.print(filename);
+			Serial.println(": File not found");
 			return;
 		}
 	}
