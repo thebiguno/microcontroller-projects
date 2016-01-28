@@ -199,7 +199,9 @@ void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade
 		filename[filenameLength-2] = 'L';
 		filename[filenameLength-1] = 'W';
 		if (!playSerialRaw.play(filename)){
-			Serial.println("File not found");
+			filename[filenameLength-4] = 0;
+			Serial.print(filename);
+			Serial.println(": File not found");
 			return;
 		}
 	}
