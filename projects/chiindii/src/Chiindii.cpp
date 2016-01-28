@@ -55,6 +55,9 @@ void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
 
 Chiindii::Chiindii() : 
+	mode(MODE_UNARMED),
+	throttle(0),
+	
 	protocol(40),
 	
 	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -72,8 +75,7 @@ Chiindii::Chiindii() :
 	direct(this),
 	uc(this)
 {
-	throttle = 0;
-	mode = MODE_UNARMED;
+	;
 }
 
 void Chiindii::run() {
@@ -121,6 +123,9 @@ void Chiindii::run() {
 			last_message_time = time;
 			status.commOK();
 		} else if (time - last_message_time > 2000) { // TODO is 2 seconds OK?
+#ifdef DEBUG
+			if (mode) usb_serial_write((const uint8_t*) "Comm timeout\n", 13);
+#endif
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -131,6 +136,9 @@ void Chiindii::run() {
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
 			status.batteryLow();
 		} else {
+#ifdef DEBUG
+			if (mode) usb_serial_write((const uint8_t*) "Low battery\n", 12);
+#endif
 			mode = MODE_UNARMED;
 			status.batteryLow();
 		}
@@ -178,6 +186,7 @@ void Chiindii::run() {
 				driveMotors(rate_pv);
 			} else {
 				status.disarmed();
+				motor_set(0, 0, 0, 0);
 			}
 		}
 
@@ -190,6 +199,12 @@ void Chiindii::driveMotors(vector_t rate_pv) {
 	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
 	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
 	double m4 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
+
+#ifdef DEBUG
+	char temp[128];
+	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %3.2f, %3.2f, %3.2f, %3.2f from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", m1, m2, m3, m4, throttle, rate_pv.x, rate_pv.y, rate_pv.z);
+	usb_serial_write((const uint8_t*) temp, size);
+#endif
 
 	motor_set(m1, m2, m3, m4);
 } 

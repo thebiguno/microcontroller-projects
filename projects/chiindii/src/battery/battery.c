@@ -14,12 +14,17 @@ void battery_init(){
 }
 
 uint8_t battery_read(){
-	uint8_t result = ADCH;
+	static uint16_t result = 0;		//The running average
+	uint8_t reading = ADCH;
 	
 	//Start conversion for next time
 	ADCSRA |= _BV(ADSC);
 
-	return result;
+	//Keep an average of 128 (2^7) positions.  This is a LPF to ensure battery jitter doesn't
+	// cause false low readings
+	result = result + reading - (result >> 7);
+
+	return result >> 7;
 }
 
 uint8_t battery_pct() {
