@@ -21,7 +21,7 @@ void General::dispatch(FramedSerialMessage* request) {
 		chiindii->sendMessage(&response);
 	}
 	else if (cmd == MESSAGE_REQUEST_BATTERY){
-		uint8_t data[] = { chiindii->getBatteryLevel() };
+		uint8_t data[] = { chiindii->getBatteryPercent() };
 		FramedSerialMessage response(MESSAGE_SEND_BATTERY, data, 1);
 		chiindii->sendMessage(&response);
 	}

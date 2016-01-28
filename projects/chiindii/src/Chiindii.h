@@ -96,6 +96,7 @@ namespace digitalcave {
 			Status* getStatus();
 
 			uint8_t getBatteryLevel();
+			uint8_t getBatteryPercent();
 			
 			uint8_t getMode();
 			void setMode(uint8_t mode);

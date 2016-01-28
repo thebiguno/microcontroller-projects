@@ -10,7 +10,7 @@ import re, serial, struct, sys
 
 axis = 0
 #digit = re.compile('^[0-9]$')
-#integer = re.compile('^-?[0-9]+$')
+integerregex = re.compile('^-?[0-9]+$')
 floatregex = re.compile('^-?[0-9.]+$')
 
 MESSAGE_SAVE_CALIBRATION = 0x30
@@ -45,27 +45,27 @@ Chiindii Calibration: Please selection an option below:
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
 """)
-		choice = raw_input("Selected Option: ")
+		choice = raw_input("Selected Option: ").lower()
 		
-		if (choice == "R" or choice == "r"):
+		if (choice == "r"):
 			doRatePidCalibration(ser)
-		elif (choice == "C" or choice == "c"):
+		elif (choice == "c"):
 			if (axis == 2):
 				print("Complementary filter tuning not applicable for Z axis")
 			else:
 				doComplementaryCalibration(ser)
-		elif (choice == "A" or choice == "a"):
+		elif (choice == "a"):
 			if (axis == 2):
 				print("Angle PID tuning not application for Z axis")
 			else:
 				doAnglePidCalibration(ser)
-		elif (choice == "L" or choice == "l"):
+		elif (choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
-		elif (choice == "S" or choice == "s"):
+		elif (choice == "s"):
 			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
 			print("All values saved to EEPROM")
-		elif (choice == "Q" or choice == "q"):
+		elif (choice == "q"):
 			sys.exit(0)
 		else:
 			print("Invalid selection, please try again\n")
@@ -87,14 +87,14 @@ Please select an axis to calibrate:
 	Q) Quit calibration
 """)
 
-		response = raw_input("Selected option: ")
+		response = raw_input("Selected option: ").lower()
 
-		if (response == "Q" or response == "q"):
+		if (response == "q"):
 			sys.exit(0)
-		elif (response == "P" or response == "p" or response == "R" or response == "r" or response == "Y" or response == "y"):
+		elif (response == "p" or response == "r" or response == "y"):
 			## translate axis into number for indexing into tuning array
-			if (response == "P" or response == "p"): axis = 0
-			elif (response == "R" or response == "r"): axis = 1
+			if (response == "p"): axis = 0
+			elif (response == "r"): axis = 1
 			else: axis = 2
 			return;
 		else:
@@ -126,45 +126,46 @@ Place Chiindii into the jig, and press enter.
 		return
 	d = response["data"]
 	while True:
-		print("\nPlease select a parameter to modify")
-		print("	S) Rate Set Point (deg/sec)")
-		print("	P) Proportional")
-		print("	I) Integral")
-		print("	D) Derivitive")
-		print("	Q) Return to axis selection")
+		param = raw_input("""
+Please select a parameter to modify
+	S) Rate Set Point (deg/sec)
+	P) Proportional
+	I) Integral
+	D) Derivitive
+	Q) Return to axis selection
 		
-		param = raw_input("Select parameter: ")
+Select parameter: """).lower()
 		
-		if (param == "Q" or param == "q"):
+		if (param == "q"):
 			break
-		elif (param == "R" or param == "r"):
+		elif (param == "r"):
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Rate: ")
+				value = raw_input("Rate: ").lower()
 				if (floatregex.match(value)):
 					rate_sp = [0,0,0,0]
 					struct.pack_info("<f", rate_sp, 0, radians(float(value)))
 					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, rate_sp)
-				elif (value == "Q" or value == "q"):
+				elif (value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "P" or param == "p" or param == "I" or param == "i" or param == "D" or param == "d"):
+		elif (param == "p" or param == "i" or param == "d"):
 			## translate param into number for indexing into tuning array
-			if (param == "P" or param == "p"): 
+			if (param == "p"): 
 				param = 0
-			elif (param == "I" or param == "i"): 
+			elif (param == "i"): 
 				param = 1
 			else: 
 				param = 2
 			
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Value (" + str(to_float_t(d[axis * 3 + param])) + "): ")
+				value = raw_input("Value (" + str(to_float_t(d[axis * 3 + param])) + "): ").lower()
 				if (floatregex.match(value)):
 					d[axis * 3 + param] = to_float_t(float(value))
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
-				elif (value == "Q" or value == "q"):
+				elif (value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
@@ -196,45 +197,46 @@ Place Chiindii into the jig, and press enter.
 		return
 	d = response["data"]
 	while True:
-		print("\nPlease select a parameter to modify")
-		print("	S) Angle Set Point (deg)")
-		print("	P) Proportional")
-		print("	I) Integral")
-		print("	D) Derivitive")
-		print("	Q) Return to axis selection")
+		param = raw_input("""
+Please select a parameter to modify
+	S) Angle Set Point (deg)
+	P) Proportional
+	I) Integral
+	D) Derivitive
+	Q) Return to axis selection
 		
-		param = raw_input("Select parameter: ")
+Select parameter: """).lower()
 		
-		if (param == "Q" or param == "q"):
+		if (param == "q"):
 			break
-		elif (param == "R" or param == "r"):
+		elif (param == "r"):
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Angle: ")
+				value = raw_input("Angle: ").lower()
 				if (floatregex.match(value)):
 					angle_sp = [0,0,0,0]
 					struct.pack_info("<f", angle_sp, 0, radians(float(value)))
 					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, angle_sp)
-				elif (value == "Q" or value == "q"):
+				elif (value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "P" or param == "p" or param == "I" or param == "i" or param == "D" or param == "d"):
+		elif (param == "p" or param == "i" or param == "d"):
 			## translate param into number for indexing into tuning array
-			if (param == "P" or param == "p"): 
+			if (param == "p"): 
 				param = 0
-			elif (param == "I" or param == "i"): 
+			elif (param == "i"): 
 				param = 1
 			else: 
 				param = 2
 			
 			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Value (" + str(struct.unpack_from("<f", d, axis * 12 + param * 4)) + "): ")
+				value = raw_input("Value (" + str(struct.unpack_from("<f", d, axis * 12 + param * 4)) + "): ").lower()
 				if (floatregex.match(value)):
 					struct.pack_into("<f", d, axis * 12 + param * 4, value)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_ANGLE_PID, d)
-				elif (value == "Q" or value == "q"):
+				elif (value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
@@ -250,16 +252,17 @@ time of integration.  This allows a trade off between drift elimination and resp
 The tuning allows you to collect raw and integrated data which can be graphed.
 """)
 	while True:
-		print("\nPlease select a parameter to modify")
-		print("	T) Tau")
-		print("	S) Start reading live test data")
-		print("	Q) Return to axis selection")
+		param = raw_input("""
+Please select a parameter to modify")
+	T) Tau")
+	S) Start reading live test data")
+	Q) Return to axis selection")
 		
-		param = raw_input("Selected Option: ")
+Selected Option: """).lower()
 		
-		if (param == "Q" or param == "q"):
+		if (param == "q"):
 			break
-		elif (param == "T" or param == "t"):
+		elif (param == "t"):
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
@@ -273,7 +276,7 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 				d = response["data"]
 				
 				print("\nEnter a valid number, or 'Q' to return to parameter selection.")
-				value = raw_input("Tau (" + str(round(struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0], 3)) + "): ")
+				value = raw_input("Tau (" + str(round(struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0], 3)) + "): ").lower()
 				if (floatregex.match(value)):
 					
 					bytes = struct.pack("<f", float(value))
@@ -281,11 +284,11 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 						print i, ord(b)
 						d[i + (axis * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
-				elif (value == "Q" or value == "q"):
+				elif (value == "q"):
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "S" or param == "s"):
+		elif (param == "s"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
 			while True:
 				response = readMessage(ser)
