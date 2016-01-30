@@ -15,20 +15,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, FramedSerialProtocolDeleg
 
 	var config = ConfigModel()
 	var flight = FlightModel()
-	var serialProtocol : FramedSerialProtocolDelegate
+	var serialProtocol = FramedSerialProtocol()
 	var stream : PeripheralStream
-	var peripheralManager : PeripheralManager
 	
-	var general: GeneralMessageManager
-	var direct: DirectMessageManager
-	var calibration: CalibrationMessageManager
+	var general: GeneralMessageManager!
+	var direct: DirectMessageManager!
+	var calibration: CalibrationMessageManager!
 
 	override init() {
+		stream = PeripheralStream(delegate: serialProtocol)
+
 		super.init()
 		
-		serialProtocol = FramedSerialProtocol(delegate: self);
-		stream = PeripheralStream(delegate: serialProtocol)
-		peripheralManager = PeripheralManager(stream: stream)
+		serialProtocol.delegate = self;
 	}
 	
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -71,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, FramedSerialProtocolDeleg
 	}
 	
 	func sendMessage(message : FramedSerialMessage) {
-		serialProtocol.write(stream, message);
+		serialProtocol.write(stream, message: message);
 	}
 
 }
