@@ -207,6 +207,11 @@ int main (void){
 		if (communication_counter > COMMUNICATION_COUNT){
 			communication = COMM_NONE;
 			communication_counter = 0;
+			
+			//Send device ID
+			uint8_t id = 'U';
+			FramedSerialMessage m(MESSAGE_ANNOUNCE_CONTROL_ID, &id, 1);
+			sendMessage(&m);
 		}
 		
 		//Read the switch state
