@@ -9,9 +9,15 @@ import re, serial, struct, sys
 ########## Common variables ##########
 
 axis = 0
+axisString = ""
 #digit = re.compile('^[0-9]$')
 integerregex = re.compile('^-?[0-9]+$')
 floatregex = re.compile('^-?[0-9.]+$')
+
+MESSAGE_ARMED = 0x20
+MESSAGE_THROTTLE = 0x21
+MESSAGE_RATE = 0x22
+MESSAGE_ANGLE = 0x23
 
 MESSAGE_SAVE_CALIBRATION = 0x30
 MESSAGE_LOAD_CALIBRATION = 0x31
@@ -38,8 +44,8 @@ def main(ser):
 		print(
 """
 Chiindii Calibration: Please selection an option below:
-	R) Change Rate PID calibration
 	C) Change Complementary filter calibration
+	R) Change Rate PID calibration
 	A) Change Angle PID calibration
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
@@ -92,16 +98,25 @@ Please select an axis to calibrate:
 		if (response == "q"):
 			sys.exit(0)
 		elif (response == "p" or response == "r" or response == "y"):
+			global axis
+			global axisString
+			
 			## translate axis into number for indexing into tuning array
-			if (response == "p"): axis = 0
-			elif (response == "r"): axis = 1
-			else: axis = 2
+			if (response == "p"): 
+				axis = 0
+				axisString = "Pitch"
+			elif (response == "r"): 
+				axis = 1
+				axisString = "Roll"
+			else: 
+				axis = 2
+				axisString = "Yaw"
 			return;
 		else:
 			print("Invalid parameter, please try again\n")
 
 
-def doRatePidCalibration(ser, mode):
+def doRatePidCalibration(ser):
 	raw_input("""
 Rate PID calibration allows Chiindii to quickly an accurately achieve the requested rotational
 rate of change.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
@@ -128,7 +143,7 @@ Place Chiindii into the jig, and press enter.
 	while True:
 		param = raw_input("""
 Please select a parameter to modify
-	S) Rate Set Point (deg/sec)
+	S) Rate Set Point
 	P) Proportional
 	I) Integral
 	D) Derivitive
@@ -138,15 +153,28 @@ Select parameter: """).lower()
 		
 		if (param == "q"):
 			break
-		elif (param == "r"):
-			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+		elif (param == "s"):
 			while True:
-				value = raw_input("Rate: ").lower()
+				value = raw_input("Enter a rate set point (in deg/sec), or hit enter to return to parameter selection: ").lower()
 				if (floatregex.match(value)):
-					rate_sp = [0,0,0,0]
-					struct.pack_info("<f", rate_sp, 0, radians(float(value)))
-					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, rate_sp)
-				elif (value == "q"):
+					rate_sp = [0,0,0,0, 0,0,0,0, 0,0,0,0]	#3 floats
+					
+					#First we write three zeros to the packet
+					bytes = struct.pack("<f", 0)
+					for i, b in enumerate(bytes):
+						rate_sp[i + 0] = ord(b)
+						rate_sp[i + 4] = ord(b)
+						rate_sp[i + 8] = ord(b)
+
+					#Then we overwrite the selected axis with the current rate
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						print i, ord(b)
+						rate_sp[i + (axis * 4)] = ord(b)
+					
+					writeMessage(ser, MESSAGE_ARMED, [1])		#Armed in rate mode
+					writeMessage(ser, MESSAGE_RATE, rate_sp)
+				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")
@@ -154,25 +182,49 @@ Select parameter: """).lower()
 			## translate param into number for indexing into tuning array
 			if (param == "p"): 
 				param = 0
+				paramString = "P"
 			elif (param == "i"): 
 				param = 1
+				paramString = "I"
 			else: 
 				param = 2
+				paramString = "D"
 			
-			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
 			while True:
-				value = raw_input("Value (" + str(to_float_t(d[axis * 3 + param])) + "): ").lower()
+				#Load the current calibration
+				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
+				response = readMessage(ser)
+				if (response == False):
+					print("Communication failure")
+					return
+				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_RATE_PID):
+					print("Invalid response detected: received command " + hex(response["command"]))
+					return
+				d = response["data"]
+				
+				print("""
+Current P	I	D
+Pitch	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
+Roll 	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
+Yaw  	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
+(Changing axis '{1}', parameter '{2}')
+""".format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), axisString, paramString))
+			
+				value = raw_input("Enter a valid number, or enter to return to parameter selection: ").lower()
 				if (floatregex.match(value)):
-					d[axis * 3 + param] = to_float_t(float(value))
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						#print i, ord(b)
+						d[i + (axis * 12) + (param * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
-				elif (value == "q"):
+				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")
 		else:
 			print("Invalid axis, please try again\n")
 
-def doAnglePidCalibration(ser, mode):
+def doAnglePidCalibration(ser):
 	raw_input("""
 Angle PID calibration allows Chiindii to quickly an accurately achieve the requested absolute
 angle.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
@@ -210,14 +262,14 @@ Select parameter: """).lower()
 		if (param == "q"):
 			break
 		elif (param == "r"):
-			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+			print("\nEnter a valid number, or hit Enter to return to parameter selection.")
 			while True:
 				value = raw_input("Angle: ").lower()
 				if (floatregex.match(value)):
 					angle_sp = [0,0,0,0]
 					struct.pack_info("<f", angle_sp, 0, radians(float(value)))
 					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, angle_sp)
-				elif (value == "q"):
+				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")
@@ -253,10 +305,10 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 """)
 	while True:
 		param = raw_input("""
-Please select a parameter to modify")
-	T) Tau")
-	S) Start reading live test data")
-	Q) Return to axis selection")
+Please select a parameter to modify
+	T) Tau
+	S) Start reading live test data
+	Q) Return to axis selection
 		
 Selected Option: """).lower()
 		
@@ -275,16 +327,15 @@ Selected Option: """).lower()
 					return
 				d = response["data"]
 				
-				print("\nEnter a valid number, or 'Q' to return to parameter selection.")
+				print("\nEnter a valid number, or enter to return to parameter selection.")
 				value = raw_input("Tau (" + str(round(struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0], 3)) + "): ").lower()
 				if (floatregex.match(value)):
-					
 					bytes = struct.pack("<f", float(value))
 					for i, b in enumerate(bytes):
 						print i, ord(b)
 						d[i + (axis * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
-				elif (value == "q"):
+				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")

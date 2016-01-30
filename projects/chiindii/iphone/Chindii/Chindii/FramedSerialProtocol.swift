@@ -27,27 +27,14 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 	let ESCAPE : UInt8 = 0x7d
 
 	//Incoming state
-	var position : Int			// Current position in the frame
-	var length : UInt8			// Frame length
-	var command : UInt8			// Incoming message command
-	var checksum : UInt8		// Checksum
-	var escape : Bool	 		// Escape byte seen, unescape next byte
-	var error : Int				// Error condition, ignore bytes until next frame start byte
-	var data : [UInt8]			// Incoming message
-	var delegate : FramedSerialProtocolDelegate
-	
-	init(delegate : FramedSerialProtocolDelegate) {
-		self.delegate = delegate;
-		position = 0
-		length = 0
-		command = 0
-		checksum = 0
-		escape = false
-		error = NO_ERROR
-		data = [UInt8]()
-
-		super.init()
-	}
+	var position : Int = 0			// Current position in the frame
+	var length : UInt8 = 0			// Frame length
+	var command : UInt8 = 0			// Incoming message command
+	var checksum : UInt8 = 0		// Checksum
+	var escape : Bool = false 		// Escape byte seen, unescape next byte
+	var error : Int = 0				// Error condition, ignore bytes until next frame start byte
+	var data = [UInt8]()			// Incoming message
+	var delegate : FramedSerialProtocolDelegate!
 	
 	//Convenience method to escape the given byte if needed
 	func escapeByte(stream : PeripheralStream, b : UInt8) {

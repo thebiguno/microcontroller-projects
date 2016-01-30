@@ -11,6 +11,11 @@ Direct::Direct(Chiindii *chiindii) {
 void Direct::dispatch(FramedSerialMessage* request) {
 	uint8_t cmd = request->getCommand();
 	if (cmd == MESSAGE_ARMED) {
+#ifdef DEBUG
+		char temp[32];
+		uint8_t size = snprintf(temp, sizeof(temp), "Arming: %d\n", request->getData()[0]);
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
 		chiindii->setMode(request->getData()[0]);
 	}
 	else if (cmd == MESSAGE_THROTTLE){
