@@ -31,4 +31,7 @@ class MenuViewController: UITableViewController {
 		// Dispose of any resources that can be recreated.
 	}
 	
+	override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+		performSegueWithIdentifier("toPeripherals", sender: self)
+	}
 }
