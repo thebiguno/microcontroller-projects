@@ -6,7 +6,7 @@ Status::Status() :
 	lastTime(0)
 {
 	*(&LED_PORT - 1) |= RED | GREEN | BLUE;
-	LED_PORT |= RED | GREEN | BLUE;	// turn off active low LED
+	LED_PORT &= ~(RED | GREEN | BLUE);	// turn on active low LED (white light on reset)
 }
 
 void Status::poll(uint32_t time) {

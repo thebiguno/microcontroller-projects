@@ -74,7 +74,7 @@ namespace digitalcave {
 			
 			Status status;
 			
-			void driveMotors(vector_t rate_pv);
+			void driveMotors(vector_t* rate_pv);
 			void dispatch(FramedSerialMessage *message);
 			
 		public:

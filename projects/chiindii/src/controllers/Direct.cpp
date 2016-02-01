@@ -35,6 +35,12 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		sp->x = data[0];
 		sp->y = data[1];
 		sp->z = data[2];
+#ifdef DEBUG
+		char temp[32];
+		uint8_t size = snprintf(temp, sizeof(temp), "Rate: %3.2f, %3.2f, %3.2f\n", sp->x, sp->y, sp->z);
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
+
 	}
 	else if (cmd == MESSAGE_LEVEL){
 		chiindii->getMpu6050()->calibrate();

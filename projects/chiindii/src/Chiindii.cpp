@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <avr/power.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 
 #include <PID.h>
@@ -61,7 +62,8 @@ void Chiindii::setThrottle(double throttle) {
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
 	throttle(0),
-	
+	angle_sp({0, 0, 0}),
+	rate_sp({0, 0, 0}),
 	protocol(40),
 	
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -92,7 +94,7 @@ Chiindii::Chiindii() :
 
 void Chiindii::run() {
 	FramedSerialMessage request(0,40);
-	
+
 	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
@@ -103,7 +105,7 @@ void Chiindii::run() {
 	uint32_t last_message_time = 0;
 	
 	motor_start();
-	
+/*	
 	motor_set(64,0,0,0);
 	_delay_ms(250);
 	motor_set(0,64,0,0);
@@ -113,8 +115,9 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
-	
+*/
 	//TODO Remove this, put it in calibration, and save values to EEPROM
+	wdt_reset();
 	mpu6050.calibrate();
 	
 	//Main program loop
@@ -122,8 +125,12 @@ void Chiindii::run() {
 	char temp[128];
 #endif
 
-
+	//Watchdog timer
+	wdt_enable(WDTO_120MS);
+	wdt_reset();
+	
 	while (1) {
+		wdt_reset();
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
@@ -186,7 +193,11 @@ void Chiindii::run() {
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
 			}
-		
+
+#ifdef DEBUG
+			//uint8_t size = snprintf(temp, sizeof(temp), "Rate SP: %3.2f, Gyro MV: %3.2f\n", rate_sp.x, gyro.x);
+			//usb_serial_write((const uint8_t*) temp, size);
+#endif
 			// rate pid
 			// computes the desired change rate
 			rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
@@ -195,7 +206,7 @@ void Chiindii::run() {
 		
 			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 				status.armed();
-				driveMotors(rate_pv);
+				driveMotors(&rate_pv);
 			} else {
 				status.disarmed();
 				motor_set(0, 0, 0, 0);
@@ -206,11 +217,11 @@ void Chiindii::run() {
 	}
 }
 
-void Chiindii::driveMotors(vector_t rate_pv) {
-	double m1 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
-	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
-	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
-	double m4 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
+void Chiindii::driveMotors(vector_t* rate_pv) {
+	double m1 = throttle - rate_pv->x - rate_pv->y - rate_pv->z;
+	double m2 = throttle + rate_pv->x - rate_pv->y + rate_pv->z;
+	double m3 = throttle + rate_pv->x + rate_pv->y - rate_pv->z;
+	double m4 = throttle - rate_pv->x + rate_pv->y + rate_pv->z;
 
 	//We limit the motor outputs to be in the range [0, 1].
 	if (m1 < 0) m1 = 0;
@@ -230,7 +241,7 @@ void Chiindii::driveMotors(vector_t rate_pv) {
 	
 #ifdef DEBUG
 	char temp[128];
-	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle, rate_pv.x, rate_pv.y, rate_pv.z);
+	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle, rate_pv->x, rate_pv->y, rate_pv->z);
 	usb_serial_write((const uint8_t*) temp, size);
 #endif
 

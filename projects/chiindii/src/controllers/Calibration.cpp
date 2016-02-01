@@ -1,5 +1,7 @@
 #include "Calibration.h"
 
+#include <avr/wdt.h>
+
 #include "../Chiindii.h"
 #include "../timer/timer.h"
 
@@ -196,6 +198,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		vector_t angle_mv;
 		
 		for (uint16_t i = 0; i < 1000; i++) {
+			wdt_reset();
+			
 			time = timer_millis();
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();

@@ -12,7 +12,10 @@
 
 using namespace digitalcave;
 
-PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t period, uint32_t time){
+PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t period, uint32_t time) :
+	integratedError(0),
+	lastMeasured(0)
+{
 	setOutputLimits(0, 255);
 	setPeriod(period);
 	setDirection(direction);

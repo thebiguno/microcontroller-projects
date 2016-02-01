@@ -4,11 +4,11 @@
 # Follow the on-screen prompts
 ###################
 
-import re, serial, struct, sys
+import math, re, serial, struct, sys
 
 ########## Common variables ##########
 
-axis = 0
+axis = -1
 axisString = ""
 #digit = re.compile('^[0-9]$')
 integerregex = re.compile('^-?[0-9]+$')
@@ -39,6 +39,9 @@ MESSAGE_SEND_TUNING_DATA = 0x3A
 def main(ser):
 	#We need to pick an axis before anything else
 	chooseAxis(ser);
+	if (axis == -1):
+		print("Axis selection is required.")
+		sys.exit(0);
 	
 	while True:
 		print(
@@ -78,6 +81,21 @@ Chiindii Calibration: Please selection an option below:
 		
 ########## Primary functions here ##########
 
+def setAxis(value):
+	global axis
+	global axisString
+	
+	## translate axis into number for indexing into tuning array
+	if (value == "x"): 
+		axis = 0
+		axisString = "Roll"
+	elif (value == "y"): 
+		axis = 1
+		axisString = "Pitch"
+	else: 
+		axis = 2
+		axisString = "Yaw"
+
 def chooseAxis(ser):
 	while(True):
 		print("""
@@ -87,37 +105,25 @@ For Pitch and Roll, attach the arms to the jig such that the craft can freely pi
 For Yaw, suspend the craft from the top so that it can freely yaw.
 
 Please select an axis to calibrate:
-	P) Pitch (Y)
-	R) Roll (X)
-	Y) Yaw (Z)
-	Q) Quit calibration
+	X) Roll
+	Y) Pitch
+	Z) Yaw
+	Q) Exit
 """)
 
 		response = raw_input("Selected option: ").lower()
 
 		if (response == "q"):
 			sys.exit(0)
-		elif (response == "p" or response == "r" or response == "y"):
-			global axis
-			global axisString
-			
-			## translate axis into number for indexing into tuning array
-			if (response == "p"): 
-				axis = 0
-				axisString = "Pitch"
-			elif (response == "r"): 
-				axis = 1
-				axisString = "Roll"
-			else: 
-				axis = 2
-				axisString = "Yaw"
+		elif (response == "x" or response == "y" or response == "z"):
+			setAxis(response)
 			return;
 		else:
 			print("Invalid parameter, please try again\n")
 
 
 def doRatePidCalibration(ser):
-	raw_input("""
+	print("""
 Rate PID calibration allows Chiindii to quickly an accurately achieve the requested rotational
 rate of change.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
 derivitive) for a total of nine parameters.
@@ -127,7 +133,7 @@ occilate around the requested rate.  At that point begin to increase the integra
 until the observed rate of change stops occilating.  Continue tuning until the observed rate
 of change is stable and matches the requested rate of change for a variety of requested rates.
 
-Place Chiindii into the jig, and press enter.
+Ensure that Chiindii is in the tuning jig.
 """)
 	
 	writeMessage(ser, 0x00, [0x43])
@@ -144,19 +150,29 @@ Place Chiindii into the jig, and press enter.
 		param = raw_input("""
 Please select a parameter to modify
 	S) Rate Set Point
-	P) Proportional
-	I) Integral
-	D) Derivitive
-	Q) Return to axis selection
+	T) Change PID Tunings
+	L) Load all values from EEPROM (revert changes for this session)
+	S) Save all values to EEPROM
+	Q) Return to main menu
 		
 Select parameter: """).lower()
 		
 		if (param == "q"):
 			break
+		elif (param == "l"):
+			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
+			print("All values loaded from EEPROM")
+		elif (param == "s"):
+			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
+			print("All values saved to EEPROM")
 		elif (param == "s"):
 			while True:
-				value = raw_input("Enter a rate set point (in deg/sec), or hit enter to return to parameter selection: ").lower()
-				if (floatregex.match(value)):
+				value = raw_input("Enter a rate set point (in deg/sec), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
+				if (value == "x" or value == "y" or value == "z"):
+					setAxis(value)
+				elif (value == ""):
+					break;
+				elif (floatregex.match(value)):
 					rate_sp = [0,0,0,0, 0,0,0,0, 0,0,0,0]	#3 floats
 					
 					#First we write three zeros to the packet
@@ -167,28 +183,25 @@ Select parameter: """).lower()
 						rate_sp[i + 8] = ord(b)
 
 					#Then we overwrite the selected axis with the current rate
-					bytes = struct.pack("<f", float(value))
+					bytes = struct.pack("<f", math.radians(float(value)))
+					print(str(float(value)))
 					for i, b in enumerate(bytes):
 						print i, ord(b)
 						rate_sp[i + (axis * 4)] = ord(b)
+
+					throttle_sp = [0,0,0,0]
+					throttle = struct.pack("<f", 0.1)
+					for i, b in enumerate(throttle):
+						throttle_sp[i] = ord(b)
 					
 					writeMessage(ser, MESSAGE_ARMED, [1])		#Armed in rate mode
+					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
 					writeMessage(ser, MESSAGE_RATE, rate_sp)
-				elif (value == ""):
-					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "p" or param == "i" or param == "d"):
-			## translate param into number for indexing into tuning array
-			if (param == "p"): 
-				param = 0
-				paramString = "P"
-			elif (param == "i"): 
-				param = 1
-				paramString = "I"
-			else: 
-				param = 2
-				paramString = "D"
+		elif (param == "t"):
+			param = 0
+			paramString = "P"
 			
 			while True:
 				#Load the current calibration
@@ -203,29 +216,42 @@ Select parameter: """).lower()
 				d = response["data"]
 				
 				print("""
-Current P	I	D
-Pitch	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
-Roll 	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
-Yaw  	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
+Current		P	I	D
+Roll (X)	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
+Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
+Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 (Changing axis '{1}', parameter '{2}')
 """.format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), axisString, paramString))
 			
-				value = raw_input("Enter a valid number, or enter to return to parameter selection: ").lower()
-				if (floatregex.match(value)):
+				value = raw_input("Enter a valid number, X/Y/Z to change axis, P/I/D to change parameter, or enter to return to parameter selection: ").lower()
+				if (value == "x" or value == "y" or value == "z"):
+					setAxis(value)
+				elif (value == "p" or value == "i" or value == "d"):
+					# translate param into number for indexing into tuning array
+					if (value == "p"): 
+						param = 0
+						paramString = "P"
+					elif (value == "i"): 
+						param = 1
+						paramString = "I"
+					else: 
+						param = 2
+						paramString = "D"
+				elif (value == ""):
+					break;
+				elif (floatregex.match(value)):
 					bytes = struct.pack("<f", float(value))
 					for i, b in enumerate(bytes):
 						#print i, ord(b)
 						d[i + (axis * 12) + (param * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
-				elif (value == ""):
-					break;
 				else:
 					print("Invalid value, please try again\n")
 		else:
 			print("Invalid axis, please try again\n")
 
 def doAnglePidCalibration(ser):
-	raw_input("""
+	print("""
 Angle PID calibration allows Chiindii to quickly an accurately achieve the requested absolute
 angle.  Each axis (pitch, roll, yaw) has three parameters (proportional, integral, 
 derivitive) for a total of nine parameters.
@@ -235,7 +261,7 @@ occilate around the angle.  At that point begin to increase the integral paramet
 until the observed angle stops occilating.  Continue tuning until the observed angle
 is stable and matches the requested angle for a variety of requested angles.
 
-Place Chiindii into the jig, and press enter.
+Ensure that Chiindii is in the tuning jig.
 """)
 	
 	writeMessage(ser, 0x00, [0x43])
@@ -255,7 +281,7 @@ Please select a parameter to modify
 	P) Proportional
 	I) Integral
 	D) Derivitive
-	Q) Return to axis selection
+	Q) Return to main menu
 		
 Select parameter: """).lower()
 		
