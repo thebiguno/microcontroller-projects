@@ -118,12 +118,12 @@
                   moduleName = "Chindii"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/warren/Documents/Projects/dcprojects/projects/chiindii/iphone/Chindii/Chindii/AppDelegate.swift"
-                  timestampString = "476036033.959379"
+                  timestampString = "476041687.412447"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
                   endingLineNumber = "0"
-                  offsetFromSymbolStart = "12">
+                  offsetFromSymbolStart = "18">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -133,12 +133,12 @@
                   moduleName = "Chindii"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/warren/Documents/Projects/dcprojects/projects/chiindii/iphone/Chindii/Chindii/AppDelegate.swift"
-                  timestampString = "476036033.959627"
+                  timestampString = "476041687.412875"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
                   endingLineNumber = "0"
-                  offsetFromSymbolStart = "16">
+                  offsetFromSymbolStart = "27">
                </Location>
             </Locations>
          </BreakpointContent>

@@ -8,8 +8,18 @@
 
 import UIKit
 
-class MenuViewController: UITableViewController {
+class MenuViewController: UITableViewController, UITextFieldDelegate {
 	
+	@IBOutlet var axis : UISegmentedControl!
+	@IBOutlet var rate : UITextField!
+	@IBOutlet var rateP : UITextField!
+	@IBOutlet var rateI : UITextField!
+	@IBOutlet var rateD : UITextField!
+	@IBOutlet var angleP : UITextField!
+	@IBOutlet var angleI : UITextField!
+	@IBOutlet var angleD : UITextField!
+	@IBOutlet var tau : UITextField!
+
 	@IBAction func unwindToMenu(seque: UIStoryboardSegue) {
 		
 	}
@@ -22,7 +32,21 @@ class MenuViewController: UITableViewController {
 		print("Save Clicked")
 	}
 	
-	var items = [String]()
+	@IBAction func axisChanged(sender: UISegmentedControl) {
+		print("Axis Changed")
+		print(sender.selectedSegmentIndex)
+	}
+	
+	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+		print("textfield")
+		if (textField == rate) {
+			print("rate")
+		} else if (textField == rateP) {
+			print("rateP")
+		}
+		return true
+	}
+	
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
 		if (toInterfaceOrientation.isLandscape) {
