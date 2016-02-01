@@ -10,6 +10,7 @@ import UIKit
 
 class MenuViewController: UITableViewController, UITextFieldDelegate {
 	
+	@IBOutlet var throttle : UISlider!
 	@IBOutlet var axis : UISegmentedControl!
 	@IBOutlet var rate : UITextField!
 	@IBOutlet var rateP : UITextField!
@@ -38,13 +39,21 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-		print("textfield")
-		if (textField == rate) {
-			print("rate")
-		} else if (textField == rateP) {
-			print("rateP")
+		let updated = (textField.text! as NSString)
+			.stringByReplacingCharactersInRange(range, withString: string);
+		
+		let numberFormatter = NSNumberFormatter()
+		let number = numberFormatter.numberFromString(updated as String)
+		if (updated == "") {
+			return true;
+		} else if (number == nil) {
+			return false;
+		} else {
+			let numberFloatValue = number!.floatValue
+			// TODO set this value into the model
+			// TODO send this value to the peripheral
+			return true;
 		}
-		return true
 	}
 	
 	

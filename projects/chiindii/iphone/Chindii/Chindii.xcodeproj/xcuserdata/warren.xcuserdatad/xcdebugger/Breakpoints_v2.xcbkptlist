@@ -118,7 +118,7 @@
                   moduleName = "Chindii"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/warren/Documents/Projects/dcprojects/projects/chiindii/iphone/Chindii/Chindii/AppDelegate.swift"
-                  timestampString = "476041687.412447"
+                  timestampString = "476044825.494512"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
@@ -133,7 +133,7 @@
                   moduleName = "Chindii"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/warren/Documents/Projects/dcprojects/projects/chiindii/iphone/Chindii/Chindii/AppDelegate.swift"
-                  timestampString = "476041687.412875"
+                  timestampString = "476044825.494727"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
@@ -141,6 +141,22 @@
                   offsetFromSymbolStart = "27">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Chindii/MenuViewController.swift"
+            timestampString = "476044753.045783"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "textField(_:shouldChangeCharactersInRange:replacementString:)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
