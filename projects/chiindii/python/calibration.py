@@ -50,6 +50,7 @@ Chiindii Calibration: Please selection an option below:
 	C) Change Complementary filter calibration
 	R) Change Rate PID calibration
 	A) Change Angle PID calibration
+	X) Change Axis
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
@@ -68,6 +69,8 @@ Chiindii Calibration: Please selection an option below:
 				print("Angle PID tuning not application for Z axis")
 			else:
 				doAnglePidCalibration(ser)
+		elif (choice == "x"):
+			chooseAxis(ser)
 		elif (choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
@@ -149,7 +152,7 @@ Ensure that Chiindii is in the tuning jig.
 	while True:
 		param = raw_input("""
 Please select a parameter to modify
-	S) Rate Set Point
+	R) Rate Set Point
 	T) Change PID Tunings
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
@@ -165,9 +168,9 @@ Select parameter: """).lower()
 		elif (param == "s"):
 			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
 			print("All values saved to EEPROM")
-		elif (param == "s"):
+		elif (param == "r"):
 			while True:
-				value = raw_input("Enter a rate set point (in deg/sec), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
+				value = raw_input("Current axis: " + axisString + ".  Enter a rate set point (in deg/sec), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
 				if (value == "x" or value == "y" or value == "z"):
 					setAxis(value)
 				elif (value == ""):
@@ -184,9 +187,7 @@ Select parameter: """).lower()
 
 					#Then we overwrite the selected axis with the current rate
 					bytes = struct.pack("<f", math.radians(float(value)))
-					print(str(float(value)))
 					for i, b in enumerate(bytes):
-						print i, ord(b)
 						rate_sp[i + (axis * 4)] = ord(b)
 
 					throttle_sp = [0,0,0,0]
@@ -248,7 +249,7 @@ Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 				else:
 					print("Invalid value, please try again\n")
 		else:
-			print("Invalid axis, please try again\n")
+			print("Invalid value, please try again\n")
 
 def doAnglePidCalibration(ser):
 	print("""
@@ -277,50 +278,105 @@ Ensure that Chiindii is in the tuning jig.
 	while True:
 		param = raw_input("""
 Please select a parameter to modify
-	S) Angle Set Point (deg)
-	P) Proportional
-	I) Integral
-	D) Derivitive
+	A) Angle Set Point
+	T) Change PID Tunings
+	L) Load all values from EEPROM (revert changes for this session)
+	S) Save all values to EEPROM
 	Q) Return to main menu
 		
 Select parameter: """).lower()
 		
 		if (param == "q"):
 			break
-		elif (param == "r"):
-			print("\nEnter a valid number, or hit Enter to return to parameter selection.")
+		elif (param == "l"):
+			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
+			print("All values loaded from EEPROM")
+		elif (param == "s"):
+			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
+			print("All values saved to EEPROM")
+		elif (param == "a"):
 			while True:
-				value = raw_input("Angle: ").lower()
-				if (floatregex.match(value)):
-					angle_sp = [0,0,0,0]
-					struct.pack_info("<f", angle_sp, 0, radians(float(value)))
-					writeMessage(ser, MESSAGE_SEND_ANGLE_SP, angle_sp)
+				if (axis == 2):
+					chooseAxis(ser)
+				else:
+					value = raw_input("Current axis: " + axisString + ".  Enter an angle set point (in deg), X/Y to change axis, or hit enter to return to parameter selection: ").lower()
+					if (value == "x" or value == "y"):
+						setAxis(value)
+					elif (value == ""):
+						break;
+					elif (floatregex.match(value)):
+						angle_sp = [0,0,0,0, 0,0,0,0]	#2 floats
+					
+						#First we write three zeros to the packet
+						bytes = struct.pack("<f", 0)
+						for i, b in enumerate(bytes):
+							angle_sp[i + 0] = ord(b)
+							angle_sp[i + 4] = ord(b)
+
+						#Then we overwrite the selected axis with the current rate
+						bytes = struct.pack("<f", math.radians(float(value)))
+						for i, b in enumerate(bytes):
+							angle_sp[i + (axis * 4)] = ord(b)
+
+						throttle_sp = [0,0,0,0]
+						throttle = struct.pack("<f", 0.1)
+						for i, b in enumerate(throttle):
+							throttle_sp[i] = ord(b)
+					
+						writeMessage(ser, MESSAGE_ARMED, [2])		#Armed in angle mode
+						writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
+						writeMessage(ser, MESSAGE_ANGLE, rate_sp)
+					else:
+						print("Invalid value, please try again\n")
+		elif (param == "t"):
+			param = 0
+			paramString = "P"
+			
+			while True:
+				#Load the current calibration
+				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
+				response = readMessage(ser)
+				if (response == False):
+					print("Communication failure")
+					return
+				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_ANGLE_PID):
+					print("Invalid response detected: received command " + hex(response["command"]))
+					return
+				d = response["data"]
+				
+				print("""
+Current		P	I	D
+Roll (X)	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
+Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
+(Changing axis '{1}', parameter '{2}')
+""".format(struct.unpack("<ffffff", buffer(str(bytearray(d)))), axisString, paramString))
+			
+				value = raw_input("Enter a valid number, X/Y/Z to change axis, P/I/D to change parameter, or enter to return to parameter selection: ").lower()
+				if (value == "x" or value == "y" or value == "z"):
+					setAxis(value)
+				elif (value == "p" or value == "i" or value == "d"):
+					# translate param into number for indexing into tuning array
+					if (value == "p"): 
+						param = 0
+						paramString = "P"
+					elif (value == "i"): 
+						param = 1
+						paramString = "I"
+					else: 
+						param = 2
+						paramString = "D"
 				elif (value == ""):
 					break;
-				else:
-					print("Invalid value, please try again\n")
-		elif (param == "p" or param == "i" or param == "d"):
-			## translate param into number for indexing into tuning array
-			if (param == "p"): 
-				param = 0
-			elif (param == "i"): 
-				param = 1
-			else: 
-				param = 2
-			
-			print("\nEnter a valid number, or 'Q' to return to parameter selection.")
-			while True:
-				value = raw_input("Value (" + str(struct.unpack_from("<f", d, axis * 12 + param * 4)) + "): ").lower()
-				if (floatregex.match(value)):
-					struct.pack_into("<f", d, axis * 12 + param * 4, value)
+				elif (floatregex.match(value)):
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						#print i, ord(b)
+						d[i + (axis * 12) + (param * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_ANGLE_PID, d)
-				elif (value == "q"):
-					break;
 				else:
 					print("Invalid value, please try again\n")
 		else:
-			print("Invalid axis, please try again\n")
-
+			print("Invalid value, please try again\n")
 
 def doComplementaryCalibration(ser):
 	print("""

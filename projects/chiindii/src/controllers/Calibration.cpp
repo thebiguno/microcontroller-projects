@@ -66,7 +66,7 @@ void Calibration::read() {
 		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
 		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
 		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
-		chiindii->getRateY()->setTunings(kp, ki, kd);
+		chiindii->getAngleY()->setTunings(kp, ki, kd);
 	
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
 		chiindii->getCompX()->setTau(t);
@@ -172,7 +172,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getRateY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
 	}
-	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
+	else if (cmd == MESSAGE_SEND_CALIBRATION_ANGLE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
