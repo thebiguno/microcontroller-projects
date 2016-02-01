@@ -52,7 +52,11 @@ void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 
-void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
+void Chiindii::setThrottle(double throttle) { 
+	if (throttle < 0) throttle = 0; 
+	else if (throttle > 1) throttle = 1; 
+	this->throttle = throttle; 
+}
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
@@ -60,12 +64,12 @@ Chiindii::Chiindii() :
 	
 	protocol(40),
 	
-	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
-	angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 3, 0),
 	c_y(0.075, 3, 0),
@@ -75,7 +79,15 @@ Chiindii::Chiindii() :
 	direct(this),
 	uc(this)
 {
-	;
+	//Output of angle PID is a rate (rad / s) for each axis.  -1 to 1 should suffice; if this
+	// results in too slow corrections, we can increase.
+	angle_x.setOutputLimits(-1, 1);
+	angle_y.setOutputLimits(-1, 1);
+
+	//Output of rate PID is a percentage (0-1) for each axis.
+	rate_x.setOutputLimits(0, 1);
+	rate_y.setOutputLimits(0, 1);
+	rate_z.setOutputLimits(0, 1);
 }
 
 void Chiindii::run() {
@@ -200,9 +212,25 @@ void Chiindii::driveMotors(vector_t rate_pv) {
 	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
 	double m4 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
 
+	//We limit the motor outputs to be in the range [0, 1].
+	if (m1 < 0) m1 = 0;
+	else if (m1 > 1) m1 = 1;
+	if (m2 < 0) m2 = 0;
+	else if (m2 > 1) m2 = 1;
+	if (m3 < 0) m3 = 0;
+	else if (m3 > 1) m3 = 1;
+	if (m4 < 0) m4 = 0;
+	else if (m4 > 1) m4 = 1;
+	
+	//Convert values in [0..1] to [0..511] (9 bit motor control)
+	m1 = m1 * 511;
+	m2 = m2 * 511;
+	m3 = m3 * 511;
+	m4 = m4 * 511;
+	
 #ifdef DEBUG
 	char temp[128];
-	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %3.2f, %3.2f, %3.2f, %3.2f from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", m1, m2, m3, m4, throttle, rate_pv.x, rate_pv.y, rate_pv.z);
+	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle, rate_pv.x, rate_pv.y, rate_pv.z);
 	usb_serial_write((const uint8_t*) temp, size);
 #endif
 

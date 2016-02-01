@@ -195,7 +195,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double outdata[3];
 		vector_t angle_mv;
 		
-		for (uint8_t i = 0; i < 10; i++) {
+		for (uint16_t i = 0; i < 1000; i++) {
 			time = timer_millis();
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();
