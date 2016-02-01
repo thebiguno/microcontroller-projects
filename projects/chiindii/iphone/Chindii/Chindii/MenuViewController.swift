@@ -14,6 +14,14 @@ class MenuViewController: UITableViewController {
 		
 	}
 	
+	@IBAction func loadClicked(sender: AnyObject) {
+		print("Load Clicked")
+	}
+	
+	@IBAction func saveClicked(sender: AnyObject) {
+		print("Save Clicked")
+	}
+	
 	var items = [String]()
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
