@@ -29,6 +29,7 @@ MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY = 0x37
 MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
 MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
 MESSAGE_SEND_TUNING_DATA = 0x3A
+MESSAGE_LEVEL = 0x3B
 
 #MODE_CALIBRATION_RATE_PID = 0x01
 #MODE_CALIBRATION_COMPLEMENTARY = 0x02
@@ -50,6 +51,7 @@ Chiindii Calibration: Please selection an option below:
 	C) Change Complementary filter calibration
 	R) Change Rate PID calibration
 	A) Change Angle PID calibration
+	V) Level MPU
 	X) Change Axis
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
@@ -69,6 +71,8 @@ Chiindii Calibration: Please selection an option below:
 				print("Angle PID tuning not application for Z axis")
 			else:
 				doAnglePidCalibration(ser)
+		elif (choice == "v"):
+			doLevelMpu(ser)
 		elif (choice == "x"):
 			chooseAxis(ser)
 		elif (choice == "l"):
@@ -121,6 +125,28 @@ Please select an axis to calibrate:
 		elif (response == "x" or response == "y" or response == "z"):
 			setAxis(response)
 			return;
+		else:
+			print("Invalid parameter, please try again\n")
+
+def doLevelMpu(ser):
+	while(True):
+		print("""
+The MPU (Accel + Gyro) needs to be calibrated to ensure that it correctly can detect
+level orientation.  Please place the craft on a solid, perfectly level surface and
+choose 'V' to mark as level.  Be sure to save your calibration when completed.
+
+Please select an option:
+	V) Mark current orientation as level
+	Q) Cancel
+""")
+
+		response = raw_input("Selected option: ").lower()
+
+		if (response == "v"):
+			writeMessage(ser, MESSAGE_LEVEL, [])
+			return
+		elif (response == "q"):
+			return
 		else:
 			print("Invalid parameter, please try again\n")
 

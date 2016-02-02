@@ -9,7 +9,6 @@
 #define MESSAGE_THROTTLE 0x21
 #define MESSAGE_RATE 0x22
 #define MESSAGE_ANGLE 0x23
-#define MESSAGE_LEVEL 0x24
 
 namespace digitalcave {
 	class Chiindii; // forward declaration

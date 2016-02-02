@@ -73,6 +73,13 @@ void Calibration::read() {
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
 		chiindii->getCompY()->setTau(t);
 		
+		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
+		int16_t calibration[3];
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 68), 6);
+		chiindii->getMpu6050()->setAccelCalib(calibration);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 74), 6);
+		chiindii->getMpu6050()->setGyroCalib(calibration);
+		
 #ifdef DEBUG
 		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Read\n");
 		usb_serial_write((const uint8_t*) temp, size);
@@ -111,6 +118,9 @@ void Calibration::write() {
 	
 	Complementary* c_y = chiindii->getCompY();
 	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
+	
+	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 68), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 74), 6);
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
@@ -224,5 +234,10 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			// TODO this delay should be the about same as the duration of the normal main loop
 			_delay_ms(10);
 		}
-	}	
+	}
+	else if (cmd == MESSAGE_LEVEL){
+		wdt_enable(WDTO_4S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
+		chiindii->getMpu6050()->calibrate();
+		wdt_enable(WDTO_120MS);
+	}
 }

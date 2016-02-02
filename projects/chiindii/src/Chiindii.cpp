@@ -105,6 +105,8 @@ void Chiindii::run() {
 	uint32_t last_message_time = 0;
 	
 	motor_start();
+	
+	_delay_ms(250);
 /*	
 	motor_set(64,0,0,0);
 	_delay_ms(250);
@@ -116,10 +118,6 @@ void Chiindii::run() {
 	_delay_ms(250);
 	motor_set(0,0,0,0);
 */
-	//TODO Remove this, put it in calibration, and save values to EEPROM
-	wdt_reset();
-	mpu6050.calibrate();
-	
 	//Main program loop
 #ifdef DEBUG
 	char temp[128];
@@ -127,7 +125,6 @@ void Chiindii::run() {
 
 	//Watchdog timer
 	wdt_enable(WDTO_120MS);
-	wdt_reset();
 	
 	while (1) {
 		wdt_reset();
@@ -153,6 +150,11 @@ void Chiindii::run() {
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
+			status.batteryLow();
+		} else if (battery_level <= 1) {
+			//The battery should only read as 0 if it is unplugged; we assume that we 
+			// are running in debug mode without any battery.  We still show the battery 
+			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
 #ifdef DEBUG
