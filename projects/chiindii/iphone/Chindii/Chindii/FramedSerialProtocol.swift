@@ -11,9 +11,10 @@ import CoreBluetooth
 
 protocol FramedSerialProtocolDelegate: NSObjectProtocol {
 	func onMessage(message: FramedSerialMessage)
+	func write(b: UInt8)
 }
 
-class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
+class FramedSerialProtocol : NSObject {
 	//Error codes
 	let NO_ERROR									= 0
 	let INCOMING_ERROR_UNEXPECTED_START_OF_FRAME	= 1
@@ -37,12 +38,12 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 	var delegate : FramedSerialProtocolDelegate!
 	
 	//Convenience method to escape the given byte if needed
-	func escapeByte(stream : PeripheralStream, b : UInt8) {
+	func escapeByte(b : UInt8) {
 		if (b == START || b == ESCAPE) {
-			stream.write(ESCAPE)
-			stream.write(b ^ 0x20);
+			delegate.write(ESCAPE)
+			delegate.write(b ^ 0x20);
 		} else {
-			stream.write(b);
+			delegate.write(b);
 		}
 	}
 	
@@ -119,7 +120,7 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 	}
 	
 	//Call this to write the entire message into the provided stream.
-	func write(stream : PeripheralStream, message : FramedSerialMessage) {
+	func write(message : FramedSerialMessage) {
 		let command = message.getCommand()
 		let data = message.getData()
 		let length = data.count;
@@ -127,13 +128,13 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 		for (var position = 0; position <= (length + 3); position++) {
 			switch(position){
 			case 0:
-				stream.write(START);
+				delegate.write(START);
 				break;
 			case 1:
-				escapeByte(stream, b: UInt8(length + 1));
+				escapeByte(UInt8(length + 1));
 				break;
 			case 2:
-				escapeByte(stream, b: command);
+				escapeByte(command);
 				break;
 			default:
 				if (position - 3 == length){
@@ -144,10 +145,10 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 						result += data[i];
 					}
 					
-					escapeByte(stream, b: 0xff - result);
+					escapeByte(0xff - result);
 				}
 				else {
-					escapeByte(stream, b: data[position - 3]);
+					escapeByte(data[position - 3]);
 				}
 				break;
 			}

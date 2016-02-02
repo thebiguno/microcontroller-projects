@@ -9,26 +9,12 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, FramedSerialProtocolDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
 	var config = ConfigModel()
 	var flight = FlightModel()
-	var serialProtocol = FramedSerialProtocol()
-	var stream : PeripheralStream
-	
-	var general: GeneralMessageManager!
-	var direct: DirectMessageManager!
-	var calibration: CalibrationMessageManager!
-
-	override init() {
-		stream = PeripheralStream(delegate: serialProtocol)
-
-		super.init()
-		
-		serialProtocol.delegate = self;
-	}
 	
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -56,22 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, FramedSerialProtocolDeleg
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-	
-	func onMessage(message: FramedSerialMessage) {
-		if ((message.command & 0xF0) == 0x00){
-			general.dispatch(message);
-		}
-		else if ((message.command & 0xF0) == 0x20){
-			direct.dispatch(message);
-		}
-		else if ( (message.command & 0xF0) == 0x30){
-			calibration.dispatch(message);
-		}
-	}
-	
-	func sendMessage(message : FramedSerialMessage) {
-		serialProtocol.write(stream, message: message);
-	}
 
 }
 

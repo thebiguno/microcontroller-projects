@@ -19,7 +19,7 @@
 		8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */; };
 		8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */; };
 		807C0AFB1C5D127400CF0C6E /* BluetoothViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807C0AFA1C5D127400CF0C6E /* BluetoothViewController.swift */; };
-		80E9546D1C4EBD83007BDB81 /* PeripheralStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E9546C1C4EBD83007BDB81 /* PeripheralStream.swift */; };
+		807C0AFD1C61598600CF0C6E /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807C0AFC1C61598600CF0C6E /* MessageManager.swift */; };
 		80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954721C557BC3007BDB81 /* ConfigModel.swift */; };
 		80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954741C557DB5007BDB81 /* FlightModel.swift */; };
 		80E954771C55869B007BDB81 /* GeneralMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954761C55869B007BDB81 /* GeneralMessageManager.swift */; };
@@ -54,7 +54,7 @@
 		8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialMessage.swift; sourceTree = "<group>"; };
 		8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialProtocol.swift; sourceTree = "<group>"; };
 		807C0AFA1C5D127400CF0C6E /* BluetoothViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothViewController.swift; sourceTree = "<group>"; };
-		80E9546C1C4EBD83007BDB81 /* PeripheralStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralStream.swift; sourceTree = "<group>"; };
+		807C0AFC1C61598600CF0C6E /* MessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 		80E954721C557BC3007BDB81 /* ConfigModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigModel.swift; sourceTree = "<group>"; };
 		80E954741C557DB5007BDB81 /* FlightModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightModel.swift; sourceTree = "<group>"; };
 		80E954761C55869B007BDB81 /* GeneralMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralMessageManager.swift; sourceTree = "<group>"; };
@@ -109,7 +109,6 @@
 				807C0AFA1C5D127400CF0C6E /* BluetoothViewController.swift */,
 				8065DC0B1C4DEA6A00FEC634 /* FramedSerialMessage.swift */,
 				8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */,
-				80E9546C1C4EBD83007BDB81 /* PeripheralStream.swift */,
 				803D102B1B856D7400B8D958 /* Main.storyboard */,
 				803D102E1B856D7400B8D958 /* Images.xcassets */,
 				803D10301B856D7400B8D958 /* LaunchScreen.xib */,
@@ -121,6 +120,7 @@
 				80E954761C55869B007BDB81 /* GeneralMessageManager.swift */,
 				80E954781C558AB0007BDB81 /* DirectMessageManager.swift */,
 				80E9547A1C558ABA007BDB81 /* CalibrationMessageManager.swift */,
+				807C0AFC1C61598600CF0C6E /* MessageManager.swift */,
 			);
 			path = Chindii;
 			sourceTree = "<group>";
@@ -253,7 +253,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8065DC0C1C4DEA6A00FEC634 /* FramedSerialMessage.swift in Sources */,
-				80E9546D1C4EBD83007BDB81 /* PeripheralStream.swift in Sources */,
 				80E9547B1C558ABA007BDB81 /* CalibrationMessageManager.swift in Sources */,
 				8065DC0A1C4DE37400FEC634 /* DZBluetoothSerialHandler.swift in Sources */,
 				803D10521B9950A900B8D958 /* FlightView.swift in Sources */,
@@ -264,6 +263,7 @@
 				803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */,
 				80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */,
 				807C0AFB1C5D127400CF0C6E /* BluetoothViewController.swift in Sources */,
+				807C0AFD1C61598600CF0C6E /* MessageManager.swift in Sources */,
 				80E954791C558AB0007BDB81 /* DirectMessageManager.swift in Sources */,
 				80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */,
 			);
