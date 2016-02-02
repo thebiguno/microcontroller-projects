@@ -38,6 +38,10 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 		print(sender.selectedSegmentIndex)
 	}
 	
+	@IBAction func calibrateClicked(sender: AnyObject) {
+		print("Calibrate Clicked")
+	}
+	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
 		let updated = (textField.text! as NSString)
 			.stringByReplacingCharactersInRange(range, withString: string);
