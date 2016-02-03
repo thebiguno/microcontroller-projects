@@ -26,11 +26,11 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	}
 	
 	@IBAction func loadClicked(sender: AnyObject) {
-		print("Load Clicked")
+		sharedMessageManager.revertTuning()
 	}
 	
 	@IBAction func saveClicked(sender: AnyObject) {
-		print("Save Clicked")
+		sharedMessageManager.saveTuning()
 	}
 	
 	@IBAction func axisChanged(sender: UISegmentedControl) {
@@ -39,7 +39,11 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	}
 	
 	@IBAction func calibrateClicked(sender: AnyObject) {
-		print("Calibrate Clicked")
+		sharedMessageManager.level()
+	}
+	
+	@IBAction func armClicked(sender: AnyObject) {
+		sharedMessageManager.armRate()
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {

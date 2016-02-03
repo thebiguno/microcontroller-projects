@@ -19,7 +19,6 @@ Armed						Control -> Device		1 byte															None
 Throttle					Control -> Device		1 double														None
 Rate						Control -> Device		3 doubles (x, y, z)												None
 Angle						Control -> Device		3 doubles (x, y, z) where z is actually a rate					None
-Level						Control -> Device		Null															None
 
 -- Calibration Controller commands
 LoadCalibration				Control -> Device		Null															None
@@ -32,6 +31,7 @@ RequestComplementaryTau		Control -> Device		Null															2 double tuning p
 SendComplementaryTau		Control -> Device 		2 double tuning params (xt, yt)									None
 StartComplementaryTuning	Control -> Device		1 byte (0 = tune x, 1 = tune y)									Null
 SendComplementaryTuning		Device -> Control		3 doubles (gyro, accel, angle)									Null
+Level						Control -> Device		Null															None
 
 -- Universal Controller commands
 UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					None

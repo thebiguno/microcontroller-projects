@@ -27,11 +27,14 @@ struct CompConfig {
 	var y : Float = 0.0
 }
 
+let sharedConfigModel = ConfigModel();
+
 class ConfigModel {
-	var peripheras = NSMutableDictionary()
-	var peripherasNames = [String]()
-	var peripheralName = ""
 	var rate = RateConfig()
 	var angle = RateConfig()
 	var comp = CompConfig()
+	
+	init() {
+		
+	}
 }

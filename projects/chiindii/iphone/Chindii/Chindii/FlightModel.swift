@@ -14,10 +14,16 @@ struct Vector {
 	var z : Float = 0.0
 }
 
+let sharedFlightModel = FlightModel()
+
 class FlightModel {
 	var armed : Bool = false
 	var angle = Vector()
 	var rate = Vector()
 	var throttle : Float = 0.0
 	var battery : UInt8 = 0
+	
+	init() {
+		
+	}
 }
