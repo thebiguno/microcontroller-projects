@@ -235,7 +235,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			_delay_ms(10);
 		}
 	}
-	else if (cmd == MESSAGE_LEVEL){
+	else if (cmd == MESSAGE_START_MPU_CALIBRATION){
 		wdt_enable(WDTO_4S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
 		chiindii->getMpu6050()->calibrate();
 		wdt_enable(WDTO_120MS);
