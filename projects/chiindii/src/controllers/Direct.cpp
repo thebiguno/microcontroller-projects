@@ -42,8 +42,5 @@ void Direct::dispatch(FramedSerialMessage* request) {
 #endif
 
 	}
-	else if (cmd == MESSAGE_LEVEL){
-		chiindii->getMpu6050()->calibrate();
-	}
 
 }

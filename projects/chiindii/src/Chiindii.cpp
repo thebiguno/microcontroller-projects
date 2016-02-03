@@ -43,6 +43,7 @@ PID* Chiindii::getRateY() { return &rate_y; }
 PID* Chiindii::getRateZ() { return &rate_z; }
 PID* Chiindii::getAngleX() { return &angle_x; }
 PID* Chiindii::getAngleY() { return &angle_y; }
+PID* Chiindii::getAngleZ() { return &angle_z; }
 Complementary* Chiindii::getCompX() { return &c_x; }
 Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
@@ -54,14 +55,14 @@ uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 
 void Chiindii::setThrottle(double throttle) { 
-	if (throttle < 0) throttle = 0; 
-	else if (throttle > 1) throttle = 1; 
-	this->throttle = throttle; 
+	if (throttle < 0) throttle_sp = 0; 
+	else if (throttle > 1) throttle_sp = 1; 
+	this->throttle_sp = throttle; 
 }
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
-	throttle(0),
+	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
 	protocol(40),
@@ -72,6 +73,7 @@ Chiindii::Chiindii() :
 	
 	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_z(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 3, 0),
 	c_y(0.075, 3, 0),
@@ -85,6 +87,9 @@ Chiindii::Chiindii() :
 	// results in too slow corrections, we can increase.
 	angle_x.setOutputLimits(-1, 1);
 	angle_y.setOutputLimits(-1, 1);
+	
+	//Output of g-force PID
+	angle_z.setOutputLimits(0, 2); // TODO this is probably too tolerant
 
 	//Output of rate PID is a percentage (0-1) for each axis.
 	rate_x.setOutputLimits(0, 1);
@@ -170,7 +175,6 @@ void Chiindii::run() {
 		// compute the absolute angle relative to the horizontal
 		angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
 		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
-		// NOTE can't do this for Z axis without a magnetometer
 
 #ifdef DEBUG
 		//uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
@@ -194,6 +198,7 @@ void Chiindii::run() {
 				// compute a rate set point given an angle set point and current measured angle
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+				angle_z.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
 			}
 
 #ifdef DEBUG
@@ -220,10 +225,10 @@ void Chiindii::run() {
 }
 
 void Chiindii::driveMotors(vector_t* rate_pv) {
-	double m1 = throttle - rate_pv->x - rate_pv->y - rate_pv->z;
-	double m2 = throttle + rate_pv->x - rate_pv->y + rate_pv->z;
-	double m3 = throttle + rate_pv->x + rate_pv->y - rate_pv->z;
-	double m4 = throttle - rate_pv->x + rate_pv->y + rate_pv->z;
+	double m1 = throttle_sp - rate_pv->x - rate_pv->y - rate_pv->z;
+	double m2 = throttle_sp + rate_pv->x - rate_pv->y + rate_pv->z;
+	double m3 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
+	double m4 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
 
 	//We limit the motor outputs to be in the range [0, 1].
 	if (m1 < 0) m1 = 0;
@@ -243,7 +248,7 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	
 #ifdef DEBUG
 	char temp[128];
-	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle, rate_pv->x, rate_pv->y, rate_pv->z);
+	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle_sp, rate_pv->x, rate_pv->y, rate_pv->z);
 	usb_serial_write((const uint8_t*) temp, size);
 #endif
 

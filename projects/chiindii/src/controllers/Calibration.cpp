@@ -68,6 +68,11 @@ void Calibration::read() {
 		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
 		chiindii->getAngleY()->setTunings(kp, ki, kd);
 	
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
+		chiindii->getAngleZ()->setTunings(kp, ki, kd);
+
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
 		chiindii->getCompX()->setTau(t);
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
@@ -75,9 +80,9 @@ void Calibration::read() {
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
 		int16_t calibration[3];
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 68), 6);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 80), 6);
 		chiindii->getMpu6050()->setAccelCalib(calibration);
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 74), 6);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
 		
 #ifdef DEBUG
@@ -113,14 +118,19 @@ void Calibration::write() {
 	eeprom_update_float((float*) EEPROM_OFFSET + 52, angle_y->getKi());
 	eeprom_update_float((float*) EEPROM_OFFSET + 56, angle_y->getKd());
 
+	PID* angle_z = chiindii->getAngleZ();
+	eeprom_update_float((float*) EEPROM_OFFSET + 60, angle_z->getKp());
+	eeprom_update_float((float*) EEPROM_OFFSET + 64, angle_z->getKi());
+	eeprom_update_float((float*) EEPROM_OFFSET + 68, angle_z->getKd());
+
 	Complementary* c_x = chiindii->getCompX();
-	eeprom_update_float((float*) EEPROM_OFFSET + 60, c_x->getTau());
+	eeprom_update_float((float*) EEPROM_OFFSET + 72, c_x->getTau());
 	
 	Complementary* c_y = chiindii->getCompY();
-	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
+	eeprom_update_float((float*) EEPROM_OFFSET + 76, c_y->getTau());
 	
-	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 68), 6);
-	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 74), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 80), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 86), 6);
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
