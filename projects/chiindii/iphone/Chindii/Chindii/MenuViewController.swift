@@ -11,8 +11,8 @@ import UIKit
 class MenuViewController: UITableViewController, UITextFieldDelegate {
 	
 	@IBOutlet var throttle : UISlider!
+	@IBOutlet var rate : UISlider!
 	@IBOutlet var axis : UISegmentedControl!
-	@IBOutlet var rate : UITextField!
 	@IBOutlet var rateP : UITextField!
 	@IBOutlet var rateI : UITextField!
 	@IBOutlet var rateD : UITextField!
@@ -43,7 +43,15 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	}
 	
 	@IBAction func armClicked(sender: AnyObject) {
-		sharedMessageManager.armRate()
+		sharedMessageManager.rate()
+	}
+	
+	@IBAction func throttleChanged(sender : UISlider) {
+		sender.value = roundf(sender.value)
+	}
+	
+	@IBAction func rateChanged(sender : UISlider) {
+		sender.value = roundf(sender.value)
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {

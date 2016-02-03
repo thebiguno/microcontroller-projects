@@ -11,7 +11,7 @@ import UIKit
 class FlightViewController: UIViewController {
 
 	@IBOutlet var armedSwitch : UISwitch!
-	@IBOutlet var battery : UIProgressView!
+	@IBOutlet var battery : UILabel!
 	
 	var timer : NSTimer?
 	
@@ -31,11 +31,11 @@ class FlightViewController: UIViewController {
 	}
 	
 	@IBAction func upPressed(sender : AnyObject) {
-		sharedFlightModel.angle.z += 0.25
+		sharedFlightModel.angle.z += 0.01
 	}
 	
 	@IBAction func downPressed(sender : AnyObject) {
-		sharedFlightModel.angle.z -= 0.25
+		sharedFlightModel.angle.z -= 0.01
 	}
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {

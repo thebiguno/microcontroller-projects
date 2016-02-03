@@ -13,10 +13,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="oTW-NK-hyl">
-                                <rect key="frame" x="497" y="20" width="51" height="2"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
-                            </progressView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="hg8-RV-vd2">
                                 <rect key="frame" x="20" y="145" width="51" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -51,6 +47,13 @@
                                     <action selector="armedPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="doX-Bu-VGK"/>
                                 </connections>
                             </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oXR-Mz-Edh">
+                                <rect key="frame" x="506" y="20" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -60,7 +63,6 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
-                        <outlet property="battery" destination="oTW-NK-hyl" id="ecT-BE-ZYQ"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>
                 </viewController>
@@ -161,16 +163,19 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Throttle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="VCD-XW-0Nb">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Throttle (%)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="VCD-XW-0Nb">
                                                     <rect key="frame" x="15" y="0.0" width="290" height="43"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" id="UmR-e7-zB5">
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="10" id="UmR-e7-zB5">
                                                     <rect key="frame" x="111" y="6" width="201" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                                    <connections>
+                                                        <action selector="throttleChanged:" destination="3lh-CX-GUg" eventType="valueChanged" id="zPw-z3-5af"/>
+                                                    </connections>
                                                 </slider>
                                             </subviews>
                                         </tableViewCellContentView>
@@ -189,15 +194,14 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="1.0" textAlignment="right" minimumFontSize="17" id="tDc-4P-oqt">
-                                                    <rect key="frame" x="111" y="7" width="201" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="decimalPad" enablesReturnKeyAutomatically="YES"/>
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-10" maxValue="10" id="iD4-XW-bCC">
+                                                    <rect key="frame" x="111" y="6" width="201" height="31"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                                    <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <connections>
-                                                        <outlet property="delegate" destination="3lh-CX-GUg" id="eKx-2M-Dhp"/>
+                                                        <action selector="rateChanged:" destination="3lh-CX-GUg" eventType="valueChanged" id="oGI-3S-h8T"/>
                                                     </connections>
-                                                </textField>
+                                                </slider>
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -445,7 +449,6 @@
                         <outlet property="angleI" destination="6Sg-hL-jap" id="qe7-hE-711"/>
                         <outlet property="angleP" destination="cA6-CX-08i" id="tvi-IF-sKo"/>
                         <outlet property="axis" destination="TFa-LU-Syg" id="QxE-kS-cHE"/>
-                        <outlet property="rate" destination="tDc-4P-oqt" id="eq7-E8-GNc"/>
                         <outlet property="rateD" destination="r2k-lx-jbQ" id="x6o-o5-Kwi"/>
                         <outlet property="rateI" destination="eBK-Fd-zVf" id="Pt4-oa-1dx"/>
                         <outlet property="rateP" destination="aAm-Qp-clU" id="Di0-gr-ON3"/>
