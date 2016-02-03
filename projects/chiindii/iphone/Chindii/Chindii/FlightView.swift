@@ -32,71 +32,11 @@ class FlightView: UIView {
 		CGContextSetAllowsAntialiasing(context, true)
 		CGContextSetShouldAntialias(context, true)
 		
-		CGContextFillRect(context, rect)
+//		CGContextFillRect(context, rect)
 
 		let radius = rect.height / 2.0 - 20
 		
-		// draw the throttle position
-		for i in -6..<7 {
-			if (i == g) {
-				CGContextSetRGBStrokeColor(context, 1.0, 1.0, 0.8, 1.0)
-			} else {
-				CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
-			}
-			
-			if (i <= 0) {
-				CGContextMoveToPoint(context, 20, rect.height / 2 - CGFloat(i*20))
-				CGContextAddLineToPoint (context, 40, rect.height / 2 - CGFloat(i*20) + 20)
-				CGContextAddLineToPoint (context, 60, rect.height / 2 - CGFloat(i*20))
-				CGContextStrokePath(context)
-			}
-			
-			if (i >= 0) {
-				CGContextMoveToPoint(context, 20, rect.height / 2 - CGFloat(i*20))
-				CGContextAddLineToPoint (context, 40, rect.height / 2 - CGFloat(i*20) - 20)
-				CGContextAddLineToPoint (context, 60, rect.height / 2 - CGFloat(i*20))
-				CGContextStrokePath(context)
-			}
-		}
-		
-		// draw the buttons
-		buttons.removeAll(keepCapacity: true)
-		for i in 0..<2 {
-			let r = i == 0 ?
-				CGRect(x: rect.width - 100, y: 20, width: 80, height: 80) :
-				CGRect(x: rect.width - 100, y: rect.height - 100, width: 80, height: 80)
-			
-			buttons.append(r)
-			
-			CGContextAddEllipseInRect(context, r)
-			if (pressed[i]) {
-				CGContextSetRGBFillColor(context, 1.0, 1.0, 0.8, 1.0)
-				CGContextFillPath(context)
-			} else {
-				CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
-				CGContextStrokePath(context)
-			}
-		}
-		
-		// draw the take off / landing button
-		CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
-		CGContextMoveToPoint(context, rect.width - 40, 40)
-		CGContextAddLineToPoint(context, rect.width - 60, 60)
-		CGContextAddLineToPoint(context, rect.width - 80, 40)
-		CGContextMoveToPoint(context, rect.width - 40, 60)
-		CGContextAddLineToPoint(context, rect.width - 60, 80)
-		CGContextAddLineToPoint(context, rect.width - 80, 60)
-		CGContextStrokePath(context)
-		
-		// draw the battery indicator
-		//CGContextSetLineWidth(context, 3.0);
-		//CGContextMoveToPoint(context, rect.width - 60, 20)
-		//CGContextAddCurveToPoint(context, rect.width - 7, 20, rect.width - 7, 100, rect.width - 60, 100)
-		//CGContextStrokePath(context)
-		
-		
-		//		CGContextSetBlendMode(context, kCGBlendModeNormal)
-		
+		CGContextSaveGState(context);
 		
 		// translate to the centre to draw the horizon
 		CGContextTranslateCTM(context, center.x, center.y)
@@ -108,39 +48,12 @@ class FlightView: UIView {
 		
 		// draw the horizon lines in 5 degree increments
 		CGContextSetLineDash(context, 0, [0,5], 2)
-		// 0
-		CGContextMoveToPoint(context, -140, 0)
-		CGContextAddLineToPoint(context, +141, 0)
-		// +/- 5
-		CGContextMoveToPoint(context, -10, -20)
-		CGContextAddLineToPoint(context, +11, -20)
-		CGContextMoveToPoint(context, -10, +20)
-		CGContextAddLineToPoint(context, +11, +20)
-		// +/- 10
-		CGContextMoveToPoint(context, -40, -40)
-		CGContextAddLineToPoint(context, +41, -40)
-		CGContextMoveToPoint(context, -40, +40)
-		CGContextAddLineToPoint(context, +41, +40)
-		// +/- 15
-		CGContextMoveToPoint(context, -20, -60)
-		CGContextAddLineToPoint(context, +21,  -60)
-		CGContextMoveToPoint(context, -20, +60)
-		CGContextAddLineToPoint(context, +21, +60)
-		// +/- 20
-		CGContextMoveToPoint(context, -40, -80)
-		CGContextAddLineToPoint(context, +41, -80)
-		CGContextMoveToPoint(context, -40, +80)
-		CGContextAddLineToPoint(context, +41, +80)
-		// +/- 35
-		CGContextMoveToPoint(context, -30, -100)
-		CGContextAddLineToPoint(context, +31, -100)
-		CGContextMoveToPoint(context, -30, +100)
-		CGContextAddLineToPoint(context, +31, +100)
-		// +/- 40
-		CGContextMoveToPoint(context, -60, -120)
-		CGContextAddLineToPoint(context, +61, -120)
-		CGContextMoveToPoint(context, -60, +120)
-		CGContextAddLineToPoint(context, +61, +120)
+
+		CGContextMoveToPoint(context, -radius, 0)
+		CGContextAddLineToPoint(context, radius, 0)
+
+		CGContextMoveToPoint(context, 0, -radius)
+		CGContextAddLineToPoint(context, 0, radius)
 
 		CGContextStrokePath(context)
 		
@@ -149,13 +62,6 @@ class FlightView: UIView {
 	
 	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			let point = (touch ).locationInView(self)
-			
-			for i in 0..<2 {
-				let r = buttons[i]
-				pressed[i] = r.contains(point)
-			}
-			gTouch(touch );
 			pitchRollTouch(touch)
 		}
 
@@ -163,7 +69,6 @@ class FlightView: UIView {
 	}
 	override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
-			gTouch(touch );
 			pitchRollTouch(touch)
 		}
 		
@@ -174,20 +79,6 @@ class FlightView: UIView {
 			pressed[i] = false
 		}
 		setNeedsDisplay()
-	}
-	
-	func gTouch(touch: UITouch) {
-		let point = touch.locationInView(self)
-
-		for i in -6..<7 {
-			let by = bounds.height / 2 - CGFloat(i*20) - (i >= 0 ? 20 : 0)
-			let h = CGFloat(i == 0 ? 40 : 20)
-			
-			let rect = CGRect(x: 20, y: by, width: 40, height: h);
-			if (rect.contains(point)) {
-				g = i;
-			}
-		}
 	}
 	
 	func pitchRollTouch(touch: UITouch) {
