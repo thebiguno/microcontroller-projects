@@ -22,22 +22,34 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <size key="titleShadowOffset" width="2.2250738585072014e-308" height="2.2250738585072014e-308"/>
                                 <state key="normal" title="Level"/>
+                                <connections>
+                                    <action selector="levelPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Mw1-SM-rZY"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="FOA-SV-iMz">
                                 <rect key="frame" x="20" y="270" width="51" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <size key="titleShadowOffset" width="2.2250738585072014e-308" height="2.2250738585072014e-308"/>
                                 <state key="normal" title="Down"/>
+                                <connections>
+                                    <action selector="downPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="0rp-PG-idr"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="kOk-mZ-1xr">
                                 <rect key="frame" x="20" y="20" width="51" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <size key="titleShadowOffset" width="2.2250738585072014e-308" height="2.2250738585072014e-308"/>
                                 <state key="normal" title="Up"/>
+                                <connections>
+                                    <action selector="upPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="6Fu-wY-VCE"/>
+                                </connections>
                             </button>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="YDn-ZI-ygu">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="YDn-ZI-ygu">
                                 <rect key="frame" x="499" y="269" width="51" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <connections>
+                                    <action selector="armedPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="doX-Bu-VGK"/>
+                                </connections>
                             </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -48,6 +60,7 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
+                        <outlet property="battery" destination="oTW-NK-hyl" id="ecT-BE-ZYQ"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>
                 </viewController>

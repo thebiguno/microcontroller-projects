@@ -50,6 +50,11 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		serialProtocol.delegate = self;
 	}
 	
+	func flight() {
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedFlightModel.armed ? 0x01 : 0x00 ]))
+		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedFlightModel.angle)));
+	}
+	
 	func level() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_LEVEL))
 	}

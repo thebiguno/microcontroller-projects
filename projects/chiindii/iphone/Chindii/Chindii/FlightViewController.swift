@@ -10,11 +10,32 @@ import UIKit
 
 class FlightViewController: UIViewController {
 
-	@IBOutlet weak var armedSwitch : UISwitch!
-	@IBOutlet weak var verticalSlider: UISlider!{
-		didSet{
-			verticalSlider.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+	@IBOutlet var armedSwitch : UISwitch!
+	@IBOutlet var battery : UIProgressView!
+	
+	var timer : NSTimer?
+	
+	@IBAction func armedPressed(sender : UISwitch) {
+		sharedFlightModel.armed = sender.on
+		
+		if (sender.on) {
+			timer = NSTimer.init(timeInterval: 0.1, target: self, selector: "timerFired", userInfo: nil, repeats: true)
+		} else {
+			timer!.invalidate()
+			timer = nil;
 		}
+	}
+	
+	@IBAction func levelPressed(sender : AnyObject) {
+		sharedFlightModel.angle.z = 0
+	}
+	
+	@IBAction func upPressed(sender : AnyObject) {
+		sharedFlightModel.angle.z += 0.25
+	}
+	
+	@IBAction func downPressed(sender : AnyObject) {
+		sharedFlightModel.angle.z -= 0.25
 	}
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
@@ -25,6 +46,10 @@ class FlightViewController: UIViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
+	}
+	
+	func timeFired() {
+		sharedMessageManager.flight();
 	}
 	
     override func didReceiveMemoryWarning() {

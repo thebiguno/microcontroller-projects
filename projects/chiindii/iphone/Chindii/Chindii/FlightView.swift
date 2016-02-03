@@ -16,10 +16,6 @@ class FlightView: UIView {
 	// red:   0.9, 0.4, 0.3
 	// blue:  0.5, 0.7, 0.8
 
-	var buttons = [CGRect]()
-	var pressed = [false, false]
-	
-	var g = 0		// a value between -6 and +6 representing g force values between -1.5 and +1.5 (.25 g steps)
 	var pitch = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	var roll = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	
@@ -75,9 +71,6 @@ class FlightView: UIView {
 		setNeedsDisplay()
 	}
 	override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-		for i in 0..<2 {
-			pressed[i] = false
-		}
 		setNeedsDisplay()
 	}
 	
