@@ -64,7 +64,7 @@ namespace digitalcave {
 			PID rate_z;
 			PID angle_x;
 			PID angle_y;
-			PID angle_z;
+			PID gforce;
 			Complementary c_x;
 			Complementary c_y;
 		
@@ -92,7 +92,7 @@ namespace digitalcave {
 			PID* getRateZ();
 			PID* getAngleX();
 			PID* getAngleY();
-			PID* getAngleZ();
+			PID* getGforce();
 			Complementary* getCompX();
 			Complementary* getCompY();
 			Mpu6050* getMpu6050();

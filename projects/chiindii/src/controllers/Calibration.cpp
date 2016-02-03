@@ -71,7 +71,7 @@ void Calibration::read() {
 		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
 		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
 		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
-		chiindii->getAngleZ()->setTunings(kp, ki, kd);
+		chiindii->getGforce()->setTunings(kp, ki, kd);
 
 		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
 		chiindii->getCompX()->setTau(t);
@@ -118,10 +118,10 @@ void Calibration::write() {
 	eeprom_update_float((float*) EEPROM_OFFSET + 52, angle_y->getKi());
 	eeprom_update_float((float*) EEPROM_OFFSET + 56, angle_y->getKd());
 
-	PID* angle_z = chiindii->getAngleZ();
-	eeprom_update_float((float*) EEPROM_OFFSET + 60, angle_z->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 64, angle_z->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 68, angle_z->getKd());
+	PID* gforce = chiindii->getGforce();
+	eeprom_update_float((float*) EEPROM_OFFSET + 60, gforce->getKp());
+	eeprom_update_float((float*) EEPROM_OFFSET + 64, gforce->getKi());
+	eeprom_update_float((float*) EEPROM_OFFSET + 68, gforce->getKd());
 
 	Complementary* c_x = chiindii->getCompX();
 	eeprom_update_float((float*) EEPROM_OFFSET + 72, c_x->getTau());
@@ -165,9 +165,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
 		PID* x = chiindii->getAngleX();
 		PID* y = chiindii->getAngleY();
+		PID* g = chiindii->getGforce();
 		double data[] = { 
 			x->getKp(), x->getKi(), x->getKd(),
-			y->getKp(), y->getKi(), y->getKd()
+			y->getKp(), y->getKi(), y->getKd(),
+			g->getKp(), g->getKi(), g->getKd()
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 24);
 		chiindii->sendMessage(&response);
@@ -196,6 +198,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
+		chiindii->getGforce()->setTunings(data[3], data[4], data[5]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
 		double* data = (double*) request->getData();

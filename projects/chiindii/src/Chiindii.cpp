@@ -43,7 +43,7 @@ PID* Chiindii::getRateY() { return &rate_y; }
 PID* Chiindii::getRateZ() { return &rate_z; }
 PID* Chiindii::getAngleX() { return &angle_x; }
 PID* Chiindii::getAngleY() { return &angle_y; }
-PID* Chiindii::getAngleZ() { return &angle_z; }
+PID* Chiindii::getGforce() { return &gforce; }
 Complementary* Chiindii::getCompX() { return &c_x; }
 Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
@@ -73,7 +73,7 @@ Chiindii::Chiindii() :
 	
 	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	angle_z(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	gforce(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 3, 0),
 	c_y(0.075, 3, 0),
@@ -89,7 +89,7 @@ Chiindii::Chiindii() :
 	angle_y.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
-	angle_z.setOutputLimits(0, 2); // TODO this is probably too tolerant
+	gforce.setOutputLimits(0.9, 1.1);
 
 	//Output of rate PID is a percentage (0-1) for each axis.
 	rate_x.setOutputLimits(0, 1);
@@ -143,7 +143,7 @@ void Chiindii::run() {
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
-		} else if (time - last_message_time > 2000) { // TODO is 2 seconds OK?
+		} else if (time - last_message_time > 1000) {
 #ifdef DEBUG
 			if (mode) usb_serial_write((const uint8_t*) "Comm timeout\n", 13);
 #endif
@@ -198,7 +198,7 @@ void Chiindii::run() {
 				// compute a rate set point given an angle set point and current measured angle
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-				angle_z.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
+				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
 			}
 
 #ifdef DEBUG

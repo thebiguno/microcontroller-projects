@@ -27,7 +27,7 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		double* data = (double*) request->getData();
 		sp->x = data[0];
 		sp->y = data[1];
-		chiindii->getRateSp()->z = data[2];
+		sp->z = data[2];
 	}
 	else if (cmd == MESSAGE_RATE){
 		vector_t* sp = chiindii->getRateSp();
