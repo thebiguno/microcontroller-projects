@@ -223,6 +223,9 @@
                                                     <rect key="frame" x="111" y="7" width="201" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Arm"/>
+                                                    <connections>
+                                                        <action selector="armClicked:" destination="3lh-CX-GUg" eventType="touchUpInside" id="kKo-sp-ll5"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                         </tableViewCellContentView>

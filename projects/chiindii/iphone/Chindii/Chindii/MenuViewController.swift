@@ -33,11 +33,6 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 		sharedMessageManager.saveTuning()
 	}
 	
-	@IBAction func axisChanged(sender: UISegmentedControl) {
-		print("Axis Changed")
-		print(sender.selectedSegmentIndex)
-	}
-	
 	@IBAction func calibrateClicked(sender: AnyObject) {
 		sharedMessageManager.level()
 	}
@@ -48,10 +43,27 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	
 	@IBAction func throttleChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
+		
+		sharedConfigModel.throttle = sender.value * 10;
 	}
 	
 	@IBAction func rateChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
+		sharedFlightModel.rate.x = 0;
+		sharedFlightModel.rate.y = 0;
+		sharedFlightModel.rate.z = 0;
+
+		switch (axis.selectedSegmentIndex) {
+		case 0:
+			sharedFlightModel.rate.x = rate.value
+			break;
+		case 1:
+			sharedFlightModel.rate.y = rate.value
+			break;
+		default:
+			sharedFlightModel.rate.z = rate.value
+			break;
+		}
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
