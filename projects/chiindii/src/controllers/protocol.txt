@@ -1,46 +1,38 @@
-Command						Direction				Payload															Response
--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Hex		Command						Direction				Payload															
+----------------------------------------------------------------------------------------------------------------------------
 -- General commands
-SendAcknowledge				Device -> Control		Command being ack'd (1 byte)									None
-SendComplete				Device -> Control		Command completed (1 byte)										None
+		RequestDebug				Control -> Device		1 byte; 0 = debug off, non-zero = debug on						
+		Debug						Device -> Control		Variable depending on message, max 254 bytes					
 
-RequestControlConfig		Control -> Device		Controller ID; UC = 0x55 ('U')									ControlConfig message
-SendControlConfig			Device -> Control		Configuration for controller									None
-
-RequestEnableDebug			Control -> Device		Null															Ack
-RequestDisableDebug			Control -> Device		Null															Ack
-SendDebug					Device -> Control		Variable depending on message, max 254 bytes					None
-
-RequestBattery				Control -> Device		Null															Battery message
-SendBattery					Device -> Control		1 byte															None
+		Battery						Device -> Control		1 byte; 0 - 99 as a percentage									
 
 -- Direct Controller commands
-Armed						Control -> Device		1 byte															None
-Throttle					Control -> Device		1 double														None
-Rate						Control -> Device		3 doubles (x, y, z)												None
-Angle						Control -> Device		3 doubles (x, y, z) where z is actually a rate					None
+20		Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
+21		Throttle					Control -> Device		1 double (0 - 1)												
+22		Rate						Control -> Device		3 doubles (x, y, z) (in rad / s)								
+23		Angle						Control -> Device		3 doubles (x, y, z) (in rad; z is in rad / s)					
 
 -- Calibration Controller commands
-LoadCalibration				Control -> Device		Null															None
-SaveCalibration				Control -> Device		Null															None
-RequestRatePID				Control -> Device		Null															9 double tuning params
-SendRatePID					Control -> Device		9 double tuning params (xp, xi, xd, yp, yi, yd, zp, zi, zd)		None
-RequestAnglePID				Control -> Device		Null															6 double tuning params
-SendAnglePID				Control -> Device		6 double tuning params (xp, xi, xd, yp, yi, yd)					None
-RequestComplementaryTau		Control -> Device		Null															2 double tuning params
-SendComplementaryTau		Control -> Device 		2 double tuning params (xt, yt)									None
-StartComplementaryTuning	Control -> Device		1 byte (0 = tune x, 1 = tune y)									Null
-SendComplementaryTuning		Device -> Control		3 doubles (gyro, accel, angle)									Null
-Level						Control -> Device		Null															None
+30		SaveCalibration				Control -> Device		Null															
+31		LoadCalibration				Control -> Device		Null															
+33		RequestRatePID				Control -> Device		Null															
+34		SendRatePID					Bidirectional			9 double tuning params (xp, xi, xd, yp, yi, yd, zp, zi, zd)		
+35		RequestAnglePID				Control -> Device		Null															
+36		SendAnglePID				Bidirectional			6 double tuning params (xp, xi, xd, yp, yi, yd)					
+37		RequestComplementary		Control -> Device		Null															
+38		SendComplementary			Bidirectional			2 double tuning params (xt, yt)									
+39		StartComplementaryTuning	Control -> Device		1 byte (0 = tune x, 1 = tune y)									
+3A		SendTuningData				Device -> Control		3 double; gyro, accel, complimentary angle (for selected axis)
+3B		StartMpuCalibration			Control -> Device		Null
 
 -- Universal Controller commands
-UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					None
-UCButtonRelease				Control -> Device		Index of button which was just released (1 byte)				None
-UCJoystickMove				Control -> Device		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)			None
+		UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					
+		UCButtonRelease				Control -> Device		Index of button which was just released (1 byte)				
+		UCJoystickMove				Control -> Device		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)			
 
-UCButtonEnable				Device -> Control		Index of button to enable (1 - 16) (1 byte)						None
-UCButtonDisable				Device -> Control		Index of button to disable (1 - 16) (1 byte)					None
-UCJoystickEnable			Device -> Control		Null															None
-UCJoystickDisable			Device -> Control		Null															None
-UCSetPollFrequency			Device -> Control		8 bit unsigned value (will be shifted 6 bits left) (1 byte)		None
-UCSetAnalogFrequency		Device -> Control		8 bit compare value (1 byte)									None
+		UCButtonEnable				Device -> Control		Index of button to enable (1 - 16) (1 byte)						
+		UCButtonDisable				Device -> Control		Index of button to disable (1 - 16) (1 byte)					
+		UCJoystickEnable			Device -> Control		Null															
+		UCJoystickDisable			Device -> Control		Null															
+		UCSetPollFrequency			Device -> Control		8 bit unsigned value (will be shifted 6 bits left) (1 byte)		
+		UCSetAnalogFrequency		Device -> Control		8 bit compare value (1 byte)									

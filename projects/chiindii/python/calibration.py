@@ -29,7 +29,7 @@ MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY = 0x37
 MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
 MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
 MESSAGE_SEND_TUNING_DATA = 0x3A
-MESSAGE_LEVEL = 0x3B
+MESSAGE_START_MPU_CALIBRATION = 0x3B
 
 #MODE_CALIBRATION_RATE_PID = 0x01
 #MODE_CALIBRATION_COMPLEMENTARY = 0x02
@@ -143,7 +143,7 @@ Please select an option:
 		response = raw_input("Selected option: ").lower()
 
 		if (response == "v"):
-			writeMessage(ser, MESSAGE_LEVEL, [])
+			writeMessage(ser, MESSAGE_START_MPU_CALIBRATION, [])
 			return
 		elif (response == "q"):
 			return
