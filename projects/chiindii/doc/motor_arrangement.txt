@@ -8,6 +8,8 @@ Motor 2 and 4: CCW
 When using the Hubsan motors, the CW motors are the ones with Red (+) and Blue (-), while
 the CCW motors are the ones with White (+) and Black (-).
 
+The A props go on the CW (Red / Blue) motors, and the B props go on the CCW (White / Black) motors.
+
 roll is rotating about the x axis
 pitch is rotating about the y axis
 
