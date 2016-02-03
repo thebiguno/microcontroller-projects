@@ -12,9 +12,6 @@ import CoreBluetooth
 let sharedMessageManager = MessageManager()
 
 class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDelegate {
-	let MESSAGE_ANNOUNCE_CONTROL_ID : UInt8 = 0x00
-	let MESSAGE_SEND_ACKNOWLEDGE : UInt8 = 0x01
-	let MESSAGE_SEND_COMPLETE : UInt8 = 0x02
 	let MESSAGE_REQUEST_ENABLE_DEBUG : UInt8 = 0x03
 	let MESSAGE_REQUEST_DISABLE_DEBUG : UInt8 = 0x04
 	let MESSAGE_SEND_DEBUG : UInt8 = 0x05
@@ -28,7 +25,6 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 
 	let MESSAGE_SAVE_CALIBRATION : UInt8 = 0x30
 	let MESSAGE_LOAD_CALIBRATION : UInt8 =  0x31
-	let MESSAGE_RESET_CALIBRATION : UInt8 =  0x32
 	let MESSAGE_REQUEST_CALIBRATION_RATE_PID : UInt8 =  0x33
 	let MESSAGE_SEND_CALIBRATION_RATE_PID : UInt8 =  0x34
 	let MESSAGE_REQUEST_CALIBRATION_ANGLE_PID : UInt8 =  0x35
@@ -59,24 +55,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		sendMessage(FramedSerialMessage(command: MESSAGE_LEVEL))
 	}
 	
-	func disarm() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x00 ]))
-	}
-	func armAngle() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x01 ]))
-	}
-	func armRate() {
+	func rate() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]))
-	}
-	
-	func throttle(throttle: Float) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(throttle)))
-	}
-	func angle(angle : Vector) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(angle)))
-	}
-	func rate(rate : Vector) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedConfigModel.throttle)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedConfigModel.rate)))
 	}
 	
 	func rateTuning(rate : RateConfig) {
@@ -93,7 +75,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		sendMessage(FramedSerialMessage(command: MESSAGE_SAVE_CALIBRATION))
 	}
 	func revertTuning() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_RESET_CALIBRATION))
+		sendMessage(FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION))
 		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID))
 		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID))
 		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY))

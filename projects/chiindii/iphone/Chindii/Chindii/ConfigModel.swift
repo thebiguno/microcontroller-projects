@@ -33,7 +33,8 @@ class ConfigModel {
 	var rate = RateConfig()
 	var angle = RateConfig()
 	var comp = CompConfig()
-	
+	var throttle : Float = 0.0
+
 	init() {
 		
 	}

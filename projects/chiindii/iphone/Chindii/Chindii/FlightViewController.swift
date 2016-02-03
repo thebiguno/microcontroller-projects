@@ -19,7 +19,7 @@ class FlightViewController: UIViewController {
 		sharedFlightModel.armed = sender.on
 		
 		if (sender.on) {
-			timer = NSTimer.init(timeInterval: 0.1, target: self, selector: "timerFired", userInfo: nil, repeats: true)
+			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
 		} else {
 			timer!.invalidate()
 			timer = nil;
@@ -46,10 +46,6 @@ class FlightViewController: UIViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-	}
-	
-	func timeFired() {
-		sharedMessageManager.flight();
 	}
 	
     override func didReceiveMemoryWarning() {
