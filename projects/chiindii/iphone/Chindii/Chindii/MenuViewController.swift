@@ -55,13 +55,13 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 
 		switch (axis.selectedSegmentIndex) {
 		case 0:
-			sharedFlightModel.rate.x = rate.value
+			sharedFlightModel.rate.x = sender.value
 			break;
 		case 1:
-			sharedFlightModel.rate.y = rate.value
+			sharedFlightModel.rate.y = sender.value
 			break;
 		default:
-			sharedFlightModel.rate.z = rate.value
+			sharedFlightModel.rate.z = sender.value
 			break;
 		}
 	}
@@ -78,6 +78,26 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 			return false;
 		} else {
 			let numberFloatValue = number!.floatValue
+
+			var ratePid : PID
+			var anglePid : PID
+			switch (axis.selectedSegmentIndex) {
+			case 0:
+				ratePid = sharedConfigModel.rate.x
+				anglePid = sharedConfigModel.angle.x
+				break;
+			case 1:
+				ratePid = sharedConfigModel.rate.y
+				anglePid = sharedConfigModel.angle.y
+				break;
+			default:
+				ratePid = sharedConfigModel.rate.z
+				anglePid = sharedConfigModel.angle.z
+				break;
+			}
+			if (textField == rateP) {
+				ratePid.p = numberFloatValue
+			}
 			// TODO set this value into the model
 			// TODO send this value to the peripheral
 			return true;

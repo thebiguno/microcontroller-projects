@@ -15,8 +15,7 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	var peripherals = [CBPeripheral]()
 	
 	override func viewDidLoad() {
-		centralManager = CBCentralManager()
-		centralManager.delegate = self;
+		centralManager = CBCentralManager(delegate: self, queue: nil)
 	}
 	
 	override func didReceiveMemoryWarning() {
@@ -24,13 +23,12 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	override func viewWillAppear(animated: Bool) {
-		centralManager.scanForPeripheralsWithServices(nil, options: nil)
-		
-		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
 		centralManager.stopScan()
+		peripherals.removeAll()
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,8 +38,25 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let peripheral = peripherals[indexPath.row];
 		let cell = tableView.dequeueReusableCellWithIdentifier("peripheral")
-		cell?.textLabel?.text = peripheral.description
+		cell?.textLabel?.text = peripheral.name
+		cell?.accessoryType = UITableViewCellAccessoryType.None
 		return cell!;
+	}
+	
+	override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+		let oldIndexPath = tableView.indexPathForSelectedRow
+		if (oldIndexPath != nil) {
+			let oldPeripheral = peripherals[oldIndexPath!.row];
+			centralManager.cancelPeripheralConnection(oldPeripheral)
+			tableView.cellForRowAtIndexPath(oldIndexPath!)?.accessoryType = UITableViewCellAccessoryType.None
+		}
+		tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.Checkmark
+		
+		let peripheral = peripherals[indexPath.row]
+		peripheral.delegate = sharedMessageManager
+		centralManager.connectPeripheral(peripheral, options: nil)
+		
+		return indexPath
 	}
 	
 	func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
@@ -50,7 +65,7 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
-		peripheral.discoverServices([CBUUID(string: "FFE1")])
+		peripheral.discoverServices([CBUUID(string: "FFE0")])
 	}
 	
 	func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
@@ -61,6 +76,13 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	func centralManagerDidUpdateState(central: CBCentralManager) {
+		switch central.state {
+		case .PoweredOn:
+			centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+			break
+		default:
+			break
+		}
 		
 	}
 	

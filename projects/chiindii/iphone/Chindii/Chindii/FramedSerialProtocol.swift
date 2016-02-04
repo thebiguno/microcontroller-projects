@@ -142,7 +142,7 @@ class FramedSerialProtocol : NSObject {
 					var result = command;
 					
 					for var i = 0; i < length; i++ {
-						result += data[i];
+						result = result &+ data[i]
 					}
 					
 					escapeByte(0xff - result);

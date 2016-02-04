@@ -105,12 +105,14 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func write(b : UInt8) {
+		if (connectedPeripheral == nil) { return }
 		let data = NSData(bytes: [b], length: 1)
-		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: writeType!)
+		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: .WithResponse)
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
 		// discover all characteristics for all services
+		peripheral.services
 		for service in peripheral.services! {
 			peripheral.discoverCharacteristics(nil, forService: service)
 		}
@@ -119,8 +121,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
 		// check whether the characteristic we're looking for (0xFFE1) is present
 		for characteristic in service.characteristics! {
+			
 			if characteristic.UUID == CBUUID(string: "FFE1") {
 				connectedPeripheral = peripheral
+				self.characteristic = characteristic
 				// subscribe to this value (so we'll get notified when there is serial data for us..)
 				peripheral.setNotifyValue(true, forCharacteristic: characteristic)
 			}
