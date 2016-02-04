@@ -37,6 +37,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 
 	var serialProtocol = FramedSerialProtocol()
 
+	var centralManager = CBCentralManager()
 	var connectedPeripheral : CBPeripheral?
 	var characteristic : CBCharacteristic?
 	var writeType : CBCharacteristicWriteType?
@@ -61,14 +62,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedConfigModel.rate)))
 	}
 	
-	func rateTuning(rate : RateConfig) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(rate)))
-	}
-	func angleTuning(angle : AngleConfig) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(rate)))
-	}
-	func compTuning(comp: CompConfig) {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(comp)))
+	func tuning() {
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedConfigModel.rate)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedConfigModel.angle)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedConfigModel.comp)))
 	}
 	
 	func saveTuning() {

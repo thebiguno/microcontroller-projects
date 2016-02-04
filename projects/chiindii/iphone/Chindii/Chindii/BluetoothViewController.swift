@@ -11,11 +11,9 @@ import CoreBluetooth
 
 class BluetoothViewController : UITableViewController, CBCentralManagerDelegate {
 	
-	var centralManager : CBCentralManager!
 	var peripherals = [CBPeripheral]()
 	
 	override func viewDidLoad() {
-		centralManager = CBCentralManager(delegate: self, queue: nil)
 	}
 	
 	override func didReceiveMemoryWarning() {
@@ -23,11 +21,12 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	override func viewWillAppear(animated: Bool) {
-
+		sharedMessageManager.centralManager.delegate = self;
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
-		centralManager.stopScan()
+		sharedMessageManager.centralManager.stopScan()
+		sharedMessageManager.centralManager.delegate = nil
 		peripherals.removeAll()
 	}
 	
@@ -47,14 +46,14 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 		let oldIndexPath = tableView.indexPathForSelectedRow
 		if (oldIndexPath != nil) {
 			let oldPeripheral = peripherals[oldIndexPath!.row];
-			centralManager.cancelPeripheralConnection(oldPeripheral)
+			sharedMessageManager.centralManager.cancelPeripheralConnection(oldPeripheral)
 			tableView.cellForRowAtIndexPath(oldIndexPath!)?.accessoryType = UITableViewCellAccessoryType.None
 		}
 		tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.Checkmark
 		
 		let peripheral = peripherals[indexPath.row]
 		peripheral.delegate = sharedMessageManager
-		centralManager.connectPeripheral(peripheral, options: nil)
+		sharedMessageManager.centralManager.connectPeripheral(peripheral, options: nil)
 		
 		return indexPath
 	}
@@ -69,16 +68,19 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-		
+		print("disconnected")
+
 	}
 	
 	func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+		print("failed to connect")
 	}
 	
 	func centralManagerDidUpdateState(central: CBCentralManager) {
 		switch central.state {
 		case .PoweredOn:
-			centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+			print(".PoweredOn")
+			sharedMessageManager.centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
 			break
 		default:
 			break
