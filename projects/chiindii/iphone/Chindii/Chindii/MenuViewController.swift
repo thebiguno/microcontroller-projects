@@ -97,9 +97,24 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 			}
 			if (textField == rateP) {
 				ratePid.p = numberFloatValue
-			}
-			// TODO set this value into the model
-			// TODO send this value to the peripheral
+            } else if (textField == rateI) {
+                ratePid.i = numberFloatValue
+            } else if (textField == rateD) {
+                ratePid.d = numberFloatValue
+            } else if (textField == angleP) {
+                anglePid.p = numberFloatValue
+            } else if (textField == angleI) {
+                anglePid.i = numberFloatValue
+            } else if (textField == angleD) {
+                anglePid.d = numberFloatValue
+            } else if (textField == tau) {
+                if (axis.selectedSegmentIndex == 0) {
+                    sharedConfigModel.comp.x = numberFloatValue
+                } else if (axis.selectedSegmentIndex == 1) {
+                    sharedConfigModel.comp.y = numberFloatValue
+                }
+            }
+            sharedMessageManager.tuning()
 			return true;
 		}
 	}
