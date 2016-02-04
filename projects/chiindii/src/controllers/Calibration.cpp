@@ -68,14 +68,14 @@ void Calibration::read() {
 		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
 		chiindii->getAngleY()->setTunings(kp, ki, kd);
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 60);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 64);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 68);
 		chiindii->getGforce()->setTunings(kp, ki, kd);
 
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 72);
 		chiindii->getCompX()->setTau(t);
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 76);
 		chiindii->getCompY()->setTau(t);
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
@@ -171,7 +171,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			y->getKp(), y->getKi(), y->getKd(),
 			g->getKp(), g->getKi(), g->getKd()
 		};
-		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 24);
+		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
@@ -198,7 +198,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
-		chiindii->getGforce()->setTunings(data[3], data[4], data[5]);
+		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
 		double* data = (double*) request->getData();

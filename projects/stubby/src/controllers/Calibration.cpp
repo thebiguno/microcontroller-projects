@@ -104,7 +104,8 @@ void Calibration::dispatch(Serial* serial, FramedSerialMessage* message){
 		message[1] = x & 0xFF;
 		message[2] = (y >> 8) & 0xFF;
 		message[3] = y & 0xFF;
-		protocol_send_message(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, message, 4);
+		FramedSerialMessage response(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, (uint8_t*) message, 4);
+		stubby->getProtocol()->write(serial, &response);
 	}
 	else if (message->getCommand() == MESSAGE_SEND_MAGNETOMETER_CALIBRATION){
 		if (message->getLength() == 4){
@@ -143,7 +144,8 @@ void Calibration::dispatch(Serial* serial, FramedSerialMessage* message){
 			message[1] = x & 0xFF;
 			message[2] = (y >> 8) & 0xFF;
 			message[3] = y & 0xFF;
-			protocol_send_message(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, message, 4);
+			FramedSerialMessage response(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, (uint8_t*) message, 4);
+			stubby->getProtocol()->write(serial, &response);
 		}
 	}
 }

@@ -67,10 +67,7 @@ Chiindii Calibration: Please selection an option below:
 			else:
 				doComplementaryCalibration(ser)
 		elif (choice == "a"):
-			if (axis == 2):
-				print("Angle PID tuning not application for Z axis")
-			else:
-				doAnglePidCalibration(ser)
+			doAnglePidCalibration(ser)
 		elif (choice == "v"):
 			doLevelMpu(ser)
 		elif (choice == "x"):
@@ -149,6 +146,76 @@ Please select an option:
 			return
 		else:
 			print("Invalid parameter, please try again\n")
+
+
+def doComplementaryCalibration(ser):
+	print("""
+Complemenentary calibration allows Chiindii to integrate Gyro and Accelerometer
+data to reduce Gyro drift.  There is one paramater that called Tau which is the response
+time of integration.  This allows a trade off between drift elimination and responsiveness.
+The tuning allows you to collect raw and integrated data which can be graphed.
+""")
+	while True:
+		param = raw_input("""
+Please select a parameter to modify
+	T) Tau
+	D) Start reading live attitude data
+	L) Load all values from EEPROM (revert changes for this session)
+	S) Save all values to EEPROM
+	Q) Return to axis selection
+		
+Selected Option: """).lower()
+		
+		if (param == "q"):
+			break
+		elif (param == "l"):
+			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
+			print("All values loaded from EEPROM")
+		elif (param == "s"):
+			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
+			print("All values saved to EEPROM")
+		elif (param == "t"):
+			while True:
+				#Load the current calibration
+				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
+				response = readMessage(ser)
+				if (response == False):
+					print("Communication failure")
+					return
+				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY):
+					print("Invalid response detected: received command " + hex(response["command"]))
+					return
+				d = response["data"]
+				
+				print("\nEnter a valid number, X/Y to change axis, or enter to return to parameter selection.")
+				value = raw_input("Current axis: {0}.  Tau ({1:.3f}): ".format(axisString, struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0])).lower()
+				if (value == "x" or value == "y"):
+					setAxis(value)
+				elif (floatregex.match(value)):
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						print i, ord(b)
+						d[i + (axis * 4)] = ord(b)
+					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
+				elif (value == ""):
+					break;
+				else:
+					print("Invalid value, please try again\n")
+		elif (param == "s"):
+			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+			while True:
+				response = readMessage(ser)
+				if (response == False):
+					break
+				d = buffer(str(bytearray(response["data"])))
+				
+				accel = struct.unpack_from("<f", d, 0)[0];
+				gyro = struct.unpack_from("<f", d, 4)[0];
+				comp = struct.unpack_from("<f", d, 8)[0];
+				print(str(round(accel, 4)) + "\t" + str(round(gyro, 4)) + "\t" + str(round(comp, 4)))
+		else:
+			print("Invalid axis, please try again\n")
+
 
 
 def doRatePidCalibration(ser):
@@ -322,38 +389,38 @@ Select parameter: """).lower()
 			print("All values saved to EEPROM")
 		elif (param == "a"):
 			while True:
-				if (axis == 2):
-					chooseAxis(ser)
+				if (axisString == "Yaw"):
+					value = raw_input("Current axis: G-Force.  Enter a hover set point (in G), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
 				else:
-					value = raw_input("Current axis: " + axisString + ".  Enter an angle set point (in deg), X/Y to change axis, or hit enter to return to parameter selection: ").lower()
-					if (value == "x" or value == "y"):
-						setAxis(value)
-					elif (value == ""):
-						break;
-					elif (floatregex.match(value)):
-						angle_sp = [0,0,0,0, 0,0,0,0]	#2 floats
-					
-						#First we write three zeros to the packet
-						bytes = struct.pack("<f", 0)
-						for i, b in enumerate(bytes):
-							angle_sp[i + 0] = ord(b)
-							angle_sp[i + 4] = ord(b)
+					value = raw_input("Current axis: " + axisString + ".  Enter an angle set point (in deg), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
+				if (value == "x" or value == "y" or value == "z"):
+					setAxis(value)
+				elif (value == ""):
+					break;
+				elif (floatregex.match(value)):
+					angle_sp = [0,0,0,0, 0,0,0,0]	#2 floats
+				
+					#First we write three zeros to the packet
+					bytes = struct.pack("<f", 0)
+					for i, b in enumerate(bytes):
+						angle_sp[i + 0] = ord(b)
+						angle_sp[i + 4] = ord(b)
 
-						#Then we overwrite the selected axis with the current rate
-						bytes = struct.pack("<f", math.radians(float(value)))
-						for i, b in enumerate(bytes):
-							angle_sp[i + (axis * 4)] = ord(b)
+					#Then we overwrite the selected axis with the current rate
+					bytes = struct.pack("<f", math.radians(float(value)))
+					for i, b in enumerate(bytes):
+						angle_sp[i + (axis * 4)] = ord(b)
 
-						throttle_sp = [0,0,0,0]
-						throttle = struct.pack("<f", 0.1)
-						for i, b in enumerate(throttle):
-							throttle_sp[i] = ord(b)
-					
-						writeMessage(ser, MESSAGE_ARMED, [2])		#Armed in angle mode
-						writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
-						writeMessage(ser, MESSAGE_ANGLE, rate_sp)
-					else:
-						print("Invalid value, please try again\n")
+					throttle_sp = [0,0,0,0]
+					throttle = struct.pack("<f", 0.1)
+					for i, b in enumerate(throttle):
+						throttle_sp[i] = ord(b)
+				
+					writeMessage(ser, MESSAGE_ARMED, [2])		#Armed in angle mode
+					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
+					writeMessage(ser, MESSAGE_ANGLE, rate_sp)
+				else:
+					print("Invalid value, please try again\n")
 		elif (param == "t"):
 			param = 0
 			paramString = "P"
@@ -369,13 +436,17 @@ Select parameter: """).lower()
 					print("Invalid response detected: received command " + hex(response["command"]))
 					return
 				d = response["data"]
-				
+
+				adjustedAxisString = axisString
+				if (adjustedAxisString == "Yaw"):
+					adjustedAxisString = "G-Force"
 				print("""
 Current		P	I	D
 Roll (X)	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
 Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
+G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 (Changing axis '{1}', parameter '{2}')
-""".format(struct.unpack("<ffffff", buffer(str(bytearray(d)))), axisString, paramString))
+""".format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), adjustedAxisString, paramString))
 			
 				value = raw_input("Enter a valid number, X/Y/Z to change axis, P/I/D to change parameter, or enter to return to parameter selection: ").lower()
 				if (value == "x" or value == "y" or value == "z"):
@@ -403,65 +474,6 @@ Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
 					print("Invalid value, please try again\n")
 		else:
 			print("Invalid value, please try again\n")
-
-def doComplementaryCalibration(ser):
-	print("""
-Complemenentary calibration allows Chiindii to integrate Gyro and Accelerometer
-data to reduce Gyro drift.  There is one paramater that called Tau which is the response
-time of integration.  This allows a trade off between drift elimination and responsiveness.
-The tuning allows you to collect raw and integrated data which can be graphed.
-""")
-	while True:
-		param = raw_input("""
-Please select a parameter to modify
-	T) Tau
-	S) Start reading live test data
-	Q) Return to axis selection
-		
-Selected Option: """).lower()
-		
-		if (param == "q"):
-			break
-		elif (param == "t"):
-			while True:
-				#Load the current calibration
-				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-				response = readMessage(ser)
-				if (response == False):
-					print("Communication failure")
-					return
-				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY):
-					print("Invalid response detected: received command " + hex(response["command"]))
-					return
-				d = response["data"]
-				
-				print("\nEnter a valid number, or enter to return to parameter selection.")
-				value = raw_input("Tau (" + str(round(struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0], 3)) + "): ").lower()
-				if (floatregex.match(value)):
-					bytes = struct.pack("<f", float(value))
-					for i, b in enumerate(bytes):
-						print i, ord(b)
-						d[i + (axis * 4)] = ord(b)
-					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
-				elif (value == ""):
-					break;
-				else:
-					print("Invalid value, please try again\n")
-		elif (param == "s"):
-			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
-			while True:
-				response = readMessage(ser)
-				if (response == False):
-					break
-				d = buffer(str(bytearray(response["data"])))
-				
-				accel = struct.unpack_from("<f", d, 0)[0];
-				gyro = struct.unpack_from("<f", d, 4)[0];
-				comp = struct.unpack_from("<f", d, 8)[0];
-				print(str(round(accel, 4)) + "\t" + str(round(gyro, 4)) + "\t" + str(round(comp, 4)))
-		else:
-			print("Invalid axis, please try again\n")
-
 
 
 ########## Helper functions here ##########

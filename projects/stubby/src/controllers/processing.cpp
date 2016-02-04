@@ -36,6 +36,69 @@ static volatile int8_t bodyTranslationZ = 0;
 
 extern Leg legs[LEG_COUNT];
 
+Processing::Processing(Stubby* stubby) : stubby(stubby){
+	;
+}
+
+void Processing::dispatch(Serial* serial, FramedSerialMessage* message){
+	if (message->getCommand() == MESSAGE_REQUEST_POWER_ON){
+		set_power(POWER_ON);
+		power_change_required = 0x01;
+		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_ON);
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_POWER_OFF){
+		set_power(POWER_OFF);
+		power_change_required = 0x01;
+		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_OFF);
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_HEADING){
+		uint8_t data[1];
+		data[0] = convert_radian_to_byte(magnetometer_read_heading());
+		protocol_send_message(MESSAGE_SEND_HEADING, data, 1);
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_DISTANCE){
+		uint8_t data[2];
+		uint16_t distance = distance_read();
+		data[0] = (distance >> 8) & 0xFF;
+		data[1] = distance & 0xFF;
+		protocol_send_message(MESSAGE_SEND_DISTANCE, data, 2);
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_MOVE){
+		if (message.getLength() == 4){
+			desired_move_angle = convert_byte_to_radian(message[0]);
+			desired_move_velocity = message[1] / 255.0;
+			desired_move_distance = message[2] << 8 | message[3];
+			
+			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
+			
+			heading_confirmation_required = 0x01;
+			move_required = 0x01;
+		}
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_TURN){
+		if (message.getLength() == 2){
+			desired_turn_angle = convert_byte_to_radian(message[0]);
+			desired_turn_velocity = message[1] / 255.0;
+			
+			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
+			
+			heading_confirmation_required = 0x01;
+			turn_required = 0x01;
+		}
+	}
+	else if (message->getCommand() == MESSAGE_REQUEST_TRANSLATE){
+		if (message.getLength() == 3){
+			bodyTranslationX = message[0];
+			bodyTranslationY = message[1];
+			bodyTranslationZ = message[2];
+			
+			doAcknowledgeCommand(MESSAGE_REQUEST_TRANSLATE);
+			
+			translation_required = 0x01;
+		}
+	}
+}
+
 void processing_command_executor(){
 	wdt_reset();
 
@@ -198,63 +261,4 @@ void processing_command_executor(){
 #else
 #warning Non-standard CPU speed.  Please specify a delay.
 #endif
-}
-
-void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
-	if (cmd == MESSAGE_REQUEST_POWER_ON){
-		set_power(POWER_ON);
-		power_change_required = 0x01;
-		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_ON);
-	}
-	else if (cmd == MESSAGE_REQUEST_POWER_OFF){
-		set_power(POWER_OFF);
-		power_change_required = 0x01;
-		doAcknowledgeCommand(MESSAGE_REQUEST_POWER_OFF);
-	}
-	else if (cmd == MESSAGE_REQUEST_HEADING){
-		uint8_t data[1];
-		data[0] = convert_radian_to_byte(magnetometer_read_heading());
-		protocol_send_message(MESSAGE_SEND_HEADING, data, 1);
-	}
-	else if (cmd == MESSAGE_REQUEST_DISTANCE){
-		uint8_t data[2];
-		uint16_t distance = distance_read();
-		data[0] = (distance >> 8) & 0xFF;
-		data[1] = distance & 0xFF;
-		protocol_send_message(MESSAGE_SEND_DISTANCE, data, 2);
-	}
-	else if (cmd == MESSAGE_REQUEST_MOVE){
-		if (length == 4){
-			desired_move_angle = convert_byte_to_radian(message[0]);
-			desired_move_velocity = message[1] / 255.0;
-			desired_move_distance = message[2] << 8 | message[3];
-			
-			doAcknowledgeCommand(MESSAGE_REQUEST_MOVE);
-			
-			heading_confirmation_required = 0x01;
-			move_required = 0x01;
-		}
-	}
-	else if (cmd == MESSAGE_REQUEST_TURN){
-		if (length == 2){
-			desired_turn_angle = convert_byte_to_radian(message[0]);
-			desired_turn_velocity = message[1] / 255.0;
-			
-			doAcknowledgeCommand(MESSAGE_REQUEST_TURN);
-			
-			heading_confirmation_required = 0x01;
-			turn_required = 0x01;
-		}
-	}
-	else if (cmd == MESSAGE_REQUEST_TRANSLATE){
-		if (length == 3){
-			bodyTranslationX = message[0];
-			bodyTranslationY = message[1];
-			bodyTranslationZ = message[2];
-			
-			doAcknowledgeCommand(MESSAGE_REQUEST_TRANSLATE);
-			
-			translation_required = 0x01;
-		}
-	}
 }

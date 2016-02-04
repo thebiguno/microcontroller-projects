@@ -33,14 +33,20 @@
 #warning   Without a magnetometer, Processing API command MESSAGE_REQUEST_TURN will not work, and MESSAGE_REQUEST_MOVE will not be accurate.
 #endif
 
-/*
- * Main processing method, where we look for incoming commands and perform actions as requested.
- */
-void processing_command_executor();
-
-/*
- * Processing-specific message dispatching.  This is called from an ISR, so keep things as short as possible here.
- */
-void processing_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length);
+namespace digitalcave {
+	class Processing {
+			
+		private:
+			Stubby* stubby;
+			
+		public:
+			Processing(Stubby* stubby);
+			
+			/*
+			 * Called from the Stubby protocol dispatch function
+			 */
+			void dispatch(Serial* serial, FramedSerialMessage* message);
+	};
+}
 
 #endif
