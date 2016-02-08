@@ -121,8 +121,16 @@ class FramedSerialProtocol : NSObject {
 		}
 	}
 	
+	func send(messages : [FramedSerialMessage]) {
+		var bytes = [UInt8]()
+		for message in messages {
+			bytes.appendContentsOf(toBytes(message))
+		}
+		delegate.write(bytes)
+	}
+	
 	//Call this to write the entire message into the provided stream.
-	func write(message : FramedSerialMessage) {
+	func toBytes(message : FramedSerialMessage) -> [UInt8] {
 		let command = message.getCommand()
 		let data = message.getData()
 		let length = data.count;
@@ -157,8 +165,7 @@ class FramedSerialProtocol : NSObject {
 				break;
 			}
 		}
-		
-		delegate.write(bytes)
+		return bytes;
 	}
 	
 	/*

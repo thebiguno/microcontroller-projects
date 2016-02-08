@@ -33,14 +33,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		803D10221B856D7300B8D958 /* Chindii.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chindii.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		803D10221B856D7300B8D958 /* Chiindii.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chiindii.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D10261B856D7400B8D958 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D10271B856D7400B8D958 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		803D10291B856D7400B8D958 /* FlightViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlightViewController.swift; sourceTree = "<group>"; };
 		803D102C1B856D7400B8D958 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		803D102E1B856D7400B8D958 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		803D10311B856D7400B8D958 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		803D10371B856D7400B8D958 /* ChindiiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChindiiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		803D10371B856D7400B8D958 /* Chiindii.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Chiindii.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D103C1B856D7400B8D958 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D103D1B856D7400B8D958 /* ChindiiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChindiiTests.swift; sourceTree = "<group>"; };
 		803D10511B9950A900B8D958 /* FlightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightView.swift; sourceTree = "<group>"; };
@@ -84,8 +84,8 @@
 		803D10231B856D7300B8D958 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				803D10221B856D7300B8D958 /* Chindii.app */,
-				803D10371B856D7400B8D958 /* ChindiiTests.xctest */,
+				803D10221B856D7300B8D958 /* Chiindii.app */,
+				803D10371B856D7400B8D958 /* Chiindii.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,9 +138,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		803D10211B856D7300B8D958 /* Chindii */ = {
+		803D10211B856D7300B8D958 /* Chiindii */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 803D10411B856D7400B8D958 /* Build configuration list for PBXNativeTarget "Chindii" */;
+			buildConfigurationList = 803D10411B856D7400B8D958 /* Build configuration list for PBXNativeTarget "Chiindii" */;
 			buildPhases = (
 				803D101E1B856D7300B8D958 /* Sources */,
 				803D101F1B856D7300B8D958 /* Frameworks */,
@@ -150,14 +150,14 @@
 			);
 			dependencies = (
 			);
-			name = Chindii;
+			name = Chiindii;
 			productName = Chindii;
-			productReference = 803D10221B856D7300B8D958 /* Chindii.app */;
+			productReference = 803D10221B856D7300B8D958 /* Chiindii.app */;
 			productType = "com.apple.product-type.application";
 		};
-		803D10361B856D7400B8D958 /* ChindiiTests */ = {
+		803D10361B856D7400B8D958 /* ChiindiiTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 803D10441B856D7400B8D958 /* Build configuration list for PBXNativeTarget "ChindiiTests" */;
+			buildConfigurationList = 803D10441B856D7400B8D958 /* Build configuration list for PBXNativeTarget "ChiindiiTests" */;
 			buildPhases = (
 				803D10331B856D7400B8D958 /* Sources */,
 				803D10341B856D7400B8D958 /* Frameworks */,
@@ -168,9 +168,9 @@
 			dependencies = (
 				803D10391B856D7400B8D958 /* PBXTargetDependency */,
 			);
-			name = ChindiiTests;
+			name = ChiindiiTests;
 			productName = ChindiiTests;
-			productReference = 803D10371B856D7400B8D958 /* ChindiiTests.xctest */;
+			productReference = 803D10371B856D7400B8D958 /* Chiindii.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -194,7 +194,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 803D101D1B856D7300B8D958 /* Build configuration list for PBXProject "Chindii" */;
+			buildConfigurationList = 803D101D1B856D7300B8D958 /* Build configuration list for PBXProject "Chiindii" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -207,8 +207,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				803D10211B856D7300B8D958 /* Chindii */,
-				803D10361B856D7400B8D958 /* ChindiiTests */,
+				803D10211B856D7300B8D958 /* Chiindii */,
+				803D10361B856D7400B8D958 /* ChiindiiTests */,
 			);
 		};
 /* End PBXProject section */
@@ -263,7 +263,7 @@
 /* Begin PBXTargetDependency section */
 		803D10391B856D7400B8D958 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 803D10211B856D7300B8D958 /* Chindii */;
+			target = 803D10211B856D7300B8D958 /* Chiindii */;
 			targetProxy = 803D10381B856D7400B8D958 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -379,7 +379,7 @@
 				INFOPLIST_FILE = Chindii/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.digitalcave.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Chiindii;
 				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
@@ -393,7 +393,7 @@
 				INFOPLIST_FILE = Chindii/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.digitalcave.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Chiindii;
 				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
@@ -413,8 +413,8 @@
 				INFOPLIST_FILE = ChindiiTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.digitalcave.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chindii.app/Chindii";
+				PRODUCT_NAME = Chiindii;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chiindii.app/Chiindii";
 			};
 			name = Debug;
 		};
@@ -429,15 +429,15 @@
 				INFOPLIST_FILE = ChindiiTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.digitalcave.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chindii.app/Chindii";
+				PRODUCT_NAME = Chiindii;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Chiindii.app/Chiindii";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		803D101D1B856D7300B8D958 /* Build configuration list for PBXProject "Chindii" */ = {
+		803D101D1B856D7300B8D958 /* Build configuration list for PBXProject "Chiindii" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				803D103F1B856D7400B8D958 /* Debug */,
@@ -446,7 +446,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		803D10411B856D7400B8D958 /* Build configuration list for PBXNativeTarget "Chindii" */ = {
+		803D10411B856D7400B8D958 /* Build configuration list for PBXNativeTarget "Chiindii" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				803D10421B856D7400B8D958 /* Debug */,
@@ -455,7 +455,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		803D10441B856D7400B8D958 /* Build configuration list for PBXNativeTarget "ChindiiTests" */ = {
+		803D10441B856D7400B8D958 /* Build configuration list for PBXNativeTarget "ChiindiiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				803D10451B856D7400B8D958 /* Debug */,

@@ -48,8 +48,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func flight() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]))
-		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)));
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]),
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
+		]);
 	}
 	
 	func level() {
@@ -57,25 +59,31 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func rate() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]))
-		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedModel.rateSp)))
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]),
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)),
+			FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedModel.rateSp))
+		])
 	}
 	
 	func tuning() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig)))
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)),
+			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)),
+			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig))
+		])
 	}
 	
 	func saveTuning() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_SAVE_CALIBRATION))
 	}
 	func revertTuning() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY))
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION),
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID),
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID),
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY),
+		])
 	}
 	
 	func onMessage(message: FramedSerialMessage) {
@@ -98,7 +106,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func sendMessage(message : FramedSerialMessage) {
-		serialProtocol.write(message);
+		sendMessages([message]);
+	}
+	func sendMessages(messages : [FramedSerialMessage]) {
+		serialProtocol.send(messages)
 	}
 	
 	func write(b : [UInt8]) {

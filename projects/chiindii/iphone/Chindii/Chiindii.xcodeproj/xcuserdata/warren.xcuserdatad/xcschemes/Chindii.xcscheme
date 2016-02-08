@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "803D10211B856D7300B8D958"
-               BuildableName = "Chindii.app"
-               BlueprintName = "Chindii"
-               ReferencedContainer = "container:Chindii.xcodeproj">
+               BuildableName = "Chiindii.app"
+               BlueprintName = "Chiindii"
+               ReferencedContainer = "container:Chiindii.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "803D10361B856D7400B8D958"
-               BuildableName = "ChindiiTests.xctest"
-               BlueprintName = "ChindiiTests"
-               ReferencedContainer = "container:Chindii.xcodeproj">
+               BuildableName = "Chiindii.xctest"
+               BlueprintName = "ChiindiiTests"
+               ReferencedContainer = "container:Chiindii.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "803D10361B856D7400B8D958"
-               BuildableName = "ChindiiTests.xctest"
-               BlueprintName = "ChindiiTests"
-               ReferencedContainer = "container:Chindii.xcodeproj">
+               BuildableName = "Chiindii.xctest"
+               BlueprintName = "ChiindiiTests"
+               ReferencedContainer = "container:Chiindii.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "803D10211B856D7300B8D958"
-            BuildableName = "Chindii.app"
-            BlueprintName = "Chindii"
-            ReferencedContainer = "container:Chindii.xcodeproj">
+            BuildableName = "Chiindii.app"
+            BlueprintName = "Chiindii"
+            ReferencedContainer = "container:Chiindii.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "803D10211B856D7300B8D958"
-            BuildableName = "Chindii.app"
-            BlueprintName = "Chindii"
-            ReferencedContainer = "container:Chindii.xcodeproj">
+            BuildableName = "Chiindii.app"
+            BlueprintName = "Chiindii"
+            ReferencedContainer = "container:Chiindii.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -99,9 +99,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "803D10211B856D7300B8D958"
-            BuildableName = "Chindii.app"
-            BlueprintName = "Chindii"
-            ReferencedContainer = "container:Chindii.xcodeproj">
+            BuildableName = "Chiindii.app"
+            BlueprintName = "Chiindii"
+            ReferencedContainer = "container:Chiindii.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
