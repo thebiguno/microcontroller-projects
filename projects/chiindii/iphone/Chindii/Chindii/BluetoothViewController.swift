@@ -12,8 +12,27 @@ import CoreBluetooth
 class BluetoothViewController : UITableViewController, CBCentralManagerDelegate {
 	
 	var peripherals = [CBPeripheral]()
+//	var refreshControl : UIRefreshControl!
 	
 	override func viewDidLoad() {
+		super.viewDidLoad()
+		sharedMessageManager.centralManager.delegate = self;
+		
+		refreshControl!.addTarget(self, action: "refresh", forControlEvents: UIControlEvents.ValueChanged)
+	}
+	
+	func refresh(sender: AnyObject) {
+		refresh()
+	}
+	func refresh() {
+		peripherals.removeAll();
+
+		if (sharedMessageManager.connectedPeripheral != nil) {
+			sharedMessageManager.centralManager.cancelPeripheralConnection(sharedMessageManager.connectedPeripheral!)
+		}
+		if (sharedMessageManager.centralManager.state == .PoweredOn) {
+			sharedMessageManager.centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+		}
 	}
 	
 	override func didReceiveMemoryWarning() {
@@ -21,13 +40,13 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	override func viewWillAppear(animated: Bool) {
-		sharedMessageManager.centralManager.delegate = self;
+		if (sharedMessageManager.centralManager.state == .PoweredOn) {
+			sharedMessageManager.centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+		}
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
 		sharedMessageManager.centralManager.stopScan()
-		sharedMessageManager.centralManager.delegate = nil
-		peripherals.removeAll()
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -77,15 +96,7 @@ class BluetoothViewController : UITableViewController, CBCentralManagerDelegate 
 	}
 	
 	func centralManagerDidUpdateState(central: CBCentralManager) {
-		switch central.state {
-		case .PoweredOn:
-			print(".PoweredOn")
-			sharedMessageManager.centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
-			break
-		default:
-			break
-		}
-		
+		refresh()
 	}
 	
 	

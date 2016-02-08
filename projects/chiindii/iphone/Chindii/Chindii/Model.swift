@@ -18,6 +18,7 @@ struct PID {
 	var i : Float = 0.0
 	var d : Float = 0.0
 }
+
 struct RateConfig {
 	var x = PID()
 	var y = PID()
@@ -27,6 +28,7 @@ struct RateConfig {
 struct AngleConfig {
 	var x = PID()
 	var y = PID()
+	var z = PID()
 }
 struct CompConfig {
 	var x : Float = 0.0
@@ -61,7 +63,7 @@ class Model {
 			delegate?.configChanged()
 		}
 	}
-	var angleConfig = RateConfig() {
+	var angleConfig = AngleConfig() {
 		didSet {
 			delegate?.configChanged()
 		}

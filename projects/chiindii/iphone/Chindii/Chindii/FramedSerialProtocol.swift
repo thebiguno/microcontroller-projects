@@ -11,7 +11,7 @@ import CoreBluetooth
 
 protocol FramedSerialProtocolDelegate: NSObjectProtocol {
 	func onMessage(message: FramedSerialMessage)
-	func write(b: UInt8)
+	func write(bytes: [UInt8])
 }
 
 class FramedSerialProtocol : NSObject {
@@ -38,13 +38,15 @@ class FramedSerialProtocol : NSObject {
 	var delegate : FramedSerialProtocolDelegate!
 	
 	//Convenience method to escape the given byte if needed
-	func escapeByte(b : UInt8) {
+	func escapeByte(b : UInt8) -> [UInt8] {
+		var result = [UInt8]()
 		if (b == START || b == ESCAPE) {
-			delegate.write(ESCAPE)
-			delegate.write(b ^ 0x20);
+			result.append(ESCAPE)
+			result.append(b ^ 0x20);
 		} else {
-			delegate.write(b);
+			result.append(b);
 		}
+		return result
 	}
 	
 	func onMessage(message: [UInt8]) {
@@ -125,19 +127,21 @@ class FramedSerialProtocol : NSObject {
 		let data = message.getData()
 		let length = data.count;
 		
+		var bytes = [UInt8]()
+		
 		for (var position = 0; position <= (length + 3); position++) {
 			switch(position){
 			case 0:
-				delegate.write(START);
+				bytes.append(START);
 				break;
 			case 1:
-				escapeByte(UInt8(length + 1));
+				bytes.appendContentsOf(escapeByte(UInt8(length + 1)))
 				break;
 			case 2:
-				escapeByte(command);
+				bytes.appendContentsOf(escapeByte(command))
 				break;
 			default:
-				if (position - 3 == length){
+				if (position - 3 == length) {
 					//Write checksum
 					var result = command;
 					
@@ -145,14 +149,16 @@ class FramedSerialProtocol : NSObject {
 						result = result &+ data[i]
 					}
 					
-					escapeByte(0xff - result);
+					bytes.appendContentsOf(escapeByte(0xff - result))
 				}
 				else {
-					escapeByte(data[position - 3]);
+					bytes.appendContentsOf(escapeByte(data[position - 3]))
 				}
 				break;
 			}
 		}
+		
+		delegate.write(bytes)
 	}
 	
 	/*

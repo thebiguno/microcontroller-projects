@@ -19,7 +19,8 @@ class FlightViewController: UIViewController, ModelDelegate {
 		sharedModel.armed = sender.on
 		
 		if (sender.on) {
-			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
+			timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
+//			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)			
 		} else {
 			timer!.invalidate()
 			timer = nil;
@@ -55,6 +56,7 @@ class FlightViewController: UIViewController, ModelDelegate {
 	
 	override func viewWillAppear(animated: Bool) {
 		sharedModel.delegate = self;
+		armedSwitch.setOn(sharedModel.armed, animated: true)
 		battery.text = "\(sharedModel.battery)%"
 	}
 	

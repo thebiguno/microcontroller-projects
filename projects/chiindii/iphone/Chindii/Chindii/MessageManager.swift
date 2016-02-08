@@ -101,9 +101,9 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		serialProtocol.write(message);
 	}
 	
-	func write(b : UInt8) {
+	func write(b : [UInt8]) {
 		if (connectedPeripheral == nil) { return }
-		let data = NSData(bytes: [b], length: 1)
+		let data = NSData(bytes: b, length: b.count)
 		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: .WithResponse)
 	}
 	
@@ -134,14 +134,52 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		serialProtocol.onMessage(buffer)
 	}
 	
-	
-	func pack(var value: Any) -> [UInt8] {
+	func pack(var value : Float) -> [UInt8] {
 		let valueByteArray = withUnsafePointer(&value) {
-			Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>($0), count: sizeofValue(value)))
+			Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>($0), count: 4))
 		}
 		return valueByteArray
 	}
 	
+	func pack(vector : Vector) -> [UInt8] {
+		var result = [UInt8]()
+		result.appendContentsOf(pack(vector.x));
+		result.appendContentsOf(pack(vector.y));
+		result.appendContentsOf(pack(vector.z));
+		return result;
+	}
+	
+	func pack(pid : PID) -> [UInt8] {
+		var result = [UInt8]()
+		result.appendContentsOf(pack(pid.p));
+		result.appendContentsOf(pack(pid.i));
+		result.appendContentsOf(pack(pid.d));
+		return result;
+	}
+
+	func pack(config : RateConfig) -> [UInt8] {
+		var result = [UInt8]()
+		result.appendContentsOf(pack(config.x));
+		result.appendContentsOf(pack(config.y));
+		result.appendContentsOf(pack(config.z));
+		return result;
+	}
+
+	func pack(config : AngleConfig) -> [UInt8] {
+		var result = [UInt8]()
+		result.appendContentsOf(pack(config.x));
+		result.appendContentsOf(pack(config.y));
+		result.appendContentsOf(pack(config.z));
+		return result;
+	}
+
+	func pack(config : CompConfig) -> [UInt8] {
+		var result = [UInt8]()
+		result.appendContentsOf(pack(config.x));
+		result.appendContentsOf(pack(config.y));
+		return result;
+	}
+
 	func unpack<T>(bytes: [UInt8]) -> T {
 		let pointer = UnsafeMutablePointer<T>.alloc(sizeof(T.Type))
 		let data = NSData(bytes: bytes, length: bytes.count)
