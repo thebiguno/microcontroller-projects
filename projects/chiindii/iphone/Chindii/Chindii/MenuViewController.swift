@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MenuViewController: UITableViewController, UITextFieldDelegate {
+class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDelegate {
 	
 	@IBOutlet var throttle : UISlider!
 	@IBOutlet var rate : UISlider!
@@ -44,24 +44,24 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	@IBAction func throttleChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
 		
-		sharedConfigModel.throttle = sender.value * 10;
+		sharedModel.throttleSp = sender.value * 10;
 	}
 	
 	@IBAction func rateChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
-		sharedFlightModel.rate.x = 0;
-		sharedFlightModel.rate.y = 0;
-		sharedFlightModel.rate.z = 0;
+		sharedModel.rateSp.x = 0;
+		sharedModel.rateSp.y = 0;
+		sharedModel.rateSp.z = 0;
 
 		switch (axis.selectedSegmentIndex) {
 		case 0:
-			sharedFlightModel.rate.x = sender.value
+			sharedModel.rateSp.x = sender.value
 			break;
 		case 1:
-			sharedFlightModel.rate.y = sender.value
+			sharedModel.rateSp.y = sender.value
 			break;
 		default:
-			sharedFlightModel.rate.z = sender.value
+			sharedModel.rateSp.z = sender.value
 			break;
 		}
 	}
@@ -83,16 +83,16 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 			var anglePid : PID
 			switch (axis.selectedSegmentIndex) {
 			case 0:
-				ratePid = sharedConfigModel.rate.x
-				anglePid = sharedConfigModel.angle.x
+				ratePid = sharedModel.rateConfig.x
+				anglePid = sharedModel.angleConfig.x
 				break;
 			case 1:
-				ratePid = sharedConfigModel.rate.y
-				anglePid = sharedConfigModel.angle.y
+				ratePid = sharedModel.rateConfig.y
+				anglePid = sharedModel.angleConfig.y
 				break;
 			default:
-				ratePid = sharedConfigModel.rate.z
-				anglePid = sharedConfigModel.angle.z
+				ratePid = sharedModel.rateConfig.z
+				anglePid = sharedModel.angleConfig.z
 				break;
 			}
 			if (textField == rateP) {
@@ -109,9 +109,9 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
                 anglePid.d = numberFloatValue
             } else if (textField == tau) {
                 if (axis.selectedSegmentIndex == 0) {
-                    sharedConfigModel.comp.x = numberFloatValue
+                    sharedModel.compConfig.x = numberFloatValue
                 } else if (axis.selectedSegmentIndex == 1) {
-                    sharedConfigModel.comp.y = numberFloatValue
+                    sharedModel.compConfig.y = numberFloatValue
                 }
             }
             sharedMessageManager.tuning()
@@ -135,6 +135,52 @@ class MenuViewController: UITableViewController, UITextFieldDelegate {
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		sharedModel.delegate = self;
+		
+		update();
+	}
+	
+	func batteryChanged() {
+	}
+	
+	func configChanged() {
+		update();
+	}
+	
+	func update() {
+		throttle.value = sharedModel.throttleSp
+		
+		if (axis.selectedSegmentIndex == 0) {
+			rate.value = sharedModel.rateSp.x
+			rateP.text = "\(sharedModel.rateConfig.x.p)"
+			rateI.text = "\(sharedModel.rateConfig.x.i)"
+			rateD.text = "\(sharedModel.rateConfig.x.d)"
+			angleP.text = "\(sharedModel.angleConfig.x.p)"
+			angleI.text = "\(sharedModel.angleConfig.x.i)"
+			angleD.text = "\(sharedModel.angleConfig.x.d)"
+			tau.text = "\(sharedModel.compConfig.x)"
+		} else if (axis.selectedSegmentIndex == 1) {
+			rate.value = sharedModel.rateSp.y
+			rateP.text = "\(sharedModel.rateConfig.y.p)"
+			rateI.text = "\(sharedModel.rateConfig.y.i)"
+			rateD.text = "\(sharedModel.rateConfig.y.d)"
+			angleP.text = "\(sharedModel.angleConfig.y.p)"
+			angleI.text = "\(sharedModel.angleConfig.y.i)"
+			angleD.text = "\(sharedModel.angleConfig.y.d)"
+			tau.text = "\(sharedModel.compConfig.y)"
+		} else {
+			rate.value = sharedModel.rateSp.x
+			rateP.text = "\(sharedModel.rateConfig.z.p)"
+			rateI.text = "\(sharedModel.rateConfig.z.i)"
+			rateD.text = "\(sharedModel.rateConfig.z.d)"
+			angleP.text = "\(sharedModel.angleConfig.z.p)"
+			angleI.text = "\(sharedModel.angleConfig.z.i)"
+			angleD.text = "\(sharedModel.angleConfig.z.d)"
+			tau.text = "0"
+		}
 	}
 	
 }

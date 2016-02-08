@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="LaH-ul-fNE">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="LaH-ul-fNE">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <scenes>
         <!--Flight View Controller-->
@@ -47,7 +47,7 @@
                                     <action selector="armedPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="doX-Bu-VGK"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oXR-Mz-Edh">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100%" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oXR-Mz-Edh">
                                 <rect key="frame" x="506" y="20" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -63,6 +63,7 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
+                        <outlet property="battery" destination="oXR-Mz-Edh" id="xTy-HY-prA"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>
                 </viewController>
@@ -452,6 +453,7 @@
                         <outlet property="angleI" destination="6Sg-hL-jap" id="qe7-hE-711"/>
                         <outlet property="angleP" destination="cA6-CX-08i" id="tvi-IF-sKo"/>
                         <outlet property="axis" destination="TFa-LU-Syg" id="QxE-kS-cHE"/>
+                        <outlet property="rate" destination="iD4-XW-bCC" id="kyi-au-gdJ"/>
                         <outlet property="rateD" destination="r2k-lx-jbQ" id="x6o-o5-Kwi"/>
                         <outlet property="rateI" destination="eBK-Fd-zVf" id="Pt4-oa-1dx"/>
                         <outlet property="rateP" destination="aAm-Qp-clU" id="Di0-gr-ON3"/>

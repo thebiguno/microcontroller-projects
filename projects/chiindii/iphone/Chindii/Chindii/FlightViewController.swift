@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FlightViewController: UIViewController {
+class FlightViewController: UIViewController, ModelDelegate {
 
 	@IBOutlet var armedSwitch : UISwitch!
 	@IBOutlet var battery : UILabel!
@@ -16,7 +16,7 @@ class FlightViewController: UIViewController {
 	var timer : NSTimer?
 	
 	@IBAction func armedPressed(sender : UISwitch) {
-		sharedFlightModel.armed = sender.on
+		sharedModel.armed = sender.on
 		
 		if (sender.on) {
 			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
@@ -27,15 +27,15 @@ class FlightViewController: UIViewController {
 	}
 	
 	@IBAction func levelPressed(sender : AnyObject) {
-		sharedFlightModel.angle.z = 0
+		sharedModel.angleSp.z = 0
 	}
 	
 	@IBAction func upPressed(sender : AnyObject) {
-		sharedFlightModel.angle.z += 0.01
+		sharedModel.angleSp.z += 0.01
 	}
 	
 	@IBAction func downPressed(sender : AnyObject) {
-		sharedFlightModel.angle.z -= 0.01
+		sharedModel.angleSp.z -= 0.01
 	}
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
@@ -52,5 +52,17 @@ class FlightViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
+	override func viewWillAppear(animated: Bool) {
+		sharedModel.delegate = self;
+		battery.text = "\(sharedModel.battery)%"
+	}
+	
+	func batteryChanged() {
+		battery.text = "\(sharedModel.battery)%"
+	}
+	
+	func configChanged() {
+	}
 	
 }

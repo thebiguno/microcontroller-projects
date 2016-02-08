@@ -19,8 +19,7 @@
 		8065DC0E1C4DEDE600FEC634 /* FramedSerialProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */; };
 		807C0AFB1C5D127400CF0C6E /* BluetoothViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807C0AFA1C5D127400CF0C6E /* BluetoothViewController.swift */; };
 		807C0AFD1C61598600CF0C6E /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807C0AFC1C61598600CF0C6E /* MessageManager.swift */; };
-		80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954721C557BC3007BDB81 /* ConfigModel.swift */; };
-		80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954741C557DB5007BDB81 /* FlightModel.swift */; };
+		80E954731C557BC3007BDB81 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E954721C557BC3007BDB81 /* Model.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,8 +49,7 @@
 		8065DC0D1C4DEDE600FEC634 /* FramedSerialProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramedSerialProtocol.swift; sourceTree = "<group>"; };
 		807C0AFA1C5D127400CF0C6E /* BluetoothViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothViewController.swift; sourceTree = "<group>"; };
 		807C0AFC1C61598600CF0C6E /* MessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
-		80E954721C557BC3007BDB81 /* ConfigModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigModel.swift; sourceTree = "<group>"; };
-		80E954741C557DB5007BDB81 /* FlightModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightModel.swift; sourceTree = "<group>"; };
+		80E954721C557BC3007BDB81 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,8 +104,7 @@
 				803D10301B856D7400B8D958 /* LaunchScreen.xib */,
 				803D10251B856D7300B8D958 /* Supporting Files */,
 				803D10511B9950A900B8D958 /* FlightView.swift */,
-				80E954721C557BC3007BDB81 /* ConfigModel.swift */,
-				80E954741C557DB5007BDB81 /* FlightModel.swift */,
+				80E954721C557BC3007BDB81 /* Model.swift */,
 				807C0AFC1C61598600CF0C6E /* MessageManager.swift */,
 			);
 			path = Chindii;
@@ -247,10 +244,9 @@
 				803D102A1B856D7400B8D958 /* FlightViewController.swift in Sources */,
 				803D10281B856D7400B8D958 /* AppDelegate.swift in Sources */,
 				803D10541B9E22A700B8D958 /* MenuViewController.swift in Sources */,
-				80E954731C557BC3007BDB81 /* ConfigModel.swift in Sources */,
+				80E954731C557BC3007BDB81 /* Model.swift in Sources */,
 				807C0AFB1C5D127400CF0C6E /* BluetoothViewController.swift in Sources */,
 				807C0AFD1C61598600CF0C6E /* MessageManager.swift in Sources */,
-				80E954751C557DB5007BDB81 /* FlightModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

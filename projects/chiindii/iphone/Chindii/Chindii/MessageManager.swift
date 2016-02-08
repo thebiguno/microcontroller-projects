@@ -48,8 +48,8 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func flight() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedFlightModel.armed ? 0x01 : 0x00 ]))
-		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedFlightModel.angle)));
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]))
+		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)));
 	}
 	
 	func level() {
@@ -58,14 +58,14 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	
 	func rate() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]))
-		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedConfigModel.throttle)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedConfigModel.rate)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedModel.rateSp)))
 	}
 	
 	func tuning() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedConfigModel.rate)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedConfigModel.angle)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedConfigModel.comp)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig)))
 	}
 	
 	func saveTuning() {
@@ -81,16 +81,16 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	func onMessage(message: FramedSerialMessage) {
 		switch(message.command) {
 		case MESSAGE_SEND_BATTERY:
-			sharedFlightModel.battery = message.data[0]
+			sharedModel.battery = message.data[0]
 			break;
 		case MESSAGE_SEND_CALIBRATION_RATE_PID:
-			sharedConfigModel.rate = unpack(message.data)
+			sharedModel.rateConfig = unpack(message.data)
 			break
 		case MESSAGE_SEND_CALIBRATION_ANGLE_PID:
-			sharedConfigModel.angle = unpack(message.data)
+			sharedModel.angleConfig = unpack(message.data)
 			break
 		case MESSAGE_SEND_CALIBRATION_COMPLEMENTARY:
-			sharedConfigModel.comp = unpack(message.data)
+			sharedModel.compConfig = unpack(message.data)
 			break
 		default:
 			break;
