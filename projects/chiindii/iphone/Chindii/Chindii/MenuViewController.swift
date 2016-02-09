@@ -141,6 +141,8 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	}
 	
 	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated);
+		
 		sharedModel.delegate = self;
 		
 		update();

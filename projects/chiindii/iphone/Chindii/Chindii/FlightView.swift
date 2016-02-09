@@ -16,6 +16,7 @@ class FlightView: UIView {
 	// red:   0.9, 0.4, 0.3
 	// blue:  0.5, 0.7, 0.8
 
+	var radius = CGFloat(0.0);
 	var pitch = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	var roll = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	
@@ -30,7 +31,7 @@ class FlightView: UIView {
 		
 //		CGContextFillRect(context, rect)
 
-		let radius = rect.height / 2.0 - 20
+		radius = rect.height / 2.0 - 20
 		
 		CGContextSaveGState(context);
 		
@@ -72,12 +73,25 @@ class FlightView: UIView {
 	}
 	override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		setNeedsDisplay()
+		sharedModel.angleSp.x = 0;
+		sharedModel.angleSp.y = 0;
 	}
 	
 	func pitchRollTouch(touch: UITouch) {
 		let point = touch.locationInView(self)
 		
-		roll = Int(point.x - center.x)
-		pitch = Int(point.y - center.y)
+		var roll = ((point.x - center.x) / radius) * 0.10;
+		var pitch = ((point.y - center.y) / radius) * 0.10;
+		
+		// limit to .1 radian (~ 5 degrees)
+		if (roll > 0.1) { roll = 0.1 }
+		if (pitch > 0.1) { pitch = 0.1 }
+		
+		// TODO verify x and y
+		sharedModel.angleSp.x = Float(pitch)
+		sharedModel.angleSp.y = Float(roll)
+		
+		print(sharedModel.angleSp.x)
+		print(sharedModel.angleSp.y)
 	}
 }

@@ -69,7 +69,11 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	func tuning() {
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)),
+		])
+		sendMessages([
 			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)),
+		])
+		sendMessages([
 			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig))
 		])
 	}
