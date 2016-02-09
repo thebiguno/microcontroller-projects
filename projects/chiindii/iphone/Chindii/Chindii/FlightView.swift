@@ -86,12 +86,14 @@ class FlightView: UIView {
 		// limit to .1 radian (~ 5 degrees)
 		if (roll > 0.1) { roll = 0.1 }
 		if (pitch > 0.1) { pitch = 0.1 }
+		if (roll < -0.1) { roll = -0.1 }
+		if (pitch < -0.1) { pitch = -0.1 }
 		
 		// TODO verify x and y
 		sharedModel.angleSp.x = Float(pitch)
 		sharedModel.angleSp.y = Float(roll)
 		
-		print(sharedModel.angleSp.x)
-		print(sharedModel.angleSp.y)
+//		print(sharedModel.angleSp.x)
+//		print(sharedModel.angleSp.y)
 	}
 }
