@@ -10,6 +10,8 @@ import UIKit
 
 class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDelegate {
 	
+	@IBOutlet var throttleLabel : UILabel!
+	@IBOutlet var rateLabel : UILabel!
 	@IBOutlet var throttle : UISlider!
 	@IBOutlet var rate : UISlider!
 	@IBOutlet var axis : UISegmentedControl!
@@ -45,6 +47,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		sender.value = roundf(sender.value)
 		
 		sharedModel.throttleSp = sender.value * 10;
+		throttleLabel.text = "\(sharedModel.throttleSp)%"
 	}
 	
 	@IBAction func rateChanged(sender : UISlider) {
@@ -56,14 +59,21 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		switch (axis.selectedSegmentIndex) {
 		case 0:
 			sharedModel.rateSp.x = sender.value
+			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
 			break;
 		case 1:
 			sharedModel.rateSp.y = sender.value
+			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
 			break;
 		default:
 			sharedModel.rateSp.z = sender.value
+			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
 			break;
 		}
+	}
+	
+	@IBAction func axisChanged(sender : UISegmentedControl) {
+		update();
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
@@ -79,43 +89,36 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		} else {
 			let numberFloatValue = number!.floatValue
 
-			var ratePid : PID
-			var anglePid : PID
 			switch (axis.selectedSegmentIndex) {
 			case 0:
-				ratePid = sharedModel.rateConfig.x
-				anglePid = sharedModel.angleConfig.x
+				if (textField == rateP)	{ sharedModel.rateConfig.x.p = numberFloatValue }
+				else if (textField == rateI) { sharedModel.rateConfig.x.i = numberFloatValue }
+				else if (textField == rateD) { sharedModel.rateConfig.x.d = numberFloatValue }
+				else if (textField == angleP) { sharedModel.angleConfig.x.p = numberFloatValue }
+				else if (textField == angleI) { sharedModel.angleConfig.x.i = numberFloatValue }
+				else if (textField == angleD) { sharedModel.angleConfig.x.d = numberFloatValue }
+				else if (textField == tau) { sharedModel.compConfig.x = numberFloatValue }
 				break;
 			case 1:
-				ratePid = sharedModel.rateConfig.y
-				anglePid = sharedModel.angleConfig.y
+				if (textField == rateP)	{ sharedModel.rateConfig.y.p = numberFloatValue }
+				else if (textField == rateI) { sharedModel.rateConfig.y.i = numberFloatValue }
+				else if (textField == rateD) { sharedModel.rateConfig.y.d = numberFloatValue }
+				else if (textField == angleP) { sharedModel.angleConfig.y.p = numberFloatValue }
+				else if (textField == angleI) { sharedModel.angleConfig.y.i = numberFloatValue }
+				else if (textField == angleD) { sharedModel.angleConfig.y.d = numberFloatValue }
+				else if (textField == tau) { sharedModel.compConfig.y = numberFloatValue }
 				break;
 			default:
-				ratePid = sharedModel.rateConfig.z
-				anglePid = sharedModel.angleConfig.z
+				if (textField == rateP)	{ sharedModel.rateConfig.z.p = numberFloatValue }
+				else if (textField == rateI) { sharedModel.rateConfig.z.i = numberFloatValue }
+				else if (textField == rateD) { sharedModel.rateConfig.z.d = numberFloatValue }
+				else if (textField == angleP) { sharedModel.angleConfig.z.p = numberFloatValue }
+				else if (textField == angleI) { sharedModel.angleConfig.z.i = numberFloatValue }
+				else if (textField == angleD) { sharedModel.angleConfig.z.d = numberFloatValue }
 				break;
 			}
-			if (textField == rateP) {
-				ratePid.p = numberFloatValue
-            } else if (textField == rateI) {
-                ratePid.i = numberFloatValue
-            } else if (textField == rateD) {
-                ratePid.d = numberFloatValue
-            } else if (textField == angleP) {
-                anglePid.p = numberFloatValue
-            } else if (textField == angleI) {
-                anglePid.i = numberFloatValue
-            } else if (textField == angleD) {
-                anglePid.d = numberFloatValue
-            } else if (textField == tau) {
-                if (axis.selectedSegmentIndex == 0) {
-                    sharedModel.compConfig.x = numberFloatValue
-                } else if (axis.selectedSegmentIndex == 1) {
-                    sharedModel.compConfig.y = numberFloatValue
-                }
-            }
             sharedMessageManager.tuning()
-			return true;
+			return false;
 		}
 	}
 	
@@ -162,6 +165,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleI.text = "\(sharedModel.angleConfig.x.i)"
 			angleD.text = "\(sharedModel.angleConfig.x.d)"
 			tau.text = "\(sharedModel.compConfig.x)"
+			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
 		} else if (axis.selectedSegmentIndex == 1) {
 			rate.value = sharedModel.rateSp.y
 			rateP.text = "\(sharedModel.rateConfig.y.p)"
@@ -171,6 +175,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleI.text = "\(sharedModel.angleConfig.y.i)"
 			angleD.text = "\(sharedModel.angleConfig.y.d)"
 			tau.text = "\(sharedModel.compConfig.y)"
+			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
 		} else {
 			rate.value = sharedModel.rateSp.x
 			rateP.text = "\(sharedModel.rateConfig.z.p)"
@@ -180,7 +185,11 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleI.text = "\(sharedModel.angleConfig.z.i)"
 			angleD.text = "\(sharedModel.angleConfig.z.d)"
 			tau.text = "0"
+			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
 		}
+		
+		throttleLabel.text = "\(sharedModel.throttleSp)%"
+
 	}
 	
 }
