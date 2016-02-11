@@ -28,6 +28,12 @@ namespace digitalcave {
 			
 			//Returns the temperature (in C)
 			double getTemperature();
+			
+			//Get / set calibration data.  Use this to persist to EEPROM from main program.
+			int16_t* getAccelCalib();
+			void setAccelCalib(int16_t* calibration);
+			int16_t* getGyroCalib();
+			void setGyroCalib(int16_t* calibration);
 
 		private:
 			int16_t accelCalib[3];

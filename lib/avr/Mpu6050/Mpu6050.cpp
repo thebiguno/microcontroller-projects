@@ -83,3 +83,21 @@ double Mpu6050::getTemperature(){
 	
 	return ((int16_t) (data[0] << 8) | data[1]) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
 }
+
+int16_t* Mpu6050::getAccelCalib(){
+	return accelCalib;
+}
+void Mpu6050::setAccelCalib(int16_t* calibration){
+	accelCalib[0] = calibration[0];
+	accelCalib[1] = calibration[1];
+	accelCalib[2] = calibration[2];
+}
+int16_t* Mpu6050::getGyroCalib(){
+	return gyroCalib;
+}
+void Mpu6050::setGyroCalib(int16_t* calibration){
+	gyroCalib[0] = calibration[0];
+	gyroCalib[1] = calibration[1];
+	gyroCalib[2] = calibration[2];
+}
+

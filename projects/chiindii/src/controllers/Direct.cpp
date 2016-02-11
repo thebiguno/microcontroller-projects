@@ -27,7 +27,7 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		double* data = (double*) request->getData();
 		sp->x = data[0];
 		sp->y = data[1];
-		chiindii->getRateSp()->z = data[2];
+		sp->z = data[2];
 	}
 	else if (cmd == MESSAGE_RATE){
 		vector_t* sp = chiindii->getRateSp();
@@ -35,9 +35,12 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		sp->x = data[0];
 		sp->y = data[1];
 		sp->z = data[2];
-	}
-	else if (cmd == MESSAGE_LEVEL){
-		chiindii->getMpu6050()->calibrate();
+#ifdef DEBUG
+		char temp[32];
+		uint8_t size = snprintf(temp, sizeof(temp), "Rate: %3.2f, %3.2f, %3.2f\n", sp->x, sp->y, sp->z);
+		usb_serial_write((const uint8_t*) temp, size);
+#endif
+
 	}
 
 }

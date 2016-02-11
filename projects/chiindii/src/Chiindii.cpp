@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <avr/power.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 
 #include <PID.h>
@@ -42,6 +43,7 @@ PID* Chiindii::getRateY() { return &rate_y; }
 PID* Chiindii::getRateZ() { return &rate_z; }
 PID* Chiindii::getAngleX() { return &angle_x; }
 PID* Chiindii::getAngleY() { return &angle_y; }
+PID* Chiindii::getGforce() { return &gforce; }
 Complementary* Chiindii::getCompX() { return &c_x; }
 Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
@@ -52,20 +54,26 @@ void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 
-void Chiindii::setThrottle(double throttle) { this->throttle = throttle; }
+void Chiindii::setThrottle(double throttle) { 
+	if (throttle < 0) throttle_sp = 0; 
+	else if (throttle > 1) throttle_sp = 1; 
+	this->throttle_sp = throttle; 
+}
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
-	throttle(0),
-	
+	throttle_sp(0),
+	angle_sp({0, 0, 0}),
+	rate_sp({0, 0, 0}),
 	protocol(40),
 	
-	rate_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_z(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
-	angle_x(1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	angle_y(1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	gforce(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
 	
 	c_x(0.075, 3, 0),
 	c_y(0.075, 3, 0),
@@ -75,12 +83,23 @@ Chiindii::Chiindii() :
 	direct(this),
 	uc(this)
 {
-	;
+	//Output of angle PID is a rate (rad / s) for each axis.  -1 to 1 should suffice; if this
+	// results in too slow corrections, we can increase.
+	angle_x.setOutputLimits(-1, 1);
+	angle_y.setOutputLimits(-1, 1);
+	
+	//Output of g-force PID
+	gforce.setOutputLimits(0.9, 1.1);
+
+	//Output of rate PID is a percentage (0-1) for each axis.
+	rate_x.setOutputLimits(0, 1);
+	rate_y.setOutputLimits(0, 1);
+	rate_z.setOutputLimits(0, 1);
 }
 
 void Chiindii::run() {
 	FramedSerialMessage request(0,40);
-	
+
 	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
 	vector_t gyro;
@@ -92,6 +111,8 @@ void Chiindii::run() {
 	
 	motor_start();
 	
+	_delay_ms(250);
+/*	
 	motor_set(64,0,0,0);
 	_delay_ms(250);
 	motor_set(0,64,0,0);
@@ -101,17 +122,17 @@ void Chiindii::run() {
 	motor_set(0,0,0,64);
 	_delay_ms(250);
 	motor_set(0,0,0,0);
-	
-	//TODO Remove this, put it in calibration, and save values to EEPROM
-	mpu6050.calibrate();
-	
+*/
 	//Main program loop
 #ifdef DEBUG
 	char temp[128];
 #endif
 
-
+	//Watchdog timer
+	wdt_enable(WDTO_120MS);
+	
 	while (1) {
+		wdt_reset();
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
@@ -122,7 +143,7 @@ void Chiindii::run() {
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
-		} else if (time - last_message_time > 2000) { // TODO is 2 seconds OK?
+		} else if (time - last_message_time > 1000) {
 #ifdef DEBUG
 			if (mode) usb_serial_write((const uint8_t*) "Comm timeout\n", 13);
 #endif
@@ -134,6 +155,11 @@ void Chiindii::run() {
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
+			status.batteryLow();
+		} else if (battery_level <= 1) {
+			//The battery should only read as 0 if it is unplugged; we assume that we 
+			// are running in debug mode without any battery.  We still show the battery 
+			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
 #ifdef DEBUG
@@ -149,7 +175,6 @@ void Chiindii::run() {
 		// compute the absolute angle relative to the horizontal
 		angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
 		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
-		// NOTE can't do this for Z axis without a magnetometer
 
 #ifdef DEBUG
 		//uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
@@ -173,8 +198,13 @@ void Chiindii::run() {
 				// compute a rate set point given an angle set point and current measured angle
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
 			}
-		
+
+#ifdef DEBUG
+			//uint8_t size = snprintf(temp, sizeof(temp), "Rate SP: %3.2f, Gyro MV: %3.2f\n", rate_sp.x, gyro.x);
+			//usb_serial_write((const uint8_t*) temp, size);
+#endif
 			// rate pid
 			// computes the desired change rate
 			rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
@@ -183,7 +213,7 @@ void Chiindii::run() {
 		
 			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 				status.armed();
-				driveMotors(rate_pv);
+				driveMotors(&rate_pv);
 			} else {
 				status.disarmed();
 				motor_set(0, 0, 0, 0);
@@ -194,15 +224,31 @@ void Chiindii::run() {
 	}
 }
 
-void Chiindii::driveMotors(vector_t rate_pv) {
-	double m1 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
-	double m2 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
-	double m3 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
-	double m4 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
+void Chiindii::driveMotors(vector_t* rate_pv) {
+	double m1 = throttle_sp - rate_pv->x - rate_pv->y - rate_pv->z;
+	double m2 = throttle_sp + rate_pv->x - rate_pv->y + rate_pv->z;
+	double m3 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
+	double m4 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
 
+	//We limit the motor outputs to be in the range [0, 1].
+	if (m1 < 0) m1 = 0;
+	else if (m1 > 1) m1 = 1;
+	if (m2 < 0) m2 = 0;
+	else if (m2 > 1) m2 = 1;
+	if (m3 < 0) m3 = 0;
+	else if (m3 > 1) m3 = 1;
+	if (m4 < 0) m4 = 0;
+	else if (m4 > 1) m4 = 1;
+	
+	//Convert values in [0..1] to [0..511] (9 bit motor control)
+	m1 = m1 * 511;
+	m2 = m2 * 511;
+	m3 = m3 * 511;
+	m4 = m4 * 511;
+	
 #ifdef DEBUG
 	char temp[128];
-	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %3.2f, %3.2f, %3.2f, %3.2f from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", m1, m2, m3, m4, throttle, rate_pv.x, rate_pv.y, rate_pv.z);
+	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle_sp, rate_pv->x, rate_pv->y, rate_pv->z);
 	usb_serial_write((const uint8_t*) temp, size);
 #endif
 

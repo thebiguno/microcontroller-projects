@@ -11,9 +11,10 @@ import CoreBluetooth
 
 protocol FramedSerialProtocolDelegate: NSObjectProtocol {
 	func onMessage(message: FramedSerialMessage)
+	func write(bytes: [UInt8])
 }
 
-class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
+class FramedSerialProtocol : NSObject {
 	//Error codes
 	let NO_ERROR									= 0
 	let INCOMING_ERROR_UNEXPECTED_START_OF_FRAME	= 1
@@ -37,13 +38,15 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 	var delegate : FramedSerialProtocolDelegate!
 	
 	//Convenience method to escape the given byte if needed
-	func escapeByte(stream : PeripheralStream, b : UInt8) {
+	func escapeByte(b : UInt8) -> [UInt8] {
+		var result = [UInt8]()
 		if (b == START || b == ESCAPE) {
-			stream.write(ESCAPE)
-			stream.write(b ^ 0x20);
+			result.append(ESCAPE)
+			result.append(b ^ 0x20);
 		} else {
-			stream.write(b);
+			result.append(b);
 		}
+		return result
 	}
 	
 	func onMessage(message: [UInt8]) {
@@ -118,40 +121,51 @@ class FramedSerialProtocol : NSObject, PeripheralStreamDelegate {
 		}
 	}
 	
+	func send(messages : [FramedSerialMessage]) {
+		var bytes = [UInt8]()
+		for message in messages {
+			bytes.appendContentsOf(toBytes(message))
+		}
+		delegate.write(bytes)
+	}
+	
 	//Call this to write the entire message into the provided stream.
-	func write(stream : PeripheralStream, message : FramedSerialMessage) {
+	func toBytes(message : FramedSerialMessage) -> [UInt8] {
 		let command = message.getCommand()
 		let data = message.getData()
 		let length = data.count;
 		
+		var bytes = [UInt8]()
+		
 		for (var position = 0; position <= (length + 3); position++) {
 			switch(position){
 			case 0:
-				stream.write(START);
+				bytes.append(START);
 				break;
 			case 1:
-				escapeByte(stream, b: UInt8(length + 1));
+				bytes.appendContentsOf(escapeByte(UInt8(length + 1)))
 				break;
 			case 2:
-				escapeByte(stream, b: command);
+				bytes.appendContentsOf(escapeByte(command))
 				break;
 			default:
-				if (position - 3 == length){
+				if (position - 3 == length) {
 					//Write checksum
 					var result = command;
 					
 					for var i = 0; i < length; i++ {
-						result += data[i];
+						result = result &+ data[i]
 					}
 					
-					escapeByte(stream, b: 0xff - result);
+					bytes.appendContentsOf(escapeByte(0xff - result))
 				}
 				else {
-					escapeByte(stream, b: data[position - 3]);
+					bytes.appendContentsOf(escapeByte(data[position - 3]))
 				}
 				break;
 			}
 		}
+		return bytes;
 	}
 	
 	/*

@@ -347,9 +347,9 @@ int main (void){
 			
 			switch(incoming.getCommand()){
 				case MESSAGE_SEND_BATTERY:
-					if (incoming.getData()[0] >= 170) display.write_text(0, 15, BATTERY_FULL_ICON);
-					else if (incoming.getData()[0] >= 85) display.write_text(0, 15, BATTERY_HALF_ICON);
-					else display.write_text(0, 15, BATTERY_EMPTY_ICON);
+					if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
+					else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
+					else display.write_text(0, 10, BATTERY_EMPTY_ICON);
 					break;
 				case MESSAGE_SEND_DEBUG:
 					//Copy the last received line to the display's second line
@@ -389,7 +389,7 @@ int main (void){
 			display.write_text(0, 14, (char) 0xFE);	//Nothing
 		}
 		
-		//Hold down circle + triangle and push left stick all the way up for a few seconds to enter bootloader mode
+		//Hold down circle + triangle and push left stick all the way up for BOOTLOADER_TIME ms to enter bootloader mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0x00){
 			if ((time - bootloader_timer) >= BOOTLOADER_TIME){
 				display.write_text(0, 0, "DFU Bootloader  ", 16);

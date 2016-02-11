@@ -1,5 +1,7 @@
 #include "Calibration.h"
 
+#include <avr/wdt.h>
+
 #include "../Chiindii.h"
 #include "../timer/timer.h"
 
@@ -64,12 +66,24 @@ void Calibration::read() {
 		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
 		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
 		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
-		chiindii->getRateY()->setTunings(kp, ki, kd);
+		chiindii->getAngleY()->setTunings(kp, ki, kd);
 	
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 60);
+		kp = eeprom_read_float((float*) EEPROM_OFFSET + 60);
+		ki = eeprom_read_float((float*) EEPROM_OFFSET + 64);
+		kd = eeprom_read_float((float*) EEPROM_OFFSET + 68);
+		chiindii->getGforce()->setTunings(kp, ki, kd);
+
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 72);
 		chiindii->getCompX()->setTau(t);
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 64);
+		t = eeprom_read_float((float*) EEPROM_OFFSET + 76);
 		chiindii->getCompY()->setTau(t);
+		
+		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
+		int16_t calibration[3];
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 80), 6);
+		chiindii->getMpu6050()->setAccelCalib(calibration);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
+		chiindii->getMpu6050()->setGyroCalib(calibration);
 		
 #ifdef DEBUG
 		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Read\n");
@@ -104,11 +118,19 @@ void Calibration::write() {
 	eeprom_update_float((float*) EEPROM_OFFSET + 52, angle_y->getKi());
 	eeprom_update_float((float*) EEPROM_OFFSET + 56, angle_y->getKd());
 
+	PID* gforce = chiindii->getGforce();
+	eeprom_update_float((float*) EEPROM_OFFSET + 60, gforce->getKp());
+	eeprom_update_float((float*) EEPROM_OFFSET + 64, gforce->getKi());
+	eeprom_update_float((float*) EEPROM_OFFSET + 68, gforce->getKd());
+
 	Complementary* c_x = chiindii->getCompX();
-	eeprom_update_float((float*) EEPROM_OFFSET + 60, c_x->getTau());
+	eeprom_update_float((float*) EEPROM_OFFSET + 72, c_x->getTau());
 	
 	Complementary* c_y = chiindii->getCompY();
-	eeprom_update_float((float*) EEPROM_OFFSET + 64, c_y->getTau());
+	eeprom_update_float((float*) EEPROM_OFFSET + 76, c_y->getTau());
+	
+	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 80), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 86), 6);
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
@@ -143,11 +165,13 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
 		PID* x = chiindii->getAngleX();
 		PID* y = chiindii->getAngleY();
+		PID* g = chiindii->getGforce();
 		double data[] = { 
 			x->getKp(), x->getKi(), x->getKd(),
-			y->getKp(), y->getKi(), y->getKd()
+			y->getKp(), y->getKi(), y->getKd(),
+			g->getKp(), g->getKi(), g->getKd()
 		};
-		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 24);
+		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
@@ -170,10 +194,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getRateY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
 	}
-	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
+	else if (cmd == MESSAGE_SEND_CALIBRATION_ANGLE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
+		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
 		double* data = (double*) request->getData();
@@ -195,7 +220,9 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		double outdata[3];
 		vector_t angle_mv;
 		
-		for (uint8_t i = 0; i < 10; i++) {
+		for (uint16_t i = 0; i < 1000; i++) {
+			wdt_reset();
+			
 			time = timer_millis();
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();
@@ -220,5 +247,10 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			// TODO this delay should be the about same as the duration of the normal main loop
 			_delay_ms(10);
 		}
-	}	
+	}
+	else if (cmd == MESSAGE_START_MPU_CALIBRATION){
+		wdt_enable(WDTO_4S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
+		chiindii->getMpu6050()->calibrate();
+		wdt_enable(WDTO_120MS);
+	}
 }

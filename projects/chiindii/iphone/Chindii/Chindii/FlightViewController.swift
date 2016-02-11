@@ -1,5 +1,5 @@
 //
-//  LandscapeViewController.swift
+//  FlightViewController.swift
 //  Chindii
 //
 //  Created by Warren Janssens on 2015-08-19.
@@ -7,10 +7,38 @@
 //
 
 import UIKit
-import CoreBluetooth
 
-class FlightViewController: UIViewController, DZBluetoothSerialDelegate {
+class FlightViewController: UIViewController, ModelDelegate {
 
+	@IBOutlet var armedSwitch : UISwitch!
+	@IBOutlet var battery : UILabel!
+	
+	var timer : NSTimer?
+	
+	@IBAction func armedPressed(sender : UISwitch) {
+		sharedModel.armed = sender.on
+		
+		if (sender.on) {
+			timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
+//			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)			
+		} else {
+			timer!.invalidate()
+			timer = nil;
+		}
+	}
+	
+	@IBAction func levelPressed(sender : AnyObject) {
+		sharedModel.angleSp.z = 0
+	}
+	
+	@IBAction func upPressed(sender : AnyObject) {
+		sharedModel.angleSp.z += 0.01
+	}
+	
+	@IBAction func downPressed(sender : AnyObject) {
+		sharedModel.angleSp.z -= 0.01
+	}
+	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
 		if (toInterfaceOrientation.isPortrait) {
 			performSegueWithIdentifier("toMenu", sender: self);
@@ -19,9 +47,6 @@ class FlightViewController: UIViewController, DZBluetoothSerialDelegate {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-		
-		serial = DZBluetoothSerialHandler(delegate: self)
-		serial.writeWithResponse = false
 	}
 	
     override func didReceiveMemoryWarning() {
@@ -29,13 +54,17 @@ class FlightViewController: UIViewController, DZBluetoothSerialDelegate {
         // Dispose of any resources that can be recreated.
     }
 	
-	func serialHandlerDidReceiveMessage(message: String) {
+	override func viewWillAppear(animated: Bool) {
+		sharedModel.delegate = self;
+		armedSwitch.setOn(sharedModel.armed, animated: true)
+		battery.text = "\(sharedModel.battery)%"
 	}
 	
-	func serialHandlerDidDisconnect(peripheral: CBPeripheral, error: NSError?) {
+	func batteryChanged() {
+		battery.text = "\(sharedModel.battery)%"
 	}
 	
-	func serialHandlerDidChangeState(newState: CBCentralManagerState) {
+	func configChanged() {
 	}
 	
 }

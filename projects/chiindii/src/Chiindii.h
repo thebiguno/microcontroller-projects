@@ -52,7 +52,7 @@ namespace digitalcave {
 			uint8_t mode;
 			uint8_t debug;
 			uint8_t battery_level;
-			double throttle;
+			double throttle_sp;
 			vector_t angle_sp;
 			vector_t rate_sp;
 			
@@ -64,6 +64,7 @@ namespace digitalcave {
 			PID rate_z;
 			PID angle_x;
 			PID angle_y;
+			PID gforce;
 			Complementary c_x;
 			Complementary c_y;
 		
@@ -74,7 +75,7 @@ namespace digitalcave {
 			
 			Status status;
 			
-			void driveMotors(vector_t rate_pv);
+			void driveMotors(vector_t* rate_pv);
 			void dispatch(FramedSerialMessage *message);
 			
 		public:
@@ -84,12 +85,14 @@ namespace digitalcave {
 			
 			vector_t* getAngleSp();
 			vector_t* getRateSp();
-			
+			void setThrottle(double throttle);
+
 			PID* getRateX();
 			PID* getRateY();
 			PID* getRateZ();
 			PID* getAngleX();
 			PID* getAngleY();
+			PID* getGforce();
 			Complementary* getCompX();
 			Complementary* getCompY();
 			Mpu6050* getMpu6050();
@@ -104,8 +107,6 @@ namespace digitalcave {
 			uint8_t getDebug();
 			void setDebug(uint8_t debug);
 
-			void setThrottle(double throttle);
-			
 			void sendMessage(FramedSerialMessage *message);
 	};
 }
