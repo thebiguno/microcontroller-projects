@@ -1,0 +1,42 @@
+Protocol Info
+-------------
+
+Message Structure (bi-directional):
+Segment				Length
+---------------------------------
+Frame start			1 byte (0x7e)
+Length				1 byte
+Command				1 byte
+Payload				0 - 254 bytes
+Checksum			1 byte
+
+Commands:
+---------
+
+Command						Direction				Payload															Response
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- General commands
+SendAcknowledge				Device -> Control		Command being ack'd (1 byte)									None
+SendComplete				Device -> Control		Command completed (1 byte)										None
+
+RequestControlConfig		Control -> Device		Controller ID; UC = 0x55 ('U')									ControlConfig message
+SendControlConfig			Device -> Control		Configuration for controller									None
+
+RequestEnableDebug			Control -> Device		Null															Ack
+RequestDisableDebug			Control -> Device		Null															Ack
+SendDebug					Device -> Control		Variable depending on message, max 254 bytes					None
+
+RequestBattery				Control -> Device		Null															Battery message
+SendBattery					Device -> Control		1 byte															None
+
+-- Universal Controller commands
+UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					None
+UCButtonRelease				Control -> Device		Index of button which was just released (1 byte)				None
+UCJoystickMove				Control -> Device		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)			None
+
+UCButtonEnable				Device -> Control		Index of button to enable (1 - 16) (1 byte)						None
+UCButtonDisable				Device -> Control		Index of button to disable (1 - 16) (1 byte)					None
+UCJoystickEnable			Device -> Control		Null															None
+UCJoystickDisable			Device -> Control		Null															None
+UCSetPollFrequency			Device -> Control		8 bit unsigned value (will be shifted 6 bits left) (1 byte)		None
+UCSetAnalogFrequency		Device -> Control		8 bit compare value (1 byte)									None
