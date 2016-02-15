@@ -48,6 +48,12 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func flight() {
+		let c = Float(M_PI) / 180.0
+		var angle = Vector()
+		angle.x = sharedModel.angleSp.x * c
+		angle.y = sharedModel.angleSp.y * c
+		angle.z = sharedModel.angleSp.z * c
+
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]),
 			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
@@ -59,6 +65,12 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func rate() {
+		let c = Float(M_PI) / 180.0
+		var rate = Vector()
+		rate.x = sharedModel.rateSp.x * c
+		rate.y = sharedModel.rateSp.y * c
+		rate.z = sharedModel.rateSp.z * c
+		
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]),
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
