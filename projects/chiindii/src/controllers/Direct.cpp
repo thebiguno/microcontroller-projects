@@ -4,6 +4,11 @@
 
 using namespace digitalcave;
 
+#ifdef DEBUG
+#include <SerialUSB.h>
+extern SerialUSB usb;
+#endif
+
 Direct::Direct(Chiindii *chiindii) {
 	this->chiindii = chiindii;
 }
@@ -14,7 +19,7 @@ void Direct::dispatch(FramedSerialMessage* request) {
 #ifdef DEBUG
 		char temp[32];
 		uint8_t size = snprintf(temp, sizeof(temp), "Arming: %d\n", request->getData()[0]);
-		usb_serial_write((const uint8_t*) temp, size);
+		usb.write((uint8_t*) temp, size);
 #endif
 		chiindii->setMode(request->getData()[0]);
 	}
@@ -38,7 +43,7 @@ void Direct::dispatch(FramedSerialMessage* request) {
 #ifdef DEBUG
 		char temp[32];
 		uint8_t size = snprintf(temp, sizeof(temp), "Rate: %3.2f, %3.2f, %3.2f\n", sp->x, sp->y, sp->z);
-		usb_serial_write((const uint8_t*) temp, size);
+		usb.write((uint8_t*) temp, size);
 #endif
 
 	}

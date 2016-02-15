@@ -34,6 +34,11 @@ char temp[128];
 
  */
 
+#ifdef DEBUG
+#include <SerialUSB.h>
+extern SerialUSB usb;
+#endif
+
 Calibration::Calibration(Chiindii* chiindii) {
 	this->chiindii = chiindii;
 }
@@ -84,11 +89,6 @@ void Calibration::read() {
 		chiindii->getMpu6050()->setAccelCalib(calibration);
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
-		
-#ifdef DEBUG
-		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Read\n");
-		usb_serial_write((const uint8_t*) temp, size);
-#endif
 	}
 }
 
@@ -134,11 +134,6 @@ void Calibration::write() {
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
-	
-#ifdef DEBUG
-		uint8_t size = snprintf(temp, sizeof(temp), "Calibration Write\n");
-		usb_serial_write((const uint8_t*) temp, size);
-#endif
 }
 
 void Calibration::dispatch(FramedSerialMessage* request) {
@@ -185,7 +180,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		uint8_t size = snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
-		usb_serial_write((const uint8_t*) temp, size);
+		usb.write((uint8_t*) temp, size);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
@@ -207,7 +202,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		uint8_t size = snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-		usb_serial_write((const uint8_t*) temp, size);
+		usb.write((uint8_t*) temp, size);
 #endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){

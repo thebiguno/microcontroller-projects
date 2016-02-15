@@ -8,7 +8,6 @@
 #include <stdio.h>
 
 #include "Complementary.h"
-#include "lib/usb/serial.h"
 
 using namespace digitalcave;
 

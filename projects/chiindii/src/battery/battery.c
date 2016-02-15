@@ -1,5 +1,4 @@
 #include "battery.h"
-#include "../lib/usb/serial.h"
 
 void battery_init(){
 	//Enable ADC with div32 prescaler, single shot conversions

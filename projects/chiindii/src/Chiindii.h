@@ -22,7 +22,7 @@
 #include "controllers/Direct.h"
 
 #ifdef DEBUG
-#include "lib/usb/serial.h"
+#include <SerialUSB.h>
 #include <stdio.h>
 #endif
 

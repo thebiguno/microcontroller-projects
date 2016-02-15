@@ -18,6 +18,9 @@ using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
 SerialAVR serial(38400, 8, 0, 1, 1, 64);
+#ifdef DEBUG
+SerialUSB usb;
+#endif
 
 int main(){
 	//Set clock to run at full speed
@@ -28,9 +31,6 @@ int main(){
 	
 	battery_init();
 	timer_init();
-#ifdef DEBUG
-	usb_init();
-#endif
 
 	Chiindii chiindii;
 	chiindii.run();
@@ -138,14 +138,14 @@ void Chiindii::run() {
 		if (protocol.read(&serial, &request)) {
 #ifdef DEBUG
 			uint8_t size = snprintf(temp, sizeof(temp), "Received Command: 0x%02x\n", request.getCommand());
-			usb_serial_write((const uint8_t*) temp, size);
+			usb.write((uint8_t*) temp, size);
 #endif
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
 		} else if (time - last_message_time > 1000) {
 #ifdef DEBUG
-			if (mode) usb_serial_write((const uint8_t*) "Comm timeout\n", 13);
+			if (mode) usb.write((uint8_t*) "Comm timeout\n", 13);
 #endif
 			mode = MODE_UNARMED;
 			status.commInterrupt();
@@ -163,7 +163,7 @@ void Chiindii::run() {
 			status.batteryLow();
 		} else {
 #ifdef DEBUG
-			if (mode) usb_serial_write((const uint8_t*) "Low battery\n", 12);
+			if (mode) usb.write((uint8_t*) "Low battery\n", 12);
 #endif
 			mode = MODE_UNARMED;
 			status.batteryLow();
@@ -188,9 +188,9 @@ void Chiindii::run() {
 		
 		if (computed){
 #ifdef DEBUG
-			//usb_serial_write((const uint8_t*) temp, size);
+			//usb.write((uint8_t*) temp, size);
 			//size = snprintf(temp, sizeof(temp), "%3.5f\n", angle_mv.x);
-			//usb_serial_write((const uint8_t*) temp, size);
+			//usb.write((uint8_t*) temp, size);
 #endif
 
 			if (mode == MODE_ARMED_ANGLE) {
@@ -203,7 +203,7 @@ void Chiindii::run() {
 
 #ifdef DEBUG
 			//uint8_t size = snprintf(temp, sizeof(temp), "Rate SP: %3.2f, Gyro MV: %3.2f\n", rate_sp.x, gyro.x);
-			//usb_serial_write((const uint8_t*) temp, size);
+			//usb.write((uint8_t*) temp, size);
 #endif
 			// rate pid
 			// computes the desired change rate
@@ -249,7 +249,7 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 #ifdef DEBUG
 	char temp[128];
 	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle_sp, rate_pv->x, rate_pv->y, rate_pv->z);
-	usb_serial_write((const uint8_t*) temp, size);
+	usb.write((uint8_t*) temp, size);
 #endif
 
 	motor_set(m1, m2, m3, m4);
