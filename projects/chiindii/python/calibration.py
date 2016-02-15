@@ -35,6 +35,11 @@ MESSAGE_START_MPU_CALIBRATION = 0x3B
 #MODE_CALIBRATION_COMPLEMENTARY = 0x02
 #MODE_CALIBRATION_ANGLE_PID = 0x03
 
+MODE_UNARMED = 0x00
+MODE_ARMED_ANGLE = 0x01
+MODE_ARMED_RATE = 0x02
+
+
 ########## Main program here ##########
 
 def main(ser):
@@ -288,7 +293,7 @@ Select parameter: """).lower()
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
-					writeMessage(ser, MESSAGE_ARMED, [1])		#Armed in rate mode
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
 					writeMessage(ser, MESSAGE_RATE, rate_sp)
 				else:
@@ -416,7 +421,7 @@ Select parameter: """).lower()
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 				
-					writeMessage(ser, MESSAGE_ARMED, [2])		#Armed in angle mode
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE])		#Armed in angle mode
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
 					writeMessage(ser, MESSAGE_ANGLE, rate_sp)
 				else:
