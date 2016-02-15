@@ -32,6 +32,16 @@ int main(){
 	battery_init();
 	timer_init();
 
+/*
+	motor_start();
+	while (1) {
+	for (uint16_t i = 0; i < 512; i++) {
+			motor_set(i,i,i,i);
+			_delay_ms(10);
+		}
+	}
+*/
+
 	Chiindii chiindii;
 	chiindii.run();
 }

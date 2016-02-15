@@ -26,6 +26,11 @@ void Direct::dispatch(FramedSerialMessage* request) {
 	else if (cmd == MESSAGE_THROTTLE){
 		double* data = (double*) request->getData();
 		chiindii->setThrottle(data[0]);
+#ifdef DEBUG
+		char temp[32];
+		uint8_t size = snprintf(temp, sizeof(temp), "Throttle: %X%X%X%X\n", request->getData()[0], request->getData()[1], request->getData()[2], request->getData()[3]);
+		usb.write((uint8_t*) temp, size);
+#endif
 	}
 	else if (cmd == MESSAGE_ANGLE){
 		vector_t* sp = chiindii->getAngleSp();

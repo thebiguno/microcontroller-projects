@@ -61,7 +61,9 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	func rate() {
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]),
-			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)),
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
+		])
+		sendMessages([
 			FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedModel.rateSp))
 		])
 	}
