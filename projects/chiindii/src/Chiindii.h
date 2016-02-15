@@ -56,6 +56,8 @@ namespace digitalcave {
 			vector_t angle_sp;
 			vector_t rate_sp;
 			
+			uint32_t last_battery;
+			
 			FramedSerialProtocol protocol;
 			Mpu6050 mpu6050;
 
