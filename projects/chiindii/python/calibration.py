@@ -4,7 +4,7 @@
 # Follow the on-screen prompts
 ###################
 
-import math, re, serial, struct, sys
+import math, re, time, serial, struct, sys
 
 ########## Common variables ##########
 
@@ -206,7 +206,7 @@ Selected Option: """).lower()
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "s"):
+		elif (param == "d"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
 			while True:
 				response = readMessage(ser)
@@ -295,7 +295,9 @@ Select parameter: """).lower()
 					
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
+					#for i in range(0, 10):
 					writeMessage(ser, MESSAGE_RATE, rate_sp)
+					#	time.sleep(0.5)
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "t"):

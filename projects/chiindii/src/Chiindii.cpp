@@ -104,9 +104,9 @@ Chiindii::Chiindii() :
 	//Output of g-force PID
 	gforce.setOutputLimits(0.9, 1.1);
 
-	//Output of rate PID is a percentage (0-1) for each axis.
-	rate_x.setOutputLimits(0, 1);
-	rate_y.setOutputLimits(0, 1);
+	//Output of rate PID is WHAT?!?!?!?
+	rate_x.setOutputLimits(-1, 1);
+	rate_y.setOutputLimits(-1, 1);
 	rate_z.setOutputLimits(0, 1);
 }
 
@@ -168,7 +168,7 @@ void Chiindii::run() {
 		if (time - last_battery > BATTERY_PERIOD){
 			uint8_t data[] = { getBatteryPercent() };
 			FramedSerialMessage message(MESSAGE_SEND_BATTERY, data, 1);
-			sendMessage(&message);
+			//sendMessage(&message);
 			last_battery = time;
 		}
 		if (battery_level > BATTERY_WARNING_LEVEL) {
