@@ -32,15 +32,15 @@
 
 #include <stdlib.h>
 
+#include <bootloader.h>
 #include <CharDisplay.h>
 #include <Hd44780_Direct.h>
 #include <FramedSerialProtocol.h>
 #include <NullSerial.h>
 #include <PSX_AVR.h>
 #include <SerialAVR.h>
+#include <SerialUSB.h>
 #include <SoftwareSerialAVR.h>
-
-#include "lib/bootloader.h"
 
 #include "Analog.h"
 #include "timer.h"
@@ -91,6 +91,7 @@
 #define ANALOG_POLL_TIME						1000
 #define BATTERY_TIME							2000
 #define BOOTLOADER_TIME							1000
+#define PASSTHROUGH_TIME						1000
 
 #define COMM_NONE								0x00
 #define COMM_RX									0x01
@@ -139,9 +140,11 @@ uint32_t bootloader_timer = 0;
 uint32_t analog_poll_timer = 0;
 uint32_t digital_poll_timer = 0;
 uint32_t communication_timer = 0;
+uint32_t passthrough_timer = 0;
 
 uint8_t communication = COMM_NONE;
 uint8_t battery_level = 0;
+uint8_t usb_passthrough = 0;
 
 char buf[15];	//String buffer, used for display formatting
 
@@ -158,6 +161,8 @@ void sendMessage(FramedSerialMessage* m){
 int main (void){
 	//Do setup here
 	clock_prescale_set(clock_div_2);	//Run at 8MHz so that we can run on 3.3v
+	
+	SerialUSB serialUSB;
 	
 	uint8_t custom[64] = {
 		0x0e,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,	// 0 (Battery Full)
@@ -188,6 +193,10 @@ int main (void){
 	
 	//Main program loop
 	while (1){
+		if (serialUSB.isConnected()){
+			serialUSB.write('X');
+		}
+		
 		uint32_t time = timer_millis();
 	
 		if ((time - battery_timer) > BATTERY_TIME){
@@ -227,140 +236,150 @@ int main (void){
 			serial = &nullSerial;
 		}
 
-		
-		psx.poll();
-		
-		uint16_t buttons = psx.buttons();
-		uint16_t changed = psx.changed();
-		
-		//Hold down square + cross and push left stick all the way down for a second or so to send the 'start' button press
-// 		if (psx.button(PSB_CROSS) && psx.button(PSB_SQUARE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
-// 			if ((time - start_timer) >= START_TIME){
-// 				buttons |= PSB_START;
-// 				changed |= PSB_START;
-// 				start_timer = time;
-// 			}
-// 			start_counter++;
-// 		}
-// 		else {
-// 			start_counter = 0;
-// 		}
-		
-		//Digital transmission section
-		if (changed){
-			for (uint8_t x = 0; x < 16; x++){
-				//If this was triggered by a real button event, show the current state (newly pressed or newly released)
-				if (changed & _BV(x)){
-					if (buttons & _BV(x)){
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						sendMessage(&m);
-					}
-					else {
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						sendMessage(&m);
-					}
-				}
+		if (usb_passthrough){
+			uint8_t b;
+			if (serialUSB.read(&b)){
+				serial.write(b);
 			}
-			
-			digital_poll_timer = time;
+			else if (serial.read(&b)){
+				serialUSB.write(b);
+			}
 		}
-		
-		//Button repeat
-		if ((time - digital_poll_timer) > DIGITAL_POLL_TIME){
-			if (buttons){
+		else {
+			psx.poll();
+			
+			uint16_t buttons = psx.buttons();
+			uint16_t changed = psx.changed();
+			
+			//Hold down square + cross and push left stick all the way down for a second or so to send the 'start' button press
+	// 		if (psx.button(PSB_CROSS) && psx.button(PSB_SQUARE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
+	// 			if ((time - start_timer) >= START_TIME){
+	// 				buttons |= PSB_START;
+	// 				changed |= PSB_START;
+	// 				start_timer = time;
+	// 			}
+	// 			start_counter++;
+	// 		}
+	// 		else {
+	// 			start_counter = 0;
+	// 		}
+			
+			//Digital transmission section
+			if (changed){
 				for (uint8_t x = 0; x < 16; x++){
-					if (buttons & _BV(x)){
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						sendMessage(&m);
+					//If this was triggered by a real button event, show the current state (newly pressed or newly released)
+					if (changed & _BV(x)){
+						if (buttons & _BV(x)){
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+							sendMessage(&m);
+						}
+						else {
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
+							sendMessage(&m);
+						}
 					}
 				}
+				
+				digital_poll_timer = time;
 			}
-			else {
-				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				sendMessage(&m);
-			}
-
-			digital_poll_timer = time;
-		}
-		
-		//Analog transmission section
-		
-		//Add in the current analog values to the running average
-		average_stick[0] = average_stick[0] + psx.stick(PSS_LX) - (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[1] = average_stick[1] + psx.stick(PSS_LY) - (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[2] = average_stick[2] + psx.stick(PSS_RX) - (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[3] = average_stick[3] + psx.stick(PSS_RY) - (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
-		
-		average_throttle = average_throttle + analog.read(ADC_THROTTLE) - (average_throttle >> AVERAGE_DIVISOR_EXPONENT);
-		
-		if ((time - analog_poll_timer) > ANALOG_POLL_TIME
-				|| abs((average_stick[0] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[0]) > STICK_THRESHOLD
-				|| abs((average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[1]) > STICK_THRESHOLD
-				|| abs((average_stick[2] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[2]) > STICK_THRESHOLD
-				|| abs((average_stick[3] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[3]) > STICK_THRESHOLD
-				|| abs((average_throttle >> AVERAGE_DIVISOR_EXPONENT) - last_throttle) > THROTTLE_THRESHOLD){
-
-			last_stick[0] = (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[1] = (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[2] = (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[3] = (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
-			last_throttle = average_throttle >> AVERAGE_DIVISOR_EXPONENT;
-
-			FramedSerialMessage sticks(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
-			sendMessage(&sticks);
 			
-			FramedSerialMessage throttle(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
-			sendMessage(&throttle);
-			
-			analog_poll_timer = time;
-		}
-
-//		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select        ", 14);
-//		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1        ", 14);
-//		else if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2        ", 14);
-//		else if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3        ", 14);
-//		else if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1       ", 14);
-//		else if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2       ", 14);
-//		else if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3       ", 14);
-//		else if (psx.button(PSB_START)) display.write_text(0, 0, "Start         ", 14);
-//		else if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up        ", 14);
-//		else if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left      ", 14);
-//		else if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down      ", 14);
-//		else if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right     ", 14);
-//		else if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle      ", 14);
-//		else if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle        ", 14);
-//		else if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross         ", 14);
-//		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square        ", 14);
-//		else display.write_text(0, 0, "                ", 16);
-//
-//		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
-//		display.write_text(1, 0, buf, 16);
-		
-		//Show local battery level
-		display.write_text(1, 15, battery_level);
-		
-		//Read any incoming bytes and handle completed messages if applicable
-		if (fsp.read(&serialAvr, &incoming)){
-			communication |= COMM_RX;
-			communication_timer = time;
-			//TODO
-			
-			switch(incoming.getCommand()){
-				case MESSAGE_SEND_BATTERY:
-					if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
-					else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
-					else display.write_text(0, 10, BATTERY_EMPTY_ICON);
-					break;
-				case MESSAGE_SEND_DEBUG:
-					//Copy the last received line to the display's second line
-					display.write_text(1, 0, text_line, 14);
-					//Copy the newly received message into the text buffer
-					for (uint8_t i = 0; i < incoming.getLength() && i < 14; i++){
-						text_line[i] = incoming.getData()[i];
+			//Button repeat
+			if ((time - digital_poll_timer) > DIGITAL_POLL_TIME){
+				if (buttons){
+					for (uint8_t x = 0; x < 16; x++){
+						if (buttons & _BV(x)){
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+							sendMessage(&m);
+						}
 					}
-					//Show the newly received line on the display's first line
-					display.write_text(0, 0, text_line, 14);
-					break;
+				}
+				else {
+					FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+					sendMessage(&m);
+				}
+
+				digital_poll_timer = time;
+			}
+			
+			//Analog transmission section
+			
+			//Add in the current analog values to the running average
+			average_stick[0] = average_stick[0] + psx.stick(PSS_LX) - (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[1] = average_stick[1] + psx.stick(PSS_LY) - (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[2] = average_stick[2] + psx.stick(PSS_RX) - (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[3] = average_stick[3] + psx.stick(PSS_RY) - (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
+			
+			average_throttle = average_throttle + analog.read(ADC_THROTTLE) - (average_throttle >> AVERAGE_DIVISOR_EXPONENT);
+			
+			if ((time - analog_poll_timer) > ANALOG_POLL_TIME
+					|| abs((average_stick[0] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[0]) > STICK_THRESHOLD
+					|| abs((average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[1]) > STICK_THRESHOLD
+					|| abs((average_stick[2] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[2]) > STICK_THRESHOLD
+					|| abs((average_stick[3] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[3]) > STICK_THRESHOLD
+					|| abs((average_throttle >> AVERAGE_DIVISOR_EXPONENT) - last_throttle) > THROTTLE_THRESHOLD){
+
+				last_stick[0] = (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[1] = (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[2] = (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[3] = (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
+				last_throttle = average_throttle >> AVERAGE_DIVISOR_EXPONENT;
+
+				FramedSerialMessage sticks(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
+				sendMessage(&sticks);
+				
+				FramedSerialMessage throttle(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
+				sendMessage(&throttle);
+				
+				analog_poll_timer = time;
+			}
+
+	//		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select        ", 14);
+	//		else if (psx.button(PSB_L1)) display.write_text(0, 0, "Left 1        ", 14);
+	//		else if (psx.button(PSB_L2)) display.write_text(0, 0, "Left 2        ", 14);
+	//		else if (psx.button(PSB_L3)) display.write_text(0, 0, "Left 3        ", 14);
+	//		else if (psx.button(PSB_R1)) display.write_text(0, 0, "Right 1       ", 14);
+	//		else if (psx.button(PSB_R2)) display.write_text(0, 0, "Right 2       ", 14);
+	//		else if (psx.button(PSB_R3)) display.write_text(0, 0, "Right 3       ", 14);
+	//		else if (psx.button(PSB_START)) display.write_text(0, 0, "Start         ", 14);
+	//		else if (psx.button(PSB_PAD_UP)) display.write_text(0, 0, "Pad Up        ", 14);
+	//		else if (psx.button(PSB_PAD_LEFT)) display.write_text(0, 0, "Pad Left      ", 14);
+	//		else if (psx.button(PSB_PAD_DOWN)) display.write_text(0, 0, "Pad Down      ", 14);
+	//		else if (psx.button(PSB_PAD_RIGHT)) display.write_text(0, 0, "Pad Right     ", 14);
+	//		else if (psx.button(PSB_TRIANGLE)) display.write_text(0, 0, "Triangle      ", 14);
+	//		else if (psx.button(PSB_CIRCLE)) display.write_text(0, 0, "Circle        ", 14);
+	//		else if (psx.button(PSB_CROSS)) display.write_text(0, 0, "Cross         ", 14);
+	//		else if (psx.button(PSB_SQUARE)) display.write_text(0, 0, "Square        ", 14);
+	//		else display.write_text(0, 0, "                ", 16);
+	//
+	//		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
+	//		display.write_text(1, 0, buf, 16);
+			
+			//Show local battery level
+			display.write_text(1, 15, battery_level);
+			
+			//Read any incoming bytes and handle completed messages if applicable
+			if (fsp.read(&serialAvr, &incoming)){
+				communication |= COMM_RX;
+				communication_timer = time;
+				//TODO
+				
+				switch(incoming.getCommand()){
+					case MESSAGE_SEND_BATTERY:
+						if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
+						else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
+						else display.write_text(0, 10, BATTERY_EMPTY_ICON);
+						break;
+					case MESSAGE_SEND_DEBUG:
+						//Copy the last received line to the display's second line
+						display.write_text(1, 0, text_line, 14);
+						//Copy the newly received message into the text buffer
+						for (uint8_t i = 0; i < incoming.getLength() && i < 14; i++){
+							text_line[i] = incoming.getData()[i];
+						}
+						//Show the newly received line on the display's first line
+						display.write_text(0, 0, text_line, 14);
+						break;
+				}
 			}
 		}
 		
@@ -400,6 +419,20 @@ int main (void){
 		}
 		else {
 			bootloader_timer = time;
+		}
+		
+		//Hold down circle + triangle and push left stick all the way down for PASSTHROUGH_TIME ms to enter USB passthrough mode
+		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
+			if ((time - passthrough_timer) >= PASSTHROUGH_TIME){
+				display.write_text(0, 0, "USB Passthrough ", 16);
+				display.write_text(1, 0, "                ", 16);
+				display.refresh();
+				
+				usb_passthrough = 1;
+			}
+		}
+		else {
+			passthrough_timer = time;
 		}
 		
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.button(PSB_PAD_UP)){
