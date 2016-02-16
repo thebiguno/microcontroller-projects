@@ -89,6 +89,10 @@ void Calibration::read() {
 		chiindii->getMpu6050()->setAccelCalib(calibration);
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
+		chiindii->sendDebug("Load EEPROM");
+	}
+	else {
+		chiindii->sendDebug("Load Defaults");
 	}
 }
 
@@ -134,6 +138,8 @@ void Calibration::write() {
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
+	
+	chiindii->sendDebug("Save EEPROM");
 }
 
 void Calibration::dispatch(FramedSerialMessage* request) {

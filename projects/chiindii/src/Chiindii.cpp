@@ -4,6 +4,7 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
+#include <string.h>
 
 #include <PID.h>
 #include <SerialAVR.h>
@@ -64,6 +65,16 @@ void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 
+void Chiindii::sendDebug(const char* message){
+	sendDebug((char*) message);
+}
+void Chiindii::sendDebug(char* message){
+	if (debug){
+		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 14));
+		sendMessage(&response);
+	}
+}
+
 void Chiindii::setThrottle(double throttle) { 
 	if (throttle < 0) throttle_sp = 0; 
 	else if (throttle > 1) throttle_sp = 1; 
@@ -72,6 +83,7 @@ void Chiindii::setThrottle(double throttle) {
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
+	debug(1),			//TODO We currently start in debug mode
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
@@ -134,9 +146,7 @@ void Chiindii::run() {
 	motor_set(0,0,0,0);
 */
 	//Main program loop
-#ifdef DEBUG
 	char temp[128];
-#endif
 
 	//Watchdog timer
 	wdt_enable(WDTO_120MS);
@@ -146,17 +156,14 @@ void Chiindii::run() {
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
-#ifdef DEBUG
-			uint8_t size = snprintf(temp, sizeof(temp), "Received Command: 0x%02x\n", request.getCommand());
-			usb.write((uint8_t*) temp, size);
-#endif
+			snprintf(temp, sizeof(temp), "Cmd: 0x%02x", request.getCommand());
+			sendDebug(temp);
+
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
 		} else if (time - last_message_time > 1000) {
-#ifdef DEBUG
-			if (mode) usb.write((uint8_t*) "Comm timeout\n", 13);
-#endif
+			sendDebug("Comm Timeout");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -172,9 +179,7 @@ void Chiindii::run() {
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
-#ifdef DEBUG
-			if (mode) usb.write((uint8_t*) "Low battery\n", 12);
-#endif
+			sendDebug("Low Battery");
 			mode = MODE_UNARMED;
 			status.batteryLow();
 		}
@@ -265,7 +270,7 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	motor_set(m1, m2, m3, m4);
 } 
 
-void Chiindii::dispatch(FramedSerialMessage *request) {
+void Chiindii::dispatch(FramedSerialMessage* request) {
 	uint8_t cmd = request->getCommand();
 
 	if ((cmd & 0xF0) == 0x00){
@@ -285,7 +290,7 @@ void Chiindii::dispatch(FramedSerialMessage *request) {
 	}
 }
 
-void Chiindii::sendMessage(FramedSerialMessage *message) {
+void Chiindii::sendMessage(FramedSerialMessage* message) {
 	protocol.write(&serial, message);
 }
 
