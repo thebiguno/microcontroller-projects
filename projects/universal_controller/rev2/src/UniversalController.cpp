@@ -191,12 +191,14 @@ int main (void){
 	//Turn the switch sensors' pullups on
 	PORTC |= _BV(PORTC6) | _BV(PORTC7);
 	
+	display.write_text(0, 0, "Loading...      ", 16);
+	display.write_text(1, 0, "                ", 16);
+	display.refresh();
+	_delay_ms(500);
+	display.clear();
+	
 	//Main program loop
 	while (1){
-		if (serialUSB.isConnected()){
-			serialUSB.write('X');
-		}
-		
 		uint32_t time = timer_millis();
 	
 		if ((time - battery_timer) > BATTERY_TIME){
@@ -208,21 +210,14 @@ int main (void){
 			battery_timer = time;
 			
 			//Request battery from remote device
-			FramedSerialMessage m(MESSAGE_REQUEST_BATTERY, 0x00, 0);
-			sendMessage(&m);
-
+			if (!usb_passthrough){
+				FramedSerialMessage m(MESSAGE_REQUEST_BATTERY, 0x00, 0);
+				sendMessage(&m);
+			}
 		}
 		if ((time - communication_timer) > COMMUNICATION_TIME){
 			communication = COMM_NONE;
 			communication_timer = time;
-		}
-		if ((time - announce_timer) > ANNOUNCE_TIME){
-			//Send device ID
-			uint8_t id = 'U';
-			FramedSerialMessage m(MESSAGE_ANNOUNCE_CONTROL_ID, &id, 1);
-			sendMessage(&m);
-
-			announce_timer = time;
 		}
 		
 		//Read the switch state
@@ -236,34 +231,34 @@ int main (void){
 			serial = &nullSerial;
 		}
 
-		if (usb_passthrough){
+		psx.poll();
+
+		if (usb_passthrough && serialUSB.isConnected()){
 			uint8_t b;
 			if (serialUSB.read(&b)){
-				serial.write(b);
+				serial->write(b);
+				communication |= COMM_TX;
+				communication_timer = time;
 			}
-			else if (serial.read(&b)){
+			else if (serial->read(&b)){
 				serialUSB.write(b);
+				communication |= COMM_RX;
+				communication_timer = time;
 			}
 		}
 		else {
-			psx.poll();
-			
+			if ((time - announce_timer) > ANNOUNCE_TIME){
+				//Send device ID
+				uint8_t id = 'U';
+				FramedSerialMessage m(MESSAGE_ANNOUNCE_CONTROL_ID, &id, 1);
+				sendMessage(&m);
+
+				announce_timer = time;
+			}
+
 			uint16_t buttons = psx.buttons();
 			uint16_t changed = psx.changed();
-			
-			//Hold down square + cross and push left stick all the way down for a second or so to send the 'start' button press
-	// 		if (psx.button(PSB_CROSS) && psx.button(PSB_SQUARE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
-	// 			if ((time - start_timer) >= START_TIME){
-	// 				buttons |= PSB_START;
-	// 				changed |= PSB_START;
-	// 				start_timer = time;
-	// 			}
-	// 			start_counter++;
-	// 		}
-	// 		else {
-	// 			start_counter = 0;
-	// 		}
-			
+
 			//Digital transmission section
 			if (changed){
 				for (uint8_t x = 0; x < 16; x++){
@@ -424,11 +419,18 @@ int main (void){
 		//Hold down circle + triangle and push left stick all the way down for PASSTHROUGH_TIME ms to enter USB passthrough mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
 			if ((time - passthrough_timer) >= PASSTHROUGH_TIME){
-				display.write_text(0, 0, "USB Passthrough ", 16);
-				display.write_text(1, 0, "                ", 16);
+				usb_passthrough ^= 1;
+				
+				if (usb_passthrough){
+					display.write_text(0, 0, "FTDI Bridge   ", 14);
+					display.write_text(1, 0, "              ", 14);
+				}
+				else {
+					display.clear();
+				}
 				display.refresh();
 				
-				usb_passthrough = 1;
+				passthrough_timer = time;
 			}
 		}
 		else {
