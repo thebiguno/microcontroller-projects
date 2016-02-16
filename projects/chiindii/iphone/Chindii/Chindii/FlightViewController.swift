@@ -10,6 +10,7 @@ import UIKit
 
 class FlightViewController: UIViewController, ModelDelegate {
 
+	@IBOutlet var message : UILabel!
 	@IBOutlet var armedSwitch : UISwitch!
 	@IBOutlet var battery : UILabel!
 	

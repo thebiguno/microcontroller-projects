@@ -47,8 +47,15 @@
                                     <action selector="armedPressed:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="doX-Bu-VGK"/>
                                 </connections>
                             </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Debug Message" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Iji-Xd-yhi">
+                                <rect key="frame" x="283" y="23" width="265" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100%" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oXR-Mz-Edh">
-                                <rect key="frame" x="506" y="20" width="42" height="21"/>
+                                <rect key="frame" x="506" y="149" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -64,6 +71,7 @@
                     <connections>
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
                         <outlet property="battery" destination="oXR-Mz-Edh" id="xTy-HY-prA"/>
+                        <outlet property="message" destination="Iji-Xd-yhi" id="hrg-gh-dhM"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>
                 </viewController>
