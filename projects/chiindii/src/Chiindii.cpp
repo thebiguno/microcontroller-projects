@@ -14,8 +14,6 @@
 #include "battery/battery.h"
 #include "motor/motor.h"
 
-#define BATTERY_PERIOD		2000
-
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
@@ -77,7 +75,6 @@ Chiindii::Chiindii() :
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
-	last_battery(0),
 	protocol(40),
 	
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
@@ -165,12 +162,6 @@ void Chiindii::run() {
 		}
 
 		battery_level = battery_read();
-		if (time - last_battery > BATTERY_PERIOD){
-			uint8_t data[] = { getBatteryPercent() };
-			FramedSerialMessage message(MESSAGE_SEND_BATTERY, data, 1);
-			//sendMessage(&message);
-			last_battery = time;
-		}
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
 		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
