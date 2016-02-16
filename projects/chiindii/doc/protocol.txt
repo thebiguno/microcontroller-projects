@@ -1,10 +1,10 @@
 Hex		Command						Direction				Payload															
 ----------------------------------------------------------------------------------------------------------------------------
 -- General commands
-		RequestDebug				Control -> Device		1 byte; 0 = debug off, non-zero = debug on						
-		Debug						Device -> Control		Variable depending on message, max 254 bytes					
-
-		Battery						Device -> Control		1 byte; 0 - 99 as a percentage									
+03		RequestDebug				Control -> Device		1 byte; 0 = debug off, non-zero = debug on						
+05		Debug						Device -> Control		Variable depending on message, max 254 bytes					
+06		RequestBattery				Control -> Device		Null
+07		Battery						Device -> Control		1 byte; 0 - 100 as a percentage									
 
 -- Direct Controller commands
 20		Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
