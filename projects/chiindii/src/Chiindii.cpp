@@ -215,6 +215,8 @@ void Chiindii::run() {
 					char temp[128];
 					snprintf(temp, sizeof(temp), "Attitude: %3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f", gyro.x, gyro.y, accel.x, accel.y, angle_mv.x, angle_mv.y);
 					sendDebug(temp);
+					snprintf(temp, sizeof(temp), "PID: %3.2f,%3.2f,%3.2f", rate_pv.x, rate_pv.y, rate_pv.z);
+					sendDebug(temp);
 				}
 
 				driveMotors(&rate_pv);
@@ -234,6 +236,12 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	double m3 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
 	double m4 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
 
+	if (debug){
+		char temp[128];
+		snprintf(temp, sizeof(temp), "Raw Motors: %3.2f, %3.2f, %3.2f, %3.2f", m1, m2, m3, m4);
+		sendDebug(temp);
+	}
+	
 	//We limit the motor outputs to be in the range [0, 1].
 	if (m1 < 0) m1 = 0;
 	else if (m1 > 1) m1 = 1;
