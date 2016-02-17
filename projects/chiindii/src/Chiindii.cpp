@@ -70,7 +70,7 @@ void Chiindii::sendDebug(const char* message){
 }
 void Chiindii::sendDebug(char* message){
 	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 14));
+		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
 		sendMessage(&response);
 	}
 }
@@ -145,25 +145,20 @@ void Chiindii::run() {
 	_delay_ms(250);
 	motor_set(0,0,0,0);
 */
-	//Main program loop
-	char temp[128];
-
 	//Watchdog timer
 	wdt_enable(WDTO_120MS);
 	
+	//Main program loop
 	while (1) {
 		wdt_reset();
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
-			snprintf(temp, sizeof(temp), "Cmd: 0x%02x", request.getCommand());
-			sendDebug(temp);
-
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
 		} else if (time - last_message_time > 1000) {
-			sendDebug("Comm Timeout");
+			if (mode) sendDebug("Comm Timeout");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -179,7 +174,7 @@ void Chiindii::run() {
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
-			sendDebug("Low Battery");
+			if (mode) sendDebug("Low Battery");
 			mode = MODE_UNARMED;
 			status.batteryLow();
 		}
@@ -191,10 +186,6 @@ void Chiindii::run() {
 		angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
 		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
 
-#ifdef DEBUG
-		//uint8_t size = snprintf(temp, sizeof(temp), "%3.5f,%3.5f,", angle_mv.x, gyro.x);
-#endif
-		
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
 		uint8_t computed = 0;
@@ -202,12 +193,6 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
-#ifdef DEBUG
-			//usb.write((uint8_t*) temp, size);
-			//size = snprintf(temp, sizeof(temp), "%3.5f\n", angle_mv.x);
-			//usb.write((uint8_t*) temp, size);
-#endif
-
 			if (mode == MODE_ARMED_ANGLE) {
 				// angle pid
 				// compute a rate set point given an angle set point and current measured angle
@@ -216,18 +201,22 @@ void Chiindii::run() {
 				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
 			}
 
-#ifdef DEBUG
-			//uint8_t size = snprintf(temp, sizeof(temp), "Rate SP: %3.2f, Gyro MV: %3.2f\n", rate_sp.x, gyro.x);
-			//usb.write((uint8_t*) temp, size);
-#endif
 			// rate pid
 			// computes the desired change rate
 			rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
 			rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 			rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
-		
+			
 			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 				status.armed();
+
+				//Debug data
+				if (debug){
+					char temp[128];
+					snprintf(temp, sizeof(temp), "Attitude: %3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f", gyro.x, gyro.y, accel.x, accel.y, angle_mv.x, angle_mv.y);
+					sendDebug(temp);
+				}
+
 				driveMotors(&rate_pv);
 			} else {
 				status.disarmed();
@@ -261,11 +250,11 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	m3 = m3 * 511;
 	m4 = m4 * 511;
 	
-#ifdef DEBUG
-	char temp[128];
-	uint8_t size = snprintf(temp, sizeof(temp), "Setting motors: %d, %d, %d, %d from throttle %3.2f and rate_pvs %3.2f, %3.2f, %3.2f\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4, throttle_sp, rate_pv->x, rate_pv->y, rate_pv->z);
-	usb.write((uint8_t*) temp, size);
-#endif
+	if (debug){
+		char temp[128];
+		snprintf(temp, sizeof(temp), "Motors: %d, %d, %d, %d", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		sendDebug(temp);
+	}
 
 	motor_set(m1, m2, m3, m4);
 } 

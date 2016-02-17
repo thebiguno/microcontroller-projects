@@ -19,6 +19,14 @@ MESSAGE_THROTTLE = 0x21
 MESSAGE_RATE = 0x22
 MESSAGE_ANGLE = 0x23
 
+MESSAGE_ANNOUNCE_CONTROL_ID = 0x00
+MESSAGE_SEND_ACKNOWLEDGE = 0x01
+MESSAGE_SEND_COMPLETE = 0x02
+MESSAGE_REQUEST_DEBUG = 0x03
+MESSAGE_DEBUG = 0x05
+MESSAGE_REQUEST_BATTERY = 0x06
+MESSAGE_SEND_BATTERY = 0x07
+
 MESSAGE_SAVE_CALIBRATION = 0x30
 MESSAGE_LOAD_CALIBRATION = 0x31
 MESSAGE_REQUEST_CALIBRATION_RATE_PID = 0x33
@@ -183,12 +191,8 @@ Selected Option: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-				response = readMessage(ser)
+				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
 				if (response == False):
-					print("Communication failure")
-					return
-				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY):
-					print("Invalid response detected: received command " + hex(response["command"]))
 					return
 				d = response["data"]
 				
@@ -208,16 +212,12 @@ Selected Option: """).lower()
 					print("Invalid value, please try again\n")
 		elif (param == "d"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+			print("Gyro\tAccel\tComp")
 			while True:
-				response = readMessage(ser)
+				response = readMessage(ser, MESSAGE_SEND_TUNING_DATA)
 				if (response == False):
 					break
-				d = buffer(str(bytearray(response["data"])))
-				
-				accel = struct.unpack_from("<f", d, 0)[0];
-				gyro = struct.unpack_from("<f", d, 4)[0];
-				comp = struct.unpack_from("<f", d, 8)[0];
-				print(str(round(accel, 4)) + "\t" + str(round(gyro, 4)) + "\t" + str(round(comp, 4)))
+				print("{0[0]:.3f}\t{0[1]:.3f}\t{0[2]:.3f}".format(struct.unpack("<fff", buffer(str(bytearray(response["data"]))))))
 		else:
 			print("Invalid axis, please try again\n")
 
@@ -239,12 +239,8 @@ Ensure that Chiindii is in the tuning jig.
 	
 	writeMessage(ser, 0x00, [0x43])
 	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-	response = readMessage(ser)
+	response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID)
 	if (response == False):
-		print("Communication failure")
-		return
-	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_RATE_PID):
-		print("Invalid response detected")
 		return
 	d = response["data"]
 	while True:
@@ -293,11 +289,17 @@ Select parameter: """).lower()
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
-					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
-					#for i in range(0, 10):
-					writeMessage(ser, MESSAGE_RATE, rate_sp)
-					#	time.sleep(0.5)
+					writeMessage(ser, MESSAGE_RATE, rate_sp)				#Set rate
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
+					
+					#Show debug data...
+					while True:
+						response = readMessage(ser, MESSAGE_DEBUG)
+						if (response == False):
+							break
+						print("".join(map(chr, response["data"])))
+
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "t"):
@@ -307,12 +309,8 @@ Select parameter: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-				response = readMessage(ser)
+				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID)
 				if (response == False):
-					print("Communication failure")
-					return
-				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_RATE_PID):
-					print("Invalid response detected: received command " + hex(response["command"]))
 					return
 				d = response["data"]
 				
@@ -367,12 +365,8 @@ Ensure that Chiindii is in the tuning jig.
 	
 	writeMessage(ser, 0x00, [0x43])
 	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-	response = readMessage(ser)
+	response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
 	if (response == False):
-		print("Communication failure")
-		return
-	elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_ANGLE_PID):
-		print("Invalid response detected")
 		return
 	d = response["data"]
 	while True:
@@ -435,12 +429,8 @@ Select parameter: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-				response = readMessage(ser)
+				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
 				if (response == False):
-					print("Communication failure")
-					return
-				elif (response["command"] != MESSAGE_REQUEST_CALIBRATION_ANGLE_PID):
-					print("Invalid response detected: received command " + hex(response["command"]))
 					return
 				d = response["data"]
 
@@ -486,6 +476,14 @@ G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 ########## Helper functions here ##########
 
 def writeMessage(ser, command, data):
+	#Flush input buffer
+	incoming = readNextMessage(ser)
+	while incoming != False:
+		if (incoming["command"] == MESSAGE_DEBUG):
+			print("Flushing: received debug message: " + "".join(map(chr, incoming["data"])))
+		else:
+			print("Flushing: received command " + hex(incoming["command"]))
+		incoming = readNextMessage(ser)
 	message = [0x7e, len(data) + 1, command]
 	checksum = command
 	for i in range(0, len(data)):
@@ -495,10 +493,22 @@ def writeMessage(ser, command, data):
 	message.append(checksum)
 	ser.write(''.join(chr(b) for b in message))
 
-def readMessage(ser):
+def readMessage(ser, command):
+	for i in range(0, 10):
+		message = readNextMessage(ser)
+		if (message != False and message["command"] == command):
+			return message
+		elif (message != False and message["command"] == MESSAGE_DEBUG and command != MESSAGE_DEBUG):
+			print("Received debug message: " + "".join(map(chr, message["data"])))
+		elif (message != False):
+			print("Received command " + hex(message["command"]))
+	print("Communication failure...")
+	return False
+	
+def readNextMessage(ser):
 	START = 0x7e
 	ESCAPE = 0x7d
-	MAX_SIZE = 40
+	MAX_SIZE = 255
 
 	err = False
 	esc = False
@@ -507,7 +517,7 @@ def readMessage(ser):
 	cmd = 0
 	chk = 0x00
 
-	buf = [0 for i in range(254)]		#max langth of message
+	buf = [0 for i in range(MAX_SIZE)]		#max langth of message
 
 	while True:
 		rawArray = ser.read()
@@ -516,16 +526,20 @@ def readMessage(ser):
 		
 		for raw in rawArray:
 			b = ord(raw)
+			#print(hex(b))
 		
 			if (err and b == START):
 				# recover from error condition
 				err = False
+				#print("Recover from error")
 				pos = 0
 			elif (err):
+				print("Error")
 				continue
 
 			if (pos > 0 and b == START):
 				# unexpected start of frame
+				#print("Unexpected start of frame")
 				err = True
 				continue
 
@@ -556,6 +570,7 @@ def readMessage(ser):
 			else:
 				if (pos > MAX_SIZE):
 					# this probably can't happen
+					#print("Overlength message")
 					continue
 
 				if (pos == (length + 2)):
@@ -567,6 +582,7 @@ def readMessage(ser):
 						return result
 					
 					else:
+						#print("Invalid checksum")
 						err = True;
 					pos = 0;
 					chk = 0;
