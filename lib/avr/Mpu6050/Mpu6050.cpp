@@ -8,7 +8,17 @@ Mpu6050::Mpu6050(){
 	data[0] = MPU6050_PWR_MGMT_1;
 	data[1] = 0x00;
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep (required at startup)
-		
+	
+	//Set gyro to 2000 deg/s range
+	data[0] = MPU6050_GYRO_CONFIG;
+	data[1] = 0x18;		//2000 deg/s
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+	
+	//Set accel to +/- 16g
+	data[0] = MPU6050_ACCEL_CONFIG;
+	data[1] = 0x18;		//+/- 16g
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+	
 	//Init calibration data to 0
 	accelCalib[0] = 0;
 	accelCalib[1] = 0;
@@ -56,9 +66,9 @@ vector_t Mpu6050::getAccel(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Accel X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.00006103515625;		// 2g / 32678
-	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.00006103515625;
-	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.00006103515625;
+	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.00048828125;		// 16g / 32768
+	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.00048828125;
+	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.00048828125;
 	return result;
 }
 
@@ -69,9 +79,9 @@ vector_t Mpu6050::getGyro(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Gyro X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.00762939453125 * M_PI / 180;		//(250 deg/s / 32768) * PI/180
-	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.00762939453125 * M_PI / 180;
-	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.00762939453125 * M_PI / 180;
+	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(250 deg/s / 32768) * PI/180
+	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.06103515625 * M_PI / 180;
+	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.06103515625 * M_PI / 180;
 	return result;
 }
 
