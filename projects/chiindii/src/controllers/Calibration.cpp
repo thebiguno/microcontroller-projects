@@ -29,8 +29,11 @@ char temp[128];
 48 angle y p
 52 angle y i
 56 angle y d
-60 comp x t
-64 comp y t
+60 g-force z p
+64 g-force z i
+68 g-force z d
+72 comp x t
+76 comp y t
 
  */
 
