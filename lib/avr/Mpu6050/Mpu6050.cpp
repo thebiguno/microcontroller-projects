@@ -79,9 +79,9 @@ vector_t Mpu6050::getGyro(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Gyro X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(250 deg/s / 32768) * PI/180
-	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.06103515625 * M_PI / 180;
-	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.06103515625 * M_PI / 180;
+	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * -0.06103515625 * M_PI / 180;		//(250 deg/s / 32768) * PI/180.  The negative is to correct CW / CCW spin
+	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * -0.06103515625 * M_PI / 180;
+	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * -0.06103515625 * M_PI / 180;
 	return result;
 }
 
