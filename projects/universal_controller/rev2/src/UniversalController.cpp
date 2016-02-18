@@ -41,6 +41,7 @@
 #include <SerialAVR.h>
 #include <SerialUSB.h>
 #include <SoftwareSerialAVR.h>
+#include <UniversalControllerClient.h>
 
 #include "Analog.h"
 #include "timer.h"
@@ -56,18 +57,6 @@
 #define MESSAGE_SEND_BATTERY					0x07
 
 //Universal Controller messages are in 0x1X space...
-#define MESSAGE_UC_BUTTON_PUSH					0x10
-#define MESSAGE_UC_BUTTON_RELEASE				0x11
-#define MESSAGE_UC_BUTTON_NONE					0x12
-#define MESSAGE_UC_JOYSTICK_MOVE				0x13
-#define MESSAGE_UC_BUTTON_ENABLE				0x14
-#define MESSAGE_UC_BUTTON_DISABLE				0x15
-#define MESSAGE_UC_JOYSTICK_ENABLE				0x16
-#define MESSAGE_UC_JOYSTICK_DISABLE				0x17
-#define MESSAGE_UC_SET_POLL_FREQUENCY			0x18
-#define MESSAGE_UC_SET_ANALOG_FREQUENCY			0x19
-#define MESSAGE_UC_THROTTLE_MOVE				0x1A
-
 
 #define ADC_THROTTLE							13
 #define ADC_BATTERY								12

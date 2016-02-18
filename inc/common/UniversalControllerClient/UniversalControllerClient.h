@@ -12,7 +12,7 @@
 #define MESSAGE_UC_JOYSTICK_DISABLE				0x17
 #define MESSAGE_UC_SET_POLL_FREQUENCY			0x18
 #define MESSAGE_UC_SET_ANALOG_FREQUENCY			0x19
-
+#define MESSAGE_UC_THROTTLE_MOVE				0x1A
 
 
 //Bit 8: 0 == analog stick message, 1 == digital button message
