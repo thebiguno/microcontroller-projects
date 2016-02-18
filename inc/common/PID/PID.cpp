@@ -89,6 +89,12 @@ void PID::setDirection(uint8_t direction){
 	this->direction = direction;
 }
 
+void PID::reset(uint32_t time){
+	integratedError = 0;
+	lastMeasured = 0;
+	lastTime = time;
+}
+
 double PID::getKp() {
 	return kp;
 }
