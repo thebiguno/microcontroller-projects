@@ -285,7 +285,7 @@ Select parameter: """).lower()
 						rate_sp[i + (axis * 4)] = ord(b)
 
 					throttle_sp = [0,0,0,0]
-					throttle = struct.pack("<f", 0.1)
+					throttle = struct.pack("<f", 0.25)
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
@@ -294,6 +294,11 @@ Select parameter: """).lower()
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
 					
 					#Show debug data...
+					for i in range(10):
+						writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
+						time.sleep(0.5)
+						
+
 					while True:
 						response = readMessage(ser, MESSAGE_DEBUG)
 						if (response == False):
@@ -475,15 +480,16 @@ G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 
 ########## Helper functions here ##########
 
-def writeMessage(ser, command, data):
+def writeMessage(ser, command, data, flush=True):
 	#Flush input buffer
-	incoming = readNextMessage(ser)
-	while incoming != False:
-		if (incoming["command"] == MESSAGE_DEBUG):
-			print("Flushing: received debug message: " + "".join(map(chr, incoming["data"])))
-		else:
-			print("Flushing: received command " + hex(incoming["command"]))
+	if (flush):
 		incoming = readNextMessage(ser)
+		while incoming != False:
+			if (incoming["command"] == MESSAGE_DEBUG):
+				print("Flushing: received debug message: " + "".join(map(chr, incoming["data"])))
+			else:
+				print("Flushing: received command " + hex(incoming["command"]))
+			incoming = readNextMessage(ser)
 	message = [0x7e, len(data) + 1, command]
 	checksum = command
 	for i in range(0, len(data)):
@@ -494,7 +500,7 @@ def writeMessage(ser, command, data):
 	ser.write(''.join(chr(b) for b in message))
 
 def readMessage(ser, command):
-	for i in range(0, 10):
+	for i in range(5):
 		message = readNextMessage(ser)
 		if (message != False and message["command"] == command):
 			return message
