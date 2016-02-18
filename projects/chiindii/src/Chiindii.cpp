@@ -111,12 +111,12 @@ Chiindii::Chiindii() :
 	angle_y.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
-	gforce.setOutputLimits(0.9, 1.1);
+	gforce.setOutputLimits(0, 1);
 
-	//Output of rate PID is WHAT?!?!?!?
-	rate_x.setOutputLimits(-1, 1);
-	rate_y.setOutputLimits(-1, 1);
-	rate_z.setOutputLimits(0, 1);
+	//Output of rate PID is an acceleration (rad / s / s) for each axis
+	rate_x.setOutputLimits(-10, 10);
+	rate_y.setOutputLimits(-10, 10);
+	rate_z.setOutputLimits(-1, 1);
 }
 
 void Chiindii::run() {
@@ -196,6 +196,7 @@ void Chiindii::run() {
 			if (mode == MODE_ARMED_ANGLE) {
 				// angle pid
 				// compute a rate set point given an angle set point and current measured angle
+				// see doc/control_system.txt
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
 				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
@@ -203,6 +204,7 @@ void Chiindii::run() {
 			else if (mode == MODE_ARMED_RATE){
 				// rate pid
 				// computes the desired change rate
+				// see doc/control_system.txt
 				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
 				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);

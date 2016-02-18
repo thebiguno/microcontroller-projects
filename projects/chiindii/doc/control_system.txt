@@ -1,0 +1,45 @@
+x and y axis
+
+           +-------+
+gyro ----> | comp  |
+accel ---> |       |
+           +-------+
+               | filtered angle (radians)
+               v mv 
+           +-------+
+ctrl sp -->| angle |
+(radians)  | pid   |
+           +-------+
+               | pv (radians / second) [ limit -1,1 ]
+               v sp
+           +-------+
+gyro mv -->| rate  |
+           | pid   |
+           +-------+
+               | pv (radians / second / second) [ limit -10,10 ]
+               v
+           +-------+
+throttle ->| motor |
+           | mixer |
+           +-------+
+               | percentage / pwm [ limit 0,1 / 0,511 ]
+               v
+
+
+z axis
+
+
+               | accel (g)
+               v mv 
+           +-------+
+ctrl sp -->| gforce|
+(g)        | pid   |
+           +-------+
+               | pv (throttle percentage) [ limit 0,1 ]
+               v throttle
+           +-------+
+           | motor |
+           | mixer |
+           +-------+
+               | percentage / pwm [ limit 0,1 / 0,511 ]
+               v
