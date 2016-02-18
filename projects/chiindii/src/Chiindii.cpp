@@ -246,10 +246,10 @@ void Chiindii::run() {
 }
 
 void Chiindii::driveMotors(vector_t* rate_pv) {
-	double m1 = throttle_sp - rate_pv->x - rate_pv->y - rate_pv->z;
-	double m2 = throttle_sp + rate_pv->x - rate_pv->y + rate_pv->z;
-	double m3 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
-	double m4 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
+	double m1 = throttle_sp + rate_pv->x - rate_pv->y - rate_pv->z;
+	double m2 = throttle_sp - rate_pv->x - rate_pv->y + rate_pv->z;
+	double m3 = throttle_sp - rate_pv->x + rate_pv->y - rate_pv->z;
+	double m4 = throttle_sp + rate_pv->x + rate_pv->y + rate_pv->z;
 
 	/*
 	if (debug){
