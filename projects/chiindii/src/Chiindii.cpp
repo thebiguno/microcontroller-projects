@@ -200,17 +200,29 @@ void Chiindii::run() {
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
 				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
 			}
-
-			// rate pid
-			// computes the desired change rate
-			rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
-			rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
-			rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+			else if (mode == MODE_ARMED_RATE){
+				// rate pid
+				// computes the desired change rate
+				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+			}
+			else {
+				//If we are not armed, keep the PID reset.  This prevents erratic behaviour 
+				// when initially turning on, especially if I is non-zero.
+				rate_x.reset(time);
+				rate_y.reset(time);
+				rate_z.reset(time);
+				angle_x.reset(time);
+				angle_y.reset(time);
+				gforce.reset(time);
+			}
 			
 			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
 				status.armed();
 
 				//Debug data
+				/*
 				if (debug){
 					char temp[128];
 					snprintf(temp, sizeof(temp), "Attitude: %3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f", gyro.x, gyro.y, accel.x, accel.y, angle_mv.x, angle_mv.y);
@@ -218,6 +230,7 @@ void Chiindii::run() {
 					snprintf(temp, sizeof(temp), "PID: %3.2f,%3.2f,%3.2f", rate_pv.x, rate_pv.y, rate_pv.z);
 					sendDebug(temp);
 				}
+				*/
 
 				driveMotors(&rate_pv);
 			} else {
@@ -236,11 +249,13 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	double m3 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
 	double m4 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
 
+	/*
 	if (debug){
 		char temp[128];
 		snprintf(temp, sizeof(temp), "Raw Motors: %3.2f, %3.2f, %3.2f, %3.2f", m1, m2, m3, m4);
 		sendDebug(temp);
 	}
+	*/
 	
 	//We limit the motor outputs to be in the range [0, 1].
 	if (m1 < 0) m1 = 0;
@@ -258,11 +273,13 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	m3 = m3 * 511;
 	m4 = m4 * 511;
 	
+	/*
 	if (debug){
 		char temp[128];
 		snprintf(temp, sizeof(temp), "Motors: %d, %d, %d, %d", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
 		sendDebug(temp);
 	}
+	*/
 
 	motor_set(m1, m2, m3, m4);
 } 
