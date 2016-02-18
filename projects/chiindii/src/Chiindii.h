@@ -85,6 +85,7 @@ namespace digitalcave {
 			
 			vector_t* getAngleSp();
 			vector_t* getRateSp();
+			double getThrottle();
 			void setThrottle(double throttle);
 
 			PID* getRateX();

@@ -75,6 +75,7 @@ void Chiindii::sendDebug(char* message){
 	}
 }
 
+double Chiindii::getThrottle() { return this->throttle_sp; }
 void Chiindii::setThrottle(double throttle) { 
 	if (throttle < 0) throttle_sp = 0; 
 	else if (throttle > 1) throttle_sp = 1; 
