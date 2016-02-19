@@ -200,7 +200,14 @@ void Chiindii::run() {
 				// see doc/control_system.txt
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-				gforce.compute(angle_sp.z, angle_mv.z, &throttle_sp, time);
+				gforce.compute(angle_sp.z, accel.z, &throttle_sp, time);
+
+				// rate pid
+				// computes the desired change rate
+				// see doc/control_system.txt
+				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 			}
 			else if (mode == MODE_ARMED_RATE){
 				// rate pid

@@ -10,7 +10,7 @@ Hex		Command						Direction				Payload
 20		Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
 21		Throttle					Control -> Device		1 double (0 - 1)												
 22		Rate						Control -> Device		3 doubles (x, y, z) (in rad / s)								
-23		Angle						Control -> Device		3 doubles (x, y, z) (in rad; z is in rad / s)					
+23		Angle						Control -> Device		3 doubles (x, y, z) (in rad; z is in g)					
 
 -- Calibration Controller commands
 30		SaveCalibration				Control -> Device		Null															

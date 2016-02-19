@@ -351,7 +351,7 @@ int main (void){
 					case MESSAGE_SEND_BATTERY:
 						if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
 						else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
-						else display.write_text(0, 10, BATTERY_EMPTY_ICON);
+						else display.write_text(0, 15, BATTERY_EMPTY_ICON);
 						break;
 					case MESSAGE_SEND_DEBUG:
 						//Copy the last received line to the display's second line
