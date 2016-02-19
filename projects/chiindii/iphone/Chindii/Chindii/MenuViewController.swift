@@ -22,6 +22,8 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	@IBOutlet var angleI : UITextField!
 	@IBOutlet var angleD : UITextField!
 	@IBOutlet var tau : UITextField!
+	
+	var typing = false
 
 	@IBAction func unwindToMenu(seque: UIStoryboardSegue) {
 		
@@ -117,9 +119,18 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 				else if (textField == angleD) { sharedModel.angleConfig.z.d = numberFloatValue }
 				break;
 			}
-            sharedMessageManager.tuning()
-			return false;
+			return true;
 		}
+	}
+	
+	func textFieldDidBeginEditing(textField: UITextField) {
+		typing = true
+	}
+	
+	func textFieldDidEndEditing(textField: UITextField) {
+		typing = false
+		update()
+		sharedMessageManager.tuning()
 	}
 	
 	
@@ -148,45 +159,49 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		update();
 	}
 	
-	func batteryChanged() {
-	}
+	func peripheralsChanged() {}
+	func batteryChanged() {}
 	
 	func configChanged() {
 		update();
 	}
 	
 	func update() {
+		if (typing) {
+			return
+		}
+		
 		throttle.value = sharedModel.throttleSp
 		
 		if (axis.selectedSegmentIndex == 0) {
 			rate.value = sharedModel.rateSp.x
-			rateP.text = "\(sharedModel.rateConfig.x.p)"
-			rateI.text = "\(sharedModel.rateConfig.x.i)"
-			rateD.text = "\(sharedModel.rateConfig.x.d)"
-			angleP.text = "\(sharedModel.angleConfig.x.p)"
-			angleI.text = "\(sharedModel.angleConfig.x.i)"
-			angleD.text = "\(sharedModel.angleConfig.x.d)"
-			tau.text = "\(sharedModel.compConfig.x)"
+			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.p)
+			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.i)
+			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.d)
+			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.p)
+			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.i)
+			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.d)
+			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.x)
 			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
 		} else if (axis.selectedSegmentIndex == 1) {
 			rate.value = sharedModel.rateSp.y
-			rateP.text = "\(sharedModel.rateConfig.y.p)"
-			rateI.text = "\(sharedModel.rateConfig.y.i)"
-			rateD.text = "\(sharedModel.rateConfig.y.d)"
-			angleP.text = "\(sharedModel.angleConfig.y.p)"
-			angleI.text = "\(sharedModel.angleConfig.y.i)"
-			angleD.text = "\(sharedModel.angleConfig.y.d)"
-			tau.text = "\(sharedModel.compConfig.y)"
+			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.p)
+			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.i)
+			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.d)
+			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.p)
+			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.i)
+			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.d)
+			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.y)
 			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
 		} else {
 			rate.value = sharedModel.rateSp.x
-			rateP.text = "\(sharedModel.rateConfig.z.p)"
-			rateI.text = "\(sharedModel.rateConfig.z.i)"
-			rateD.text = "\(sharedModel.rateConfig.z.d)"
-			angleP.text = "\(sharedModel.angleConfig.z.p)"
-			angleI.text = "\(sharedModel.angleConfig.z.i)"
-			angleD.text = "\(sharedModel.angleConfig.z.d)"
-			tau.text = "0"
+			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.p)
+			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.i)
+			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.d)
+			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.p)
+			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.i)
+			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.i)
+			tau.text = "N/A"
 			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
 		}
 		

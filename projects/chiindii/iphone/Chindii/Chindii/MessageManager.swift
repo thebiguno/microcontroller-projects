@@ -11,7 +11,7 @@ import CoreBluetooth
 
 let sharedMessageManager = MessageManager()
 
-class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDelegate {
+class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerDelegate, CBPeripheralDelegate {
 	let MESSAGE_REQUEST_ENABLE_DEBUG : UInt8 = 0x03
 	let MESSAGE_REQUEST_DISABLE_DEBUG : UInt8 = 0x04
 	let MESSAGE_SEND_DEBUG : UInt8 = 0x05
@@ -41,10 +41,23 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	var connectedPeripheral : CBPeripheral?
 	var characteristic : CBCharacteristic?
 	var writeType : CBCharacteristicWriteType?
-
+	
+	var timer : NSTimer?
+	
 	override init() {
 		super.init()
 		serialProtocol.delegate = self;
+		centralManager.delegate = self;
+	}
+	
+	func arm() {
+		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
+	}
+	func disarm() {
+		if (timer != nil) {
+			timer!.invalidate()
+			timer = nil;
+		}
 	}
 	
 	func flight() {
@@ -56,7 +69,8 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]),
-			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
 		]);
 	}
 	
@@ -109,13 +123,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		case MESSAGE_SEND_BATTERY:
 			sharedModel.battery = message.data[0]
 			break;
-		case MESSAGE_SEND_CALIBRATION_RATE_PID:
+		case MESSAGE_REQUEST_CALIBRATION_RATE_PID:
 			sharedModel.rateConfig = unpack(message.data)
 			break
-		case MESSAGE_SEND_CALIBRATION_ANGLE_PID:
+		case MESSAGE_REQUEST_CALIBRATION_ANGLE_PID:
 			sharedModel.angleConfig = unpack(message.data)
 			break
-		case MESSAGE_SEND_CALIBRATION_COMPLEMENTARY:
+		case MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY:
 			sharedModel.compConfig = unpack(message.data)
 			break
 		default:
@@ -134,6 +148,34 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		if (connectedPeripheral == nil) { return }
 		let data = NSData(bytes: b, length: b.count)
 		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: .WithResponse)
+	}
+	
+	func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
+		sharedModel.peripherals.append(peripheral)
+	}
+	
+	func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
+		peripheral.discoverServices([CBUUID(string: "FFE0")])
+	}
+	
+	func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+		print("disconnected")
+		
+	}
+	
+	func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+		print("failed to connect")
+	}
+	
+	func centralManagerDidUpdateState(central: CBCentralManager) {
+		sharedModel.peripherals.removeAll();
+		
+		if (connectedPeripheral != nil) {
+			centralManager.cancelPeripheralConnection(connectedPeripheral!)
+		}
+		if (centralManager.state == .PoweredOn) {
+			centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+		}
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
@@ -158,8 +200,17 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-		var buffer = [UInt8]()
-		characteristic.value?.getBytes(&buffer, length: (characteristic.value?.length)!)
+		if (error != nil) {
+			print("Error reading characteristic \(error!.localizedDescription)")
+		}
+		let value = characteristic.value
+		let length = value?.length
+		//print(length!)
+		//print("Characteristic value : \(characteristic.value) with ID \(characteristic.UUID)");
+		
+		var buffer = [UInt8](count: length!, repeatedValue: 0)
+		value?.getBytes(&buffer, length: length!)
+		print(buffer)
 		serialProtocol.onMessage(buffer)
 	}
 	

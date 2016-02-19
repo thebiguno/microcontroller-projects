@@ -58,6 +58,7 @@ class FramedSerialProtocol : NSObject {
 					// recover from any previous error condition
 					error = NO_ERROR;
 					position = 0;
+					data.removeAll();
 				}
 				else {
 					continue;
@@ -80,7 +81,7 @@ class FramedSerialProtocol : NSObject {
 				escape = false;
 			}
 			if (position > 1) { // start byte and length byte not included in checksum
-				checksum += b;
+				checksum = checksum &+ b;
 			}
 			
 			switch(position) {
@@ -111,9 +112,10 @@ class FramedSerialProtocol : NSObject {
 					}
 					position = 0;
 					checksum = 0;
+					data.removeAll()
 				}
 				else {
-					data[position - 3] = b;
+					data.append(b);
 					position++;
 				}
 				break;
