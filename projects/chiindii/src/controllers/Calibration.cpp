@@ -37,11 +37,6 @@ char temp[128];
 
  */
 
-#ifdef DEBUG
-#include <SerialUSB.h>
-extern SerialUSB usb;
-#endif
-
 Calibration::Calibration(Chiindii* chiindii) {
 	this->chiindii = chiindii;
 }
@@ -92,10 +87,14 @@ void Calibration::read() {
 		chiindii->getMpu6050()->setAccelCalib(calibration);
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
-		chiindii->sendDebug("Load EEPROM");
+#ifdef DEBUG
+		chiindii->sendUsb("Load EEPROM\n");
+#endif
 	}
 	else {
-		chiindii->sendDebug("Load Defaults");
+#ifdef DEBUG
+		chiindii->sendUsb("Load Defaults\n");
+#endif
 	}
 }
 
@@ -142,7 +141,9 @@ void Calibration::write() {
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
 	
-	chiindii->sendDebug("Save EEPROM");
+#ifdef DEBUG
+	chiindii->sendUsb("Save EEPROM\n");
+#endif
 }
 
 void Calibration::dispatch(FramedSerialMessage* request) {
@@ -165,6 +166,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_RATE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
+		
+#ifdef DEBUG
+		snprintf(temp, sizeof(temp), "Request Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+		chiindii->sendUsb(temp);
+#endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
 		PID* x = chiindii->getAngleX();
@@ -177,6 +183,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
+		
+#ifdef DEBUG
+		snprintf(temp, sizeof(temp), "Request Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+		chiindii->sendUsb(temp);
+#endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
 		Complementary* x = chiindii->getCompX();
@@ -188,8 +199,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->sendMessage(&response);
 		
 #ifdef DEBUG
-		uint8_t size = snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
-		usb.write((uint8_t*) temp, size);
+		snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
+		chiindii->sendUsb(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
@@ -197,12 +208,22 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getRateX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getRateY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
+		
+#ifdef DEBUG
+		snprintf(temp, sizeof(temp), "Set Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+		chiindii->sendUsb(temp);
+#endif
+
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_ANGLE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
+#ifdef DEBUG
+		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+		chiindii->sendUsb(temp);
+#endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
 		double* data = (double*) request->getData();
@@ -210,8 +231,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getCompY()->setTau(data[1]);
 		
 #ifdef DEBUG
-		uint8_t size = snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-		usb.write((uint8_t*) temp, size);
+		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
+		chiindii->sendUsb(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){

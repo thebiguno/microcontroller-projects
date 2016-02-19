@@ -29,6 +29,8 @@ int main(){
 	// DISABLE JTAG - take control of F port
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
+	//Disable WDT; this would be enabled if we have previously reset due to WDT
+	wdt_disable();
 	
 	battery_init();
 	timer_init();
@@ -74,6 +76,18 @@ void Chiindii::sendDebug(char* message){
 		sendMessage(&response);
 	}
 }
+void Chiindii::sendUsb(const char* message){
+#ifdef DEBUG
+	sendUsb((char*) message);
+#endif
+}
+void Chiindii::sendUsb(char* message){
+#ifdef DEBUG
+	if (debug){
+		usb.write(message);
+	}
+#endif
+}
 
 double Chiindii::getThrottle() { return this->throttle_sp; }
 void Chiindii::setThrottle(double throttle) { 
@@ -90,16 +104,18 @@ Chiindii::Chiindii() :
 	rate_sp({0, 0, 0}),
 	protocol(40),
 	
-	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	//We set the period for all PID objects to 1, as we rely on attitude filter for timing
+	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	
-	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
-	gforce(0.1, 0, 0, DIRECTION_NORMAL, 10, 0),
+	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	gforce(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	
-	c_x(0.075, 3, 0),
-	c_y(0.075, 3, 0),
+	//Attitude filter period determines PID period
+	c_x(0.075, 10, 0),
+	c_y(0.075, 10, 0),
 	
 	general(this),
 	calibration(this),
@@ -135,17 +151,7 @@ void Chiindii::run() {
 	motor_start();
 	
 	_delay_ms(250);
-/*	
-	motor_set(64,0,0,0);
-	_delay_ms(250);
-	motor_set(0,64,0,0);
-	_delay_ms(250);
-	motor_set(0,0,64,0);
-	_delay_ms(250);
-	motor_set(0,0,0,64);
-	_delay_ms(250);
-	motor_set(0,0,0,0);
-*/
+
 	//Watchdog timer
 	wdt_enable(WDTO_120MS);
 	
@@ -195,12 +201,13 @@ void Chiindii::run() {
 		
 		if (computed){
 			if (mode == MODE_ARMED_ANGLE) {
+				double gforceThrottle = 0;
 				// angle pid
 				// compute a rate set point given an angle set point and current measured angle
 				// see doc/control_system.txt
 				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
 				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-				gforce.compute(angle_sp.z, accel.z, &throttle_sp, time);
+				gforce.compute(angle_sp.z, accel.z, &gforceThrottle, time);
 
 				// rate pid
 				// computes the desired change rate
@@ -208,6 +215,48 @@ void Chiindii::run() {
 				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
 				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+				
+				status.armed();
+				driveMotors(gforceThrottle, &rate_pv);
+			}
+			else if (mode == MODE_ARMED_THROTTLE) {
+				if (throttle_sp > 0.01){
+					// angle pid with direct throttle
+					// compute a rate set point given an angle set point and current measured angle
+					// see doc/control_system.txt
+					angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
+					angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+					gforce.reset(time);
+
+					// rate pid
+					// computes the desired change rate
+					// see doc/control_system.txt
+					rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
+					rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
+					rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+					
+					driveMotors(throttle_sp, &rate_pv);
+#ifdef DEBUG
+					if (debug){
+						char temp[128];
+						snprintf(temp, sizeof(temp), "Throttle Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
+						sendUsb(temp);
+					}
+#endif
+				}
+				else {
+					//Don't do PID if the throttle is too low.
+					rate_x.reset(time);
+					rate_y.reset(time);
+					rate_z.reset(time);
+					angle_x.reset(time);
+					angle_y.reset(time);
+					gforce.reset(time);
+					
+					motor_set(0, 0, 0, 0);
+				}
+
+				status.armed();
 			}
 			else if (mode == MODE_ARMED_RATE){
 				// rate pid
@@ -216,6 +265,17 @@ void Chiindii::run() {
 				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
 				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+				
+#ifdef DEBUG
+				if (debug){
+					char temp[128];
+					snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
+					sendUsb(temp);
+				}
+#endif
+
+				status.armed();
+				driveMotors(throttle_sp, &rate_pv);
 			}
 			else {
 				//If we are not armed, keep the PID reset.  This prevents erratic behaviour 
@@ -226,24 +286,7 @@ void Chiindii::run() {
 				angle_x.reset(time);
 				angle_y.reset(time);
 				gforce.reset(time);
-			}
-			
-			if (mode == MODE_ARMED_RATE || mode == MODE_ARMED_ANGLE) {
-				status.armed();
-
-				//Debug data
-				/*
-				if (debug){
-					char temp[128];
-					snprintf(temp, sizeof(temp), "Attitude: %3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f", gyro.x, gyro.y, accel.x, accel.y, angle_mv.x, angle_mv.y);
-					sendDebug(temp);
-					snprintf(temp, sizeof(temp), "PID: %3.2f,%3.2f,%3.2f", rate_pv.x, rate_pv.y, rate_pv.z);
-					sendDebug(temp);
-				}
-				*/
-
-				driveMotors(&rate_pv);
-			} else {
+				
 				status.disarmed();
 				motor_set(0, 0, 0, 0);
 			}
@@ -253,22 +296,26 @@ void Chiindii::run() {
 	}
 }
 
-void Chiindii::driveMotors(vector_t* rate_pv) {
-	//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
-	double m1 = throttle_sp + rate_pv->x - rate_pv->y + rate_pv->z;
-	double m2 = throttle_sp - rate_pv->x - rate_pv->y - rate_pv->z;
-	double m3 = throttle_sp - rate_pv->x + rate_pv->y + rate_pv->z;
-	double m4 = throttle_sp + rate_pv->x + rate_pv->y - rate_pv->z;
-
-	/*
-	if (debug){
-		char temp[128];
-		snprintf(temp, sizeof(temp), "Raw Motors: %3.2f, %3.2f, %3.2f, %3.2f", m1, m2, m3, m4);
-		sendDebug(temp);
-	}
-	*/
+void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
+	//Limit throttle to [0,1]
+	if (throttle < 0) throttle = 0;
+	else if (throttle > 1) throttle = 1;
 	
-	//We limit the motor outputs to be in the range [0, 1].
+	if (throttle < 0.01){
+		motor_set(0, 0, 0, 0);
+		return;
+	}
+
+	//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
+	double m1 = throttle + rate_pv->x - rate_pv->y + rate_pv->z;
+	double m2 = throttle - rate_pv->x - rate_pv->y - rate_pv->z;
+	double m3 = throttle - rate_pv->x + rate_pv->y + rate_pv->z;
+	double m4 = throttle + rate_pv->x + rate_pv->y - rate_pv->z;
+
+	//We limit the motor outputs to be in the range [0, min(throttle*2, 1)].
+//	if (throttle * 2 > 1) throttle = 1;
+//	else (throttle = throttle * 2);
+	
 	if (m1 < 0) m1 = 0;
 	else if (m1 > 1) m1 = 1;
 	if (m2 < 0) m2 = 0;
@@ -284,13 +331,13 @@ void Chiindii::driveMotors(vector_t* rate_pv) {
 	m3 = m3 * 511;
 	m4 = m4 * 511;
 	
-	/*
+#ifdef DEBUG
 	if (debug){
 		char temp[128];
-		snprintf(temp, sizeof(temp), "Motors: %d, %d, %d, %d", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		sendDebug(temp);
+		snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		sendUsb(temp);
 	}
-	*/
+#endif
 
 	motor_set(m1, m2, m3, m4);
 } 

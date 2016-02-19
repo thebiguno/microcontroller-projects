@@ -4,6 +4,6 @@ F_CPU=16000000
 PROGRAMMER=dfu
 
 LDFLAGS=-Wl,-u,vfprintf -lprintf_flt -lm
-CDEFS=-DTIMER_BITS=32 -DPWM_PORTA_UNUSED
+CDEFS=
 
 include ../../../build/avr.mk

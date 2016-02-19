@@ -38,6 +38,7 @@
 #define MODE_UNARMED		0x00
 #define MODE_ARMED_ANGLE	0x01
 #define MODE_ARMED_RATE		0x02
+#define MODE_ARMED_THROTTLE	0x03
 
 #define CONTROLLER_NONE			0x00
 #define CONTROLLER_UC			0x01
@@ -75,7 +76,7 @@ namespace digitalcave {
 			
 			Status status;
 			
-			void driveMotors(vector_t* rate_pv);
+			void driveMotors(double throttle, vector_t* rate_pv);
 			void dispatch(FramedSerialMessage *message);
 			
 		public:
@@ -109,6 +110,9 @@ namespace digitalcave {
 			void setDebug(uint8_t debug);
 			void sendDebug(char* message);
 			void sendDebug(const char* message);
+			void sendUsb(char* message);
+			void sendUsb(const char* message);
+
 
 			void sendMessage(FramedSerialMessage* message);
 	};
