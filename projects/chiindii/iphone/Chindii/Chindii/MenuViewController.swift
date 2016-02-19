@@ -11,9 +11,11 @@ import UIKit
 class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDelegate {
 	
 	@IBOutlet var throttleLabel : UILabel!
-	@IBOutlet var rateLabel : UILabel!
 	@IBOutlet var throttle : UISlider!
+	@IBOutlet var rateLabel : UILabel!
 	@IBOutlet var rate : UISlider!
+	@IBOutlet var angleLabel : UILabel!
+	@IBOutlet var angle : UISlider!
 	@IBOutlet var axis : UISegmentedControl!
 	@IBOutlet var rateP : UITextField!
 	@IBOutlet var rateI : UITextField!
@@ -41,10 +43,14 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		sharedMessageManager.level()
 	}
 	
-	@IBAction func armClicked(sender: AnyObject) {
+	@IBAction func rateTestClicked(sender: AnyObject) {
 		sharedMessageManager.rate()
 	}
 	
+	@IBAction func angleTestClicked(sender: AnyObject) {
+		sharedMessageManager.angle()
+	}
+
 	@IBAction func throttleChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
 		
@@ -74,6 +80,28 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		}
 	}
 	
+	@IBAction func angleChanged(sender : UISlider) {
+		sender.value = roundf(sender.value)
+		sharedModel.angleSp.x = 0;
+		sharedModel.angleSp.y = 0;
+		sharedModel.angleSp.z = 0;
+		
+		switch (axis.selectedSegmentIndex) {
+		case 0:
+			sharedModel.angleSp.x = sender.value
+			angleLabel.text = "\(sharedModel.angleSp.x)°"
+			break;
+		case 1:
+			sharedModel.angleSp.y = sender.value
+			angleLabel.text = "\(sharedModel.angleSp.y)°"
+			break;
+		default:
+			sharedModel.angleSp.z = sender.value
+			angleLabel.text = "\(sharedModel.angleSp.z)°"
+			break;
+		}
+	}
+
 	@IBAction func axisChanged(sender : UISegmentedControl) {
 		update();
 	}
@@ -184,6 +212,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.d)
 			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.x)
 			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
+			angleLabel.text = "\(sharedModel.angleSp.x)°/s"
 		} else if (axis.selectedSegmentIndex == 1) {
 			rate.value = sharedModel.rateSp.y
 			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.p)
@@ -194,6 +223,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.d)
 			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.y)
 			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
+			angleLabel.text = "\(sharedModel.angleSp.y)°/s"
 		} else {
 			rate.value = sharedModel.rateSp.x
 			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.p)
@@ -204,6 +234,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.i)
 			tau.text = "N/A"
 			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
+			angleLabel.text = "\(sharedModel.angleSp.z)°/s"
 		}
 		
 		throttleLabel.text = "\(sharedModel.throttleSp)%"

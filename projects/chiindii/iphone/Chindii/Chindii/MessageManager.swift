@@ -90,7 +90,23 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
 		])
 		sendMessages([
-			FramedSerialMessage(command: MESSAGE_RATE, data: pack(sharedModel.rateSp))
+			FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate))
+		])
+	}
+
+	func angle() {
+		let c = Float(M_PI) / 180.0
+		var angle = Vector()
+		angle.x = sharedModel.angleSp.x * c
+		angle.y = sharedModel.angleSp.y * c
+		angle.z = sharedModel.angleSp.z * c
+		
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x01 ]),
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
+		])
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_RATE, data: pack(angle))
 		])
 	}
 	
