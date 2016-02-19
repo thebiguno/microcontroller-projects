@@ -14,17 +14,12 @@ class FlightViewController: UIViewController, ModelDelegate {
 	@IBOutlet var armedSwitch : UISwitch!
 	@IBOutlet var battery : UILabel!
 	
-	var timer : NSTimer?
-	
 	@IBAction func armedPressed(sender : UISwitch) {
 		sharedModel.armed = sender.on
-		
 		if (sender.on) {
-			timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)
-//			timer = NSTimer.init(timeInterval: 0.1, target: sharedMessageManager, selector: "flight", userInfo: nil, repeats: true)			
+			sharedMessageManager.arm()
 		} else {
-			timer!.invalidate()
-			timer = nil;
+			sharedMessageManager.disarm()
 		}
 	}
 	

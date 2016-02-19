@@ -41,10 +41,20 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	var connectedPeripheral : CBPeripheral?
 	var characteristic : CBCharacteristic?
 	var writeType : CBCharacteristicWriteType?
-
+	
+	var timer : NSTimer?
+	
 	override init() {
 		super.init()
 		serialProtocol.delegate = self;
+	}
+	
+	func arm() {
+		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
+	}
+	func disarm() {
+		timer!.invalidate()
+		timer = nil;
 	}
 	
 	func flight() {
@@ -56,7 +66,8 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]),
-			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
 		]);
 	}
 	
