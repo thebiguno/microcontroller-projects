@@ -161,6 +161,7 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	
 	func peripheralsChanged() {}
 	func batteryChanged() {}
+	func debugChanged() {}
 	
 	func configChanged() {
 		update();

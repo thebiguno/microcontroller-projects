@@ -20,6 +20,7 @@ class BluetoothViewController : UITableViewController, ModelDelegate {
 	
 	func batteryChanged() {}
 	func configChanged() {}
+	func debugChanged() {}
 
 	func peripheralsChanged() {
 		tableView.reloadData()

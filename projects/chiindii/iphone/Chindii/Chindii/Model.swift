@@ -10,6 +10,7 @@ import Foundation
 import CoreBluetooth
 
 protocol ModelDelegate : NSObjectProtocol {
+	func debugChanged()
 	func batteryChanged()
 	func configChanged()
 	func peripheralsChanged()
@@ -60,6 +61,11 @@ class Model {
 	var battery : UInt8 = 0 {
 		didSet {
 			delegate?.batteryChanged()
+		}
+	}
+	var debug = "" {
+		didSet {
+			delegate?.debugChanged()
 		}
 	}
 

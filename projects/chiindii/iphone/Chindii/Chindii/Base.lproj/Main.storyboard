@@ -71,6 +71,7 @@
                     <connections>
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
                         <outlet property="battery" destination="oXR-Mz-Edh" id="xTy-HY-prA"/>
+                        <outlet property="debug" destination="Iji-Xd-yhi" id="CUO-Uu-uzj"/>
                         <outlet property="message" destination="Iji-Xd-yhi" id="hrg-gh-dhM"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>

@@ -132,6 +132,8 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		case MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY:
 			sharedModel.compConfig = unpack(message.data)
 			break
+		case MESSAGE_SEND_DEBUG:
+			sharedModel.debug = unpack(message.data)
 		default:
 			break;
 		}
