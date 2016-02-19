@@ -19,6 +19,16 @@ Mpu6050::Mpu6050(){
 	data[1] = 0x18;		//+/- 16g
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
+	//Set digital LPF to smooth out noise
+	data[0] = MPU6050_CONFIG;
+	data[1] = 0x03;		//4.9ms delay
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+
+	//Set output rate
+	data[0] = MPU6050_SMPLRT_DIV;
+	data[1] = 0x03;		//250Hz sample rate
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+	
 	//Init calibration data to 0
 	accelCalib[0] = 0;
 	accelCalib[1] = 0;
