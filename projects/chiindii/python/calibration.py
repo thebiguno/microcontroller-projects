@@ -491,6 +491,14 @@ G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 
 ########## Helper functions here ##########
 
+def escapeByte(message, byte):
+	if (byte  == 0x7D or byte == 0x7E):
+		message.append(0x7D);
+		message.append(byte ^ 0x20);
+	else:
+		message.append(byte)
+
+
 def writeMessage(ser, command, data, flush=True):
 	#Flush input buffer
 	if (flush):
@@ -504,10 +512,10 @@ def writeMessage(ser, command, data, flush=True):
 	message = [0x7e, len(data) + 1, command]
 	checksum = command
 	for i in range(0, len(data)):
-		message.append(data[i])
+		escapeByte(message, data[i])
 		checksum = (checksum + data[i]) & 0xFF
 	checksum = 0xFF - checksum
-	message.append(checksum)
+	escapeByte(message, checksum)
 	ser.write(''.join(chr(b) for b in message))
 
 def readMessage(ser, command):
