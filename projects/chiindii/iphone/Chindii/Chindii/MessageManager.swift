@@ -120,13 +120,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		case MESSAGE_SEND_BATTERY:
 			sharedModel.battery = message.data[0]
 			break;
-		case MESSAGE_SEND_CALIBRATION_RATE_PID:
+		case MESSAGE_REQUEST_CALIBRATION_RATE_PID:
 			sharedModel.rateConfig = unpack(message.data)
 			break
-		case MESSAGE_SEND_CALIBRATION_ANGLE_PID:
+		case MESSAGE_REQUEST_CALIBRATION_ANGLE_PID:
 			sharedModel.angleConfig = unpack(message.data)
 			break
-		case MESSAGE_SEND_CALIBRATION_COMPLEMENTARY:
+		case MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY:
 			sharedModel.compConfig = unpack(message.data)
 			break
 		default:
@@ -169,8 +169,17 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
-		var buffer = [UInt8]()
-		characteristic.value?.getBytes(&buffer, length: (characteristic.value?.length)!)
+		if (error != nil) {
+			print("Error reading characteristic \(error!.localizedDescription)")
+		}
+		let value = characteristic.value
+		let length = value?.length
+		//print(length!)
+		//print("Characteristic value : \(characteristic.value) with ID \(characteristic.UUID)");
+		
+		var buffer = [UInt8](count: length!, repeatedValue: 0)
+		value?.getBytes(&buffer, length: length!)
+		print(buffer)
 		serialProtocol.onMessage(buffer)
 	}
 	
