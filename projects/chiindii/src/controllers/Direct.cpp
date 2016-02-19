@@ -38,6 +38,8 @@ void Direct::dispatch(FramedSerialMessage* request) {
 		sp->x = data[0];
 		sp->y = data[1];
 		sp->z = data[2];
+		
+		chiindii->getRateSp()->z = 0;
 	}
 	else if (cmd == MESSAGE_RATE){
 		vector_t* sp = chiindii->getRateSp();

@@ -289,9 +289,9 @@ Select parameter: """).lower()
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
-					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
-					writeMessage(ser, MESSAGE_RATE, rate_sp)				#Set rate
-					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE])		#Armed in rate mode
+					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)						#Set throttle
+					writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Show debug data...
 					for i in range(10):
@@ -404,27 +404,38 @@ Select parameter: """).lower()
 				elif (value == ""):
 					break;
 				elif (floatregex.match(value)):
-					angle_sp = [0,0,0,0, 0,0,0,0]	#2 floats
+					angle_sp = [0,0,0,0, 0,0,0,0, 0,0,0,0]	#2 floats
 				
 					#First we write three zeros to the packet
 					bytes = struct.pack("<f", 0)
 					for i, b in enumerate(bytes):
 						angle_sp[i + 0] = ord(b)
 						angle_sp[i + 4] = ord(b)
+						angle_sp[i + 8] = ord(b)
 
 					#Then we overwrite the selected axis with the current rate
 					bytes = struct.pack("<f", math.radians(float(value)))
 					for i, b in enumerate(bytes):
 						angle_sp[i + (axis * 4)] = ord(b)
 
-					throttle_sp = [0,0,0,0]
-					throttle = struct.pack("<f", 0.1)
-					for i, b in enumerate(throttle):
-						throttle_sp[i] = ord(b)
+					gforce = struct.pack("<f", 1.1)
+					for i, b in enumerate(gforce):
+						angle_sp[i + 8] = ord(b)
 				
-					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE])		#Armed in angle mode
-					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)		#Set throttle
-					writeMessage(ser, MESSAGE_ANGLE, rate_sp)
+					writeMessage(ser, MESSAGE_ANGLE, angle_sp)								#Set angle
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE], flush=False)		#Armed in angle mode
+					
+					#Show debug data...
+					for i in range(10):
+						writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE], flush=False)		#Armed in rate mode
+						time.sleep(0.5)
+						
+
+					while True:
+						response = readMessage(ser, MESSAGE_DEBUG)
+						if (response == False):
+							break
+						print("".join(map(chr, response["data"])))
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "t"):
