@@ -19,11 +19,11 @@ uint8_t battery_read(){
 	//Start conversion for next time
 	ADCSRA |= _BV(ADSC);
 
-	//Keep an average of 128 (2^7) positions.  This is a LPF to ensure battery jitter doesn't
+	//Keep an average of 256 (2^8) positions.  This is a LPF to ensure battery jitter doesn't
 	// cause false low readings
-	result = result + reading - (result >> 7);
+	result = result + reading - (result >> 8);
 
-	return result >> 7;
+	return result >> 8;
 }
 
 uint8_t battery_pct() {
