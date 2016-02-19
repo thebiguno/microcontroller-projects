@@ -3,7 +3,8 @@
 using namespace digitalcave;
 
 Status::Status() : 
-	lastTime(0)
+	lastTime(0),
+	status(0)
 {
 	*(&LED_PORT - 1) |= RED | GREEN | BLUE;
 	LED_PORT &= ~(RED | GREEN | BLUE);	// turn on active low LED (white light on reset)
