@@ -11,7 +11,7 @@ import CoreBluetooth
 
 let sharedMessageManager = MessageManager()
 
-class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDelegate {
+class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerDelegate, CBPeripheralDelegate {
 	let MESSAGE_REQUEST_ENABLE_DEBUG : UInt8 = 0x03
 	let MESSAGE_REQUEST_DISABLE_DEBUG : UInt8 = 0x04
 	let MESSAGE_SEND_DEBUG : UInt8 = 0x05
@@ -47,14 +47,17 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 	override init() {
 		super.init()
 		serialProtocol.delegate = self;
+		centralManager.delegate = self;
 	}
 	
 	func arm() {
 		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
 	}
 	func disarm() {
-		timer!.invalidate()
-		timer = nil;
+		if (timer != nil) {
+			timer!.invalidate()
+			timer = nil;
+		}
 	}
 	
 	func flight() {
@@ -145,6 +148,34 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBPeripheralDeleg
 		if (connectedPeripheral == nil) { return }
 		let data = NSData(bytes: b, length: b.count)
 		connectedPeripheral!.writeValue(data, forCharacteristic: characteristic!, type: .WithResponse)
+	}
+	
+	func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
+		sharedModel.peripherals.append(peripheral)
+	}
+	
+	func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
+		peripheral.discoverServices([CBUUID(string: "FFE0")])
+	}
+	
+	func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+		print("disconnected")
+		
+	}
+	
+	func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+		print("failed to connect")
+	}
+	
+	func centralManagerDidUpdateState(central: CBCentralManager) {
+		sharedModel.peripherals.removeAll();
+		
+		if (connectedPeripheral != nil) {
+			centralManager.cancelPeripheralConnection(connectedPeripheral!)
+		}
+		if (centralManager.state == .PoweredOn) {
+			centralManager.scanForPeripheralsWithServices([CBUUID(string: "FFE0")], options: nil)
+		}
 	}
 	
 	func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {

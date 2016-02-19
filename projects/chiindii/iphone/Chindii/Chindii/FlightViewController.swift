@@ -60,7 +60,8 @@ class FlightViewController: UIViewController, ModelDelegate {
 		battery.text = "\(sharedModel.battery)%"
 	}
 	
-	func configChanged() {
-	}
+	func configChanged() {}
+	func peripheralsChanged() {}
+
 	
 }

@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 protocol ModelDelegate : NSObjectProtocol {
 	func batteryChanged()
 	func configChanged()
+	func peripheralsChanged()
 }
 
 struct PID {
@@ -46,6 +48,12 @@ let sharedModel = Model();
 class Model {
 	var delegate : ModelDelegate?
 	
+	var peripherals = [CBPeripheral]() {
+		didSet {
+			delegate?.peripheralsChanged()
+		}
+	}
+
 	// flight
 	var armed : Bool = false
 	var angleSp = Vector()
