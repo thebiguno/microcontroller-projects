@@ -66,6 +66,7 @@ Chiindii Calibration: Please selection an option below:
 	A) Change Angle PID calibration
 	V) Level MPU
 	X) Change Axis
+	D) Read debug messages
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
@@ -85,6 +86,12 @@ Chiindii Calibration: Please selection an option below:
 			doLevelMpu(ser)
 		elif (choice == "x"):
 			chooseAxis(ser)
+		elif (choice == "d"):
+			while True:
+				response = readMessage(ser, MESSAGE_DEBUG)
+				if (response != False):
+					print("".join(map(chr, response["data"])))
+
 		elif (choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
