@@ -524,6 +524,7 @@ def writeMessage(ser, command, data, flush=True):
 	checksum = 0xFF - checksum
 	escapeByte(message, checksum)
 	ser.write(''.join(chr(b) for b in message))
+	print(' '.join(hex(b) for b in message))
 
 def readMessage(ser, command):
 	for i in range(5):
