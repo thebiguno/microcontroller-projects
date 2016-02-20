@@ -190,8 +190,10 @@ void Chiindii::run() {
 		gyro = mpu6050.getGyro();
 
 		// compute the absolute angle relative to the horizontal
-		angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
-		angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
+		//Yes, the values are reversed.  This is actually correct.  Look at the axis values, and then think about axis
+		// orientation vs. axis rotation.
+		angle_mv.x = M_PI_2 - atan2(accel.z, accel.y);
+		angle_mv.y = M_PI_2 - atan2(accel.z, accel.x);
 
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
@@ -200,10 +202,6 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
-			char temp[128];
-			snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f\n", angle_mv.x * 57.296, angle_mv.y * 57.296);
-			sendDebug(temp);
-
 			if (mode == MODE_ARMED_ANGLE) {
 				double gforceThrottle = 0;
 				// angle pid
