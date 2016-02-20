@@ -18,7 +18,7 @@
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
-SerialAVR serial(38400, 8, 0, 1, 1, 64);
+SerialAVR serial(38400, 8, 0, 1, 1, 255);
 #ifdef DEBUG
 SerialUSB usb;
 #endif
@@ -102,7 +102,7 @@ Chiindii::Chiindii() :
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
-	protocol(40),
+	protocol(255),
 	
 	//We set the period for all PID objects to 1, as we rely on attitude filter for timing
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
@@ -137,7 +137,7 @@ Chiindii::Chiindii() :
 }
 
 void Chiindii::run() {
-	FramedSerialMessage request(0,40);
+	FramedSerialMessage request(0,255);
 
 	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
@@ -236,13 +236,13 @@ void Chiindii::run() {
 					rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 					
 					driveMotors(throttle_sp, &rate_pv);
-#ifdef DEBUG
-					if (debug){
-						char temp[128];
-						snprintf(temp, sizeof(temp), "Throttle Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
-						sendUsb(temp);
-					}
-#endif
+// #ifdef DEBUG
+// 					if (debug){
+// 						char temp[128];
+// 						snprintf(temp, sizeof(temp), "Throttle Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
+// 						sendDebug(temp);
+// 					}
+// #endif
 				}
 				else {
 					//Don't do PID if the throttle is too low.
@@ -266,13 +266,13 @@ void Chiindii::run() {
 				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
 				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 				
-#ifdef DEBUG
-				if (debug){
-					char temp[128];
-					snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
-					sendUsb(temp);
-				}
-#endif
+// #ifdef DEBUG
+// 				if (debug){
+// 					char temp[128];
+// 					snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
+// 					sendDebug(temp);
+// 				}
+// #endif
 
 				status.armed();
 				driveMotors(throttle_sp, &rate_pv);
@@ -335,7 +335,7 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 	if (debug){
 		char temp[128];
 		snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		sendUsb(temp);
+		sendDebug(temp);
 	}
 #endif
 

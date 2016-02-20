@@ -88,12 +88,12 @@ void Calibration::read() {
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
 #ifdef DEBUG
-		chiindii->sendUsb("Load EEPROM\n");
+		chiindii->sendDebug("Load EEPROM\n");
 #endif
 	}
 	else {
 #ifdef DEBUG
-		chiindii->sendUsb("Load Defaults\n");
+		chiindii->sendDebug("Load Defaults\n");
 #endif
 	}
 }
@@ -142,7 +142,7 @@ void Calibration::write() {
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
 	
 #ifdef DEBUG
-	chiindii->sendUsb("Save EEPROM\n");
+	chiindii->sendDebug("Save EEPROM\n");
 #endif
 }
 
@@ -169,7 +169,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Request Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
@@ -186,7 +186,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Request Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
@@ -200,7 +200,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
@@ -211,7 +211,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Set Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 
 	}
@@ -222,7 +222,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
@@ -232,7 +232,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		
 #ifdef DEBUG
 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-		chiindii->sendUsb(temp);
+		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
