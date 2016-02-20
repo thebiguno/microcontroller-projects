@@ -159,6 +159,7 @@ void FramedSerialProtocol::write(Stream* stream, FramedSerialMessage* message){
 	uint8_t command = message->getCommand();
 	uint8_t* data = message->getData();
 	
+	uint8_t checksum  = 0;
 	for(uint8_t position = 0; position <= (length + 3); position++){
 		switch(position){
 			case 0:
@@ -169,20 +170,16 @@ void FramedSerialProtocol::write(Stream* stream, FramedSerialMessage* message){
 				break;
 			case 2:
 				escapeByte(stream, command);
+				checksum = command;
 				break;
 			default:
 				if (position - 3 == length){
-					//Write checksum
-					uint8_t result = command;
-				
-					for (uint8_t i = 0; i < length; i++) {
-						result += data[i];
-					}
-
-					escapeByte(stream, 0xff - result);
+					escapeByte(stream, 0xff - checksum);
 				}
 				else {
-					escapeByte(stream, data[position - 3]);
+					uint8_t b = data[position - 3];
+					escapeByte(stream, b);
+					checksum += b;
 				}
 				break;
 		}
