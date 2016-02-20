@@ -335,9 +335,9 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 	
 #ifdef DEBUG
 	if (debug){
-		//char temp[128];
-		//snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		//sendDebug(temp);
+		char temp[128];
+		snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		sendDebug(temp);
 	}
 #endif
 
