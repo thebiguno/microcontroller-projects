@@ -4,11 +4,18 @@ using namespace digitalcave;
 
 Mpu6050::Mpu6050(){
 	twi_init();
-	uint8_t data[2];
-	data[0] = MPU6050_PWR_MGMT_1;
-	data[1] = 0x00;
-	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep (required at startup)
+
+	//Init calibration data to 0
+	accelCalib[0] = 0;
+	accelCalib[1] = 0;
+	accelCalib[2] = 0;
 	
+	gyroCalib[0] = 0;
+	gyroCalib[1] = 0;
+	gyroCalib[2] = 0;
+
+	uint8_t data[2];
+
 	//Set gyro to 2000 deg/s range
 	data[0] = MPU6050_GYRO_CONFIG;
 	data[1] = 0x18;		//2000 deg/s
@@ -29,15 +36,11 @@ Mpu6050::Mpu6050(){
 	data[1] = 0x03;		//250Hz sample rate
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
-	//Init calibration data to 0
-	accelCalib[0] = 0;
-	accelCalib[1] = 0;
-	accelCalib[2] = 0;
-	
-	gyroCalib[0] = 0;
-	gyroCalib[1] = 0;
-	gyroCalib[2] = 0;
-	
+	//Wake up
+	data[0] = MPU6050_PWR_MGMT_1;
+	data[1] = 0x00;
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep (required at startup)
+		
 	_delay_ms(500);
 }
 
@@ -63,7 +66,7 @@ void Mpu6050::calibrate(){
 	//We want Accel Z (index 2) to be 1g, and all else to be 0.
 	accelCalib[0] = 0 - totals[0] / count;
 	accelCalib[1] = 0 - totals[1] / count;
-	accelCalib[2] = 16384 - totals[2] / count;
+	accelCalib[2] = 2048 - totals[2] / count;		//32768 (full scale range) divided by 16 (16g)
 	gyroCalib[0] = 0 - totals[3] / count;
 	gyroCalib[1] = 0 - totals[4] / count;
 	gyroCalib[2] = 0 - totals[5] / count;
@@ -89,7 +92,7 @@ vector_t Mpu6050::getGyro(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Gyro X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(250 deg/s / 32768) * PI/180.
+	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(2000 deg/s / 32768) * PI/180.
 	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.06103515625 * M_PI / 180;
 	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.06103515625 * M_PI / 180;
 	return result;
