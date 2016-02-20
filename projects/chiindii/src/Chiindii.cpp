@@ -200,6 +200,10 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
+			char temp[128];
+			snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f\n", angle_mv.x * 57.296, angle_mv.y * 57.296);
+			sendDebug(temp);
+
 			if (mode == MODE_ARMED_ANGLE) {
 				double gforceThrottle = 0;
 				// angle pid
@@ -333,9 +337,9 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 	
 #ifdef DEBUG
 	if (debug){
-		char temp[128];
-		snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		sendDebug(temp);
+		//char temp[128];
+		//snprintf(temp, sizeof(temp), "Throttle: %3.2f  Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", throttle, rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		//sendDebug(temp);
 	}
 #endif
 
