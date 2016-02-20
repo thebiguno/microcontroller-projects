@@ -18,7 +18,7 @@ class FlightViewController: UIViewController, ModelDelegate {
 	@IBAction func armedPressed(sender : UISwitch) {
 		sharedModel.armed = sender.on
 		if (sender.on) {
-			sharedMessageManager.arm()
+			sharedMessageManager.armFlight()
 		} else {
 			sharedMessageManager.disarm()
 		}

@@ -68,6 +68,7 @@ class FramedSerialProtocol : NSObject {
 			if (position > 0 && b == START) {
 				// unexpected start of frame
 				error = INCOMING_ERROR_UNEXPECTED_START_OF_FRAME;
+				print("incoming error unexpected start of frame")
 				continue;
 			}
 			if (position > 0 && b == ESCAPE) {
@@ -91,6 +92,7 @@ class FramedSerialProtocol : NSObject {
 			case 1: // length
 				if (b == 0){
 					error = INCOMING_ERROR_INVALID_LENGTH;
+					print("incoming error invalid length")
 				}
 				else {
 					length = b;
@@ -109,6 +111,7 @@ class FramedSerialProtocol : NSObject {
 						checksum = 0;
 					} else {
 						error = INCOMING_ERROR_INVALID_CHECKSUM;
+						print("incoming error invalid checksum")
 					}
 					position = 0;
 					checksum = 0;

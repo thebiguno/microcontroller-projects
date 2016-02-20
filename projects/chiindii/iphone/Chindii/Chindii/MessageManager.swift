@@ -77,7 +77,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		centralManager.delegate = self;
 	}
 	
-	func arm() {
+	func armRate() {
+		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "rate", userInfo: nil, repeats: true)
+	}
+	func armAngle() {
+		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "angle", userInfo: nil, repeats: true)
+	}
+	func armFlight() {
 		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
 	}
 	func disarm() {
@@ -94,11 +100,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		angle.y = sharedModel.angleSp.y * c
 		angle.z = sharedModel.angleSp.z * c
 
+		sendMessage(
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
+		)
 		sendMessages([
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ]),
-			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
-		]);
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ])
+		])
 	}
 	
 	func level() {
@@ -112,12 +120,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		rate.y = sharedModel.rateSp.y * c
 		rate.z = sharedModel.rateSp.z * c
 		
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]),
-			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
-		])
-		sendMessages([
+		sendMessage(
 			FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate))
+		)
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ])
 		])
 	}
 
@@ -128,43 +137,30 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		angle.y = sharedModel.angleSp.y * c
 		angle.z = sharedModel.angleSp.z * c
 		
+		sendMessage(
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(angle))
+		)
 		sendMessages([
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x01 ]),
-			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0))
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_RATE, data: pack(angle))
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
+			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x03 ])
 		])
 	}
 	
 	func tuning() {
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)),
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)),
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig))
-		])
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig)))
 	}
 	
 	func saveTuning() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_SAVE_CALIBRATION))
 	}
 	func revertTuning() {
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION)
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID)
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
-		])
-		sendMessages([
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
-		])
+		sendMessage(FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION))
+		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID))
+		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID))
+		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY))
 	}
 	
 	func onMessage(message: FramedSerialMessage) {

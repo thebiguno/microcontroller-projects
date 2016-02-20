@@ -24,6 +24,8 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	@IBOutlet var angleI : UITextField!
 	@IBOutlet var angleD : UITextField!
 	@IBOutlet var tau : UITextField!
+	@IBOutlet var battery : UILabel!
+	@IBOutlet var debug : UILabel!
 	
 	var typing = false
 
@@ -43,12 +45,22 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		sharedMessageManager.level()
 	}
 	
-	@IBAction func rateTestClicked(sender: AnyObject) {
-		sharedMessageManager.rate()
+	@IBAction func ratePressed(sender : UISwitch) {
+		sharedModel.armed = sender.on
+		if (sender.on) {
+			sharedMessageManager.armRate()
+		} else {
+			sharedMessageManager.disarm()
+		}
 	}
 	
-	@IBAction func angleTestClicked(sender: AnyObject) {
-		sharedMessageManager.angle()
+	@IBAction func anglePressed(sender : UISwitch) {
+		sharedModel.armed = sender.on
+		if (sender.on) {
+			sharedMessageManager.armAngle()
+		} else {
+			sharedMessageManager.disarm()
+		}
 	}
 
 	@IBAction func throttleChanged(sender : UISlider) {
@@ -189,8 +201,12 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	}
 	
 	func peripheralsChanged() {}
-	func batteryChanged() {}
-	func debugChanged() {}
+	func batteryChanged() {
+		battery.text = "\(sharedModel.battery)%"
+	}
+	func debugChanged() {
+		debug.text = sharedModel.debug
+	}
 	
 	func configChanged() {
 		update();
