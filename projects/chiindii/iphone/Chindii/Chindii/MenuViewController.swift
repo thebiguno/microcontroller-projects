@@ -112,7 +112,8 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		
 		let numberFormatter = NSNumberFormatter()
 		let number = numberFormatter.numberFromString(updated as String)
-		if (updated == "") {
+		if (updated == "" || updated == ".") {
+			// not a number but still an valid input
 			return true;
 		} else if (number == nil) {
 			return false;

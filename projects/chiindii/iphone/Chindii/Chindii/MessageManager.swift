@@ -11,6 +11,33 @@ import CoreBluetooth
 
 let sharedMessageManager = MessageManager()
 
+extension Array {
+	func slice(args: Int...) -> Array {
+		var s = args[0]
+		var e = self.count - 1
+		if args.count > 1 { e = args[1] }
+		
+		if e < 0 {
+			e += self.count
+		}
+		
+		if s < 0 {
+			s += self.count
+		}
+		
+		let count = (s < e ? e-s : s-e)+1
+		let inc = s < e ? 1 : -1
+		var ret = Array()
+		
+		var idx = s
+		for var i=0;i<count;i++  {
+			ret.append(self[idx])
+			idx += inc
+		}
+		return ret
+	}
+}
+
 class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerDelegate, CBPeripheralDelegate {
 	let MESSAGE_REQUEST_ENABLE_DEBUG : UInt8 = 0x03
 	let MESSAGE_REQUEST_DISABLE_DEBUG : UInt8 = 0x04
@@ -127,29 +154,77 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 	}
 	func revertTuning() {
 		sendMessages([
-			FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION),
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID),
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID),
-			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY),
+			FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION)
+		])
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID)
+		])
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
+		])
+		sendMessages([
+			FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
 		])
 	}
 	
 	func onMessage(message: FramedSerialMessage) {
+		print(message.command)
+		print(message.data)
+	
 		switch(message.command) {
 		case MESSAGE_SEND_BATTERY:
 			sharedModel.battery = message.data[0]
 			break;
 		case MESSAGE_REQUEST_CALIBRATION_RATE_PID:
-			sharedModel.rateConfig = unpack(message.data)
+			sharedModel.rateConfig.x.p = unpack(message.data.slice(0,3))
+			sharedModel.rateConfig.x.i = unpack(message.data.slice(4,7))
+			sharedModel.rateConfig.x.d = unpack(message.data.slice(8,11))
+
+			sharedModel.rateConfig.y.p = unpack(message.data.slice(12,15))
+			sharedModel.rateConfig.y.i = unpack(message.data.slice(16,19))
+			sharedModel.rateConfig.y.d = unpack(message.data.slice(20,23))
+
+			sharedModel.rateConfig.z.p = unpack(message.data.slice(24,27))
+			sharedModel.rateConfig.z.i = unpack(message.data.slice(28,31))
+			sharedModel.rateConfig.z.d = unpack(message.data.slice(32,35))
+
+			print("rate pid")
+			print(sharedModel.rateConfig.x)
+			print(sharedModel.rateConfig.y)
+			print(sharedModel.rateConfig.z)
 			break
 		case MESSAGE_REQUEST_CALIBRATION_ANGLE_PID:
 			sharedModel.angleConfig = unpack(message.data)
+			sharedModel.angleConfig.x.p = unpack(message.data.slice(0,3))
+			sharedModel.angleConfig.x.i = unpack(message.data.slice(4,7))
+			sharedModel.angleConfig.x.d = unpack(message.data.slice(8,11))
+			
+			sharedModel.angleConfig.y.p = unpack(message.data.slice(12,15))
+			sharedModel.angleConfig.y.i = unpack(message.data.slice(16,19))
+			sharedModel.angleConfig.y.d = unpack(message.data.slice(20,23))
+			
+			sharedModel.angleConfig.z.p = unpack(message.data.slice(24,27))
+			sharedModel.angleConfig.z.i = unpack(message.data.slice(28,31))
+			sharedModel.angleConfig.z.d = unpack(message.data.slice(32,35))
+
+			print("angle pid")
+			print(sharedModel.angleConfig.x)
+			print(sharedModel.angleConfig.y)
+			print(sharedModel.angleConfig.z)
 			break
 		case MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY:
 			sharedModel.compConfig = unpack(message.data)
+			sharedModel.compConfig.x = unpack(message.data.slice(0,3))
+			sharedModel.compConfig.y = unpack(message.data.slice(4,7))
+
+			print("comp")
+			print(sharedModel.compConfig)
 			break
 		case MESSAGE_SEND_DEBUG:
-			sharedModel.debug = unpack(message.data)
+			print("debug")
+			let debug = NSString(bytes: message.data, length: message.data.count, encoding: NSASCIIStringEncoding)
+			print(debug)
+			sharedModel.debug = debug as! String
 		default:
 			break;
 		}
@@ -228,7 +303,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		
 		var buffer = [UInt8](count: length!, repeatedValue: 0)
 		value?.getBytes(&buffer, length: length!)
-		print(buffer)
+		//print(buffer)
 		serialProtocol.onMessage(buffer)
 	}
 	
