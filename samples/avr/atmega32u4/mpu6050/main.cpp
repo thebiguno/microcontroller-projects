@@ -32,7 +32,7 @@ int main (){
 	PORTF ^= _BV(5) | _BV(6) | _BV(7);
 	
 	Mpu6050 mpu6050;
-	mpu6050.calibrate();
+	//mpu6050.calibrate();
 
 	PORTF ^= _BV(5) | _BV(6) | _BV(7);
 	_delay_ms(1000);
@@ -40,20 +40,21 @@ int main (){
 	
 	SerialUSB serial;
 
-	char temp[64];
+	char temp[128];
 	
 	while (1){
-//		vector_t accel = mpu6050.getAccel();
+		vector_t accel = mpu6050.getAccel();
 		vector_t gyro = mpu6050.getGyro();
 //		double temperature = mpu6050.getTemperature();
 		
-		uint8_t size = snprintf(temp, sizeof(temp), "GX: %.02f\tY: %.02f\tZ: %.02f\n", gyro.x, gyro.y, gyro.z);
-		
+		uint8_t size = snprintf(temp, sizeof(temp), "Gyro: X: %.02f  Y: %.02f  Z: %.02f\n", gyro.x, gyro.y, gyro.z);
+		serial.write((uint8_t*) temp, size);
+		size = snprintf(temp, sizeof(temp), "Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
 		serial.write((uint8_t*) temp, size);
 		//usb_serial_flush_input();
 		//usb_serial_write((uint8_t*) temp, sizeof(temp));
 		
 		PORTF ^= _BV(5) | _BV(6) | _BV(7);
-		_delay_ms(100);
+		_delay_ms(20);
 	}
 }
