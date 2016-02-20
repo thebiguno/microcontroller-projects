@@ -82,6 +82,7 @@
 #define BATTERY_TIME							2000
 #define REMOTE_BATTERY_TIMEOUT					5000
 #define BOOTLOADER_TIME							1000
+#define DISABLE_TIME						1000
 
 #define COMM_NONE								0x00
 #define COMM_RX									0x01
@@ -132,9 +133,11 @@ uint32_t bootloader_timer = 0;
 uint32_t analog_poll_timer = 0;
 uint32_t digital_poll_timer = 0;
 uint32_t communication_timer = 0;
+uint32_t disable_timer = 0;
 
 uint8_t communication = COMM_NONE;
 uint8_t battery_level = 0;
+uint8_t disable_controls = 0;
 
 char buf[15];	//String buffer, used for display formatting
 
@@ -234,73 +237,75 @@ int main (void){
 		uint16_t buttons = psx.buttons();
 		uint16_t changed = psx.changed();
 
-		//Digital transmission section
-		if (changed){
-			for (uint8_t x = 0; x < 16; x++){
-				//If this was triggered by a real button event, show the current state (newly pressed or newly released)
-				if (changed & _BV(x)){
-					if (buttons & _BV(x)){
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						sendMessage(&m);
-					}
-					else {
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
-						sendMessage(&m);
-					}
-				}
-			}
-			
-			digital_poll_timer = time;
-		}
-		
-		//Button repeat
-		if ((time - digital_poll_timer) > DIGITAL_POLL_TIME){
-			if (buttons){
+		if (!disable_controls){
+			//Digital transmission section
+			if (changed){
 				for (uint8_t x = 0; x < 16; x++){
-					if (buttons & _BV(x)){
-						FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
-						sendMessage(&m);
+					//If this was triggered by a real button event, show the current state (newly pressed or newly released)
+					if (changed & _BV(x)){
+						if (buttons & _BV(x)){
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+							sendMessage(&m);
+						}
+						else {
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_RELEASE, &x, 1);
+							sendMessage(&m);
+						}
 					}
 				}
+				
+				digital_poll_timer = time;
 			}
-			else {
-				FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
-				sendMessage(&m);
+			
+			//Button repeat
+			if ((time - digital_poll_timer) > DIGITAL_POLL_TIME){
+				if (buttons){
+					for (uint8_t x = 0; x < 16; x++){
+						if (buttons & _BV(x)){
+							FramedSerialMessage m(MESSAGE_UC_BUTTON_PUSH, &x, 1);
+							sendMessage(&m);
+						}
+					}
+				}
+				else {
+					FramedSerialMessage m(MESSAGE_UC_BUTTON_NONE, 0x00, 0);
+					sendMessage(&m);
+				}
+
+				digital_poll_timer = time;
 			}
-
-			digital_poll_timer = time;
-		}
-		
-		//Analog transmission section
-		
-		//Add in the current analog values to the running average
-		average_stick[0] = average_stick[0] + psx.stick(PSS_LX) - (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[1] = average_stick[1] + psx.stick(PSS_LY) - (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[2] = average_stick[2] + psx.stick(PSS_RX) - (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
-		average_stick[3] = average_stick[3] + psx.stick(PSS_RY) - (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
-		
-		average_throttle = average_throttle + analog.read(ADC_THROTTLE) - (average_throttle >> AVERAGE_DIVISOR_EXPONENT);
-		
-		if ((time - analog_poll_timer) > ANALOG_POLL_TIME
-				|| abs((average_stick[0] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[0]) > STICK_THRESHOLD
-				|| abs((average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[1]) > STICK_THRESHOLD
-				|| abs((average_stick[2] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[2]) > STICK_THRESHOLD
-				|| abs((average_stick[3] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[3]) > STICK_THRESHOLD
-				|| abs((average_throttle >> AVERAGE_DIVISOR_EXPONENT) - last_throttle) > THROTTLE_THRESHOLD){
-
-			last_stick[0] = (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[1] = (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[2] = (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
-			last_stick[3] = (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
-			last_throttle = average_throttle >> AVERAGE_DIVISOR_EXPONENT;
-
-			FramedSerialMessage sticks(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
-			sendMessage(&sticks);
 			
-			FramedSerialMessage throttle(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
-			sendMessage(&throttle);
+			//Analog transmission section
 			
-			analog_poll_timer = time;
+			//Add in the current analog values to the running average
+			average_stick[0] = average_stick[0] + psx.stick(PSS_LX) - (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[1] = average_stick[1] + psx.stick(PSS_LY) - (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[2] = average_stick[2] + psx.stick(PSS_RX) - (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
+			average_stick[3] = average_stick[3] + psx.stick(PSS_RY) - (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
+			
+			average_throttle = average_throttle + analog.read(ADC_THROTTLE) - (average_throttle >> AVERAGE_DIVISOR_EXPONENT);
+			
+			if ((time - analog_poll_timer) > ANALOG_POLL_TIME
+					|| abs((average_stick[0] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[0]) > STICK_THRESHOLD
+					|| abs((average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[1]) > STICK_THRESHOLD
+					|| abs((average_stick[2] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[2]) > STICK_THRESHOLD
+					|| abs((average_stick[3] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[3]) > STICK_THRESHOLD
+					|| abs((average_throttle >> AVERAGE_DIVISOR_EXPONENT) - last_throttle) > THROTTLE_THRESHOLD){
+
+				last_stick[0] = (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[1] = (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[2] = (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
+				last_stick[3] = (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
+				last_throttle = average_throttle >> AVERAGE_DIVISOR_EXPONENT;
+
+				FramedSerialMessage sticks(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
+				sendMessage(&sticks);
+				
+				FramedSerialMessage throttle(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
+				sendMessage(&throttle);
+				
+				analog_poll_timer = time;
+			}
 		}
 
 //		if (psx.button(PSB_SELECT)) display.write_text(0, 0, "Select        ", 14);
@@ -405,6 +410,28 @@ int main (void){
 		}
 		else {
 			bootloader_timer = time;
+		}
+		
+		//Hold down circle + triangle and push left stick all the way down for DISABLE_TIME ms to disable the controls.  This can be useful when hooked up to computer via USB
+		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
+			if ((time - disable_timer) >= DISABLE_TIME){
+				disable_controls ^= 1;
+				
+				if (disable_controls){
+					display.write_text(0, 0, "Controls      ", 14);
+					display.write_text(1, 0, "Disabled      ", 14);
+				}
+				else {
+					display.write_text(0, 0, "Controls      ", 14);
+					display.write_text(1, 0, "Enabled       ", 14);
+				}
+				display.refresh();
+				
+				disable_timer = time;
+			}
+		}
+		else {
+			disable_timer = time;
 		}
 		
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.button(PSB_PAD_UP)){
