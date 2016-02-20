@@ -499,7 +499,6 @@
                                                     <state key="normal" title="Start Test"/>
                                                     <connections>
                                                         <action selector="angleTestClicked:" destination="3lh-CX-GUg" eventType="touchUpInside" id="F8f-2j-dfi"/>
-                                                        <action selector="armClicked:" destination="3lh-CX-GUg" eventType="touchUpInside" id="0P9-Ys-O8n"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
