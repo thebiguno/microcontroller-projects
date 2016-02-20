@@ -46,39 +46,39 @@ void Calibration::read() {
 		double kp, ki, kd;
 		double t;
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 0);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 4);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 8);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 8));
 		chiindii->getRateX()->setTunings(kp, ki, kd);
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 12);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 16);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 20);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 12));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 16));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 20));
 		chiindii->getRateY()->setTunings(kp, ki, kd);
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 24);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 28);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 32);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 24));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 28));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 32));
 		chiindii->getRateZ()->setTunings(kp, ki, kd);
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 36);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 40);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 44);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 36));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 40));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 44));
 		chiindii->getAngleX()->setTunings(kp, ki, kd);
 
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 48);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 52);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 56);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 48));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 52));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 56));
 		chiindii->getAngleY()->setTunings(kp, ki, kd);
 	
-		kp = eeprom_read_float((float*) EEPROM_OFFSET + 60);
-		ki = eeprom_read_float((float*) EEPROM_OFFSET + 64);
-		kd = eeprom_read_float((float*) EEPROM_OFFSET + 68);
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 60));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 64));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
 		chiindii->getGforce()->setTunings(kp, ki, kd);
 
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 72);
+		t = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
 		chiindii->getCompX()->setTau(t);
-		t = eeprom_read_float((float*) EEPROM_OFFSET + 76);
+		t = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
 		chiindii->getCompY()->setTau(t);
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
@@ -99,47 +99,53 @@ void Calibration::read() {
 }
 
 void Calibration::write() {
+	cli();
+	wdt_disable();
+	
 	PID* rate_x = chiindii->getRateX();
-	eeprom_update_float((float*) EEPROM_OFFSET + 0, rate_x->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 4, rate_x->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 8, rate_x->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 0), rate_x->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 4), rate_x->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 8), rate_x->getKd());
 
 	PID* rate_y = chiindii->getRateY();
-	eeprom_update_float((float*) EEPROM_OFFSET + 12, rate_y->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 16, rate_y->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 20, rate_y->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 12), rate_y->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 16), rate_y->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 20), rate_y->getKd());
 	
 	PID* rate_z = chiindii->getRateZ();
-	eeprom_update_float((float*) EEPROM_OFFSET + 24, rate_z->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 28, rate_z->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 32, rate_z->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 24), rate_z->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 28), rate_z->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 32), rate_z->getKd());
 
 	PID* angle_x = chiindii->getAngleX();
-	eeprom_update_float((float*) EEPROM_OFFSET + 36, angle_x->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 40, angle_x->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 44, angle_x->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 36), angle_x->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 40), angle_x->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 44), angle_x->getKd());
 
 	PID* angle_y = chiindii->getAngleY();
-	eeprom_update_float((float*) EEPROM_OFFSET + 48, angle_y->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 52, angle_y->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 56, angle_y->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 48), angle_y->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 52), angle_y->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 56), angle_y->getKd());
 
 	PID* gforce = chiindii->getGforce();
-	eeprom_update_float((float*) EEPROM_OFFSET + 60, gforce->getKp());
-	eeprom_update_float((float*) EEPROM_OFFSET + 64, gforce->getKi());
-	eeprom_update_float((float*) EEPROM_OFFSET + 68, gforce->getKd());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 60), gforce->getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 64), gforce->getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 68), gforce->getKd());
 
 	Complementary* c_x = chiindii->getCompX();
-	eeprom_update_float((float*) EEPROM_OFFSET + 72, c_x->getTau());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 72), c_x->getTau());
 	
 	Complementary* c_y = chiindii->getCompY();
-	eeprom_update_float((float*) EEPROM_OFFSET + 76, c_y->getTau());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 76), c_y->getTau());
 	
 	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 80), 6);
 	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 86), 6);
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
+	
+	wdt_enable(WDTO_120MS);
+	sei();
 	
 #ifdef DEBUG
 	chiindii->sendDebug("Save EEPROM\n");
@@ -168,8 +174,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->sendMessage(&response);
 		
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Request Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendDebug(temp);
+//		snprintf(temp, sizeof(temp), "Request Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+//		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
@@ -185,8 +191,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->sendMessage(&response);
 		
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Request Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendDebug(temp);
+// 		snprintf(temp, sizeof(temp), "Request Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+// 		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
@@ -199,8 +205,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->sendMessage(&response);
 		
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
-		chiindii->sendDebug(temp);
+// 		snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
+// 		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
@@ -210,8 +216,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
 		
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Set Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendDebug(temp);
+// 		snprintf(temp, sizeof(temp), "Set Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+// 		chiindii->sendDebug(temp);
 #endif
 
 	}
@@ -221,8 +227,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-		chiindii->sendDebug(temp);
+// 		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+// 		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
@@ -231,8 +237,8 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getCompY()->setTau(data[1]);
 		
 #ifdef DEBUG
-		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-		chiindii->sendDebug(temp);
+// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
+// 		chiindii->sendDebug(temp);
 #endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){

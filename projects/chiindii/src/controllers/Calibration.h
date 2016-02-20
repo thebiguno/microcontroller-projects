@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <avr/eeprom.h>
+#include <avr/wdt.h>
 
 #include <FramedSerialProtocol.h>
 
@@ -20,8 +21,8 @@
 #define MESSAGE_START_MPU_CALIBRATION 0x3B
 
 
-#define EEPROM_MAGIC	0x00
-#define EEPROM_OFFSET	0x10
+#define EEPROM_MAGIC	0x2FF
+#define EEPROM_OFFSET	0x300
 
 namespace digitalcave {
 	class Chiindii; // forward declaration
