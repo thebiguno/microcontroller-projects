@@ -46,6 +46,7 @@ MESSAGE_START_MPU_CALIBRATION = 0x3B
 MODE_UNARMED = 0x00
 MODE_ARMED_ANGLE = 0x01
 MODE_ARMED_RATE = 0x02
+MODE_ARMED_THROTTLE = 0x03
 
 
 ########## Main program here ##########
@@ -292,7 +293,7 @@ Select parameter: """).lower()
 						rate_sp[i + (axis * 4)] = ord(b)
 
 					throttle_sp = [0,0,0,0]
-					throttle = struct.pack("<f", 0.25)
+					throttle = struct.pack("<f", 0.5)
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
@@ -301,8 +302,11 @@ Select parameter: """).lower()
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Show debug data...
-					for i in range(10):
+					for i in range(4):
 						writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
+						response = readNextMessage(ser)
+						if (response != False and response["command"] == MESSAGE_DEBUG):
+							print("".join(map(chr, response["data"])))
 						time.sleep(0.5)
 						
 
@@ -429,12 +433,20 @@ Select parameter: """).lower()
 					for i, b in enumerate(gforce):
 						angle_sp[i + 8] = ord(b)
 				
-					writeMessage(ser, MESSAGE_ANGLE, angle_sp)								#Set angle
-					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE], flush=False)		#Armed in angle mode
+					throttle_sp = [0,0,0,0]
+					throttle = struct.pack("<f", 0.5)
+					for i, b in enumerate(throttle):
+						throttle_sp[i] = ord(b)
 					
-					#Show debug data...
-					for i in range(10):
-						writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_ANGLE], flush=False)		#Armed in rate mode
+					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)						#Set throttle
+					writeMessage(ser, MESSAGE_ANGLE, angle_sp)								#Set angle
+					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_THROTTLE], flush=False)		#Armed in angle mode
+					
+					for i in range(4):
+						writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_THROTTLE], flush=False)		#Armed in angle mode
+						response = readNextMessage(ser)
+						if (response != False and response["command"] == MESSAGE_DEBUG):
+							print("".join(map(chr, response["data"])))
 						time.sleep(0.5)
 						
 
@@ -561,18 +573,19 @@ def readNextMessage(ser):
 			b = ord(raw)
 			#print(hex(b))
 		
-			if (err and b == START):
-				# recover from error condition
-				err = False
-				#print("Recover from error")
-				pos = 0
-			elif (err):
-				print("Error")
-				continue
+			if (err):
+				if (b == START):
+					# recover from error condition
+					err = False
+					print("Recover from error")
+					pos = 0
+				else:
+					#print("In Error State")
+					continue
 
 			if (pos > 0 and b == START):
 				# unexpected start of frame
-				#print("Unexpected start of frame")
+				print("Unexpected start of frame")
 				err = True
 				continue
 
@@ -593,17 +606,21 @@ def readNextMessage(ser):
 				pos = pos + 1
 				continue
 			elif (pos == 1):
-				length = b
-				pos = pos + 1
+				if (b == 0):
+					error = True
+					print("Invalid length")
+				else:
+					length = b
+					pos = pos + 1
 				continue
 			elif (pos == 2):
 				cmd = b
 				pos = pos + 1
 				continue
 			else:
-				if (pos > MAX_SIZE):
+				if ((pos - 3)> MAX_SIZE):
 					# this probably can't happen
-					#print("Overlength message")
+					print("Overlength message")
 					continue
 
 				if (pos == (length + 2)):
@@ -615,7 +632,7 @@ def readNextMessage(ser):
 						return result
 					
 					else:
-						#print("Invalid checksum")
+						print("Invalid checksum")
 						err = True;
 					pos = 0;
 					chk = 0;

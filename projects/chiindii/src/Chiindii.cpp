@@ -124,8 +124,8 @@ Chiindii::Chiindii() :
 {
 	//Output of angle PID is a rate (rad / s) for each axis.  -1 to 1 should suffice; if this
 	// results in too slow corrections, we can increase.
-	angle_x.setOutputLimits(-1, 1);
-	angle_y.setOutputLimits(-1, 1);
+	angle_x.setOutputLimits(-10, 10);
+	angle_y.setOutputLimits(-10, 10);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 1);
