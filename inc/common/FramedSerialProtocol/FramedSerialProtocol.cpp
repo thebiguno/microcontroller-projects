@@ -173,13 +173,13 @@ void FramedSerialProtocol::write(Stream* stream, FramedSerialMessage* message){
 			default:
 				if (position - 3 == length){
 					//Write checksum
-					uint8_t result = command;
+					uint8_t checksum = command;
 				
 					for (uint8_t i = 0; i < length; i++) {
-						result += data[i];
+						checksum += data[i];
 					}
 
-					escapeByte(stream, 0xff - result);
+					escapeByte(stream, 0xff - checksum);
 				}
 				else {
 					escapeByte(stream, data[position - 3]);
