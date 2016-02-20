@@ -77,20 +77,27 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		centralManager.delegate = self;
 	}
 	
+	func armFlight() {
+		flight()
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x01 ]))
+		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
+	}
 	func armRate() {
+		rate()
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ]))
 		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "rate", userInfo: nil, repeats: true)
 	}
 	func armAngle() {
+		angle()
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x03 ]))
 		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "angle", userInfo: nil, repeats: true)
-	}
-	func armFlight() {
-		timer = NSTimer.scheduledTimerWithTimeInterval(0.2, target: self, selector: "flight", userInfo: nil, repeats: true)
 	}
 	func disarm() {
 		if (timer != nil) {
 			timer!.invalidate()
 			timer = nil;
 		}
+		sendMessage(FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x00 ]))
 	}
 	
 	func flight() {
@@ -100,12 +107,9 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		angle.y = sharedModel.angleSp.y * c
 		angle.z = sharedModel.angleSp.z * c
 
-		sendMessage(
-			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp))
-		)
 		sendMessages([
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ sharedModel.armed ? 0x01 : 0x00 ])
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
 		])
 	}
 	
@@ -120,13 +124,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		rate.y = sharedModel.rateSp.y * c
 		rate.z = sharedModel.rateSp.z * c
 		
-		sendMessage(
-			FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate))
-		)
 		sendMessages([
+			FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate)),
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
 			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x02 ])
 		])
 	}
 
@@ -137,13 +138,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		angle.y = sharedModel.angleSp.y * c
 		angle.z = sharedModel.angleSp.z * c
 		
-		sendMessage(
-			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(angle))
-		)
 		sendMessages([
+			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(angle)),
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
-			FramedSerialMessage(command: MESSAGE_ARMED, data: [ 0x03 ])
+			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
 		])
 	}
 	
