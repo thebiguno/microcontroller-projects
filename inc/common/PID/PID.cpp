@@ -12,46 +12,41 @@
 
 using namespace digitalcave;
 
-PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t period, uint32_t time) :
+PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t time) :
+	lastTime(time),
 	integratedError(0),
 	lastMeasured(0)
 {
 	setOutputLimits(0, 255);
-	setPeriod(period);
 	setDirection(direction);
 	setTunings(kp, ki, kd);
-
-	if (time > period) lastTime = time - period;
-	else lastTime = 0;
 }
 
-uint8_t PID::compute(double setPoint, double measured, double* output, uint32_t time){
+double PID::compute(double setPoint, double measured, uint32_t time){
 	uint32_t currentPeriod = time - lastTime;
-	if (currentPeriod >= period){
-		double periodSec = currentPeriod / 1000.0;	//Period in seconds; used to normalize ki / kd values across different periods
-		
-		//Compute all the working error variables
-		double error = setPoint - measured;
-		integratedError += (ki * periodSec * error);
+	if (currentPeriod == 0) currentPeriod = 1;
+	double periodSec = currentPeriod / 1000.0;	//Period in seconds; used to normalize ki / kd values across different periods
+	
+	//Compute all the working error variables
+	double error = setPoint - measured;
+	integratedError += (ki * periodSec * error);
 
-		if (integratedError > outMax) integratedError = outMax;
-		else if (integratedError < outMin) integratedError = outMin;
-		
-		double derivative = (measured - lastMeasured);
- 
-		// Compute PID Output
-		double result = kp * error + integratedError - kd / periodSec * derivative;
-		
-		if (result > outMax) result = outMax;
-		else if(result < outMin) result = outMin;
-		*output = result;
-		
-		//Remember some variables for next time
-		lastMeasured = measured;
-		lastTime = time;
-		return true;
-	}
-	return false;
+	if (integratedError > outMax) integratedError = outMax;
+	else if (integratedError < outMin) integratedError = outMin;
+	
+	double derivative = (measured - lastMeasured);
+
+	// Compute PID Output
+	double result = kp * error + integratedError - kd / periodSec * derivative;
+	
+	if (result > outMax) result = outMax;
+	else if(result < outMin) result = outMin;
+	
+	//Remember some variables for next time
+	lastMeasured = measured;
+	lastTime = time;
+	
+	return result;
 }
 
 
@@ -70,9 +65,6 @@ void PID::setTunings(double kp, double ki, double kd){
 	}
 }
 	
-void PID::setPeriod(uint16_t period){
-	this->period = period;
-}
 void PID::setOutputLimits(double min, double max){
 	if (min >= max) return;
 

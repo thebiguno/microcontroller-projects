@@ -302,12 +302,12 @@ Select parameter: """).lower()
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Show debug data...
-					#for i in range(4):
-						#writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
-						#response = readNextMessage(ser)
-						#if (response != False and response["command"] == MESSAGE_DEBUG):
-							#print("".join(map(chr, response["data"])))
-						#time.sleep(0.5)
+					for i in range(2):
+						writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
+						response = readNextMessage(ser)
+						if (response != False and response["command"] == MESSAGE_DEBUG):
+							print("".join(map(chr, response["data"])))
+						time.sleep(0.5)
 						
 
 					while True:

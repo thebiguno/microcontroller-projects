@@ -16,7 +16,7 @@
 #include "motor/motor.h"
 
 //The period (in ms) at which we run the main processing loop (complementary filter + PID + set motors, etc)
-#define PROCESS_PERIOD			10
+#define PROCESS_PERIOD			50
 
 using namespace digitalcave;
 
@@ -107,13 +107,13 @@ Chiindii::Chiindii() :
 	rate_sp({0, 0, 0}),
 	protocol(255),
 	
-	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
-	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
-	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
-	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
-	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
-	gforce(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
+	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
 	c_x(0.075, 0),
 	c_y(0.075, 0),
@@ -205,29 +205,20 @@ void Chiindii::run() {
 			angle_mv.x = c_x.compute(gyro.x, angle_mv.x, time);
 			angle_mv.y= c_y.compute(gyro.y, angle_mv.y, time);
 		
-#ifdef DEBUG
-			if (mode && debug){
-				char temp[128];
-				snprintf(temp, sizeof(temp), "Filtered Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
-				sendDebug(temp);
-			}
-#endif
-
 			if (mode == MODE_ARMED_ANGLE) {
-				double gforceThrottle = 0;
 				// angle pid
 				// compute a rate set point given an angle set point and current measured angle
 				// see doc/control_system.txt
-				angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
-				angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
-				gforce.compute(angle_sp.z, accel.z, &gforceThrottle, time);
+				rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
+				rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
+				double gforceThrottle = gforce.compute(angle_sp.z, accel.z, time);
 
 				// rate pid
 				// computes the desired change rate
 				// see doc/control_system.txt
-				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
-				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
-				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+				rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
+				rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
+				rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
 				
 				status.armed();
 				driveMotors(gforceThrottle, &rate_pv);
@@ -237,16 +228,16 @@ void Chiindii::run() {
 					// angle pid with direct throttle
 					// compute a rate set point given an angle set point and current measured angle
 					// see doc/control_system.txt
-					angle_x.compute(angle_sp.x, angle_mv.x, &rate_sp.x, time);
-					angle_y.compute(angle_sp.y, angle_mv.y, &rate_sp.y, time);
+					rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
+					rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
 					gforce.reset(time);
 
 					// rate pid
 					// computes the desired change rate
 					// see doc/control_system.txt
-					rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
-					rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
-					rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+					rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
+					rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
+					rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
 					
 					driveMotors(throttle_sp, &rate_pv);
 				}
@@ -265,20 +256,25 @@ void Chiindii::run() {
 				status.armed();
 			}
 			else if (mode == MODE_ARMED_RATE){
+				// angle pid not used here
+				angle_x.reset(time);
+				angle_y.reset(time);
+				gforce.reset(time);
+
 				// rate pid
 				// computes the desired change rate
 				// see doc/control_system.txt
-				rate_x.compute(rate_sp.x, gyro.x, &rate_pv.x, time);
-				rate_y.compute(rate_sp.y, gyro.y, &rate_pv.y, time);
-				rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
+				rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
+				rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
+				rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
 				
-// #ifdef DEBUG
-// 				if (debug){
-// 					char temp[128];
-// 					snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
-// 					sendDebug(temp);
-// 				}
-// #endif
+#ifdef DEBUG
+			if (mode && debug){
+				char temp[128];
+				snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f   Rates: %3.2f, %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y), rate_pv.x, rate_pv.y, rate_pv.z);
+				sendDebug(temp);
+			}
+#endif
 
 				status.armed();
 				driveMotors(throttle_sp, &rate_pv);
@@ -338,11 +334,11 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 	m4 = m4 * 511;
 	
 #ifdef DEBUG
-	if (debug){
-		char temp[128];
-		snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d", rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		sendDebug(temp);
-	}
+// 	if (debug){
+// 		char temp[128];
+// 		snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d", rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+// 		sendDebug(temp);
+// 	}
 #endif
 
 	motor_set(m1, m2, m3, m4);
