@@ -242,38 +242,59 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 #endif
 	}
 	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
-		uint8_t* data = (uint8_t*) request->getData();
-		uint8_t axis = data[0];
+//		uint8_t* data = (uint8_t*) request->getData();
+//		uint8_t axis = data[0];
 		
 		uint8_t time;
 		vector_t accel;
 		vector_t gyro;
-		double outdata[3];
+//		double outdata[3];
 		vector_t angle_mv;
 		
 		for (uint16_t i = 0; i < 1000; i++) {
 			wdt_reset();
 			
 			time = timer_millis();
+
 			accel = chiindii->getMpu6050()->getAccel();
 			gyro = chiindii->getMpu6050()->getGyro();
+
+			// compute the absolute angle relative to the horizontal.  We use the standard convention of
+			// rotation about the X axis is roll, and rotation about the Y axis is pitch.
+			// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
+			// See http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/ for formula
+			angle_mv.x = atan2(accel.y, accel.z);		//roll
+			angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));		//pitch
+
+			// complementary tuning
+			// filter gyro rate and measured angle increase the accuracy of the angle
+			angle_mv.x = chiindii->getCompX()->compute(gyro.x, angle_mv.x, time);
+			angle_mv.y= chiindii->getCompY()->compute(gyro.y, angle_mv.y, time);
+
+			char temp[128];
+			snprintf(temp, sizeof(temp), "Raw Gyro: %7.0f, %7.0f, %7.0f  Raw Accel: %9.2f, %9.2f, %9.2f  Angle: %7.0f, %7.0f\n", RADIANS_TO_DEGREES(gyro.x), RADIANS_TO_DEGREES(gyro.y), RADIANS_TO_DEGREES(gyro.z), accel.x, accel.y, accel.z, RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
+			chiindii->sendDebug(temp);
 			
-			if (axis == 0) {
-				angle_mv.x = atan2(accel.y, accel.z);
-				angle_mv.x = chiindii->getCompX()->compute(gyro.x, angle_mv.x, time);
-				outdata[0] = gyro.x;
-				outdata[1] = accel.x;
-				outdata[2] = angle_mv.x;
-			}
-			else {
-				angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
-				angle_mv.y = chiindii->getCompX()->compute(gyro.y, angle_mv.y, time);
-				outdata[0] = gyro.y;
-				outdata[1] = accel.y;
-				outdata[2] = angle_mv.y;
-			}
-			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) outdata, 12);
-			chiindii->sendMessage(&response);
+// 			accel = chiindii->getMpu6050()->getAccel();
+// 			gyro = chiindii->getMpu6050()->getGyro();
+// 			
+// 			if (axis == 0) {
+// 				angle_mv.x = atan2(accel.y, accel.z);
+// 				angle_mv.x = chiindii->getCompX()->compute(gyro.x, angle_mv.x, time);
+// 				outdata[0] = gyro.x;
+// 				outdata[1] = accel.x;
+// 				outdata[2] = angle_mv.x;
+// 			}
+// 			else {
+// 				angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
+// 				angle_mv.y = chiindii->getCompX()->compute(gyro.y, angle_mv.y, time);
+// 				outdata[0] = gyro.y;
+// 				outdata[1] = accel.y;
+// 				outdata[2] = angle_mv.y;
+// 			}
+// 			FramedSerialMessage response(MESSAGE_SEND_TUNING_DATA, (uint8_t*) outdata, 12);
+// 			chiindii->sendMessage(&response);
+			
 
 			// TODO this delay should be the about same as the duration of the normal main loop
 			_delay_ms(10);

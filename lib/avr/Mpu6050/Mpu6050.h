@@ -9,6 +9,10 @@
 
 #include "../twi/twi.h"
 
+//Accel running average returns 2^ACCEL_AVERAGE_EXPONENT.  Comment out completely
+// to always report live accel data
+//#define ACCEL_AVERAGE_EXPONENT		3
+
 namespace digitalcave {
 
 	class Mpu6050{

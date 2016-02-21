@@ -77,7 +77,12 @@ void FramedSerialProtocol::escapeByte(Stream* stream, uint8_t b){
 
 uint8_t FramedSerialProtocol::read(Stream* stream, FramedSerialMessage* result){
 	uint8_t b;
-	while (stream->read(&b)){	
+	while (stream->read(&b)){
+		if (position == 0 && b != START){
+			//Garbage data, ignore
+			continue;
+		}
+		
 		if (error > 0){
 			if (b == START) {
 				// recover from any previous error condition

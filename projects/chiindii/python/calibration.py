@@ -4,7 +4,7 @@
 # Follow the on-screen prompts
 ###################
 
-import math, re, time, serial, struct, sys
+import math, re, serial, struct, sys, threading, time
 
 ########## Common variables ##########
 
@@ -13,6 +13,8 @@ axisString = ""
 #digit = re.compile('^[0-9]$')
 integerregex = re.compile('^-?[0-9]+$')
 floatregex = re.compile('^-?[0-9.]+$')
+
+MAILBOX = {}
 
 MESSAGE_ARMED = 0x20
 MESSAGE_THROTTLE = 0x21
@@ -67,7 +69,6 @@ Chiindii Calibration: Please selection an option below:
 	A) Change Angle PID calibration
 	V) Level MPU
 	X) Change Axis
-	D) Read debug messages
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
 	Q) Quit (Any unsaved changes will be lost)
@@ -87,12 +88,6 @@ Chiindii Calibration: Please selection an option below:
 			doLevelMpu(ser)
 		elif (choice == "x"):
 			chooseAxis(ser)
-		elif (choice == "d"):
-			while True:
-				response = readMessage(ser, MESSAGE_DEBUG)
-				if (response != False):
-					print("".join(map(chr, response["data"])))
-
 		elif (choice == "l"):
 			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
 			print("All values loaded from EEPROM")
@@ -199,9 +194,7 @@ Selected Option: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
-				if (response == False):
-					return
+				response = readMessage(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
 				d = response["data"]
 				
 				print("\nEnter a valid number, X/Y to change axis, or enter to return to parameter selection.")
@@ -220,12 +213,6 @@ Selected Option: """).lower()
 					print("Invalid value, please try again\n")
 		elif (param == "d"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
-			print("Gyro\tAccel\tComp")
-			while True:
-				response = readMessage(ser, MESSAGE_SEND_TUNING_DATA)
-				if (response == False):
-					break
-				print("{0[0]:.3f}\t{0[1]:.3f}\t{0[2]:.3f}".format(struct.unpack("<fff", buffer(str(bytearray(response["data"]))))))
 		else:
 			print("Invalid axis, please try again\n")
 
@@ -247,9 +234,7 @@ Ensure that Chiindii is in the tuning jig.
 	
 	writeMessage(ser, 0x00, [0x43])
 	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-	response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID)
-	if (response == False):
-		return
+	response = readMessage(MESSAGE_REQUEST_CALIBRATION_RATE_PID)
 	d = response["data"]
 	while True:
 		param = raw_input("""
@@ -298,23 +283,16 @@ Select parameter: """).lower()
 						throttle_sp[i] = ord(b)
 					
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)						#Set throttle
+					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
+					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
-					#Show debug data...
-					for i in range(2):
-						writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
-						response = readNextMessage(ser)
-						if (response != False and response["command"] == MESSAGE_DEBUG):
-							print("".join(map(chr, response["data"])))
+					#Keep sending data to prevent comm timeout...
+					for i in range(10):
+						writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)								#Set rate
 						time.sleep(0.5)
-						
-
-					while True:
-						response = readMessage(ser, MESSAGE_DEBUG)
-						if (response == False):
-							break
-						print("".join(map(chr, response["data"])))
+					time.sleep(1)
 
 				else:
 					print("Invalid value, please try again\n")
@@ -325,9 +303,7 @@ Select parameter: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID)
-				if (response == False):
-					return
+				response = readMessage(MESSAGE_REQUEST_CALIBRATION_RATE_PID)
 				d = response["data"]
 				
 				print("""
@@ -381,9 +357,7 @@ Ensure that Chiindii is in the tuning jig.
 	
 	writeMessage(ser, 0x00, [0x43])
 	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-	response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
-	if (response == False):
-		return
+	response = readMessage(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
 	d = response["data"]
 	while True:
 		param = raw_input("""
@@ -439,22 +413,15 @@ Select parameter: """).lower()
 						throttle_sp[i] = ord(b)
 					
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)						#Set throttle
+					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_ANGLE, angle_sp)								#Set angle
+					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_THROTTLE], flush=False)		#Armed in angle mode
 					
 					for i in range(4):
-						writeMessage(ser, MESSAGE_ANGLE, angle_sp)								#Set angle
-						response = readNextMessage(ser)
-						if (response != False and response["command"] == MESSAGE_DEBUG):
-							print("".join(map(chr, response["data"])))
+						writeMessage(ser, MESSAGE_ANGLE, angle_sp, flush=False)								#Set angle
 						time.sleep(0.5)
 						
-
-					while True:
-						response = readMessage(ser, MESSAGE_DEBUG)
-						if (response == False):
-							break
-						print("".join(map(chr, response["data"])))
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "t"):
@@ -464,9 +431,7 @@ Select parameter: """).lower()
 			while True:
 				#Load the current calibration
 				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-				response = readMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
-				if (response == False):
-					return
+				response = readMessage(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
 				d = response["data"]
 
 				adjustedAxisString = axisString
@@ -519,15 +484,15 @@ def escapeByte(message, byte):
 
 
 def writeMessage(ser, command, data, flush=True):
-	#Flush input buffer
-	if (flush):
-		incoming = readNextMessage(ser)
-		while incoming != False:
-			if (incoming["command"] == MESSAGE_DEBUG):
-				print("Flushing: received debug message: " + "".join(map(chr, incoming["data"])))
-			else:
-				print("Flushing: received command " + hex(incoming["command"]))
-			incoming = readNextMessage(ser)
+	##Flush input buffer
+	#if (flush):
+		#incoming = readNextMessage(ser)
+		#while incoming != False:
+			#if (incoming["command"] == MESSAGE_DEBUG):
+				#print("Flushing: received debug message: " + "".join(map(chr, incoming["data"])))
+			#else:
+				#print("Flushing: received command " + hex(incoming["command"]))
+			#incoming = readNextMessage(ser)
 	message = [0x7e, len(data) + 1, command]
 	checksum = command
 	for i in range(0, len(data)):
@@ -536,19 +501,37 @@ def writeMessage(ser, command, data, flush=True):
 	checksum = 0xFF - checksum
 	escapeByte(message, checksum)
 	ser.write(''.join(chr(b) for b in message))
-	print(' '.join(hex(b) for b in message))
+	#print("Writing: " + ' '.join(hex(b) for b in message))
 
-def readMessage(ser, command):
-	for i in range(5):
+#def readMessage(ser, command):
+	#for i in range(5):
+		#message = readNextMessage(ser)
+		#if (message != False and message["command"] == command):
+			#return message
+		#elif (message != False and message["command"] == MESSAGE_DEBUG and command != MESSAGE_DEBUG):
+			#print("Received debug message: " + "".join(map(chr, message["data"])))
+		#elif (message != False):
+			#print("Received command " + hex(message["command"]))
+	#print("Communication failure...")
+	#return False
+def readMessage(command, block=True):
+	if (block == True):
+		while (not(command in MAILBOX)):
+			time.sleep(0.1)
+		return MAILBOX[command]
+	else:
+		if (command in MAILBOX):
+			return MAILBOX[command]
+		return False
+		
+def readMessages(ser):
+	while True:
 		message = readNextMessage(ser)
-		if (message != False and message["command"] == command):
-			return message
-		elif (message != False and message["command"] == MESSAGE_DEBUG and command != MESSAGE_DEBUG):
-			print("Received debug message: " + "".join(map(chr, message["data"])))
-		elif (message != False):
-			print("Received command " + hex(message["command"]))
-	print("Communication failure...")
-	return False
+		if (message != False):
+			if (message["command"] == MESSAGE_DEBUG):
+				sys.stdout.write("".join(map(chr, message["data"])))
+			else:
+				MAILBOX[message["command"]] = message
 	
 def readNextMessage(ser):
 	START = 0x7e
@@ -573,6 +556,10 @@ def readNextMessage(ser):
 			b = ord(raw)
 			#print(hex(b))
 		
+			if (pos == 0 and b != START):
+				print("Garbage data, ignoring")
+				continue
+			
 			if (err):
 				if (b == START):
 					# recover from error condition
@@ -648,6 +635,9 @@ if (__name__=="__main__"):
 		print("Usage: " + sys.argv[0] + " <port>")
 		sys.exit(0)
 
-	ser = serial.Serial(sys.argv[1], 38400, timeout=1)
+	ser = serial.Serial(sys.argv[1], 38400, timeout=0.1)
 
+	thread = threading.Thread(target=readMessages, args=(ser, ))
+	thread.setDaemon(True)
+	thread.start()
 	main(ser)

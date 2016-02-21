@@ -3,7 +3,16 @@
 using namespace digitalcave;
 
 Mpu6050::Mpu6050(){
+	uint8_t data[2];
+	
 	twi_init();
+
+	//Reset MPU 
+	data[0] = MPU6050_PWR_MGMT_1;
+	data[1] = 0x80;
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+	
+	_delay_ms(100);
 
 	//Init calibration data to 0
 	accelCalib[0] = 0;
@@ -14,7 +23,6 @@ Mpu6050::Mpu6050(){
 	gyroCalib[1] = 0;
 	gyroCalib[2] = 0;
 
-	uint8_t data[2];
 
 	//Set gyro to 2000 deg/s range
 	data[0] = MPU6050_GYRO_CONFIG;
@@ -26,15 +34,17 @@ Mpu6050::Mpu6050(){
 	data[1] = 0x18;		//+/- 16g
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
-	//Set digital LPF to smooth out noise
+	//Set digital LPF to smooth out noise.  Noise seems to be worst for the accelerometer;
+	// leave the on-chip LPF low, since it affects both gyro and accel.  We filter accel in software
+	// and leave the gyro with hardware (not too intensive) filters.
 	data[0] = MPU6050_CONFIG;
-	data[1] = 0x06;
+	data[1] = 0x00;
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 
 	//Set output rate
-//	data[0] = MPU6050_SMPLRT_DIV;
-//	data[1] = 0x03;		//250Hz sample rate
-//	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+	data[0] = MPU6050_SMPLRT_DIV;
+	data[1] = 0x00;		//1kHz sample rate
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
 	//Wake up
 	data[0] = MPU6050_PWR_MGMT_1;
@@ -77,12 +87,12 @@ vector_t Mpu6050::getAccel(){
 	data[0] = MPU6050_ACCEL_XOUT_H;
 	twi_write_to(MPU6050_ADDRESS, data, 1, TWI_BLOCK, TWI_STOP);	//Go to register MPU6050_ACCEL_XOUT_H
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Accel X/Y/Z, 16 bits signed each)
-	
-	vector_t result;
+
+ 	vector_t result;
 	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.00048828125;		// 16g / 32768
 	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.00048828125;
 	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.00048828125;
-	return result;
+ 	return result;
 }
 
 vector_t Mpu6050::getGyro(){

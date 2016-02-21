@@ -16,7 +16,9 @@
 #include "motor/motor.h"
 
 //The period (in ms) at which we run the main processing loop (complementary filter + PID + set motors, etc)
-#define PROCESS_PERIOD			50
+#define PROCESS_PERIOD			10
+//The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
+#define COMM_TIMEOUT_PERIOD		1000
 
 using namespace digitalcave;
 
@@ -166,8 +168,8 @@ void Chiindii::run() {
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
-		} else if (time - last_message_time > 1000) {
-			if (mode) sendDebug("Comm Timeout");
+		} else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
+			if (mode) sendDebug("Comm Timeout\n");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -183,7 +185,7 @@ void Chiindii::run() {
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
-			if (mode) sendDebug("Low Battery");
+			if (mode) sendDebug("Low Battery\n");
 			mode = MODE_UNARMED;
 			status.batteryLow();
 		}
@@ -197,8 +199,9 @@ void Chiindii::run() {
 			// compute the absolute angle relative to the horizontal.  We use the standard convention of
 			// rotation about the X axis is roll, and rotation about the Y axis is pitch.
 			// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
-			angle_mv.x = atan2(accel.y, accel.z);
-			angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
+			// See http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/ for another opinion
+			angle_mv.x = atan2(accel.y, accel.z);		//roll
+			angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));		//pitch
 
 			// complementary tuning
 			// filter gyro rate and measured angle increase the accuracy of the angle
@@ -271,7 +274,9 @@ void Chiindii::run() {
 #ifdef DEBUG
 			if (mode && debug){
 				char temp[128];
-				snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f   Rates: %3.2f, %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y), rate_pv.x, rate_pv.y, rate_pv.z);
+				snprintf(temp, sizeof(temp), "Raw Gyro: %5.0f, %5.0f, %5.0f  Raw Accel: %7.2f, %7.2f, %7.2f  ", RADIANS_TO_DEGREES(gyro.x), RADIANS_TO_DEGREES(gyro.y), RADIANS_TO_DEGREES(gyro.z), accel.x, accel.y, accel.z);
+				sendDebug(temp);
+				snprintf(temp, sizeof(temp), "Angle: %5.0f, %5.0f   Rates: %5.2f, %5.2f, %5.2f  ", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y), rate_pv.x, rate_pv.y, rate_pv.z);
 				sendDebug(temp);
 			}
 #endif
@@ -334,11 +339,11 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 	m4 = m4 * 511;
 	
 #ifdef DEBUG
-// 	if (debug){
-// 		char temp[128];
-// 		snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d", rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-// 		sendDebug(temp);
-// 	}
+	if (debug){
+		char temp[128];
+		snprintf(temp, sizeof(temp), "Motors: %d, %d, %d, %d\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		sendDebug(temp);
+	}
 #endif
 
 	motor_set(m1, m2, m3, m4);
