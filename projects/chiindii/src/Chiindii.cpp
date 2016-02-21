@@ -124,15 +124,15 @@ Chiindii::Chiindii() :
 {
 	//Output of angle PID is a rate (rad / s) for each axis.  -1 to 1 should suffice; if this
 	// results in too slow corrections, we can increase.
-	angle_x.setOutputLimits(-10, 10);
-	angle_y.setOutputLimits(-10, 10);
+	angle_x.setOutputLimits(-1, 1);
+	angle_y.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 1);
 
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
-	rate_x.setOutputLimits(-10, 10);
-	rate_y.setOutputLimits(-10, 10);
+	rate_x.setOutputLimits(-1, 1);
+	rate_y.setOutputLimits(-1, 1);
 	rate_z.setOutputLimits(-1, 1);
 }
 
@@ -189,12 +189,21 @@ void Chiindii::run() {
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
 
-		// compute the absolute angle relative to the horizontal
-		//Yes, the values are reversed.  This is actually correct.  Look at the axis values, and then think about axis
-		// orientation vs. axis rotation.
-		angle_mv.x = M_PI_2 - atan2(accel.z, accel.y);
-		angle_mv.y = M_PI_2 - atan2(accel.z, accel.x);
+		// compute the absolute angle relative to the horizontal.  We use the standard convention of
+		// rotation about the X axis is roll, and rotation about the Y axis is pitch.
+		// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
+		angle_mv.x = atan2(accel.y, accel.z);
+		angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
 
+#ifdef DEBUG
+			if (mode && debug){
+				char temp[128];
+				snprintf(temp, sizeof(temp), "Raw Accel: %3.2f, %3.2f, %3.2f; Raw Gyro: %3.2f, %3.2f, %3.2f", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
+				sendDebug(temp);
+				snprintf(temp, sizeof(temp), "Raw Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
+				sendDebug(temp);
+			}
+#endif
 		// complementary tuning
 		// filter gyro rate and measured angle increase the accuracy of the angle
 		uint8_t computed = 0;
@@ -202,6 +211,14 @@ void Chiindii::run() {
 		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
 		
 		if (computed){
+#ifdef DEBUG
+			if (mode && debug){
+				char temp[128];
+				snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
+				sendDebug(temp);
+			}
+#endif
+
 			if (mode == MODE_ARMED_ANGLE) {
 				double gforceThrottle = 0;
 				// angle pid
@@ -238,13 +255,6 @@ void Chiindii::run() {
 					rate_z.compute(rate_sp.z, gyro.z, &rate_pv.z, time);
 					
 					driveMotors(throttle_sp, &rate_pv);
-// #ifdef DEBUG
-// 					if (debug){
-// 						char temp[128];
-// 						snprintf(temp, sizeof(temp), "Throttle Rates: %3.2f, %3.2f, %3.2f\n", rate_pv.x, rate_pv.y, rate_pv.z);
-// 						sendDebug(temp);
-// 					}
-// #endif
 				}
 				else {
 					//Don't do PID if the throttle is too low.
@@ -336,7 +346,7 @@ void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
 #ifdef DEBUG
 	if (debug){
 		char temp[128];
-		snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d\n", rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
+		snprintf(temp, sizeof(temp), "Rates: %3.2f, %3.2f, %3.2f  Motors: %d, %d, %d, %d", rate_pv->x, rate_pv->y, rate_pv->z, (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
 		sendDebug(temp);
 	}
 #endif

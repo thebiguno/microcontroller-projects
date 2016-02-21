@@ -45,6 +45,8 @@
 #define CONTROLLER_DIRECT		0x02
 #define CONTROLLER_CALIBRATION	0x03
 
+#define DEGREES_TO_RADIANS(degrees) ((degrees) / 180.0 * M_PI)
+#define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 
 namespace digitalcave {
 	class Chiindii {
