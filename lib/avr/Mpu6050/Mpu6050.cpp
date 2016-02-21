@@ -28,7 +28,7 @@ Mpu6050::Mpu6050(){
 	
 	//Set digital LPF to smooth out noise
 	data[0] = MPU6050_CONFIG;
-	data[1] = 0x06;
+	data[1] = 0x03;
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 
 	//Set output rate

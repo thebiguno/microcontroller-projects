@@ -15,6 +15,9 @@
 #include "battery/battery.h"
 #include "motor/motor.h"
 
+//The period (in ms) at which we run the main processing loop (complementary filter + PID + set motors, etc)
+#define PROCESS_PERIOD			10
+
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
@@ -104,7 +107,6 @@ Chiindii::Chiindii() :
 	rate_sp({0, 0, 0}),
 	protocol(255),
 	
-	//We set the period for all PID objects to 1, as we rely on attitude filter for timing
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
@@ -113,9 +115,8 @@ Chiindii::Chiindii() :
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 1, 0),
 	
-	//Attitude filter period determines PID period
-	c_x(0.075, 10, 0),
-	c_y(0.075, 10, 0),
+	c_x(0.075, 0),
+	c_y(0.075, 0),
 	
 	general(this),
 	calibration(this),
@@ -147,6 +148,7 @@ void Chiindii::run() {
 	vector_t angle_mv;
 	uint32_t time = 0;
 	uint32_t last_message_time = 0;
+	uint32_t lastProcessTime = 0;
 	
 	motor_start();
 	
@@ -186,35 +188,27 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 
-		accel = mpu6050.getAccel();
-		gyro = mpu6050.getGyro();
+		if ((time - lastProcessTime) > PROCESS_PERIOD){
+			lastProcessTime = time;
+			
+			accel = mpu6050.getAccel();
+			gyro = mpu6050.getGyro();
 
-		// compute the absolute angle relative to the horizontal.  We use the standard convention of
-		// rotation about the X axis is roll, and rotation about the Y axis is pitch.
-		// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
-		angle_mv.x = atan2(accel.y, accel.z);
-		angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
+			// compute the absolute angle relative to the horizontal.  We use the standard convention of
+			// rotation about the X axis is roll, and rotation about the Y axis is pitch.
+			// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
+			angle_mv.x = atan2(accel.y, accel.z);
+			angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
 
-#ifdef DEBUG
-			if (mode && debug){
-				char temp[128];
-				snprintf(temp, sizeof(temp), "Raw Accel: %3.2f, %3.2f, %3.2f; Raw Gyro: %3.2f, %3.2f, %3.2f", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
-				sendDebug(temp);
-				snprintf(temp, sizeof(temp), "Raw Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
-				sendDebug(temp);
-			}
-#endif
-		// complementary tuning
-		// filter gyro rate and measured angle increase the accuracy of the angle
-		uint8_t computed = 0;
-		computed |= c_x.compute(gyro.x, angle_mv.x, &angle_mv.x, time);
-		computed |= c_y.compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+			// complementary tuning
+			// filter gyro rate and measured angle increase the accuracy of the angle
+			angle_mv.x = c_x.compute(gyro.x, angle_mv.x, time);
+			angle_mv.y= c_y.compute(gyro.y, angle_mv.y, time);
 		
-		if (computed){
 #ifdef DEBUG
 			if (mode && debug){
 				char temp[128];
-				snprintf(temp, sizeof(temp), "Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
+				snprintf(temp, sizeof(temp), "Filtered Angle: %3.2f, %3.2f", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
 				sendDebug(temp);
 			}
 #endif

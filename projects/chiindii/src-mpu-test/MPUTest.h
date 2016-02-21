@@ -9,6 +9,8 @@
 
 #include "lib/Mpu6050/Mpu6050.h"
 
+#include "Complementary.h"
+
 #define MOTOR1_PORT		PORTE
 #define MOTOR1_PIN		PORTE6
 #define MOTOR2_PORT		PORTC
@@ -26,7 +28,9 @@ namespace digitalcave {
 			
 		private:
 			Mpu6050 mpu6050;
-			
+			Complementary c_x;
+			Complementary c_y;
+
 		public:
 			MPUTest();
 

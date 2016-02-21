@@ -11,6 +11,7 @@
 #include <SerialUSB.h>
 
 #include "lib/Mpu6050/Mpu6050.h"
+#include "timer/timer.h"
 
 #include "motor/motor.h"
 
@@ -28,6 +29,8 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
+	timer_init();
+	
 	MPUTest mpuTest;
 	mpuTest.run();
 }
@@ -39,10 +42,15 @@ void MPUTest::sendDebug(char* message){
 	serial.write((uint8_t*) message, strnlen(message, 128));
 }
 
-MPUTest::MPUTest() {
+MPUTest::MPUTest() :
+	//Attitude filter period determines PID period
+	c_x(0.15, 0),
+	c_y(0.15, 0)
+{
 }
 
 void MPUTest::run() {
+	uint32_t time = 0;
 	
 	int16_t calibration[3];
 	eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 80), 6);
@@ -52,12 +60,16 @@ void MPUTest::run() {
 	
 	vector_t gyro;
 	vector_t accel;
+	vector_t angle_mv;
 	vector_t maxGyro = {0, 0, 0};
 	vector_t maxAccel = {0, 0, 1};
+	vector_t maxAngle = {0, 0, 0};
 	vector_t minGyro = {0, 0, 0};
 	vector_t minAccel = {0, 0, 1};
+	vector_t minAngle = {0, 0, 0};
 	vector_t totalGyro = {0, 0, 0};
 	vector_t totalAccel = {0, 0, 0};
+	vector_t totalAngle = {0, 0, 0};
 	
 	motor_start();
 	
@@ -68,9 +80,22 @@ void MPUTest::run() {
 	
 	motor_set(300, 300, 300, 300);
 	for (uint16_t i = 0; i < COUNT; i++){
+		time = timer_millis();
+		
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
-		
+
+		// compute the absolute angle relative to the horizontal.  We use the standard convention of
+		// rotation about the X axis is roll, and rotation about the Y axis is pitch.
+		// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
+		angle_mv.x = atan2(accel.y, accel.z);
+		angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
+
+		// complementary tuning
+		// filter gyro rate and measured angle increase the accuracy of the angle
+		angle_mv.x = c_x.compute(gyro.x, angle_mv.x, time);
+		angle_mv.y= c_y.compute(gyro.y, angle_mv.y, time);
+
 		if (gyro.x < minGyro.x) minGyro.x = gyro.x;
 		if (gyro.y < minGyro.y) minGyro.y = gyro.y;
 		if (gyro.z < minGyro.z) minGyro.z = gyro.z;
@@ -83,6 +108,10 @@ void MPUTest::run() {
 		if (accel.x > maxAccel.x) maxAccel.x = accel.x;
 		if (accel.y > maxAccel.y) maxAccel.y = accel.y;
 		if (accel.z > maxAccel.z) maxAccel.z = accel.z;
+		if (angle_mv.x < minAngle.x) minAngle.x = angle_mv.x;
+		if (angle_mv.y < minAngle.y) minAngle.y = angle_mv.y;
+		if (angle_mv.x > maxAngle.x) maxAngle.x = angle_mv.x;
+		if (angle_mv.y > maxAngle.y) maxAngle.y = angle_mv.y;
 		
 		totalAccel.x += accel.x;
 		totalAccel.y += accel.y;
@@ -90,19 +119,18 @@ void MPUTest::run() {
 		totalGyro.x += gyro.x;
 		totalGyro.y += gyro.y;
 		totalGyro.z += gyro.z;
+		totalAngle.x += angle_mv.x;
+		totalAngle.y += angle_mv.y;
 		
-		snprintf(temp, sizeof(temp), "Raw Accel: %3.2f, %3.2f, %3.2f; Raw Gyro: %3.2f, %3.2f, %3.2f\n", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
-		sendDebug(temp);
-
 		_delay_ms(10);
 	}
 	motor_set(0, 0, 0, 0);
 	
-	snprintf(temp, sizeof(temp), "Max Accel: %3.2f, %3.2f, %3.2f; Max Gyro: %3.2f, %3.2f, %3.2f\n", maxAccel.x, maxAccel.y, maxAccel.z, maxGyro.x, maxGyro.y, maxGyro.z);
+	snprintf(temp, sizeof(temp), "Max Accel: %3.2f, %3.2f, %3.2f; Max Gyro: %3.2f, %3.2f, %3.2f; Max Angle: %3.0f, %3.0f\n", maxAccel.x, maxAccel.y, maxAccel.z, maxGyro.x, maxGyro.y, maxGyro.z, RADIANS_TO_DEGREES(maxAngle.x), RADIANS_TO_DEGREES(maxAngle.y));
 	sendDebug(temp);
-	snprintf(temp, sizeof(temp), "Min Accel: %3.2f, %3.2f, %3.2f; Min Gyro: %3.2f, %3.2f, %3.2f\n", minAccel.x, minAccel.y, minAccel.z, minGyro.x, minGyro.y, minGyro.z);
+	snprintf(temp, sizeof(temp), "Min Accel: %3.2f, %3.2f, %3.2f; Min Gyro: %3.2f, %3.2f, %3.2f; Min Angle: %3.0f, %3.0f\n", minAccel.x, minAccel.y, minAccel.z, minGyro.x, minGyro.y, minGyro.z, RADIANS_TO_DEGREES(minAngle.x), RADIANS_TO_DEGREES(minAngle.y));
 	sendDebug(temp);
-	snprintf(temp, sizeof(temp), "Avg Accel: %3.2f, %3.2f, %3.2f; Avg Gyro: %3.2f, %3.2f, %3.2f\n", totalAccel.x / COUNT, totalAccel.y / COUNT, totalAccel.z / COUNT, totalGyro.x / COUNT, totalGyro.y / COUNT, totalGyro.z / COUNT);
+	snprintf(temp, sizeof(temp), "Avg Accel: %3.2f, %3.2f, %3.2f; Avg Gyro: %3.2f, %3.2f, %3.2f; Avg Angle: %3.0f, %3.0f\n", totalAccel.x / COUNT, totalAccel.y / COUNT, totalAccel.z / COUNT, totalGyro.x / COUNT, totalGyro.y / COUNT, totalGyro.z / COUNT, RADIANS_TO_DEGREES(totalAngle.x / COUNT), RADIANS_TO_DEGREES(totalAngle.y / COUNT));
 	sendDebug(temp);
 
 

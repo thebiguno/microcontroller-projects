@@ -259,15 +259,15 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			gyro = chiindii->getMpu6050()->getGyro();
 			
 			if (axis == 0) {
-				angle_mv.x = M_PI_2 - atan2(accel.z, accel.x);
-				chiindii->getCompX()->compute(gyro.x, angle_mv.x, &angle_mv.x, time);
+				angle_mv.x = atan2(accel.y, accel.z);
+				angle_mv.x = chiindii->getCompX()->compute(gyro.x, angle_mv.x, time);
 				outdata[0] = gyro.x;
 				outdata[1] = accel.x;
 				outdata[2] = angle_mv.x;
 			}
 			else {
-				angle_mv.y = M_PI_2 - atan2(accel.z, accel.y);
-				chiindii->getCompX()->compute(gyro.y, angle_mv.y, &angle_mv.y, time);
+				angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));
+				angle_mv.y = chiindii->getCompX()->compute(gyro.y, angle_mv.y, time);
 				outdata[0] = gyro.y;
 				outdata[1] = accel.y;
 				outdata[2] = angle_mv.y;

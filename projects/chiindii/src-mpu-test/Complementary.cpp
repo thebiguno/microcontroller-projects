@@ -31,9 +31,7 @@ double Complementary::compute(double rate, double angle, uint32_t time){
 	return result;
 }
 
-/*
- * The larger the value of Tau, the higher the weight which is placed on gyroscope measurements.
- */
+
 void Complementary::setTau(double tau) {
 	this->tau = tau;
 }
