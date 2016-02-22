@@ -213,6 +213,11 @@ Selected Option: """).lower()
 					print("Invalid value, please try again\n")
 		elif (param == "d"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+			for i in range(10):
+				writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+				time.sleep(0.5)
+			time.sleep(1)
+
 		else:
 			print("Invalid axis, please try again\n")
 
@@ -289,8 +294,8 @@ Select parameter: """).lower()
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Keep sending data to prevent comm timeout...
-					for i in range(10):
-						writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)								#Set rate
+					for i in range(20):
+						writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)				#Set rate
 						time.sleep(0.5)
 					time.sleep(1)
 
@@ -418,9 +423,10 @@ Select parameter: """).lower()
 					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_THROTTLE], flush=False)		#Armed in angle mode
 					
-					for i in range(4):
+					for i in range(20):
 						writeMessage(ser, MESSAGE_ANGLE, angle_sp, flush=False)								#Set angle
 						time.sleep(0.5)
+					time.sleep(1)
 						
 				else:
 					print("Invalid value, please try again\n")
@@ -518,10 +524,10 @@ def readMessage(command, block=True):
 	if (block == True):
 		while (not(command in MAILBOX)):
 			time.sleep(0.1)
-		return MAILBOX[command]
+		return MAILBOX.pop(command)
 	else:
 		if (command in MAILBOX):
-			return MAILBOX[command]
+			return MAILBOX.pop(command)
 		return False
 		
 def readMessages(ser):
