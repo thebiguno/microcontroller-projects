@@ -40,6 +40,8 @@ MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
 MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
 MESSAGE_SEND_TUNING_DATA = 0x3A
 MESSAGE_START_MPU_CALIBRATION = 0x3B
+MESSAGE_REQUEST_CALIBRATION_MADGWICK = 0x3C
+MESSAGE_SEND_CALIBRATION_MADGWICK = 0x3D
 
 #MODE_CALIBRATION_RATE_PID = 0x01
 #MODE_CALIBRATION_COMPLEMENTARY = 0x02
@@ -64,7 +66,7 @@ def main(ser):
 		print(
 """
 Chiindii Calibration: Please selection an option below:
-	C) Change Complementary filter calibration
+	C) Change IMU filter calibration
 	R) Change Rate PID calibration
 	A) Change Angle PID calibration
 	V) Level MPU
@@ -78,10 +80,7 @@ Chiindii Calibration: Please selection an option below:
 		if (choice == "r"):
 			doRatePidCalibration(ser)
 		elif (choice == "c"):
-			if (axis == 2):
-				print("Complementary filter tuning not applicable for Z axis")
-			else:
-				doComplementaryCalibration(ser)
+			doImuCalibration(ser)
 		elif (choice == "a"):
 			doAnglePidCalibration(ser)
 		elif (choice == "v"):
@@ -164,17 +163,20 @@ Please select an option:
 			print("Invalid parameter, please try again\n")
 
 
-def doComplementaryCalibration(ser):
+def doImuCalibration(ser):
 	print("""
-Complemenentary calibration allows Chiindii to integrate Gyro and Accelerometer
-data to reduce Gyro drift.  There is one paramater that called Tau which is the response
-time of integration.  This allows a trade off between drift elimination and responsiveness.
+IMU calibration allows Chiindii to integrate Gyro and Accelerometer
+data to reduce Gyro drift.  For Complementary filters, there is one paramater (per X / Y axis)
+called Tau which is the response time of integration.  This allows a trade off 
+between drift elimination and responsiveness.
+For Madgwick filters, there is one global filter called Beta.
 The tuning allows you to collect raw and integrated data which can be graphed.
 """)
 	while True:
 		param = raw_input("""
 Please select a parameter to modify
-	T) Tau
+	T) Complementary Tau (per axis)
+	B) Madgwick Beta (global)
 	D) Start reading live attitude data
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
@@ -191,29 +193,49 @@ Selected Option: """).lower()
 			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
 			print("All values saved to EEPROM")
 		elif (param == "t"):
+			if (axis == 2):
+				print("Complementary filter tuning not applicable for Z axis")
+			else:
+				while True:
+					#Load the current calibration
+					writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
+					response = readMessage(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
+					d = response["data"]
+				
+					print("\nEnter a valid number, X/Y to change axis, or enter to return to parameter selection.")
+					value = raw_input("Current axis: {0}.  Tau ({1:.3f}): ".format(axisString, struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0])).lower()
+					if (value == "x" or value == "y"):
+						setAxis(value)
+					elif (floatregex.match(value)):
+						bytes = struct.pack("<f", float(value))
+						for i, b in enumerate(bytes):
+							d[i + (axis * 4)] = ord(b)
+						writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
+					elif (value == ""):
+						break;
+					else:
+						print("Invalid value, please try again\n")
+		elif (param == "b"):
 			while True:
 				#Load the current calibration
-				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-				response = readMessage(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
+				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_MADGWICK, [])
+				response = readMessage(MESSAGE_REQUEST_CALIBRATION_MADGWICK)
 				d = response["data"]
 				
-				print("\nEnter a valid number, X/Y to change axis, or enter to return to parameter selection.")
-				value = raw_input("Current axis: {0}.  Tau ({1:.3f}): ".format(axisString, struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0])).lower()
-				if (value == "x" or value == "y"):
-					setAxis(value)
-				elif (floatregex.match(value)):
+				print("\nEnter a valid number, or enter to return to parameter selection.")
+				value = raw_input("Beta ({0:.3f}): ".format(struct.unpack_from("<f", buffer(str(bytearray(d))), 0)[0])).lower()
+				if (floatregex.match(value)):
 					bytes = struct.pack("<f", float(value))
 					for i, b in enumerate(bytes):
-						print i, ord(b)
-						d[i + (axis * 4)] = ord(b)
-					writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
+						d[i] = ord(b)
+					writeMessage(ser, MESSAGE_SEND_CALIBRATION_MADGWICK, d)
 				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "d"):
 			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
-			for i in range(10):
+			for i in range(30):
 				writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
 				time.sleep(0.5)
 			time.sleep(1)

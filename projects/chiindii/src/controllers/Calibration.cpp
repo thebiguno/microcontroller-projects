@@ -76,10 +76,15 @@ void Calibration::read() {
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
 		chiindii->getGforce()->setTunings(kp, ki, kd);
 
+#if defined IMU_MADGWICK
+		t = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
+		chiindii->getMadgwick()->setBeta(t);
+#elif defined IMU_COMPLEMENTARY
 		t = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
 		chiindii->getCompX()->setTau(t);
 		t = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
 		chiindii->getCompY()->setTau(t);
+#endif
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
 		int16_t calibration[3];
@@ -132,11 +137,16 @@ void Calibration::write() {
 	eeprom_update_float((float*) (EEPROM_OFFSET + 64), gforce->getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 68), gforce->getKd());
 
+#if defined IMU_MADGWICK
+	Madgwick* madgwick = chiindii->getMadgwick();
+	eeprom_update_float((float*) (EEPROM_OFFSET + 72), madgwick->getBeta());
+#elif defined IMU_COMPLEMENTARY
 	Complementary* c_x = chiindii->getCompX();
 	eeprom_update_float((float*) (EEPROM_OFFSET + 72), c_x->getTau());
 	
 	Complementary* c_y = chiindii->getCompY();
 	eeprom_update_float((float*) (EEPROM_OFFSET + 76), c_y->getTau());
+#endif
 	
 	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 80), 6);
 	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 86), 6);
@@ -195,6 +205,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 // 		chiindii->sendDebug(temp);
 #endif
 	}
+#ifdef IMU_COMPLEMENTARY
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
 		Complementary* x = chiindii->getCompX();
 		Complementary* y = chiindii->getCompY();
@@ -209,6 +220,46 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 // 		chiindii->sendDebug(temp);
 #endif
 	}
+	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
+		double* data = (double*) request->getData();
+		chiindii->getCompX()->setTau(data[0]);
+		chiindii->getCompY()->setTau(data[1]);
+		
+#ifdef DEBUG
+// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
+// 		chiindii->sendDebug(temp);
+#endif
+	}
+#endif
+
+
+#ifdef IMU_MADGWICK
+	else if (cmd == MESSAGE_REQUEST_CALIBRATION_MADGWICK){
+		Madgwick* m = chiindii->getMadgwick();
+		double data[] = { 
+			m->getBeta()
+		};
+		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_MADGWICK, (uint8_t*) data, 4);
+		chiindii->sendMessage(&response);
+		
+#ifdef DEBUG
+// 		snprintf(temp, sizeof(temp), "Calibration requested madgwick: %f\n", m->getBeta());
+// 		chiindii->sendDebug(temp);
+#endif
+	}
+	else if (cmd == MESSAGE_SEND_CALIBRATION_MADGWICK){
+		double* data = (double*) request->getData();
+		chiindii->getMadgwick()->setBeta(data[0]);
+		
+#ifdef DEBUG
+// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
+// 		chiindii->sendDebug(temp);
+#endif
+	}
+
+#endif
+
+
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getRateX()->setTunings(data[0], data[1], data[2]);
@@ -228,16 +279,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 #ifdef DEBUG
 // 		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-// 		chiindii->sendDebug(temp);
-#endif
-	}
-	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
-		double* data = (double*) request->getData();
-		chiindii->getCompX()->setTau(data[0]);
-		chiindii->getCompY()->setTau(data[1]);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
 // 		chiindii->sendDebug(temp);
 #endif
 	}

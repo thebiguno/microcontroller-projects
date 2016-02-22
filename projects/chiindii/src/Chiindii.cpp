@@ -15,8 +15,10 @@
 #include "battery/battery.h"
 #include "motor/motor.h"
 
-//The period (in ms) at which we run the main processing loop (complementary filter + PID + set motors, etc)
-#define PROCESS_PERIOD			10
+//The period (in ms) at which we run the different processing loops (imu filter + PID + set motors, etc)
+#define IMU_PERIOD			2
+#define PID_PERIOD			10
+
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
 #define COMM_TIMEOUT_PERIOD		1000
 
@@ -28,27 +30,23 @@ SerialAVR serial(38400, 8, 0, 1, 1, 255);
 SerialUSB usb;
 #endif
 
+//Disable the WDT on startup.  See http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_softreset.html
+void wdt_init(void){
+	MCUSR = 0;
+	wdt_disable();
+
+	return;
+}
+
 int main(){
 	//Set clock to run at full speed
 	clock_prescale_set(clock_div_1);
 	// DISABLE JTAG - take control of F port
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
-	//Disable WDT; this would be enabled if we have previously reset due to WDT
-	wdt_disable();
 	
 	battery_init();
 	timer_init();
-
-/*
-	motor_start();
-	while (1) {
-	for (uint16_t i = 0; i < 512; i++) {
-			motor_set(i,i,i,i);
-			_delay_ms(10);
-		}
-	}
-*/
 
 	Chiindii chiindii;
 	chiindii.run();
@@ -62,8 +60,6 @@ PID* Chiindii::getRateZ() { return &rate_z; }
 PID* Chiindii::getAngleX() { return &angle_x; }
 PID* Chiindii::getAngleY() { return &angle_y; }
 PID* Chiindii::getGforce() { return &gforce; }
-Complementary* Chiindii::getCompX() { return &c_x; }
-Complementary* Chiindii::getCompY() { return &c_y; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
 uint8_t Chiindii::getBatteryLevel() { return battery_level; }
 uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
@@ -71,6 +67,14 @@ uint8_t Chiindii::getMode() { return mode; }
 void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
+
+#if defined IMU_MADGWICK
+Madgwick* Chiindii::getMadgwick() { return &madgwick; }
+#elif defined IMU_COMPLEMENTARY
+Complementary* Chiindii::getCompX() { return &c_x; }
+Complementary* Chiindii::getCompY() { return &c_y; }
+#endif
+
 
 void Chiindii::sendDebug(const char* message){
 	sendDebug((char*) message);
@@ -117,8 +121,12 @@ Chiindii::Chiindii() :
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
+#if defined IMU_MADGWICK
+	madgwick(0.01, 0),
+#elif defined IMU_COMPLEMENTARY
 	c_x(0.075, 0),
 	c_y(0.075, 0),
+#endif
 	
 	general(this),
 	calibration(this),
@@ -144,13 +152,14 @@ void Chiindii::run() {
 
 	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
-	vector_t gyro;
-	vector_t accel;
-	vector_t rate_pv;
-	vector_t angle_mv;
+	vector_t gyro = {0, 0, 0};
+	vector_t accel = {0, 0, 0};
+	vector_t rate_pv = {0, 0, 0};
+	vector_t angle_mv = {0, 0, 0};
 	uint32_t time = 0;
 	uint32_t last_message_time = 0;
-	uint32_t lastProcessTime = 0;
+	uint32_t lastImuTime = 0;
+	uint32_t lastPidTime = 0;
 	
 	motor_start();
 	
@@ -190,12 +199,17 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 
-		if ((time - lastProcessTime) > PROCESS_PERIOD){
-			lastProcessTime = time;
+		//Update IMU calculations.  We do this more frequently than PID to help average out
+		// reading noise.
+		if ((time - lastImuTime) >= IMU_PERIOD){
+			lastImuTime = time;
 			
 			accel = mpu6050.getAccel();
 			gyro = mpu6050.getGyro();
 
+#if defined IMU_MADGWICK
+			madgwick.compute(accel, gyro, time);
+#elif defined IMU_COMPLEMENTARY
 			// compute the absolute angle relative to the horizontal.  We use the standard convention of
 			// rotation about the X axis is roll, and rotation about the Y axis is pitch.
 			// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
@@ -207,7 +221,17 @@ void Chiindii::run() {
 			// filter gyro rate and measured angle increase the accuracy of the angle
 			angle_mv.x = c_x.compute(gyro.x, angle_mv.x, time);
 			angle_mv.y= c_y.compute(gyro.y, angle_mv.y, time);
+#endif
+		}
 		
+		//Update PID calculations and adjust motors
+		if ((time - lastPidTime) >= PID_PERIOD){
+			lastPidTime = time;
+
+#if defined IMU_MADGWICK
+			angle_mv = madgwick.getEuler();
+#endif
+
 			double throttle = 0;
 			if (mode == MODE_ARMED_ANGLE) {
 				// angle pid
@@ -260,17 +284,17 @@ void Chiindii::run() {
 			if (debug){
 				char temp[128];
 				if (mode){
-					snprintf(temp, sizeof(temp), "Raw Gyro: %5.0f, %5.0f, %5.0f  ", RADIANS_TO_DEGREES(gyro.x), RADIANS_TO_DEGREES(gyro.y), RADIANS_TO_DEGREES(gyro.z));
+					snprintf(temp, sizeof(temp), "Raw Gyro: %5d, %5d, %5d  ", (int16_t) radToDeg(gyro.x), (int16_t) radToDeg(gyro.y), (int16_t) radToDeg(gyro.z));
 					sendDebug(temp);
 				}
 				if (mode == MODE_ARMED_THROTTLE || mode == MODE_ARMED_ANGLE || mode == MODE_SHOW_VARIABLES){
-					snprintf(temp, sizeof(temp), "Raw Accel: %7.2f, %7.2f, %7.2f  ", accel.x, accel.y, accel.z);
+					snprintf(temp, sizeof(temp), "Raw Accel: %4d, %4d, %4d  ", (int16_t) (accel.x * 100), (int16_t) (accel.y * 100), (int16_t) (accel.z * 100));
 					sendDebug(temp);
-					snprintf(temp, sizeof(temp), "Angle: %5.0f, %5.0f  ", RADIANS_TO_DEGREES(angle_mv.x), RADIANS_TO_DEGREES(angle_mv.y));
+					snprintf(temp, sizeof(temp), "Angle: %4d, %4d, %4d  ", (int16_t) radToDeg(angle_mv.x), (int16_t) radToDeg(angle_mv.y), (int16_t) radToDeg(angle_mv.z));
 					sendDebug(temp);
 				}
 				if (mode){
-					snprintf(temp, sizeof(temp), "Rates: %5.2f, %5.2f, %5.2f  ", rate_pv.x, rate_pv.y, rate_pv.z);
+					snprintf(temp, sizeof(temp), "Rates: %4d, %4d, %4d  ", (int16_t) (rate_pv.x * 100), (int16_t) (rate_pv.y * 100), (int16_t) (rate_pv.z * 100));
 					sendDebug(temp);
 				}
 				if (mode == MODE_SHOW_VARIABLES){

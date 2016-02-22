@@ -4,22 +4,32 @@
 //Comment this out to remove debugging output on USB serial
 #define DEBUG
 
+//Pick one IMU
+#define IMU_MADGWICK
+//#define IMU_COMPLEMENTARY
+
 #include <util/delay.h>
 #include <avr/io.h>
 
-#include <FramedSerialProtocol.h>
+#include <dcmath.h>
 #include <dctypes.h>
+#include <FramedSerialProtocol.h>
 #include <SerialAVR.h>
 #include <PID.h>
 
 #include "lib/Mpu6050/Mpu6050.h"
 
-#include "Complementary.h"
 #include "Status.h"
 #include "controllers/General.h"
 #include "controllers/UniversalController.h"
 #include "controllers/Calibration.h"
 #include "controllers/Direct.h"
+
+#if defined IMU_MADGWICK
+#include "imu/Madgwick.h"
+#elif defined IMU_COMPLEMENTARY
+#include "imu/Complementary.h"
+#endif
 
 #ifdef DEBUG
 #include <SerialUSB.h>
@@ -46,8 +56,9 @@
 #define CONTROLLER_DIRECT		0x02
 #define CONTROLLER_CALIBRATION	0x03
 
-#define DEGREES_TO_RADIANS(degrees) ((degrees) / 180.0 * M_PI)
-#define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
+//Disable the WDT on startup.  See http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_softreset.html
+void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
+
 
 namespace digitalcave {
 	class Chiindii {
@@ -69,8 +80,13 @@ namespace digitalcave {
 			PID angle_x;
 			PID angle_y;
 			PID gforce;
+
+#if defined IMU_MADGWICK
+			Madgwick madgwick;
+#elif defined IMU_COMPLEMENTARY
 			Complementary c_x;
 			Complementary c_y;
+#endif
 		
 			General general;
 			Calibration calibration;
@@ -98,8 +114,13 @@ namespace digitalcave {
 			PID* getAngleX();
 			PID* getAngleY();
 			PID* getGforce();
+
+#if defined IMU_MADGWICK
+			Madgwick* getMadgwick();
+#elif defined IMU_COMPLEMENTARY
 			Complementary* getCompX();
 			Complementary* getCompY();
+#endif
 			Mpu6050* getMpu6050();
 			Status* getStatus();
 
