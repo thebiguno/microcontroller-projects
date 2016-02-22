@@ -15,7 +15,7 @@
 #include "battery/battery.h"
 #include "motor/motor.h"
 
-//The period (in ms) at which we run the different processing loops (imu filter + PID + set motors, etc)
+//The period (in ms) at which we run the different processing loops (imu filter, PID + set motors, etc)
 #define IMU_PERIOD			2
 #define PID_PERIOD			10
 
