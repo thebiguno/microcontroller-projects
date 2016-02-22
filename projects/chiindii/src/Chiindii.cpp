@@ -9,7 +9,6 @@
 #include <PID.h>
 #include <SerialAVR.h>
 
-#include "lib/Mpu6050/Mpu6050.h"
 #include "timer/timer.h"
 
 #include "battery/battery.h"

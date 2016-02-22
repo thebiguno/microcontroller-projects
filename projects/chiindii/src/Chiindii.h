@@ -14,10 +14,9 @@
 #include <dcmath.h>
 #include <dctypes.h>
 #include <FramedSerialProtocol.h>
+#include <Mpu6050.h>
 #include <SerialAVR.h>
 #include <PID.h>
-
-#include "lib/Mpu6050/Mpu6050.h"
 
 #include "Status.h"
 #include "controllers/General.h"
