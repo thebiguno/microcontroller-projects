@@ -14,15 +14,12 @@ Mpu6050::Mpu6050(){
 	
 	_delay_ms(100);
 
-	//Init calibration data to 0
-	accelCalib[0] = 0;
-	accelCalib[1] = 0;
-	accelCalib[2] = 0;
-	
-	gyroCalib[0] = 0;
-	gyroCalib[1] = 0;
-	gyroCalib[2] = 0;
-
+	//Wake up
+	data[0] = MPU6050_PWR_MGMT_1;
+	data[1] = 0x00;
+	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep (required at startup)
+		
+	_delay_ms(500);
 
 	//Set gyro to 2000 deg/s range
 	data[0] = MPU6050_GYRO_CONFIG;
@@ -45,13 +42,18 @@ Mpu6050::Mpu6050(){
 	data[0] = MPU6050_SMPLRT_DIV;
 	data[1] = 0x00;		//1kHz sample rate
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
+
+	//Init calibration data to 0
+	accelCalib[0] = 0;
+	accelCalib[1] = 0;
+	accelCalib[2] = 0;
 	
-	//Wake up
-	data[0] = MPU6050_PWR_MGMT_1;
-	data[1] = 0x00;
-	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);	//Disable sleep (required at startup)
-		
-	_delay_ms(500);
+	gyroCalib[0] = 0;
+	gyroCalib[1] = 0;
+	gyroCalib[2] = 0;
+
+
+
 }
 
 void Mpu6050::calibrate(){
@@ -102,6 +104,9 @@ vector_t Mpu6050::getGyro(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Gyro X/Y/Z, 16 bits signed each)
 	
 	vector_t result;
+// 	result.x = ((data[0] << 8) | data[1]);
+// 	result.y = ((data[2] << 8) | data[3]);
+// 	result.z = ((data[4] << 8) | data[5]);
 	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(2000 deg/s / 32768) * PI/180.
 	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.06103515625 * M_PI / 180;
 	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.06103515625 * M_PI / 180;
