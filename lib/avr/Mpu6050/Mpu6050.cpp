@@ -26,19 +26,17 @@ Mpu6050::Mpu6050(){
 	data[1] = 0x18;		//2000 deg/s
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
-	//Set accel to +/- 16g
+	//Set accel to +/- 8g
 	data[0] = MPU6050_ACCEL_CONFIG;
-	data[1] = 0x18;		//+/- 16g
+	data[1] = 0x10;		//+/- 8g
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
-	//Set digital LPF to smooth out noise.  Noise seems to be worst for the accelerometer;
-	// leave the on-chip LPF low, since it affects both gyro and accel.  We filter accel in software
-	// and leave the gyro with hardware (not too intensive) filters.
+	//Digital LPF config.
 	data[0] = MPU6050_CONFIG;
 	data[1] = 0x00;
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 
-	//Set output rate
+	//Output rate config
 	data[0] = MPU6050_SMPLRT_DIV;
 	data[1] = 0x00;		//1kHz sample rate
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);

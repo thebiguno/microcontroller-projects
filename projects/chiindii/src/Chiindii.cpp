@@ -27,7 +27,7 @@ using namespace digitalcave;
 //This cannot be a class variable, since it needs to be accessed by an ISR
 SerialAVR serial(38400, 8, 0, 1, 1, 255);
 #ifdef DEBUG
-SerialUSB usb;
+//SerialUSB usb;
 #endif
 
 //Disable the WDT on startup.  See http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_softreset.html
@@ -87,13 +87,13 @@ void Chiindii::sendDebug(char* message){
 }
 void Chiindii::sendUsb(const char* message){
 #ifdef DEBUG
-	sendUsb((char*) message);
+//	sendUsb((char*) message);
 #endif
 }
 void Chiindii::sendUsb(char* message){
 #ifdef DEBUG
 	if (debug){
-		usb.write(message);
+//		usb.write(message);
 	}
 #endif
 }
