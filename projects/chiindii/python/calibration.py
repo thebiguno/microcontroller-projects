@@ -316,7 +316,7 @@ Select parameter: """).lower()
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Keep sending data to prevent comm timeout...
-					for i in range(20):
+					for i in range(30):
 						writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)				#Set rate
 						time.sleep(0.5)
 					time.sleep(1)
@@ -360,7 +360,7 @@ Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 				elif (floatregex.match(value)):
 					bytes = struct.pack("<f", float(value))
 					for i, b in enumerate(bytes):
-						#print i, ord(b)
+						print i, ord(b)
 						d[i + (axis * 12) + (param * 4)] = ord(b)
 					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
 				else:
