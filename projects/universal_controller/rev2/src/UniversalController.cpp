@@ -55,6 +55,7 @@
 #define MESSAGE_SEND_DEBUG						0x05
 #define MESSAGE_REQUEST_BATTERY					0x06
 #define MESSAGE_SEND_BATTERY					0x07
+#define MESSAGE_SEND_STATUS						0x08
 
 //Universal Controller messages are in 0x1X space...
 
@@ -82,7 +83,7 @@
 #define BATTERY_TIME							2000
 #define REMOTE_BATTERY_TIMEOUT					5000
 #define BOOTLOADER_TIME							1000
-#define DISABLE_TIME						1000
+#define DISABLE_TIME							1000
 
 #define COMM_NONE								0x00
 #define COMM_RX									0x01
@@ -140,8 +141,6 @@ uint8_t battery_level = 0;
 uint8_t disable_controls = 0;
 
 char buf[15];	//String buffer, used for display formatting
-
-char text_line[14] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '};	
 
 Serial* serial;		//Pointer to which serial port (tx) we are currently using
 
@@ -347,14 +346,30 @@ int main (void){
 					remote_battery_timeout_timer = time;
 					break;
 				case MESSAGE_SEND_DEBUG:
-					//Copy the last received line to the display's second line
-					display.write_text(1, 0, text_line, 14);
 					//Copy the newly received message into the text buffer
-					for (uint8_t i = 0; i < incoming.getLength() && i < 14; i++){
-						text_line[i] = incoming.getData()[i];
+					for (uint8_t i = 0; i < 14; i++){
+						if (i < incoming.getLength()){
+							buf[i] = incoming.getData()[i];
+						}
+						else {
+							buf[i] = ' ';
+						}
 					}
-					//Show the newly received line on the display's first line
-					display.write_text(0, 0, text_line, 14);
+					//Show the newly received line on the display's bottom line
+					display.write_text(1, 0, buf, 14);
+					break;
+				case MESSAGE_SEND_STATUS:
+					//Copy the newly received message into the text buffer
+					for (uint8_t i = 0; i < 14; i++){
+						if (i < incoming.getLength()){
+							buf[i] = incoming.getData()[i];
+						}
+						else {
+							buf[i] = ' ';
+						}
+					}
+					//Show the newly received line on the display's top line
+					display.write_text(0, 0, buf, 14);
 					break;
 			}
 			
