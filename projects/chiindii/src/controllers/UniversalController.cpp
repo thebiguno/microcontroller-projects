@@ -101,7 +101,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			chiindii->setMode(MODE_ARMED_THROTTLE);
 		}
 		//To arm in rate mode, press the circle (right discrete) button while the throttle is all the way down.
-		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && chiindii->getThrottle() < 0.01){
+		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && chiindii->getThrottle() < 0.01){
 			chiindii->sendDebug("Armed (Rate)  ");
 			chiindii->setMode(MODE_ARMED_RATE);
 		}
@@ -110,6 +110,17 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			chiindii->sendDebug("Disarmed      ");
 			chiindii->setMode(MODE_UNARMED);
 			chiindii->setThrottle(0);
+		}
+		//To disarm, press the cross (bottom discrete) button at any time
+		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_PADUP){
+			if (chiindii->getDebug()){
+				chiindii->sendDebug("Debug Disabled");
+				chiindii->setDebug(0);
+			}
+			else {
+				chiindii->setDebug(1);
+				chiindii->sendDebug("Debug Enabled ");
+			}
 		}
 	}
 }
