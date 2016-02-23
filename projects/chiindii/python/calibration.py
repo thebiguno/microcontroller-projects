@@ -35,9 +35,7 @@ MESSAGE_REQUEST_CALIBRATION_RATE_PID = 0x33
 MESSAGE_SEND_CALIBRATION_RATE_PID = 0x34
 MESSAGE_REQUEST_CALIBRATION_ANGLE_PID = 0x35
 MESSAGE_SEND_CALIBRATION_ANGLE_PID = 0x36
-MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY = 0x37
-MESSAGE_SEND_CALIBRATION_COMPLEMENTARY = 0x38
-MESSAGE_START_COMPLEMENTARY_CALIBRATION = 0x39
+MESSAGE_START_SHOW_VARIABLES = 0x39
 MESSAGE_SEND_TUNING_DATA = 0x3A
 MESSAGE_START_MPU_CALIBRATION = 0x3B
 MESSAGE_REQUEST_CALIBRATION_MADGWICK = 0x3C
@@ -234,9 +232,9 @@ Selected Option: """).lower()
 				else:
 					print("Invalid value, please try again\n")
 		elif (param == "d"):
-			writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+			writeMessage(ser, MESSAGE_START_SHOW_VARIABLES, [axis])
 			for i in range(30):
-				writeMessage(ser, MESSAGE_START_COMPLEMENTARY_CALIBRATION, [axis])
+				writeMessage(ser, MESSAGE_START_SHOW_VARIABLES, [axis])
 				time.sleep(0.5)
 			time.sleep(1)
 
@@ -291,6 +289,7 @@ Select parameter: """).lower()
 					break;
 				elif (floatregex.match(value)):
 					rate_sp = [0,0,0,0, 0,0,0,0, 0,0,0,0]	#3 floats
+					neg_rate_sp = [0,0,0,0, 0,0,0,0, 0,0,0,0]	#3 floats
 					
 					#First we write three zeros to the packet
 					bytes = struct.pack("<f", 0)
@@ -298,27 +297,39 @@ Select parameter: """).lower()
 						rate_sp[i + 0] = ord(b)
 						rate_sp[i + 4] = ord(b)
 						rate_sp[i + 8] = ord(b)
+						neg_rate_sp[i + 0] = ord(b)
+						neg_rate_sp[i + 4] = ord(b)
+						neg_rate_sp[i + 8] = ord(b)
 
 					#Then we overwrite the selected axis with the current rate
-					bytes = struct.pack("<f", math.radians(float(value)))
-					for i, b in enumerate(bytes):
+					sp_bytes = struct.pack("<f", math.radians(float(value)))
+					for i, b in enumerate(sp_bytes):
 						rate_sp[i + (axis * 4)] = ord(b)
+					neg_sp_bytes = struct.pack("<f", math.radians(float(value) * -1))
+					for i, b in enumerate(neg_sp_bytes):
+						neg_rate_sp[i + (axis * 4)] = ord(b)
 
 					throttle_sp = [0,0,0,0]
-					throttle = struct.pack("<f", 0.5)
+					throttle = struct.pack("<f", 0.35)
 					for i, b in enumerate(throttle):
 						throttle_sp[i] = ord(b)
 					
+					time.sleep(1.0);
 					writeMessage(ser, MESSAGE_THROTTLE, throttle_sp)						#Set throttle
-					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_RATE, rate_sp)								#Set rate
-					time.sleep(0.5);
 					writeMessage(ser, MESSAGE_ARMED, [MODE_ARMED_RATE], flush=False)		#Armed in rate mode
 					
 					#Keep sending data to prevent comm timeout...
-					for i in range(30):
-						writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)				#Set rate
-						time.sleep(0.5)
+					for i in range(5):
+						print("Positive")
+						for i in range(4):
+							writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)				#Set rate
+							time.sleep(0.5)
+						print("Negative")
+						for i in range(4):
+							writeMessage(ser, MESSAGE_RATE, neg_rate_sp, flush=False)			#Set negative rate
+							time.sleep(0.5)
+							
 					time.sleep(1)
 
 				else:

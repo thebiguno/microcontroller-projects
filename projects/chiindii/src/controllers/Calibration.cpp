@@ -76,21 +76,14 @@ void Calibration::read() {
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
 		chiindii->getGforce()->setTunings(kp, ki, kd);
 
-#if defined IMU_MADGWICK
 		t = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
 		chiindii->getMadgwick()->setBeta(t);
-#elif defined IMU_COMPLEMENTARY
-		t = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
-		chiindii->getCompX()->setTau(t);
-		t = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
-		chiindii->getCompY()->setTau(t);
-#endif
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
 		int16_t calibration[3];
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 80), 6);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 76), 6);
 		chiindii->getMpu6050()->setAccelCalib(calibration);
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 86), 6);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 82), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
 #ifdef DEBUG
 		chiindii->sendDebug("Load EEPROM\n");
@@ -137,19 +130,11 @@ void Calibration::write() {
 	eeprom_update_float((float*) (EEPROM_OFFSET + 64), gforce->getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 68), gforce->getKd());
 
-#if defined IMU_MADGWICK
 	Madgwick* madgwick = chiindii->getMadgwick();
 	eeprom_update_float((float*) (EEPROM_OFFSET + 72), madgwick->getBeta());
-#elif defined IMU_COMPLEMENTARY
-	Complementary* c_x = chiindii->getCompX();
-	eeprom_update_float((float*) (EEPROM_OFFSET + 72), c_x->getTau());
 	
-	Complementary* c_y = chiindii->getCompY();
-	eeprom_update_float((float*) (EEPROM_OFFSET + 76), c_y->getTau());
-#endif
-	
-	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 80), 6);
-	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 86), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getAccelCalib(), (void*) (EEPROM_OFFSET + 76), 6);
+	eeprom_update_block(chiindii->getMpu6050()->getGyroCalib(), (void*) (EEPROM_OFFSET + 82), 6);
 	
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
@@ -205,35 +190,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 // 		chiindii->sendDebug(temp);
 #endif
 	}
-#ifdef IMU_COMPLEMENTARY
-	else if (cmd == MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY){
-		Complementary* x = chiindii->getCompX();
-		Complementary* y = chiindii->getCompY();
-		double data[] = { 
-			x->getTau(), y->getTau()
-		};
-		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, (uint8_t*) data, 8);
-		chiindii->sendMessage(&response);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Calibration requested comp: %f, %f\n", x->getTau(), y->getTau());
-// 		chiindii->sendDebug(temp);
-#endif
-	}
-	else if (cmd == MESSAGE_SEND_CALIBRATION_COMPLEMENTARY){
-		double* data = (double*) request->getData();
-		chiindii->getCompX()->setTau(data[0]);
-		chiindii->getCompY()->setTau(data[1]);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-// 		chiindii->sendDebug(temp);
-#endif
-	}
-#endif
-
-
-#ifdef IMU_MADGWICK
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_MADGWICK){
 		Madgwick* m = chiindii->getMadgwick();
 		double data[] = { 
@@ -256,10 +212,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 // 		chiindii->sendDebug(temp);
 #endif
 	}
-
-#endif
-
-
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getRateX()->setTunings(data[0], data[1], data[2]);
@@ -282,11 +234,11 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 // 		chiindii->sendDebug(temp);
 #endif
 	}
-	else if (cmd == MESSAGE_START_CALIBRATION_COMPLEMENTARY){
+	else if (cmd == MESSAGE_START_SHOW_VARIABLES){
 		chiindii->setMode(MODE_SHOW_VARIABLES);
 	}
 	else if (cmd == MESSAGE_START_MPU_CALIBRATION){
-		wdt_enable(WDTO_4S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
+		wdt_enable(WDTO_8S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
 		chiindii->getMpu6050()->calibrate();
 		wdt_enable(WDTO_120MS);
 	}

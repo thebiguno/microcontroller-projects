@@ -16,7 +16,7 @@
 
 //The period (in ms) at which we run the different processing loops (imu filter, PID + set motors, etc)
 #define IMU_PERIOD			2
-#define PID_PERIOD			10
+#define PID_PERIOD			5
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
 #define COMM_TIMEOUT_PERIOD		1000
@@ -24,20 +24,11 @@
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
-SerialAVR serial(38400, 8, 0, 1, 1, 255);
-#ifdef DEBUG
-//SerialUSB usb;
-#endif
-
-//Disable the WDT on startup.  See http://www.atmel.com/webdoc/AVRLibcReferenceManual/FAQ_1faq_softreset.html
-void wdt_init(void){
-	MCUSR = 0;
-	wdt_disable();
-
-	return;
-}
+SerialAVR serial(38400, 8, 0, 1, 1, 128);
 
 int main(){
+	wdt_disable();
+	
 	//Set clock to run at full speed
 	clock_prescale_set(clock_div_1);
 	// DISABLE JTAG - take control of F port
@@ -66,13 +57,7 @@ uint8_t Chiindii::getMode() { return mode; }
 void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
 uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
-
-#if defined IMU_MADGWICK
 Madgwick* Chiindii::getMadgwick() { return &madgwick; }
-#elif defined IMU_COMPLEMENTARY
-Complementary* Chiindii::getCompX() { return &c_x; }
-Complementary* Chiindii::getCompY() { return &c_y; }
-#endif
 
 
 void Chiindii::sendDebug(const char* message){
@@ -83,18 +68,6 @@ void Chiindii::sendDebug(char* message){
 		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
 		sendMessage(&response);
 	}
-}
-void Chiindii::sendUsb(const char* message){
-#ifdef DEBUG
-//	sendUsb((char*) message);
-#endif
-}
-void Chiindii::sendUsb(char* message){
-#ifdef DEBUG
-	if (debug){
-//		usb.write(message);
-	}
-#endif
 }
 
 double Chiindii::getThrottle() { return this->throttle_sp; }
@@ -110,7 +83,7 @@ Chiindii::Chiindii() :
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
-	protocol(255),
+	protocol(128),
 	
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
@@ -120,12 +93,7 @@ Chiindii::Chiindii() :
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
-#if defined IMU_MADGWICK
 	madgwick(0.01, 0),
-#elif defined IMU_COMPLEMENTARY
-	c_x(0.075, 0),
-	c_y(0.075, 0),
-#endif
 	
 	general(this),
 	calibration(this),
@@ -147,7 +115,7 @@ Chiindii::Chiindii() :
 }
 
 void Chiindii::run() {
-	FramedSerialMessage request(0,255);
+	FramedSerialMessage request(0, 128);
 
 	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
 	
@@ -206,30 +174,14 @@ void Chiindii::run() {
 			accel = mpu6050.getAccel();
 			gyro = mpu6050.getGyro();
 
-#if defined IMU_MADGWICK
-			madgwick.compute(accel, gyro, time);
-#elif defined IMU_COMPLEMENTARY
-			// compute the absolute angle relative to the horizontal.  We use the standard convention of
-			// rotation about the X axis is roll, and rotation about the Y axis is pitch.
-			// See http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation, answer by 'matteo' for formula.
-			// See http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/ for another opinion
-			angle_mv.x = atan2(accel.y, accel.z);		//roll
-			angle_mv.y = atan2(-accel.x, sqrt(accel.y * accel.y + accel.z * accel.z));		//pitch
-
-			// complementary tuning
-			// filter gyro rate and measured angle increase the accuracy of the angle
-			angle_mv.x = c_x.compute(gyro.x, angle_mv.x, time);
-			angle_mv.y= c_y.compute(gyro.y, angle_mv.y, time);
-#endif
+			madgwick.compute(accel, gyro, mode, time);
 		}
 		
 		//Update PID calculations and adjust motors
 		if ((time - lastPidTime) >= PID_PERIOD){
 			lastPidTime = time;
 
-#if defined IMU_MADGWICK
 			angle_mv = madgwick.getEuler();
-#endif
 
 			double throttle = 0;
 			if (mode == MODE_ARMED_ANGLE) {

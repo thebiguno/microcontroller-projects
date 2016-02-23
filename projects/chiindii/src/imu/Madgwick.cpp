@@ -22,9 +22,11 @@ Madgwick::Madgwick(double beta, uint32_t time) :
 {
 }
 
-void Madgwick::compute(vector_t accel, vector_t gyro, uint32_t time){
+void Madgwick::compute(vector_t accel, vector_t gyro, uint8_t armed, uint32_t time){
 	double dt = (time - lastTime) / 1000.0;
 	lastTime = time;
+	
+	double b = (armed ? beta : beta * 100);	//If not armed, increase beta substantially.  This will more quickly take accelerometers into account and mark the craft as level.
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -72,10 +74,10 @@ void Madgwick::compute(vector_t accel, vector_t gyro, uint32_t time){
 		s3 *= recipNorm;
 
 		// Apply feedback step
-		qDot1 -= beta * s0;
-		qDot2 -= beta * s1;
-		qDot3 -= beta * s2;
-		qDot4 -= beta * s3;
+		qDot1 -= b * s0;
+		qDot2 -= b * s1;
+		qDot3 -= b * s2;
+		qDot4 -= b * s3;
 	}
 
 	// Integrate rate of change of quaternion to yield quaternion

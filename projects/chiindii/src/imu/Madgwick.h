@@ -27,7 +27,7 @@ namespace digitalcave {
 
 			// Perform the actual calculations.  It should be called repeatedly in the main loop. 
 			// No return from this function; call getEuler to get the updated RPY angles
-			void compute(vector_t accel, vector_t gyro, uint32_t time);
+			void compute(vector_t accel, vector_t gyro, uint8_t armed, uint32_t time);
 			
 			//Returns the euler angles (in radians) for Roll, Pitch, and Yaw
 			vector_t getEuler();
