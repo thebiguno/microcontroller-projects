@@ -86,12 +86,12 @@ void Calibration::read() {
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 82), 6);
 		chiindii->getMpu6050()->setGyroCalib(calibration);
 #ifdef DEBUG
-		chiindii->sendDebug("Load EEPROM\n");
+		chiindii->sendStatus("Load EEPROM   ");
 #endif
 	}
 	else {
 #ifdef DEBUG
-		chiindii->sendDebug("Load Defaults\n");
+		chiindii->sendStatus("Load Defaults ");
 #endif
 	}
 }
@@ -143,7 +143,7 @@ void Calibration::write() {
 	sei();
 	
 #ifdef DEBUG
-	chiindii->sendDebug("Save EEPROM\n");
+	chiindii->sendStatus("Save EEPROM\n");
 #endif
 }
 

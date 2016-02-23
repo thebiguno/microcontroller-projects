@@ -12,6 +12,7 @@
 #define MESSAGE_DEBUG							0x05
 #define MESSAGE_REQUEST_BATTERY					0x06
 #define MESSAGE_SEND_BATTERY					0x07
+#define MESSAGE_STATUS							0x08
 
 namespace digitalcave {
 	class Chiindii; // forward declaration

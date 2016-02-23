@@ -42,41 +42,6 @@ int main(){
 	chiindii.run();
 }
 
-vector_t* Chiindii::getAngleSp() { return &angle_sp; }
-vector_t* Chiindii::getRateSp() { return &rate_sp; }
-PID* Chiindii::getRateX() { return &rate_x; }
-PID* Chiindii::getRateY() { return &rate_y; }
-PID* Chiindii::getRateZ() { return &rate_z; }
-PID* Chiindii::getAngleX() { return &angle_x; }
-PID* Chiindii::getAngleY() { return &angle_y; }
-PID* Chiindii::getGforce() { return &gforce; }
-Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
-uint8_t Chiindii::getBatteryLevel() { return battery_level; }
-uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
-uint8_t Chiindii::getMode() { return mode; }
-void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
-uint8_t Chiindii::getDebug() { return debug; }
-void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
-Madgwick* Chiindii::getMadgwick() { return &madgwick; }
-
-
-void Chiindii::sendDebug(const char* message){
-	sendDebug((char*) message);
-}
-void Chiindii::sendDebug(char* message){
-	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
-		sendMessage(&response);
-	}
-}
-
-double Chiindii::getThrottle() { return this->throttle_sp; }
-void Chiindii::setThrottle(double throttle) { 
-	if (throttle < 0) throttle_sp = 0; 
-	else if (throttle > 1) throttle_sp = 1; 
-	this->throttle_sp = throttle; 
-}
-
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
 	debug(1),			//TODO We currently start in debug mode
@@ -145,7 +110,7 @@ void Chiindii::run() {
 			last_message_time = time;
 			status.commOK();
 		} else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
-			if (mode) sendDebug("Comm Timeout\n");
+			if (mode) sendStatus("Comm Timeout  ");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -161,7 +126,7 @@ void Chiindii::run() {
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		} else {
-			if (mode) sendDebug("Low Battery\n");
+			if (mode) sendStatus("Low Battery  ");
 			mode = MODE_UNARMED;
 			status.batteryLow();
 		}
@@ -324,6 +289,49 @@ void Chiindii::dispatch(FramedSerialMessage* request) {
 	else {
 		//TODO Send debug message 'unknown command' or similar
 	}
+}
+
+
+vector_t* Chiindii::getAngleSp() { return &angle_sp; }
+vector_t* Chiindii::getRateSp() { return &rate_sp; }
+PID* Chiindii::getRateX() { return &rate_x; }
+PID* Chiindii::getRateY() { return &rate_y; }
+PID* Chiindii::getRateZ() { return &rate_z; }
+PID* Chiindii::getAngleX() { return &angle_x; }
+PID* Chiindii::getAngleY() { return &angle_y; }
+PID* Chiindii::getGforce() { return &gforce; }
+Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
+uint8_t Chiindii::getBatteryLevel() { return battery_level; }
+uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
+uint8_t Chiindii::getMode() { return mode; }
+void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
+uint8_t Chiindii::getDebug() { return debug; }
+void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
+Madgwick* Chiindii::getMadgwick() { return &madgwick; }
+
+
+void Chiindii::sendDebug(const char* message){
+	sendDebug((char*) message);
+}
+void Chiindii::sendDebug(char* message){
+	if (debug){
+		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
+		sendMessage(&response);
+	}
+}
+void Chiindii::sendStatus(const char* message){
+	sendDebug((char*) message);
+}
+void Chiindii::sendStatus(char* message){
+	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, strnlen(message, 14));
+	sendMessage(&response);
+}
+
+double Chiindii::getThrottle() { return this->throttle_sp; }
+void Chiindii::setThrottle(double throttle) { 
+	if (throttle < 0) throttle_sp = 0; 
+	else if (throttle > 1) throttle_sp = 1; 
+	this->throttle_sp = throttle; 
 }
 
 void Chiindii::sendMessage(FramedSerialMessage* message) {
