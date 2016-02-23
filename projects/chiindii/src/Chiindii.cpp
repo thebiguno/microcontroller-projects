@@ -26,6 +26,13 @@ using namespace digitalcave;
 //This cannot be a class variable, since it needs to be accessed by an ISR
 SerialAVR serial(38400, 8, 0, 1, 1, 128);
 
+//Reset WDT after system reset
+void get_mcusr(void) __attribute__((naked))  __attribute__((section(".init3")));
+void get_mcusr(void) {
+	MCUSR = 0;
+	wdt_disable();
+}
+
 int main(){
 	wdt_disable();
 	
