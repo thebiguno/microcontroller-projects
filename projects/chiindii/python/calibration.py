@@ -321,11 +321,9 @@ Select parameter: """).lower()
 					
 					#Keep sending data to prevent comm timeout...
 					for i in range(5):
-						print("Positive")
 						for i in range(4):
 							writeMessage(ser, MESSAGE_RATE, rate_sp, flush=False)				#Set rate
 							time.sleep(0.5)
-						print("Negative")
 						for i in range(4):
 							writeMessage(ser, MESSAGE_RATE, neg_rate_sp, flush=False)			#Set negative rate
 							time.sleep(0.5)

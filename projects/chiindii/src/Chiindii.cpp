@@ -42,6 +42,8 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
+	DDRB |= _BV(PORTB0);
+	
 	battery_init();
 	timer_init();
 
@@ -109,6 +111,7 @@ void Chiindii::run() {
 	
 	//Main program loop
 	while (1) {
+		PORTB ^= _BV(PORTB0);		//Heatbeat on B0 to determine main loop runtime
 		wdt_reset();
 		time = timer_millis();
 		
@@ -116,7 +119,8 @@ void Chiindii::run() {
 			dispatch(&request);
 			last_message_time = time;
 			status.commOK();
-		} else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
+		}
+		else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
 			if (mode) sendStatus("Comm Timeout  ");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
@@ -125,14 +129,17 @@ void Chiindii::run() {
 		battery_level = battery_read();
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
-		} else if (battery_level > BATTERY_DAMAGE_LEVEL) {
+		}
+		else if (battery_level > BATTERY_DAMAGE_LEVEL) {
 			status.batteryLow();
-		} else if (battery_level <= 1) {
-			//The battery should only read as 0 if it is unplugged; we assume that we 
+		}
+		else if (battery_level <= 1) {
+			//The battery should only read as 0 (or 1) if it is completely unplugged; we assume that we 
 			// are running in debug mode without any battery.  We still show the battery 
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
-		} else {
+		}
+		else {
 			if (mode) sendStatus("Low Battery  ");
 			mode = MODE_UNARMED;
 			status.batteryLow();
@@ -173,6 +180,9 @@ void Chiindii::run() {
 				gforce.reset(time);
 				throttle = throttle_sp;
 			}
+			
+			//We always want to do rate PID; if we are in rate mode, then we use the rate_sp as passed
+			// by the user, otherwise we use rate_sp as the output of angle PID.
 			if (mode){
 				// rate pid
 				// computes the desired change rate

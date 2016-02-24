@@ -167,11 +167,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_RATE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
-		
-#ifdef DEBUG
-//		snprintf(temp, sizeof(temp), "Request Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-//		chiindii->sendDebug(temp);
-#endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_ANGLE_PID){
 		PID* x = chiindii->getAngleX();
@@ -184,11 +179,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, (uint8_t*) data, 36);
 		chiindii->sendMessage(&response);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Request Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-// 		chiindii->sendDebug(temp);
-#endif
 	}
 	else if (cmd == MESSAGE_REQUEST_CALIBRATION_MADGWICK){
 		Madgwick* m = chiindii->getMadgwick();
@@ -197,42 +187,22 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		};
 		FramedSerialMessage response(MESSAGE_REQUEST_CALIBRATION_MADGWICK, (uint8_t*) data, 4);
 		chiindii->sendMessage(&response);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Calibration requested madgwick: %f\n", m->getBeta());
-// 		chiindii->sendDebug(temp);
-#endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_MADGWICK){
 		double* data = (double*) request->getData();
 		chiindii->getMadgwick()->setBeta(data[0]);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Calibration sent comp: %f, %f\n", chiindii->getCompX()->getTau(), chiindii->getCompY()->getTau());
-// 		chiindii->sendDebug(temp);
-#endif
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_RATE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getRateX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getRateY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getRateZ()->setTunings(data[6], data[7], data[8]);
-		
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Set Rate PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-// 		chiindii->sendDebug(temp);
-#endif
-
 	}
 	else if (cmd == MESSAGE_SEND_CALIBRATION_ANGLE_PID){
 		double* data = (double*) request->getData();
 		chiindii->getAngleX()->setTunings(data[0], data[1], data[2]);
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
-#ifdef DEBUG
-// 		snprintf(temp, sizeof(temp), "Set Angle PID:\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n%3.2f, %3.2f, %3.2f\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
-// 		chiindii->sendDebug(temp);
-#endif
 	}
 	else if (cmd == MESSAGE_START_SHOW_VARIABLES){
 		chiindii->setMode(MODE_SHOW_VARIABLES);
