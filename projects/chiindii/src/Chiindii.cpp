@@ -71,15 +71,15 @@ Chiindii::Chiindii() :
 	uc(this)
 {
 	//Output of angle PID is a rate (rad / s) for each axis.
-	angle_x.setOutputLimits(-5, 5);
-	angle_y.setOutputLimits(-5, 5);
+	angle_x.setOutputLimits(-10, 10);
+	angle_y.setOutputLimits(-10, 10);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 1);
 
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
-	rate_x.setOutputLimits(-2, 2);
-	rate_y.setOutputLimits(-2, 2);
+	rate_x.setOutputLimits(-4, 4);
+	rate_y.setOutputLimits(-4, 4);
 	rate_z.setOutputLimits(-1, 1);
 }
 
@@ -202,6 +202,12 @@ void Chiindii::run() {
 			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
 			rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
 			
+			//This is the weight which we give to throttle relative to the rate PID outputs.
+			// Keeping this too low will result in not enough throttle control; keeping it too high
+			// will result in not enough attitude control.
+			const double THROTTLE_WEIGHT = 5;
+			throttle = throttle * THROTTLE_WEIGHT;
+			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
 			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
 			double m2 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
@@ -209,19 +215,19 @@ void Chiindii::run() {
 			double m4 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
 
 			if (m1 < 0) m1 = 0;
-			else if (m1 > fmin(1, throttle * 2)) m1 = fmin(1, throttle * 2);
+			else if (m1 > THROTTLE_WEIGHT) m1 = THROTTLE_WEIGHT;
 			if (m2 < 0) m2 = 0;
-			else if (m2 > fmin(1, throttle * 2)) m2 = fmin(1, throttle * 2);
+			else if (m2 > THROTTLE_WEIGHT) m2 = THROTTLE_WEIGHT;
 			if (m3 < 0) m3 = 0;
-			else if (m3 > fmin(1, throttle * 2)) m3 = fmin(1, throttle * 2);
+			else if (m3 > THROTTLE_WEIGHT) m3 = THROTTLE_WEIGHT;
 			if (m4 < 0) m4 = 0;
-			else if (m4 > fmin(1, throttle * 2)) m4 = fmin(1, throttle * 2);
+			else if (m4 > THROTTLE_WEIGHT) m4 = THROTTLE_WEIGHT;
 
 			//Convert values in [0..1] to [0..511] (9 bit motor control)
-			m1 = m1 * 511;
-			m2 = m2 * 511;
-			m3 = m3 * 511;
-			m4 = m4 * 511;
+			m1 = m1 * 511 / THROTTLE_WEIGHT;
+			m2 = m2 * 511 / THROTTLE_WEIGHT;
+			m3 = m3 * 511 / THROTTLE_WEIGHT;
+			m4 = m4 * 511 / THROTTLE_WEIGHT;
 
 			motor_set(m1, m2, m3, m4);
 
@@ -298,7 +304,7 @@ void Chiindii::sendDebug(char* message){
 	}
 }
 void Chiindii::sendStatus(const char* message){
-	sendDebug((char*) message);
+	sendStatus((char*) message);
 }
 void Chiindii::sendStatus(char* message){
 	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, strnlen(message, 14));

@@ -90,7 +90,7 @@
 #define COMM_TX									0x02
 #define COMM_RX_TX								0x03
 
-#define AVERAGE_DIVISOR_EXPONENT				3
+#define AVERAGE_DIVISOR_EXPONENT				2
 
 
 using namespace digitalcave;

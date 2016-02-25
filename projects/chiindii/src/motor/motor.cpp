@@ -1,7 +1,7 @@
 #include "motor.h"
 #include "../Chiindii.h"
 
-#define PWM_MIN		0x2F
+#define PWM_MIN		0x1F
 #define PWM_MAX		0x1FF
 
 volatile uint8_t motorPinMask1 = 0;

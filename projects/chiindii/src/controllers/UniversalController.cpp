@@ -4,8 +4,11 @@
 
 using namespace digitalcave;
 
-UniversalController::UniversalController(Chiindii *chiindii) {
-	this->chiindii = chiindii;
+UniversalController::UniversalController(Chiindii *chiindii) :
+	mode(MODE_FLIGHT),
+	chiindii(chiindii)
+{
+	;
 }
 
 void UniversalController::dispatch(FramedSerialMessage* message) {
@@ -61,30 +64,30 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			//For the joysticks (rate mode), we read 20 degrees from each side (with 0.2 degree resolution),
 			// and leave the remainder in the center unused to allow for slop in the center readings
 			if (rx < 100){
-				rate_sp->x = -1 * degToRad((100.0 - rx) / 10 * 2);
+				rate_sp->x = -1 * degToRad((100.0 - rx) / 10 * 4);
 			}
 			else if (rx > 155){
-				rate_sp->x = degToRad((rx - 155.0) / 10 * 2);
+				rate_sp->x = degToRad((rx - 155.0) / 10 * 4);
 			}
 			else {
 				rate_sp->x = 0;
 			}
 		
 			if (ry < 100){
-				rate_sp->y = degToRad((100.0 - ry) / 10 * 2);
+				rate_sp->y = degToRad((100.0 - ry) / 10 * 4);
 			}
 			else if (ry > 155){
-				rate_sp->y = -1 * degToRad((ry - 155.0) / 10 * 2);
+				rate_sp->y = -1 * degToRad((ry - 155.0) / 10 * 4);
 			}
 			else {
 				rate_sp->y = 0;
 			}
 			
 			if (lx < 100){
-				rate_sp->z = -1 * degToRad((100.0 - lx) / 10 * 2);
+				rate_sp->z = -1 * degToRad((100.0 - lx) / 10 * 4);
 			}
 			else if (ry > 155){
-				rate_sp->z = degToRad((lx - 155) / 10 * 2);
+				rate_sp->z = degToRad((lx - 155) / 10 * 4);
 			}
 			else {
 				rate_sp->z = 0;
@@ -92,22 +95,35 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 		}
 	}
 	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
-		chiindii->setThrottle(message->getData()[0] / 255.0 * 0.7);		//Max throttle stick returns a 70% throttle rate, to allow for overhead maneuvering thrust
+		//chiindii->setThrottle(message->getData()[0] / 255.0 * 0.7);		//Max throttle stick returns a 70% throttle rate, to allow for overhead maneuvering thrust
+// 		if (message->getData()[0] < 5) chiindii->setThrottle(0);
+// 		else chiindii->setThrottle(message->getData()[0] / 255.0 * 0.5 + 0.1);	//Non-zero throttle linear in between 10% and 60%
+		chiindii->setThrottle(((double) (message->getData()[0]) * message->getData()[0]) / 80000);	//Exponential throttle
 	}
 	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
 		//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
 		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && chiindii->getThrottle() < 0.01){
+			mode = MODE_FLIGHT;
 			chiindii->sendStatus("Armed (Angle) ");
 			chiindii->setMode(MODE_ARMED_THROTTLE);
 		}
 		//To arm in rate mode, press the circle (right discrete) button while the throttle is all the way down.
 		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && chiindii->getThrottle() < 0.01){
+			mode = MODE_FLIGHT;
 			chiindii->sendStatus("Armed (Rate)  ");
 			chiindii->setMode(MODE_ARMED_RATE);
 		}
 		//To disarm, press the cross (bottom discrete) button at any time
 		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CROSS){
-			chiindii->sendDebug("Disarmed      ");
+			mode = MODE_FLIGHT;
+			chiindii->sendStatus("Disarmed      ");
+			chiindii->setMode(MODE_UNARMED);
+			chiindii->setThrottle(0);
+		}
+		//Square (left discrete) button is PID tuning
+		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_SQUARE){
+			mode = MODE_TUNING;
+			chiindii->sendStatus("PID Tuning    ");
 			chiindii->setMode(MODE_UNARMED);
 			chiindii->setThrottle(0);
 		}
