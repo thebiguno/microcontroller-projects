@@ -52,10 +52,15 @@ void motor_stop(){
 }
 
 void motor_set(uint16_t motorValue1, uint16_t motorValue2, uint16_t motorValue3, uint16_t motorValue4){
-	OCR1B = motorValue1 & PWM_MAX;
-	OCR1C = motorValue2 & PWM_MAX;
-	OCR3B = motorValue3 & PWM_MAX;
-	OCR3C = motorValue4 & PWM_MAX;
+	if (motorValue1 > PWM_MAX) motorValue1 = PWM_MAX;
+	if (motorValue2 > PWM_MAX) motorValue2 = PWM_MAX;
+	if (motorValue3 > PWM_MAX) motorValue3 = PWM_MAX;
+	if (motorValue4 > PWM_MAX) motorValue4 = PWM_MAX;
+	
+	OCR1B = motorValue1;
+	OCR1C = motorValue2;
+	OCR3B = motorValue3;
+	OCR3C = motorValue4;
 	
 	//Anything less than PWM_MIN turns the motors off completely; this is so that we don't miss
 	// low values when the compares fire before the overflow is completed
