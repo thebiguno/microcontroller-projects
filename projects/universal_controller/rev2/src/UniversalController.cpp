@@ -345,19 +345,6 @@ int main (void){
 					
 					remote_battery_timeout_timer = time;
 					break;
-				case MESSAGE_SEND_DEBUG:
-					//Copy the newly received message into the text buffer
-					for (uint8_t i = 0; i < 14; i++){
-						if (i < incoming.getLength()){
-							buf[i] = incoming.getData()[i];
-						}
-						else {
-							buf[i] = ' ';
-						}
-					}
-					//Show the newly received line on the display's bottom line
-					display.write_text(1, 0, buf, 14);
-					break;
 				case MESSAGE_SEND_STATUS:
 					//Copy the newly received message into the text buffer
 					for (uint8_t i = 0; i < 14; i++){
@@ -370,6 +357,19 @@ int main (void){
 					}
 					//Show the newly received line on the display's top line
 					display.write_text(0, 0, buf, 14);
+					break;
+				case MESSAGE_SEND_DEBUG:
+					//Copy the newly received message into the text buffer
+					for (uint8_t i = 0; i < 14; i++){
+						if (i < incoming.getLength()){
+							buf[i] = incoming.getData()[i];
+						}
+						else {
+							buf[i] = ' ';
+						}
+					}
+					//Show the newly received line on the display's bottom line
+					display.write_text(1, 0, buf, 14);
 					break;
 			}
 			
