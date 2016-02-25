@@ -32,6 +32,10 @@ namespace digitalcave {
 			//Returns the euler angles (in radians) for Roll, Pitch, and Yaw
 			vector_t getEuler();
 			
+			//Returns acceleration on the Z axis (including gravity).  When at rest, this will be 1.0;
+			// if going up it will be greater than 1 / going down less than 1.
+			double getZAcceleration(vector_t accel);
+			
 			void setBeta(double beta);
 			double getBeta();
 	};

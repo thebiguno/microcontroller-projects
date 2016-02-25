@@ -111,6 +111,18 @@ vector_t Madgwick::getEuler(){
 	return result;
 }
 
+double Madgwick::getZAcceleration(vector_t accel){
+	float gx, gy, gz; // estimated gravity direction
+
+	gx = 2 * (q1*q3 - q0*q2);
+	gy = 2 * (q0*q1 + q2*q3);
+	gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+
+	// return vertical acceleration without gravity
+	// (A dot G) / |G| - 1G (|G| = 1) -> (A dot G)
+	return ((accel.x*gx + accel.y*gy + accel.z*gz));
+}
+
 double Madgwick::getBeta() {
 	return beta;
 }

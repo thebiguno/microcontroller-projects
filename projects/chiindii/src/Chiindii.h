@@ -64,6 +64,7 @@ namespace digitalcave {
 			PID rate_z;
 			PID angle_x;
 			PID angle_y;
+			PID angle_z;
 			PID gforce;
 
 			Madgwick madgwick;
@@ -90,6 +91,7 @@ namespace digitalcave {
 			PID* getRateZ();
 			PID* getAngleX();
 			PID* getAngleY();
+			PID* getAngleZ();
 			PID* getGforce();
 
 			Madgwick* getMadgwick();

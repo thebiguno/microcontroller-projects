@@ -98,3 +98,13 @@ double PID::getKi() {
 double PID::getKd() {
 	return kd;
 }
+
+void PID::setKp(double Kp){
+	kp = Kp;
+}
+void PID::setKi(double Ki){
+	ki = Ki;
+}
+void PID::setKd(double Kd){
+	kd = Kd;
+}

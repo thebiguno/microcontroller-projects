@@ -16,30 +16,22 @@ floatregex = re.compile('^-?[0-9.]+$')
 
 MAILBOX = {}
 
+MESSAGE_BATTERY = 0x01
+MESSAGE_STATUS = 0x02
+MESSAGE_DEBUG = 0x03
+
 MESSAGE_ARMED = 0x20
 MESSAGE_THROTTLE = 0x21
 MESSAGE_RATE = 0x22
 MESSAGE_ANGLE = 0x23
 
-MESSAGE_ANNOUNCE_CONTROL_ID = 0x00
-MESSAGE_SEND_ACKNOWLEDGE = 0x01
-MESSAGE_SEND_COMPLETE = 0x02
-MESSAGE_REQUEST_DEBUG = 0x03
-MESSAGE_DEBUG = 0x05
-MESSAGE_REQUEST_BATTERY = 0x06
-MESSAGE_SEND_BATTERY = 0x07
-
 MESSAGE_SAVE_CALIBRATION = 0x30
 MESSAGE_LOAD_CALIBRATION = 0x31
-MESSAGE_REQUEST_CALIBRATION_RATE_PID = 0x33
-MESSAGE_SEND_CALIBRATION_RATE_PID = 0x34
-MESSAGE_REQUEST_CALIBRATION_ANGLE_PID = 0x35
-MESSAGE_SEND_CALIBRATION_ANGLE_PID = 0x36
-MESSAGE_START_SHOW_VARIABLES = 0x39
-MESSAGE_SEND_TUNING_DATA = 0x3A
-MESSAGE_START_MPU_CALIBRATION = 0x3B
-MESSAGE_REQUEST_CALIBRATION_MADGWICK = 0x3C
-MESSAGE_SEND_CALIBRATION_MADGWICK = 0x3D
+MESSAGE_CALIBRATE_IMU = 0x32
+MESSAGE_MADGWICK_TUNING = 0x33
+MESSAGE_RATE_PID_TUNING = 0x34
+MESSAGE_ANGLE_PID_TUNING = 0x35
+MESSAGE_THROTTLE_PID_TUNING = 0x36
 
 #MODE_CALIBRATION_RATE_PID = 0x01
 #MODE_CALIBRATION_COMPLEMENTARY = 0x02
@@ -64,10 +56,11 @@ def main(ser):
 		print(
 """
 Chiindii Calibration: Please selection an option below:
+	V) Level MPU
 	C) Change IMU filter calibration
 	R) Change Rate PID calibration
 	A) Change Angle PID calibration
-	V) Level MPU
+	T) Change Throttle PID calibration
 	X) Change Axis
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
@@ -81,6 +74,8 @@ Chiindii Calibration: Please selection an option below:
 			doImuCalibration(ser)
 		elif (choice == "a"):
 			doAnglePidCalibration(ser)
+		elif (choice == "t"):
+			doThrottlePidCalibration(ser)
 		elif (choice == "v"):
 			doLevelMpu(ser)
 		elif (choice == "x"):
@@ -153,7 +148,7 @@ Please select an option:
 		response = raw_input("Selected option: ").lower()
 
 		if (response == "v"):
-			writeMessage(ser, MESSAGE_START_MPU_CALIBRATION, [])
+			writeMessage(ser, MESSAGE_CALIBRATE_IMU, [])
 			return
 		elif (response == "q"):
 			return
@@ -173,9 +168,7 @@ The tuning allows you to collect raw and integrated data which can be graphed.
 	while True:
 		param = raw_input("""
 Please select a parameter to modify
-	T) Complementary Tau (per axis)
 	B) Madgwick Beta (global)
-	D) Start reading live attitude data
 	L) Load all values from EEPROM (revert changes for this session)
 	S) Save all values to EEPROM
 	Q) Return to axis selection
@@ -190,34 +183,11 @@ Selected Option: """).lower()
 		elif (param == "s"):
 			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
 			print("All values saved to EEPROM")
-		elif (param == "t"):
-			if (axis == 2):
-				print("Complementary filter tuning not applicable for Z axis")
-			else:
-				while True:
-					#Load the current calibration
-					writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY, [])
-					response = readMessage(MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY)
-					d = response["data"]
-				
-					print("\nEnter a valid number, X/Y to change axis, or enter to return to parameter selection.")
-					value = raw_input("Current axis: {0}.  Tau ({1:.3f}): ".format(axisString, struct.unpack_from("<f", buffer(str(bytearray(d))), axis * 4)[0])).lower()
-					if (value == "x" or value == "y"):
-						setAxis(value)
-					elif (floatregex.match(value)):
-						bytes = struct.pack("<f", float(value))
-						for i, b in enumerate(bytes):
-							d[i + (axis * 4)] = ord(b)
-						writeMessage(ser, MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, d)
-					elif (value == ""):
-						break;
-					else:
-						print("Invalid value, please try again\n")
 		elif (param == "b"):
 			while True:
 				#Load the current calibration
-				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_MADGWICK, [])
-				response = readMessage(MESSAGE_REQUEST_CALIBRATION_MADGWICK)
+				writeMessage(ser, MESSAGE_MADGWICK_TUNING, [])
+				response = readMessage(MESSAGE_MADGWICK_TUNING)
 				d = response["data"]
 				
 				print("\nEnter a valid number, or enter to return to parameter selection.")
@@ -226,18 +196,11 @@ Selected Option: """).lower()
 					bytes = struct.pack("<f", float(value))
 					for i, b in enumerate(bytes):
 						d[i] = ord(b)
-					writeMessage(ser, MESSAGE_SEND_CALIBRATION_MADGWICK, d)
+					writeMessage(ser, MESSAGE_MADGWICK_TUNING, d)
 				elif (value == ""):
 					break;
 				else:
 					print("Invalid value, please try again\n")
-		elif (param == "d"):
-			writeMessage(ser, MESSAGE_START_SHOW_VARIABLES, [axis])
-			for i in range(30):
-				writeMessage(ser, MESSAGE_START_SHOW_VARIABLES, [axis])
-				time.sleep(0.5)
-			time.sleep(1)
-
 		else:
 			print("Invalid axis, please try again\n")
 
@@ -257,9 +220,8 @@ of change is stable and matches the requested rate of change for a variety of re
 Ensure that Chiindii is in the tuning jig.
 """)
 	
-	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-	response = readMessage(MESSAGE_REQUEST_CALIBRATION_RATE_PID)
+	writeMessage(ser, MESSAGE_RATE_PID_TUNING, [])
+	response = readMessage(MESSAGE_RATE_PID_TUNING)
 	d = response["data"]
 	while True:
 		param = raw_input("""
@@ -338,8 +300,8 @@ Select parameter: """).lower()
 			
 			while True:
 				#Load the current calibration
-				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_RATE_PID, [])
-				response = readMessage(MESSAGE_REQUEST_CALIBRATION_RATE_PID)
+				writeMessage(ser, MESSAGE_RATE_PID_TUNING, [])
+				response = readMessage(MESSAGE_RATE_PID_TUNING)
 				d = response["data"]
 				
 				print("""
@@ -371,7 +333,7 @@ Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 					for i, b in enumerate(bytes):
 						print i, ord(b)
 						d[i + (axis * 12) + (param * 4)] = ord(b)
-					writeMessage(ser, MESSAGE_SEND_CALIBRATION_RATE_PID, d)
+					writeMessage(ser, MESSAGE_RATE_PID_TUNING, d)
 				else:
 					print("Invalid value, please try again\n")
 		else:
@@ -391,9 +353,8 @@ is stable and matches the requested angle for a variety of requested angles.
 Ensure that Chiindii is in the tuning jig.
 """)
 	
-	writeMessage(ser, 0x00, [0x43])
-	writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-	response = readMessage(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
+	writeMessage(ser, MESSAGE_ANGLE_PID_TUNING, [])
+	response = readMessage(MESSAGE_ANGLE_PID_TUNING)
 	d = response["data"]
 	while True:
 		param = raw_input("""
@@ -416,10 +377,7 @@ Select parameter: """).lower()
 			print("All values saved to EEPROM")
 		elif (param == "a"):
 			while True:
-				if (axisString == "Yaw"):
-					value = raw_input("Current axis: G-Force.  Enter a hover set point (in G), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
-				else:
-					value = raw_input("Current axis: " + axisString + ".  Enter an angle set point (in deg), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
+				value = raw_input("Current axis: " + axisString + ".  Enter an angle set point (in deg), X/Y/Z to change axis, or hit enter to return to parameter selection: ").lower()
 				if (value == "x" or value == "y" or value == "z"):
 					setAxis(value)
 				elif (value == ""):
@@ -467,8 +425,8 @@ Select parameter: """).lower()
 			
 			while True:
 				#Load the current calibration
-				writeMessage(ser, MESSAGE_REQUEST_CALIBRATION_ANGLE_PID, [])
-				response = readMessage(MESSAGE_REQUEST_CALIBRATION_ANGLE_PID)
+				writeMessage(ser, MESSAGE_ANGLE_PID_TUNING, [])
+				response = readMessage(MESSAGE_ANGLE_PID_TUNING)
 				d = response["data"]
 
 				adjustedAxisString = axisString
@@ -478,7 +436,7 @@ Select parameter: """).lower()
 Current		P	I	D
 Roll (X)	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
 Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
-G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
+Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 (Changing axis '{1}', parameter '{2}')
 """.format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), adjustedAxisString, paramString))
 			
@@ -503,12 +461,81 @@ G-Force (Z)	{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 					for i, b in enumerate(bytes):
 						#print i, ord(b)
 						d[i + (axis * 12) + (param * 4)] = ord(b)
-					writeMessage(ser, MESSAGE_SEND_CALIBRATION_ANGLE_PID, d)
+					writeMessage(ser, MESSAGE_ANGLE_PID_TUNING, d)
 				else:
 					print("Invalid value, please try again\n")
 		else:
 			print("Invalid value, please try again\n")
 
+def doThrottlePidCalibration(ser):
+	print("""
+Throttle PID calibration allows Chiindii to quickly and accurately achieve a level altitude.
+This is a single PID controller, with three parameters (proportional, integral, derivitive).
+
+This screen allows setpoint only, and won't work well in a tuning jig.
+""")
+	
+	writeMessage(ser, MESSAGE_THROTTLE_PID_TUNING, [])
+	response = readMessage(MESSAGE_THROTTLE_PID_TUNING)
+	d = response["data"]
+	while True:
+		param = raw_input("""
+Please select a parameter to modify
+	T) Change PID Tunings
+	L) Load all values from EEPROM (revert changes for this session)
+	S) Save all values to EEPROM
+	Q) Return to main menu
+		
+Select parameter: """).lower()
+		
+		if (param == "q"):
+			break
+		elif (param == "l"):
+			writeMessage(ser, MESSAGE_LOAD_CALIBRATION, [])
+			print("All values loaded from EEPROM")
+		elif (param == "s"):
+			writeMessage(ser, MESSAGE_SAVE_CALIBRATION, [])
+			print("All values saved to EEPROM")
+		elif (param == "t"):
+			param = 0
+			paramString = "P"
+			
+			while True:
+				#Load the current calibration
+				writeMessage(ser, MESSAGE_THROTTLE_PID_TUNING, [])
+				response = readMessage(MESSAGE_THROTTLE_PID_TUNING)
+				d = response["data"]
+
+				print("""
+Current		P	I	D
+Throttle	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
+(Changing parameter '{1}')
+""".format(struct.unpack("<fff", buffer(str(bytearray(d)))), paramString))
+			
+				value = raw_input("Enter a valid number, P/I/D to change parameter, or enter to return to parameter selection: ").lower()
+				if (value == "p" or value == "i" or value == "d"):
+					# translate param into number for indexing into tuning array
+					if (value == "p"): 
+						param = 0
+						paramString = "P"
+					elif (value == "i"): 
+						param = 1
+						paramString = "I"
+					else: 
+						param = 2
+						paramString = "D"
+				elif (value == ""):
+					break;
+				elif (floatregex.match(value)):
+					bytes = struct.pack("<f", float(value))
+					for i, b in enumerate(bytes):
+						#print i, ord(b)
+						d[i + (param * 4)] = ord(b)
+					writeMessage(ser, MESSAGE_THROTTLE_PID_TUNING, d)
+				else:
+					print("Invalid value, please try again\n")
+		else:
+			print("Invalid value, please try again\n")
 
 ########## Helper functions here ##########
 

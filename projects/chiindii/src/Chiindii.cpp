@@ -61,6 +61,8 @@ Chiindii::Chiindii() :
 	
 	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	angle_z(0.1, 0, 0, DIRECTION_NORMAL, 0),
+	
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
 	madgwick(0.01, 0),
@@ -73,6 +75,7 @@ Chiindii::Chiindii() :
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
 	angle_y.setOutputLimits(-10, 10);
+	angle_z.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 1);
@@ -167,12 +170,15 @@ void Chiindii::run() {
 		
 		//We only do angle PID in mode angle or throttle.
 		if (mode == MODE_ARMED_ANGLE) {
+			double accel_mv = madgwick.getZAcceleration(accel);
+			
 			// angle pid
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			throttle = gforce.compute(angle_sp.z, accel.z, time);
+			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
+			throttle = gforce.compute(angle_sp.z, accel_mv, time);
 		}
 		else if (mode == MODE_ARMED_THROTTLE) {
 			// angle pid with direct throttle
@@ -180,6 +186,7 @@ void Chiindii::run() {
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
+			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
 			gforce.reset(time);
 			
 			throttle = throttle_sp;
@@ -187,6 +194,7 @@ void Chiindii::run() {
 		else {
 			angle_x.reset(time);
 			angle_y.reset(time);
+			angle_z.reset(time);
 			gforce.reset(time);
 			
 			throttle = throttle_sp;
@@ -241,6 +249,7 @@ void Chiindii::run() {
 			rate_z.reset(time);
 			angle_x.reset(time);
 			angle_y.reset(time);
+			angle_z.reset(time);
 			gforce.reset(time);
 			
 			status.disarmed();
@@ -283,6 +292,7 @@ PID* Chiindii::getRateY() { return &rate_y; }
 PID* Chiindii::getRateZ() { return &rate_z; }
 PID* Chiindii::getAngleX() { return &angle_x; }
 PID* Chiindii::getAngleY() { return &angle_y; }
+PID* Chiindii::getAngleZ() { return &angle_z; }
 PID* Chiindii::getGforce() { return &gforce; }
 Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
 uint8_t Chiindii::getBatteryLevel() { return battery_level; }
