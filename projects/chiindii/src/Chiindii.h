@@ -38,7 +38,6 @@
 #define MODE_ARMED_ANGLE	0x01
 #define MODE_ARMED_RATE		0x02
 #define MODE_ARMED_THROTTLE	0x03
-#define MODE_SHOW_VARIABLES 0x04
 
 #define CONTROLLER_NONE			0x00
 #define CONTROLLER_UC			0x01
@@ -75,9 +74,6 @@ namespace digitalcave {
 			UniversalController uc;
 			
 			Status status;
-			
-			void driveMotors(double throttle, vector_t* rate_pv);
-			void dispatch(FramedSerialMessage *message);
 			
 		public:
 			Chiindii();

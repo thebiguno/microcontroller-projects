@@ -14,10 +14,6 @@
 #include "battery/battery.h"
 #include "motor/motor.h"
 
-//The period (in ms) at which we run the different processing loops (imu filter, PID + set motors, etc)
-#define IMU_PERIOD			2
-#define PID_PERIOD			5
-
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
 #define COMM_TIMEOUT_PERIOD		1000
 
@@ -42,7 +38,7 @@ int main(){
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
 	
-	DDRB |= _BV(PORTB0);
+	DDRB |= _BV(PORTB1);
 	
 	battery_init();
 	timer_init();
@@ -74,17 +70,16 @@ Chiindii::Chiindii() :
 	direct(this),
 	uc(this)
 {
-	//Output of angle PID is a rate (rad / s) for each axis.  -1 to 1 should suffice; if this
-	// results in too slow corrections, we can increase.
-	angle_x.setOutputLimits(-1, 1);
-	angle_y.setOutputLimits(-1, 1);
+	//Output of angle PID is a rate (rad / s) for each axis.
+	angle_x.setOutputLimits(-5, 5);
+	angle_y.setOutputLimits(-5, 5);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 1);
 
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
-	rate_x.setOutputLimits(-1, 1);
-	rate_y.setOutputLimits(-1, 1);
+	rate_x.setOutputLimits(-2, 2);
+	rate_y.setOutputLimits(-2, 2);
 	rate_z.setOutputLimits(-1, 1);
 }
 
@@ -99,8 +94,6 @@ void Chiindii::run() {
 	vector_t angle_mv = {0, 0, 0};
 	uint32_t time = 0;
 	uint32_t last_message_time = 0;
-	uint32_t lastImuTime = 0;
-	uint32_t lastPidTime = 0;
 	
 	motor_start();
 	
@@ -111,12 +104,28 @@ void Chiindii::run() {
 	
 	//Main program loop
 	while (1) {
-		PORTB ^= _BV(PORTB0);		//Heatbeat on B0 to determine main loop runtime
+		PORTB ^= _BV(PORTB1);
 		wdt_reset();
 		time = timer_millis();
 		
 		if (protocol.read(&serial, &request)) {
-			dispatch(&request);
+			uint8_t cmd = request.getCommand();
+
+			if ((cmd & 0xF0) == 0x00){
+				general.dispatch(&request);
+			}
+			else if ((cmd & 0xF0) == 0x10){
+				uc.dispatch(&request);
+			}
+			else if ((cmd & 0xF0) == 0x20){
+				direct.dispatch(&request);
+			}
+			else if ((cmd & 0xF0) == 0x30){
+				calibration.dispatch(&request);
+			}
+			else {
+				//TODO Send debug message 'unknown command' or similar
+			}
 			last_message_time = time;
 			status.commOK();
 		}
@@ -145,171 +154,121 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 
-		//Update IMU calculations.  We do this more frequently than PID to help average out
-		// reading noise.
-		if ((time - lastImuTime) >= IMU_PERIOD){
-			lastImuTime = time;
-			
-			accel = mpu6050.getAccel();
-			gyro = mpu6050.getGyro();
+		//Update IMU calculations.
+		accel = mpu6050.getAccel();
+		gyro = mpu6050.getGyro();
 
-			madgwick.compute(accel, gyro, mode, time);
-		}
+		madgwick.compute(accel, gyro, mode, time);
 		
 		//Update PID calculations and adjust motors
-		if ((time - lastPidTime) >= PID_PERIOD){
-			lastPidTime = time;
+		angle_mv = madgwick.getEuler();
 
-			angle_mv = madgwick.getEuler();
-
-			double throttle = 0;
-			if (mode == MODE_ARMED_ANGLE) {
-				// angle pid
-				// compute a rate set point given an angle set point and current measured angle
-				// see doc/control_system.txt
-				rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
-				rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-				throttle = gforce.compute(angle_sp.z, accel.z, time);
-			}
-			else if (mode == MODE_ARMED_THROTTLE) {
-				// angle pid with direct throttle
-				// compute a rate set point given an angle set point and current measured angle
-				// see doc/control_system.txt
-				rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
-				rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-				gforce.reset(time);
-				throttle = throttle_sp;
-			}
-			
-			//We always want to do rate PID; if we are in rate mode, then we use the rate_sp as passed
-			// by the user, otherwise we use rate_sp as the output of angle PID.
-			if (mode){
-				// rate pid
-				// computes the desired change rate
-				// see doc/control_system.txt
-				rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
-				rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
-				rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
-				
-				throttle = throttle_sp;
-			}
-			
-			if (mode && mode != MODE_SHOW_VARIABLES){
-				status.armed();
-				driveMotors(throttle, &rate_pv);	
-			}
-			
-			if (mode == MODE_UNARMED){
-				//If we are not armed, keep the PID reset.  This prevents erratic behaviour 
-				// when initially turning on, especially if I is non-zero.
-				rate_x.reset(time);
-				rate_y.reset(time);
-				rate_z.reset(time);
-				angle_x.reset(time);
-				angle_y.reset(time);
-				gforce.reset(time);
-				
-				status.disarmed();
-				motor_set(0, 0, 0, 0);
-			}
-			
-#ifdef DEBUG
-			if (debug){
-				char temp[128];
-				if (mode){
-					snprintf(temp, sizeof(temp), "Gyro: %4d, %4d, %4d  ", (int16_t) radToDeg(gyro.x), (int16_t) radToDeg(gyro.y), (int16_t) radToDeg(gyro.z));
-					sendDebug(temp);
-				}
-				if (mode == MODE_ARMED_THROTTLE || mode == MODE_ARMED_ANGLE || mode == MODE_SHOW_VARIABLES){
-					snprintf(temp, sizeof(temp), "Accel: %4d, %4d, %4d  ", (int16_t) (accel.x * 100), (int16_t) (accel.y * 100), (int16_t) (accel.z * 100));
-					sendDebug(temp);
-					snprintf(temp, sizeof(temp), "Angle MV: %4d, %4d, %4d  ", (int16_t) radToDeg(angle_mv.x), (int16_t) radToDeg(angle_mv.y), (int16_t) radToDeg(angle_mv.z));
-					sendDebug(temp);
-					snprintf(temp, sizeof(temp), "Rate SP: %3d, %3d, %3d  ", (int16_t) (rate_sp.x * 100), (int16_t) (rate_sp.y * 100), (int16_t) (rate_sp.z * 100));
-					sendDebug(temp);
-				}
-				if (mode){
-					snprintf(temp, sizeof(temp), "Rate PV: %3d, %3d, %3d  ", (int16_t) (rate_pv.x * 100), (int16_t) (rate_pv.y * 100), (int16_t) (rate_pv.z * 100));
-					sendDebug(temp);
-				}
-				if (mode == MODE_SHOW_VARIABLES){
-					sendDebug("\n");
-				}
-			}
-#endif
-
+		double throttle;
+		
+		//We only do angle PID in mode angle or throttle.
+		if (mode == MODE_ARMED_ANGLE) {
+			// angle pid
+			// compute a rate set point given an angle set point and current measured angle
+			// see doc/control_system.txt
+			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
+			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
+			throttle = gforce.compute(angle_sp.z, accel.z, time);
 		}
+		else if (mode == MODE_ARMED_THROTTLE) {
+			// angle pid with direct throttle
+			// compute a rate set point given an angle set point and current measured angle
+			// see doc/control_system.txt
+			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
+			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
+			gforce.reset(time);
+			
+			throttle = throttle_sp;
+		}
+		else {
+			angle_x.reset(time);
+			angle_y.reset(time);
+			gforce.reset(time);
+			
+			throttle = throttle_sp;
+		}
+		
+		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
+		// by the user, otherwise we use rate_sp as the output of angle PID.
+		if (mode && throttle_sp > 0.01){
+			// rate pid
+			// computes the desired change rate
+			// see doc/control_system.txt
+			rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
+			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
+			rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
+			
+			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
+			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
+			double m2 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
+			double m3 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
+			double m4 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
+
+			if (m1 < 0) m1 = 0;
+			else if (m1 > fmin(1, throttle * 2)) m1 = fmin(1, throttle * 2);
+			if (m2 < 0) m2 = 0;
+			else if (m2 > fmin(1, throttle * 2)) m2 = fmin(1, throttle * 2);
+			if (m3 < 0) m3 = 0;
+			else if (m3 > fmin(1, throttle * 2)) m3 = fmin(1, throttle * 2);
+			if (m4 < 0) m4 = 0;
+			else if (m4 > fmin(1, throttle * 2)) m4 = fmin(1, throttle * 2);
+
+			//Convert values in [0..1] to [0..511] (9 bit motor control)
+			m1 = m1 * 511;
+			m2 = m2 * 511;
+			m3 = m3 * 511;
+			m4 = m4 * 511;
+
+			motor_set(m1, m2, m3, m4);
+
+			status.armed();
+		}
+		else {
+			//If we are not armed, keep the PID reset.  This prevents erratic behaviour 
+			// when initially turning on, especially if I is non-zero.
+			rate_x.reset(time);
+			rate_y.reset(time);
+			rate_z.reset(time);
+			angle_x.reset(time);
+			angle_y.reset(time);
+			gforce.reset(time);
+			
+			status.disarmed();
+			motor_set(0, 0, 0, 0);
+		}
+			
+// #ifdef DEBUG
+// 		if (debug){
+// 			char temp[128];
+// 			if (mode){
+// 				snprintf(temp, sizeof(temp), "Gyro: %4d, %4d, %4d  ", (int16_t) radToDeg(gyro.x), (int16_t) radToDeg(gyro.y), (int16_t) radToDeg(gyro.z));
+// 				sendDebug(temp);
+// 			}
+// 			if (mode == MODE_ARMED_THROTTLE || mode == MODE_ARMED_ANGLE || mode == MODE_SHOW_VARIABLES){
+// 				snprintf(temp, sizeof(temp), "Accel: %4d, %4d, %4d  ", (int16_t) (accel.x * 100), (int16_t) (accel.y * 100), (int16_t) (accel.z * 100));
+// 				sendDebug(temp);
+// 				snprintf(temp, sizeof(temp), "Angle MV: %4d, %4d, %4d  ", (int16_t) radToDeg(angle_mv.x), (int16_t) radToDeg(angle_mv.y), (int16_t) radToDeg(angle_mv.z));
+// 				sendDebug(temp);
+// 				snprintf(temp, sizeof(temp), "Rate SP: %3d, %3d, %3d  ", (int16_t) (rate_sp.x * 100), (int16_t) (rate_sp.y * 100), (int16_t) (rate_sp.z * 100));
+// 				sendDebug(temp);
+// 			}
+// 			if (mode){
+// 				snprintf(temp, sizeof(temp), "Rate PV: %3d, %3d, %3d  ", (int16_t) (rate_pv.x * 100), (int16_t) (rate_pv.y * 100), (int16_t) (rate_pv.z * 100));
+// 				sendDebug(temp);
+// 			}
+// 			if (mode == MODE_SHOW_VARIABLES){
+// 				sendDebug("\n");
+// 			}
+// 		}
+// #endif
 
 		status.poll(time);
 	}
 }
-
-void Chiindii::driveMotors(double throttle, vector_t* rate_pv) {
-	//Limit throttle to [0,1]
-	if (throttle < 0) throttle = 0;
-	else if (throttle > 1) throttle = 1;
-	
-	if (throttle < 0.01){
-		motor_set(0, 0, 0, 0);
-		return;
-	}
-
-	//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
-	double m1 = throttle + rate_pv->x - rate_pv->y + rate_pv->z;
-	double m2 = throttle - rate_pv->x - rate_pv->y - rate_pv->z;
-	double m3 = throttle - rate_pv->x + rate_pv->y + rate_pv->z;
-	double m4 = throttle + rate_pv->x + rate_pv->y - rate_pv->z;
-
-	//We limit the motor outputs to be in the range [0, min(throttle*2, 1)].
-//	if (throttle * 2 > 1) throttle = 1;
-//	else (throttle = throttle * 2);
-	
-	if (m1 < 0) m1 = 0;
-	else if (m1 > 1) m1 = 1;
-	if (m2 < 0) m2 = 0;
-	else if (m2 > 1) m2 = 1;
-	if (m3 < 0) m3 = 0;
-	else if (m3 > 1) m3 = 1;
-	if (m4 < 0) m4 = 0;
-	else if (m4 > 1) m4 = 1;
-	
-	//Convert values in [0..1] to [0..511] (9 bit motor control)
-	m1 = m1 * 511;
-	m2 = m2 * 511;
-	m3 = m3 * 511;
-	m4 = m4 * 511;
-	
-#ifdef DEBUG
-	if (debug){
-		char temp[128];
-		snprintf(temp, sizeof(temp), "Motors: %d, %d, %d, %d\n", (uint16_t) m1, (uint16_t) m2, (uint16_t) m3, (uint16_t) m4);
-		sendDebug(temp);
-	}
-#endif
-
-	motor_set(m1, m2, m3, m4);
-} 
-
-void Chiindii::dispatch(FramedSerialMessage* request) {
-	uint8_t cmd = request->getCommand();
-
-	if ((cmd & 0xF0) == 0x00){
-		general.dispatch(request);
-	}
-	else if ((cmd & 0xF0) == 0x10){
-		uc.dispatch(request);
-	}
-	else if ((cmd & 0xF0) == 0x20){
-		direct.dispatch(request);
-	}
-	else if ((cmd & 0xF0) == 0x30){
-		calibration.dispatch(request);
-	}
-	else {
-		//TODO Send debug message 'unknown command' or similar
-	}
-}
-
 
 vector_t* Chiindii::getAngleSp() { return &angle_sp; }
 vector_t* Chiindii::getRateSp() { return &rate_sp; }
