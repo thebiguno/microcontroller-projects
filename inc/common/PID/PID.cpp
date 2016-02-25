@@ -24,7 +24,7 @@ PID::PID(double kp, double ki, double kd, uint8_t direction, uint32_t time) :
 
 double PID::compute(double setPoint, double measured, uint32_t time){
 	uint32_t currentPeriod = time - lastTime;
-	if (currentPeriod == 0) currentPeriod = 1;
+	if (currentPeriod == 0) currentPeriod = 1;	//Calling this more frequently than once per ms is not recommended...
 	double periodSec = currentPeriod / 1000.0;	//Period in seconds; used to normalize ki / kd values across different periods
 	
 	//Compute all the working error variables
