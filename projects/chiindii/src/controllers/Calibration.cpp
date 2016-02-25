@@ -204,9 +204,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getAngleY()->setTunings(data[3], data[4], data[5]);
 		chiindii->getGforce()->setTunings(data[6], data[7], data[8]);
 	}
-	else if (cmd == MESSAGE_START_SHOW_VARIABLES){
-		chiindii->setMode(MODE_SHOW_VARIABLES);
-	}
 	else if (cmd == MESSAGE_START_MPU_CALIBRATION){
 		wdt_enable(WDTO_8S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
 		chiindii->getMpu6050()->calibrate();
