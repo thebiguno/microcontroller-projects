@@ -429,16 +429,13 @@ Select parameter: """).lower()
 				response = readMessage(MESSAGE_ANGLE_PID_TUNING)
 				d = response["data"]
 
-				adjustedAxisString = axisString
-				if (adjustedAxisString == "Yaw"):
-					adjustedAxisString = "G-Force"
 				print("""
 Current		P	I	D
 Roll (X)	{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}
 Pitch (Y)	{0[3]:.3f}	{0[4]:.3f}	{0[5]:.3f}
 Yaw (Z)		{0[6]:.3f}	{0[7]:.3f}	{0[8]:.3f}
 (Changing axis '{1}', parameter '{2}')
-""".format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), adjustedAxisString, paramString))
+""".format(struct.unpack("<fffffffff", buffer(str(bytearray(d)))), axisString, paramString))
 			
 				value = raw_input("Enter a valid number, X/Y/Z to change axis, P/I/D to change parameter, or enter to return to parameter selection: ").lower()
 				if (value == "x" or value == "y" or value == "z"):
