@@ -12,25 +12,22 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	
 	@IBOutlet var throttleLabel : UILabel!
 	@IBOutlet var throttle : UISlider!
-	@IBOutlet var rateLabel : UILabel!
-	@IBOutlet var rate : UISlider!
-	@IBOutlet var angleLabel : UILabel!
-	@IBOutlet var angle : UISlider!
-	@IBOutlet var axis : UISegmentedControl!
-	@IBOutlet var rateP : UITextField!
-	@IBOutlet var rateI : UITextField!
-	@IBOutlet var rateD : UITextField!
-	@IBOutlet var angleP : UITextField!
-	@IBOutlet var angleI : UITextField!
-	@IBOutlet var angleD : UITextField!
-	@IBOutlet var tau : UITextField!
+	@IBOutlet var spLabel : UILabel!
+	@IBOutlet var sp : UISlider!
+	@IBOutlet var p : UITextField!
+	@IBOutlet var i : UITextField!
+	@IBOutlet var d : UITextField!
+	@IBOutlet var beta : UITextField!
 	@IBOutlet var battery : UILabel!
 	@IBOutlet var debug : UILabel!
+	@IBOutlet var status : UILabel!
+	@IBOutlet var selectedPID : UILabel!
+	@IBOutlet var selectedPeripheral : UILabel!
 	
 	var typing = false
 
 	@IBAction func unwindToMenu(seque: UIStoryboardSegue) {
-		
+		update();
 	}
 	
 	@IBAction func loadClicked(sender: AnyObject) {
@@ -42,27 +39,23 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	}
 	
 	@IBAction func calibrateClicked(sender: AnyObject) {
-		sharedMessageManager.level()
+		sharedMessageManager.calibrate()
 	}
 	
-	@IBAction func ratePressed(sender : UISwitch) {
-		sharedModel.armed = sender.on
+	@IBAction func armPressed(sender : UISwitch) {
 		if (sender.on) {
-			sharedMessageManager.armRate()
+			if (sharedModel.selectedPID < 3) {
+				sharedMessageManager.armRate()
+			} else if (sharedModel.selectedPID < 6) {
+				sharedMessageManager.armAngle()
+			} else {
+				sharedMessageManager.armFlight()
+			}
 		} else {
 			sharedMessageManager.disarm()
 		}
 	}
 	
-	@IBAction func anglePressed(sender : UISwitch) {
-		sharedModel.armed = sender.on
-		if (sender.on) {
-			sharedMessageManager.armAngle()
-		} else {
-			sharedMessageManager.disarm()
-		}
-	}
-
 	@IBAction func throttleChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
 		
@@ -70,52 +63,44 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		throttleLabel.text = "\(sharedModel.throttleSp)%"
 	}
 	
-	@IBAction func rateChanged(sender : UISlider) {
+	@IBAction func spChanged(sender : UISlider) {
 		sender.value = roundf(sender.value)
 		sharedModel.rateSp.x = 0;
 		sharedModel.rateSp.y = 0;
 		sharedModel.rateSp.z = 0;
-
-		switch (axis.selectedSegmentIndex) {
-		case 0:
-			sharedModel.rateSp.x = sender.value
-			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
-			break;
-		case 1:
-			sharedModel.rateSp.y = sender.value
-			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
-			break;
-		default:
-			sharedModel.rateSp.z = sender.value
-			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
-			break;
-		}
-	}
-	
-	@IBAction func angleChanged(sender : UISlider) {
-		sender.value = roundf(sender.value)
 		sharedModel.angleSp.x = 0;
 		sharedModel.angleSp.y = 0;
 		sharedModel.angleSp.z = 0;
-		
-		switch (axis.selectedSegmentIndex) {
+
+		switch (sharedModel.selectedPID) {
 		case 0:
-			sharedModel.angleSp.x = sender.value
-			angleLabel.text = "\(sharedModel.angleSp.x)°"
+			sharedModel.rateSp.x = sender.value
+			spLabel.text = "\(sharedModel.rateSp.x)°/s"
 			break;
 		case 1:
+			sharedModel.rateSp.y = sender.value
+			spLabel.text = "\(sharedModel.rateSp.y)°/s"
+			break;
+		case 2:
+			sharedModel.rateSp.z = sender.value
+			spLabel.text = "\(sharedModel.rateSp.z)°/s"
+			break;
+		case 3:
+			sharedModel.angleSp.x = sender.value
+			spLabel.text = "\(sharedModel.angleSp.x)°"
+			break;
+		case 4:
 			sharedModel.angleSp.y = sender.value
-			angleLabel.text = "\(sharedModel.angleSp.y)°"
+			spLabel.text = "\(sharedModel.angleSp.y)°"
+			break;
+		case 5:
+			sharedModel.angleSp.z = sender.value
+			spLabel.text = "\(sharedModel.angleSp.z)°"
 			break;
 		default:
-			sharedModel.angleSp.z = sender.value
-			angleLabel.text = "\(sharedModel.angleSp.z)°"
-			break;
+			sharedModel.throttleSp = sender.value
+			spLabel.text = "\(sharedModel.throttleSp) g"
 		}
-	}
-
-	@IBAction func axisChanged(sender : UISegmentedControl) {
-		update();
 	}
 	
 	func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
@@ -132,33 +117,45 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		} else {
 			let numberFloatValue = number!.floatValue
 
-			switch (axis.selectedSegmentIndex) {
-			case 0:
-				if (textField == rateP)	{ sharedModel.rateConfig.x.p = numberFloatValue }
-				else if (textField == rateI) { sharedModel.rateConfig.x.i = numberFloatValue }
-				else if (textField == rateD) { sharedModel.rateConfig.x.d = numberFloatValue }
-				else if (textField == angleP) { sharedModel.angleConfig.x.p = numberFloatValue }
-				else if (textField == angleI) { sharedModel.angleConfig.x.i = numberFloatValue }
-				else if (textField == angleD) { sharedModel.angleConfig.x.d = numberFloatValue }
-				else if (textField == tau) { sharedModel.compConfig.x = numberFloatValue }
-				break;
-			case 1:
-				if (textField == rateP)	{ sharedModel.rateConfig.y.p = numberFloatValue }
-				else if (textField == rateI) { sharedModel.rateConfig.y.i = numberFloatValue }
-				else if (textField == rateD) { sharedModel.rateConfig.y.d = numberFloatValue }
-				else if (textField == angleP) { sharedModel.angleConfig.y.p = numberFloatValue }
-				else if (textField == angleI) { sharedModel.angleConfig.y.i = numberFloatValue }
-				else if (textField == angleD) { sharedModel.angleConfig.y.d = numberFloatValue }
-				else if (textField == tau) { sharedModel.compConfig.y = numberFloatValue }
-				break;
-			default:
-				if (textField == rateP)	{ sharedModel.rateConfig.z.p = numberFloatValue }
-				else if (textField == rateI) { sharedModel.rateConfig.z.i = numberFloatValue }
-				else if (textField == rateD) { sharedModel.rateConfig.z.d = numberFloatValue }
-				else if (textField == angleP) { sharedModel.angleConfig.z.p = numberFloatValue }
-				else if (textField == angleI) { sharedModel.angleConfig.z.i = numberFloatValue }
-				else if (textField == angleD) { sharedModel.angleConfig.z.d = numberFloatValue }
-				break;
+			if (textField == beta) { sharedModel.madgwickConfig = numberFloatValue }
+			else {
+				switch (sharedModel.selectedPID) {
+				case 0:
+					if (textField == p)	{ sharedModel.rateConfig.x.p = numberFloatValue }
+					else if (textField == i) { sharedModel.rateConfig.x.i = numberFloatValue }
+					else if (textField == d) { sharedModel.rateConfig.x.d = numberFloatValue }
+					break;
+				case 1:
+					if (textField == p)	{ sharedModel.rateConfig.y.p = numberFloatValue }
+					else if (textField == i) { sharedModel.rateConfig.y.i = numberFloatValue }
+					else if (textField == d) { sharedModel.rateConfig.y.d = numberFloatValue }
+					break;
+				case 2:
+					if (textField == p)	{ sharedModel.rateConfig.z.p = numberFloatValue }
+					else if (textField == i) { sharedModel.rateConfig.z.i = numberFloatValue }
+					else if (textField == d) { sharedModel.rateConfig.z.d = numberFloatValue }
+					break;
+				case 3:
+					if (textField == p)	{ sharedModel.angleConfig.x.p = numberFloatValue }
+					else if (textField == i) { sharedModel.angleConfig.x.i = numberFloatValue }
+					else if (textField == d) { sharedModel.angleConfig.x.d = numberFloatValue }
+					break;
+				case 4:
+					if (textField == p)	{ sharedModel.angleConfig.y.p = numberFloatValue }
+					else if (textField == i) { sharedModel.angleConfig.y.i = numberFloatValue }
+					else if (textField == d) { sharedModel.angleConfig.y.d = numberFloatValue }
+					break;
+				case 5:
+					if (textField == p)	{ sharedModel.angleConfig.z.p = numberFloatValue }
+					else if (textField == i) { sharedModel.angleConfig.z.i = numberFloatValue }
+					else if (textField == d) { sharedModel.angleConfig.z.d = numberFloatValue }
+					break;
+				default:
+					if (textField == p)	{ sharedModel.gforceConfig.p = numberFloatValue }
+					else if (textField == i) { sharedModel.gforceConfig.i = numberFloatValue }
+					else if (textField == d) { sharedModel.gforceConfig.d = numberFloatValue }
+				}
+				
 			}
 			return true;
 		}
@@ -207,6 +204,9 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	func debugChanged() {
 		debug.text = sharedModel.debug
 	}
+	func statusChanged() {
+		status.text = sharedModel.status
+	}
 	
 	func configChanged() {
 		update();
@@ -217,43 +217,62 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 			return
 		}
 		
+		selectedPeripheral.text = sharedMessageManager.connectedPeripheral?.name
 		throttle.value = sharedModel.throttleSp
+		beta.text = String.localizedStringWithFormat("%.3f", sharedModel.madgwickConfig)
 		
-		if (axis.selectedSegmentIndex == 0) {
-			rate.value = sharedModel.rateSp.x
-			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.p)
-			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.i)
-			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.x.d)
-			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.p)
-			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.i)
-			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.x.d)
-			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.x)
-			rateLabel.text = "\(sharedModel.rateSp.x)°/s"
-			angleLabel.text = "\(sharedModel.angleSp.x)°/s"
-		} else if (axis.selectedSegmentIndex == 1) {
-			rate.value = sharedModel.rateSp.y
-			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.p)
-			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.i)
-			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.y.d)
-			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.p)
-			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.i)
-			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.y.d)
-			tau.text = String.localizedStringWithFormat("%.3f", sharedModel.compConfig.y)
-			rateLabel.text = "\(sharedModel.rateSp.y)°/s"
-			angleLabel.text = "\(sharedModel.angleSp.y)°/s"
-		} else {
-			rate.value = sharedModel.rateSp.x
-			rateP.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.p)
-			rateI.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.i)
-			rateD.text = String.localizedStringWithFormat("%.3f", sharedModel.rateConfig.z.d)
-			angleP.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.p)
-			angleI.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.i)
-			angleD.text = String.localizedStringWithFormat("%.3f", sharedModel.angleConfig.z.i)
-			tau.text = "N/A"
-			rateLabel.text = "\(sharedModel.rateSp.z)°/s"
-			angleLabel.text = "\(sharedModel.angleSp.z)°/s"
+		var value : PID
+		var sp : Float
+		var unit : String
+		switch (sharedModel.selectedPID) {
+		case 0:
+			value = sharedModel.rateConfig.x
+			sp = sharedModel.rateSp.x
+			unit = "°/s"
+			selectedPID.text = "X Roll Rate"
+			break
+		case 1:
+			value = sharedModel.rateConfig.y
+			sp = sharedModel.rateSp.y
+			unit = "°/s"
+			selectedPID.text = "Y Pitch Rate"
+			break;
+		case 2:
+			value = sharedModel.rateConfig.z
+			sp = sharedModel.rateSp.z
+			unit = "°/s"
+			selectedPID.text = "Z Yaw Rate"
+			break
+		case 3:
+			value = sharedModel.angleConfig.x
+			sp = sharedModel.angleSp.x
+			unit = "°"
+			selectedPID.text = "X Roll Angle"
+			break
+		case 4:
+			value = sharedModel.angleConfig.y
+			sp = sharedModel.angleSp.y
+			unit = "°"
+			selectedPID.text = "Y Pitch Angle"
+			break
+		case 5:
+			value = sharedModel.angleConfig.z
+			sp = sharedModel.angleSp.z
+			unit = "°"
+			selectedPID.text = "Z Yaw Angle"
+			break
+		default:
+			value = sharedModel.gforceConfig
+			sp = sharedModel.throttleSp
+			unit = " g"
+			selectedPID.text = "G-Force"
 		}
 		
+		p.text = String.localizedStringWithFormat("%.3f", value.p)
+		i.text = String.localizedStringWithFormat("%.3f", value.i)
+		d.text = String.localizedStringWithFormat("%.3f", value.d)
+		spLabel.text = "\(sp)\(unit)"
+
 		throttleLabel.text = "\(sharedModel.throttleSp)%"
 
 	}

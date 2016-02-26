@@ -11,6 +11,7 @@ import CoreBluetooth
 
 protocol ModelDelegate : NSObjectProtocol {
 	func debugChanged()
+	func statusChanged()
 	func batteryChanged()
 	func configChanged()
 	func peripheralsChanged()
@@ -33,10 +34,6 @@ struct AngleConfig {
 	var y = PID()
 	var z = PID()
 }
-struct CompConfig {
-	var x : Float = 0.0
-	var y : Float = 0.0
-}
 
 struct Vector {
 	var x : Float = 0.0
@@ -56,8 +53,8 @@ class Model {
 	}
 
 	// flight
-	var armed : Bool = false
 	var angleSp = Vector()
+	var throttleSp : Float = 0.0 // this is either a throttle percentage or a g-force setpoint, depending on the mode
 	var battery : UInt8 = 0 {
 		didSet {
 			delegate?.batteryChanged()
@@ -68,9 +65,14 @@ class Model {
 			delegate?.debugChanged()
 		}
 	}
+	var status = "" {
+		didSet {
+			delegate?.statusChanged()
+		}
+	}
 
 	// config
-	var throttleSp : Float = 0.0
+	var selectedPID = 0
 	var rateSp = Vector()
 	var rateConfig = RateConfig() {
 		didSet {
@@ -82,7 +84,12 @@ class Model {
 			delegate?.configChanged()
 		}
 	}
-	var compConfig = CompConfig() {
+	var gforceConfig = PID() {
+		didSet {
+			delegate?.configChanged()
+		}
+	}
+	var madgwickConfig : Float = 0.0 {
 		didSet {
 			delegate?.configChanged()
 		}

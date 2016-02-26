@@ -21,6 +21,7 @@ class BluetoothViewController : UITableViewController, ModelDelegate {
 	func batteryChanged() {}
 	func configChanged() {}
 	func debugChanged() {}
+	func statusChanged() {}
 
 	func peripheralsChanged() {
 		tableView.reloadData()
@@ -78,6 +79,8 @@ class BluetoothViewController : UITableViewController, ModelDelegate {
 		let peripheral = sharedModel.peripherals[indexPath.row]
 		peripheral.delegate = sharedMessageManager
 		sharedMessageManager.centralManager.connectPeripheral(peripheral, options: nil)
+		
+		performSegueWithIdentifier("unwindPeripherals", sender: self)
 		
 		return indexPath
 	}
