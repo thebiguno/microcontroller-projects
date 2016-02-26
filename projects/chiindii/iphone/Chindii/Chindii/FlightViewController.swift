@@ -13,10 +13,10 @@ class FlightViewController: UIViewController, ModelDelegate {
 	@IBOutlet var message : UILabel!
 	@IBOutlet var armedSwitch : UISwitch!
 	@IBOutlet var battery : UILabel!
+	@IBOutlet var status : UILabel!
 	@IBOutlet var debug : UILabel!
 	
 	@IBAction func armedPressed(sender : UISwitch) {
-		sharedModel.armed = sender.on
 		if (sender.on) {
 			sharedMessageManager.armFlight()
 		} else {
@@ -53,7 +53,6 @@ class FlightViewController: UIViewController, ModelDelegate {
 	
 	override func viewWillAppear(animated: Bool) {
 		sharedModel.delegate = self;
-		armedSwitch.setOn(sharedModel.armed, animated: true)
 		battery.text = "\(sharedModel.battery)%"
 		debug.text = ""
 	}
@@ -66,6 +65,10 @@ class FlightViewController: UIViewController, ModelDelegate {
 		debug.text = sharedModel.debug
 	}
 	
+	func statusChanged() {
+		status.text = sharedModel.status
+	}
+
 	func configChanged() {}
 	func peripheralsChanged() {}
 
