@@ -178,7 +178,10 @@ void Chiindii::run() {
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
 			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
-			throttle = gforce.compute(angle_sp.z, accel_mv, time);
+			throttle = gforce.compute(throttle_sp, accel_mv, time);
+			char temp[14];
+			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
+			sendDebug(temp);
 		}
 		else if (mode == MODE_ARMED_THROTTLE) {
 			// angle pid with direct throttle
@@ -202,7 +205,7 @@ void Chiindii::run() {
 		
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
-		if (mode && throttle_sp > 0.01){
+		if (mode && throttle > 0.001){
 			// rate pid
 			// computes the desired change rate
 			// see doc/control_system.txt
