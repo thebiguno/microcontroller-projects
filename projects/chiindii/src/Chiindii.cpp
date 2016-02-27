@@ -89,7 +89,7 @@ Chiindii::Chiindii() :
 void Chiindii::run() {
 	FramedSerialMessage request(0, 128);
 
-	calibration.read(); // load previously saved PID and comp tuning values from EEPROM
+	loadConfig(); // load previously saved PID and comp tuning values from EEPROM
 	
 	vector_t gyro = {0, 0, 0};
 	vector_t accel = {0, 0, 0};
@@ -193,6 +193,10 @@ void Chiindii::run() {
 			//rate_sp.z = angle_z.compute(angle_sp.z, gyro.z, time);
 			angle_z.reset(time);
 			gforce.reset(time);
+
+			char temp[14];
+			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.y * 100), (int16_t) (angle_mv.y * 100), (int16_t) (rate_sp.y * 100));
+			sendDebug(temp);
 			
 			throttle = throttle_sp;
 		}
@@ -218,8 +222,10 @@ void Chiindii::run() {
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
 			// will result in not enough attitude control.
-			const double THROTTLE_WEIGHT = 10;
-			throttle = throttle * THROTTLE_WEIGHT;
+			//By making this dynamic, we allow for more throttle control at the bottom of the throttle
+			// range, and more manouverability at the middle / top.
+			double throttleWeight = fmax(-5.0 * throttle + 2, 1);
+			throttle = throttle * throttleWeight;
 			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
 			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
@@ -228,19 +234,19 @@ void Chiindii::run() {
 			double m4 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
 
 			if (m1 < 0) m1 = 0;
-			else if (m1 > THROTTLE_WEIGHT) m1 = THROTTLE_WEIGHT;
+			else if (m1 > throttleWeight) m1 = throttleWeight;
 			if (m2 < 0) m2 = 0;
-			else if (m2 > THROTTLE_WEIGHT) m2 = THROTTLE_WEIGHT;
+			else if (m2 > throttleWeight) m2 = throttleWeight;
 			if (m3 < 0) m3 = 0;
-			else if (m3 > THROTTLE_WEIGHT) m3 = THROTTLE_WEIGHT;
+			else if (m3 > throttleWeight) m3 = throttleWeight;
 			if (m4 < 0) m4 = 0;
-			else if (m4 > THROTTLE_WEIGHT) m4 = THROTTLE_WEIGHT;
+			else if (m4 > throttleWeight) m4 = throttleWeight;
 
 			//Convert values in [0..1] to [0..511] (9 bit motor control)
-			m1 = m1 * 511 / THROTTLE_WEIGHT;
-			m2 = m2 * 511 / THROTTLE_WEIGHT;
-			m3 = m3 * 511 / THROTTLE_WEIGHT;
-			m4 = m4 * 511 / THROTTLE_WEIGHT;
+			m1 = m1 * 511 / throttleWeight;
+			m2 = m2 * 511 / throttleWeight;
+			m3 = m3 * 511 / throttleWeight;
+			m4 = m4 * 511 / throttleWeight;
 
 			motor_set(m1, m2, m3, m4);
 			
@@ -308,6 +314,107 @@ uint8_t Chiindii::getDebug() { return debug; }
 void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
 Madgwick* Chiindii::getMadgwick() { return &madgwick; }
 
+void Chiindii::loadConfig(){
+	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
+		double kp, ki, kd;
+		double t;
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 8));
+		rate_x.setTunings(kp, ki, kd);
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 12));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 16));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 20));
+		rate_y.setTunings(kp, ki, kd);
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 24));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 28));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 32));
+		rate_z.setTunings(kp, ki, kd);
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 36));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 40));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 44));
+		angle_x.setTunings(kp, ki, kd);
+
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 48));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 52));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 56));
+		angle_y.setTunings(kp, ki, kd);
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 60));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 64));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
+		angle_z.setTunings(kp, ki, kd);
+	
+		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
+		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
+		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 80));
+		gforce.setTunings(kp, ki, kd);
+
+		t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
+		madgwick.setBeta(t);
+		
+		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
+		int16_t calibration[3];
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 88), 6);
+		mpu6050.setAccelCalib(calibration);
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 94), 6);
+		mpu6050.setGyroCalib(calibration);
+		sendStatus("Load EEPROM   ");
+	}
+	else {
+		sendStatus("Load Defaults ");
+	}
+}
+
+void Chiindii::saveConfig(){
+	cli();
+	wdt_disable();
+	
+	eeprom_update_float((float*) (EEPROM_OFFSET + 0), rate_x.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 4), rate_x.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 8), rate_x.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 12), rate_y.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 16), rate_y.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 20), rate_y.getKd());
+	
+	eeprom_update_float((float*) (EEPROM_OFFSET + 24), rate_z.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 28), rate_z.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 32), rate_z.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 36), angle_x.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 40), angle_x.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 44), angle_x.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 48), angle_y.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 52), angle_y.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 56), angle_y.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 60), angle_z.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 64), angle_z.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 68), angle_z.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 72), gforce.getKp());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 76), gforce.getKi());
+	eeprom_update_float((float*) (EEPROM_OFFSET + 80), gforce.getKd());
+
+	eeprom_update_float((float*) (EEPROM_OFFSET + 84), madgwick.getBeta());
+	
+	eeprom_update_block(mpu6050.getAccelCalib(), (void*) (EEPROM_OFFSET + 88), 6);
+	eeprom_update_block(mpu6050.getGyroCalib(), (void*) (EEPROM_OFFSET + 94), 6);
+	
+	//Write the magic value to say that we have written valid bytes
+	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
+	
+	wdt_enable(WDTO_120MS);
+	sei();
+	
+	sendStatus("Save EEPROM   ");
+}
 
 void Chiindii::sendDebug(const char* message){
 	sendDebug((char*) message);

@@ -163,35 +163,37 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 		}
 	}
 	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
-		//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
-		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && rawThrottle <= 1){
-			mode = MODE_FLIGHT;
-			chiindii->sendStatus("Armed (Angle) ");
-			chiindii->sendDebug("              ");
-			chiindii->setMode(MODE_ARMED_ANGLE);
-		}
-		//To arm in throttle mode, press the circle (right discrete) button while the throttle is all the way down.
-		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && rawThrottle <= 1){
-			mode = MODE_FLIGHT;
-			chiindii->sendStatus("Armed (Throt.)");
-			chiindii->sendDebug("              ");
-			chiindii->setMode(MODE_ARMED_THROTTLE);
-		}
 		//To disarm, press the cross (bottom discrete) button at any time
-		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CROSS){
+		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CROSS){
 			mode = MODE_FLIGHT;
 			chiindii->sendStatus("Disarmed      ");
 			chiindii->sendDebug("              ");
 			chiindii->setMode(MODE_UNARMED);
 			chiindii->setThrottle(0);
 		}
-		//Square (left discrete) button is PID tuning
-		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_SQUARE){
-			mode = MODE_TUNING;
-			chiindii->sendStatus("PID Tuning    ");
-			chiindii->setMode(MODE_UNARMED);
-			chiindii->setThrottle(0);
-			updatePidDisplay();
+		else if (mode == MODE_FLIGHT){
+			//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
+			if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && rawThrottle <= 1){
+				mode = MODE_FLIGHT;
+				chiindii->sendStatus("Armed (Angle) ");
+				chiindii->sendDebug("              ");
+				chiindii->setMode(MODE_ARMED_ANGLE);
+			}
+			//To arm in throttle mode, press the circle (right discrete) button while the throttle is all the way down.
+			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && rawThrottle <= 1){
+				mode = MODE_FLIGHT;
+				chiindii->sendStatus("Armed (Throt.)");
+				chiindii->sendDebug("              ");
+				chiindii->setMode(MODE_ARMED_THROTTLE);
+			}
+			//Square (left discrete) button is PID tuning
+			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_SQUARE && chiindii->getMode() == MODE_UNARMED){
+				mode = MODE_TUNING;
+				chiindii->sendStatus("PID Tuning    ");
+				chiindii->setMode(MODE_UNARMED);
+				chiindii->setThrottle(0);
+				updatePidDisplay();
+			}
 		}
 		else if (mode == MODE_TUNING){
 			//Up / down adjusts selected value
@@ -218,6 +220,14 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_PADLEFT){
 				axis++;
 				if (axis > AXIS_T) axis = AXIS_RX;
+			}
+			//Square (left discrete) saves to EEPROM
+			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_SQUARE){
+				chiindii->saveConfig();
+			}
+			//Circle (right discrete) loads from EEPROM / reverts changes
+			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE){
+				chiindii->loadConfig();
 			}
 			
 			updatePidDisplay();

@@ -30,8 +30,6 @@ namespace digitalcave {
 			Calibration(Chiindii *chiindii);
 
 			void dispatch(FramedSerialMessage* message);
-			void read();
-			void write();
 	};
 }
 #endif

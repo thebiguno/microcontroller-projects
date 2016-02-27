@@ -104,6 +104,8 @@ namespace digitalcave {
 			uint8_t getMode();
 			void setMode(uint8_t mode);
 			
+			void saveConfig();
+			void loadConfig();
 			uint8_t getDebug();
 			void setDebug(uint8_t debug);
 			void sendDebug(char* message);
