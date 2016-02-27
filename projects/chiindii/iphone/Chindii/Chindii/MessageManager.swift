@@ -103,6 +103,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)), // this is a g-force value
 			FramedSerialMessage(command: MESSAGE_BATTERY)
 		])
 	}
@@ -142,7 +143,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 	func tuning() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_RATE_PID_TUNING, data: pack(sharedModel.rateConfig)))
 		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE_PID_TUNING, data: pack(sharedModel.angleConfig)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE_PID_TUNING, data: pack(sharedModel.madgwickConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE_PID_TUNING, data: pack(sharedModel.gforceConfig)))
 		sendMessage(FramedSerialMessage(command: MESSAGE_MADGWICK_TUNING, data: pack(sharedModel.madgwickConfig)))
 	}
 	

@@ -55,10 +55,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100%" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oXR-Mz-Edh">
-                                <rect key="frame" x="506" y="149" width="42" height="21"/>
+                                <rect key="frame" x="499" y="125" width="49" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.0 g" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="egy-CQ-IRc">
+                                <rect key="frame" x="499" y="166" width="49" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -72,6 +79,7 @@
                         <outlet property="armedSwitch" destination="YDn-ZI-ygu" id="Sok-IB-GHh"/>
                         <outlet property="battery" destination="oXR-Mz-Edh" id="xTy-HY-prA"/>
                         <outlet property="debug" destination="Iji-Xd-yhi" id="CUO-Uu-uzj"/>
+                        <outlet property="gforce" destination="egy-CQ-IRc" id="Rlh-3a-qqi"/>
                         <outlet property="message" destination="Iji-Xd-yhi" id="hrg-gh-dhM"/>
                         <segue destination="LaH-ul-fNE" kind="modal" identifier="toMenu" id="q54-Lp-d0a"/>
                     </connections>

@@ -78,7 +78,7 @@ Chiindii::Chiindii() :
 	angle_z.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
-	gforce.setOutputLimits(0, 1);
+	gforce.setOutputLimits(0, 2);
 
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
 	rate_x.setOutputLimits(-4, 4);
@@ -169,7 +169,7 @@ void Chiindii::run() {
 		double throttle;
 		
 		//We only do angle PID in mode angle or throttle.
-		if (mode == MODE_ARMED_ANGLE) {
+		if (mode == MODE_ARMED_ANGLE) { // 0x01
 			double accel_mv = madgwick.getZAcceleration(accel);
 			
 			// angle pid
@@ -184,18 +184,19 @@ void Chiindii::run() {
 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
 			sendDebug(temp);
 		}
-		else if (mode == MODE_ARMED_THROTTLE) {
+		else if (mode == MODE_ARMED_THROTTLE) { // 0x02
 			// angle pid with direct throttle
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
 			//rate_sp.z = angle_z.compute(angle_sp.z, gyro.z, time);
+			angle_z.reset(time);
 			gforce.reset(time);
 			
 			throttle = throttle_sp;
 		}
-		else {
+		else { // 0x03
 			angle_x.reset(time);
 			angle_y.reset(time);
 			angle_z.reset(time);

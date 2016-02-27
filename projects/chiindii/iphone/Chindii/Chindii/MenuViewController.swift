@@ -19,7 +19,6 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 	@IBOutlet var d : UITextField!
 	@IBOutlet var beta : UITextField!
 	@IBOutlet var battery : UILabel!
-	@IBOutlet var debug : UILabel!
 	@IBOutlet var status : UILabel!
 	@IBOutlet var selectedPID : UILabel!
 	@IBOutlet var selectedPeripheral : UILabel!
@@ -202,7 +201,6 @@ class MenuViewController: UITableViewController, UITextFieldDelegate, ModelDeleg
 		battery.text = "\(sharedModel.battery)%"
 	}
 	func debugChanged() {
-		debug.text = sharedModel.debug
 	}
 	func statusChanged() {
 		status.text = sharedModel.status
