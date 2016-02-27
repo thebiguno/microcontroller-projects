@@ -75,7 +75,7 @@ Chiindii::Chiindii() :
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
 	angle_y.setOutputLimits(-10, 10);
-	angle_z.setOutputLimits(-1, 1);
+	angle_z.setOutputLimits(-10, 10);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 2);
@@ -83,7 +83,7 @@ Chiindii::Chiindii() :
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
 	rate_x.setOutputLimits(-4, 4);
 	rate_y.setOutputLimits(-4, 4);
-	rate_z.setOutputLimits(-1, 1);
+	rate_z.setOutputLimits(-4, 4);
 }
 
 void Chiindii::run() {
@@ -95,6 +95,7 @@ void Chiindii::run() {
 	vector_t accel = {0, 0, 0};
 	vector_t rate_pv = {0, 0, 0};
 	vector_t angle_mv = {0, 0, 0};
+	double gyro_z_average = 0;
 	uint32_t time = 0;
 	uint32_t last_message_time = 0;
 	
@@ -185,19 +186,21 @@ void Chiindii::run() {
 			sendDebug(temp);
 		}
 		else if (mode == MODE_ARMED_THROTTLE) { // 0x02
+			gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / 100);
+			
 			// angle pid with direct throttle
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			//rate_sp.z = angle_z.compute(angle_sp.z, gyro.z, time);
-			angle_z.reset(time);
+			rate_sp.z = angle_z.compute(angle_sp.z, gyro_z_average / 100, time);
+//			angle_z.reset(time);
 			gforce.reset(time);
 
 // 			char temp[14];
-// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.y * 100), (int16_t) (angle_mv.y * 100), (int16_t) (rate_sp.y * 100));
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.z * 100), (int16_t) gyro_z_average, (int16_t) (rate_sp.z * 100));
 // 			sendDebug(temp);
-// 			
+
 			throttle = throttle_sp;
 		}
 		else { // 0x03
@@ -224,7 +227,7 @@ void Chiindii::run() {
 			// will result in not enough attitude control.
 			//By making this dynamic, we allow for more throttle control at the bottom of the throttle
 			// range, and more manouverability at the middle / top.
-			double throttleWeight = fmax(-5.0 * throttle + 2, 1);
+			double throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
 			throttle = throttle * throttleWeight;
 			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration

@@ -105,7 +105,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			uint8_t ry = sticks[3];
 		
 			vector_t* angle_sp = chiindii->getAngleSp();
-			vector_t* rate_sp = chiindii->getRateSp();
+			//vector_t* rate_sp = chiindii->getRateSp();
 			//For the joysticks, we read 20 degrees from each side (with 0.2 degree resolution),
 			// and leave the remainder in the center unused to allow for slop in the center readings
 			if (rx < 100){
@@ -129,13 +129,13 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			}
 			
 			if (lx < 100){
-				rate_sp->z = degToRad((100 - lx) / 10);
+				angle_sp->z = -1 * degToRad((100.0 - lx) / 10 * 2);
 			}
-			else if (ry > 155){
-				angle_sp->z = degToRad((lx - 155) / 10);
+			else if (lx > 155){
+				angle_sp->z = degToRad((lx - 155.0) / 10 * 2);
 			}
 			else {
-				rate_sp->z = 0;
+				angle_sp->z = 0;
 			}
 		}
 	}
