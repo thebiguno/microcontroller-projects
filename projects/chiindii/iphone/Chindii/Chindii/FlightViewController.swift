@@ -19,25 +19,24 @@ class FlightViewController: UIViewController, ModelDelegate {
 	
 	@IBAction func armedPressed(sender : UISwitch) {
 		if (sender.on) {
-			sharedMessageManager.armFlight()
+			sharedMessageManager.armAngle()
 		} else {
+			sharedMessageManager.disarm()
+			sharedMessageManager.disarm()
 			sharedMessageManager.disarm()
 		}
 	}
 	
-	@IBAction func levelPressed(sender : AnyObject) {
-		sharedModel.throttleSp = 1.0
-		gforce.text = "\(String.localizedStringWithFormat("%.1f", sharedModel.throttleSp)) g"
-	}
-	
 	@IBAction func upPressed(sender : AnyObject) {
-		sharedModel.throttleSp += 0.1
-		gforce.text = "\(String.localizedStringWithFormat("%.1f", sharedModel.throttleSp)) g"
+		sharedModel.throttleSp += 5
+		if (sharedModel.throttleSp > 100) { sharedModel.throttleSp = 100 }
+		gforce.text = "\(sharedModel.throttleSp)%"
 	}
 	
 	@IBAction func downPressed(sender : AnyObject) {
-		sharedModel.throttleSp -= 0.1
-		gforce.text = "\(String.localizedStringWithFormat("%.1f", sharedModel.throttleSp)) g"
+		sharedModel.throttleSp -= 5
+		if (sharedModel.throttleSp < 0) { sharedModel.throttleSp = 0 }
+		gforce.text = "\(sharedModel.throttleSp)%"
 	}
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
@@ -58,7 +57,7 @@ class FlightViewController: UIViewController, ModelDelegate {
 	override func viewWillAppear(animated: Bool) {
 		sharedModel.delegate = self;
 		battery.text = "\(sharedModel.battery)%"
-		gforce.text = "\(String.localizedStringWithFormat("%.1f", sharedModel.throttleSp)) g"
+		gforce.text = "\(sharedModel.throttleSp)%"
 		debug.text = ""
 	}
 	
