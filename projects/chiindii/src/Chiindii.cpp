@@ -194,10 +194,10 @@ void Chiindii::run() {
 			angle_z.reset(time);
 			gforce.reset(time);
 
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.y * 100), (int16_t) (angle_mv.y * 100), (int16_t) (rate_sp.y * 100));
-			sendDebug(temp);
-			
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.y * 100), (int16_t) (angle_mv.y * 100), (int16_t) (rate_sp.y * 100));
+// 			sendDebug(temp);
+// 			
 			throttle = throttle_sp;
 		}
 		else { // 0x03
