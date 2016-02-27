@@ -179,6 +179,7 @@ void Chiindii::run() {
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
 			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
 			throttle = gforce.compute(throttle_sp, accel_mv, time);
+			//TODO Remove this debugging once we figure out why PID is not adjusting throttle properly...
 			char temp[14];
 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
 			sendDebug(temp);
@@ -189,7 +190,7 @@ void Chiindii::run() {
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
+			//rate_sp.z = angle_z.compute(angle_sp.z, gyro.z, time);
 			gforce.reset(time);
 			
 			throttle = throttle_sp;
@@ -205,7 +206,7 @@ void Chiindii::run() {
 		
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
-		if (mode && throttle > 0.001){
+		if (mode){
 			// rate pid
 			// computes the desired change rate
 			// see doc/control_system.txt
@@ -216,7 +217,7 @@ void Chiindii::run() {
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
 			// will result in not enough attitude control.
-			const double THROTTLE_WEIGHT = 5;
+			const double THROTTLE_WEIGHT = 10;
 			throttle = throttle * THROTTLE_WEIGHT;
 			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
@@ -241,7 +242,7 @@ void Chiindii::run() {
 			m4 = m4 * 511 / THROTTLE_WEIGHT;
 
 			motor_set(m1, m2, m3, m4);
-
+			
 			status.armed();
 		}
 		else {

@@ -28,6 +28,7 @@ namespace digitalcave {
 			uint8_t mode;
 			uint8_t axis;	//RX,RY,RZ,AX,AY,AZ,T (throttle)
 			uint8_t pid;	//P,I,D for each axis
+			uint8_t rawThrottle;	//Raw throttle position (1 byte)
 			
 			Chiindii *chiindii;
 			

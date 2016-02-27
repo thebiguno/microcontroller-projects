@@ -8,6 +8,7 @@ UniversalController::UniversalController(Chiindii *chiindii) :
 	mode(MODE_FLIGHT),
 	axis(AXIS_RX),
 	pid(PID_P),
+	rawThrottle(0),
 	chiindii(chiindii)
 {
 	;
@@ -82,11 +83,15 @@ void UniversalController::updatePidDisplay(){
 			break;
 		default:
 			pidLabel = "D";
-			value = selectedPid->getKd() * 1000;
+			value = selectedPid->getKd() * 100;
 			break;
 	}
 	
-	snprintf(temp, sizeof(temp), "%s %s: %4d", axisLabel, pidLabel, value);
+	snprintf(temp, sizeof(temp), "%s %s: %03d", axisLabel, pidLabel, value);
+	for(uint8_t i = 14; i >= 7; i--){
+		temp[i] = temp[i-1];
+	}
+	temp[7] = '.';
 	chiindii->sendDebug(temp);
 }
 
@@ -135,6 +140,8 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 		}
 	}
 	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
+		rawThrottle = message->getData()[0];
+		
 		//chiindii->setThrottle(message->getData()[0] / 255.0 * 0.7);		//Max throttle stick returns a 70% throttle rate, to allow for overhead maneuvering thrust
 // 		if (message->getData()[0] < 5) chiindii->setThrottle(0);
 // 		else chiindii->setThrottle(message->getData()[0] / 255.0 * 0.5 + 0.1);	//Non-zero throttle linear in between 10% and 60%
@@ -151,19 +158,20 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			}
 		}
 		else {
-			chiindii->setThrottle(((double) (message->getData()[0]) * message->getData()[0]) / 80000);	//Exponential throttle
+			//chiindii->setThrottle(((double) (message->getData()[0]) * message->getData()[0]) / 80000);	//Exponential throttle
+			chiindii->setThrottle(message->getData()[0] / 255.0 * 0.80);	//Non-zero throttle linear in between 0% and 80%
 		}
 	}
 	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
 		//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
-		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && chiindii->getThrottle() < 0.01){
+		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && rawThrottle <= 1){
 			mode = MODE_FLIGHT;
 			chiindii->sendStatus("Armed (Angle) ");
 			chiindii->sendDebug("              ");
 			chiindii->setMode(MODE_ARMED_ANGLE);
 		}
 		//To arm in throttle mode, press the circle (right discrete) button while the throttle is all the way down.
-		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && chiindii->getThrottle() < 0.01){
+		else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && rawThrottle <= 1){
 			mode = MODE_FLIGHT;
 			chiindii->sendStatus("Armed (Throt.)");
 			chiindii->sendDebug("              ");
@@ -191,10 +199,10 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 				int8_t direction = (message->getData()[0] == CONTROLLER_BUTTON_VALUE_PADUP ? 1 : -1);
 				switch(pid){
 					case PID_P:
-						getPid()->setKp(getPid()->getKp() + direction * 0.1);
+						getPid()->setKp(getPid()->getKp() + direction * 0.01);
 						break;
 					case PID_I:
-						getPid()->setKi(getPid()->getKi() + direction * 0.1);
+						getPid()->setKi(getPid()->getKi() + direction * 0.01);
 						break;
 					case PID_D:
 						getPid()->setKd(getPid()->getKd() + direction * 0.01);
