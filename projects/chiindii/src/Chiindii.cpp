@@ -98,6 +98,7 @@ void Chiindii::run() {
 	double gyro_z_average = 0;
 	uint32_t time = 0;
 	uint32_t last_message_time = 0;
+	double lowBatteryThrottle = 0;
 	
 	motor_start();
 	
@@ -154,8 +155,11 @@ void Chiindii::run() {
 		}
 		else {
 			if (mode) sendStatus("Low Battery  ");
-			mode = MODE_UNARMED;
+			lowBatteryThrottle += 0.0001;
 			status.batteryLow();
+			if (lowBatteryThrottle > 0.75){
+				mode = MODE_UNARMED;
+			}
 		}
 
 		//Update IMU calculations.
@@ -211,6 +215,9 @@ void Chiindii::run() {
 			
 			throttle = throttle_sp;
 		}
+		
+		throttle -= lowBatteryThrottle;
+		if (throttle < 0) throttle = 0;
 		
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
