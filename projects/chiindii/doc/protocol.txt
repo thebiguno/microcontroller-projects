@@ -1,10 +1,9 @@
 Hex		Command						Direction				Payload															
 ----------------------------------------------------------------------------------------------------------------------------
 -- General commands
-03		RequestDebug				Control -> Device		1 byte; 0 = debug off, non-zero = debug on						
-05		Debug						Device -> Control		Variable depending on message, max 254 bytes					
-06		RequestBattery				Control -> Device		Null
-07		Battery						Device -> Control		1 byte; 0 - 100 as a percentage									
+0x01	MESSAGE_BATTERY				Bidirectional			Null: controller request battery from device; 1 byte: device reply
+0x02	MESSAGE_STATUS				Device -> Control		Variable depending on message, max 254 bytes					
+0x03	MESSAGE_DEBUG				Device -> Control		Variable depending on message, max 254 bytes					
 
 -- Direct Controller commands
 20		Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
@@ -13,17 +12,13 @@ Hex		Command						Direction				Payload
 23		Angle						Control -> Device		3 doubles (x, y, z) (in rad; z is in g)					
 
 -- Calibration Controller commands
-30		SaveCalibration				Control -> Device		Null															
-31		LoadCalibration				Control -> Device		Null															
-33		RequestRatePID				Control -> Device		Null															
-34		SendRatePID					Bidirectional			9 double tuning params (xp, xi, xd, yp, yi, yd, zp, zi, zd)		
-35		RequestAnglePID				Control -> Device		Null															
-36		SendAnglePID				Bidirectional			6 double tuning params (xp, xi, xd, yp, yi, yd)					
-37		RequestComplementary		Control -> Device		Null															
-38		SendComplementary			Bidirectional			2 double tuning params (xt, yt)									
-39		StartComplementaryTuning	Control -> Device		1 byte (0 = tune x, 1 = tune y)									
-3A		SendTuningData				Device -> Control		3 double; gyro, accel, complimentary angle (for selected axis)
-3B		StartMpuCalibration			Control -> Device		Null
+0x30	MESSAGE_SAVE_CALIBRATION	Control -> Device		Null														
+0x31	MESSAGE_LOAD_CALIBRATION	Control -> Device		Null															
+0x32	MESSAGE_CALIBRATE_IMU		Control -> Device		Null
+0x33	MESSAGE_MADGWICK_TUNING		Bidirectional			Null: Controller request current tuning; 1 float: send tuning data
+0x34	MESSAGE_RATE_PID_TUNING		Bidirectional			Null: Controller request current tuning; 9 float: send tuning data
+0x35	MESSAGE_ANGLE_PID_TUNING	Bidirectional			Null: Controller request current tuning; 9 float: send tuning data
+0x36	MESSAGE_THROTTLE_PID_TUNING	Bidirectional			Null: Controller request current tuning; 3 float: send tuning data
 
 -- Universal Controller commands
 		UCButtonPush				Control -> Device		Index of button which was just pressed (1 byte)					

@@ -13,27 +13,30 @@ class FlightViewController: UIViewController, ModelDelegate {
 	@IBOutlet var message : UILabel!
 	@IBOutlet var armedSwitch : UISwitch!
 	@IBOutlet var battery : UILabel!
+	@IBOutlet var status : UILabel!
 	@IBOutlet var debug : UILabel!
+	@IBOutlet var gforce : UILabel!
 	
 	@IBAction func armedPressed(sender : UISwitch) {
-		sharedModel.armed = sender.on
 		if (sender.on) {
-			sharedMessageManager.armFlight()
+			sharedMessageManager.armAngle()
 		} else {
+			sharedMessageManager.disarm()
+			sharedMessageManager.disarm()
 			sharedMessageManager.disarm()
 		}
 	}
 	
-	@IBAction func levelPressed(sender : AnyObject) {
-		sharedModel.angleSp.z = 0
-	}
-	
 	@IBAction func upPressed(sender : AnyObject) {
-		sharedModel.angleSp.z += 0.01
+		sharedModel.throttleSp += 5
+		if (sharedModel.throttleSp > 100) { sharedModel.throttleSp = 100 }
+		gforce.text = "\(sharedModel.throttleSp)%"
 	}
 	
 	@IBAction func downPressed(sender : AnyObject) {
-		sharedModel.angleSp.z -= 0.01
+		sharedModel.throttleSp -= 5
+		if (sharedModel.throttleSp < 0) { sharedModel.throttleSp = 0 }
+		gforce.text = "\(sharedModel.throttleSp)%"
 	}
 	
 	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
@@ -53,8 +56,8 @@ class FlightViewController: UIViewController, ModelDelegate {
 	
 	override func viewWillAppear(animated: Bool) {
 		sharedModel.delegate = self;
-		armedSwitch.setOn(sharedModel.armed, animated: true)
 		battery.text = "\(sharedModel.battery)%"
+		gforce.text = "\(sharedModel.throttleSp)%"
 		debug.text = ""
 	}
 	
@@ -66,6 +69,10 @@ class FlightViewController: UIViewController, ModelDelegate {
 		debug.text = sharedModel.debug
 	}
 	
+	func statusChanged() {
+		debug.text = sharedModel.status
+	}
+
 	func configChanged() {}
 	func peripheralsChanged() {}
 

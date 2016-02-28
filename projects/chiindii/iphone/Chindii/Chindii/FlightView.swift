@@ -78,20 +78,21 @@ class FlightView: UIView {
 	}
 	
 	func pitchRollTouch(touch: UITouch) {
+		let limit = 0.35 as Float; // 20 degrees
 		let point = touch.locationInView(self)
 		
-		var roll = ((point.x - center.x) / radius) * 0.10;
-		var pitch = ((point.y - center.y) / radius) * 0.10;
+		var roll = Float((point.x - center.x) / radius) * limit;
+		var pitch = Float((point.y - center.y) / radius) * limit;
 		
 		// limit to .1 radian (~ 5 degrees)
-		if (roll > 0.1) { roll = 0.1 }
-		if (pitch > 0.1) { pitch = 0.1 }
-		if (roll < -0.1) { roll = -0.1 }
-		if (pitch < -0.1) { pitch = -0.1 }
+		if (roll > limit) { roll = limit }
+		if (pitch > limit) { pitch = limit }
+		if (roll < -limit) { roll = -limit }
+		if (pitch < -limit) { pitch = -limit }
 		
 		// TODO verify x and y
-		sharedModel.angleSp.x = Float(pitch)
-		sharedModel.angleSp.y = Float(roll)
+		sharedModel.angleSp.x = pitch
+		sharedModel.angleSp.y = roll
 		
 //		print(sharedModel.angleSp.x)
 //		print(sharedModel.angleSp.y)

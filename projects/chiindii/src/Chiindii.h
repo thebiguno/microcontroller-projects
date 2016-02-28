@@ -1,28 +1,27 @@
 #ifndef CHIINDII_H
 #define CHIINDII_H
 
-//Comment this out to remove debugging output on USB serial
-#define DEBUG
-
 #include <util/delay.h>
 #include <avr/io.h>
 
-#include <FramedSerialProtocol.h>
+#define DEBUG
+
+#include <dcmath.h>
 #include <dctypes.h>
+#include <FramedSerialProtocol.h>
+#include <Mpu6050.h>
 #include <SerialAVR.h>
 #include <PID.h>
 
-#include "lib/Mpu6050/Mpu6050.h"
-
-#include "Complementary.h"
 #include "Status.h"
 #include "controllers/General.h"
 #include "controllers/UniversalController.h"
 #include "controllers/Calibration.h"
 #include "controllers/Direct.h"
 
+#include "imu/Madgwick.h"
+
 #ifdef DEBUG
-#include <SerialUSB.h>
 #include <stdio.h>
 #endif
 
@@ -45,8 +44,6 @@
 #define CONTROLLER_DIRECT		0x02
 #define CONTROLLER_CALIBRATION	0x03
 
-#define DEGREES_TO_RADIANS(degrees) ((degrees) / 180.0 * M_PI)
-#define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 
 namespace digitalcave {
 	class Chiindii {
@@ -67,9 +64,10 @@ namespace digitalcave {
 			PID rate_z;
 			PID angle_x;
 			PID angle_y;
+			PID angle_z;
 			PID gforce;
-			Complementary c_x;
-			Complementary c_y;
+
+			Madgwick madgwick;
 		
 			General general;
 			Calibration calibration;
@@ -77,9 +75,6 @@ namespace digitalcave {
 			UniversalController uc;
 			
 			Status status;
-			
-			void driveMotors(double throttle, vector_t* rate_pv);
-			void dispatch(FramedSerialMessage *message);
 			
 		public:
 			Chiindii();
@@ -96,9 +91,10 @@ namespace digitalcave {
 			PID* getRateZ();
 			PID* getAngleX();
 			PID* getAngleY();
+			PID* getAngleZ();
 			PID* getGforce();
-			Complementary* getCompX();
-			Complementary* getCompY();
+
+			Madgwick* getMadgwick();
 			Mpu6050* getMpu6050();
 			Status* getStatus();
 
@@ -108,13 +104,14 @@ namespace digitalcave {
 			uint8_t getMode();
 			void setMode(uint8_t mode);
 			
+			void saveConfig();
+			void loadConfig();
 			uint8_t getDebug();
 			void setDebug(uint8_t debug);
 			void sendDebug(char* message);
 			void sendDebug(const char* message);
-			void sendUsb(char* message);
-			void sendUsb(const char* message);
-
+			void sendStatus(char* message);
+			void sendStatus(const char* message);
 
 			void sendMessage(FramedSerialMessage* message);
 	};

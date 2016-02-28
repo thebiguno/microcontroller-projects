@@ -52,7 +52,7 @@ Mpu6050::Mpu6050(){
 }
 
 void Mpu6050::calibrate(){
-	uint32_t totals[6] = {0, 0, 0, 0, 0, 0};
+	int32_t totals[6] = {0, 0, 0, 0, 0, 0};
 	const uint16_t count = 1000;
 	for (uint16_t i = 0; i < count; i++){
 		uint8_t data[14];
@@ -73,7 +73,7 @@ void Mpu6050::calibrate(){
 	//We want Accel Z (index 2) to be 1g, and all else to be 0.
 	accelCalib[0] = 0 - totals[0] / count;
 	accelCalib[1] = 0 - totals[1] / count;
-	accelCalib[2] = 2048 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g)
+	accelCalib[2] = 4096 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g)
 	gyroCalib[0] = 0 - totals[3] / count;
 	gyroCalib[1] = 0 - totals[4] / count;
 	gyroCalib[2] = 0 - totals[5] / count;
@@ -86,9 +86,9 @@ vector_t Mpu6050::getAccel(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Accel X/Y/Z, 16 bits signed each)
 
  	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.00048828125;		// 16g / 32768
-	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.00048828125;
-	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.00048828125;
+	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.000244140625;		// 8g / 32768
+	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.000244140625;
+	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.000244140625;
  	return result;
 }
 

@@ -39,11 +39,9 @@ extension Array {
 }
 
 class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerDelegate, CBPeripheralDelegate {
-	let MESSAGE_REQUEST_ENABLE_DEBUG : UInt8 = 0x03
-	let MESSAGE_REQUEST_DISABLE_DEBUG : UInt8 = 0x04
-	let MESSAGE_SEND_DEBUG : UInt8 = 0x05
-	let MESSAGE_REQUEST_BATTERY : UInt8 = 0x06
-	let MESSAGE_SEND_BATTERY : UInt8 = 0x07
+	let MESSAGE_BATTERY : UInt8 = 0x01
+	let MESSAGE_STATUS : UInt8 = 0x02
+	let MESSAGE_DEBUG : UInt8 = 0x03
 
 	let MESSAGE_ARMED : UInt8 = 0x20
 	let MESSAGE_THROTTLE : UInt8 = 0x21
@@ -52,15 +50,11 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 
 	let MESSAGE_SAVE_CALIBRATION : UInt8 = 0x30
 	let MESSAGE_LOAD_CALIBRATION : UInt8 =  0x31
-	let MESSAGE_REQUEST_CALIBRATION_RATE_PID : UInt8 =  0x33
-	let MESSAGE_SEND_CALIBRATION_RATE_PID : UInt8 =  0x34
-	let MESSAGE_REQUEST_CALIBRATION_ANGLE_PID : UInt8 =  0x35
-	let MESSAGE_SEND_CALIBRATION_ANGLE_PID : UInt8 =  0x36
-	let MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY : UInt8 =  0x37
-	let MESSAGE_SEND_CALIBRATION_COMPLEMENTARY : UInt8 =  0x38
-	let MESSAGE_START_CALIBRATION_COMPLEMENTARY : UInt8 =  0x39
-	let MESSAGE_SEND_TUNING_DATA : UInt8 =  0x3A
-	let MESSAGE_LEVEL : UInt8 =  0x3B
+	let MESSAGE_CALIBRATE_IMU : UInt8 = 0x32
+	let MESSAGE_MADGWICK_TUNING : UInt8 = 0x33
+	let MESSAGE_RATE_PID_TUNING : UInt8 =  0x34
+	let MESSAGE_ANGLE_PID_TUNING : UInt8 =  0x35
+	let MESSAGE_THROTTLE_PID_TUNING : UInt8 =  0x36
 
 	var serialProtocol = FramedSerialProtocol()
 
@@ -109,12 +103,13 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(sharedModel.angleSp)),
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
+			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp)), // this is a g-force value
+			FramedSerialMessage(command: MESSAGE_BATTERY)
 		])
 	}
 	
-	func level() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_LEVEL))
+	func calibrate() {
+		sendMessage(FramedSerialMessage(command: MESSAGE_CALIBRATE_IMU))
 	}
 	
 	func rate() {
@@ -127,7 +122,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_RATE, data: pack(rate)),
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY),
+			FramedSerialMessage(command: MESSAGE_BATTERY),
 		])
 	}
 
@@ -141,14 +136,15 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		sendMessages([
 			FramedSerialMessage(command: MESSAGE_ANGLE, data: pack(angle)),
 			FramedSerialMessage(command: MESSAGE_THROTTLE, data: pack(sharedModel.throttleSp / 100.0)),
-			FramedSerialMessage(command: MESSAGE_REQUEST_BATTERY)
+			FramedSerialMessage(command: MESSAGE_BATTERY)
 		])
 	}
 	
 	func tuning() {
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_RATE_PID, data: pack(sharedModel.rateConfig)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_ANGLE_PID, data: pack(sharedModel.angleConfig)))
-		sendMessage(FramedSerialMessage(command: MESSAGE_SEND_CALIBRATION_COMPLEMENTARY, data: pack(sharedModel.compConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_RATE_PID_TUNING, data: pack(sharedModel.rateConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE_PID_TUNING, data: pack(sharedModel.angleConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE_PID_TUNING, data: pack(sharedModel.gforceConfig)))
+		sendMessage(FramedSerialMessage(command: MESSAGE_MADGWICK_TUNING, data: pack(sharedModel.madgwickConfig)))
 	}
 	
 	func saveTuning() {
@@ -156,9 +152,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 	}
 	func revertTuning() {
 		sendMessage(FramedSerialMessage(command: MESSAGE_LOAD_CALIBRATION))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_RATE_PID))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_ANGLE_PID))
-		sendMessage(FramedSerialMessage(command: MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY))
+		sendMessage(FramedSerialMessage(command: MESSAGE_MADGWICK_TUNING))
+		sendMessage(FramedSerialMessage(command: MESSAGE_RATE_PID_TUNING))
+		sendMessage(FramedSerialMessage(command: MESSAGE_ANGLE_PID_TUNING))
+		sendMessage(FramedSerialMessage(command: MESSAGE_THROTTLE_PID_TUNING))
 	}
 	
 	func onMessage(message: FramedSerialMessage) {
@@ -166,10 +163,10 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		print(message.data)
 	
 		switch(message.command) {
-		case MESSAGE_SEND_BATTERY:
+		case MESSAGE_BATTERY:
 			sharedModel.battery = message.data[0]
 			break;
-		case MESSAGE_REQUEST_CALIBRATION_RATE_PID:
+		case MESSAGE_RATE_PID_TUNING:
 			sharedModel.rateConfig.x.p = unpack(message.data.slice(0,3))
 			sharedModel.rateConfig.x.i = unpack(message.data.slice(4,7))
 			sharedModel.rateConfig.x.d = unpack(message.data.slice(8,11))
@@ -187,8 +184,7 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 			print(sharedModel.rateConfig.y)
 			print(sharedModel.rateConfig.z)
 			break
-		case MESSAGE_REQUEST_CALIBRATION_ANGLE_PID:
-			sharedModel.angleConfig = unpack(message.data)
+		case MESSAGE_ANGLE_PID_TUNING:
 			sharedModel.angleConfig.x.p = unpack(message.data.slice(0,3))
 			sharedModel.angleConfig.x.i = unpack(message.data.slice(4,7))
 			sharedModel.angleConfig.x.d = unpack(message.data.slice(8,11))
@@ -206,15 +202,26 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 			print(sharedModel.angleConfig.y)
 			print(sharedModel.angleConfig.z)
 			break
-		case MESSAGE_REQUEST_CALIBRATION_COMPLEMENTARY:
-			sharedModel.compConfig = unpack(message.data)
-			sharedModel.compConfig.x = unpack(message.data.slice(0,3))
-			sharedModel.compConfig.y = unpack(message.data.slice(4,7))
-
-			print("comp")
-			print(sharedModel.compConfig)
+		case MESSAGE_THROTTLE_PID_TUNING:
+			sharedModel.gforceConfig.p = unpack(message.data.slice(0,3))
+			sharedModel.gforceConfig.i = unpack(message.data.slice(4,7))
+			sharedModel.gforceConfig.d = unpack(message.data.slice(8,11))
+			
+			print("gforce pid")
+			print(sharedModel.gforceConfig)
 			break
-		case MESSAGE_SEND_DEBUG:
+		case MESSAGE_MADGWICK_TUNING:
+			sharedModel.madgwickConfig = unpack(message.data)
+
+			print("madgwick")
+			print(sharedModel.madgwickConfig)
+			break
+		case MESSAGE_STATUS:
+			print("status")
+			let status = NSString(bytes: message.data, length: message.data.count, encoding: NSASCIIStringEncoding)
+			print(status)
+			sharedModel.status = status as! String
+		case MESSAGE_DEBUG:
 			print("debug")
 			let debug = NSString(bytes: message.data, length: message.data.count, encoding: NSASCIIStringEncoding)
 			print(debug)
@@ -337,13 +344,6 @@ class MessageManager : NSObject, FramedSerialProtocolDelegate, CBCentralManagerD
 		result.appendContentsOf(pack(config.x));
 		result.appendContentsOf(pack(config.y));
 		result.appendContentsOf(pack(config.z));
-		return result;
-	}
-
-	func pack(config : CompConfig) -> [UInt8] {
-		var result = [UInt8]()
-		result.appendContentsOf(pack(config.x));
-		result.appendContentsOf(pack(config.y));
 		return result;
 	}
 

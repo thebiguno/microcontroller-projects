@@ -10,8 +10,6 @@
  * can ensure that the receiving client does not miss an event.  The idle
  * polling does not re-send analog data.
  *
- * We announce the controller id ('U', for Universal Controller) every once in a while.
- * 
  * The display reserves the two most right characters on both rows for status.
  * The farthest right char on the top row is the remote device's battery; the bottom row
  * is the Universal Controller's battery.  The second farthest right char on the top row
@@ -47,14 +45,9 @@
 #include "timer.h"
 
 //Generic messages are in 0x0X space...
-#define MESSAGE_ANNOUNCE_CONTROL_ID				0x00
-#define MESSAGE_SEND_ACKNOWLEDGE				0x01
-#define MESSAGE_SEND_COMPLETE					0x02
-#define MESSAGE_REQUEST_ENABLE_DEBUG			0x03
-#define MESSAGE_REQUEST_DISABLE_DEBUG			0x04
-#define MESSAGE_SEND_DEBUG						0x05
-#define MESSAGE_REQUEST_BATTERY					0x06
-#define MESSAGE_SEND_BATTERY					0x07
+#define MESSAGE_BATTERY							0x01
+#define MESSAGE_STATUS							0x02
+#define MESSAGE_DEBUG							0x03
 
 //Universal Controller messages are in 0x1X space...
 
@@ -75,21 +68,20 @@
 //Times (in milliseconds) before various events happen
 #define THROTTLE_TIME							1000
 #define COMMUNICATION_TIME						100
-#define ANNOUNCE_TIME							2000
 #define DIGITAL_POLL_TIME						1000
 #define CONTRAST_TIME							500
 #define ANALOG_POLL_TIME						1000
 #define BATTERY_TIME							2000
 #define REMOTE_BATTERY_TIMEOUT					5000
 #define BOOTLOADER_TIME							1000
-#define DISABLE_TIME						1000
+#define DISABLE_TIME							1000
 
 #define COMM_NONE								0x00
 #define COMM_RX									0x01
 #define COMM_TX									0x02
 #define COMM_RX_TX								0x03
 
-#define AVERAGE_DIVISOR_EXPONENT				3
+#define AVERAGE_DIVISOR_EXPONENT				2
 
 
 using namespace digitalcave;
@@ -125,7 +117,6 @@ NullSerial nullSerial;
 Analog analog;
 
 uint32_t contrast_timer = 0;
-uint32_t announce_timer = 0;
 uint32_t throttle_timer = 0;
 uint32_t battery_timer = 0;
 uint32_t remote_battery_timeout_timer = 0;
@@ -140,8 +131,6 @@ uint8_t battery_level = 0;
 uint8_t disable_controls = 0;
 
 char buf[15];	//String buffer, used for display formatting
-
-char text_line[14] = {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '};	
 
 Serial* serial;		//Pointer to which serial port (tx) we are currently using
 
@@ -200,7 +189,7 @@ int main (void){
 			battery_timer = time;
 			
 			//Request battery from remote device
-			FramedSerialMessage m(MESSAGE_REQUEST_BATTERY, 0x00, 0);
+			FramedSerialMessage m(MESSAGE_BATTERY, 0x00, 0);
 			sendMessage(&m);
 		}
 		if ((time - communication_timer) > COMMUNICATION_TIME){
@@ -224,15 +213,6 @@ int main (void){
 		}
 
 		psx.poll();
-
-		if ((time - announce_timer) > ANNOUNCE_TIME){
-			//Send device ID
-			uint8_t id = 'U';
-			FramedSerialMessage m(MESSAGE_ANNOUNCE_CONTROL_ID, &id, 1);
-			sendMessage(&m);
-
-			announce_timer = time;
-		}
 
 		uint16_t buttons = psx.buttons();
 		uint16_t changed = psx.changed();
@@ -339,28 +319,46 @@ int main (void){
 			//TODO
 			
 			switch(incoming.getCommand()){
-				case MESSAGE_SEND_BATTERY:
-					if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
-					else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
-					else display.write_text(0, 15, BATTERY_EMPTY_ICON);
+				case MESSAGE_BATTERY:
+					if (incoming.getLength() == 1){
+						if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
+						else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
+						else display.write_text(0, 15, BATTERY_EMPTY_ICON);
 					
-					remote_battery_timeout_timer = time;
-					break;
-				case MESSAGE_SEND_DEBUG:
-					//Copy the last received line to the display's second line
-					display.write_text(1, 0, text_line, 14);
-					//Copy the newly received message into the text buffer
-					for (uint8_t i = 0; i < incoming.getLength() && i < 14; i++){
-						text_line[i] = incoming.getData()[i];
+						remote_battery_timeout_timer = time;
 					}
-					//Show the newly received line on the display's first line
-					display.write_text(0, 0, text_line, 14);
+					break;
+				case MESSAGE_STATUS:
+					//Copy the newly received message into the text buffer
+					for (uint8_t i = 0; i < 14; i++){
+						if (i < incoming.getLength()){
+							buf[i] = incoming.getData()[i];
+						}
+						else {
+							buf[i] = ' ';
+						}
+					}
+					//Show the newly received line on the display's top line
+					display.write_text(0, 0, buf, 14);
+					break;
+				case MESSAGE_DEBUG:
+					//Copy the newly received message into the text buffer
+					for (uint8_t i = 0; i < 14; i++){
+						if (i < incoming.getLength()){
+							buf[i] = incoming.getData()[i];
+						}
+						else {
+							buf[i] = ' ';
+						}
+					}
+					//Show the newly received line on the display's bottom line
+					display.write_text(1, 0, buf, 14);
 					break;
 			}
 			
 			//Pass messages from radio to USB
 			if (serialUSB.isConnected()){
-				if (incoming.getCommand() != MESSAGE_SEND_BATTERY){
+				if (incoming.getCommand() != MESSAGE_BATTERY){
 					fspUsb.write(&serialUSB, &incoming);
 				}
 			}

@@ -50,6 +50,9 @@ namespace digitalcave {
 			double getKp();
 			double getKi();
 			double getKd();
+			void setKp(double Kp);
+			void setKi(double Ki);
+			void setKd(double Kd);
 	};
 }
 #endif
