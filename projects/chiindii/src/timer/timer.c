@@ -7,8 +7,10 @@
  */
 #include "timer.h"
 
-static volatile uint32_t _timer_millis;
-
+//By using two counters (8 and 16 bit) we get: a) fast incrementing in ISR b) effective 24 bit resolution.  We don't 
+// need more time than that (24bit ms == 16000 seconds == 279 minutes).  No single-battery flight time will be that long!
+static volatile uint8_t _timer_millis;		//Resets every 256ms (overflow)
+static volatile uint16_t _timer_millis_counter;		//Increments every 256ms
 /*
  * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
  * linked with timer0.
@@ -36,7 +38,7 @@ void timer_init(){
  * last time timer_init() was called.  Overflows after about 49 days.
  */
 uint32_t timer_millis(){
-	return _timer_millis;
+	return (_timer_millis_counter << 8) + _timer_millis;
 }
 
 /* 
@@ -47,4 +49,7 @@ EMPTY_INTERRUPT(TIMER0_COMPB_vect)
 EMPTY_INTERRUPT(TIMER0_OVF_vect)
 ISR(TIMER0_COMPA_vect){
 	_timer_millis++;
+	if (_timer_millis == 0){
+		_timer_millis_counter++;
+	}
 }
