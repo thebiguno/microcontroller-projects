@@ -108,10 +108,10 @@ namespace digitalcave {
 			void loadConfig();
 			uint8_t getDebug();
 			void setDebug(uint8_t debug);
-			void sendDebug(char* message);
-			void sendDebug(const char* message);
-			void sendStatus(char* message);
-			void sendStatus(const char* message);
+			void sendDebug(char* message, uint8_t length);
+			void sendDebug(const char* message, uint8_t length);
+			void sendStatus(char* message, uint8_t length);
+			void sendStatus(const char* message, uint8_t length);
 
 			void sendMessage(FramedSerialMessage* message);
 	};

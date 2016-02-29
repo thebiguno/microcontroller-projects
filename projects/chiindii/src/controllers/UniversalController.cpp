@@ -92,7 +92,7 @@ void UniversalController::updatePidDisplay(){
 		temp[i] = temp[i-1];
 	}
 	temp[7] = '.';
-	chiindii->sendDebug(temp);
+	chiindii->sendDebug(temp, 14);
 }
 
 void UniversalController::dispatch(FramedSerialMessage* message) {
@@ -166,8 +166,8 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 		//To disarm, press the cross (bottom discrete) button at any time
 		if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CROSS){
 			mode = MODE_FLIGHT;
-			chiindii->sendStatus("Disarmed      ");
-			chiindii->sendDebug("              ");
+			chiindii->sendStatus("Disarmed      ", 14);
+			chiindii->sendDebug("              ", 14);
 			chiindii->setMode(MODE_UNARMED);
 			chiindii->setThrottle(0);
 		}
@@ -175,21 +175,21 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
 			if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_TRIANGLE && rawThrottle <= 1){
 				mode = MODE_FLIGHT;
-				chiindii->sendStatus("Armed (Angle) ");
-				chiindii->sendDebug("              ");
+				chiindii->sendStatus("Armed (Angle) ", 14);
+				chiindii->sendDebug("              ", 14);
 				chiindii->setMode(MODE_ARMED_ANGLE);
 			}
 			//To arm in throttle mode, press the circle (right discrete) button while the throttle is all the way down.
 			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_CIRCLE && rawThrottle <= 1){
 				mode = MODE_FLIGHT;
-				chiindii->sendStatus("Armed (Throt.)");
-				chiindii->sendDebug("              ");
+				chiindii->sendStatus("Armed (Throt.)", 14);
+				chiindii->sendDebug("              ", 14);
 				chiindii->setMode(MODE_ARMED_THROTTLE);
 			}
 			//Square (left discrete) button is PID tuning
 			else if (message->getData()[0] == CONTROLLER_BUTTON_VALUE_SQUARE && chiindii->getMode() == MODE_UNARMED){
 				mode = MODE_TUNING;
-				chiindii->sendStatus("PID Tuning    ");
+				chiindii->sendStatus("PID Tuning    ", 14);
 				chiindii->setMode(MODE_UNARMED);
 				chiindii->setThrottle(0);
 				updatePidDisplay();

@@ -13,10 +13,10 @@ void General::dispatch(FramedSerialMessage* request) {
 	if (cmd == MESSAGE_DEBUG) {
 		chiindii->setDebug(request->getData()[0]);
 		if (request->getData()[0]){
-			chiindii->sendDebug("Debug Enabled");
+			chiindii->sendDebug("Debug Enabled ", 14);
 		}
 		else {
-			chiindii->sendDebug("Debug Disabled");
+			chiindii->sendDebug("Debug Disabled", 14);
 		}
 	}
 	else if (cmd == MESSAGE_BATTERY){

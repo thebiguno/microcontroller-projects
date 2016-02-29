@@ -53,7 +53,7 @@ endif
 CDEFS+=-DF_CPU=$(F_CPU)
 
 #C and C++ flags
-CPPFLAGS += -mmcu=$(MMCU) -pedantic -g -Os -Wall
+CPPFLAGS += -mmcu=$(MMCU) -pedantic -g -Os -Wall -ffunction-sections -ffreestanding
 
 #C flags only
 CFLAGS += -std=gnu99
@@ -62,7 +62,7 @@ CFLAGS += -std=gnu99
 CXXFLAGS += -std=gnu++11
 
 # linker options
-LDFLAGS += -mmcu=$(MMCU) -Os -Wl,--gc-sections
+LDFLAGS += -mmcu=$(MMCU) -Os -Wl,--gc-sections -Wl,--relax
 
 AS = avr-as
 CC = avr-gcc

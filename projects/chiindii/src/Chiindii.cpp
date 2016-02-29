@@ -4,7 +4,6 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
-#include <string.h>
 
 #include <PID.h>
 #include <SerialAVR.h>
@@ -25,12 +24,13 @@ using namespace digitalcave;
 SerialAVR serial(38400, 8, 0, 1, 1, 128);
 
 //Reset WDT after system reset
-void get_mcusr(void) __attribute__((naked))  __attribute__((section(".init3")));
+void get_mcusr(void) __attribute__((naked))  __attribute__((used))  __attribute__((section(".init3")));
 void get_mcusr(void) {
 	MCUSR = 0;
 	wdt_disable();
 }
 
+int main() __attribute__ ((noreturn));
 int main(){
 	wdt_disable();
 	
@@ -47,6 +47,7 @@ int main(){
 
 	Chiindii chiindii;
 	chiindii.run();
+	while(1);
 }
 
 Chiindii::Chiindii() : 
@@ -138,7 +139,7 @@ void Chiindii::run() {
 			status.commOK();
 		}
 		else if ((time - lastReceiveMessageTime) > COMM_TIMEOUT_PERIOD) {
-			if (mode) sendStatus("Comm Timeout  ");
+			if (mode) sendStatus("Comm Timeout  ", 14);
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -158,7 +159,7 @@ void Chiindii::run() {
 		}
 		else {
 			if ((time - lastLowBatteryTime) > LAST_LOW_BATTERY_TIME){
-				sendStatus("Low Battery  ");
+				sendStatus("Low Battery  ", 14);
 			}
 			lowBatteryThrottle += 0.0001;
 			status.batteryLow();
@@ -190,9 +191,9 @@ void Chiindii::run() {
 			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
 			throttle = gforce.compute(throttle_sp, accel_mv, time);
 			//TODO Remove this debugging once we figure out why PID is not adjusting throttle properly...
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
-			sendDebug(temp);
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
+// 			sendDebug(temp);
 		}
 		else if (mode == MODE_ARMED_THROTTLE) { // 0x02
 			// angle pid with direct throttle
@@ -382,10 +383,10 @@ void Chiindii::loadConfig(){
 		mpu6050.setAccelCalib(calibration);
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 94), 6);
 		mpu6050.setGyroCalib(calibration);
-		sendStatus("Load EEPROM   ");
+		sendStatus("Load EEPROM   ", 14);
 	}
 	else {
-		sendStatus("Load Defaults ");
+		sendStatus("Load Defaults ", 14);
 	}
 }
 
@@ -432,23 +433,23 @@ void Chiindii::saveConfig(){
 	wdt_enable(WDTO_120MS);
 	sei();
 	
-	sendStatus("Save EEPROM   ");
+	sendStatus("Save EEPROM   ", 14);
 }
 
-void Chiindii::sendDebug(const char* message){
-	sendDebug((char*) message);
+void Chiindii::sendDebug(const char* message, uint8_t length){
+	sendDebug((char*) message, length);
 }
-void Chiindii::sendDebug(char* message){
+void Chiindii::sendDebug(char* message, uint8_t length){
 	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
+		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, length);
 		sendMessage(&response);
 	}
 }
-void Chiindii::sendStatus(const char* message){
-	sendStatus((char*) message);
+void Chiindii::sendStatus(const char* message, uint8_t length){
+	sendStatus((char*) message, length);
 }
-void Chiindii::sendStatus(char* message){
-	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, strnlen(message, 14));
+void Chiindii::sendStatus(char* message, uint8_t length){
+	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length);
 	sendMessage(&response);
 }
 
