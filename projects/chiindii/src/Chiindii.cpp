@@ -16,6 +16,8 @@
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
 #define COMM_TIMEOUT_PERIOD		1000
+//The time since the last "low battery" warning was sent, as needed
+#define LAST_LOW_BATTERY_TIME	1000
 
 using namespace digitalcave;
 
@@ -97,7 +99,8 @@ void Chiindii::run() {
 	vector_t angle_mv = {0, 0, 0};
 	double gyro_z_average = 0;
 	uint32_t time = 0;
-	uint32_t last_message_time = 0;
+	uint32_t lastReceiveMessageTime = 0;
+	uint32_t lastLowBatteryTime = 0;
 	double lowBatteryThrottle = 0;
 	
 	motor_start();
@@ -131,10 +134,10 @@ void Chiindii::run() {
 			else {
 				//TODO Send debug message 'unknown command' or similar
 			}
-			last_message_time = time;
+			lastReceiveMessageTime = time;
 			status.commOK();
 		}
-		else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
+		else if ((time - lastReceiveMessageTime) > COMM_TIMEOUT_PERIOD) {
 			if (mode) sendStatus("Comm Timeout  ");
 			mode = MODE_UNARMED;
 			status.commInterrupt();
@@ -154,7 +157,9 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 		else {
-			if (mode) sendStatus("Low Battery  ");
+			if ((time - lastLowBatteryTime) > LAST_LOW_BATTERY_TIME){
+				sendStatus("Low Battery  ");
+			}
 			lowBatteryThrottle += 0.0001;
 			status.batteryLow();
 			if (lowBatteryThrottle > 0.75){
@@ -190,15 +195,13 @@ void Chiindii::run() {
 			sendDebug(temp);
 		}
 		else if (mode == MODE_ARMED_THROTTLE) { // 0x02
-			gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / 100);
-			
 			// angle pid with direct throttle
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			rate_sp.z = angle_z.compute(angle_sp.z, gyro_z_average / 100, time);
-//			angle_z.reset(time);
+			//rate_sp.z = angle_z.compute(angle_sp.z, gyro_z_average / 100, time);
+			angle_z.reset(time);
 			gforce.reset(time);
 
 // 			char temp[14];
@@ -222,13 +225,19 @@ void Chiindii::run() {
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
 		if (mode){
+			gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / 100);
+			
 			// rate pid
 			// computes the desired change rate
 			// see doc/control_system.txt
 			rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
 			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
-			rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
-			
+			rate_pv.z = rate_z.compute(angle_sp.z, gyro_z_average / 100, time);
+
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.z * 100), (int16_t) gyro_z_average, (int16_t) (rate_pv.z * 100));
+// 			sendDebug(temp);
+
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
 			// will result in not enough attitude control.
