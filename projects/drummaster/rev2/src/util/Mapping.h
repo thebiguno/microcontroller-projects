@@ -21,7 +21,7 @@
 #define KITNAME_STRING_SIZE				20
 
 //Maximum number of kits.  Allocates enough memory to load all these kits, so keep the number low
-#define KIT_COUNT						12
+#define KIT_COUNT						20
 
 namespace digitalcave {
 
