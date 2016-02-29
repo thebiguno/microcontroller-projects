@@ -66,11 +66,11 @@
 #define CDC_GET_LINE_CODING		0x21
 #define CDC_SET_CONTROL_LINE_STATE	0x22
 
-#include <Serial.h>
+#include <Stream.h>
 
 namespace digitalcave {
 
-	class SerialUSB : public Serial {
+	class SerialUSB : public Stream {
 		private:
 			
 		public:

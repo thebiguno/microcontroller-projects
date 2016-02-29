@@ -17,12 +17,12 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-#include <Serial.h>
+#include <Stream.h>
 #include <ArrayStream.h>
 
 namespace digitalcave {
 
-	class SerialAVR : public Serial {
+	class SerialAVR : public Stream {
 		private:
 			ArrayStream rxBuffer;
 			

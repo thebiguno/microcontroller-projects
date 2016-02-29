@@ -17,11 +17,11 @@
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
-#include <Serial.h>
+#include <Stream.h>
 
 namespace digitalcave {
 
-	class SoftwareSerialAVR : public Serial {
+	class SoftwareSerialAVR : public Stream {
 		private:
 			uint32_t baud;
 			volatile uint8_t* port;
