@@ -10,7 +10,6 @@
 
 #include "timer/timer.h"
 
-#include "battery/battery.h"
 #include "motor/motor.h"
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
@@ -52,7 +51,6 @@ int main(){
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
-	debug(1),			//TODO We currently start in debug mode
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
@@ -316,24 +314,6 @@ void Chiindii::run() {
 	}
 }
 
-vector_t* Chiindii::getAngleSp() { return &angle_sp; }
-vector_t* Chiindii::getRateSp() { return &rate_sp; }
-PID* Chiindii::getRateX() { return &rate_x; }
-PID* Chiindii::getRateY() { return &rate_y; }
-PID* Chiindii::getRateZ() { return &rate_z; }
-PID* Chiindii::getAngleX() { return &angle_x; }
-PID* Chiindii::getAngleY() { return &angle_y; }
-PID* Chiindii::getAngleZ() { return &angle_z; }
-PID* Chiindii::getGforce() { return &gforce; }
-Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
-uint8_t Chiindii::getBatteryLevel() { return battery_level; }
-uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
-uint8_t Chiindii::getMode() { return mode; }
-void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
-uint8_t Chiindii::getDebug() { return debug; }
-void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
-Madgwick* Chiindii::getMadgwick() { return &madgwick; }
-
 void Chiindii::loadConfig(){
 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
 		double kp, ki, kd;
@@ -434,30 +414,6 @@ void Chiindii::saveConfig(){
 	sei();
 	
 	sendStatus("Save EEPROM   ", 14);
-}
-
-void Chiindii::sendDebug(const char* message, uint8_t length){
-	sendDebug((char*) message, length);
-}
-void Chiindii::sendDebug(char* message, uint8_t length){
-	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, length);
-		sendMessage(&response);
-	}
-}
-void Chiindii::sendStatus(const char* message, uint8_t length){
-	sendStatus((char*) message, length);
-}
-void Chiindii::sendStatus(char* message, uint8_t length){
-	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length);
-	sendMessage(&response);
-}
-
-double Chiindii::getThrottle() { return this->throttle_sp; }
-void Chiindii::setThrottle(double throttle) { 
-	if (throttle < 0) throttle_sp = 0; 
-	else if (throttle > 1) throttle_sp = 1; 
-	this->throttle_sp = throttle; 
 }
 
 void Chiindii::sendMessage(FramedSerialMessage* message) {
