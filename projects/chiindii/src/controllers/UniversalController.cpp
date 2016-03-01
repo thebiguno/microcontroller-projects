@@ -87,7 +87,7 @@ void UniversalController::updatePidDisplay(){
 			break;
 	}
 	
-	snprintf(temp, sizeof(temp), "%s %s: %03d", axisLabel, pidLabel, value);
+	snprintf(temp, sizeof(temp), "%s %s: %03d      ", axisLabel, pidLabel, value);
 	for(uint8_t i = 14; i >= 7; i--){
 		temp[i] = temp[i-1];
 	}
@@ -129,10 +129,10 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			}
 			
 			if (lx < 100){
-				angle_sp->z = -1 * degToRad((100.0 - lx) / 10 * 2);
+				angle_sp->z = degToRad((100.0 - lx) / 10 * 2);
 			}
 			else if (lx > 155){
-				angle_sp->z = degToRad((lx - 155.0) / 10 * 2);
+				angle_sp->z = -1 * degToRad((lx - 155.0) / 10 * 2);
 			}
 			else {
 				angle_sp->z = 0;

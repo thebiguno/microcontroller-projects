@@ -16,6 +16,8 @@
 #define COMM_TIMEOUT_PERIOD		1000
 //The time since the last "low battery" warning was sent, as needed
 #define LAST_LOW_BATTERY_TIME	1000
+//The number of Z-gyro samples to average
+#define GYRO_AVERAGE_COUNT 25
 
 using namespace digitalcave;
 
@@ -157,7 +159,7 @@ void Chiindii::run() {
 		}
 		else {
 			if ((time - lastLowBatteryTime) > LAST_LOW_BATTERY_TIME){
-				sendStatus("Low Battery  ", 14);
+				sendStatus("Low Battery   ", 14);
 			}
 			lowBatteryThrottle += 0.0001;
 			status.batteryLow();
@@ -169,6 +171,7 @@ void Chiindii::run() {
 		//Update IMU calculations.
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
+		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		madgwick.compute(accel, gyro, mode, time);
 		
@@ -204,8 +207,8 @@ void Chiindii::run() {
 			gforce.reset(time);
 
 // 			char temp[14];
-// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.z * 100), (int16_t) gyro_z_average, (int16_t) (rate_sp.z * 100));
-// 			sendDebug(temp);
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (int16_t) (angle_sp.z * 100), (int16_t) (gyro_z_average / GYRO_AVERAGE_COUNT) * 100, (int16_t) (rate_sp.z * 100));
+// 			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
 		}
@@ -224,18 +227,16 @@ void Chiindii::run() {
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
 		if (mode){
-			gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / 100);
-			
 			// rate pid
 			// computes the desired change rate
 			// see doc/control_system.txt
 			rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
 			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
-			rate_pv.z = rate_z.compute(angle_sp.z, gyro_z_average / 100, time);
+			rate_pv.z = rate_z.compute(angle_sp.z, gyro_z_average / GYRO_AVERAGE_COUNT, time);
 
-// 			char temp[14];
-// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.z * 100), (int16_t) gyro_z_average, (int16_t) (rate_pv.z * 100));
-// 			sendDebug(temp);
+			char temp[14];
+			snprintf(temp, sizeof(temp), "%3d %3d %3d     ", (int16_t) (angle_sp.z * 100), (int16_t) ((gyro_z_average / GYRO_AVERAGE_COUNT) * 100), (int16_t) (rate_pv.z * 100));
+			sendDebug(temp, 14);
 
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
