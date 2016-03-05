@@ -3,8 +3,6 @@
  * (Latch, bit banging, etc) to provide the full driver.
  */
 
-#include <avr/io.h>
-#include <util/delay.h>
 #include "Hd44780.h"
 
 using namespace digitalcave;
@@ -21,7 +19,7 @@ void Hd44780::init_display(uint8_t function) {
 
 void Hd44780::clear() {
 	this->write_command(0x01);
-	_delay_ms(0x04);
+//	_delay_ms(0x04);
 }
 
 void Hd44780::home() {

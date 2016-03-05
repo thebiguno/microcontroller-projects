@@ -91,7 +91,9 @@ void Draw::text(int16_t x, int16_t y, const char* text, uint8_t orientation) {
 }
 void Draw::character(int16_t x, int16_t y, char c, uint8_t orientation) {
 	//Find the entry in the code page
-	uint8_t glyph_index = pgm_read_byte_near(font_codepage + (uint8_t) c);
+//	uint8_t glyph_index = pgm_read_byte_near(font_codepage + (uint8_t) c);
+	//TODO
+	uint8_t glyph_index = 0xFF;
 
 	if (glyph_index != 0xFF) {
 		bitmap(x, y, font_width, font_height, orientation, font + (glyph_index * font_glyph_byte_ct));

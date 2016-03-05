@@ -6,9 +6,6 @@
 #ifndef NULL_STREAM_H
 #define NULL_STREAM_H
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
 #include <Stream.h>
 
 namespace digitalcave {
