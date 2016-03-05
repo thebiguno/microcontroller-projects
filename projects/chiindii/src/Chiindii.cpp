@@ -194,9 +194,9 @@ void Chiindii::run() {
 			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
 			gforce.reset(time);
 
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z), (int16_t) (rate_sp.z * 100));
-			sendDebug(temp, 14);
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z), (int16_t) (rate_sp.z * 100));
+// 			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
 		}
