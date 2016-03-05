@@ -100,7 +100,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 	if (cmd == MESSAGE_UC_JOYSTICK_MOVE) {
 		if (chiindii->getMode()){
 			uint8_t* sticks = message->getData();
-			uint8_t lx = sticks[0];
+			//uint8_t lx = sticks[0];
 			uint8_t rx = sticks[2];
 			uint8_t ry = sticks[3];
 		
@@ -199,10 +199,10 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			else if (button == CONTROLLER_BUTTON_VALUE_LEFT2 || button == CONTROLLER_BUTTON_VALUE_RIGHT2){
 				vector_t* angle_sp = chiindii->getAngleSp();
 				if (button == CONTROLLER_BUTTON_VALUE_LEFT2){
-					angle_sp->z += degToRad(10);
+					angle_sp->z += degToRad(25);
 				}
 				else if (button == CONTROLLER_BUTTON_VALUE_RIGHT2){
-					angle_sp->z -= degToRad(10);
+					angle_sp->z -= degToRad(25);
 				}
 				
 				if (angle_sp->z < -M_PI) angle_sp->z += M_PI * 2;
