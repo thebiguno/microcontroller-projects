@@ -78,7 +78,7 @@ Chiindii::Chiindii() :
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
 	angle_y.setOutputLimits(-10, 10);
-	angle_z.setOutputLimits(-10, 10);
+	angle_z.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 2);
@@ -86,7 +86,7 @@ Chiindii::Chiindii() :
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
 	rate_x.setOutputLimits(-4, 4);
 	rate_y.setOutputLimits(-4, 4);
-	rate_z.setOutputLimits(-4, 4);
+	rate_z.setOutputLimits(-1, 1);
 }
 
 void Chiindii::run() {
@@ -182,15 +182,15 @@ void Chiindii::run() {
 		
 		//We only do angle PID in mode angle or throttle.
 		if (mode == MODE_ARMED_ANGLE) { // 0x01
-			double accel_mv = madgwick.getZAcceleration(accel);
+// 			double accel_mv = madgwick.getZAcceleration(accel);
 			
 			// angle pid
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
-			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
-			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
-			throttle = gforce.compute(throttle_sp, accel_mv, time);
+// 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
+// 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
+// 			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
+// 			throttle = gforce.compute(throttle_sp, accel_mv, time);
 			//TODO Remove this debugging once we figure out why PID is not adjusting throttle properly...
 // 			char temp[14];
 // 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
@@ -202,23 +202,28 @@ void Chiindii::run() {
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			//rate_sp.z = angle_z.compute(angle_sp.z, gyro_z_average / 100, time);
-			angle_z.reset(time);
+			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
+//			angle_z.reset(time);
 			gforce.reset(time);
 
-// 			char temp[14];
-// 			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (int16_t) (angle_sp.z * 100), (int16_t) (gyro_z_average / GYRO_AVERAGE_COUNT) * 100, (int16_t) (rate_sp.z * 100));
-// 			sendDebug(temp, 14);
+			char temp[14];
+			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z), (int16_t) (rate_sp.z * 100));
+			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
 		}
-		else { // 0x03
+		else { // unarmed
 			angle_x.reset(time);
 			angle_y.reset(time);
 			angle_z.reset(time);
 			gforce.reset(time);
 			
+			angle_sp.z = angle_mv.z;	//Reset heading to measured value
 			throttle = throttle_sp;
+			
+			char temp[14];
+			snprintf(temp, sizeof(temp), "%3d %3d N/A        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z));
+			sendDebug(temp, 14);
 		}
 		
 		throttle -= lowBatteryThrottle;
@@ -232,11 +237,11 @@ void Chiindii::run() {
 			// see doc/control_system.txt
 			rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
 			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
-			rate_pv.z = rate_z.compute(angle_sp.z, gyro_z_average / GYRO_AVERAGE_COUNT, time);
+			rate_pv.z = rate_z.compute(rate_sp.z, gyro_z_average / GYRO_AVERAGE_COUNT, time);
 
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d %3d     ", (int16_t) (angle_sp.z * 100), (int16_t) ((gyro_z_average / GYRO_AVERAGE_COUNT) * 100), (int16_t) (rate_pv.z * 100));
-			sendDebug(temp, 14);
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d     ", (int16_t) (angle_sp.z * 100), (int16_t) ((gyro_z_average / GYRO_AVERAGE_COUNT) * 100), (int16_t) (rate_pv.z * 100));
+// 			sendDebug(temp, 14);
 
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
