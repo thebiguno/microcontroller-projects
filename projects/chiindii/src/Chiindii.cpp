@@ -209,9 +209,9 @@ void Chiindii::run() {
 			angle_sp.z = angle_mv.z;	//Reset heading to measured value
 			throttle = throttle_sp;
 			
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d N/A        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z));
-			sendDebug(temp, 14);
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d N/A        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z));
+// 			sendDebug(temp, 14);
 		}
 		
 		throttle -= lowBatteryThrottle;
