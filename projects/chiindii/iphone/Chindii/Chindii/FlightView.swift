@@ -16,11 +16,13 @@ class FlightView: UIView {
 	// red:   0.9, 0.4, 0.3
 	// blue:  0.5, 0.7, 0.8
 
-	var radius = CGFloat(0.0);
+	var height = CGFloat(0.0)
+	var radius = CGFloat(0.0)
 	var pitch = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	var roll = 0	// a value between -6 and +6 representing radians between -pi/6 and +pi/6 (5 degree steps)
 	
 	override func drawRect(rect: CGRect) {
+		height = rect.height
 		let context = UIGraphicsGetCurrentContext()
 		CGContextSetRGBStrokeColor(context, 0.5, 0.7, 0.8, 1.0)
 		CGContextSetRGBFillColor(context, 0.0, 0.0, 0.0, 1.0)
@@ -67,6 +69,7 @@ class FlightView: UIView {
 	override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
 		for touch in touches {
 			pitchRollTouch(touch)
+			throttleTouch(touch)
 		}
 		
 		setNeedsDisplay()
@@ -77,9 +80,28 @@ class FlightView: UIView {
 		sharedModel.angleSp.y = 0;
 	}
 	
-	func pitchRollTouch(touch: UITouch) {
-		let limit = 0.35 as Float; // 20 degrees
+	func throttleTouch(touch: UITouch) {
 		let point = touch.locationInView(self)
+
+		// bounds checking
+		if (point.x - center.x > -radius) { return }
+		
+		let throttle = Float((height - point.y) / height);
+		sharedModel.throttleSp = throttle;
+		
+		print("throttle \(sharedModel.throttleSp)");
+	}
+	
+	func pitchRollTouch(touch: UITouch) {
+		let point = touch.locationInView(self)
+		
+		// bounds checking
+		if (point.x - center.x > radius) { return }
+		else if (point.x - center.x < -radius) {return }
+		else if (point.y - center.y > radius) { return }
+		else if (point.y - center.y < -radius) { return }
+		
+		let limit = 0.35 as Float; // 20 degrees
 		
 		var roll = Float((point.x - center.x) / radius) * limit;
 		var pitch = Float((point.y - center.y) / radius) * limit;
@@ -94,7 +116,6 @@ class FlightView: UIView {
 		sharedModel.angleSp.x = pitch
 		sharedModel.angleSp.y = roll
 		
-//		print(sharedModel.angleSp.x)
-//		print(sharedModel.angleSp.y)
+		print("x \(sharedModel.angleSp.x) y \(sharedModel.angleSp.y)");
 	}
 }
