@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name DigitalCave)(type KiCad)(uri ${KIPRJMOD}/../../../lib/kicad/modules/DigitalCave.pretty)(options "")(descr ""))
+  (lib (name chiindii)(type KiCad)(uri "$(KIPRJMOD)/chiindii.pretty")(options "")(descr ""))
+)
