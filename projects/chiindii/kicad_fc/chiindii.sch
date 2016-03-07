@@ -29,7 +29,6 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-LIBS:chiindii-cache
 EELAYER 25 0
 EELAYER END
 $Descr USLegal 14000 8500
@@ -2317,11 +2316,11 @@ Wire Wire Line
 Text Label 12000 4300 0    60   ~ 0
 MOTOR2
 Text Label 12000 4400 0    60   ~ 0
-MOTOR8
+MOTOR7
 Text Label 12000 2800 0    60   ~ 0
 MOTOR3
 Text Label 12000 3600 0    60   ~ 0
-MOTOR7
+MOTOR8
 $Comp
 L GND #PWR059
 U 1 1 56DCE0BB
@@ -2523,4 +2522,15 @@ Wire Wire Line
 Connection ~ 1300 1600
 Text Notes 2600 2350 0    60   ~ 0
 TODO: Add 5v Boost or verify 8MHz operation
+$Comp
+L STM32F411 U?
+U 1 1 56DE3A93
+P 15350 4100
+F 0 "U?" H 15350 4050 60  0000 C CNN
+F 1 "STM32F411" H 15350 4150 60  0000 C CNN
+F 2 "" H 15350 4100 60  0000 C CNN
+F 3 "" H 15350 4100 60  0000 C CNN
+	1    15350 4100
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
