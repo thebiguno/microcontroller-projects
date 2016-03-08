@@ -35,19 +35,19 @@ ifndef OBJDUMP
 endif
 
 
-CDEFS+=-DF_CPU=$(F_CPU)
+CDEFS+=
 
 #C and C++ flags
-CPPFLAGS += -c -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -Os -DSTM32F411xE -DARM_MATH_CM4 -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding 
+CXXFLAGS += -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -Os -DSTM32F411xE -DARM_MATH_CM4 -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding 
 
 #C flags only
 CFLAGS += -std=gnu99
 
 #C++ flags only
-CXXFLAGS += -std=gnu++11 -fno-rtti
+CPPFLAGS += -std=gnu++11 -fno-rtti
 
 # linker options
-LDFLAGS +=  -mcpu=cortex-m4 -Os -mlittle-endian -mthumb -DSTM32F411xE -TTrueSTUDIO/$(PROJECT)/STM32F411RE_FLASH.ld -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs -Wl,--start-group -lgcc -lc -Wl,--end-group
+LDFLAGS += -mcpu=cortex-m4 -Os -mlittle-endian -mthumb -DSTM32F411xE -Tlinker/STM32F411RE_FLASH.ld -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs -Wl,--start-group -lgcc -lc -Wl,--end-group
 
 AS = arm-none-eabi-as
 CC = arm-none-eabi-gcc
@@ -57,63 +57,18 @@ OBJDUMP = arm-none-eabi-objdump
 SIZE = arm-none-eabi-size
 
 
-ifeq 'stk500v1' '$(PROGRAMMER)'
-	ifeq 'Linux' '$(OS)'
-		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
-	endif
-	ifndef AVRDUDE_PORT
-		ifeq 'Linux' '$(OS)'
-			AVRDUDE_PORT=/dev/ttyUSB0
-		else
-			AVRDUDE_PORT=/dev/tty.usbserial*
-		endif
-	endif
-	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 19200
-endif
-#We use the arduino programmer to mean 'Arduino Uno with Optiboot'; this is stk500v1 compatible at 115200 baud.
-ifeq 'arduino' '$(PROGRAMMER)'
-	ifndef AVRDUDE_PORT
-		ifeq 'Linux' '$(OS)'
-			AVRDUDE_PORT=/dev/ttyUSB0
-		else
-			AVRDUDE_PORT=/dev/tty.usbserial*
-		endif
-	endif
-
-	ifeq 'Linux' '$(OS)'
-		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
-	endif
-	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
-endif
-
-ifeq 'usbtiny' '$(PROGRAMMER)'
-	ifndef AVRDUDE_SPEED
-		AVRDUDE_SPEED = -B 1
-	endif
-endif
-
-ifeq 'avrispmkII' '$(PROGRAMMER)'
-	AVRDUDE_ARGS += -P usb
-endif
-
-#If an EFUSE variable has been set, we program the extended fuses too
-ifeq '' '$(EFUSE)'
-	EXTENDED_FUSE_WRITE=
-else
-	EXTENDED_FUSE_WRITE=-U efuse:w:$(EFUSE):m
-endif
-
 # automatically create lists of the sources and objects
-LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/arm" -name '*.c') $(shell find -L "./Drivers/STM32F4xx_HAL_Driver/Src/" -name '*.c')
-LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/arm" -name '*.cpp') $(shell find -L "./Drivers/STM32F4xx_HAL_Driver/Src/" -name '*.cpp')
-S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./Drivers/*" ! -path "./build/*")
-C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./Drivers/*" ! -path "./build/*")
-CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./Drivers/*" ! -path "./build/*")
+LS_FILES := $(shell find -L "./inc/common" -iname '*.s') $(shell find -L "./inc/arm" -iname '*.s') $(shell find -L "./inc/stm32f4" -iname '*.s')
+LC_FILES := $(shell find -L "./inc/common" -iname '*.c') $(shell find -L "./inc/arm" -iname '*.c') $(shell find -L "./inc/stm32f4" -iname '*.c')
+LCPP_FILES := $(shell find -L "./inc/common" -iname '*.cpp') $(shell find -L "./inc/arm" -iname '*.cpp') $(shell find -L "./inc/stm32f4" -iname '*.cpp')
+S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./build/*") $(shell find -L . -name '*.s' ! -path "./inc/*" ! -path "./build/*")
+C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
+CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
 
 # include paths for libraries
-L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/arm" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./Inc" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./Drivers" -type d), -I$(lib))
+L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/arm" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/stm32f4" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./config" -type d), -I$(lib))
 
-SOURCES := $(S_FILES:.S=.o) $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
+SOURCES := $(S_FILES:.S=.o) $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LS_FILES:.s=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
 #$(info $(SOURCES))
 
@@ -124,34 +79,26 @@ build: $(PROJECT).elf
 bin: $(PROJECT).bin
 
 flash: all
-ifeq 'dfu' '$(PROGRAMMER)'
-	$(DFU) $(MMCU) erase
-	$(DFU) $(MMCU) flash $(PROJECT).bin
-else
-	$(AVRDUDE_PREP_COMMANDS)
-	$(AVRDUDE) -F -p $(MMCU) -c $(PROGRAMMER) \
-		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
-		-U flash:w:$(PROJECT).bin 
-endif
+	st-flash --reset write $(PROJECT).bin 0x8000000 
 
-$(BUILDDIR)/%.o: %.S
+$(BUILDDIR)/%.o: %.s
 	@echo "[AS]\t$<"
 	@mkdir -p "$(dir $@)"
-	@$(CC) $(CDEFS) $(CPPFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
+	@$(CC) $(CDEFS) $(CXXFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(BUILDDIR)/%.o: %.c
 	@echo "[CC]\t$<"
 	@mkdir -p "$(dir $@)"
-	$(CC) $(CDEFS) $(CPPFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
+	@$(CC) $(CDEFS) $(CXXFLAGS) $(CFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(BUILDDIR)/%.o: %.cpp
 	@echo "[CXX]\t$<"
 	@mkdir -p "$(dir $@)"
-	$(CXX) $(CDEFS) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -c "$<"
+	@$(CXX) $(CDEFS) $(CXXFLAGS) $(CPPFLAGS) $(L_INC) -o "$@" -c "$<"
 
 $(PROJECT).elf: $(OBJS)
 	@echo "[LD]\t$@"
-	$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS)
+	@$(CC) $(LDFLAGS) -o "$@" $(OBJS)
 
 $(PROJECT).asm: $(PROJECT).elf
 	@$(OBJDUMP) -C -d $(PROJECT).elf
