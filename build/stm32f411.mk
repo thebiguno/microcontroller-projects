@@ -61,9 +61,9 @@ SIZE = arm-none-eabi-size
 LS_FILES := $(shell find -L "./inc/common" -iname '*.s') $(shell find -L "./inc/arm" -iname '*.s') $(shell find -L "./inc/stm32f4" -iname '*.s')
 LC_FILES := $(shell find -L "./inc/common" -iname '*.c') $(shell find -L "./inc/arm" -iname '*.c') $(shell find -L "./inc/stm32f4" -iname '*.c')
 LCPP_FILES := $(shell find -L "./inc/common" -iname '*.cpp') $(shell find -L "./inc/arm" -iname '*.cpp') $(shell find -L "./inc/stm32f4" -iname '*.cpp')
-S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./build/*") $(shell find -L . -name '*.s' ! -path "./inc/*" ! -path "./build/*")
-C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./build/*")
-CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./build/*")
+S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./build/*") $(shell find -L . -name '*.s' ! -path "./inc/*" ! -path "./cubemx/*" ! -path "./build/*")
+C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./cubemx/*" ! -path "./build/*")
+CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./cubemx/*" ! -path "./build/*")
 
 # include paths for libraries
 L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/arm" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/stm32f4" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./config" -type d), -I$(lib))
