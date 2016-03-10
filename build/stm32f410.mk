@@ -9,11 +9,11 @@
 # PROGRAMMER (st-flash, nucleo, etc)
 #######################################################
 
-CXXFLAGS +=  -DSTM32F411xE
+CXXFLAGS +=  -DSTM32F410Rx
 
-LDFLAGS += -DSTM32F411xE -Tcubemx/TrueSTUDIO/cubemx/STM32F411RE_FLASH.ld 
+LDFLAGS += -DSTM32F410Rx -Tcubemx/TrueSTUDIO/cubemx/STM32F410RB_FLASH.ld
 
-STARTUP_FILES := $(shell find -L "./inc/stm32f4/drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc" -name 'startup_stm32f411xe.s')
+STARTUP_FILES := $(shell find -L "./inc/stm32f4/drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc" -name 'startup_stm32f410rx.s')
 
 SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(SELF_DIR)stm32f4xx.mk
