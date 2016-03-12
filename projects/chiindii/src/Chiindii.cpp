@@ -150,6 +150,10 @@ void Chiindii::run() {
 		battery_level = battery_read();
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
+			lowBatteryThrottle -= 0.0001;
+			if (lowBatteryThrottle < 0){
+				lowBatteryThrottle = 0;
+			}
 		}
 		else if (battery_level > BATTERY_DAMAGE_LEVEL) {
 			status.batteryLow();
