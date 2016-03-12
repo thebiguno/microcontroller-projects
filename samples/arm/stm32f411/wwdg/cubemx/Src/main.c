@@ -38,27 +38,28 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart2;
+
 WWDG_HandleTypeDef hwwdg;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-static uint32_t millis;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_WWDG_Init(void);
+static void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+void wwdg_main();
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-void HAL_SYSTICK_Callback(void){
-	millis++;
-}
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -79,30 +80,16 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_WWDG_Init();
+  MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-	//We flash the light briefly, then go into the infinite loop.  The WDT should kick in at some point...
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-	
-	//The WWDG runs on PCLK1 with a hardcoded prescaler of 4096.  The user prescaler is applied after, for a total 
-	// frequency of FREQ = (PCLK1 / 4096) / prescaler.  You need to ensure that the refresh is called between 
-	// min time (mS) = 1000 * (Window_Value) / FREQ and max time (mS) = (1000 * (Down_Counter) / FREQ) + min_time.
-	// Assuming a 50MHz PCLK1 and a div1 prescaler, a window of 64, and a downcounter of 64, this means that you 
-	// need to refresh between 5ms and 10ms 
-	// to keep things going.
-	HAL_WWDG_Start(&hwwdg);
-
+  wwdg_main();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//A real program would call this regularly more frequently than the calculated period above.  For this sample, we want to
-	// just force a reset to demonstrate how WDT works.
-	//HAL_WWDG_Refresh(&hwwdg);		
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -151,14 +138,30 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
+/* USART2 init function */
+void MX_USART2_UART_Init(void)
+{
+
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_UART_Init(&huart2);
+
+}
+
 /* WWDG init function */
 void MX_WWDG_Init(void)
 {
 
   hwwdg.Instance = WWDG;
-  hwwdg.Init.Prescaler = WWDG_PRESCALER_1;
-  hwwdg.Init.Window = 64;
-  hwwdg.Init.Counter = 64;
+  hwwdg.Init.Prescaler = WWDG_PRESCALER_8;
+  hwwdg.Init.Window = 126;
+  hwwdg.Init.Counter = 127;
   HAL_WWDG_Init(&hwwdg);
 
 }
