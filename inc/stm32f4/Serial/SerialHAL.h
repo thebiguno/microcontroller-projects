@@ -2,7 +2,9 @@
  * STM32 HAL implementation of Serial library.
  * 
  * ***** IMPORTANT: *****
- * You need to put an ISR callback into your own code somewhere to handle incoming characters and pass them to the 
+ * You need to enable the USART interrupt in CubeMX, under NVIC Settings for the USART.  Without this, Tx will
+ * work but you will never receive anything.
+ * You also need to put an ISR callback into your own code somewhere to handle incoming characters and pass them to the 
  * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
  * 
  *		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
