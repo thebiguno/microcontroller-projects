@@ -101,7 +101,7 @@ void Chiindii::run() {
 	vector_t rate_pv = {0, 0, 0};
 	vector_t angle_mv = {0, 0, 0};
 	double gyro_z_average = 0;
-	double gforce_z_average = 1;
+//	double gforce_z_average = 1;
 	uint32_t time = 0;
 	uint32_t lastReceiveMessageTime = 0;
 	uint32_t lastLowBatteryTime = 0;
@@ -181,7 +181,7 @@ void Chiindii::run() {
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		madgwick.compute(accel, gyro, mode, time);
-		gforce_z_average = gforce_z_average + madgwick.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
+//		gforce_z_average = gforce_z_average + madgwick.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
 		
 		//Update PID calculations and adjust motors
 		angle_mv = madgwick.getEuler();
@@ -242,6 +242,10 @@ void Chiindii::run() {
 			// range, and more manouverability at the middle / top.
 			double throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
 			throttle = throttle * throttleWeight;
+			
+			//Give a bit more throttle when pitching / rolling.  The magic number '10' means that, with a max of 30 degrees (~0.5 radians) 
+			// as the set point, we will add at most 0.05 (5%) to the throttle.
+			throttle += fmax(abs(angle_sp.x), abs(angle_sp.y)) / 10;
 			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
 			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;

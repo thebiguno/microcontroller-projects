@@ -106,23 +106,23 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 		
 			vector_t* angle_sp = chiindii->getAngleSp();
 			//vector_t* rate_sp = chiindii->getRateSp();
-			//For the joysticks, we read 20 degrees from each side (with 0.2 degree resolution),
+			//For the joysticks, we read 30 degrees from each side (with 0.3 degree resolution),
 			// and leave the remainder in the center unused to allow for slop in the center readings
 			if (rx < 100){
-				angle_sp->x = -1 * degToRad((100.0 - rx) / 10 * 2);
+				angle_sp->x = -1 * degToRad((100.0 - rx) / 10 * 3);
 			}
 			else if (rx > 155){
-				angle_sp->x = degToRad((rx - 155.0) / 10 * 2);
+				angle_sp->x = degToRad((rx - 155.0) / 10 * 3);
 			}
 			else {
 				angle_sp->x = 0;
 			}
 		
 			if (ry < 100){
-				angle_sp->y = degToRad((100.0 - ry) / 10 * 2);
+				angle_sp->y = degToRad((100.0 - ry) / 10 * 3);
 			}
 			else if (ry > 155){
-				angle_sp->y = -1 * degToRad((ry - 155.0) / 10 * 2);
+				angle_sp->y = -1 * degToRad((ry - 155.0) / 10 * 3);
 			}
 			else {
 				angle_sp->y = 0;
@@ -141,26 +141,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 	}
 	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
 		rawThrottle = message->getData()[0];
-		
-		//chiindii->setThrottle(message->getData()[0] / 255.0 * 0.7);		//Max throttle stick returns a 70% throttle rate, to allow for overhead maneuvering thrust
-// 		if (message->getData()[0] < 5) chiindii->setThrottle(0);
-// 		else chiindii->setThrottle(message->getData()[0] / 255.0 * 0.5 + 0.1);	//Non-zero throttle linear in between 10% and 60%
-		if (chiindii->getMode() == MODE_ARMED_ANGLE){
-			uint8_t t = message->getData()[0];
-			if (t < 100){
-				chiindii->setThrottle(1 - (100.0 - t) / 1000);	//Bottom of the throttle sends a value of 1 to 0.9
-			}
-			else if (t > 155){
-				chiindii->setThrottle(1 + (t - 155.0) / 1000);	//Top of the throttle sends a value of 1 to 1.1
-			}
-			else {
-				chiindii->setThrottle(1);
-			}
-		}
-		else {
-			//chiindii->setThrottle(((double) (message->getData()[0]) * message->getData()[0]) / 80000);	//Exponential throttle
-			chiindii->setThrottle(message->getData()[0] / 255.0 * 0.80);	//Non-zero throttle linear in between 0% and 80%
-		}
+		chiindii->setThrottle(rawThrottle / 255.0 * 0.90);	//Non-zero throttle linear in between 0% and 90%
 	}
 	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
 		uint8_t button = message->getData()[0];
