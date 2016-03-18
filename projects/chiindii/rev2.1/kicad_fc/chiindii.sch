@@ -2292,22 +2292,10 @@ Text Label 3200 3900 0    60   ~ 0
 PB2
 Text Label 5850 7150 2    60   ~ 0
 PB2
-$Comp
-L CONN_01X01 P18
-U 1 1 56EB2709
-P 5250 7650
-F 0 "P18" H 5250 7750 50  0000 C CNN
-F 1 "PA5_DAC" V 5350 7650 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 5250 7650 50  0001 C CNN
-F 3 "" H 5250 7650 50  0000 C CNN
-	1    5250 7650
-	1    0    0    -1  
-$EndComp
 NoConn ~ 3200 6700
 NoConn ~ 3200 6600
 NoConn ~ 3200 6500
 NoConn ~ 3200 6400
-NoConn ~ 3200 6300
 NoConn ~ 3200 6200
 NoConn ~ 3200 4900
 NoConn ~ 3200 4200
@@ -2317,4 +2305,19 @@ NoConn ~ 3200 3200
 NoConn ~ 1400 2600
 NoConn ~ 1400 2500
 NoConn ~ 1400 2200
+$Comp
+L CONN_01X02 P18
+U 1 1 56EC225E
+P 5250 7700
+F 0 "P18" H 5250 7850 50  0000 C CNN
+F 1 "DAC" V 5350 7700 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 5250 7700 50  0001 C CNN
+F 3 "" H 5250 7700 50  0000 C CNN
+	1    5250 7700
+	1    0    0    -1  
+$EndComp
+Text Label 5050 7750 2    60   ~ 0
+PC9
+Text Label 3200 6300 0    60   ~ 0
+PC9
 $EndSCHEMATC
