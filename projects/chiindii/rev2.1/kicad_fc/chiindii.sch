@@ -29,6 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
+LIBS:chiindii-cache
 EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
@@ -432,7 +433,7 @@ U 1 1 56DBB6B0
 P 5350 1200
 F 0 "P1" H 5350 1400 50  0000 C CNN
 F 1 "CONN_01X03" V 5450 1200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 5350 1200 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 5350 1200 50  0001 C CNN
 F 3 "" H 5350 1200 50  0000 C CNN
 	1    5350 1200
 	1    0    0    1   
@@ -662,7 +663,7 @@ U 1 1 56DF5641
 P 5350 2900
 F 0 "P2" H 5350 3100 50  0000 C CNN
 F 1 "CONN_01X03" V 5450 2900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 5350 2900 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 5350 2900 50  0001 C CNN
 F 3 "" H 5350 2900 50  0000 C CNN
 	1    5350 2900
 	1    0    0    1   
@@ -763,7 +764,7 @@ U 1 1 56DF5879
 P 7000 1200
 F 0 "P3" H 7000 1400 50  0000 C CNN
 F 1 "CONN_01X03" V 7100 1200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 7000 1200 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 7000 1200 50  0001 C CNN
 F 3 "" H 7000 1200 50  0000 C CNN
 	1    7000 1200
 	1    0    0    1   
@@ -864,7 +865,7 @@ U 1 1 56DF58C5
 P 7000 2900
 F 0 "P4" H 7000 3100 50  0000 C CNN
 F 1 "CONN_01X03" V 7100 2900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 7000 2900 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 7000 2900 50  0001 C CNN
 F 3 "" H 7000 2900 50  0000 C CNN
 	1    7000 2900
 	1    0    0    1   
@@ -965,7 +966,7 @@ U 1 1 56DF5DDB
 P 8650 1200
 F 0 "P5" H 8650 1400 50  0000 C CNN
 F 1 "CONN_01X03" V 8750 1200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 8650 1200 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 8650 1200 50  0001 C CNN
 F 3 "" H 8650 1200 50  0000 C CNN
 	1    8650 1200
 	1    0    0    1   
@@ -1066,7 +1067,7 @@ U 1 1 56DF5E27
 P 8650 2900
 F 0 "P6" H 8650 3100 50  0000 C CNN
 F 1 "CONN_01X03" V 8750 2900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 8650 2900 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 8650 2900 50  0001 C CNN
 F 3 "" H 8650 2900 50  0000 C CNN
 	1    8650 2900
 	1    0    0    1   
@@ -1167,7 +1168,7 @@ U 1 1 56DF5E73
 P 10300 1200
 F 0 "P7" H 10300 1400 50  0000 C CNN
 F 1 "CONN_01X03" V 10400 1200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 10300 1200 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 10300 1200 50  0001 C CNN
 F 3 "" H 10300 1200 50  0000 C CNN
 	1    10300 1200
 	1    0    0    1   
@@ -1268,7 +1269,7 @@ U 1 1 56DF5EBF
 P 10300 2900
 F 0 "P8" H 10300 3100 50  0000 C CNN
 F 1 "CONN_01X03" V 10400 2900 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 10300 2900 50  0001 C CNN
+F 2 "chiindii:Motor_Connector" H 10300 2900 50  0001 C CNN
 F 3 "" H 10300 2900 50  0000 C CNN
 	1    10300 2900
 	1    0    0    1   
@@ -2244,4 +2245,76 @@ F 3 "" H 6950 4700 60  0000 C CNN
 	1    6950 4700
 	0    1    1    0   
 $EndComp
+$Comp
+L CONN_01X08 P17
+U 1 1 56EADBE6
+P 6050 7500
+F 0 "P17" H 6050 7950 50  0000 C CNN
+F 1 "CONN_01X08" V 6150 7500 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x08" H 6050 7500 50  0001 C CNN
+F 3 "" H 6050 7500 50  0000 C CNN
+	1    6050 7500
+	1    0    0    -1  
+$EndComp
+Text Label 5850 7250 2    60   ~ 0
+PB1
+Text Label 5850 7350 2    60   ~ 0
+PB0
+Text Label 5850 7450 2    60   ~ 0
+PC5
+Text Label 5850 7550 2    60   ~ 0
+PC4
+Text Label 5850 7650 2    60   ~ 0
+PA7
+Text Label 5850 7750 2    60   ~ 0
+PA6
+Text Label 5050 7650 2    60   ~ 0
+PA5
+Text Label 5850 7850 2    60   ~ 0
+PA4
+Text Label 3200 2700 0    60   ~ 0
+PA7
+Text Label 3200 2600 0    60   ~ 0
+PA6
+Text Label 3200 2500 0    60   ~ 0
+PA5
+Text Label 3200 2400 0    60   ~ 0
+PA4
+Text Label 3200 3800 0    60   ~ 0
+PB1
+Text Label 3200 3700 0    60   ~ 0
+PB0
+Text Label 3200 5900 0    60   ~ 0
+PC5
+Text Label 3200 5800 0    60   ~ 0
+PC4
+Text Label 3200 3900 0    60   ~ 0
+PB2
+Text Label 5850 7150 2    60   ~ 0
+PB2
+$Comp
+L CONN_01X01 P18
+U 1 1 56EB2709
+P 5250 7650
+F 0 "P18" H 5250 7750 50  0000 C CNN
+F 1 "PA5_DAC" V 5350 7650 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 5250 7650 50  0001 C CNN
+F 3 "" H 5250 7650 50  0000 C CNN
+	1    5250 7650
+	1    0    0    -1  
+$EndComp
+NoConn ~ 3200 6700
+NoConn ~ 3200 6600
+NoConn ~ 3200 6500
+NoConn ~ 3200 6400
+NoConn ~ 3200 6300
+NoConn ~ 3200 6200
+NoConn ~ 3200 4900
+NoConn ~ 3200 4200
+NoConn ~ 3200 4100
+NoConn ~ 3200 3500
+NoConn ~ 3200 3200
+NoConn ~ 1400 2600
+NoConn ~ 1400 2500
+NoConn ~ 1400 2200
 $EndSCHEMATC
