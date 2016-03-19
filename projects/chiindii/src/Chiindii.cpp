@@ -106,6 +106,7 @@ void Chiindii::run() {
 	uint32_t lastReceiveMessageTime = 0;
 	uint32_t lastLowBatteryTime = 0;
 	double lowBatteryThrottle = 0;
+	uint16_t loopCounter = 0;
 	
 	motor_start();
 	
@@ -203,6 +204,18 @@ void Chiindii::run() {
 // 			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
+			
+			//Send telemetry if something is strange...
+// 			if (angle_mv.x < -0.5 || angle_mv.x > 0.5 || angle_mv.y < -0.5 || angle_mv.y > 0.5 || rate_sp.x < -0.5 || rate_sp.x > 0.5 || rate_sp.y < -0.5 || rate_sp.y > 0.5){ 
+// 				int16_t telemetry[5];
+// 				telemetry[0] = loopCounter;
+// 				telemetry[1] = angle_mv.x * 1000;
+// 				telemetry[2] = angle_mv.y * 1000;
+// 				telemetry[3] = rate_sp.x * 1000;
+// 				telemetry[4] = rate_sp.y * 1000;
+// 				FramedSerialMessage response(0x24, (uint8_t*) telemetry, 10);
+// 				sendMessage(&response);
+// 			}
 		}
 		else { // unarmed
 			angle_x.reset(time);
@@ -313,6 +326,8 @@ void Chiindii::run() {
 // #endif
 
 		status.poll(time);
+		
+		loopCounter++;
 	}
 }
 
