@@ -34,7 +34,7 @@
 #include <CharDisplay.h>
 #include <Hd44780_Direct.h>
 #include <FramedSerialProtocol.h>
-#include <NullSerial.h>
+#include <NullStream.h>
 #include <PSX_AVR.h>
 #include <SerialAVR.h>
 #include <SerialUSB.h>
@@ -112,7 +112,7 @@ PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	
 SerialAVR serialAvr(38400, 8, 0, 1, 1);
 SoftwareSerialAVR softwareSerialAvr(&PORTE, PORTE6, 9600);
-NullSerial nullSerial;
+NullStream nullSerial;
 
 Analog analog;
 
@@ -132,7 +132,7 @@ uint8_t disable_controls = 0;
 
 char buf[15];	//String buffer, used for display formatting
 
-Serial* serial;		//Pointer to which serial port (tx) we are currently using
+Stream* serial;		//Pointer to which serial port (tx) we are currently using
 
 void sendMessage(FramedSerialMessage* m){
 	fspSerial.write(serial, m);

@@ -33,7 +33,7 @@ Mpu6050::Mpu6050(){
 	
 	//Digital LPF config.
 	data[0] = MPU6050_CONFIG;
-	data[1] = 0x00;
+	data[1] = 0x02;
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 
 	//Output rate config

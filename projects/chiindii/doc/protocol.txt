@@ -6,10 +6,11 @@ Hex		Command						Direction				Payload
 0x03	MESSAGE_DEBUG				Device -> Control		Variable depending on message, max 254 bytes					
 
 -- Direct Controller commands
-20		Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
-21		Throttle					Control -> Device		1 double (0 - 1)												
-22		Rate						Control -> Device		3 doubles (x, y, z) (in rad / s)								
-23		Angle						Control -> Device		3 doubles (x, y, z) (in rad; z is in g)					
+0x20	Armed						Control -> Device		1 byte; 0 = disarmed, 1 = angle armed, 2 = rate armed			
+0x21	Throttle					Control -> Device		1 float (0 - 1)												
+0x22	Rate						Control -> Device		3 floats (x, y, z) (in rad / s)								
+0x23	Angle						Control -> Device		3 floats (x, y, z) (in rad; z is in g)					
+0x24	Telemetry					Device -> Control		6 floats (mv x/y/z, sp x/y/z)
 
 -- Calibration Controller commands
 0x30	MESSAGE_SAVE_CALIBRATION	Control -> Device		Null														

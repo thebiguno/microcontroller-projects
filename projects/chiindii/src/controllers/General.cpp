@@ -10,16 +10,7 @@ General::General(Chiindii *chiindii) {
 
 void General::dispatch(FramedSerialMessage* request) {
 	uint8_t cmd = request->getCommand();
-	if (cmd == MESSAGE_DEBUG) {
-		chiindii->setDebug(request->getData()[0]);
-		if (request->getData()[0]){
-			chiindii->sendDebug("Debug Enabled");
-		}
-		else {
-			chiindii->sendDebug("Debug Disabled");
-		}
-	}
-	else if (cmd == MESSAGE_BATTERY){
+	if (cmd == MESSAGE_BATTERY){
 		uint8_t data[] = { chiindii->getBatteryPercent() };
 		FramedSerialMessage response(MESSAGE_BATTERY, data, 1);
 		chiindii->sendMessage(&response);

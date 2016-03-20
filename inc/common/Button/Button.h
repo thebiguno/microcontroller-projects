@@ -1,7 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include <avr/io.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 namespace digitalcave {

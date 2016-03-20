@@ -2,7 +2,7 @@
 #define DRAW_H
 
 #include <stdlib.h>
-#include <avr/pgmspace.h> 
+#include <stdint.h> 
 
 //Orientation modes.
 #define DRAW_ORIENTATION_NORMAL	0		//Normal, left to right

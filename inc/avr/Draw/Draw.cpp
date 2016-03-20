@@ -1,4 +1,6 @@
 #include "../../common/Draw/Draw.h"
+#include <avr/io.h>
+#include <avr/pgmspace.h>
 
 using namespace digitalcave;
 

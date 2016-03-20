@@ -4,14 +4,12 @@
  * damage voltage = 3V		= 163
  * warning voltage = 3.2V	= 175
  * full voltage = 4.2V		= 229
- *
- * In practice, we set these a little bit higher to prevent battery damage.
  */
 #ifndef BATTERY_H
 #define BATTERY_H
 
-#define BATTERY_DAMAGE_LEVEL		175
-#define BATTERY_WARNING_LEVEL		190
+#define BATTERY_DAMAGE_LEVEL		163
+#define BATTERY_WARNING_LEVEL		175
 #define BATTERY_FULL_LEVEL			229
 
 #include <avr/io.h>

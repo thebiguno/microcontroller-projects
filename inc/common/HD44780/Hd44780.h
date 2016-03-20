@@ -1,7 +1,7 @@
 #ifndef HD44780_H
 #define HD44780_H
 
-#include <avr/io.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 namespace digitalcave {

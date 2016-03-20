@@ -4,31 +4,36 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
-#include <string.h>
 
 #include <PID.h>
 #include <SerialAVR.h>
 
 #include "timer/timer.h"
 
-#include "battery/battery.h"
 #include "motor/motor.h"
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
 #define COMM_TIMEOUT_PERIOD		1000
+//The time since the last "low battery" warning was sent, as needed
+#define LAST_LOW_BATTERY_TIME	1000
+//The number of Z-gyro samples to average
+#define GYRO_AVERAGE_COUNT 25
+//The number of Z-gyro samples to average
+#define GFORCE_AVERAGE_COUNT 25
 
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
-SerialAVR serial(38400, 8, 0, 1, 1, 128);
+static SerialAVR serial(38400, 8, 0, 1, 1, 128);
 
 //Reset WDT after system reset
-void get_mcusr(void) __attribute__((naked))  __attribute__((section(".init3")));
+void get_mcusr(void) __attribute__((naked))  __attribute__((used))  __attribute__((section(".init3")));
 void get_mcusr(void) {
 	MCUSR = 0;
 	wdt_disable();
 }
 
+int main() __attribute__ ((noreturn));
 int main(){
 	wdt_disable();
 	
@@ -45,11 +50,11 @@ int main(){
 
 	Chiindii chiindii;
 	chiindii.run();
+	while(1);
 }
 
 Chiindii::Chiindii() : 
 	mode(MODE_UNARMED),
-	debug(1),			//TODO We currently start in debug mode
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
@@ -75,7 +80,7 @@ Chiindii::Chiindii() :
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
 	angle_y.setOutputLimits(-10, 10);
-	angle_z.setOutputLimits(-10, 10);
+	angle_z.setOutputLimits(-1, 1);
 	
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 2);
@@ -83,7 +88,7 @@ Chiindii::Chiindii() :
 	//Output of rate PID is an acceleration (rad / s / s) for each axis
 	rate_x.setOutputLimits(-4, 4);
 	rate_y.setOutputLimits(-4, 4);
-	rate_z.setOutputLimits(-4, 4);
+	rate_z.setOutputLimits(-1, 1);
 }
 
 void Chiindii::run() {
@@ -96,9 +101,12 @@ void Chiindii::run() {
 	vector_t rate_pv = {0, 0, 0};
 	vector_t angle_mv = {0, 0, 0};
 	double gyro_z_average = 0;
+//	double gforce_z_average = 1;
 	uint32_t time = 0;
-	uint32_t last_message_time = 0;
+	uint32_t lastReceiveMessageTime = 0;
+	uint32_t lastLowBatteryTime = 0;
 	double lowBatteryThrottle = 0;
+	uint16_t loopCounter = 0;
 	
 	motor_start();
 	
@@ -131,11 +139,11 @@ void Chiindii::run() {
 			else {
 				//TODO Send debug message 'unknown command' or similar
 			}
-			last_message_time = time;
+			lastReceiveMessageTime = time;
 			status.commOK();
 		}
-		else if ((time - last_message_time) > COMM_TIMEOUT_PERIOD) {
-			if (mode) sendStatus("Comm Timeout  ");
+		else if ((time - lastReceiveMessageTime) > COMM_TIMEOUT_PERIOD) {
+			if (mode) sendStatus("Comm Timeout  ", 14);
 			mode = MODE_UNARMED;
 			status.commInterrupt();
 		}
@@ -143,6 +151,10 @@ void Chiindii::run() {
 		battery_level = battery_read();
 		if (battery_level > BATTERY_WARNING_LEVEL) {
 			status.batteryOK();
+			lowBatteryThrottle -= 0.0001;
+			if (lowBatteryThrottle < 0){
+				lowBatteryThrottle = 0;
+			}
 		}
 		else if (battery_level > BATTERY_DAMAGE_LEVEL) {
 			status.batteryLow();
@@ -154,7 +166,9 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 		else {
-			if (mode) sendStatus("Low Battery  ");
+			if ((time - lastLowBatteryTime) > LAST_LOW_BATTERY_TIME){
+				sendStatus("Low Battery   ", 14);
+			}
 			lowBatteryThrottle += 0.0001;
 			status.batteryLow();
 			if (lowBatteryThrottle > 0.75){
@@ -165,8 +179,10 @@ void Chiindii::run() {
 		//Update IMU calculations.
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
+		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		madgwick.compute(accel, gyro, mode, time);
+//		gforce_z_average = gforce_z_average + madgwick.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
 		
 		//Update PID calculations and adjust motors
 		angle_mv = madgwick.getEuler();
@@ -174,46 +190,45 @@ void Chiindii::run() {
 		double throttle;
 		
 		//We only do angle PID in mode angle or throttle.
-		if (mode == MODE_ARMED_ANGLE) { // 0x01
-			double accel_mv = madgwick.getZAcceleration(accel);
-			
-			// angle pid
-			// compute a rate set point given an angle set point and current measured angle
-			// see doc/control_system.txt
-			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
-			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
-			throttle = gforce.compute(throttle_sp, accel_mv, time);
-			//TODO Remove this debugging once we figure out why PID is not adjusting throttle properly...
-			char temp[14];
-			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (throttle_sp * 100), (int16_t) (accel_mv * 100), (int16_t) (throttle * 100));
-			sendDebug(temp);
-		}
-		else if (mode == MODE_ARMED_THROTTLE) { // 0x02
-			gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / 100);
-			
+		if (mode == MODE_ARMED_THROTTLE) { // 0x02
 			// angle pid with direct throttle
 			// compute a rate set point given an angle set point and current measured angle
 			// see doc/control_system.txt
 			rate_sp.x = angle_x.compute(angle_sp.x, angle_mv.x, time);
 			rate_sp.y = angle_y.compute(angle_sp.y, angle_mv.y, time);
-			rate_sp.z = angle_z.compute(angle_sp.z, gyro_z_average / 100, time);
-//			angle_z.reset(time);
+			rate_sp.z = angle_z.compute(angle_sp.z, angle_mv.z, time);
 			gforce.reset(time);
 
 // 			char temp[14];
-// 			snprintf(temp, sizeof(temp), "%3d %3d %3d", (int16_t) (angle_sp.z * 100), (int16_t) gyro_z_average, (int16_t) (rate_sp.z * 100));
-// 			sendDebug(temp);
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z), (int16_t) (rate_sp.z * 100));
+// 			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
+			
+			//Send telemetry if something is strange...
+// 			if (angle_mv.x < -0.5 || angle_mv.x > 0.5 || angle_mv.y < -0.5 || angle_mv.y > 0.5 || rate_sp.x < -0.5 || rate_sp.x > 0.5 || rate_sp.y < -0.5 || rate_sp.y > 0.5){ 
+// 				int16_t telemetry[5];
+// 				telemetry[0] = loopCounter;
+// 				telemetry[1] = angle_mv.x * 1000;
+// 				telemetry[2] = angle_mv.y * 1000;
+// 				telemetry[3] = rate_sp.x * 1000;
+// 				telemetry[4] = rate_sp.y * 1000;
+// 				FramedSerialMessage response(0x24, (uint8_t*) telemetry, 10);
+// 				sendMessage(&response);
+// 			}
 		}
-		else { // 0x03
+		else { // unarmed
 			angle_x.reset(time);
 			angle_y.reset(time);
 			angle_z.reset(time);
 			gforce.reset(time);
 			
+			angle_sp.z = angle_mv.z;	//Reset heading to measured value
 			throttle = throttle_sp;
+			
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d N/A        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z));
+// 			sendDebug(temp, 14);
 		}
 		
 		throttle -= lowBatteryThrottle;
@@ -227,8 +242,12 @@ void Chiindii::run() {
 			// see doc/control_system.txt
 			rate_pv.x = rate_x.compute(rate_sp.x, gyro.x, time);
 			rate_pv.y = rate_y.compute(rate_sp.y, gyro.y, time);
-			rate_pv.z = rate_z.compute(rate_sp.z, gyro.z, time);
-			
+			rate_pv.z = rate_z.compute(rate_sp.z, gyro_z_average / GYRO_AVERAGE_COUNT, time);
+
+// 			char temp[14];
+// 			snprintf(temp, sizeof(temp), "%3d %3d %3d     ", (int16_t) (angle_sp.z * 100), (int16_t) ((gyro_z_average / GYRO_AVERAGE_COUNT) * 100), (int16_t) (rate_pv.z * 100));
+// 			sendDebug(temp, 14);
+
 			//This is the weight which we give to throttle relative to the rate PID outputs.
 			// Keeping this too low will result in not enough throttle control; keeping it too high
 			// will result in not enough attitude control.
@@ -236,6 +255,10 @@ void Chiindii::run() {
 			// range, and more manouverability at the middle / top.
 			double throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
 			throttle = throttle * throttleWeight;
+			
+			//Give a bit more throttle when pitching / rolling.  The magic number '10' means that, with a max of 30 degrees (~0.5 radians) 
+			// as the set point, we will add at most 0.05 (5%) to the throttle.
+			throttle += fmax(abs(angle_sp.x), abs(angle_sp.y)) / 10;
 			
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
 			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
@@ -303,26 +326,10 @@ void Chiindii::run() {
 // #endif
 
 		status.poll(time);
+		
+		loopCounter++;
 	}
 }
-
-vector_t* Chiindii::getAngleSp() { return &angle_sp; }
-vector_t* Chiindii::getRateSp() { return &rate_sp; }
-PID* Chiindii::getRateX() { return &rate_x; }
-PID* Chiindii::getRateY() { return &rate_y; }
-PID* Chiindii::getRateZ() { return &rate_z; }
-PID* Chiindii::getAngleX() { return &angle_x; }
-PID* Chiindii::getAngleY() { return &angle_y; }
-PID* Chiindii::getAngleZ() { return &angle_z; }
-PID* Chiindii::getGforce() { return &gforce; }
-Mpu6050* Chiindii::getMpu6050() { return &mpu6050; }
-uint8_t Chiindii::getBatteryLevel() { return battery_level; }
-uint8_t Chiindii::getBatteryPercent() { return battery_pct(); }
-uint8_t Chiindii::getMode() { return mode; }
-void Chiindii::setMode(uint8_t mode) { this->mode = mode; }
-uint8_t Chiindii::getDebug() { return debug; }
-void Chiindii::setDebug(uint8_t debug) { this->debug = debug; }
-Madgwick* Chiindii::getMadgwick() { return &madgwick; }
 
 void Chiindii::loadConfig(){
 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
@@ -373,10 +380,10 @@ void Chiindii::loadConfig(){
 		mpu6050.setAccelCalib(calibration);
 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 94), 6);
 		mpu6050.setGyroCalib(calibration);
-		sendStatus("Load EEPROM   ");
+		sendStatus("Load EEPROM   ", 14);
 	}
 	else {
-		sendStatus("Load Defaults ");
+		sendStatus("Load Defaults ", 14);
 	}
 }
 
@@ -423,31 +430,7 @@ void Chiindii::saveConfig(){
 	wdt_enable(WDTO_120MS);
 	sei();
 	
-	sendStatus("Save EEPROM   ");
-}
-
-void Chiindii::sendDebug(const char* message){
-	sendDebug((char*) message);
-}
-void Chiindii::sendDebug(char* message){
-	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strnlen(message, 128));
-		sendMessage(&response);
-	}
-}
-void Chiindii::sendStatus(const char* message){
-	sendStatus((char*) message);
-}
-void Chiindii::sendStatus(char* message){
-	FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, strnlen(message, 14));
-	sendMessage(&response);
-}
-
-double Chiindii::getThrottle() { return this->throttle_sp; }
-void Chiindii::setThrottle(double throttle) { 
-	if (throttle < 0) throttle_sp = 0; 
-	else if (throttle > 1) throttle_sp = 1; 
-	this->throttle_sp = throttle; 
+	sendStatus("Save EEPROM   ", 14);
 }
 
 void Chiindii::sendMessage(FramedSerialMessage* message) {
