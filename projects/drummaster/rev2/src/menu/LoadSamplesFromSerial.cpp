@@ -151,32 +151,37 @@ Menu* LoadSamplesFromSerial::handleAction(){
 				//We read 4 bytes as a uint32_t for file size
 				else if (state == STATE_SIZE){
 					if (fileSizeIndex < 4){
-						fileSize = (fileSize << 8) + b;
+						fileSize = (fileSize * 256) + b;
 						fileSizeIndex++;
 					}
 					else if (b == BYTE_SEPARATOR){
-						state = STATE_CONTENT;
-						flashBufferIndex = 0;
-						escape = 0;
-						
-						if (SerialFlash.exists(filename)){
-							SerialFlash.remove(filename);
-						}
-						
-						//Create a new file and open it for writing
-						if (SerialFlash.create(filename, fileSize)) {
-							flashFile = SerialFlash.open(filename);
-							if (!flashFile) {
-								display->clear();
-								display->write_text(1, 0, "Error Flash File Open", 20);
-								return flushError();
-							}
+						if (fileSize == 0){
+							state = STATE_START;
 						}
 						else {
-							display->write_text(1, 0, "Error Flash Create   ", 20);
-							display->write_text(2, 0, "There may be no room ", 20);
-							display->write_text(3, 0, "left; try formatting ", 20);
-							return flushError();
+							state = STATE_CONTENT;
+							flashBufferIndex = 0;
+							escape = 0;
+							
+							if (SerialFlash.exists(filename)){
+								SerialFlash.remove(filename);
+							}
+							
+							//Create a new file and open it for writing
+							if (SerialFlash.create(filename, fileSize)) {
+								flashFile = SerialFlash.open(filename);
+								if (!flashFile) {
+									display->clear();
+									display->write_text(1, 0, "Error Flash File Open", 20);
+									return flushError();
+								}
+							}
+							else {
+								display->write_text(1, 0, "Error Flash Create   ", 20);
+								display->write_text(2, 0, "There may be no room ", 20);
+								display->write_text(3, 0, "left; try formatting ", 20);
+								return flushError();
+							}
 						}
 					}
 					else {
