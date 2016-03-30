@@ -9,6 +9,7 @@
 #include <dcmath.h>
 #include <dctypes.h>
 #include <FramedSerialProtocol.h>
+#include <Madgwick.h>
 #include <Mpu6050.h>
 #include <SerialAVR.h>
 #include <PID.h>
@@ -20,7 +21,6 @@
 #include "controllers/Direct.h"
 #include "battery/battery.h"
 
-#include "imu/Madgwick.h"
 
 #ifdef DEBUG
 #include <stdio.h>
