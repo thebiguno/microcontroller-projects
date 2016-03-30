@@ -13,7 +13,7 @@
 #include "motor/motor.h"
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
-#define COMM_TIMEOUT_PERIOD		1000
+#define COMM_TIMEOUT_PERIOD		2000
 //The time since the last "low battery" warning was sent, as needed
 #define LAST_LOW_BATTERY_TIME	1000
 //The number of Z-gyro samples to average
