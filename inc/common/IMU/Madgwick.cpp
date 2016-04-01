@@ -9,19 +9,13 @@
  * This Library is licensed under a GPLv3 License
  **********************************************************************************************/
 
-#include <stdio.h>
-
 #include "Madgwick.h"
 
 using namespace digitalcave;
 
 Madgwick::Madgwick(float beta, uint32_t time) :
-		beta(beta),
-		lastTime(time),
-		q0(1),
-		q1(0),
-		q2(0),
-		q3(0)
+	IMU(time),
+	beta(beta)
 {
 }
 
@@ -126,9 +120,6 @@ void Madgwick::compute(vector_t accel, vector_t gyro, vector_t mag, uint8_t arme
 	q3 *= recipNorm;
 }
 
-//---------------------------------------------------------------------------------------------------
-// IMU algorithm update
-
 void Madgwick::compute(vector_t accel, vector_t gyro, uint8_t armed, uint32_t time){
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -200,32 +191,4 @@ void Madgwick::compute(vector_t accel, vector_t gyro, uint8_t armed, uint32_t ti
 	q1 *= recipNorm;
 	q2 *= recipNorm;
 	q3 *= recipNorm;
-}
-
-vector_t Madgwick::getEuler(){
-	vector_t result;
-	result.x = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
-	result.y = asin(-2 * (q1*q3 - q0*q2));
-	result.z = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
-	return result;
-}
-
-float Madgwick::getZAcceleration(vector_t accel){
-	float gx, gy, gz; // estimated gravity direction
-
-	gx = 2 * (q1*q3 - q0*q2);
-	gy = 2 * (q0*q1 + q2*q3);
-	gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
-
-	// return vertical acceleration without gravity
-	// (A dot G) / |G| - 1G (|G| = 1) -> (A dot G)
-	return ((accel.x*gx + accel.y*gy + accel.z*gz));
-}
-
-float Madgwick::getBeta() {
-	return beta;
-}
-
-void Madgwick::setBeta(float beta) {
-	this->beta = beta;
 }

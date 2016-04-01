@@ -29,6 +29,9 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->getMpu6050()->calibrate();
 		wdt_enable(WDTO_120MS);
 	}
+#if defined MAHONY
+	//TODO Add support for Mahoney tuning
+#elif defined MADGWICK
 	else if (cmd == MESSAGE_MADGWICK_TUNING){
 		Madgwick* m = chiindii->getMadgwick();
 		if (request->getLength() == 0){
@@ -41,6 +44,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			m->setBeta(data[0]);
 		}
 	}
+#endif
 	else if (cmd == MESSAGE_RATE_PID_TUNING){
 		PID* x = chiindii->getRateX();
 		PID* y = chiindii->getRateY();

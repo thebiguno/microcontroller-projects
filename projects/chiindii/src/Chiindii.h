@@ -6,10 +6,14 @@
 
 #define DEBUG
 
+//Set exactly one of these
+//#define MAHONY
+#define MADGWICK
+
 #include <dcmath.h>
 #include <dctypes.h>
 #include <FramedSerialProtocol.h>
-#include <Madgwick.h>
+#include <Mahony.h>
 #include <Mpu6050.h>
 #include <SerialAVR.h>
 #include <PID.h>
@@ -67,7 +71,11 @@ namespace digitalcave {
 			PID angle_z;
 			PID gforce;
 
-			Madgwick madgwick;
+#if defined MAHONY
+			Mahony imu;
+#elif defined MADGWICK
+			Madgwick imu;
+#endif
 		
 			General general;
 			Calibration calibration;
@@ -98,7 +106,11 @@ namespace digitalcave {
 			PID* getAngleZ() { return &angle_z; }
 			PID* getGforce() { return &gforce; }
 
-			Madgwick* getMadgwick() { return &madgwick; }
+#if defined MAHONY
+			Mahony* getImu() { return &imu; }
+#elif defined MADGWICK
+			Madgwick* getImu() { return &imu; }
+#endif
 			Mpu6050* getMpu6050() { return &mpu6050; }
 			Status* getStatus();
 

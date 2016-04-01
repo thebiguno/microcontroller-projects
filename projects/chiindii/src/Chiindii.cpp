@@ -69,8 +69,12 @@ Chiindii::Chiindii() :
 	angle_z(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
-	
-	madgwick(0.01, 0),
+
+#if defined MAHONY
+	imu(1, 0, 0),
+#elif defined MADGWICK
+	imu(0.01, 0),
+#endif
 	
 	general(this),
 	calibration(this),
@@ -181,11 +185,11 @@ void Chiindii::run() {
 		gyro = mpu6050.getGyro();
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
-		madgwick.compute(accel, gyro, mode, time);
-//		gforce_z_average = gforce_z_average + madgwick.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
+		imu.compute(accel, gyro, mode, time);
+//		gforce_z_average = gforce_z_average + imu.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
 		
 		//Update PID calculations and adjust motors
-		angle_mv = madgwick.getEuler();
+		angle_mv = imu.getEuler();
 
 		double throttle;
 		
@@ -334,7 +338,6 @@ void Chiindii::run() {
 void Chiindii::loadConfig(){
 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
 		double kp, ki, kd;
-		double t;
 	
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
@@ -371,8 +374,11 @@ void Chiindii::loadConfig(){
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 80));
 		gforce.setTunings(kp, ki, kd);
 
-		t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
-		madgwick.setBeta(t);
+#if defined MAHONY
+#elif defined MADGWICK
+		double t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
+		imu.setBeta(t);
+#endif
 		
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
 		int16_t calibration[3];
@@ -419,8 +425,11 @@ void Chiindii::saveConfig(){
 	eeprom_update_float((float*) (EEPROM_OFFSET + 76), gforce.getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 80), gforce.getKd());
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 84), madgwick.getBeta());
-	
+#if defined MAHONY
+#elif defined MADGWICK
+	eeprom_update_float((float*) (EEPROM_OFFSET + 84), imu.getBeta());
+#endif
+
 	eeprom_update_block(mpu6050.getAccelCalib(), (void*) (EEPROM_OFFSET + 88), 6);
 	eeprom_update_block(mpu6050.getGyroCalib(), (void*) (EEPROM_OFFSET + 94), 6);
 	

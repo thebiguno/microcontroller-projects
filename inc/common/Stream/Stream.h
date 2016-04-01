@@ -6,8 +6,6 @@
 
 namespace digitalcave {
 	class Stream {
-		private:
-
 		public:
 			/*
 			 * Reads a single byte from the stream.  Pass in a pointer to a byte, and
@@ -45,6 +43,9 @@ namespace digitalcave {
 			 * Returns the number of bytes which were written successfully.
 			 */
 			uint8_t write(uint8_t* data, uint8_t len);
+			
+		private:
+
 	};
 }
 
