@@ -33,7 +33,7 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 	//TODO Add support for Mahoney tuning
 #elif defined MADGWICK
 	else if (cmd == MESSAGE_MADGWICK_TUNING){
-		Madgwick* m = chiindii->getMadgwick();
+		Madgwick* m = chiindii->getImu();
 		if (request->getLength() == 0){
 			double data[] = { m->getBeta() };
 			FramedSerialMessage response(MESSAGE_MADGWICK_TUNING, (uint8_t*) data, 4);

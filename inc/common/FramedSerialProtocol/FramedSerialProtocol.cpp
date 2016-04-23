@@ -14,7 +14,7 @@ FramedSerialMessage::~FramedSerialMessage(){
 }
 
 FramedSerialMessage::FramedSerialMessage(uint8_t command, uint8_t* data, uint8_t length){
-	this->data = (uint8_t*) malloc(maxSize);
+	this->data = (uint8_t*) malloc(length);
 	this->command = command;
 	this->length = length;
 	this->maxSize = length;

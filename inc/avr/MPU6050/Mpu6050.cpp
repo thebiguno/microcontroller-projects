@@ -26,14 +26,14 @@ Mpu6050::Mpu6050(){
 	data[1] = 0x18;		//2000 deg/s
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
-	//Set accel to +/- 8g
+	//Set accel to +/- 16g
 	data[0] = MPU6050_ACCEL_CONFIG;
-	data[1] = 0x10;		//+/- 8g
+	data[1] = 0x18;		//+/- 16g
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 	
 	//Digital LPF config.
 	data[0] = MPU6050_CONFIG;
-	data[1] = 0x00;
+	data[1] = 0x02;		//Accel = 94Hz, Gyro = 98 Hz
 	twi_write_to(MPU6050_ADDRESS, data, 2, TWI_BLOCK, TWI_STOP);
 
 	//Output rate config
@@ -73,7 +73,7 @@ void Mpu6050::calibrate(){
 	//We want Accel Z (index 2) to be 1g, and all else to be 0.
 	accelCalib[0] = 0 - totals[0] / count;
 	accelCalib[1] = 0 - totals[1] / count;
-	accelCalib[2] = 4096 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g)
+	accelCalib[2] = 2048 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g)
 	gyroCalib[0] = 0 - totals[3] / count;
 	gyroCalib[1] = 0 - totals[4] / count;
 	gyroCalib[2] = 0 - totals[5] / count;
@@ -86,9 +86,9 @@ vector_t Mpu6050::getAccel(){
 	twi_read_from(MPU6050_ADDRESS, data, 6, TWI_STOP);				//Read 6 bytes (Accel X/Y/Z, 16 bits signed each)
 
  	vector_t result;
-	result.x = (((data[0] << 8) | data[1]) + accelCalib[0]) * 0.000244140625;		// 8g / 32768
-	result.y = (((data[2] << 8) | data[3]) + accelCalib[1]) * 0.000244140625;
-	result.z = (((data[4] << 8) | data[5]) + accelCalib[2]) * 0.000244140625;
+	result.x = (((int16_t) ((data[0] << 8) | data[1])) + accelCalib[0]) * 0.00048828125;		// 16g / 32768
+	result.y = (((int16_t) ((data[2] << 8) | data[3])) + accelCalib[1]) * 0.00048828125;
+	result.z = (((int16_t) ((data[4] << 8) | data[5])) + accelCalib[2]) * 0.00048828125;
  	return result;
 }
 
@@ -102,9 +102,9 @@ vector_t Mpu6050::getGyro(){
 // 	result.x = ((data[0] << 8) | data[1]);
 // 	result.y = ((data[2] << 8) | data[3]);
 // 	result.z = ((data[4] << 8) | data[5]);
-	result.x = (((data[0] << 8) | data[1]) + gyroCalib[0]) * 0.06103515625 * M_PI / 180;		//(2000 deg/s / 32768) * PI/180.
-	result.y = (((data[2] << 8) | data[3]) + gyroCalib[1]) * 0.06103515625 * M_PI / 180;
-	result.z = (((data[4] << 8) | data[5]) + gyroCalib[2]) * 0.06103515625 * M_PI / 180;
+	result.x = (((int16_t) ((data[0] << 8) | data[1])) + gyroCalib[0]) * (0.06103515625 * M_PI / 180);		//(2000 deg/s / 32768) * PI/180.
+	result.y = (((int16_t) ((data[2] << 8) | data[3])) + gyroCalib[1]) * (0.06103515625 * M_PI / 180);
+	result.z = (((int16_t) ((data[4] << 8) | data[5])) + gyroCalib[2]) * (0.06103515625 * M_PI / 180);
 	return result;
 }
 
@@ -114,7 +114,7 @@ double Mpu6050::getTemperature(){
 	twi_write_to(MPU6050_ADDRESS, data, 1, TWI_BLOCK, TWI_STOP);	//Go to register MPU6050_ACCEL_XOUT_H
 	twi_read_from(MPU6050_ADDRESS, data, 2, TWI_STOP);				//Read 2 bytes (16 bit raw temperature data)
 	
-	return ((int16_t) (data[0] << 8) | data[1]) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
+	return ((int16_t) ((data[0] << 8) | data[1])) / 340.00 + 36.53;	//equation for temperature in degrees C from datasheet
 }
 
 int16_t* Mpu6050::getAccelCalib(){

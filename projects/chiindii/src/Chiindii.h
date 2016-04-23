@@ -13,7 +13,11 @@
 #include <dcmath.h>
 #include <dctypes.h>
 #include <FramedSerialProtocol.h>
+#if defined MAHONY
 #include <Mahony.h>
+#elif defined MADGWICK
+#include <Madgwick.h>
+#endif
 #include <Mpu6050.h>
 #include <SerialAVR.h>
 #include <PID.h>

@@ -14,7 +14,7 @@ def readMessages(ser):
 				#print("{0[0]:X},{0[1]:X},{0[2]:X},{0[3]:X}	{0[4]:X},{0[5]:X},{0[6]:X},{0[7]:X}	{0[8]:X},{0[9]:X},{0[10]:X},{0[11]:X}".format(message["data"]))
 				#print("{0[0]:.3f}	{0[1]:.3f}	{0[2]:.3f}".format(struct.unpack("<fff", buffer(str(bytearray(message["data"]))))))
 				#print(time.strftime("%M:%S") + ": {0[0]}	{0[1]}	{0[2]}	{0[3]}	{1[1]:02X}{1[0]:02X}	{1[3]:02X}{1[2]:02X}	{1[5]:02X}{1[4]:02X}	{1[7]:02X}{1[6]:02X}".format(struct.unpack("<hhhh", buffer(str(bytearray(message["data"])))), message["data"]))
-				print(time.strftime("%M:%S") + ": {0[0]}	{0[1]}	{0[2]}	{0[3]}	{0[4]}".format(struct.unpack("<hhhhh", buffer(str(bytearray(message["data"])))), message["data"]))
+				print(time.strftime("%M:%S") + ": {0[0]}	{0[1]}	{0[2]}	{0[3]}".format(struct.unpack("<hhhh", buffer(str(bytearray(message["data"])))), message["data"]))
 	
 def readNextMessage(ser):
 	START = 0x7e

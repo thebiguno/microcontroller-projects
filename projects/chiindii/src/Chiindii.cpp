@@ -13,7 +13,7 @@
 #include "motor/motor.h"
 
 //The period (in ms) since we last saw a message, after which we assume the comm link is dead and we disarm the craft
-#define COMM_TIMEOUT_PERIOD		2000
+#define COMM_TIMEOUT_PERIOD		3000
 //The time since the last "low battery" warning was sent, as needed
 #define LAST_LOW_BATTERY_TIME	1000
 //The number of Z-gyro samples to average
@@ -185,6 +185,17 @@ void Chiindii::run() {
 		gyro = mpu6050.getGyro();
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
+		//Send telemetry if something is strange...
+		if (accel.x > 1 || accel.x < -1 || accel.y > 1 || accel.y < -1 || accel.z > 2 || accel.z < 0){ 
+			int16_t telemetry[4];
+			telemetry[0] = loopCounter;
+			telemetry[1] = accel.x * 1000;
+			telemetry[2] = accel.y * 1000;
+			telemetry[3] = accel.z * 1000;
+			FramedSerialMessage response(0x24, (uint8_t*) telemetry, 8);
+			sendMessage(&response);
+		}
+		
 		imu.compute(accel, gyro, mode, time);
 //		gforce_z_average = gforce_z_average + imu.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
 		
@@ -208,18 +219,6 @@ void Chiindii::run() {
 // 			sendDebug(temp, 14);
 
 			throttle = throttle_sp;
-			
-			//Send telemetry if something is strange...
-// 			if (angle_mv.x < -0.5 || angle_mv.x > 0.5 || angle_mv.y < -0.5 || angle_mv.y > 0.5 || rate_sp.x < -0.5 || rate_sp.x > 0.5 || rate_sp.y < -0.5 || rate_sp.y > 0.5){ 
-// 				int16_t telemetry[5];
-// 				telemetry[0] = loopCounter;
-// 				telemetry[1] = angle_mv.x * 1000;
-// 				telemetry[2] = angle_mv.y * 1000;
-// 				telemetry[3] = rate_sp.x * 1000;
-// 				telemetry[4] = rate_sp.y * 1000;
-// 				FramedSerialMessage response(0x24, (uint8_t*) telemetry, 10);
-// 				sendMessage(&response);
-// 			}
 		}
 		else { // unarmed
 			angle_x.reset(time);
