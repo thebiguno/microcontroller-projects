@@ -3,7 +3,7 @@
 
 #include "Leg.h"
 
-#ifndef DEBUG_SIMULATION
+#include <avr/eeprom.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <stdint.h>
@@ -13,24 +13,16 @@
 #include <SerialAVR.h>
 #include <UniversalControllerClient.h>
 
-#include "util/delays.h"
+#include "gait/gait.h"
+#include "hardware/magnetometer.h"
 #include "lib/pwm/pwm.h"
-#else
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#endif
 
 #include "hardware.h"
 
 //State variables
-#define POWER_OFF				0x00
-#define POWER_ON				0x01
-
-#define CONTROLLER_NONE			0x00
-#define CONTROLLER_UC			0x01
-#define CONTROLLER_PROCESSING	0x02
-#define CONTROLLER_CALIBRATION	0x03
+#define STATE_POWER_OFF			0x00
+#define STATE_WALKING			0x01
+#define STATE_CALIBRATION		0x02
 
 
 namespace digitalcave {
@@ -40,29 +32,29 @@ namespace digitalcave {
 			Leg* legs;
 			FramedSerialProtocol protocol;
 			
+			uint8_t state;
+			float linearAngle;
+			float linearVelocity;
+			float rotationalVelocity;
+			float turn;
+			
 		public:
 			Stubby();
 			
 			FramedSerialProtocol* getProtocol();
 			Leg* getLegs();
+			
+			uint8_t getState() {return state;}
+			void setState(uint8_t state) { this->state = state;}
+			void setLinearAngle(float linearAngle) { this->linearAngle = linearAngle;}
+			void setLinearVelocity(float linearVelocity) { this->linearVelocity = linearVelocity;}
+			void setRotationalVelocity(float rotationalVelocity) { this->rotationalVelocity = rotationalVelocity;}
+			void setTurn(int8_t turn) { this->turn = turn;}
+			
 			void run();
 			void sendDebug(char* message);
 			void resetLegs();
 	};
 }
-
-uint8_t get_power();
-void set_power(uint8_t power);
-
-uint8_t get_controller();
-
-void doAcknowledgeCommand(uint8_t command);
-void doCompleteCommand(uint8_t command);
-void doSendDebug(char* message);
-void doResetLegs();
-
-void mode_select();
-void mode_remote_control();
-void mode_calibration();
 	
 #endif

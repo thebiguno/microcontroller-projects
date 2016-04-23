@@ -26,7 +26,7 @@ void servo_init(Leg *legs){
 	}
 	pwm_apply_batch();
 
-	delay_ms(500);
+	//delay_ms(500);
 	
 	pwm_stop();	
 }

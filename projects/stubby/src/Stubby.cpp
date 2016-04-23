@@ -1,8 +1,7 @@
 #include "Stubby.h"
 
 #include "controllers/Calibration.h"
-#include "controllers/processing.h"
-#include "controllers/universal_controller.h"
+#include "controllers/UniversalController.h"
 #include "gait/gait.h"
 #include "hardware/magnetometer.h"
 #include "hardware/servo.h"
@@ -25,6 +24,14 @@ volatile uint8_t debug = 0x00;							//0 is no debug, 1 is show debug
 volatile uint8_t pending_acknowledge = 0x00;			//When set, we will send a message in the delay code
 volatile uint8_t pending_complete = 0x00;				//When set, we will send a message in the delay code
 
+//Reset WDT after system reset
+void get_mcusr(void) __attribute__((naked))  __attribute__((used))  __attribute__((section(".init3")));
+void get_mcusr(void) {
+	MCUSR = 0;
+	wdt_disable();
+}
+
+int main(void) __attribute__ ((noreturn));
 int main (void){
 	wdt_enable(WDTO_2S);
 
@@ -54,7 +61,7 @@ Stubby::Stubby() :
 		#error Unsupported PCB_REVISION value.
 	#endif
 	}),
-	serial(38400)
+	state(STATE_POWER_OFF)
 {
 
 }
@@ -66,12 +73,19 @@ void Stubby::run(){
 	battery_init();
 	magnetometer_init();
 	distance_init();
+	timer0_init();
 	timer2_init();
 	
 	Calibration calibration(this);
+	
+	uint32_t time;
+	uint32_t lastStepMoveTime;
 
 	while (1){
+		time = timer_millis();
 		wdt_reset();
+		
+		//Listen for incoming commands
 		if (protocol.read(&serial, &request)) {
 			if (request.getCommand() & 0xF0 == 0x30){
 				calibration.dispatch(&serial, &request);
@@ -81,6 +95,33 @@ void Stubby::run(){
 			}
 			else if (controller == CONTROLLER_CALIBRATION){
 				calibration_command_executor();
+			}
+		}
+		
+		//Perform gait according to current state.
+		if (state == STATE_WALKING){
+			if ((time -lastStepMoveTime) > 5){
+				if (rotational_velocity <= 0.3 && rotational_velocity > -0.3) rotational_velocity = 0;
+				if (linear_velocity <= 0.3) linear_velocity = 0;
+				if (linear_velocity != 0 || rotational_velocity != 0){
+					static int8_t step_index = 0;
+					
+					for (uint8_t l = 0; l < LEG_COUNT; l++){
+						Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
+						legs[l].setOffset(step);
+					}
+					step_index++;
+					if (step_index > gait_step_count()){
+						step_index = 0;
+					}
+				}
+				else {
+					for (uint8_t l = 0; l < LEG_COUNT; l++){
+						legs[l].setOffset(Point(0,0,0));
+					}
+				}
+				pwm_apply_batch();
+				lastStepMoveTime = time;
 			}
 		}
 	}
