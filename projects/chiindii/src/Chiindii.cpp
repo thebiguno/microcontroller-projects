@@ -186,15 +186,15 @@ void Chiindii::run() {
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		//Send telemetry if something is strange...
-		if (accel.x > 1 || accel.x < -1 || accel.y > 1 || accel.y < -1 || accel.z > 2 || accel.z < 0){ 
-			int16_t telemetry[4];
-			telemetry[0] = loopCounter;
-			telemetry[1] = accel.x * 1000;
-			telemetry[2] = accel.y * 1000;
-			telemetry[3] = accel.z * 1000;
-			FramedSerialMessage response(0x24, (uint8_t*) telemetry, 8);
-			sendMessage(&response);
-		}
+// 		if (accel.x > 1 || accel.x < -1 || accel.y > 1 || accel.y < -1 || accel.z > 2 || accel.z < 0){ 
+// 			int16_t telemetry[4];
+// 			telemetry[0] = loopCounter;
+// 			telemetry[1] = accel.x * 1000;
+// 			telemetry[2] = accel.y * 1000;
+// 			telemetry[3] = accel.z * 1000;
+// 			FramedSerialMessage response(0x24, (uint8_t*) telemetry, 8);
+// 			sendMessage(&response);
+// 		}
 		
 		imu.compute(accel, gyro, mode, time);
 //		gforce_z_average = gforce_z_average + imu.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
