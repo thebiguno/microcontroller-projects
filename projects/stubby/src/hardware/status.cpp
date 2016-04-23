@@ -27,9 +27,9 @@ void status_flash(uint8_t red, uint8_t green, uint8_t blue, uint8_t count){
 	for (uint8_t i = 0; i < count; i++){
 		wdt_reset();
 		status_set_color(red, green, blue);
-		delay_ms(100);
+		//delay_ms(100);
 		status_set_color(0x00, 0x00, 0x00);
-		delay_ms(100);
+		//delay_ms(100);
 	}	
 }
 

@@ -1,18 +1,7 @@
 #ifndef CALIBRATION_H
 #define CALIBRATION_H
 
-#include <avr/eeprom.h>
-#include <avr/wdt.h>
-
 #include "../Stubby.h"
-#include "../Leg.h"
-#include "../gait/gait.h"
-#include "../hardware/battery.h"
-#include "../hardware/magnetometer.h"
-#include "../types/Point.h"
-#include "../util/delays.h"
-
-#include "../lib/pwm/pwm.h"
 
 //Calibration-specific messages are in 0x3X space...
 #define MESSAGE_SAVE_CALIBRATION						0x30
@@ -34,16 +23,17 @@
 namespace digitalcave {
 	class Calibration {
 			
-		private:
-			Stubby* stubby;
-			
 		public:
 			Calibration(Stubby* stubby);
 			
 			/*
 			 * Called from the Stubby protocol dispatch function
 			 */
-			void dispatch(Serial* serial, FramedSerialMessage* message);
+			void dispatch(Stream* serial, FramedSerialMessage* message);
+
+		private:
+			Stubby* stubby;
+			
 	};
 }
 

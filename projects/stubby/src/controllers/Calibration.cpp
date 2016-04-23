@@ -2,11 +2,13 @@
 
 using namespace digitalcave;
 
-Calibration::Calibration(Stubby* stubby) : stubby(stubby){
+Calibration::Calibration(Stubby* stubby) : 
+	stubby(stubby)
+{
 	;
 }
 
-void Calibration::dispatch(Serial* serial, FramedSerialMessage* message){
+void Calibration::dispatch(Stream* serial, FramedSerialMessage* message){
 	if (message->getCommand() == MESSAGE_SAVE_CALIBRATION){
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
 			for (uint8_t j = 0; j < CALIBRATION_COUNT; j++){
@@ -117,7 +119,7 @@ void Calibration::dispatch(Serial* serial, FramedSerialMessage* message){
 	else if (message->getCommand() == MESSAGE_START_MAGNETOMETER_CALIBRATION){
 		uint8_t step_index = 0;
 
-		delay_ms(200);
+		//delay_ms(200);
 		//Rotate slowly in place, constantly sending magnetometer readings to the computer.  This 
 		// many iterations should be about 3 - 5 full turns.
 		for (uint16_t i = 0; i < 2000; i++){
@@ -133,7 +135,7 @@ void Calibration::dispatch(Serial* serial, FramedSerialMessage* message){
 				step_index = 0;
 			}
 			
-			delay_ms(20);
+			//delay_ms(20);
 			
 			//Send magnetometer reading
 			int16_t x;

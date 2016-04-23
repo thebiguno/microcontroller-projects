@@ -30,14 +30,14 @@ void magnetometer_init(){
 	//Discard the first reading after mode change
 	message[0] = 0x03;
 	twi_write_to(MAGNETOMETER_ADDRESS, message, 1, TWI_BLOCK, TWI_STOP);
-	delay_ms(100);
+	//delay_ms(100);
 	message[0] = 0x06;
 	twi_read_from(MAGNETOMETER_ADDRESS, message, 6, TWI_STOP);
 
 	//Read an actual value
 	message[0] = 0x03;
 	twi_write_to(MAGNETOMETER_ADDRESS, message, 1, TWI_BLOCK, TWI_STOP);
-	delay_ms(100);
+	//delay_ms(100);
 	message[0] = 0x06;
 	twi_read_from(MAGNETOMETER_ADDRESS, message, 6, TWI_STOP);
 
