@@ -2,6 +2,12 @@
 #define I2C_H
 
 #include <stdint.h>
+#include "I2CMessage.h"
+
+#define I2C_NOBLOCK	0
+#define I2C_BLOCK	1
+#define I2C_NOSTOP	0
+#define I2C_STOP	1
 
 namespace digitalcave {
 
@@ -10,12 +16,14 @@ namespace digitalcave {
 			/*
 			 * Writes the specified message to the given 7 bit address.
 			 */
-			virtual void write(uint8_t address, I2CMessage* m);
-			
+			void write(uint8_t address, I2CMessage* m) { this->write(address, m, I2C_BLOCK, I2C_STOP); }
+			virtual void write(uint8_t address, I2CMessage* m, uint8_t i2cBlock, uint8_t i2cStop);
+
 			/*
 			 * Reads into the specified message from the given 7 bit address.
 			 */
-			virtual void read(uint8_t address, I2CMessage* m);
+			void read(uint8_t address, I2CMessage* m) { this->read(address, m, m->getLength(), I2C_STOP); }
+			virtual void read(uint8_t address, I2CMessage* m, uint8_t length, uint8_t i2cStop);
 
 		private:
 			//Data

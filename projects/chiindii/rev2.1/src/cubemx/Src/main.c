@@ -79,7 +79,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+void chiindii_main();
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -115,14 +115,13 @@ int main(void)
   MX_DAC_Init();
 
   /* USER CODE BEGIN 2 */
-  HAL_IWDG_Start(&hiwdg);
+  chiindii_main();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_IWDG_Refresh(&hiwdg);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
