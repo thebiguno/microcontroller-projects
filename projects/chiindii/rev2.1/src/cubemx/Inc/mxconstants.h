@@ -38,6 +38,32 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define LED_G_Pin GPIO_PIN_0
+#define LED_G_GPIO_Port GPIOC
+#define LED_B_Pin GPIO_PIN_1
+#define LED_B_GPIO_Port GPIOC
+#define LED_R_Pin GPIO_PIN_2
+#define LED_R_GPIO_Port GPIOC
+#define MOTOR_1_Pin GPIO_PIN_0
+#define MOTOR_1_GPIO_Port GPIOA
+#define MOTOR_5_Pin GPIO_PIN_1
+#define MOTOR_5_GPIO_Port GPIOA
+#define MOTOR_8_Pin GPIO_PIN_2
+#define MOTOR_8_GPIO_Port GPIOA
+#define MOTOR_4_Pin GPIO_PIN_3
+#define MOTOR_4_GPIO_Port GPIOA
+#define IMU_I2C2_SCL_Pin GPIO_PIN_10
+#define IMU_I2C2_SCL_GPIO_Port GPIOB
+#define MOTOR_3_Pin GPIO_PIN_8
+#define MOTOR_3_GPIO_Port GPIOA
+#define MOTOR_7_Pin GPIO_PIN_9
+#define MOTOR_7_GPIO_Port GPIOA
+#define MOTOR_6_Pin GPIO_PIN_10
+#define MOTOR_6_GPIO_Port GPIOA
+#define MOTOR_2_Pin GPIO_PIN_11
+#define MOTOR_2_GPIO_Port GPIOA
+#define IMU_I2C2_SDA_Pin GPIO_PIN_11
+#define IMU_I2C2_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

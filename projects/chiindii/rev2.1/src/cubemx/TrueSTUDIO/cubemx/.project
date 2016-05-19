@@ -337,13 +337,13 @@
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/home/wyatt/STM32Cube/Repository/STM32Cube_FW_F4_V1.11.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c</locationURI>
 		</link><link>
-			<name>Application</name>
+			
 			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			
 		</link><link>
-			<name>Drivers</name>
+			
 			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
+			
 		</link><link>
 			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_dac_ex.c</name>
 			<type>1</type>
@@ -356,5 +356,29 @@
 			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_spi.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Users/wyatt/STM32Cube/Repository/STM32Cube_FW_F4_V1.11.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c</locationURI>
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			
+			<type>2</type>
+			
+		</link><link>
+			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_dac_ex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/home/wyatt/STM32Cube/Repository/STM32Cube_FW_F4_V1.11.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c</locationURI>
+		</link><link>
+			<name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_dac.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/home/wyatt/STM32Cube/Repository/STM32Cube_FW_F4_V1.11.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c</locationURI>
+		</link><link>
+			<name>Application</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link><link>
+			<name>Drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link></linkedResources>
 </projectDescription>
