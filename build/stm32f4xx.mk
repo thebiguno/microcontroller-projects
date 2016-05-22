@@ -79,7 +79,7 @@ flash: all
 ifeq 'nucleo' '$(PROGRAMMER)'
 	@cp $(PROJECT).bin $(NUCLEO_FOLDER)/
 else
-	st-flash --reset write $(PROJECT).bin 0x8000000 
+	st-flash write $(PROJECT).bin 0x8000000 
 endif
 
 
