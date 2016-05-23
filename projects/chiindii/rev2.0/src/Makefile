@@ -6,4 +6,4 @@ PROGRAMMER=dfu
 #LDFLAGS=-Wl,-u,vfprintf -lprintf_flt -lm
 CDEFS=
 
-include ../../../build/avr.mk
+include ../../../../build/avr.mk

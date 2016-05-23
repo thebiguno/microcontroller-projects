@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <dctypes.h>
-#include <util/delay.h>
+#include <dcutil/delay.h>
 #include <I2C.h>
 
 namespace digitalcave {
