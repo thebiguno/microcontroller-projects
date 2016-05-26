@@ -44,12 +44,6 @@
 #include "Analog.h"
 #include "timer.h"
 
-//Generic messages are in 0x0X space...
-#define MESSAGE_BATTERY							0x01
-#define MESSAGE_STATUS							0x02
-#define MESSAGE_DEBUG							0x03
-
-//Universal Controller messages are in 0x1X space...
 
 #define ADC_THROTTLE							13
 #define ADC_BATTERY								12

@@ -46,26 +46,6 @@ UCButtonPush				Control -> Stubby		Index of button which was just pressed (1 byt
 UCButtonRelease				Control -> Stubby		Index of button which was just released (1 byte)									None
 UCJoystickMove				Control -> Stubby		Value of all joystick axis (4 bytes, order LX:LY:RX:RY)								None
 
--- Processing API commands
-RequestPowerOn				Control -> Stubby		Null																				Ack
-RequestPowerOff				Control -> Stubby		Null																				Ack
-
-RequestMove					Control -> Stubby		Angle (1 byte), Velocity (1 byte), Distance (2 bytes)								Ack + Complete when done
-RequestTurn					Control -> Stubby		Angle (1 bytes), Velocity (1 byte)													Ack + Complete when done
-RequestTranslate			Control -> Stubby		Amount (3 bytes, order X, Y, Z)														Ack
-RequestRotate				Control -> Stubby		Axis (1 byte), Angle (1 byte)														Ack
-
-RequestHeading				Control -> Stubby		Null																				Heading message
-SendHeading					Stubby -> Control		Angle (1 byte)																		None
-
-RequestDistance				Control -> Stubby		Null																				Distance message
-SendDistance				Stubby -> Control		Distance (2 bytes, MSB first)																	None
-
-RequestOptical				Control -> Stubby		Null																				Optical message
-SendOptical					Stubby -> Control		1 byte / sensor (TODO: How many sensors?)											None
-
-RequestSetLED				Control -> Stubby		3 bytes (RGB value)																	Ack
-
 -- Calibration program commands
 RequestJointCalibration		Control -> Stubby		Null																				SendJointCalibration message
 SendJointCalibration		Either -> Either		18 bytes, ordered LEG0_TIBIA, LEG0_FEMUR, LEG0_COXA, ... LEG5_COXA					None

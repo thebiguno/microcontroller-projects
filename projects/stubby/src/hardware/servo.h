@@ -8,6 +8,6 @@
 
 #include "../lib/pwm/pwm.h"
 
-void servo_init(Leg *legs);
+void servo_init(Leg** legs);
 
 #endif

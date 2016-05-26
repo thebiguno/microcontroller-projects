@@ -18,6 +18,13 @@
 #include "lib/pwm/pwm.h"
 
 #include "hardware.h"
+#include "hardware/battery.h"
+#include "hardware/distance.h"
+#include "hardware/magnetometer.h"
+#include "hardware/servo.h"
+#include "hardware/status.h"
+#include "hardware/timer0.h"
+#include "hardware/timer2.h"
 
 //State variables
 #define STATE_POWER_OFF			0x00
@@ -29,8 +36,8 @@ namespace digitalcave {
 	class Stubby {
 			
 		private:
-			Leg* legs;
-			FramedSerialProtocol protocol;
+			Leg* legs[LEG_COUNT];
+			FramedSerialProtocol* protocol;
 			
 			uint8_t state;
 			float linearAngle;

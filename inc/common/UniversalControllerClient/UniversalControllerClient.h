@@ -1,6 +1,11 @@
 #ifndef UNIVERSAL_CONTROLLER_CLIENT_H
 #define UNIVERSAL_CONTROLLER_CLIENT_H
 
+//Generic messages are in 0x0X space...
+#define MESSAGE_BATTERY							0x01
+#define MESSAGE_STATUS							0x02
+#define MESSAGE_DEBUG							0x03
+
 //Universal Controller messages are in 0x1X space...
 #define MESSAGE_UC_BUTTON_PUSH					0x10
 #define MESSAGE_UC_BUTTON_RELEASE				0x11

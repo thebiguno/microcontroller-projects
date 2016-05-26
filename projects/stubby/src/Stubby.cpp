@@ -39,31 +39,28 @@ int main (void){
 	stubby.run();
 }
 
-Stubby::Stubby() :
+Stubby::Stubby(){
 	//Set up the leg objects, including servo details and mounting angle.  Leg indices follows
-	// // DIP numbering format, starting at front left and proceeding counter clockwise around.
-	legs[LEG_COUNT]({
-	#if PCB_REVISION == 1
-		Leg(FRONT_LEFT,		&PORTB, PORTB0, &PORTB, PORTB1, &PORTB, PORTB2, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0)),
-		Leg(MIDDLE_LEFT,	&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0)),
-		Leg(REAR_LEFT,		&PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0)),
-		Leg(REAR_RIGHT,		&PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0)),
-		Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0)),
-		Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0))
-	#elif PCB_REVISION == 2
-		Leg(FRONT_LEFT,		&PORTA, PORTA6, &PORTA, PORTA5, &PORTA, PORTA4, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0)),
-		Leg(MIDDLE_LEFT,	&PORTA, PORTA3, &PORTB, PORTB0, &PORTB, PORTB1, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0)),
-		Leg(REAR_LEFT,		&PORTB, PORTB2, &PORTB, PORTB3, &PORTB, PORTB4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0)),
-		Leg(REAR_RIGHT,		&PORTD, PORTD4, &PORTD, PORTD3, &PORTD, PORTD2, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0)),
-		Leg(MIDDLE_RIGHT,	&PORTD, PORTD7, &PORTD, PORTD6, &PORTD, PORTD5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0)),
-		Leg(FRONT_RIGHT,	&PORTC, PORTC4, &PORTC, PORTC3, &PORTC, PORTC2, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0))
-	#else
-		#error Unsupported PCB_REVISION value.
-	#endif
-	}),
-	state(STATE_POWER_OFF)
-{
+	// DIP numbering format, starting at front left and proceeding counter clockwise around.
+#if PCB_REVISION == 1
+	legs[0] = new Leg(FRONT_LEFT,	&PORTB, PORTB0, &PORTB, PORTB1, &PORTB, PORTB2, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0));
+	legs[1] = new Leg(MIDDLE_LEFT,	&PORTB, PORTB3, &PORTA, PORTA3, &PORTB, PORTB4, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0));
+	legs[2] = new Leg(REAR_LEFT,	&PORTD, PORTD2, &PORTD, PORTD3, &PORTC, PORTC4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0));
+	legs[3] = new Leg(REAR_RIGHT,	&PORTC, PORTC3, &PORTC, PORTC2, &PORTD, PORTD7, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0));
+	legs[4] = new Leg(MIDDLE_RIGHT,	&PORTC, PORTC7, &PORTC, PORTC6, &PORTC, PORTC5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0));
+	legs[5] = new Leg(FRONT_RIGHT,	&PORTA, PORTA4, &PORTA, PORTA5, &PORTA, PORTA6, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0));
+#elif PCB_REVISION == 2
+	legs[0] = new Leg(FRONT_LEFT,	&PORTA, PORTA6, &PORTA, PORTA5, &PORTA, PORTA4, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0));
+	legs[1] = new Leg(MIDDLE_LEFT,	&PORTA, PORTA3, &PORTB, PORTB0, &PORTB, PORTB1, 3 * LEG_MOUNTING_ANGLE, Point(-120, 0, 0));
+	legs[2] = new Leg(REAR_LEFT,	&PORTB, PORTB2, &PORTB, PORTB3, &PORTB, PORTB4, 4 * LEG_MOUNTING_ANGLE, Point(-60, -104, 0));
+	legs[3] = new Leg(REAR_RIGHT,	&PORTD, PORTD4, &PORTD, PORTD3, &PORTD, PORTD2, 5 * LEG_MOUNTING_ANGLE, Point(60, -104, 0));
+	legs[4] = new Leg(MIDDLE_RIGHT,	&PORTD, PORTD7, &PORTD, PORTD6, &PORTD, PORTD5, 0 * LEG_MOUNTING_ANGLE, Point(120, 0, 0));
+	legs[5] = new Leg(FRONT_RIGHT,	&PORTC, PORTC4, &PORTC, PORTC3, &PORTC, PORTC2, 1 * LEG_MOUNTING_ANGLE, Point(60, 104, 0));
+#else
+	#error Unsupported PCB_REVISION value.
+#endif
 
+	protocol = new FramedSerialProtocol(64);
 }
 
 void Stubby::run(){
@@ -76,6 +73,7 @@ void Stubby::run(){
 	timer0_init();
 	timer2_init();
 	
+	UniversalController universalController(this);
 	Calibration calibration(this);
 	
 	uint32_t time;
@@ -86,29 +84,26 @@ void Stubby::run(){
 		wdt_reset();
 		
 		//Listen for incoming commands
-		if (protocol.read(&serial, &request)) {
-			if (request.getCommand() & 0xF0 == 0x30){
+		if (protocol->read(&serial, &request)) {
+			if ((request.getCommand() & 0xF0) == 0x10){
+				universalController.dispatch(&serial, &request);
+			}
+			else if ((request.getCommand() & 0xF0) == 0x30){
 				calibration.dispatch(&serial, &request);
-			}
-			else if (controller == CONTROLLER_PROCESSING){
-				processing_command_executor();
-			}
-			else if (controller == CONTROLLER_CALIBRATION){
-				calibration_command_executor();
 			}
 		}
 		
 		//Perform gait according to current state.
 		if (state == STATE_WALKING){
 			if ((time -lastStepMoveTime) > 5){
-				if (rotational_velocity <= 0.3 && rotational_velocity > -0.3) rotational_velocity = 0;
-				if (linear_velocity <= 0.3) linear_velocity = 0;
-				if (linear_velocity != 0 || rotational_velocity != 0){
+				if (rotationalVelocity <= 0.3 && rotationalVelocity > -0.3) rotationalVelocity = 0;
+				if (linearVelocity <= 0.3) linearVelocity = 0;
+				if (linearVelocity != 0 || rotationalVelocity != 0){
 					static int8_t step_index = 0;
 					
 					for (uint8_t l = 0; l < LEG_COUNT; l++){
-						Point step = gait_step(legs[l], step_index, linear_velocity, linear_angle, rotational_velocity);
-						legs[l].setOffset(step);
+						Point step = gait_step(legs[l], step_index, linearVelocity, linearAngle, rotationalVelocity);
+						legs[l]->setOffset(step);
 					}
 					step_index++;
 					if (step_index > gait_step_count()){
@@ -117,7 +112,7 @@ void Stubby::run(){
 				}
 				else {
 					for (uint8_t l = 0; l < LEG_COUNT; l++){
-						legs[l].setOffset(Point(0,0,0));
+						legs[l]->setOffset(Point(0,0,0));
 					}
 				}
 				pwm_apply_batch();
@@ -130,7 +125,7 @@ void Stubby::run(){
 void Stubby::sendDebug(char* message){
 	if (debug){
 		FramedSerialMessage response(MESSAGE_SEND_DEBUG, (uint8_t*) message, strlen(message));
-		protocol.write(&serial, response);
+		protocol->write(&serial, response);
 	}
 }
 
