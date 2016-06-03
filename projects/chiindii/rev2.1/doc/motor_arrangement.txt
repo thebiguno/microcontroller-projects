@@ -1,0 +1,39 @@
+The Chiindii-8 motors are arranged as follows:
+
+    2
+  1   6
+ 5     7
+  8   3
+    4
+
+The motor spin directions are as follows:
+Motors 2, 7, 4, 5: CW
+Motors 1, 6, 3, 8: CCW
+
+When using the Hubsan motors, the CW motors are the ones with Red (+) and Blue (-), while
+the CCW motors are the ones with White (+) and Black (-).
+
+The A props go on the CW (Red / Blue) motors, and the B props go on the CCW (White / Black) motors.
+
+roll is rotating about the x axis
+pitch is rotating about the y axis
+
+Gyro measurements follow the direction of the arrow on the MPU.  Specifically:
+For the X axis, rolling to the right is positive and rolling to the left is negative.
+For the Y axis, pitching the front of the craft down is positive, pitching up is negative.
+For the Z axis, looking down at the craft from above, yaw clockwise is negative, counter clockwise is positive.
+
+
+LED conditions
+blue	no comms
+red		low battery
+green	unarmed (safe to pick up)
+white	armed and with to other error condition (running strobe)
+
+the timing of the LED conditions is as follows
+http://wavedrom.com/editor.html
+{signal: [
+  {name: 'errors', wave: 'x3450x', data: ['comm', 'batt', 'safe'] },
+  {name: 'strobe', wave: 'x0..1x' },
+  {name: 'time',   wave: 'x====x', data: ['.25s', '.25s', '.25s', '.25'] }
+]}
