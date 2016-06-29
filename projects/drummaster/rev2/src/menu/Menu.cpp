@@ -53,7 +53,8 @@ void Menu::initDisplay(){
 	
 	hd44780 = new Hd44780_Teensy(Menu::hd44780->FUNCTION_LINE_2 | Menu::hd44780->FUNCTION_SIZE_5x8, PIN_RS, PIN_E, MUX0, MUX1, MUX2, MUX3);
 	display = new CharDisplay(Menu::hd44780, DISPLAY_ROWS, DISPLAY_COLS);
-	display->write_text(0, 0, "Loading...          ", 20);
+	display->clear();
+	display->write_text(1, 5, "Loading...", 10);
 	display->refresh();
 	
 	{
@@ -71,10 +72,12 @@ void Menu::initDisplay(){
 		delay(64);
 		hd44780->write_bytes(custom, 64);
 	}
+	
+	delay(10);
 }
 
 void Menu::poll(){
-	if (lastTime + 100 < millis()){
+	if ((lastTime + 100) < millis()){
 		button.sample(millis());
 		
 		//Ensure valid menu entry is selected

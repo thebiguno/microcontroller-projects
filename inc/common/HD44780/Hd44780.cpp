@@ -9,17 +9,19 @@ using namespace digitalcave;
 
 void Hd44780::init_display(uint8_t function) {
 	this->write_command((function & 0x0c) | 0x30);
+	delay_us(60);
 	this->write_command(0x08);
+	delay_us(60);
 	this->clear();
 	this->write_command(0x06);
+	delay_us(60);
 	this->write_command(0x0c);
-	
-	
+	delay_us(60);
 }
 
 void Hd44780::clear() {
 	this->write_command(0x01);
-//	_delay_ms(0x04);
+	delay_ms(4);
 }
 
 void Hd44780::home() {
