@@ -188,6 +188,8 @@ void Sample::play(char* filename, uint8_t pad, double volume){
 }
 
 void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade){
+	if (filename == NULL) return;
+	
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 	
