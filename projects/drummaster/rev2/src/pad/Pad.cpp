@@ -1,6 +1,7 @@
 #include "Pad.h"
 
 #include "HiHat.h"
+#include "Ride.h"
 #include "Drum.h"
 #include "Cymbal.h"
 
@@ -17,7 +18,7 @@ Pad* Pad::pads[PAD_COUNT] = {
 	new Drum(	MUX_6,					50),			//Tom2
 	new Drum(	MUX_7,					50),			//Tom3
 	new Cymbal(	MUX_8, MUX_13,			50,		0.97),	//Splash
-	new Cymbal(	MUX_9, MUX_12,			50,		0.99),	//Ride
+	new Ride(	MUX_9, MUX_1, MUX_12,	50,		0.99),	//Ride
 	new Drum(	MUX_10,					50),			//X0
 	new Drum(	MUX_11,					50)				//X1
 };
