@@ -25,6 +25,55 @@ namespace digitalcave {
  	 * the static findAvailableSample method.
 	 */
 	class Sample {
+		public:
+			//Get / set the headphone volume.  This is a value from 0 to 100 (internally divided by 100).
+			static uint8_t getVolumeHeadphones();
+			static void setVolumeHeadphones(uint8_t volume);
+			
+			//Get / set the line in volume.  This is a value from 0 to 200 (internally divided by 100).  Keep this low unless using the line in.
+			static uint8_t getVolumeLineIn();
+			static void setVolumeLineIn(uint8_t volume);
+			
+			
+			//Find the best available Sample object from the singleton array
+			static Sample* findAvailableSample(uint8_t pad, double volume);
+			
+			//Starts fading out all currently playing samples for the selected pad.
+			static void startFade(uint8_t pad, double gain);
+			
+			//Stops a previously started fade
+			static void stopFade(uint8_t pad);
+			
+			//Call this repeatedly to handle the actual fading (since using an envelope object uses way too much CPU)
+			static void processFade(uint8_t pad);
+			
+			//Start playback using this sample's SPI playback object for the given filename
+			void play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade);
+			
+			//Is the sample current playing?
+			uint8_t isPlaying();
+			
+			//If the sample is playing, return the position of the sample; otherwise return 0
+			uint32_t getPositionMillis();
+			
+			//Fade a specific sample
+			void startFade(double gain);
+			
+			//Stops playback
+			void stop();
+
+			//Retrieves the current sample volume.  This is a floating point gain multiplier.
+			double getVolume();
+
+			//Set the sample volume.  This is a value from 0 to 255.
+			void setVolume(double volume);
+
+			//Returns the index of the last pad which initiated playback.
+			uint8_t getLastPad();
+			
+			//Returns the last filename which was played on this sample
+			char* getFilename();
+			
 		private:
 			//Control object
 			static AudioControlSGTL5000 control;
@@ -89,56 +138,6 @@ namespace digitalcave {
 			
 			//Constructing the objects should only happen during singleton array init.
 			Sample();
-			
-		public:
-			//Get / set the headphone volume.  This is a value from 0 to 100 (internally divided by 100).
-			static uint8_t getVolumeHeadphones();
-			static void setVolumeHeadphones(uint8_t volume);
-			
-			//Get / set the line in volume.  This is a value from 0 to 200 (internally divided by 100).  Keep this low unless using the line in.
-			static uint8_t getVolumeLineIn();
-			static void setVolumeLineIn(uint8_t volume);
-			
-			
-			//Find the best available Sample object from the singleton array
-			static Sample* findAvailableSample(uint8_t pad, double volume);
-			
-			//Starts fading out all currently playing samples for the selected pad.
-			static void startFade(uint8_t pad, double gain);
-			
-			//Stops a previously started fade
-			static void stopFade(uint8_t pad);
-			
-			//Call this repeatedly to handle the actual fading (since using an envelope object uses way too much CPU)
-			static void processFade(uint8_t pad);
-			
-			//Start playback using this sample's SPI playback object for the given filename
-			void play(char* filename, uint8_t pad, double volume);
-			void play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade);
-			
-			//Is the sample current playing?
-			uint8_t isPlaying();
-			
-			//If the sample is playing, return the position of the sample; otherwise return 0
-			uint32_t getPositionMillis();
-			
-			//Fade a specific sample
-			void startFade(double gain);
-			
-			//Stops playback
-			void stop();
-
-			//Retrieves the current sample volume.  This is a floating point gain multiplier.
-			double getVolume();
-
-			//Set the sample volume.  This is a value from 0 to 255.
-			void setVolume(double volume);
-
-			//Returns the index of the last pad which initiated playback.
-			uint8_t getLastPad();
-			
-			//Returns the last filename which was played on this sample
-			char* getFilename();
 	};
 	
 }

@@ -183,10 +183,6 @@ Sample::Sample():
 	currentIndex++;	//Increment current index
 }
 
-void Sample::play(char* filename, uint8_t pad, double volume){
-	play(filename, pad, volume, 0);
-}
-
 void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade){
 	if (filename == NULL) return;
 	

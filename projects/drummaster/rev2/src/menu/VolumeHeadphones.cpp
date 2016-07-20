@@ -32,7 +32,7 @@ Menu* VolumeHeadphones::handleAction(){
 	display->write_text(2, 8, ARROW_BOLD);
 
 	//Dynamic text
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getSelectedMapping()->getKitName());
 	display->write_text(1, 1, buf, 19);
 	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeHeadphones());
 	display->write_text(2, 9, buf, 3);

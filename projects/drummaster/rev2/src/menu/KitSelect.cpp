@@ -14,7 +14,6 @@ void KitSelect::loadKitIndexFromEeprom(){
 	((KitSelect*) Menu::kitSelect)->encoderState = kitIndex * 2;
 	((KitSelect*) Menu::kitSelect)->setMenuCount(Mapping::getKitCount());
 	Mapping::setSelectedKit(kitIndex);
-	Pad::loadAllSamples(kitIndex);
 	VolumePad::loadPadVolumesFromEeprom(kitIndex);
 }
 
@@ -26,7 +25,6 @@ Menu* KitSelect::handleAction(){
 	//Change value
 	if (Mapping::getSelectedKit() != getMenuPosition(0)){
 		Mapping::setSelectedKit(getMenuPosition(0));
-		Pad::loadAllSamples(Mapping::getSelectedKit());
 		VolumePad::loadPadVolumesFromEeprom(Mapping::getSelectedKit());
 	}
 	
@@ -39,7 +37,7 @@ Menu* KitSelect::handleAction(){
 	display->write_text(1, 0, ARROW_BOLD);
 
 	//Dynamic text
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getSelectedMapping()->getKitName());
 	display->write_text(1, 1, buf, 19);
 	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeHeadphones());
 	display->write_text(2, 9, buf, 3);

@@ -1,6 +1,7 @@
 #include "Mapping.h"
 
 #include "../menu/Menu.h"
+#include "../Pad.h"
 
 using namespace digitalcave;
 
@@ -15,15 +16,19 @@ void Mapping::loadMappings(){
 	
 	//Init the mapping objects
 	for(uint8_t i = 0; i < KIT_COUNT; i++){
-		mappings[i].kitIndex = 0xFF;
+		//Zero out the kit names
 		for(uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
 			mappings[i].kitName[j] = 0x00;
 		}
+		//Zero out the filename details for each pad
 		for (uint8_t j = 0; j < PAD_COUNT; j++){
-			for(uint8_t k = 0; k < FILENAME_PREFIX_STRING_SIZE; k++){
-				mappings[i].filenamePrefixes[j][k] = 0x00;
+			for (uint8_t k = 0; k < FILENAME_COUNT; k++){
+				for (uint8_t l = 0; l < FILENAME_PREFIX_STRING_SIZE; l++){
+					mappings[i].filenamePrefixes[j][k][l] = 0x00;
+				}
 			}
-			mappings[i].custom[j] = 0xFF;
+			
+			mappings[i].filenamePrefixCount[j] = 0;
 		}
 	}
 
@@ -36,6 +41,9 @@ void Mapping::loadMappings(){
 
 	//This is the current pad index.  Looked up based on the mapping key.  0xFF implies not set.
 	uint8_t padIndex = 0xFF;
+	//Current filename index.  Starts at 0, and increments with each comma separated filename.
+	// Must be less than FILENAME_COUNT.
+	uint8_t filenameIndex = 0;
 
 	SerialFlashFile mappingsFile = SerialFlash.open("MAPPINGS.TXT");
 	if (!mappingsFile) {
@@ -43,8 +51,9 @@ void Mapping::loadMappings(){
 		
 		Menu::display->clear();
 		Menu::display->write_text(0, 0, "No Mappings Found...", 20);
-		Menu::display->write_text(1, 0, "Please load samples ", 20);
-		Menu::display->write_text(2, 0, "from the SD card    ", 20);
+		Menu::display->write_text(1, 0, "Please copy samples ", 20);
+		Menu::display->write_text(2, 0, "to the flash chip   ", 20);
+		Menu::display->write_text(3, 0, "via Serial or SD.   ", 20);
 		Menu::display->refresh();
 		delay(2000);
 		Menu::display->clear();
@@ -74,7 +83,6 @@ void Mapping::loadMappings(){
 						return;
 					}
 					kitNameIndex = 0;
-					mappings[kitIndex].kitIndex = kitIndex;
 					for (uint8_t j = 0; j < KITNAME_STRING_SIZE; j++){
 						mappings[kitIndex].kitName[j] = 0x00;	//Null out string
 					}
@@ -159,23 +167,25 @@ void Mapping::loadMappings(){
 				//Separator character (colon)
 				else if (mappingIndex == 2){
 					if (buffer[i] == ':') {
-						for (uint8_t j = 0; j < FILENAME_PREFIX_STRING_SIZE; j++){
-							mappings[kitIndex].filenamePrefixes[padIndex][j] = 0x00;	//Null out string
-						}
+						filenameIndex = 0;
 					}
 					else {
 						state = STATE_INVALID;
 					}
 				}
 				//Filling up filename
-				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == ',' || buffer[i] == '-' || buffer[i] == '_'){
+				else if ((buffer[i] >= 'A' && buffer[i] <= 'Z') || (buffer[i] >= '0' && buffer[i] <= '9') || buffer[i] == '.' || buffer[i] == '-' || buffer[i] == '_'){
 					if ((mappingIndex - 3) < FILENAME_PREFIX_STRING_SIZE - 1){
- 						mappings[kitIndex].filenamePrefixes[padIndex][mappingIndex - 3] = buffer[i];
+ 						mappings[kitIndex].filenamePrefixes[padIndex][filenameIndex][mappingIndex - 3] = buffer[i];
 					}
 				}
-				//This one has a custom mapping!
-				else if (buffer[i] == ':'){
-					state = STATE_CUSTOM;
+				//Comma separated list for filenames
+				else if (buffer[i] == ','){
+					filenameIndex++;
+					if (filenameIndex >= FILENAME_COUNT){
+						filenameIndex = FILENAME_COUNT - 1;
+					}
+					mappings[kitIndex].filenamePrefixCount[padIndex] = filenameIndex + 1;	//Keep track of how many filenames for each pad
 				}
 				//Something else
 				else {
@@ -184,19 +194,6 @@ void Mapping::loadMappings(){
 				
 				mappingIndex++;
 			}
-			else if (state == STATE_CUSTOM){
-				if (buffer[i] >= '0' && buffer[i] <= '9'){
-					mappings[kitIndex].custom[padIndex] = buffer[i] - 0x30;
-				}
-				//Newline
-				else if (buffer[i] == '\n' || buffer[i] == '\r'){
-					state = STATE_NEWLINE;
-				}
-				//Something else
-				else {
-					state = STATE_INVALID;
-				}
-			}
 		}
 	}
 	
@@ -204,10 +201,8 @@ void Mapping::loadMappings(){
 	kitCount = kitIndex + 1;
 }
 
-Mapping* Mapping::getMapping(uint8_t index){
-	if (index < kitCount) return &mappings[index];
-	else if (kitCount > 0) return &mappings[kitCount - 1];
-	else return &mappings[0];
+Mapping* Mapping::getSelectedMapping(){
+	return &mappings[selectedKit];
 }
 
 uint8_t Mapping::getKitCount(){
@@ -220,23 +215,189 @@ uint8_t Mapping::getSelectedKit(){
 void Mapping::setSelectedKit(uint8_t kitIndex){
 	if (kitIndex >= kitCount) kitIndex = kitCount - 1;
 	selectedKit = kitIndex;
-}
+	
+	Mapping* selected = &mappings[selectedKit];
+	
+	//Clear the sample volumes
+	for (uint8_t i = 0; i < 18; i++){
+		selected->sampleVolumes[i] = 0x00;
+	}
 
+	//Loop through each pad defined in the current mapping
+	for (uint8_t i = 0; i < PAD_COUNT; i++){
+		for (uint8_t j = 0; j < selected->filenamePrefixCount[i]; j++){
+			//The filename prefix must be at least three chars
+			if (strlen(selected->filenamePrefixes[i][j]) < 3) continue;
+			
+			SerialFlash.opendir();
+			while (1) {
+				char filename[16];
+				unsigned long filesize;
 
-uint8_t Mapping::getKitIndex(){
-	return kitIndex;
+				if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
+					uint8_t filenamePrefixLength = strlen(selected->filenamePrefixes[i][j]);
+					if (filenamePrefixLength > 6) filenamePrefixLength = 6;
+					
+					//Check that this filename starts with the currently assigned filename prefix
+					if (strncmp(selected->filenamePrefixes[i][j], filename, filenamePrefixLength) != 0) {
+						continue;
+					}
+
+					uint8_t pedalPosition = 0;
+
+					//Check that there is a valid character immediately after the filename prefix.
+					// Depending on the pad type, this may be an underscore, a 'B' (Bell), or 0-9 A-F (HiHat level).
+					if (Pad::getPad(i)->getPadType() == PAD_TYPE_DRUM){
+						if (filename[filenamePrefixLength] != '_'){
+							continue;	//Invalid filename, missing '_' before volume.
+						}
+						pedalPosition = 0;
+					}
+					else if (Pad::getPad(i)->getPadType() == PAD_TYPE_CYMBAL){
+						//Check that the filename pedal position is valid (_ or B).  The pedal position is the first character after the prefix.
+						char filePedalPosition = filename[filenamePrefixLength];
+						if (filePedalPosition == '_') pedalPosition = 0;
+						else if (filePedalPosition == 'B') pedalPosition = 1;
+						else {
+							continue;	//Invalid volume
+						}
+					}
+					else if (Pad::getPad(i)->getPadType() == PAD_TYPE_HIHAT){
+						//Check that the filename pedal position is valid (0..F).  The pedal position is the first character after the prefix.
+						char filePedalPosition = filename[filenamePrefixLength];
+						if (filePedalPosition >= '0' && filePedalPosition <= '9') pedalPosition = filePedalPosition - 0x30;
+						else if (filePedalPosition >= 'A' && filePedalPosition <= 'F') pedalPosition = filePedalPosition - 0x37;
+						else if (filePedalPosition == 'K') pedalPosition = HIHAT_SPECIAL_CHIC;
+						else if (filePedalPosition == 'P') pedalPosition = HIHAT_SPECIAL_SPLASH;
+						else {
+							continue;	//Invalid volume
+						}
+					}
+					
+					//Check that the filename volume is valid (0..F).  The volume is the second character after the prefix.
+					char fileVolume = filename[filenamePrefixLength + 1];
+					uint8_t volume;
+					if (fileVolume >= '0' && fileVolume <= '9') volume = fileVolume - 0x30;
+					else if (fileVolume >= 'A' && fileVolume <= 'F') volume = fileVolume - 0x37;
+					else {
+						continue;	//Invalid volume
+					}
+
+					selected->sampleVolumes[pedalPosition] |= _BV(volume);
+				} 
+				else {
+					break; // no more files
+				}
+			}
+		}
+	}
 }
 
 char* Mapping::getKitName(){
 	return kitName;
 }
 
-char* Mapping::getFilenamePrefix(uint8_t padIndex){
-	if (padIndex < PAD_COUNT) return filenamePrefixes[padIndex];
-	else return NULL;
+inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex, uint16_t* sampleVolumes){
+	if (sampleVolumes[pedalPositionIndex] == 0) return 0xFF;
+	
+	//Start at the current bucket; if that is not a match, look up and down until a match is found.  At 
+	// most this will take 16 tries (since there are 16 buckets)
+	for(uint8_t i = 0; i < 16; i++){
+		if (((closestVolume + i) <= 0x0F) && (sampleVolumes[pedalPositionIndex] & _BV(closestVolume + i))) {
+			return closestVolume + i;
+		}
+		else if (((closestVolume - i) >= 0x00) && (sampleVolumes[pedalPositionIndex] & _BV(closestVolume - i))) {
+			return closestVolume - i;
+		}
+	}
+	
+	return 0xFF;
 }
 
-uint8_t Mapping::getCustom(uint8_t padIndex){
-	if (padIndex < PAD_COUNT) return custom[padIndex];
-	else return 0xFF;
+uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char** filenames){
+	if (padIndex >= PAD_COUNT){
+		return 0;
+	}
+
+	
+	//Limit volume from 0 to 1
+	if (volume < 0) volume = 0;
+	else if (volume >= 1.0) volume = 1.0;
+
+	//We find the closest match in fileCountByVolume
+	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
+	
+	for (uint8_t i = 0; i < filenamePrefixCount[padIndex]; i++){
+		if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_DRUM){
+			closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes);
+
+			snprintf(filenames[i], FILENAME_STRING_SIZE, "%s_%X.RAW", filenamePrefixes[padIndex][i], closestVolume);
+		}
+		else if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_CYMBAL){
+			//Find the closes match in pedal position.
+			int8_t closestPedalPosition = 0;	//This is either 0 (normal ride) or 1 (bell)
+
+			//Pedal position is more important than velocity; thus, we look for the closest match on
+			// position first, and then once we find any sample closest to the selected pedal position,
+			// we then look to find the closest velocity sample within that position.
+			if (pedalPosition > 8 && sampleVolumes[1]){
+				closestPedalPosition = 1;
+				closestVolume = getClosestVolume(closestVolume, 1, sampleVolumes);
+			}
+			else {
+				closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes);
+			}
+			
+			snprintf(filenames[i], FILENAME_STRING_SIZE, "%s%c%X.RAW", filenamePrefixes[padIndex][i], closestPedalPosition == 0 ? '_' : 'B', closestVolume);
+		}
+		else if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_HIHAT){
+			if (pedalPosition == HIHAT_SPECIAL_CHIC || pedalPosition == HIHAT_SPECIAL_SPLASH){
+				closestVolume = getClosestVolume(closestVolume, pedalPosition, sampleVolumes);
+				if (closestVolume == 0xFF){
+					return i;
+				}
+				else {
+					snprintf(filenames[i], FILENAME_STRING_SIZE, "%s%c%X.RAW", filenamePrefixes[padIndex][i], pedalPosition == HIHAT_SPECIAL_CHIC ? 'K' : 'P', closestVolume);
+				}
+			}
+			else {
+				//Find the closes match in pedal position.
+				int8_t closestPedalPosition = pedalPosition;	//Pedal position is already a 4 bit number
+
+				//Pedal position is more important than velocity; thus, we look for the closest match on
+				// position first, and then once we find any sample closest to the selected pedal position,
+				// we then look to find the closest velocity sample within that position.
+				for(uint8_t i = 0; i < 16; i++){
+					//First we check if there is anything in the sampleVolumes array at this index; if so, we go with it.
+					if (((closestPedalPosition + i) <= 0x0F) && (sampleVolumes[closestPedalPosition + i])) {
+						//Remember what pedal position we are looking at
+						closestPedalPosition = closestPedalPosition + i;
+						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+						break;
+					}
+					//Likewise on the low side.
+					if (((closestPedalPosition - i) <= 0x0F) && (sampleVolumes[closestPedalPosition - i])) {
+						//Remember what pedal position we are looking at
+						closestPedalPosition = closestPedalPosition - i;
+						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+						break;
+					}
+				}
+
+				snprintf(filenames[i], FILENAME_STRING_SIZE, "%s%X%X.RAW", filenamePrefixes[padIndex][i], closestPedalPosition, closestVolume);
+			}
+		}
+		
+	}
+
+	
+	
+	
+	if (padIndex < PAD_COUNT){
+		filenames = (char**) this->filenamePrefixes[padIndex];
+		for (int8_t i = FILENAME_COUNT - 1; i >= 0; i--){
+			if (filenamePrefixes[padIndex][i][0] != 0x00) return i;
+		}
+	}
+	return 0;
 }

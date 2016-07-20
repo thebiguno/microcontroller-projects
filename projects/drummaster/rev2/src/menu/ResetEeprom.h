@@ -4,7 +4,7 @@
 #include <EEPROM/EEPROM.h>
 
 #include "../hardware.h"
-#include "../pad/Pad.h"
+#include "../Pad.h"
 #include "Menu.h"
 #include "KitSelect.h"
 
