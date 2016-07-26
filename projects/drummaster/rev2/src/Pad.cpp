@@ -57,6 +57,14 @@ Pad::Pad(uint8_t padType, uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t
 		peakValue(0),
 		playTime(0),
 		lastPiezo(0),
+		lastRaw(0),
+		switchValue(0),
+		lastSwitchValue(0),
+		pedalPosition(0),
+		lastPedalPosition(0),
+		averagePedalPosition(0),
+		lastChicTime(0),
+		lastChicVolume(0),
 		doubleHitThreshold(doubleHitThreshold) {
 	currentIndex++;
 }
@@ -68,11 +76,13 @@ void Pad::poll(){
 		
 		//We have just tightly closed the pedal; play the chic sound if it is fast enough.  The 
 		// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
-		if ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1)){
+		if (getPadType() == PAD_TYPE_HIHAT && ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1))){
 			double volume = ((averagePedalPosition >> AVERAGE_PEDAL_COUNT_EXP) / 16.0 - 0.2);
+			Serial.print("Hihat! Volume ");
+			Serial.println(volume);
 			
 			char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE];
-			uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, switchValue, pedalPosition, (char**) filenames);
+			uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, switchValue, HIHAT_SPECIAL_CHIC, filenames);
 
 			if (volume > 0 && lastChicTime + 200 < millis()){
 				for (uint8_t i = 0; i < filePrefixCount; i++){
@@ -92,7 +102,8 @@ void Pad::poll(){
 	double volume = readPiezo(piezoMuxIndex);
 	if (volume){
 		char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE];
-		uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, 0, 0, (char**) filenames);
+		uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, 0, pedalPosition, filenames);
+		Serial.println(filePrefixCount);
 		for (uint8_t i = 0; i < filePrefixCount; i++){
 			Sample* sample = Sample::findAvailableSample(padIndex, volume);
 			sample->play(filenames[i], padIndex, volume, 0);

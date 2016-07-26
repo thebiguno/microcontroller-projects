@@ -10,6 +10,8 @@ uint8_t Mapping::kitCount;
 uint8_t Mapping::selectedKit;
 
 void Mapping::loadMappings(){
+	Serial.println("loadMappings()");
+
 	uint8_t state = STATE_NEWLINE;
 
 	int8_t kitIndex = -1;
@@ -178,6 +180,7 @@ void Mapping::loadMappings(){
 					if ((mappingIndex - 3) < FILENAME_PREFIX_STRING_SIZE - 1){
  						mappings[kitIndex].filenamePrefixes[padIndex][filenameIndex][mappingIndex - 3] = buffer[i];
 					}
+					mappings[kitIndex].filenamePrefixCount[padIndex] = filenameIndex + 1;	//Keep track of how many filenames for each pad.  Doing it repeatedly here (for each character) is redundant, but it works.
 				}
 				//Comma separated list for filenames
 				else if (buffer[i] == ','){
@@ -185,7 +188,6 @@ void Mapping::loadMappings(){
 					if (filenameIndex >= FILENAME_COUNT){
 						filenameIndex = FILENAME_COUNT - 1;
 					}
-					mappings[kitIndex].filenamePrefixCount[padIndex] = filenameIndex + 1;	//Keep track of how many filenames for each pad
 				}
 				//Something else
 				else {
@@ -199,6 +201,25 @@ void Mapping::loadMappings(){
 	
 	mappingsFile.close();
 	kitCount = kitIndex + 1;
+	
+	//Print defined mappings
+// 	for (uint8_t i = 0; i < kitCount; i++){
+// 		Serial.println(mappings[i].kitName);
+// 		for (uint8_t j = 0; j < PAD_COUNT; j++){
+// 			Serial.print("  ");
+// 			Serial.print(j);	//Pad index
+// 			Serial.print(" (");
+// 			Serial.print(mappings[i].filenamePrefixCount[j]);
+// 			Serial.print("): ");
+// 			for (uint8_t k = 0; k < mappings[i].filenamePrefixCount[j]; k++){
+// 				if (mappings[i].filenamePrefixes[j][k][0] != 0x00){
+// 					Serial.print(mappings[i].filenamePrefixes[j][k]);
+// 					Serial.print(", ");
+// 				}
+// 			}
+// 			Serial.println("");
+// 		}
+// 	}
 }
 
 Mapping* Mapping::getSelectedMapping(){
@@ -213,19 +234,26 @@ uint8_t Mapping::getSelectedKit(){
 	return selectedKit;
 }
 void Mapping::setSelectedKit(uint8_t kitIndex){
+	Serial.println("setSelectedKit()");
+
 	if (kitIndex >= kitCount) kitIndex = kitCount - 1;
 	selectedKit = kitIndex;
 	
 	Mapping* selected = &mappings[selectedKit];
 	
 	//Clear the sample volumes
-	for (uint8_t i = 0; i < 18; i++){
-		selected->sampleVolumes[i] = 0x00;
+	for (uint8_t i = 0; i < PAD_COUNT; i++){
+		for (uint8_t j = 0; j < FILENAME_COUNT; j++){
+			for (uint8_t k = 0; k < 18; k++){
+				selected->sampleVolumes[i][j][k] = 0x00;
+			}
+		}
 	}
 
 	//Loop through each pad defined in the current mapping
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
 		for (uint8_t j = 0; j < selected->filenamePrefixCount[i]; j++){
+			Serial.println(selected->filenamePrefixes[i][j]);
 			//The filename prefix must be at least three chars
 			if (strlen(selected->filenamePrefixes[i][j]) < 3) continue;
 			
@@ -235,6 +263,8 @@ void Mapping::setSelectedKit(uint8_t kitIndex){
 				unsigned long filesize;
 
 				if (SerialFlash.readdir(filename, sizeof(filename), filesize)) {
+// 					Serial.print("filename: ");
+// 					Serial.println(filename);
 					uint8_t filenamePrefixLength = strlen(selected->filenamePrefixes[i][j]);
 					if (filenamePrefixLength > 6) filenamePrefixLength = 6;
 					
@@ -283,7 +313,7 @@ void Mapping::setSelectedKit(uint8_t kitIndex){
 						continue;	//Invalid volume
 					}
 
-					selected->sampleVolumes[pedalPosition] |= _BV(volume);
+					selected->sampleVolumes[i][j][pedalPosition] |= _BV(volume);
 				} 
 				else {
 					break; // no more files
@@ -314,7 +344,13 @@ inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex
 	return 0xFF;
 }
 
-uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char** filenames){
+uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE]){
+	Serial.println("getFilenames()");
+	Serial.print("switchPosition = ");
+	Serial.print(switchPosition);
+	Serial.print("; pedalPosition = ");
+	Serial.println(pedalPosition);
+
 	if (padIndex >= PAD_COUNT){
 		return 0;
 	}
@@ -327,11 +363,23 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 	//We find the closest match in fileCountByVolume
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
+	Serial.println(filenamePrefixCount[padIndex]);
+	
 	for (uint8_t i = 0; i < filenamePrefixCount[padIndex]; i++){
+		Serial.print("pad ");
+		Serial.print(i);
+		Serial.print(" type ");
+		Serial.println(Pad::getPad(padIndex)->getPadType());
 		if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_DRUM){
-			closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes);
-
+			closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes[padIndex][i]);
+			Serial.print("closestVolume: ");
+			Serial.println(closestVolume);
+			Serial.print("filenamePrefix: ");
+			Serial.println(filenamePrefixes[padIndex][i]);
 			snprintf(filenames[i], FILENAME_STRING_SIZE, "%s_%X.RAW", filenamePrefixes[padIndex][i], closestVolume);
+			Serial.print("filename: '");
+			Serial.print(filenames[i]);
+			Serial.println("'");
 		}
 		else if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_CYMBAL){
 			//Find the closes match in pedal position.
@@ -340,19 +388,19 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 			//Pedal position is more important than velocity; thus, we look for the closest match on
 			// position first, and then once we find any sample closest to the selected pedal position,
 			// we then look to find the closest velocity sample within that position.
-			if (pedalPosition > 8 && sampleVolumes[1]){
+			if (pedalPosition > 8 && sampleVolumes[padIndex][i][1]){
 				closestPedalPosition = 1;
-				closestVolume = getClosestVolume(closestVolume, 1, sampleVolumes);
+				closestVolume = getClosestVolume(closestVolume, 1, sampleVolumes[padIndex][i]);
 			}
 			else {
-				closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes);
+				closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes[padIndex][i]);
 			}
 			
 			snprintf(filenames[i], FILENAME_STRING_SIZE, "%s%c%X.RAW", filenamePrefixes[padIndex][i], closestPedalPosition == 0 ? '_' : 'B', closestVolume);
 		}
 		else if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_HIHAT){
 			if (pedalPosition == HIHAT_SPECIAL_CHIC || pedalPosition == HIHAT_SPECIAL_SPLASH){
-				closestVolume = getClosestVolume(closestVolume, pedalPosition, sampleVolumes);
+				closestVolume = getClosestVolume(closestVolume, pedalPosition, sampleVolumes[padIndex][i]);
 				if (closestVolume == 0xFF){
 					return i;
 				}
@@ -367,19 +415,19 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 				//Pedal position is more important than velocity; thus, we look for the closest match on
 				// position first, and then once we find any sample closest to the selected pedal position,
 				// we then look to find the closest velocity sample within that position.
-				for(uint8_t i = 0; i < 16; i++){
+				for(uint8_t j = 0; j < 16; j++){
 					//First we check if there is anything in the sampleVolumes array at this index; if so, we go with it.
-					if (((closestPedalPosition + i) <= 0x0F) && (sampleVolumes[closestPedalPosition + i])) {
+					if (((closestPedalPosition + j) <= 0x0F) && (sampleVolumes[padIndex][i][closestPedalPosition + j])) {
 						//Remember what pedal position we are looking at
-						closestPedalPosition = closestPedalPosition + i;
-						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+						closestPedalPosition = closestPedalPosition + j;
+						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes[padIndex][i]);
 						break;
 					}
 					//Likewise on the low side.
-					if (((closestPedalPosition - i) <= 0x0F) && (sampleVolumes[closestPedalPosition - i])) {
+					if (((closestPedalPosition - j) <= 0x0F) && (sampleVolumes[padIndex][i][closestPedalPosition - j])) {
 						//Remember what pedal position we are looking at
-						closestPedalPosition = closestPedalPosition - i;
-						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes);
+						closestPedalPosition = closestPedalPosition - j;
+						closestVolume = getClosestVolume(closestVolume, closestPedalPosition, sampleVolumes[padIndex][i]);
 						break;
 					}
 				}
@@ -390,13 +438,10 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 		
 	}
 
-	
-	
-	
 	if (padIndex < PAD_COUNT){
-		filenames = (char**) this->filenamePrefixes[padIndex];
-		for (int8_t i = FILENAME_COUNT - 1; i >= 0; i--){
-			if (filenamePrefixes[padIndex][i][0] != 0x00) return i;
+		for (int8_t i = filenamePrefixCount[padIndex] - 1; i >= 0; i--){
+			Serial.println(i);
+			if (filenames[i][0] != 0x00) return (i + 1);
 		}
 	}
 	return 0;

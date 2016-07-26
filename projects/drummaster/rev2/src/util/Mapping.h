@@ -49,7 +49,7 @@ namespace digitalcave {
 			//Returns the number of filename prefixes that are available for this pad index,
 			// and points to the filenames object.  The calling code can then start playing
 			// each filename.
-			uint8_t getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char** filenames);
+			uint8_t getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE]);
 
 		private:
 			static Mapping mappings[KIT_COUNT];		//All defined mappings, loaded from the mappings file
@@ -69,7 +69,7 @@ namespace digitalcave {
 			// pedal position or special effect (as entries in the array).
 			//Drums only use index 0; cymbals with bells defined use index 0 and 1; ride cymbals
 			// use all 16 + 2 special effects (chic and splash)
-			uint16_t sampleVolumes[18];
+			uint16_t sampleVolumes[PAD_COUNT][FILENAME_COUNT][18];
 	};
 	
 }
