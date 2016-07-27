@@ -5,7 +5,7 @@
 
 #include <SerialFlash.h>
 
-#include "../hardware.h"
+#include "hardware.h"
 
 #define STATE_INVALID		0
 #define STATE_NEWLINE		1

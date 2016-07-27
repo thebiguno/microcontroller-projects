@@ -1,6 +1,6 @@
 #include "VolumeHeadphones.h"
+#include "../Mapping.h"
 #include "../Sample.h"
-#include "../util/Mapping.h"
 
 using namespace digitalcave;
 

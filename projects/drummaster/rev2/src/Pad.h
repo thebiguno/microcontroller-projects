@@ -5,9 +5,9 @@
 
 #include <ADC.h>
 
+#include "Mapping.h"
 #include "Sample.h"
 #include "hardware.h"
-#include "util/Mapping.h"
 
 #define MUX_0		0
 #define MUX_1		1
@@ -136,6 +136,9 @@ namespace digitalcave {
 			
 			//The last time the sample was changed based on pedal position
 			uint32_t lastSampleChange;
+			
+			//The last sample which was played for the given file (we can adjust the volume on this if needed)
+			Sample* lastSample[FILENAME_COUNT];
 
 			/*** Private functions ***/
 			//Returns the strike velocity.  Handles the ADC, draining, etc.

@@ -67,6 +67,10 @@ Pad::Pad(uint8_t padType, uint8_t piezoMuxIndex, uint8_t switchMuxIndex, uint8_t
 		lastChicVolume(0),
 		doubleHitThreshold(doubleHitThreshold) {
 	currentIndex++;
+	
+	for (uint8_t i = 0; i < FILENAME_COUNT; i++){
+		lastSample[i] = NULL;
+	}
 }
 
 void Pad::poll(){
@@ -78,8 +82,8 @@ void Pad::poll(){
 		// volume will depend on how fast it was closed (i.e. what the average position was prior to the close)
 		if (getPadType() == PAD_TYPE_HIHAT && ((!lastSwitchValue && switchValue) || (pedalPosition <= 1 && lastPedalPosition > 1))){
 			double volume = ((averagePedalPosition >> AVERAGE_PEDAL_COUNT_EXP) / 16.0 - 0.2);
-			Serial.print("Hihat! Volume ");
-			Serial.println(volume);
+// 			Serial.print("Hihat! Volume ");
+// 			Serial.println(volume);
 			
 			char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE];
 			uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, switchValue, HIHAT_SPECIAL_CHIC, filenames);
@@ -87,8 +91,8 @@ void Pad::poll(){
 			if (volume > 0 && lastChicTime + 200 < millis()){
 				for (uint8_t i = 0; i < filePrefixCount; i++){
 					Sample::startFade(padIndex, 0.95);
-					Sample* sample = Sample::findAvailableSample(padIndex, volume);
-					sample->play(filenames[i], padIndex, volume, 1);
+					lastSample[i] = Sample::findAvailableSample(padIndex, volume);
+					lastSample[i]->play(filenames[i], padIndex, volume, 1);
 					lastChicTime = millis();
 					lastChicVolume = volume;
 				}
@@ -103,10 +107,10 @@ void Pad::poll(){
 	if (volume){
 		char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE];
 		uint8_t filePrefixCount = Mapping::getSelectedMapping()->getFilenames(padIndex, volume, 0, pedalPosition, filenames);
-		Serial.println(filePrefixCount);
+// 		Serial.println(filePrefixCount);
 		for (uint8_t i = 0; i < filePrefixCount; i++){
-			Sample* sample = Sample::findAvailableSample(padIndex, volume);
-			sample->play(filenames[i], padIndex, volume, 0);
+			lastSample[i] = Sample::findAvailableSample(padIndex, volume);
+			lastSample[i]->play(filenames[i], padIndex, volume, 0);
 		}
 	}
 	
@@ -137,15 +141,21 @@ double Pad::readPiezo(uint8_t muxIndex){
 	digitalWriteFast(ADC_EN, MUX_DISABLE);
 
 	//If we are within double trigger threshold, AND the currentValue is greater than the last played value, 
-	// then we adjust the volume of the last played sample.  We don't enable thr drain this time through;
+	// then we adjust the volume of the last played sample.  We don't enable the drain this time through;
 	// if the volume is stable then it will be enabled next time around, and if it is still increasing we
 	// want to go through here again.
-// 	if (playTime + doubleHitThreshold > millis() && currentValue > lastRaw){
-// 		double adjustedVolume = (currentValue - MIN_VALUE) / 256.0 * padVolume;
-// 		lastSample->setVolume(adjustedVolume);
-// 		lastRaw = currentValue;
-// 		return 0;
-// 	}
+ 	if (playTime + doubleHitThreshold > millis() && currentValue > lastRaw){
+ 		double adjustedVolume = (currentValue - MIN_VALUE) / 256.0 * padVolume;
+		for (uint8_t i = 0; i < FILENAME_COUNT; i++){
+			if (lastSample[i] != NULL){
+				lastSample[i]->setVolume(adjustedVolume);
+			}
+		}
+// 		Serial.print("Adjusting volume to ");
+// 		Serial.println(adjustedVolume);
+ 		lastRaw = currentValue;
+ 		return 0;
+ 	}
 	
 	//If we are still within the double hit threshold, OR if we are within 4x the double hit threshold 
 	// time-span AND the currently read value is less than one quarter of the previous one, then we 

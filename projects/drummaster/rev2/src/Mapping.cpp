@@ -1,7 +1,7 @@
 #include "Mapping.h"
 
-#include "../menu/Menu.h"
-#include "../Pad.h"
+#include "Pad.h"
+#include "menu/Menu.h"
 
 using namespace digitalcave;
 
@@ -10,7 +10,7 @@ uint8_t Mapping::kitCount;
 uint8_t Mapping::selectedKit;
 
 void Mapping::loadMappings(){
-	Serial.println("loadMappings()");
+// 	Serial.println("loadMappings()");
 
 	uint8_t state = STATE_NEWLINE;
 
@@ -185,6 +185,7 @@ void Mapping::loadMappings(){
 				//Comma separated list for filenames
 				else if (buffer[i] == ','){
 					filenameIndex++;
+					mappingIndex = 2;	//Pretend we are at the character immediately following the colon
 					if (filenameIndex >= FILENAME_COUNT){
 						filenameIndex = FILENAME_COUNT - 1;
 					}
@@ -234,7 +235,7 @@ uint8_t Mapping::getSelectedKit(){
 	return selectedKit;
 }
 void Mapping::setSelectedKit(uint8_t kitIndex){
-	Serial.println("setSelectedKit()");
+// 	Serial.println("setSelectedKit()");
 
 	if (kitIndex >= kitCount) kitIndex = kitCount - 1;
 	selectedKit = kitIndex;
@@ -253,7 +254,7 @@ void Mapping::setSelectedKit(uint8_t kitIndex){
 	//Loop through each pad defined in the current mapping
 	for (uint8_t i = 0; i < PAD_COUNT; i++){
 		for (uint8_t j = 0; j < selected->filenamePrefixCount[i]; j++){
-			Serial.println(selected->filenamePrefixes[i][j]);
+// 			Serial.println(selected->filenamePrefixes[i][j]);
 			//The filename prefix must be at least three chars
 			if (strlen(selected->filenamePrefixes[i][j]) < 3) continue;
 			
@@ -345,11 +346,11 @@ inline uint8_t getClosestVolume(int8_t closestVolume, uint8_t pedalPositionIndex
 }
 
 uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPosition, uint8_t pedalPosition, char filenames[FILENAME_COUNT][FILENAME_STRING_SIZE]){
-	Serial.println("getFilenames()");
-	Serial.print("switchPosition = ");
-	Serial.print(switchPosition);
-	Serial.print("; pedalPosition = ");
-	Serial.println(pedalPosition);
+// 	Serial.println("getFilenames()");
+// 	Serial.print("switchPosition = ");
+// 	Serial.print(switchPosition);
+// 	Serial.print("; pedalPosition = ");
+// 	Serial.println(pedalPosition);
 
 	if (padIndex >= PAD_COUNT){
 		return 0;
@@ -363,23 +364,23 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 	//We find the closest match in fileCountByVolume
 	int8_t closestVolume = volume * 16;		//Multiply by 16 to get into the 16 buckets of the samples
 	
-	Serial.println(filenamePrefixCount[padIndex]);
+// 	Serial.println(filenamePrefixCount[padIndex]);
 	
 	for (uint8_t i = 0; i < filenamePrefixCount[padIndex]; i++){
-		Serial.print("pad ");
-		Serial.print(i);
-		Serial.print(" type ");
-		Serial.println(Pad::getPad(padIndex)->getPadType());
+// 		Serial.print("pad ");
+// 		Serial.print(i);
+// 		Serial.print(" type ");
+// 		Serial.println(Pad::getPad(padIndex)->getPadType());
 		if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_DRUM){
 			closestVolume = getClosestVolume(closestVolume, 0, sampleVolumes[padIndex][i]);
-			Serial.print("closestVolume: ");
-			Serial.println(closestVolume);
-			Serial.print("filenamePrefix: ");
-			Serial.println(filenamePrefixes[padIndex][i]);
+// 			Serial.print("closestVolume: ");
+// 			Serial.println(closestVolume);
+// 			Serial.print("filenamePrefix: ");
+// 			Serial.println(filenamePrefixes[padIndex][i]);
 			snprintf(filenames[i], FILENAME_STRING_SIZE, "%s_%X.RAW", filenamePrefixes[padIndex][i], closestVolume);
-			Serial.print("filename: '");
-			Serial.print(filenames[i]);
-			Serial.println("'");
+// 			Serial.print("filename: '");
+// 			Serial.print(filenames[i]);
+// 			Serial.println("'");
 		}
 		else if (Pad::getPad(padIndex)->getPadType() == PAD_TYPE_CYMBAL){
 			//Find the closes match in pedal position.
@@ -440,7 +441,7 @@ uint8_t Mapping::getFilenames(uint8_t padIndex, double volume, uint8_t switchPos
 
 	if (padIndex < PAD_COUNT){
 		for (int8_t i = filenamePrefixCount[padIndex] - 1; i >= 0; i--){
-			Serial.println(i);
+// 			Serial.println(i);
 			if (filenames[i][0] != 0x00) return (i + 1);
 		}
 	}

@@ -1,6 +1,6 @@
 #include "MainMenu.h"
 #include "../Sample.h"
-#include "../util/Mapping.h"
+#include "../Mapping.h"
 
 using namespace digitalcave;
 
