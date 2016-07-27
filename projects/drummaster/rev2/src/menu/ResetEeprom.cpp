@@ -23,11 +23,12 @@ Menu* ResetEeprom::handleAction(){
 		return Menu::settings;
 	}
 	else if (button.releaseEvent() && getMenuPosition(0) == 1){
-		//Reset pot calibration to 100
+		//Reset pot calibration to defaults
 		uint16_t values[CHANNEL_COUNT];
 		for (uint8_t i = 0; i < CHANNEL_COUNT; i++){
 			values[i] = 170;
 		}
+		values[10] = 50;	//X0 on my set is a wooden block (cowbell), and needs more amplification
 		EEPROM.put(EEPROM_POTENTIOMETER, values);
 		
 		//Headphone default volume is 70
@@ -41,7 +42,7 @@ Menu* ResetEeprom::handleAction(){
 		
 		//All the pad volumes are set to 20 (100%).  We assume there are at least 20 kits, and write 
 		// all values from EEPROM_PAD_VOLUME.
-		for (uint8_t i = 0; i < 20; i++){
+		for (uint8_t i = 0; i < KIT_COUNT; i++){
 			for (uint8_t j = 0; j < PAD_COUNT; j++){
 				EEPROM.update(EEPROM_PAD_VOLUME + j + (PAD_COUNT * i), 20);
 			}
