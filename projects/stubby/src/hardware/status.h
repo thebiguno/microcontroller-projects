@@ -5,7 +5,7 @@
 
 #include "../Stubby.h"
 
-#include "../lib/pwm/pwm.h"
+#include "../hardware/pwm.h"
 
 void status_init(volatile uint8_t **ports, uint8_t *pins);
 

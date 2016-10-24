@@ -1,28 +1,14 @@
 #include "Stubby.h"
 
-#include "controllers/Calibration.h"
-#include "controllers/UniversalController.h"
 #include "gait/gait.h"
-#include "hardware/magnetometer.h"
-#include "hardware/servo.h"
-#include "hardware/status.h"
-#include "hardware/timer2.h"
-#include "types/Point.h"
-#include "util/math.h"
 
-#include "Leg.h"
 
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
-SerialAVR serial(38400);
+SerialAVR serialAvr(38400);
 
-//Stubby state variables
-static volatile uint8_t power = 0x00;					//0 is off, 1 is on
-volatile uint8_t controller = 0x00;						//0 is no controller, 1 is Universal Controller, 2 is Processing API, 3 is Calibration API
-volatile uint8_t debug = 0x00;							//0 is no debug, 1 is show debug
-volatile uint8_t pending_acknowledge = 0x00;			//When set, we will send a message in the delay code
-volatile uint8_t pending_complete = 0x00;				//When set, we will send a message in the delay code
+FramedSerialMessage request(0,40);
 
 //Reset WDT after system reset
 void get_mcusr(void) __attribute__((naked))  __attribute__((used))  __attribute__((section(".init3")));
@@ -31,17 +17,77 @@ void get_mcusr(void) {
 	wdt_disable();
 }
 
-// int main(void) __attribute__ ((noreturn));
-int main (void){
-	wdt_enable(WDTO_2S);
-
-	Stubby stubby;
-	stubby.run();
+//On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.
+// For consistency we do the same thing here.
+int main(void){
+	stubby_main();
 	return 0;
 }
 
-Stubby::Stubby(){
-	//Set up the leg objects, including servo details and mounting angle.  Leg indices follows
+void stubby_main(){
+	//Setup
+	wdt_enable(WDTO_2S);
+	servo_init(legs);
+	battery_init();
+	magnetometer_init();
+	distance_init();
+	timer0_init();
+	timer2_init();
+
+	//Get the Stubby instance variable for keeping state
+	Stubby stubby;
+
+	UniversalController universalController(stubby);
+	Calibration calibration(stubby);
+	General general(stubby);
+
+	//Main loop
+	while(1){
+		//Tell the watchdog we are still alive
+		wdt_reset();
+
+		//Read incoming serial messages
+		if (protocol.read(&serial, &request)) {
+			uint8_t cmd = request.getCommand();
+
+			if ((cmd & 0xF0) == 0x00){
+				general.dispatch(&request);
+			}
+			else if ((cmd & 0xF0) == 0x10){
+				uc.dispatch(&request);
+			}
+			else if ((cmd & 0xF0) == 0x30){
+				calibration.dispatch(&request);
+			}
+			else {
+				//TODO Send debug message 'unknown command' or similar
+			}
+			lastReceiveMessageTime = time;
+			status.commOK();
+		}
+		else if ((time - lastReceiveMessageTime) > COMM_TIMEOUT_PERIOD) {
+			if (mode == MODE_WALKING) sendStatus("Comm Timeout  ", 14);
+			mode = MODE_UNARMED;
+			status.commInterrupt();
+		}
+
+		//Move legs according to state and time
+		if (mode == MODE_WALKING){
+			gait_step(stubby);
+		}
+	}
+}
+
+Stubby::Stubby() :
+	protocol(64),
+	mode(0);
+	linearAngle(0),
+	linearVelocity(0),
+	rotationalVelocity(0),
+	turn(0)
+
+{
+	//Set up the leg objects, including servo details and mounting angle.  Leg indices follow
 	// DIP numbering format, starting at front left and proceeding counter clockwise around.
 #if PCB_REVISION == 1
 	legs[0] = new Leg(FRONT_LEFT,	&PORTB, PORTB0, &PORTB, PORTB1, &PORTB, PORTB2, 2 * LEG_MOUNTING_ANGLE, Point(-60, 104, 0));
@@ -61,103 +107,126 @@ Stubby::Stubby(){
 	#error Unsupported PCB_REVISION value.
 #endif
 
-	protocol = new FramedSerialProtocol(64);
+	serial = serialAvr;
 }
 
-void Stubby::run(){
-	FramedSerialMessage request(0,40);
-	
-	servo_init(legs);
-	battery_init();
-	magnetometer_init();
-	distance_init();
-	timer0_init();
-	timer2_init();
-	
-	UniversalController universalController(this);
-	Calibration calibration(this);
-	
-	uint32_t time;
-	uint32_t lastStepMoveTime = timer_millis();
-
-	while (1){
-		time = timer_millis();
-		wdt_reset();
-		
-		//Listen for incoming commands
-		if (protocol->read(&serial, &request)) {
-			if ((request.getCommand() & 0xF0) == 0x00){
-				//general.dispatch(&serial, &request);		//TODO
-			}
-			else if ((request.getCommand() & 0xF0) == 0x10){
-				universalController.dispatch(&serial, &request);
-			}
-			else if ((request.getCommand() & 0xF0) == 0x30){
-				calibration.dispatch(&serial, &request);
-			}
-		}
-		
-		//Perform gait according to current state.
-		if (state == STATE_WALKING){
-			if ((time -lastStepMoveTime) > 5){
-				if (rotationalVelocity <= 0.3 && rotationalVelocity > -0.3) rotationalVelocity = 0;
-				if (linearVelocity <= 0.3) linearVelocity = 0;
-				if (linearVelocity != 0 || rotationalVelocity != 0){
-					static int8_t step_index = 0;
-					
-					for (uint8_t l = 0; l < LEG_COUNT; l++){
-						Point step = gait_step(legs[l], step_index, linearVelocity, linearAngle, rotationalVelocity);
-						legs[l]->setOffset(step);
-					}
-					step_index++;
-					if (step_index > gait_step_count()){
-						step_index = 0;
-					}
-				}
-				else {
-					for (uint8_t l = 0; l < LEG_COUNT; l++){
-						legs[l]->setOffset(Point(0,0,0));
-					}
-				}
-				pwm_apply_batch();
-				lastStepMoveTime = time;
-			}
-		}
-	}
+ISR(USART1_RX_vect){
+	serialAvr.isr();
 }
 
-void Stubby::sendDebug(char* message){
-	if (debug){
-		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strlen(message));
-		protocol->write(&serial, &response);
-	}
-}
 
-void Stubby::resetLegs(){
-	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
-		legs[l]->setOffset(Point(0,0,30));
-	}
-	pwm_apply_batch();
-	delay_ms(200);
 
-	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
-		legs[l]->setOffset(Point(0,0,0));
-	}
-	pwm_apply_batch();
-	delay_ms(200);
 
-	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
-		legs[l]->setOffset(Point(0,0,30));
-	}
-	pwm_apply_batch();
-	delay_ms(200);
 
-	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
-		legs[l]->setOffset(Point(0,0,0));
-	}
-	pwm_apply_batch();
-	delay_ms(200);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// #include "Stubby.h"
+//
+// #include "controllers/Calibration.h"
+// #include "controllers/UniversalController.h"
+// #include "gait/gait.h"
+// #include "hardware/magnetometer.h"
+// #include "hardware/servo.h"
+// #include "hardware/status.h"
+// #include "hardware/timer2.h"
+// #include "types/Point.h"
+// #include "util/math.h"
+//
+// #include "Leg.h"
+//
+// using namespace digitalcave;
+//
+// // int main(void) __attribute__ ((noreturn));
+// int main (void){
+// 	wdt_enable(WDTO_2S);
+//
+// 	Stubby stubby;
+// 	stubby.run();
+// 	return 0;
+// }
+
+
+
+// void Stubby::run(){
+// 	FramedSerialMessage request(0,40);
+//
+// 	servo_init(legs);
+// 	battery_init();
+// 	magnetometer_init();
+// 	distance_init();
+// 	timer0_init();
+// 	timer2_init();
+//
+// 	UniversalController universalController(this);
+// 	Calibration calibration(this);
+//
+// 	uint32_t time;
+// 	uint32_t lastStepMoveTime = timer_millis();
+//
+// 	while (1){
+// 		time = timer_millis();
+// 		wdt_reset();
+//
+// 		//Listen for incoming commands
+// 		if (protocol->read(&serial, &request)) {
+// 			if ((request.getCommand() & 0xF0) == 0x00){
+// 				//general.dispatch(&serial, &request);		//TODO
+// 			}
+// 			else if ((request.getCommand() & 0xF0) == 0x10){
+// 				universalController.dispatch(&serial, &request);
+// 			}
+// 			else if ((request.getCommand() & 0xF0) == 0x30){
+// 				calibration.dispatch(&serial, &request);
+// 			}
+// 		}
+//
+// 		//Perform gait according to current state.
+// 		if (mode == MODE_WALKING){
+// 			gait_step(stubby);
+// 		}
+// 	}
+// }
+
+// void Stubby::resetLegs(){
+// 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+// 		legs[l]->setOffset(Point(0,0,30));
+// 	}
+// 	pwm_apply_batch();
+// 	delay_ms(200);
+//
+// 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+// 		legs[l]->setOffset(Point(0,0,0));
+// 	}
+// 	pwm_apply_batch();
+// 	delay_ms(200);
+//
+// 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+// 		legs[l]->setOffset(Point(0,0,30));
+// 	}
+// 	pwm_apply_batch();
+// 	delay_ms(200);
+//
+// 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+// 		legs[l]->setOffset(Point(0,0,0));
+// 	}
+// 	pwm_apply_batch();
+// 	delay_ms(200);
+// }
 
 // /*
 //  * Called from ISR; keep things as short as possible.
@@ -202,15 +271,3 @@ void Stubby::resetLegs(){
 // 		//TODO Send debug message 'unknown command' or similar
 // 	}
 // }
-
-FramedSerialProtocol* Stubby::getProtocol(){
-	return protocol;
-}
-
-Leg** Stubby::getLegs(){
-	return legs;
-}
-
-ISR(USART1_RX_vect){
-	serial.isr();
-}

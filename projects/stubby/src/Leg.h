@@ -3,7 +3,7 @@
 
 #ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#include "lib/pwm/pwm.h"
+#include "hardware/pwm.h"
 #else
 #include <stdlib.h>
 #include <stdint.h>
@@ -67,19 +67,19 @@
 
 //For the Coxa joint we just use a linear equation to determine the offsets, since it is close enough for
 // most purposes and eliminates a lot of math needed for the drive system calculations.  To determine
-// this value, set the coxa joint on a single leg to various phases (for instance, 1500 + 300, 1500 - 300, 
+// this value, set the coxa joint on a single leg to various phases (for instance, 1500 + 300, 1500 - 300,
 // 1500 + 600, etc) and measure the resulting angles.  On my robot, I get approx. 16 degrees for each
-// phase offset of 300us.  By dividing this out (300 / (16 * PI / 180)) I get the value 1074.296, which 
+// phase offset of 300us.  By dividing this out (300 / (16 * PI / 180)) I get the value 1074.296, which
 // means that for each radian I want to move, I adjust the phase by 1074.296.
 #define COXA_PHASE_MULTIPLIER			-1074.296
 
-//Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has 
+//Servo travel information.  We assume a neutral offset of 1500, with even amounts on either side.  We also assume that the servo has
 // a linear travel between one end and the other.
 #define PHASE_MIN						700			//Clockwise from neutral
 #define PHASE_NEUTRAL					1500
 #define PHASE_MAX						2300		//Counter clockwise from neutral
 
-//Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum 
+//Maximum angle of travel for the servo, in radians (between MIN_PHASE and MAX_PHASE).  Therefore, the maximum
 // travel in each direction from neutral is half of this number.
 #define SERVO_TRAVEL					(150 * M_PI / 180)
 
@@ -89,7 +89,7 @@
 class Leg {
 	private:
 		uint8_t index;
-		
+
 		volatile uint8_t *port[JOINT_COUNT];
 		uint8_t pin[JOINT_COUNT];
 
@@ -97,28 +97,28 @@ class Leg {
 		Point neutralP;									//Neutral foot co-ordinates
 		double mounting_angle;							//The angle at which the leg is mounted, in degrees, relative to the X axis of a standard cartesian plane.
 		int8_t calibration[CALIBRATION_COUNT];			//Calibration offset (in degrees for 0..2, and in mm for 3..5)
-		
+
 		//Set the angle for each servo.  This includes the servo abstraction code.
 		void setTibiaAngle(double angle);
 		void setFemurAngle(double angle);
 		void setCoxaAngle(double angle);
-		
+
 	public:
 		/*
 		 * Initializes the leg, given the specified mounting angle describing it's radial position in degrees.
 		 */
 		Leg(uint8_t index, volatile uint8_t *tibia_port, uint8_t tibia_pin, volatile uint8_t *femur_port, uint8_t femur_pin, volatile uint8_t *coxa_port, uint8_t coxa_pin, double mounting_angle, Point neutralP);
-		
+
 		/*
 		 * Set the foot position, relative to neutralP.
 		 */
 		void setOffset(Point offset);
-		
+
 		/*
 		 * Resets the foot position to neutral (as defined from the constructor).
 		 */
 		void resetPosition();
-		
+
 		/*
 		 * Returns the last set foot position.
 		 */
@@ -129,32 +129,32 @@ class Leg {
 		 * sets the servo position for each of the three joints.
 		 */
 		void setPosition(Point point);
-		
+
 		/*
 		 * Gets the offset for the given joint
 		 */
 		int8_t getCalibration(uint8_t joint);
-		
+
 		/*
 		 * Sets the offset for the given joint
 		 */
 		void setCalibration(uint8_t joint, int8_t offset);
-		
+
 		/*
 		 * Returns the index
 		 */
 		uint8_t getIndex();
-		
+
 		/*
 		 * Returns the mounting angle
 		 */
 		double getMountingAngle();
-		
+
 		/*
 		 * Gets the specified port
 		 */
 		volatile uint8_t* getPort(uint8_t joint);
-		
+
 		/*
 		 * Gets the specified pin
 		 */

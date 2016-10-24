@@ -1,7 +1,8 @@
 #ifndef CALIBRATION_H
 #define CALIBRATION_H
 
-#include "../Stubby.h"
+#include <stdint.h>
+#include <FramedSerialProtocol.h>
 
 //Calibration-specific messages are in 0x3X space...
 #define MESSAGE_SAVE_CALIBRATION						0x30
@@ -21,19 +22,18 @@
 #define MODE_CALIBRATION_MAGNETOMETER					0x03
 
 namespace digitalcave {
+	class Stubby; // forward declaration
+
 	class Calibration {
-			
+
 		public:
 			Calibration(Stubby* stubby);
-			
-			/*
-			 * Called from the Stubby protocol dispatch function
-			 */
-			void dispatch(Stream* serial, FramedSerialMessage* message);
+
+			void dispatch(FramedSerialMessage* message);
 
 		private:
 			Stubby* stubby;
-			
+
 	};
 }
 

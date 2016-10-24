@@ -6,7 +6,7 @@
 #include "../Leg.h"
 #include "../hardware/status.h"
 
-#include "../lib/pwm/pwm.h"
+#include "../hardware/pwm.h"
 
 void servo_init(Leg** legs);
 

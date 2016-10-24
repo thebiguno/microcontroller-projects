@@ -1,25 +1,16 @@
 #ifndef GAIT_H
 #define GAIT_H
 
-#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
-#else
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#endif
+#include "../Stubby.h"
 
-#include "../types/Point.h"
-#include "../Leg.h"
+#define GAIT_STEP_INTERVAL		5
+
+using namespace digitalcave;
 
 /*
- * Returns the offset for the given leg at the given step index, scaled by the given velocity
+ * Move the legs according to Stubby state variables and internal gait timing
  */
-Point gait_step(Leg* leg, uint8_t step_index, double linear_velocity, double linear_angle, double rotational_velocity);
-
-/*
- * Reteurns the number of steps in this gait
- */
-uint8_t gait_step_count();
+void gait_step(Stubby* stubby);
 
 #endif

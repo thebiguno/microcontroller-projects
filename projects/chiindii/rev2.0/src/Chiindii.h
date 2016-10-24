@@ -56,14 +56,14 @@
 
 namespace digitalcave {
 	class Chiindii {
-			
+
 		private:
 			uint8_t mode;
 			uint8_t battery_level;
 			double throttle_sp;
 			vector_t angle_sp;
 			vector_t rate_sp;
-			
+
 			FramedSerialProtocol protocol;
 			Mpu6050 mpu6050;
 
@@ -80,26 +80,26 @@ namespace digitalcave {
 #elif defined MADGWICK
 			Madgwick imu;
 #endif
-		
+
 			General general;
 			Calibration calibration;
 			Direct direct;
 			UniversalController uc;
-			
+
 			Status status;
-			
+
 		public:
 			Chiindii();
 
 			void run();
-			
+
 			vector_t* getAngleSp() { return &angle_sp; }
 			vector_t* getRateSp() { return &rate_sp; }
 			double getThrottle() { return this->throttle_sp; }
-			void setThrottle(double throttle){ 
-				if (throttle < 0) throttle_sp = 0; 
-				else if (throttle > 1) throttle_sp = 1; 
-				this->throttle_sp = throttle; 
+			void setThrottle(double throttle){
+				if (throttle < 0) throttle_sp = 0;
+				else if (throttle > 1) throttle_sp = 1;
+				this->throttle_sp = throttle;
 			}
 
 			PID* getRateX() { return &rate_x; }
@@ -120,7 +120,7 @@ namespace digitalcave {
 
 			uint8_t getBatteryLevel() { return battery_level; }
 			uint8_t getBatteryPercent() { return battery_pct(); }
-			
+
 			uint8_t getMode() { return mode; }
 			void setMode(uint8_t mode) { this->mode = mode; }
 
@@ -131,7 +131,7 @@ namespace digitalcave {
 			void sendStatus(char* message, uint8_t length) { FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length); sendMessage(&response); }
 			void sendStatus(const char* message, uint8_t length) { sendStatus((char*) message, length); }
 
-			void sendMessage(FramedSerialMessage* message);
+			void sendMessage(FramedSerialMessage* message) { protocol->write(&serial, message); }
 	};
 }
 #endif
