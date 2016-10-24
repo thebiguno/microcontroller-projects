@@ -5,8 +5,7 @@
 
 #include "Menu.h"
 #include "VolumePad.h"
-#include "../pad/Pad.h"
-#include "../util/Mapping.h"
+#include "../Pad.h"
 #include "../hardware.h"
 
 namespace digitalcave {

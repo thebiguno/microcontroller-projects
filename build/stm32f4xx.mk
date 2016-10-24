@@ -9,7 +9,7 @@ ifndef BUILDDIR
 endif
 
 ifndef PROGRAMMER
-	PROGRAMMER=nucleo
+	PROGRAMMER=stlink
 endif
 
 OS=$(shell uname -s)

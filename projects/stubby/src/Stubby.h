@@ -13,6 +13,8 @@
 #include <SerialAVR.h>
 #include <UniversalControllerClient.h>
 
+#include <dcutil/delay.h>
+
 #include "gait/gait.h"
 #include "hardware/magnetometer.h"
 #include "lib/pwm/pwm.h"
@@ -31,7 +33,6 @@
 #define STATE_WALKING			0x01
 #define STATE_CALIBRATION		0x02
 
-
 namespace digitalcave {
 	class Stubby {
 			
@@ -49,7 +50,7 @@ namespace digitalcave {
 			Stubby();
 			
 			FramedSerialProtocol* getProtocol();
-			Leg* getLegs();
+			Leg** getLegs();
 			
 			uint8_t getState() {return state;}
 			void setState(uint8_t state) { this->state = state;}

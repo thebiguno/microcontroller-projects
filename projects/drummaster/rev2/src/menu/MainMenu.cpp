@@ -1,6 +1,6 @@
 #include "MainMenu.h"
 #include "../Sample.h"
-#include "../util/Mapping.h"
+#include "../Mapping.h"
 
 using namespace digitalcave;
 
@@ -25,7 +25,7 @@ Menu* MainMenu::handleAction(){
 	display->write_text(3, 1, "Settings           ", 19);
 
 	//Dynamic text
-	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getMapping(Mapping::getSelectedKit())->getKitName());
+	snprintf(buf, sizeof(buf), "%s                   ", Mapping::getSelectedMapping()->getKitName());
 	display->write_text(1, 1, buf, 19);
 	snprintf(buf, sizeof(buf), "%3d", Sample::getVolumeHeadphones());
 	display->write_text(2, 9, buf, 3);

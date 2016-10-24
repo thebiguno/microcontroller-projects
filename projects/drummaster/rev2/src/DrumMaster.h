@@ -6,10 +6,7 @@
 #include <SPI.h>
 #include <EEPROM/EEPROM.h>
 
-#include "pad/Cymbal.h"
-#include "pad/Drum.h"
-#include "pad/HiHat.h"
-
+#include "Pad.h"
 #include "menu/Menu.h"
 #include "menu/CalibrateChannel.h"
 #include "menu/KitSelect.h"

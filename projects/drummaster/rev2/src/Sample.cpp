@@ -183,11 +183,9 @@ Sample::Sample():
 	currentIndex++;	//Increment current index
 }
 
-void Sample::play(char* filename, uint8_t pad, double volume){
-	play(filename, pad, volume, 0);
-}
-
 void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade){
+	if (filename == NULL) return;
+	
 	if (volume < 0) volume = 0;
 	else if (volume >= 5.0) volume = 5.0;
 	
@@ -205,8 +203,8 @@ void Sample::play(char* filename, uint8_t pad, double volume, uint8_t ignoreFade
 		filename[filenameLength-1] = 'W';
 		if (!playSerialRaw.play(filename)){
 			filename[filenameLength-4] = 0;
-			Serial.print(filename);
-			Serial.println(": File not found");
+// 			Serial.print(filename);
+// 			Serial.println(": File not found");
 			return;
 		}
 	}

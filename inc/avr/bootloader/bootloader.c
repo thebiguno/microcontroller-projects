@@ -1,6 +1,7 @@
 #include "bootloader.h"
 
 void bootloader_jump(){
+#if defined(__AVR_ATmega32U4__)
 	//Jump to bootloader.  Copied from http://www.pjrc.com/teensy/jump_to_bootloader.html
 	cli();
 	
@@ -18,4 +19,5 @@ void bootloader_jump(){
 	PORTB = 0; PORTC = 0; PORTD = 0; PORTE = 0; PORTF = 0;
 	
 	asm volatile("jmp 0x7E00");
+#endif
 }

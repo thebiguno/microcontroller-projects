@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <dcutil/delay.h>
 
 namespace digitalcave {
 
