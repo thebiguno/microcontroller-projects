@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script type="text/javascript">
+var click = function() { 
+	var c = $(this);
+	if (c.hasClass('on')) {
+		c.removeClass('on');
+		output();
+	} else {
+		c.addClass('on');
+		output();
+	}
+};
+var clear = function() {
+	$.each($('.px'), function() { this.removeClass('on'); });
+};
+var resize = function() {
+	var t = $('#t');
+	var w = parseInt($('#w').val());
+	var h = parseInt($('#h').val());
+	var html = '';
+	for (var i = 0; i < h; i++) {
+		html += '<tr>';
+		for (var j = 0; j < w; j++) {
+			html += '<td title="' + j + ',' + i + '" class="px"></td>';
+		}
+		html += '</tr>';
+	}
+	t.html(html);
+	$('.px').click(click);
+	output();
+};
+var _bv = function(bit) {
+	return 1 << bit;
+}
+var output = function() {
+	var t = $('#t');
+	var w = parseInt($('#w').val());
+	var h = parseInt($('#h').val());
+	
+	var bytes = (w * h) >> 3;
+	var bits = (w * h) & 0x7;
+	
+	var bit = 7;
+	var byt = 0;
+	
+	if (bits != 0) {
+		bytes++;
+		bit = bits - 1; // the padding is at the front of the first byte, so don't start at bit 0
+	}
+	var a = [];
+	for (var i = 0; i < bytes; i++) a.push(0);
+	
+	$.each(t.find('tr'), function() {
+		$.each($(this).find('td'), function() {
+			if ($(this).hasClass('on')) {
+				a[byt] |= _bv(bit);
+			}
+			if (bit == 0) {
+				byt++;
+				bit = 8;
+			}
+			bit--;
+		});
+	});
+	
+	var html = '';
+	for (var i = 0; i < a.length; i++) {
+		if (i > 0) html += ', ';
+		html += '0x';
+		html += a[i].toString(16);
+	}
+	html += '<br/>';
+	
+	a.splice(0,0,w,h);
+	var str = String.fromCharCode.apply(null,a);
+	var b64 = btoa(str);
+	
+	$('#out').html(html);
+	$('#o').val(b64);
+};
+var set = function() {
+	var b64 = $('#o').val();
+	
+	var a = [];
+	var str = atob(b64);
+	for (var i = 0; i < str.length; i++) {
+		a.push(str.charCodeAt(i));
+	}
+	var size = a.splice(0,2);
+	$('#w').val(size[0]);
+	$('#h').val(size[1]);
+	resize();
+	
+	var w = parseInt(size[0]);
+	var h = parseInt(size[1]);
+	var bytes = (w * h) >> 3;  // (w*h)/8
+	var bits = (w * h) & 0x7; // (w*h)%8
+	
+	var bit = 7;
+	var byt = 0;
+	
+	if (bits != 0) {
+		bytes++;
+		bit = bits - 1;
+	}
+	
+	$.each($('#t').find('tr'), function() {
+		$.each($(this).find('td'), function() {
+			if (a[byt] & _bv(bit)) {
+				$(this).addClass('on');
+			}
+			if (bit == 0) {
+				byt++;
+				bit = 8;
+			}
+			bit--;
+		});
+	});
+	
+	output();
+	
+}
+		</script>
+		<style type="text/css">
+.px { width: 20px; height: 20px; border: 1px solid black; }
+.on { background-color: black; }
+		</style>
+	</head>
+	<body>
+		<form>
+			<p>
+			<label for="w">Width</label>
+			<input id="w"/>
+			<label for="h">Height</label>
+			<input id="h"/>
+			</p>
+			<p>
+			<label for="o">Encoded</label>
+			<input id="o" style="width: 300px;"/>
+			</p>
+		</form>
+		<table id="t">
+		</table>
+		<p id="out"></p>
+		<script>
+$(function() {
+	$('#w').change(function() { resize(); });
+	$('#h').change(function() { resize(); });
+	$('#o').change(function() { set(); });
+});
+		</script>
+	</body>
+</html>

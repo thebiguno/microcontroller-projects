@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+#include "FramedSerialProtocol.h"
+#include "../Stream/ArrayStream.h"
+
+using namespace digitalcave;
+
+class Console : public Stream {
+	private:
+	
+	public:
+		virtual uint8_t read(uint8_t *b);
+		virtual uint8_t write(uint8_t b);
+};
+
+uint8_t Console::read(uint8_t *b){
+	return 0;
+}
+uint8_t Console::write(uint8_t b){
+	printf("Console write: 0x%02x\n", b);
+}
+
+int main(){
+	FramedSerialProtocol protocol(32);
+
+	FramedSerialMessage incoming(0x00, 32);
+
+	FramedSerialMessage outgoing(0x12, 32);
+
+	
+	Console console;
+	ArrayStream arrayStream((uint8_t) 255);
+	
+	printf("Outgoing message:\n");
+	printf("Command: 0x%02x\n", outgoing.getCommand());
+	for (uint8_t i = 0; i < outgoing.getLength(); i++){
+		printf("FramedSerialMessage[%d]: 0x%02x\n", i, outgoing.getData()[i]);
+	}
+	
+	protocol.write(&arrayStream, &outgoing);
+	protocol.write(&console, &outgoing);
+	printf("Foo\n");
+	protocol.read(&arrayStream, &incoming);
+	
+	printf("Incoming message:\n");
+	printf("Command: 0x%02x\n", incoming.getCommand());
+	for (uint8_t i = 0; i < incoming.getLength(); i++){
+		printf("FramedSerialMessage[%d]: 0x%02x\n", i, incoming.getData()[i]);
+	}
+	protocol.write(&console, &incoming);
+	return 0;
+}

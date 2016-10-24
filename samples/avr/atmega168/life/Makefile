@@ -6,4 +6,4 @@ PROGRAMMER=usbtiny
 
 CFLAGS+=-DTWI_BUFFER_LENGTH=193 -DTWI_NO_SLAVE -DTWI_CUSTOM_BUFFERS -DTWI_MASTER_TX_WRITER -DMATRIX_NO_SHIFT 
 
-include ../../../../build/avr.mk
+include avr.mk

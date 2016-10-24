@@ -34,6 +34,7 @@ static uint8_t scratch_buffer[MATRIX_WIDTH][MATRIX_HEIGHT];
 
 static uint32_t recent_hashes[RECENT_HASH_COUNT];
 static uint8_t recent_hash_match_count = 0;
+static uint32_t last_setup_time = 0;
 
 void set_scratch(uint8_t x, uint8_t y, uint8_t value){
 	if (x >= MATRIX_WIDTH || y >= MATRIX_HEIGHT) return;	//Bounds check
@@ -140,6 +141,8 @@ void setup(){
 	
 	flush();
 	matrix_write_buffer();
+	
+	last_setup_time = timer_millis();
 }
 
 int main (void){
@@ -219,6 +222,10 @@ int main (void){
 		else recent_hash_match_count++;
 		
 		if (recent_hash_match_count >= RECENT_HASH_MATCH_COUNT){
+			setup();
+		}
+		
+		if (timer_millis() - last_setup_time > 120000){
 			setup();
 		}
 		
