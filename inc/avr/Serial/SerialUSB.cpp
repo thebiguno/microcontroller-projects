@@ -141,6 +141,7 @@ using namespace digitalcave;
 #define CDC_TX_BUFFER		EP_DOUBLE_BUFFER
 #endif
 
+#ifdef UDCON
 static const uint8_t PROGMEM endpoint_config_table[] = {
 	0,
 	1, EP_TYPE_INTERRUPT_IN,  EP_SIZE(CDC_ACM_SIZE) | CDC_ACM_BUFFER,
@@ -958,5 +959,9 @@ ISR(USB_COM_vect)
         }
 	UECONX = (1<<STALLRQ) | (1<<EPEN);	// stall
 }
-
+#else
+uint8_t SerialUSB::write(uint8_t* buffer, uint8_t size){
+	return 0;
+}
+#endif
 

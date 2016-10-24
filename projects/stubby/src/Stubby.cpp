@@ -31,12 +31,13 @@ void get_mcusr(void) {
 	wdt_disable();
 }
 
-int main(void) __attribute__ ((noreturn));
+// int main(void) __attribute__ ((noreturn));
 int main (void){
 	wdt_enable(WDTO_2S);
 
 	Stubby stubby;
 	stubby.run();
+	return 0;
 }
 
 Stubby::Stubby(){
@@ -77,7 +78,7 @@ void Stubby::run(){
 	Calibration calibration(this);
 	
 	uint32_t time;
-	uint32_t lastStepMoveTime;
+	uint32_t lastStepMoveTime = timer_millis();
 
 	while (1){
 		time = timer_millis();
@@ -85,7 +86,10 @@ void Stubby::run(){
 		
 		//Listen for incoming commands
 		if (protocol->read(&serial, &request)) {
-			if ((request.getCommand() & 0xF0) == 0x10){
+			if ((request.getCommand() & 0xF0) == 0x00){
+				//general.dispatch(&serial, &request);		//TODO
+			}
+			else if ((request.getCommand() & 0xF0) == 0x10){
 				universalController.dispatch(&serial, &request);
 			}
 			else if ((request.getCommand() & 0xF0) == 0x30){
@@ -124,83 +128,87 @@ void Stubby::run(){
 
 void Stubby::sendDebug(char* message){
 	if (debug){
-		FramedSerialMessage response(MESSAGE_SEND_DEBUG, (uint8_t*) message, strlen(message));
-		protocol->write(&serial, response);
+		FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, strlen(message));
+		protocol->write(&serial, &response);
 	}
 }
 
 void Stubby::resetLegs(){
 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
-		legs[l].setOffset(Point(0,0,30));
+		legs[l]->setOffset(Point(0,0,30));
 	}
 	pwm_apply_batch();
 	delay_ms(200);
 
 	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
-		legs[l].setOffset(Point(0,0,0));
+		legs[l]->setOffset(Point(0,0,0));
 	}
 	pwm_apply_batch();
 	delay_ms(200);
 
 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
-		legs[l].setOffset(Point(0,0,30));
+		legs[l]->setOffset(Point(0,0,30));
 	}
 	pwm_apply_batch();
 	delay_ms(200);
 
 	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
-		legs[l].setOffset(Point(0,0,0));
+		legs[l]->setOffset(Point(0,0,0));
 	}
 	pwm_apply_batch();
 	delay_ms(200);
 }
 
-/*
- * Called from ISR; keep things as short as possible.
- */
-void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
-	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
-		if (message[0] == 'U'){
-			controller = CONTROLLER_UC;
-		}
-		else if (message[0] == 'P'){
-			controller = CONTROLLER_PROCESSING;
-		}
-		else if (message[0] == 'C'){
-			controller = CONTROLLER_CALIBRATION;
-		}
-		//TODO Put any other supported control modes here.
-		else {
-			controller = CONTROLLER_NONE;
-		}
-	}
-	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG){
-		debug = 0x01;
-		doAcknowledgeCommand(MESSAGE_REQUEST_ENABLE_DEBUG);
-	}
-	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG){
-		debug = 0x00;
-		doAcknowledgeCommand(MESSAGE_REQUEST_DISABLE_DEBUG);
-	}
-	//This is a Universal Controller message (namespace 0x1X)
-	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
-		uc_dispatch_message(cmd, message, length);
-	}
-	//This is a Processing API message (namespace 0x2X)
-	else if (controller == CONTROLLER_PROCESSING && (cmd & 0xF0) == 0x20){
-		processing_dispatch_message(cmd, message, length);
-	}
-	//This is a Calibration API message (namespace 0x3X)
-	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
-		calibration_dispatch_message(cmd, message, length);
-	}
-	else {
-		//TODO Send debug message 'unknown command' or similar
-	}
-}
+// /*
+//  * Called from ISR; keep things as short as possible.
+//  */
+// void protocol_dispatch_message(uint8_t cmd, uint8_t *message, uint8_t length){
+// 	if (cmd == MESSAGE_ANNOUNCE_CONTROL_ID){
+// 		if (message[0] == 'U'){
+// 			controller = CONTROLLER_UC;
+// 		}
+// 		else if (message[0] == 'P'){
+// 			controller = CONTROLLER_PROCESSING;
+// 		}
+// 		else if (message[0] == 'C'){
+// 			controller = CONTROLLER_CALIBRATION;
+// 		}
+// 		//TODO Put any other supported control modes here.
+// 		else {
+// 			controller = CONTROLLER_NONE;
+// 		}
+// 	}
+// 	else if (cmd == MESSAGE_REQUEST_ENABLE_DEBUG){
+// 		debug = 0x01;
+// 		doAcknowledgeCommand(MESSAGE_REQUEST_ENABLE_DEBUG);
+// 	}
+// 	else if (cmd == MESSAGE_REQUEST_DISABLE_DEBUG){
+// 		debug = 0x00;
+// 		doAcknowledgeCommand(MESSAGE_REQUEST_DISABLE_DEBUG);
+// 	}
+// 	//This is a Universal Controller message (namespace 0x1X)
+// 	else if (controller == CONTROLLER_UC && (cmd & 0xF0) == 0x10){
+// 		uc_dispatch_message(cmd, message, length);
+// 	}
+// 	//This is a Processing API message (namespace 0x2X)
+// 	else if (controller == CONTROLLER_PROCESSING && (cmd & 0xF0) == 0x20){
+// 		processing_dispatch_message(cmd, message, length);
+// 	}
+// 	//This is a Calibration API message (namespace 0x3X)
+// 	else if (controller == CONTROLLER_CALIBRATION && (cmd & 0xF0) == 0x30){
+// 		calibration_dispatch_message(cmd, message, length);
+// 	}
+// 	else {
+// 		//TODO Send debug message 'unknown command' or similar
+// 	}
+// }
 
 FramedSerialProtocol* Stubby::getProtocol(){
-	return &protocol;
+	return protocol;
+}
+
+Leg** Stubby::getLegs(){
+	return legs;
 }
 
 ISR(USART1_RX_vect){

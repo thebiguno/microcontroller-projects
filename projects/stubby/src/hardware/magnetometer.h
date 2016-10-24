@@ -4,12 +4,11 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <math.h>
+#include <twi/twi.h>
 
 #include "../Stubby.h"
 #include "status.h"
 #include "../util/convert.h"
-
-#include "../lib/twi/twi.h"
 
 
 /*
