@@ -15,19 +15,14 @@
 
 #include <dcutil/delay.h>
 
-#include "hardware/magnetometer.h"
-
 #include "hardware.h"
 #include "hardware/battery.h"
-#include "hardware/distance.h"
-#include "hardware/magnetometer.h"
 #include "hardware/servo.h"
 #include "hardware/status.h"
 #include "hardware/timer0.h"
-#include "hardware/timer2.h"
 
 //Mode variables
-#define MODE_POWER_OFF			0x00
+#define MODE_UNARMED			0x00
 #define MODE_WALKING			0x01
 #define MODE_CALIBRATION		0x02
 
@@ -37,7 +32,7 @@ namespace digitalcave {
 		public:
 			Stubby();
 
-			FramedSerialProtocol* getProtocol() { return protocol; }
+			FramedSerialProtocol* getProtocol() { return &protocol; }
 			Leg** getLegs() { return legs; }
 
 			uint8_t getMode() {return mode;}
@@ -57,11 +52,11 @@ namespace digitalcave {
 			void sendStatus(char* message, uint8_t length) { FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length); sendMessage(&response); }
 			void sendStatus(const char* message, uint8_t length) { sendStatus((char*) message, length); }
 
-			void sendMessage(FramedSerialMessage* message) { protocol->write(serial, message); }
+			void sendMessage(FramedSerialMessage* message) { protocol.write(serial, message); }
 
 		private:
 			Leg* legs[LEG_COUNT];
-			FramedSerialProtocol* protocol;
+			FramedSerialProtocol protocol;
 			Stream* serial;
 
 			uint8_t mode;

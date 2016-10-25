@@ -1,5 +1,7 @@
 #include "Point.h"
 
+#include "../util/math.h"
+
 Point::Point(){
 }
 Point::Point(int16_t x, int16_t y, int16_t z){
@@ -24,7 +26,7 @@ void rotate2D(int16_t* c1, int16_t* c2, double angle){
 	//Use rotational matrix to rotate point c1,c2 around the origin, resulting in new point n1,n2
 	int16_t n1 = *c1 * cos_f(angle) - *c2 * sin_f(angle);
 	int16_t n2 = *c1 * sin_f(angle) + *c2 * cos_f(angle);
-	
+
 	*c1 = n1;
 	*c2 = n2;
 }
@@ -40,4 +42,3 @@ void Point::rotateXZ(double angle){
 void Point::rotateYZ(double angle){
 	rotate2D(&this->y, &this->z, angle);
 }
-

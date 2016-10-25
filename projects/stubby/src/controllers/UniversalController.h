@@ -11,7 +11,7 @@ namespace digitalcave {
 		public:
 			UniversalController(Stubby* stubby);
 
-			void dispatch(Stream* serial, FramedSerialMessage* message);
+			void dispatch(FramedSerialMessage* message);
 
 		private:
 			Stubby* stubby;

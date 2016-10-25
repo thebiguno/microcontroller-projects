@@ -18,11 +18,11 @@ void Calibration::dispatch(FramedSerialMessage* message){
 			}
 		}
 
-		int16_t x;
-		int16_t y;
-		magnetometer_get_offsets(&x, &y);
-		eeprom_update_word((uint16_t*) MAGNETOMETER_EEPROM_BASE, (uint16_t) x);
-		eeprom_update_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET), (uint16_t) y);
+		//int16_t x;
+		//int16_t y;
+		//magnetometer_get_offsets(&x, &y);
+		//eeprom_update_word((uint16_t*) MAGNETOMETER_EEPROM_BASE, (uint16_t) x);
+		//eeprom_update_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET), (uint16_t) y);
 	}
 	else if (message->getCommand() == MESSAGE_LOAD_CALIBRATION){
 		for (uint8_t l = 0; l < LEG_COUNT; l++){
@@ -31,9 +31,9 @@ void Calibration::dispatch(FramedSerialMessage* message){
 			}
 		}
 
-		int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
-		int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
-		magnetometer_set_offsets(x, y);
+		//int16_t x = eeprom_read_word((uint16_t*) MAGNETOMETER_EEPROM_BASE);
+		//int16_t y = eeprom_read_word((uint16_t*) (MAGNETOMETER_EEPROM_BASE + MAGNETOMETER_EEPROM_OFFSET));
+		//magnetometer_set_offsets(x, y);
 	}
 	else if (message->getCommand() == MESSAGE_RESET_CALIBRATION){
 		uint8_t resetCalibration = message->getData()[0];
@@ -55,7 +55,7 @@ void Calibration::dispatch(FramedSerialMessage* message){
 			}
 		}
 		else if (resetCalibration == MODE_CALIBRATION_MAGNETOMETER){
-			magnetometer_set_offsets(0, 0);
+			//magnetometer_set_offsets(0, 0);
 		}
 
 	}
@@ -99,25 +99,25 @@ void Calibration::dispatch(FramedSerialMessage* message){
 			}
 		}
 	}
-	else if (message->getCommand() == MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION){
-		int16_t x;
-		int16_t y;
-		magnetometer_get_offsets(&x, &y);
-		uint8_t message[4];
-		message[0] = (x >> 8) & 0xFF;
-		message[1] = x & 0xFF;
-		message[2] = (y >> 8) & 0xFF;
-		message[3] = y & 0xFF;
-		FramedSerialMessage response(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, (uint8_t*) message, 4);
-		stubby->sendMessage(&response);
-	}
-	else if (message->getCommand() == MESSAGE_SEND_MAGNETOMETER_CALIBRATION){
-		if (message->getLength() == 4){
-			int16_t x = (int16_t) ((message->getData()[0] << 8) | message->getData()[1]);
-			int16_t y = (int16_t) ((message->getData()[2] << 8) | message->getData()[3]);
-			magnetometer_set_offsets(x, y);
-		}
-	}
+	// else if (message->getCommand() == MESSAGE_REQUEST_MAGNETOMETER_CALIBRATION){
+	// 	int16_t x;
+	// 	int16_t y;
+	// 	magnetometer_get_offsets(&x, &y);
+	// 	uint8_t message[4];
+	// 	message[0] = (x >> 8) & 0xFF;
+	// 	message[1] = x & 0xFF;
+	// 	message[2] = (y >> 8) & 0xFF;
+	// 	message[3] = y & 0xFF;
+	// 	FramedSerialMessage response(MESSAGE_SEND_MAGNETOMETER_CALIBRATION, (uint8_t*) message, 4);
+	// 	stubby->sendMessage(&response);
+	// }
+	// else if (message->getCommand() == MESSAGE_SEND_MAGNETOMETER_CALIBRATION){
+	// 	if (message->getLength() == 4){
+	// 		int16_t x = (int16_t) ((message->getData()[0] << 8) | message->getData()[1]);
+	// 		int16_t y = (int16_t) ((message->getData()[2] << 8) | message->getData()[3]);
+	// 		magnetometer_set_offsets(x, y);
+	// 	}
+	// }
 	// else if (message->getCommand() == MESSAGE_START_MAGNETOMETER_CALIBRATION){
 	// 	uint8_t step_index = 0;
 	//

@@ -8,7 +8,7 @@ UniversalController::UniversalController(Stubby* stubby) :
 	;
 }
 
-void UniversalController::dispatch(Stream* serial, FramedSerialMessage* message){
+void UniversalController::dispatch(FramedSerialMessage* message){
 
 }
 

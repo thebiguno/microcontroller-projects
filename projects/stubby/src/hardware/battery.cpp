@@ -29,7 +29,7 @@ uint8_t battery_get_percent(){
 		average = battery_level;
 	}
 	else {
-		average = (uint8_t) (ALPHA * battery_level + (1 - ALPHA) * value);
+		average = (uint8_t) (ALPHA * battery_level + (1 - ALPHA) * average);
 	}
 
 	if (average >= BATTERY_LEVEL_FULL) {

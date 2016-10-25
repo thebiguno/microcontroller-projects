@@ -1,4 +1,7 @@
 #include "gait.h"
+
+#include "../util/math.h"
+
 #include "../types/Point.h"
 
 #define STEP_COUNT		22

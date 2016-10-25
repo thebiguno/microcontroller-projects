@@ -1,7 +1,11 @@
 #include "Stubby.h"
 
+#include "controllers/Calibration.h"
+#include "controllers/General.h"
+#include "controllers/UniversalController.h"
 #include "gait/gait.h"
 
+#define COMM_TIMEOUT_PERIOD			5000
 
 using namespace digitalcave;
 
@@ -17,44 +21,42 @@ void get_mcusr(void) {
 	wdt_disable();
 }
 
-//On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.
-// For consistency we do the same thing here.
-int main(void){
-	stubby_main();
-	return 0;
-}
-
 void stubby_main(){
 	//Setup
-	wdt_enable(WDTO_2S);
-	servo_init(legs);
-	battery_init();
-	magnetometer_init();
-	distance_init();
-	timer0_init();
-	timer2_init();
-
-	//Get the Stubby instance variable for keeping state
 	Stubby stubby;
 
-	UniversalController universalController(stubby);
-	Calibration calibration(stubby);
-	General general(stubby);
+	wdt_enable(WDTO_2S);
+	servo_init(stubby.getLegs());
+	battery_init();
+	// magnetometer_init();
+	// distance_init();
+	timer0_init();
+	// timer2_init();
+
+	UniversalController universalController(&stubby);
+	Calibration calibration(&stubby);
+	General general(&stubby);
+
+	uint32_t time;
+	uint32_t lastReceiveMessageTime = 0;
 
 	//Main loop
 	while(1){
 		//Tell the watchdog we are still alive
 		wdt_reset();
 
+		//Loop time
+		time = timer_millis();
+
 		//Read incoming serial messages
-		if (protocol.read(&serial, &request)) {
+		if (stubby.getProtocol()->read(&serialAvr, &request)) {
 			uint8_t cmd = request.getCommand();
 
 			if ((cmd & 0xF0) == 0x00){
 				general.dispatch(&request);
 			}
 			else if ((cmd & 0xF0) == 0x10){
-				uc.dispatch(&request);
+				universalController.dispatch(&request);
 			}
 			else if ((cmd & 0xF0) == 0x30){
 				calibration.dispatch(&request);
@@ -63,29 +65,27 @@ void stubby_main(){
 				//TODO Send debug message 'unknown command' or similar
 			}
 			lastReceiveMessageTime = time;
-			status.commOK();
 		}
 		else if ((time - lastReceiveMessageTime) > COMM_TIMEOUT_PERIOD) {
-			if (mode == MODE_WALKING) sendStatus("Comm Timeout  ", 14);
-			mode = MODE_UNARMED;
-			status.commInterrupt();
+			if (stubby.getMode() == MODE_WALKING){
+				stubby.sendStatus("Comm Timeout  ", 14);
+			}
+			stubby.setMode(MODE_UNARMED);
 		}
 
 		//Move legs according to state and time
-		if (mode == MODE_WALKING){
-			gait_step(stubby);
+		if (stubby.getMode() == MODE_WALKING){
+			gait_step(&stubby);
 		}
 	}
 }
 
 Stubby::Stubby() :
 	protocol(64),
-	mode(0);
+	mode(MODE_UNARMED),
 	linearAngle(0),
 	linearVelocity(0),
-	rotationalVelocity(0),
-	turn(0)
-
+	rotationalVelocity(0)
 {
 	//Set up the leg objects, including servo details and mounting angle.  Leg indices follow
 	// DIP numbering format, starting at front left and proceeding counter clockwise around.
@@ -107,7 +107,14 @@ Stubby::Stubby() :
 	#error Unsupported PCB_REVISION value.
 #endif
 
-	serial = serialAvr;
+	serial = &serialAvr;
+}
+
+//On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.
+// For consistency we do the same thing here.
+int main(void){
+	stubby_main();
+	return 0;
 }
 
 ISR(USART1_RX_vect){
