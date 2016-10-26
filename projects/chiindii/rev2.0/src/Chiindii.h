@@ -65,7 +65,7 @@ namespace digitalcave {
 			vector_t rate_sp;
 
 			FramedSerialProtocol protocol;
-			Mpu6050 mpu6050;
+			MPU6050 mpu6050;
 
 			PID rate_x;
 			PID rate_y;
@@ -115,7 +115,7 @@ namespace digitalcave {
 #elif defined MADGWICK
 			Madgwick* getImu() { return &imu; }
 #endif
-			Mpu6050* getMpu6050() { return &mpu6050; }
+			MPU6050* getMpu6050() { return &mpu6050; }
 			Status* getStatus();
 
 			uint8_t getBatteryLevel() { return battery_level; }

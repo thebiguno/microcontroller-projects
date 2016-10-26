@@ -46,6 +46,7 @@
 
 //Constants used for read / write methods: send / no send stop bit,
 // block on function / no block on function
+//Make sure these map to the same values as the I2C versions in common/I2C.h
 #define TWI_STOP		1
 #define TWI_NO_STOP		0
 #define TWI_BLOCK		1
@@ -62,7 +63,7 @@ extern "C" {
 #endif
 
 /*
- * Override the default buffers with your own buffers.  This gives you more control over how the 
+ * Override the default buffers with your own buffers.  This gives you more control over how the
  * buffers are constructed.
  */
 void twi_set_master_buffer(uint8_t* buffer);
@@ -70,8 +71,8 @@ void twi_set_rx_buffer(uint8_t* buffer);
 void twi_set_tx_buffer(uint8_t* buffer);
 
 /*
- * For even more control, you can attach readers / writers to the master / slave; this lets 
- * you programatically construct the data to send / handle the data received, without just 
+ * For even more control, you can attach readers / writers to the master / slave; this lets
+ * you programatically construct the data to send / handle the data received, without just
  * relying on a sequential buffer.
  */
 //Attach a slave rx reader function.  This takes a uint8_t (incoming data), and uint16_t (incoming data's index).
@@ -84,7 +85,7 @@ void twi_attach_slave_tx_writer( uint8_t (*function)(uint16_t) );
 //Attach a master rx reader.  This takes a uint8_t (incoming data), and uint16_t (incoming data's index).
 void twi_attach_master_rx_reader( void (*function)(uint8_t, uint16_t) );
 
-//Attach a master tx writer.  This takes a uint16_t (outgoing data's index), and returns a uint8_t (the 
+//Attach a master tx writer.  This takes a uint16_t (outgoing data's index), and returns a uint8_t (the
 // byte to be transmitted.
 void twi_attach_master_tx_writer( uint8_t (*function)(uint16_t) );
 
@@ -94,12 +95,12 @@ void twi_attach_master_tx_writer( uint8_t (*function)(uint16_t) );
 //Initialize the TWI hardware
 void twi_init();
 
-//Master mode, read from the given address, to the given data buffer, for the given number of 
+//Master mode, read from the given address, to the given data buffer, for the given number of
 // bytes, and either TWI_STOP or TWI_NO_STOP when completed.
 uint8_t twi_read_from(uint8_t address, uint8_t* data, uint16_t length, uint8_t send_stop);
 
 //Master mode, write to the given slave address, from the given data buffer, for the given number of
-// bytes.  If block is TWI_BLOCK (not TWI_NO_BLOCK) then this function blocks until the write is 
+// bytes.  If block is TWI_BLOCK (not TWI_NO_BLOCK) then this function blocks until the write is
 // completed.  If send_stop is TWI_STOP then we send the stop byte when completed.
 uint8_t twi_write_to(uint8_t address, uint8_t* data, uint16_t length, uint8_t block, uint8_t send_stop);
 
@@ -109,11 +110,11 @@ void twi_set_slave_address(uint8_t);
 //Transmit is called from the slave tx event callback, and will start the transmission back to the master.
 uint8_t twi_transmit(const uint8_t*, uint16_t);
 
-//Attach the supplied callback function, which is called when the slave rx is completed.  The 
+//Attach the supplied callback function, which is called when the slave rx is completed.  The
 // callback's arguments are the daat buffer which was just read, and the length of that buffer.
 // This function is most likely redundant if TWI_SLAVE_RX_READER is defined (that callback will
-// be called once for each byte in the incoming message, whereas this one will not be called 
-// until the entire message is buffered, but there are probably not many scenarios when both 
+// be called once for each byte in the incoming message, whereas this one will not be called
+// until the entire message is buffered, but there are probably not many scenarios when both
 // approaches are valid at the same time.)
 void twi_attach_slave_rx_callback( void (*)(uint8_t*, uint16_t) );
 
