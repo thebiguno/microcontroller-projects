@@ -2,9 +2,6 @@
 #define CONVERT_H
 
 #include <stdint.h>
-#include <math.h>
-
-#include "math.h"
 
 double convert_byte_to_radian(uint8_t x);
 uint8_t convert_radian_to_byte(double x);
@@ -19,7 +16,7 @@ double convert_bytes_to_double(uint8_t *buf, uint8_t offset);
 double normalize_angle(double radians);
 
 /*
- * Find the difference between two angles, taking into account wraparound.  
+ * Find the difference between two angles, taking into account wraparound.
  * Each angle must be between -PI and PI.  If a2 is clockwise from a1,
  * the result is positive; otherwise the result is negative.
  */

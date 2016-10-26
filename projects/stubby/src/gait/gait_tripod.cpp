@@ -1,6 +1,7 @@
 #include "gait.h"
 
-#include "../util/math.h"
+#include <math.h>
+#include <dcutil/dcmath.h>
 
 #include "../types/Point.h"
 

@@ -1,6 +1,5 @@
 #include "Point.h"
-
-#include "../util/math.h"
+#include <dcutil/dcmath.h>
 
 Point::Point(){
 }

@@ -1,9 +1,11 @@
-#include "math.h"
+#include "dcmath.h"
+
+#include <math.h>
 
 //In this library, we pass in / pass out angles in radians.  Internally, we use a custom measurement which maps
 // 90 degrees (PI / 2 radians) into 256 segments (hereafter this unit is called a 'segment', or 'seg').
 
-//Generated with: 
+//Generated with:
 //    for (double i = -1; i <= 1; i+=0.01){ printf("%1.5f, ", acos(i)); }
 // (add a 0 at the end)
 static double lookup_acos[201] = {
@@ -32,7 +34,7 @@ uint8_t constrain_angle(int16_t angle, uint8_t *quadrant){
 	while (angle >= 1024){
 		angle -= 1024;
 	}
-	
+
 	if (angle <= 255) {
 		*quadrant = 1;
 	}
@@ -87,5 +89,21 @@ uint16_t sqrt_f(uint16_t q){
 
 	if (q < (uint16_t) r * r ) r -= 1;
 
-	return r ; 
+	return r ;
+}
+
+
+//---------------------------------------------------------------------------------------------------
+// Fast inverse square-root
+// See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
+// with changes from http://stackoverflow.com/questions/15818906/does-this-pointer-casting-break-strict-aliasing-rule
+// to fix a warning about strict aliasing rule being broken
+float invSqrt(float x){
+	float halfx = 0.5f * x;
+	float y = x;
+	uint32_t i = (union { float f; uint32_t l; }) {y} .l;
+	i = 0x5f3759df - (i>>1);
+	y = (union { uint32_t l; float f; }) {i} .f;
+	y = y * (1.5f - (halfx * y * y));
+	return y;
 }

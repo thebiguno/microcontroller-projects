@@ -1,15 +1,8 @@
 #ifndef LEG_H
 #define LEG_H
 
-#ifndef DEBUG_SIMULATION
 #include <avr/io.h>
 #include "hardware/pwm.h"
-#else
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include "../simulation/debug.h"
-#endif
 #include "types/Point.h"
 
 #include "hardware.h"

@@ -1,6 +1,7 @@
 #include "Stubby.h"
 
-#include "controllers/Calibration.h"
+#include <dcutil/new.h>
+
 #include "controllers/General.h"
 #include "controllers/UniversalController.h"
 #include "gait/gait.h"
@@ -34,7 +35,7 @@ void stubby_main(){
 	// timer2_init();
 
 	UniversalController universalController(&stubby);
-	Calibration calibration(&stubby);
+	//Calibration calibration(&stubby);
 	General general(&stubby);
 
 	uint32_t time;
@@ -58,9 +59,9 @@ void stubby_main(){
 			else if ((cmd & 0xF0) == 0x10){
 				universalController.dispatch(&request);
 			}
-			else if ((cmd & 0xF0) == 0x30){
-				calibration.dispatch(&request);
-			}
+			// else if ((cmd & 0xF0) == 0x30){
+			// 	calibration.dispatch(&request);
+			// }
 			else {
 				//TODO Send debug message 'unknown command' or similar
 			}

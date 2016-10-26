@@ -1,5 +1,8 @@
 #include "convert.h"
 
+#include <math.h>
+#include <dcutil/dcmath.h>
+
 union udouble {
 	double d;
 	uint8_t u[sizeof(double)];

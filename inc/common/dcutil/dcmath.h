@@ -1,14 +1,15 @@
-#ifndef TRIG_H
-#define TRIG_H
+#ifndef DC_MATH
+#define DC_MATH
 
-#ifndef DEBUG_SIMULATION
-#include <avr/io.h>
-#else
-#include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
+
+#define fabs(x) __builtin_fabs(x)
+#define degToRad(degrees) ((degrees) / 180.0 * M_PI)
+#define radToDeg(radians) ((radians) * (180.0 / M_PI))
+
+#if defined (__cplusplus)
+extern "C" {
 #endif
-#include <math.h>
 
 /*
  * Returns an angle (in degrees) given the input value.  If the value is
@@ -30,5 +31,14 @@ double sin_f(double angle);
  * Fast square root function; from http://www.mikrocontroller.net/articles/AVR_Arithmetik#avr-gcc_Implementierung_.2816_Bit.29
  */
 uint16_t sqrt_f(uint16_t q);
+
+/*
+ * Fast inverse square root function.
+ */
+float invSqrt(float x);
+
+#if defined (__cplusplus)
+}
+#endif
 
 #endif

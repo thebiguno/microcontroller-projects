@@ -9,7 +9,7 @@
  * the ATMega168 does not have a PORTA, then there will be compile errors.  If you
  * have the hardware, but are not using it for PWM, then it will just use (slightly) more
  * memory and will be (slightly) slower.
- * 
+ *
  * Written by Wyatt Olson and Warren Janssens
  * http://digitalcave.ca
  * Released under the Creative Commons Attribution-NonCommercial-ShareAlike license.
@@ -34,14 +34,17 @@
 #define PWM_MAX_PINS 4
 #endif
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
 
 /*
  * Initializes the PWM library at a given period, using the specified ports.
- * You can have up to PWM_MAX_PINS pins defined here. 
- * 
+ * You can have up to PWM_MAX_PINS pins defined here.
+ *
  * To initialize this, you must pass in references to each of the PORTs, DDRs, and
  * the values of each pin.  You can do it like this:
- * 
+ *
  *    volatile uint8_t *ports[8];
  *    ports[0] = &PORTB;
  *    ports[1] = &PORTD;
@@ -55,19 +58,19 @@
  *
  *    pwm_init(ports, pins, 6, 20000);
  *
- * While the code to do this is uglier than if it were to just be a function 
+ * While the code to do this is uglier than if it were to just be a function
  * call, by allowing an arbitrary number of PWM pins, it is best to do it like this.
  *
- * The period must be less than 3354624µs (about 3.3 seconds); any more than this and
+ * The period must be less than 3354624ï¿½s (about 3.3 seconds); any more than this and
  * we just set it to the maximum.  There is no theoretical minimum, but in practice
- * you should probably keep it at 1000µs or so (1ms).
+ * you should probably keep it at 1000ï¿½s or so (1ms).
  */
 void pwm_init(volatile uint8_t *ports[],
 				uint8_t pins[],
 				uint8_t count,
 				uint32_t period);
-				
-				
+
+
 /*
  * Sets the phase of the pin at the given index to the specified value.  The index
  * matches the index used for the arrays in pwm_init().
@@ -88,7 +91,7 @@ void pwm_set_phase_batch(uint8_t index, uint32_t phase);
 void pwm_apply_batch();
 
 /*
- * Sets the period of the PWM generator, changing the period specified in init().  
+ * Sets the period of the PWM generator, changing the period specified in init().
  * Applies to all active PWM pins.
  */
 void pwm_set_period(uint32_t period);
@@ -100,13 +103,17 @@ void pwm_set_period(uint32_t period);
 void pwm_stop();
 
 /*
- * Turns on the PWM generator, starting back at 0.  This should be called after pwm_off() 
+ * Turns on the PWM generator, starting back at 0.  This should be called after pwm_off()
  * has been called, but pwm_init() *must* already have been called.  Calling this when
  * the generator is already on will reset the timer to 0, but otherwise will have no effect.
  *
- * If TIMER1 control registers have been modified by other libraries, you must call 
+ * If TIMER1 control registers have been modified by other libraries, you must call
  * pwm_init() instead of pwm_start().
  */
 void pwm_start();
+
+#if defined (__cplusplus)
+}
+#endif
 
 #endif

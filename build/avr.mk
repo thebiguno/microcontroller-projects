@@ -166,7 +166,7 @@ $(BUILDDIR)/%.o: %.cpp
 
 $(PROJECT).elf: $(OBJS)
 	@echo "[LD]\t$@"
-	$(CXX) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS)
+	@$(CXX) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS)
 
 $(PROJECT).asm: $(PROJECT).elf
 	@$(OBJDUMP) -C -d $(PROJECT).elf
