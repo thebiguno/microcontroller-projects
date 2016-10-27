@@ -30,7 +30,7 @@ namespace digitalcave {
 	class Stubby {
 
 		public:
-			Stubby();
+			Stubby(Stream* serial);
 
 			FramedSerialProtocol* getProtocol() { return &protocol; }
 			Leg** getLegs() { return legs; }

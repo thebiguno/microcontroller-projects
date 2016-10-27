@@ -81,12 +81,13 @@ void stubby_main(){
 	}
 }
 
-Stubby::Stubby() :
+Stubby::Stubby(Stream* serial) :
 	protocol(64),
 	mode(MODE_UNARMED),
 	linearAngle(0),
 	linearVelocity(0),
-	rotationalVelocity(0)
+	rotationalVelocity(0),
+	serial(serial)
 {
 	//Set up the leg objects, including servo details and mounting angle.  Leg indices follow
 	// DIP numbering format, starting at front left and proceeding counter clockwise around.
@@ -107,8 +108,6 @@ Stubby::Stubby() :
 #else
 	#error Unsupported PCB_REVISION value.
 #endif
-
-	serial = &serialAvr;
 }
 
 //On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.

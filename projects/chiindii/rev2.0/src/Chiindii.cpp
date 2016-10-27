@@ -7,6 +7,7 @@
 
 #include <PID.h>
 #include <SerialAVR.h>
+#include <I2CAVR.h>
 
 #include "timer/timer.h"
 
@@ -24,7 +25,7 @@
 using namespace digitalcave;
 
 //This cannot be a class variable, since it needs to be accessed by an ISR
-static SerialAVR serial(38400, 8, 0, 1, 1, 128);
+static SerialAVR serialAvr(38400, 8, 0, 1, 1, 128);
 
 //Reset WDT after system reset
 void get_mcusr(void) __attribute__((naked))  __attribute__((used))  __attribute__((section(".init3")));
@@ -36,38 +37,43 @@ void get_mcusr(void) {
 int main() __attribute__ ((noreturn));
 int main(){
 	wdt_disable();
-	
+
 	//Set clock to run at full speed
 	clock_prescale_set(clock_div_1);
 	// DISABLE JTAG - take control of F port
 	MCUCR = _BV(JTD);
 	MCUCR = _BV(JTD);
-	
+
 	DDRB |= _BV(PORTB1);
-	
+
 	battery_init();
 	timer_init();
 
-	Chiindii chiindii;
+	I2CAVR i2cAvr;
+
+	Chiindii chiindii(&serialAvr, &i2cAvr);
 	chiindii.run();
 	while(1);
 }
 
-Chiindii::Chiindii() : 
+Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 	mode(MODE_UNARMED),
 	throttle_sp(0),
 	angle_sp({0, 0, 0}),
 	rate_sp({0, 0, 0}),
+	serial(serial),
 	protocol(128),
-	
+	i2c(i2c),
+	mpu6050(i2c),
+
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	rate_z(0.1, 0, 0, DIRECTION_NORMAL, 0),
-	
+
 	angle_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	angle_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	angle_z(0.1, 0, 0, DIRECTION_NORMAL, 0),
-	
+
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 
 #if defined MAHONY
@@ -75,17 +81,17 @@ Chiindii::Chiindii() :
 #elif defined MADGWICK
 	imu(0.01, 0),
 #endif
-	
+
 	general(this),
 	calibration(this),
 	direct(this),
-	uc(this)
+	universalController(this)
 {
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
 	angle_y.setOutputLimits(-10, 10);
 	angle_z.setOutputLimits(-1, 1);
-	
+
 	//Output of g-force PID
 	gforce.setOutputLimits(0, 2);
 
@@ -99,7 +105,7 @@ void Chiindii::run() {
 	FramedSerialMessage request(0, 128);
 
 	loadConfig(); // load previously saved PID and comp tuning values from EEPROM
-	
+
 	vector_t gyro = {0, 0, 0};
 	vector_t accel = {0, 0, 0};
 	vector_t rate_pv = {0, 0, 0};
@@ -111,28 +117,28 @@ void Chiindii::run() {
 	uint32_t lastLowBatteryTime = 0;
 	double lowBatteryThrottle = 0;
 	uint16_t loopCounter = 0;
-	
+
 	motor_start();
-	
+
 	_delay_ms(250);
 
 	//Watchdog timer
 	wdt_enable(WDTO_120MS);
-	
+
 	//Main program loop
 	while (1) {
 		PORTB ^= _BV(PORTB1);
 		wdt_reset();
 		time = timer_millis();
-		
-		if (protocol.read(&serial, &request)) {
+
+		if (protocol.read(serial, &request)) {
 			uint8_t cmd = request.getCommand();
 
 			if ((cmd & 0xF0) == 0x00){
 				general.dispatch(&request);
 			}
 			else if ((cmd & 0xF0) == 0x10){
-				uc.dispatch(&request);
+				universalController.dispatch(&request);
 			}
 			else if ((cmd & 0xF0) == 0x20){
 				direct.dispatch(&request);
@@ -164,8 +170,8 @@ void Chiindii::run() {
 			status.batteryLow();
 		}
 		else if (battery_level <= 1) {
-			//The battery should only read as 0 (or 1) if it is completely unplugged; we assume that we 
-			// are running in debug mode without any battery.  We still show the battery 
+			//The battery should only read as 0 (or 1) if it is completely unplugged; we assume that we
+			// are running in debug mode without any battery.  We still show the battery
 			// status light, but we don't exit from armed mode.
 			status.batteryLow();
 		}
@@ -186,7 +192,7 @@ void Chiindii::run() {
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		//Send telemetry if something is strange...
-// 		if (accel.x > 1 || accel.x < -1 || accel.y > 1 || accel.y < -1 || accel.z > 2 || accel.z < 0){ 
+// 		if (accel.x > 1 || accel.x < -1 || accel.y > 1 || accel.y < -1 || accel.z > 2 || accel.z < 0){
 // 			int16_t telemetry[4];
 // 			telemetry[0] = loopCounter;
 // 			telemetry[1] = accel.x * 1000;
@@ -195,15 +201,15 @@ void Chiindii::run() {
 // 			FramedSerialMessage response(0x24, (uint8_t*) telemetry, 8);
 // 			sendMessage(&response);
 // 		}
-		
+
 		imu.compute(accel, gyro, mode, time);
 //		gforce_z_average = gforce_z_average + imu.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
-		
+
 		//Update PID calculations and adjust motors
 		angle_mv = imu.getEuler();
 
 		double throttle;
-		
+
 		//We only do angle PID in mode angle or throttle.
 		if (mode == MODE_ARMED_THROTTLE) { // 0x02
 			// angle pid with direct throttle
@@ -225,18 +231,18 @@ void Chiindii::run() {
 			angle_y.reset(time);
 			angle_z.reset(time);
 			gforce.reset(time);
-			
+
 			angle_sp.z = angle_mv.z;	//Reset heading to measured value
 			throttle = throttle_sp;
-			
+
 // 			char temp[14];
 // 			snprintf(temp, sizeof(temp), "%3d %3d N/A        ", (uint16_t) radToDeg(angle_sp.z), (uint16_t) radToDeg(angle_mv.z));
 // 			sendDebug(temp, 14);
 		}
-		
+
 		throttle -= lowBatteryThrottle;
 		if (throttle < 0) throttle = 0;
-		
+
 		//We always want to do rate PID when armed; if we are in rate mode, then we use the rate_sp as passed
 		// by the user, otherwise we use rate_sp as the output of angle PID.
 		if (mode){
@@ -258,11 +264,11 @@ void Chiindii::run() {
 			// range, and more manouverability at the middle / top.
 			double throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
 			throttle = throttle * throttleWeight;
-			
-			//Give a bit more throttle when pitching / rolling.  The magic number '10' means that, with a max of 30 degrees (~0.5 radians) 
+
+			//Give a bit more throttle when pitching / rolling.  The magic number '10' means that, with a max of 30 degrees (~0.5 radians)
 			// as the set point, we will add at most 0.05 (5%) to the throttle.
 			throttle += fmax(abs(angle_sp.x), abs(angle_sp.y)) / 10;
-			
+
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
 			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
 			double m2 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
@@ -285,11 +291,11 @@ void Chiindii::run() {
 			m4 = m4 * 511 / throttleWeight;
 
 			motor_set(m1, m2, m3, m4);
-			
+
 			status.armed();
 		}
 		else {
-			//If we are not armed, keep the PID reset.  This prevents erratic behaviour 
+			//If we are not armed, keep the PID reset.  This prevents erratic behaviour
 			// when initially turning on, especially if I is non-zero.
 			rate_x.reset(time);
 			rate_y.reset(time);
@@ -298,11 +304,11 @@ void Chiindii::run() {
 			angle_y.reset(time);
 			angle_z.reset(time);
 			gforce.reset(time);
-			
+
 			status.disarmed();
 			motor_set(0, 0, 0, 0);
 		}
-			
+
 // #ifdef DEBUG
 // 		if (debug){
 // 			char temp[128];
@@ -329,7 +335,7 @@ void Chiindii::run() {
 // #endif
 
 		status.poll(time);
-		
+
 		loopCounter++;
 	}
 }
@@ -337,22 +343,22 @@ void Chiindii::run() {
 void Chiindii::loadConfig(){
 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
 		double kp, ki, kd;
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 8));
 		rate_x.setTunings(kp, ki, kd);
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 12));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 16));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 20));
 		rate_y.setTunings(kp, ki, kd);
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 24));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 28));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 32));
 		rate_z.setTunings(kp, ki, kd);
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 36));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 40));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 44));
@@ -362,12 +368,12 @@ void Chiindii::loadConfig(){
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 52));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 56));
 		angle_y.setTunings(kp, ki, kd);
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 60));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 64));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
 		angle_z.setTunings(kp, ki, kd);
-	
+
 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 80));
@@ -378,13 +384,11 @@ void Chiindii::loadConfig(){
 		double t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
 		imu.setBeta(t);
 #endif
-		
+
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
-		int16_t calibration[3];
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 88), 6);
-		mpu6050.setAccelCalib(calibration);
-		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 94), 6);
-		mpu6050.setGyroCalib(calibration);
+		int16_t calibration[6];
+		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 88), 12);
+		mpu6050.setCalibration(calibration);
 		sendStatus("Load EEPROM   ", 14);
 	}
 	else {
@@ -395,7 +399,7 @@ void Chiindii::loadConfig(){
 void Chiindii::saveConfig(){
 	cli();
 	wdt_disable();
-	
+
 	eeprom_update_float((float*) (EEPROM_OFFSET + 0), rate_x.getKp());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 4), rate_x.getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 8), rate_x.getKd());
@@ -403,7 +407,7 @@ void Chiindii::saveConfig(){
 	eeprom_update_float((float*) (EEPROM_OFFSET + 12), rate_y.getKp());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 16), rate_y.getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 20), rate_y.getKd());
-	
+
 	eeprom_update_float((float*) (EEPROM_OFFSET + 24), rate_z.getKp());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 28), rate_z.getKi());
 	eeprom_update_float((float*) (EEPROM_OFFSET + 32), rate_z.getKd());
@@ -429,22 +433,17 @@ void Chiindii::saveConfig(){
 	eeprom_update_float((float*) (EEPROM_OFFSET + 84), imu.getBeta());
 #endif
 
-	eeprom_update_block(mpu6050.getAccelCalib(), (void*) (EEPROM_OFFSET + 88), 6);
-	eeprom_update_block(mpu6050.getGyroCalib(), (void*) (EEPROM_OFFSET + 94), 6);
-	
+	eeprom_update_block(mpu6050.getCalibration(), (void*) (EEPROM_OFFSET + 88), 12);
+
 	//Write the magic value to say that we have written valid bytes
 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
-	
+
 	wdt_enable(WDTO_120MS);
 	sei();
-	
+
 	sendStatus("Save EEPROM   ", 14);
 }
 
-void Chiindii::sendMessage(FramedSerialMessage* message) {
-	protocol.write(&serial, message);
-}
-
 ISR(USART1_RX_vect){
-	serial.isr();
+	serialAvr.isr();
 }

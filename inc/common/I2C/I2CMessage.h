@@ -17,6 +17,10 @@ namespace digitalcave {
 
 			uint8_t getLength() { return length; }
 			uint8_t* getData() { return data; }
+
+			//Change the length.  Do not set this to be longer than data array,
+			// or you will overflow.
+			void setLength(uint8_t length) { this->length = length; }
 	};
 }
 

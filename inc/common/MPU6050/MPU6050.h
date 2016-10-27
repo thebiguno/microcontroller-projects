@@ -19,11 +19,24 @@ namespace digitalcave {
 			// to EEPROM if desired.
 			void calibrate();
 
+			//Return the raw values directly from the device.  No calibration or scaling is applied.
+			// Probably useful for debugging rather than real world data.
+			// Pass in a uint16_t[14] array.
+			void getRaw(uint8_t* raw);
+
 			//Returns a vector of acceleration values (in g)
 			vector_t getAccel();
 
 			//Returns a vector of gyroscope values (in rad / s)
 			vector_t getGyro();
+
+			//Returns all data in a single operation.  Raw data is obtained from
+			// a single I2C read, so it should be a bit faster for cases where you always
+			// need everything.
+			void getValues(vector_t* accel, vector_t* gyro, double* temperature);
+
+			//Same as getValues, but allow you to pass in raw data.
+			void getValuesFromRaw(vector_t* accel, vector_t* gyro, double* temperature, uint8_t* data);
 
 			//Returns the temperature (in C)
 			double getTemperature();

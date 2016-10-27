@@ -64,7 +64,9 @@ namespace digitalcave {
 			vector_t angle_sp;
 			vector_t rate_sp;
 
+			Stream* serial;
 			FramedSerialProtocol protocol;
+			I2C* i2c;
 			MPU6050 mpu6050;
 
 			PID rate_x;
@@ -84,12 +86,12 @@ namespace digitalcave {
 			General general;
 			Calibration calibration;
 			Direct direct;
-			UniversalController uc;
+			UniversalController universalController;
 
 			Status status;
 
 		public:
-			Chiindii();
+			Chiindii(Stream* serial, I2C* i2c);
 
 			void run();
 
@@ -131,7 +133,7 @@ namespace digitalcave {
 			void sendStatus(char* message, uint8_t length) { FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length); sendMessage(&response); }
 			void sendStatus(const char* message, uint8_t length) { sendStatus((char*) message, length); }
 
-			void sendMessage(FramedSerialMessage* message) { protocol->write(&serial, message); }
+			void sendMessage(FramedSerialMessage* message) { protocol.write(serial, message); }
 	};
 }
 #endif
