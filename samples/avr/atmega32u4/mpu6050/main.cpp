@@ -29,7 +29,7 @@ int main (){
 	}
 
 	I2CAVR i2c;
-	MPU6050 mpu6050(&i2c);
+	MPU6050 mpu6050(&i2c, MPU6050_ACCEL_RANGE_2G, MPU6050_GYRO_RANGE_250);
 	mpu6050.calibrate();
 
 	for (uint8_t i = 0; i < 10; i++){

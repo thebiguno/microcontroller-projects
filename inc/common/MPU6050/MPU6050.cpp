@@ -3,9 +3,10 @@
 using namespace digitalcave;
 
 //Inits the MPU6050 control object and sends the power up commands to the chip.
-MPU6050::MPU6050(I2C* i2c) :
-    i2c(i2c),
-    calibration()
+MPU6050::MPU6050(I2C* i2c, uint8_t accelRange, uint8_t gyroRange) :
+	i2c(i2c),
+	calibration(),
+	accelRange(accelRange)
 {
 	uint8_t data[2];
 	I2CMessage message(data, sizeof(data));
@@ -24,14 +25,48 @@ MPU6050::MPU6050(I2C* i2c) :
 
 	delay_ms(500);
 
-	//Set gyro to 2000 deg/s range
+	//Set gyro range
 	data[0] = MPU6050_GYRO_CONFIG;
-	data[1] = 0x18;		//2000 deg/s
+	switch(gyroRange){
+		case MPU6050_GYRO_RANGE_250:
+			data[1] = 0x00;		//250 deg/s
+			gyroScale = (0.00762939453125 * M_PI / 180);	//(250 deg/s / 32768) * PI/180.
+			break;
+		case MPU6050_GYRO_RANGE_500:
+			data[1] = 0x08;		//500 deg/s
+			gyroScale = (0.0152587890625 * M_PI / 180);		//(500 deg/s / 32768) * PI/180.
+			break;
+		case MPU6050_GYRO_RANGE_1000:
+			data[1] = 0x10;		//1000 deg/s
+			gyroScale = (0.030517578125 * M_PI / 180);		//(1000 deg/s / 32768) * PI/180.
+			break;
+		default:
+			data[1] = 0x18;		//2000 deg/s
+			gyroScale = (0.06103515625 * M_PI / 180);		//(2000 deg/s / 32768) * PI/180.
+			break;
+	}
 	i2c->write(MPU6050_ADDRESS, &message);
 
-	//Set accel to +/- 16g
+	//Set accel range
 	data[0] = MPU6050_ACCEL_CONFIG;
-	data[1] = 0x18;		//+/- 16g
+	switch(accelRange){
+		case MPU6050_ACCEL_RANGE_2G:
+			data[1] = 0x00;		// +/- 2G
+			accelScale = 0.00006103515625;		// 2g / 32768
+			break;
+		case MPU6050_ACCEL_RANGE_4G:
+			data[1] = 0x08;		// +/- 4G
+			accelScale = 0.0001220703125;		// 4g / 32768
+			break;
+		case MPU6050_ACCEL_RANGE_8G:
+			data[1] = 0x10;		// +/- 8G
+			accelScale = 0.000244140625;		// 8g / 32768
+			break;
+		default:
+			data[1] = 0x18;		// +/- 16G
+			accelScale = 0.00048828125;		// 16g / 32768
+			break;
+	}
 	i2c->write(MPU6050_ADDRESS, &message);
 
 	//Digital LPF config.
@@ -73,27 +108,38 @@ void MPU6050::calibrate(){
 	//We want Accel Z (index 2) to be 1g, and all else to be 0.
 	calibration[0] = 0 - totals[0] / count;
 	calibration[1] = 0 - totals[1] / count;
-	calibration[2] = 2048 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g), i.e. what a nominal 1G reading should be
+	switch (accelRange){
+		case MPU6050_ACCEL_RANGE_2G:
+			calibration[2] = 16384 - totals[2] / count;		//16384 = 32768 (full scale range) divided by 2 (2g), i.e. what a nominal 1G reading should be
+			break;
+		case MPU6050_ACCEL_RANGE_4G:
+			calibration[2] = 8192 - totals[2] / count;		//8192 = 32768 (full scale range) divided by 4 (4g)
+			break;
+		case MPU6050_ACCEL_RANGE_8G:
+			calibration[2] = 4096 - totals[2] / count;		//4096 = 32768 (full scale range) divided by 8 (8g)
+			break;
+		default:
+			calibration[2] = 2048 - totals[2] / count;		//2048 = 32768 (full scale range) divided by 16 (16g)
+			break;
+	}
 	calibration[3] = 0 - totals[3] / count;
 	calibration[4] = 0 - totals[4] / count;
 	calibration[5] = 0 - totals[5] / count;
 }
 
-inline vector_t getAccelConverted(uint8_t* data, MPU6050* mpu6050){
+inline vector_t getAccelConverted(uint8_t* data, int16_t* calibration, double accelScale){
 	vector_t result;
-	int16_t* calibration = mpu6050->getCalibration();
-	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[0]) * 0.00048828125;		// 16g / 32768
-	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[1]) * 0.00048828125;
-	result.z = (((int16_t) (((uint16_t) data[4] << 8) | data[5])) + calibration[2]) * 0.00048828125;
+	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[0]) * accelScale;
+	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[1]) * accelScale;
+	result.z = (((int16_t) (((uint16_t) data[4] << 8) | data[5])) + calibration[2]) * accelScale;
 	return result;
 }
 
-inline vector_t getGyroConverted(uint8_t* data, MPU6050* mpu6050){
+inline vector_t getGyroConverted(uint8_t* data, int16_t* calibration, double gyroScale){
 	vector_t result;
-	int16_t* calibration = mpu6050->getCalibration();
-	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[3]) * (0.06103515625 * M_PI / 180);		//(2000 deg/s / 32768) * PI/180.
-	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[4]) * (0.06103515625 * M_PI / 180);
-	result.z = (((int16_t) (((uint16_t) data[4] << 8) | data[5])) + calibration[5]) * (0.06103515625 * M_PI / 180);
+	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[3]) * gyroScale;
+	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[4]) * gyroScale;
+	result.z = (((int16_t) (((uint16_t) data[4] << 8) | data[5])) + calibration[5]) * gyroScale;
 	return result;
 }
 
@@ -110,7 +156,7 @@ vector_t MPU6050::getAccel(){
 	message.setLength(6);
 	i2c->read(MPU6050_ADDRESS, &message);				//Read 6 bytes (Accel X/Y/Z, 16 bits signed each)
 
- 	return getAccelConverted(data, this);
+ 	return getAccelConverted(data, calibration, accelScale);
 }
 
 //Returns a vector of gyroscope values (in rad / s)
@@ -122,7 +168,7 @@ vector_t MPU6050::getGyro(){
 	message.setLength(6);
 	i2c->read(MPU6050_ADDRESS, &message);				//Read 14 bytes (Gyro X/Y/Z, 16 bits signed each)
 
-	return getGyroConverted(data, this);
+	return getGyroConverted(data, calibration, gyroScale);
 }
 
 //Returns the temperature (in C)
@@ -149,9 +195,9 @@ void MPU6050::getValues(vector_t* accel, vector_t* gyro, double* temperature){
 }
 
 void MPU6050::getValuesFromRaw(vector_t* accel, vector_t* gyro, double* temperature, uint8_t* data){
-	*accel = getAccelConverted(data + 0, this);
-	*gyro = getGyroConverted(data + 8, this);
+	*accel = getAccelConverted(data + 0, calibration, accelScale);
 	*temperature = getTemperatureConverted(data + 6);
+	*gyro = getGyroConverted(data + 8, calibration, gyroScale);
 }
 
 void MPU6050::getRaw(uint8_t* raw){

@@ -7,12 +7,22 @@
 #include <dcutil/delay.h>
 #include <I2C.h>
 
+#define MPU6050_ACCEL_RANGE_2G			0
+#define MPU6050_ACCEL_RANGE_4G			1
+#define MPU6050_ACCEL_RANGE_8G			2
+#define MPU6050_ACCEL_RANGE_16G			3
+
+#define MPU6050_GYRO_RANGE_250			0
+#define MPU6050_GYRO_RANGE_500			1
+#define MPU6050_GYRO_RANGE_1000			2
+#define MPU6050_GYRO_RANGE_2000			3
+
 namespace digitalcave {
 
 	class MPU6050{
 		public:
 			//Inits the MPU6050 control object and sends the power up commands to the chip.
-			MPU6050(I2C* i2c);
+			MPU6050(I2C* i2c, uint8_t accelRange = MPU6050_ACCEL_RANGE_16G, uint8_t gyroRange = MPU6050_GYRO_RANGE_2000);
 
 			//You should only call this when the chip is on a flat, nonmoving surface.  We find the average error
 			// and set the calibration variables accordingly.  You can read the calibration via get*Calib(), and persist
@@ -49,6 +59,13 @@ namespace digitalcave {
 		private:
 			I2C* i2c;
 			int16_t calibration[6];
+
+			//The scaling factors to convert raw values to output values
+			double accelScale;
+			double gyroScale;
+
+			//We need to keep this for the calibration routines
+			uint8_t accelRange;
 	};
 
 	#define MPU6050_ADDRESS				0x68
