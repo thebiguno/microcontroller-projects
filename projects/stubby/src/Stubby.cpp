@@ -24,7 +24,7 @@ void get_mcusr(void) {
 
 void stubby_main(){
 	//Setup
-	Stubby stubby;
+	Stubby stubby(&serialAvr);
 
 	wdt_enable(WDTO_2S);
 	servo_init(stubby.getLegs());
@@ -83,11 +83,11 @@ void stubby_main(){
 
 Stubby::Stubby(Stream* serial) :
 	protocol(64),
+	serial(serial),
 	mode(MODE_UNARMED),
 	linearAngle(0),
 	linearVelocity(0),
-	rotationalVelocity(0),
-	serial(serial)
+	rotationalVelocity(0)
 {
 	//Set up the leg objects, including servo details and mounting angle.  Leg indices follow
 	// DIP numbering format, starting at front left and proceeding counter clockwise around.
