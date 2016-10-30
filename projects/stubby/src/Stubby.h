@@ -23,8 +23,9 @@
 
 //Mode variables
 #define MODE_UNARMED			0x00
-#define MODE_WALKING			0x01
-#define MODE_CALIBRATION		0x02
+#define MODE_RESETTING			0x01
+#define MODE_WALKING			0x02
+#define MODE_CALIBRATION		0x03
 
 namespace digitalcave {
 	class Stubby {

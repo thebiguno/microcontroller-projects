@@ -130,3 +130,44 @@ void gait_step(Stubby* stubby){
 		last_time = time;
 	}
 }
+
+void gait_reset(Stubby* stubby){
+	for (uint8_t i = 0; i < 10; i++){
+		PORTC ^= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
+		delay_ms(100);
+	}
+	
+	
+	pwm_start();
+	
+	//TODO change this to be non blocking
+	Leg** legs = stubby->getLegs();
+	
+	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+		legs[l]->setOffset(Point(0,0,30));
+	}
+	pwm_apply_batch();
+	delay_ms(200);
+
+	for (uint8_t l = 0; l < LEG_COUNT; l+=2){
+		legs[l]->setOffset(Point(0,0,0));
+	}
+	pwm_apply_batch();
+	delay_ms(200);
+	
+	wdt_reset();
+
+	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+		legs[l]->setOffset(Point(0,0,30));
+	}
+	pwm_apply_batch();
+	delay_ms(200);
+
+	for (uint8_t l = 1; l < LEG_COUNT; l+=2){
+		legs[l]->setOffset(Point(0,0,0));
+	}
+	pwm_apply_batch();
+	delay_ms(200);
+	
+	stubby->setMode(MODE_UNARMED);
+}
