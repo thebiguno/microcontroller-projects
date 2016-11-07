@@ -30,22 +30,21 @@ void status_flash(uint8_t red, uint8_t green, uint8_t blue, uint8_t count){
 		//delay_ms(100);
 		status_set_color(0x00, 0x00, 0x00);
 		//delay_ms(100);
-	}	
+	}
 }
 
 void status_set_color(uint8_t red, uint8_t green, uint8_t blue){
 #if PCB_REVISION == 1
-	pwm_set_phase_batch(LED_RED, ((uint16_t) red) * PHASE_MULTIPLIER);
-	pwm_set_phase_batch(LED_GREEN, ((uint16_t) green) * PHASE_MULTIPLIER);
-	pwm_set_phase_batch(LED_BLUE, ((uint16_t) blue) * PHASE_MULTIPLIER);
-#elif PCB_REVISION == 2	
-	pwm_set_phase_batch(LED_RED, ((uint16_t) 0xFF - red) * PHASE_MULTIPLIER);
-	pwm_set_phase_batch(LED_GREEN, ((uint16_t) 0xFF - green) * PHASE_MULTIPLIER);
-	pwm_set_phase_batch(LED_BLUE, ((uint16_t) 0xFF - blue) * PHASE_MULTIPLIER);
+	pwm_set_phase_batch(LED_RED, ((uint16_t) red) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
+	pwm_set_phase_batch(LED_GREEN, ((uint16_t) green) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
+	pwm_set_phase_batch(LED_BLUE, ((uint16_t) blue) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
+#elif PCB_REVISION == 2
+	pwm_set_phase_batch(LED_RED, ((uint16_t) 0xFF - red) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
+	pwm_set_phase_batch(LED_GREEN, ((uint16_t) 0xFF - green) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
+	pwm_set_phase_batch(LED_BLUE, ((uint16_t) 0xFF - blue) * PHASE_MULTIPLIER, PWM_STATUS_TIMEOUT_COUNTER);
 #else
 	#error Unsupported PCB_REVISION value.
 #endif
 
 	pwm_apply_batch();
 }
-

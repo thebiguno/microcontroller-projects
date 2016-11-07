@@ -42,7 +42,7 @@ void Calibration::dispatch(FramedSerialMessage* message){
 			for (uint8_t l = 0; l < LEG_COUNT; l++){
 				for (uint8_t j = 0; j < JOINT_COUNT; j++){
 					stubby->getLegs()[l]->setCalibration(j, 0);
-					pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL + (stubby->getLegs()[l]->getCalibration(j) * 10));
+					pwm_set_phase_batch(l * JOINT_COUNT + j, PHASE_NEUTRAL + (stubby->getLegs()[l]->getCalibration(j) * 10), PWM_SERVO_TIMEOUT_COUNTER);
 				}
 			}
 			pwm_apply_batch();

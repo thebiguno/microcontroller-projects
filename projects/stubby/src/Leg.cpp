@@ -2,6 +2,8 @@
 
 #include <dcutil/dcmath.h>
 
+#include "Stubby.h"
+
 /*
  * Returns the angle which the servo needs to move from neutral.  Used for both tibia and femur.
  */
@@ -123,15 +125,15 @@ void Leg::setCalibration(uint8_t i, int8_t calibration){
 void Leg::setTibiaAngle(double desired_angle){
 	//See diagrams in doc/diagrams.pdf for description of sides and angles
 	double angle_S = solveServoTrapezoid(desired_angle, TIBIA_A, TIBIA_B, TIBIA_C, TIBIA_D, TIBIA_E_OFFSET_ANGLE, TIBIA_E_OFFSET_ANGLE, TIBIA_NEUTRAL_SERVO_ANGLE);
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + (this->calibration[TIBIA] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, (uint16_t) PHASE_NEUTRAL + (this->calibration[TIBIA] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL), PWM_SERVO_TIMEOUT_COUNTER);
 }
 
 void Leg::setFemurAngle(double desired_angle){
 	//See diagrams in doc/diagrams.pdf for description of sides and angles
 	double angle_S = solveServoTrapezoid(desired_angle, FEMUR_A, FEMUR_B, FEMUR_C, FEMUR_D, FEMUR_E_OFFSET_ANGLE, FEMUR_E_OFFSET_ANGLE, FEMUR_NEUTRAL_SERVO_ANGLE);
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + (this->calibration[FEMUR] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL));
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, (uint16_t) PHASE_NEUTRAL + (this->calibration[FEMUR] * 10) + angle_S * ((PHASE_MAX - PHASE_MIN) / SERVO_TRAVEL), PWM_SERVO_TIMEOUT_COUNTER);
 }
 
 void Leg::setCoxaAngle(double desired_angle){
-	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + (this->calibration[COXA] * 10) + desired_angle * COXA_PHASE_MULTIPLIER);
+	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, (uint16_t) PHASE_NEUTRAL + (this->calibration[COXA] * 10) + desired_angle * COXA_PHASE_MULTIPLIER, PWM_SERVO_TIMEOUT_COUNTER);
 }
