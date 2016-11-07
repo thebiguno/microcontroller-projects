@@ -13,4 +13,9 @@ using namespace digitalcave;
  */
 void gait_step(Stubby* stubby);
 
+/*
+ * Move the legs back to reset position and then change to unarmed mode
+ */
+void gait_reset(Stubby* stubby);
+
 #endif

@@ -23,8 +23,9 @@
 
 //Mode variables
 #define MODE_UNARMED			0x00
-#define MODE_WALKING			0x01
-#define MODE_CALIBRATION		0x02
+#define MODE_RESETTING			0x01
+#define MODE_WALKING			0x02
+#define MODE_CALIBRATION		0x03
 
 namespace digitalcave {
 	class Stubby {
@@ -60,10 +61,10 @@ namespace digitalcave {
 			Stream* serial;
 
 			uint8_t mode;
-			float linearAngle;
-			float linearVelocity;
-			float rotationalVelocity;
-			float turn;
+			float linearAngle;			//Which direction to move.  Expressed as angle in rad
+			float linearVelocity;		//How fast to move in direction linearAngle.  Expressed as float from 0..1
+			float rotationalVelocity;	//How fast to turn in place.  Expressed as float from 0..1
+			//float turn;
 	};
 }
 

@@ -1,11 +1,11 @@
 # Most user configurable options are in this file.
 include hardware.mk
 
-ifndef AVRDUDE_PROGRAMMER
-	AVRDUDE_PROGRAMMER=usbtiny
+ifndef PROGRAMMER
+	PROGRAMMER=usbtiny
 endif
 
-ifneq 'usbtiny' '$(AVRDUDE_PROGRAMMER)'
+ifneq 'usbtiny' '$(PROGRAMMER)'
 ifndef AVRDUDE_PORT
 ifeq ($(OS),Linux)
 	AVRDUDE_PORT=/dev/ttyUSB0

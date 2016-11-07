@@ -1,5 +1,16 @@
 #include "UniversalController.h"
 
+#include <math.h>
+
+#include <UniversalControllerClient.h>
+
+#include "../Stubby.h"
+
+#define ANALOG_CENTER					0
+#define ANALOG_LESS_THAN_CENTER			1
+#define ANALOG_MORE_THAN_CENTER			2
+
+
 using namespace digitalcave;
 
 UniversalController::UniversalController(Stubby* stubby) :
@@ -9,7 +20,96 @@ UniversalController::UniversalController(Stubby* stubby) :
 }
 
 void UniversalController::dispatch(FramedSerialMessage* message){
+	uint8_t cmd = message->getCommand();
+	if (cmd == MESSAGE_UC_JOYSTICK_MOVE) {
+			uint8_t* sticks = message->getData();
+			uint8_t lx = sticks[0];
+			uint8_t ly = sticks[1];
+			uint8_t rx = sticks[2];
+			uint8_t ry = sticks[3];
+			
+			float adjRx = 0;
+			float adjRy = 0;
+			float adjLx = 0;
+			
+			//Adjusted stick readings are in range -1..1, and uses only the outer 100 units of joystick
+			if (rx < 100){
+				adjRx = (100.0 - rx) / 100.0;
+				rx = ANALOG_LESS_THAN_CENTER;
+			}
+			else if (rx > 155){
+				adjRx = (rx - 155.0) / 100.0;
+				rx = ANALOG_MORE_THAN_CENTER;
+			}
+			else {
+				rx = ANALOG_CENTER;
+			}
 
+			if (ry < 100){
+				adjRy = (100.0 - ry) / 100.0;
+				ry = ANALOG_LESS_THAN_CENTER;
+			}
+			else if (ry > 155){
+				adjRy = (ry - 155.0) / 100.0;
+				ry = ANALOG_MORE_THAN_CENTER;
+			}
+			else {
+				ry = ANALOG_CENTER;
+			}
+			
+			if (lx < 100){
+				adjLx = (100.0 - lx) / 100.0;
+				lx = ANALOG_LESS_THAN_CENTER;
+			}
+			else if (lx > 155){
+				adjLx = (lx - 155.0) / 100.0;
+				lx = ANALOG_MORE_THAN_CENTER;
+			}
+			else {
+				lx = ANALOG_CENTER;
+			}
+			
+			//Find the linear angle using atan.  We have to handle the special case
+			// of no x value and either positive or negative y value separately.
+			if (rx == ANALOG_CENTER && ry == ANALOG_CENTER){
+				stubby->setLinearAngle(0);
+			}
+			else if (rx == ANALOG_CENTER && ry == ANALOG_MORE_THAN_CENTER){
+				stubby->setLinearAngle(M_PI / 2);
+			}
+			else if (rx == ANALOG_CENTER && ry == ANALOG_LESS_THAN_CENTER){
+				stubby->setLinearAngle(M_PI / -2);
+			}
+			else {
+				stubby->setLinearAngle(atan2(adjRy, adjRx));
+			}
+
+			//Use pythagorean theorem to find the velocity, in the range [0..1].
+			stubby->setLinearVelocity(fmin(1.0, fmax(0.0, sqrt((adjRx * adjRx) + (adjRy * adjRy)))));
+			
+			//We only care about the X axis for right (rotational) stick
+			stubby->setRotationalVelocity(adjLx);
+	}
+	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
+		uint8_t rawThrottle = message->getData()[0];
+		//TODO Allow configuration of the height (i.e. move up and down with throttle)
+	}
+	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
+		uint8_t button = message->getData()[0];
+		
+		//To disarm, press the cross (bottom discrete) button at any time
+		if (button == CONTROLLER_BUTTON_VALUE_CROSS){
+			stubby->sendStatus("Disarmed      ", 14);
+			stubby->sendDebug("              ", 14);
+			stubby->setMode(MODE_UNARMED);
+		}
+		//To arm, press the circle (right discrete) button at any time
+		else if (button == CONTROLLER_BUTTON_VALUE_CIRCLE){
+			stubby->sendStatus("Armed         ", 14);
+			stubby->sendDebug("              ", 14);
+			stubby->setMode(MODE_WALKING);
+		}
+	}
 }
 
 

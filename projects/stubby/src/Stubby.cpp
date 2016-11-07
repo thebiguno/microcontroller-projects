@@ -78,13 +78,16 @@ void stubby_main(){
 		if (stubby.getMode() == MODE_WALKING){
 			gait_step(&stubby);
 		}
+		else if (stubby.getMode() == MODE_RESETTING){
+			gait_reset(&stubby);
+		}
 	}
 }
 
 Stubby::Stubby(Stream* serial) :
 	protocol(64),
 	serial(serial),
-	mode(MODE_UNARMED),
+	mode(MODE_RESETTING),
 	linearAngle(0),
 	linearVelocity(0),
 	rotationalVelocity(0)
