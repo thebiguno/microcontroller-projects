@@ -40,6 +40,9 @@ void stubby_main(){
 
 	uint32_t time;
 	uint32_t lastReceiveMessageTime = 0;
+	uint32_t lastHeartbeatTime = 0;
+	
+	delay_ms(500);
 
 	//Main loop
 	while(1){
@@ -72,6 +75,19 @@ void stubby_main(){
 				stubby.sendStatus("Comm Timeout  ", 14);
 			}
 			stubby.setMode(MODE_UNARMED);
+		}
+		
+		if ((time - lastHeartbeatTime) > 1000){
+			if (stubby.getMode() == MODE_WALKING){
+				PORTC ^= _BV(PORTC7);
+			}
+			else if (stubby.getMode() == MODE_UNARMED){
+				PORTC ^= _BV(PORTC5);
+			}
+			else {
+				PORTC ^= _BV(PORTC6);
+			}
+			lastHeartbeatTime = time;
 		}
 
 		//Move legs according to state and time
@@ -120,7 +136,7 @@ int main(void){
 	return 0;
 }
 
-ISR(USART1_RX_vect){
+ISR(USART0_RX_vect){
 	serialAvr.isr();
 }
 

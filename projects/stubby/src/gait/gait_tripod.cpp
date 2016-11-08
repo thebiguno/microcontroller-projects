@@ -132,12 +132,10 @@ void gait_step(Stubby* stubby){
 }
 
 void gait_reset(Stubby* stubby){
-	for (uint8_t i = 0; i < 10; i++){
-		PORTC ^= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
-		delay_ms(100);
-	}
-	
-	
+// 	for (uint8_t i = 0; i < 10; i++){
+// 		PORTC ^= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
+// 		delay_ms(100);
+// 	}
 	pwm_start();
 	
 	//TODO change this to be non blocking

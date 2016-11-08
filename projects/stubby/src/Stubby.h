@@ -28,7 +28,7 @@
 #define MODE_CALIBRATION		0x03
 
 //How many PWM iterations should happen before we stop sending the events.
-#define PWM_SERVO_TIMEOUT_COUNTER	25
+#define PWM_SERVO_TIMEOUT_COUNTER	50
 #define PWM_STATUS_TIMEOUT_COUNTER	255
 
 namespace digitalcave {

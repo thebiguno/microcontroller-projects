@@ -186,6 +186,7 @@ void pwm_set_phase_batch(uint8_t index, uint32_t phase, uint8_t counter){
 		_set_phase_batch = 1;
 		p->counter = counter;
 	}
+	
 	//Set the new compare value
 	p->compare_value = new_clicks;
 }
@@ -323,30 +324,31 @@ ISR(TIMER1_COMPA_vect){
 		_pwm_event_high = _pwm_event_high_new;
 		_set_phase = 0;
 	}
-	//Decrement counters and update the port masks on counters that have run out.  TODO This may take too long to be included in the ISR... verification needed.
+	//Decrement counters and update the port masks on counters that have run out.
+	//TODO This may take too long to be included in the ISR... verification needed.
 	for (uint8_t i = 0; i < _count; i++){
 		pwm_pin_t *p = &(_pwm_pins[i]);
 		if (p->counter != 0xFF && p->counter != 0x00){
 			p->counter--;
 			if (p->counter == 0x00){
-				//Set port masks low for pins whose counters have run out.
-#ifndef PWM_PORTA_UNUSED
-				if (p->port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTB_UNUSED
-				if (p->port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTC_UNUSED
-				if (p->port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTD_UNUSED
-				if (p->port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p->pin);
-				else
-#endif
-				if (0);	//Nop so that ignored ports dont break things
+// 				//Set port masks low for pins whose counters have run out.
+// #ifndef PWM_PORTA_UNUSED
+// 				if (p->port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p->pin);
+// 				else
+// #endif
+// #ifndef PWM_PORTB_UNUSED
+// 				if (p->port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p->pin);
+// 				else
+// #endif
+// #ifndef PWM_PORTC_UNUSED
+// 				if (p->port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p->pin);
+// 				else
+// #endif
+// #ifndef PWM_PORTD_UNUSED
+// 				if (p->port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p->pin);
+// 				else
+// #endif
+// 				if (0);	//Nop so that ignored ports dont break things
 			}
 		}
 	}
