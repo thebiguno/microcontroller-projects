@@ -7,7 +7,7 @@
  *		ISR(USART1_RX_vect){
  *			//Be sure to pass your serial object instance the correct data; i.e. UDR0 for serial port 0, UDR1 
  *			// for serial port 1, etc.
- *			serial.isr(UDR0);
+ *			serial.isr();
  * 		}
  */
 

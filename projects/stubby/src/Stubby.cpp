@@ -81,6 +81,8 @@ void stubby_main(){
 		else if (stubby.getMode() == MODE_RESETTING){
 			gait_reset(&stubby);
 		}
+		
+		PORTC ^= _BV(PORTC6);
 	}
 }
 
@@ -121,6 +123,7 @@ int main(void){
 }
 
 ISR(USART1_RX_vect){
+	PORTC ^= _BV(PORTC5);
 	serialAvr.isr();
 }
 
