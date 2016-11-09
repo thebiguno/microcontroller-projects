@@ -41,7 +41,7 @@ void stubby_main(){
 	uint32_t time;
 	uint32_t lastReceiveMessageTime = 0;
 	uint32_t lastHeartbeatTime = 0;
-	
+
 	delay_ms(500);
 
 	//Main loop
@@ -76,7 +76,7 @@ void stubby_main(){
 			}
 			stubby.setMode(MODE_UNARMED);
 		}
-		
+
 		if ((time - lastHeartbeatTime) > 1000){
 			if (stubby.getMode() == MODE_WALKING){
 				PORTC ^= _BV(PORTC7);
@@ -131,7 +131,7 @@ Stubby::Stubby(Stream* serial) :
 
 //On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.
 // For consistency we do the same thing here.
-int main(void){
+int main_2(void){
 	stubby_main();
 	return 0;
 }
