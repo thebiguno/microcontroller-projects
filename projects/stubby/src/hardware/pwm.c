@@ -388,9 +388,9 @@ ISR(TIMER1_COMPA_vect){
 	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
 	// so that the delta of any delay between PORTA and PORTD should be reduced or eliminated.
+	PORTC ^= _BV(PORTC6);
 #ifndef PWM_PORTA_UNUSED
 	PORTA |= _pwm_event_high.porta_mask;
-	if (_pwm_event_high.porta_mask) PORTC ^= _BV(PORTC5);
 #endif
 #ifndef PWM_PORTB_UNUSED
 	PORTB |= _pwm_event_high.portb_mask;

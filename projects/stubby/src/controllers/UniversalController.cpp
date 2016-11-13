@@ -1,6 +1,7 @@
 #include "UniversalController.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #include <UniversalControllerClient.h>
 
@@ -85,11 +86,16 @@ void UniversalController::dispatch(FramedSerialMessage* message){
 				stubby->setLinearAngle(atan2(adjRy, adjRx));
 			}
 
-// 			//Use pythagorean theorem to find the velocity, in the range [0..1].
-// 			stubby->setLinearVelocity(fmin(1.0, fmax(0.0, sqrt((adjRx * adjRx) + (adjRy * adjRy)))));
-// 			
-// 			//We only care about the X axis for right (rotational) stick
-// 			stubby->setRotationalVelocity(adjLx);
+ 			//Use pythagorean theorem to find the velocity, in the range [0..1].
+			stubby->setLinearVelocity(fmin(1.0, fmax(0.0, sqrt((adjRx * adjRx) + (adjRy * adjRy)))));
+			
+			//We only care about the X axis for right (rotational) stick
+			stubby->setRotationalVelocity(adjLx);
+
+			//Print status
+			char temp[15];
+			snprintf(temp, sizeof(temp), "l:%1.2f r:%1.2f   ", stubby->getLinearVelocity(), stubby->getRotationalVelocity());
+			stubby->sendStatus(temp, 14);
 		}
 	}
 	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
@@ -110,6 +116,7 @@ void UniversalController::dispatch(FramedSerialMessage* message){
 			stubby->sendStatus("Armed         ", 14);
 			stubby->sendDebug("              ", 14);
 			stubby->setMode(MODE_WALKING);
+			pwm_start();
 		}
 	}
 }

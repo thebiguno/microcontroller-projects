@@ -25,7 +25,13 @@ void get_mcusr(void) {
 void stubby_main(){
 	//Setup
 	Stubby stubby(&serialAvr);
+	
+	stubby.sendStatus("main          ", 14);
 
+	//TODO Status lights (non PWM), delete
+	DDRC |= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
+	PORTC |= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
+	
 	wdt_enable(WDTO_2S);
 	servo_init(stubby.getLegs());
 	battery_init();
@@ -42,6 +48,12 @@ void stubby_main(){
 	uint32_t lastReceiveMessageTime = 0;
 	uint32_t lastHeartbeatTime = 0;
 
+	for (uint8_t i = 0; i < 10; i++){
+		PORTC ^= _BV(PORTC5);
+		delay_ms(100);
+	}
+
+	
 	delay_ms(500);
 
 	//Main loop
@@ -78,15 +90,7 @@ void stubby_main(){
 		}
 
 		if ((time - lastHeartbeatTime) > 1000){
-			if (stubby.getMode() == MODE_WALKING){
-				PORTC ^= _BV(PORTC7);
-			}
-			else if (stubby.getMode() == MODE_UNARMED){
-				PORTC ^= _BV(PORTC5);
-			}
-			else {
-				PORTC ^= _BV(PORTC6);
-			}
+			PORTC ^= _BV(PORTC5);
 			lastHeartbeatTime = time;
 		}
 
@@ -131,7 +135,7 @@ Stubby::Stubby(Stream* serial) :
 
 //On ARM chips this function will be in the CubeMX-generated code, and will call xxx_main.
 // For consistency we do the same thing here.
-int main_2(void){
+int main(void){
 	stubby_main();
 	return 0;
 }

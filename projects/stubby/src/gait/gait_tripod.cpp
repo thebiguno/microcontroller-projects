@@ -1,6 +1,7 @@
 #include "gait.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <dcutil/dcmath.h>
 
 #include "../types/Point.h"
@@ -88,7 +89,7 @@ void gait_step(Stubby* stubby){
 				//Three of the legs are out of phase with the other three (otherwise it is pretty hard to actually move...)
 				uint8_t j = step_index;
 				if (leg->getIndex() == FRONT_RIGHT || leg->getIndex() == MIDDLE_LEFT || leg->getIndex() == REAR_RIGHT){
-					i = (step_index + (STEP_COUNT / 2)) % STEP_COUNT;
+					j = (step_index + (STEP_COUNT / 2)) % STEP_COUNT;
 				}
 
 				Point result(0,0,0);
@@ -116,6 +117,15 @@ void gait_step(Stubby* stubby){
 				}
 
 				legs[i]->setOffset(result);
+				
+				static uint32_t last_debug = 0;
+				if (i == 0 && time - last_debug > 500){
+					//Print status on leg 0
+					char temp[15];
+					snprintf(temp, sizeof(temp), "%d %d %d           ", result.x, result.y, result.z);
+					stubby->sendDebug(temp, 14);
+					last_debug = time;
+				}
 			}
 		}
 		else {
@@ -136,6 +146,8 @@ void gait_reset(Stubby* stubby){
 // 		PORTC ^= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
 // 		delay_ms(100);
 // 	}
+	stubby->sendStatus("gait_reset    ", 14);
+	
 	pwm_start();
 	
 	//TODO change this to be non blocking
@@ -168,4 +180,6 @@ void gait_reset(Stubby* stubby){
 	delay_ms(200);
 	
 	stubby->setMode(MODE_UNARMED);
+	
+	pwm_stop();
 }

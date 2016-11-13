@@ -3,7 +3,7 @@
 #include "hardware/timer0.h"
 #include "Stubby.h"
 
-int main(void){
+int main_test(void){
 	DDRC |= _BV(PORTC5) | _BV(PORTC6) | _BV(PORTC7);
 //	DDRA |= _BV(PORTA6);
 //	PORTA |= _BV(PORTA6);
