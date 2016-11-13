@@ -76,14 +76,14 @@ void pwm_init(volatile uint8_t *ports[],
  * matches the index used for the arrays in pwm_init().
  * Internally, this calls pwm_set_phase_batch() and then pwm_apply_batch().
  */
-void pwm_set_phase(uint8_t index, uint32_t phase);
+void pwm_set_phase(uint8_t index, uint32_t phase, uint8_t counter);
 
 /*
  * Sets the phase of the pin at the given index to the specified value, but does not
  * apply the change (recalculate all pin values).  This can be called multiple times
  * for different pins with minimal overhead; when completed all changes, call pwm_apply_batch().
  */
-void pwm_set_phase_batch(uint8_t index, uint32_t phase);
+void pwm_set_phase_batch(uint8_t index, uint32_t phase, uint8_t counter);
 
 /*
  * Recalculates all pin / timer values.  Required after calling pwm_set_phase_batch().

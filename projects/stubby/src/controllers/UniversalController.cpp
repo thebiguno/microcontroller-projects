@@ -22,6 +22,7 @@ UniversalController::UniversalController(Stubby* stubby) :
 void UniversalController::dispatch(FramedSerialMessage* message){
 	uint8_t cmd = message->getCommand();
 	if (cmd == MESSAGE_UC_JOYSTICK_MOVE) {
+		if (stubby->getMode() == MODE_WALKING){
 			uint8_t* sticks = message->getData();
 			uint8_t lx = sticks[0];
 			uint8_t ly = sticks[1];
@@ -84,11 +85,12 @@ void UniversalController::dispatch(FramedSerialMessage* message){
 				stubby->setLinearAngle(atan2(adjRy, adjRx));
 			}
 
-			//Use pythagorean theorem to find the velocity, in the range [0..1].
-			stubby->setLinearVelocity(fmin(1.0, fmax(0.0, sqrt((adjRx * adjRx) + (adjRy * adjRy)))));
-			
-			//We only care about the X axis for right (rotational) stick
-			stubby->setRotationalVelocity(adjLx);
+// 			//Use pythagorean theorem to find the velocity, in the range [0..1].
+// 			stubby->setLinearVelocity(fmin(1.0, fmax(0.0, sqrt((adjRx * adjRx) + (adjRy * adjRy)))));
+// 			
+// 			//We only care about the X axis for right (rotational) stick
+// 			stubby->setRotationalVelocity(adjLx);
+		}
 	}
 	else if (cmd == MESSAGE_UC_THROTTLE_MOVE){
 		uint8_t rawThrottle = message->getData()[0];
@@ -101,7 +103,7 @@ void UniversalController::dispatch(FramedSerialMessage* message){
 		if (button == CONTROLLER_BUTTON_VALUE_CROSS){
 			stubby->sendStatus("Disarmed      ", 14);
 			stubby->sendDebug("              ", 14);
-			stubby->setMode(MODE_UNARMED);
+			stubby->setMode(MODE_RESETTING);
 		}
 		//To arm, press the circle (right discrete) button at any time
 		else if (button == CONTROLLER_BUTTON_VALUE_CIRCLE){
