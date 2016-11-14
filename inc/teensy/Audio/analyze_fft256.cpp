@@ -28,6 +28,7 @@
 #include "sqrt_integer.h"
 #include "utility/dspinst.h"
 
+#ifndef __MKL26Z64__
 
 // 140312 - PAH - slightly faster copy
 static void copy_to_fft_buffer(void *destination, const void *source)
@@ -126,4 +127,5 @@ void AudioAnalyzeFFT256::update(void)
 #endif
 }
 
+#endif
 
