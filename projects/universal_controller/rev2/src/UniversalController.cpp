@@ -80,7 +80,7 @@
 
 using namespace digitalcave;
 
-//Running average of analog values; divide by 64 (2^AVERAGE_DIVISOR_EXPONENT) for actual value
+//Running average of analog values; divide 2^AVERAGE_DIVISOR_EXPONENT for actual value
 uint16_t average_stick[4] = {0, 0, 0, 0};
 uint16_t average_throttle = 0;
 //Last sent values
