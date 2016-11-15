@@ -3,7 +3,12 @@
 #include <UniversalControllerClient.h>
 
 /*
- * Connect pin 0 (RX) to Bluetooth TX, and pin 1 to Bluetooth RX.
+ * Connect the Teensy and the Bluetooth as follows:
+ * Teensy		Bluetooth
+ * GND			Pin 1
+ * 3v			Pin 3
+ * D0			Pin 4
+ * D1			Pin 5
  */
 
 using namespace digitalcave;
@@ -31,7 +36,7 @@ int main(){
 						adjusted[i] = 0.5 + (sticks[i] - 155.0) / 200.0;
 					}
 					else {
-						adjusted[i] = 0;
+						adjusted[i] = 0.5;
 					}
 				}
 
