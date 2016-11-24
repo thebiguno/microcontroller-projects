@@ -331,24 +331,24 @@ ISR(TIMER1_COMPA_vect){
 		if (p->counter != 0xFF && p->counter != 0x00){
 			p->counter--;
 			if (p->counter == 0x00){
-// 				//Set port masks low for pins whose counters have run out.
-// #ifndef PWM_PORTA_UNUSED
-// 				if (p->port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p->pin);
-// 				else
-// #endif
-// #ifndef PWM_PORTB_UNUSED
-// 				if (p->port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p->pin);
-// 				else
-// #endif
-// #ifndef PWM_PORTC_UNUSED
-// 				if (p->port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p->pin);
-// 				else
-// #endif
-// #ifndef PWM_PORTD_UNUSED
-// 				if (p->port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p->pin);
-// 				else
-// #endif
-// 				if (0);	//Nop so that ignored ports dont break things
+				//Set port masks low for pins whose counters have run out.
+#ifndef PWM_PORTA_UNUSED
+				if (p->port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p->pin);
+				else
+#endif
+#ifndef PWM_PORTB_UNUSED
+				if (p->port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p->pin);
+				else
+#endif
+#ifndef PWM_PORTC_UNUSED
+				if (p->port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p->pin);
+				else
+#endif
+#ifndef PWM_PORTD_UNUSED
+				if (p->port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p->pin);
+				else
+#endif
+				if (0);	//Nop so that ignored ports dont break things
 			}
 		}
 	}
@@ -388,6 +388,7 @@ ISR(TIMER1_COMPA_vect){
 	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
 	// so that the delta of any delay between PORTA and PORTD should be reduced or eliminated.
+	PORTC ^= _BV(PORTC6);
 #ifndef PWM_PORTA_UNUSED
 	PORTA |= _pwm_event_high.porta_mask;
 #endif

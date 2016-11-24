@@ -95,6 +95,13 @@ void Leg::setOffset(Point offset){
 
 	offset.add(this->neutralP);
 	this->setPosition(offset);
+	
+// 	static uint16_t position = 750;
+// 	pwm_set_phase_batch((this->index * JOINT_COUNT) + TIBIA, position, PWM_SERVO_TIMEOUT_COUNTER);
+// 	pwm_set_phase_batch((this->index * JOINT_COUNT) + FEMUR, position, PWM_SERVO_TIMEOUT_COUNTER);
+// 	pwm_set_phase_batch((this->index * JOINT_COUNT) + COXA, position, PWM_SERVO_TIMEOUT_COUNTER);
+// 	position++;
+// 	if (position > 1250) position = 750;
 }
 
 void Leg::resetPosition(){

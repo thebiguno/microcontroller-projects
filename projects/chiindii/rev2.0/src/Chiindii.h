@@ -18,7 +18,8 @@
 #elif defined MADGWICK
 #include <Madgwick.h>
 #endif
-#include <Mpu6050.h>
+#include <I2C.h>
+#include <MPU6050.h>
 #include <SerialAVR.h>
 #include <PID.h>
 

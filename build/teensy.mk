@@ -6,6 +6,7 @@
 # TEENSY=31 or 30 or LC
 # F_CPU=24000000, 48000000, 96000000, etc
 # OPTIONS=???? (defaults to -DUSB_SERIAL -DLAYOUT_US_ENGLISH)
+#      possible options: -DUSB_SERIAL, -DUSB_HID, -DUSB_SERIAL_HID, -DUSB_MIDI, -DUSB_RAWHID, -DUSB_FLIGHTSIM, -DUSB_DISABLE
 #
 # This build script relies on the build tools from Arduino with the Teensyduino addons.  Please ensure
 # that you have this installed in the proper location.
