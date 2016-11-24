@@ -40,8 +40,8 @@ void UniversalController::updatePidDisplay(){
 	PID* selectedPid;
 	int16_t value;
 	char temp[15];
-	
-	
+
+
 	switch(axis){
 		case AXIS_RX:
 			axisLabel = "RX";
@@ -86,7 +86,7 @@ void UniversalController::updatePidDisplay(){
 			value = selectedPid->getKd() * 100;
 			break;
 	}
-	
+
 	snprintf(temp, sizeof(temp), "%s %s: %03d      ", axisLabel, pidLabel, value);
 	for(uint8_t i = 14; i >= 7; i--){
 		temp[i] = temp[i-1];
@@ -103,7 +103,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			//uint8_t lx = sticks[0];
 			uint8_t rx = sticks[2];
 			uint8_t ry = sticks[3];
-		
+
 			vector_t* angle_sp = chiindii->getAngleSp();
 			//vector_t* rate_sp = chiindii->getRateSp();
 			//For the joysticks, we read 30 degrees from each side (with 0.3 degree resolution),
@@ -117,7 +117,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			else {
 				angle_sp->x = 0;
 			}
-		
+
 			if (ry < 100){
 				angle_sp->y = degToRad((100.0 - ry) / 10 * 3);
 			}
@@ -127,14 +127,14 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			else {
 				angle_sp->y = 0;
 			}
-			
+
 // 			if (lx < 100){
 // 				angle_sp->z += degToRad((100.0 - lx) / 10);
 // 			}
 // 			else if (lx > 155){
 // 				angle_sp->z += -1 * degToRad((lx - 155.0) / 10);
 // 			}
-// 			
+//
 // 			if (angle_sp->z < -M_PI) angle_sp->z += M_PI * 2;
 // 			else if (angle_sp->z > M_PI) angle_sp->z -= M_PI * 2;
 		}
@@ -145,7 +145,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 	}
 	else if (cmd == MESSAGE_UC_BUTTON_PUSH){
 		uint8_t button = message->getData()[0];
-		
+
 		//To disarm, press the cross (bottom discrete) button at any time
 		if (button == CONTROLLER_BUTTON_VALUE_CROSS){
 			mode = MODE_FLIGHT;
@@ -185,7 +185,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 				else if (button == CONTROLLER_BUTTON_VALUE_RIGHT2){
 					angle_sp->z -= degToRad(25);
 				}
-				
+
 				if (angle_sp->z < -M_PI) angle_sp->z += M_PI * 2;
 				else if (angle_sp->z > M_PI) angle_sp->z -= M_PI * 2;
 			}
@@ -224,7 +224,7 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			else if (button == CONTROLLER_BUTTON_VALUE_CIRCLE){
 				chiindii->loadConfig();
 			}
-			
+
 			updatePidDisplay();
 		}
 	}

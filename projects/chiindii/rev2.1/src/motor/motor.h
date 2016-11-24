@@ -20,15 +20,15 @@ extern "C" {
 /*
  * Sets the phase for each of the motors.  Limited to 10 bit values 1023 is 100%, 512 is 50%, etc.
  */
-void motor_set(uint16_t motorValue1, uint16_t motorValue2, uint16_t motorValue3, uint16_t motorValue4);
+void motor_set(double motorValue1, double motorValue2, double motorValue3, double motorValue4, double motorValue5, double motorValue6, double motorValue7, double motorValue8);
 
 /*
- * Turns on the timer clock.
+ * Turns on the PWM.
  */
 void motor_start();
 
 /*
- * Turns off the motor pins and stops the timer clock.
+ * Turns off the PWM and takes all motors to off state.
  */
 void motor_stop();
 

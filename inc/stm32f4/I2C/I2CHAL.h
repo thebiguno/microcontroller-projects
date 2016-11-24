@@ -14,7 +14,7 @@ namespace digitalcave {
 	class I2CHAL : public I2C {
 		public:
 			//Initialize specifying baud rate and all other optional parameters
-			I2CHAL(UART_HandleTypeDef* huart, uint8_t bufferSize);
+			I2CHAL(I2C_HandleTypeDef* hi2c);
 
 			// Implementation of virtual functions declared in superclass
 			void read(uint8_t address, I2CMessage* m, uint8_t length, uint8_t i2cStop);
@@ -24,7 +24,7 @@ namespace digitalcave {
 			using I2C::write; // Allow other overloaded functions from superclass to show up in subclass.
 
 		private:
-
+			I2C_HandleTypeDef* hi2c;
 	};
 }
 
