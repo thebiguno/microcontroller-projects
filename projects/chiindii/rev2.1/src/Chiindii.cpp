@@ -332,6 +332,110 @@ void Chiindii::run() {
 	}
 }
 
+void Chiindii::loadConfig(){
+// 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
+// 		double kp, ki, kd;
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 8));
+// 		rate_x.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 12));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 16));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 20));
+// 		rate_y.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 24));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 28));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 32));
+// 		rate_z.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 36));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 40));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 44));
+// 		angle_x.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 48));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 52));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 56));
+// 		angle_y.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 60));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 64));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
+// 		angle_z.setTunings(kp, ki, kd);
+//
+// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
+// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
+// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 80));
+// 		gforce.setTunings(kp, ki, kd);
+//
+// #if defined MAHONY
+// #elif defined MADGWICK
+// 		double t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
+// 		imu.setBeta(t);
+// #endif
+//
+// 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
+// 		int16_t calibration[6];
+// 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 88), 12);
+// 		mpu6050.setCalibration(calibration);
+// 		sendStatus("Load EEPROM   ", 14);
+// 	}
+// 	else {
+// 		sendStatus("Load Defaults ", 14);
+// 	}
+}
+
+void Chiindii::saveConfig(){
+// 	cli();
+// 	wdt_disable();
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 0), rate_x.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 4), rate_x.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 8), rate_x.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 12), rate_y.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 16), rate_y.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 20), rate_y.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 24), rate_z.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 28), rate_z.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 32), rate_z.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 36), angle_x.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 40), angle_x.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 44), angle_x.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 48), angle_y.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 52), angle_y.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 56), angle_y.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 60), angle_z.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 64), angle_z.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 68), angle_z.getKd());
+//
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 72), gforce.getKp());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 76), gforce.getKi());
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 80), gforce.getKd());
+//
+// #if defined MAHONY
+// #elif defined MADGWICK
+// 	eeprom_update_float((float*) (EEPROM_OFFSET + 84), imu.getBeta());
+// #endif
+//
+// 	eeprom_update_block(mpu6050.getCalibration(), (void*) (EEPROM_OFFSET + 88), 12);
+//
+// 	//Write the magic value to say that we have written valid bytes
+// 	eeprom_update_byte((uint8_t*) EEPROM_MAGIC, 0x42);
+//
+// 	wdt_enable(WDTO_120MS);
+// 	sei();
+//
+// 	sendStatus("Save EEPROM   ", 14);
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	if (serialHal.getHandleTypeDef() == huart){
 		serialHal.isr();

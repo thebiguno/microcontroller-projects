@@ -125,8 +125,8 @@ namespace digitalcave {
 			uint8_t getMode() { return mode; }
 			void setMode(uint8_t mode) { this->mode = mode; }
 
-			//void saveConfig();
-			//void loadConfig();
+			void saveConfig();
+			void loadConfig();
 			void sendDebug(char* message, uint8_t length) { FramedSerialMessage response(MESSAGE_DEBUG, (uint8_t*) message, length); sendMessage(&response); }
 			void sendDebug(const char* message, uint8_t length) { sendDebug((char*) message, length); }
 			void sendStatus(char* message, uint8_t length) { FramedSerialMessage response(MESSAGE_STATUS, (uint8_t*) message, length); sendMessage(&response); }
