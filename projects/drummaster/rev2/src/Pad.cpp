@@ -9,11 +9,11 @@ Pad* Pad::pads[PAD_COUNT] = {
 	new Pad(PAD_TYPE_DRUM,		MUX_2,	MUX_NA, MUX_NA,	50,		0),		//Snare
 	new Pad(PAD_TYPE_DRUM,		MUX_3,	MUX_NA, MUX_NA,	50,		0),		//Bass
 	new Pad(PAD_TYPE_DRUM,		MUX_4,	MUX_NA, MUX_NA,	50,		0),		//Tom1
-	new Pad(PAD_TYPE_CYMBAL,	MUX_5,	MUX_14, MUX_NA,	50,		0.98),	//Crash
+	new Pad(PAD_TYPE_CYMBAL,	MUX_5,	MUX_14, MUX_NA,	50,		0.990),	//Crash
 	new Pad(PAD_TYPE_DRUM,		MUX_6,	MUX_NA, MUX_NA,	50,		0),		//Tom2
 	new Pad(PAD_TYPE_DRUM,		MUX_7,	MUX_NA, MUX_NA,	50,		0),		//Tom3
-	new Pad(PAD_TYPE_CYMBAL,	MUX_8,	MUX_13, MUX_NA,	50,		0.97),	//Splash
-	new Pad(PAD_TYPE_CYMBAL,	MUX_9,	MUX_12,	MUX_1,	50,		0.99),	//Ride
+	new Pad(PAD_TYPE_CYMBAL,	MUX_8,	MUX_13, MUX_NA,	50,		0.992),	//Splash
+	new Pad(PAD_TYPE_CYMBAL,	MUX_9,	MUX_12,	MUX_1,	50,		0.995),	//Ride
 	new Pad(PAD_TYPE_DRUM,		MUX_10,	MUX_NA, MUX_NA,	50,		0),		//X0
 	new Pad(PAD_TYPE_DRUM,		MUX_11,	MUX_NA, MUX_NA,	50,		0)		//X1
 };
@@ -101,6 +101,15 @@ void Pad::poll(){
 				Sample::startFade(padIndex, fadeGain);
 			}
 		}
+		
+		if (getPadType() == PAD_TYPE_CYMBAL){
+			if (!lastSwitchValue && switchValue){
+				Sample::startFade(padIndex, fadeGain);
+			}
+			else if (lastSwitchValue && !switchValue){
+				Sample::stopFade(padIndex);
+			}
+		}
 	}
 
 	double volume = readPiezo(piezoMuxIndex);
@@ -183,6 +192,7 @@ double Pad::readPiezo(uint8_t muxIndex){
 	if (peakValue && (millis() - strikeTime) > MAX_RESPONSE_TIME){
 		//We have timed out; send whatever the peak value currently is
 		double result = (peakValue - MIN_VALUE) / 256.0 * padVolume;
+		if (result > 2.0) result = 2;
 		lastRaw = peakValue;
 		playTime = millis();
 		peakValue = 0;
