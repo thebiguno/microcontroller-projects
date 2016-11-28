@@ -1,6 +1,5 @@
 /*
- * PWM motor control library, which allows you to control 4 motors.  Modified from
- * generic PWM library in Digital Cave microcontroller projects.
+ * PWM motor control library
  *
  * Written by Wyatt Olson and Warren Janssens
  * http://digitalcave.ca
@@ -20,7 +19,7 @@ extern "C" {
 /*
  * Sets the phase for each of the motors.  Limited to 10 bit values 1023 is 100%, 512 is 50%, etc.
  */
-void motor_set(double motorValue1, double motorValue2, double motorValue3, double motorValue4, double motorValue5, double motorValue6, double motorValue7, double motorValue8);
+void motor_set(double* motorValues);
 
 /*
  * Turns on the PWM.

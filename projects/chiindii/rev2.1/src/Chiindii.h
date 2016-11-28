@@ -7,6 +7,9 @@
 //#define MAHONY
 #define MADGWICK
 
+//How many motors.  Check doc/motor_arrangement.txt for how the motors are arranged in various configurations.
+#define MOTOR_COUNT			8
+
 #include <dcutil/delay.h>
 #include <dcutil/dcmath.h>
 #include <dctypes.h>
@@ -32,15 +35,6 @@
 #ifdef DEBUG
 #include <stdio.h>
 #endif
-
-#define MOTOR1_PORT		PORTE
-#define MOTOR1_PIN		PORTE6
-#define MOTOR2_PORT		PORTC
-#define MOTOR2_PIN		PORTC7
-#define MOTOR3_PORT		PORTD
-#define MOTOR3_PIN		PORTD5
-#define MOTOR4_PORT		PORTB
-#define MOTOR4_PIN		PORTB7
 
 #define MODE_UNARMED		0x00
 #define MODE_ARMED_ANGLE	0x01

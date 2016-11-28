@@ -261,28 +261,39 @@ void Chiindii::run() {
 			// as the set point, we will add at most 0.05 (5%) to the throttle.
 			throttle += fmax(abs(angle_sp.x), abs(angle_sp.y)) / 10;
 
-			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X configuration
-			double m1 = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
-			double m2 = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
-			double m3 = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
-			double m4 = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
+			//The 2.1 hardware supports up to 8 motors
+			double m[8];
 
-			if (m1 < 0) m1 = 0;
-			else if (m1 > throttleWeight) m1 = throttleWeight;
-			if (m2 < 0) m2 = 0;
-			else if (m2 > throttleWeight) m2 = throttleWeight;
-			if (m3 < 0) m3 = 0;
-			else if (m3 > throttleWeight) m3 = throttleWeight;
-			if (m4 < 0) m4 = 0;
-			else if (m4 > throttleWeight) m4 = throttleWeight;
+#if MOTOR_COUNT == 8
+			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X + T configuration
+			m[0] = throttle + rate_pv.x - rate_pv.y - rate_pv.z;
+			m[1] = throttle - rate_pv.y + rate_pv.z;
+			m[2] = throttle - rate_pv.x + rate_pv.y - rate_pv.z;
+			m[3] = throttle + rate_pv.y + rate_pv.z;
+			m[4] = throttle + rate_pv.x + rate_pv.z;
+			m[5] = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
+			m[6] = throttle - rate_pv.x + rate_pv.z;
+			m[7] = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
+#elif MOTOR_COUNT == 4
+			m[0] = throttle + rate_pv.x - rate_pv.y + rate_pv.z;
+			m[1] = 0;
+			m[2] = throttle - rate_pv.x + rate_pv.y + rate_pv.z;
+			m[3] = 0;
+			m[4] = 0;
+			m[5] = throttle - rate_pv.x - rate_pv.y - rate_pv.z;
+			m[6] = 0;
+			m[7] = throttle + rate_pv.x + rate_pv.y - rate_pv.z;
+#else
+			#warning Invalid motor count
+#endif
+			for (uint8_t i = 0; i < 8; i++){
+				if (m[i] < 0) m[i] = 0;
+				else if (m[i] > throttleWeight) m[i] = throttleWeight;
 
-			//Convert values in [0..1] to [0..511] (9 bit motor control)
-			m1 = m1 / throttleWeight;
-			m2 = m2 / throttleWeight;
-			m3 = m3 / throttleWeight;
-			m4 = m4 / throttleWeight;
+				m[i] = m[i] / throttleWeight;
+			}
 
-			motor_set(m1, m2, m3, m4, 0, 0, 0, 0);
+			motor_set(m);
 
 			status.armed();
 		}
@@ -298,7 +309,7 @@ void Chiindii::run() {
 			gforce.reset(time);
 
 			status.disarmed();
-			motor_set(0, 0, 0, 0, 0, 0, 0, 0);
+			motor_stop();
 		}
 
 // #ifdef DEBUG

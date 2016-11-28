@@ -1,6 +1,10 @@
 The Chiindii motors are arranged clockwise in ascending numeric order, starting at the
 front left of the craft.
 
+1   2
+ 
+4   3
+
 The motor spin directions are as follows:
 Motor 1 and 3: CW
 Motor 2 and 4: CCW
