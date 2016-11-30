@@ -119,9 +119,11 @@ void Chiindii::run() {
 
 	//Main program loop
 	while (1) {
-		//PORTB ^= _BV(PORTB1);
 		HAL_IWDG_Refresh(&hiwdg);
 		time = timer_millis();
+
+		delay_ms(100);
+		sendStatus("Test          ", 14);
 
 		if (protocol.read(serial, &request)) {
 			uint8_t cmd = request.getCommand();
@@ -448,6 +450,9 @@ void Chiindii::saveConfig(){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_RESET);
 	if (serialHal.getHandleTypeDef() == huart){
 		serialHal.isr();
 	}

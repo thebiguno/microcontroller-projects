@@ -129,6 +129,12 @@ while True:
 					sys.stdout.write("Right Y = " + format(buf[3], '#02x') + "\n")
 				elif (cmd == 0x1A): #Analog throttle value
 					sys.stdout.write("Throttle = " + format(buf[0], '#02x') + "\n")
+				elif (cmd == 0x01):
+					sys.stdout.write("Battery = " + str(buf[0]) + "%\n")
+				elif (cmd == 0x02):
+					sys.stdout.write("Status = " + ''.join(chr(buf[x]) for x in buf) + "\n")
+				elif (cmd == 0x03):
+					sys.stdout.write("Debug = " + ''.join(chr(buf[x]) for x in buf) + "\n")
 				
 			else:
 				err = True;

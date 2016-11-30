@@ -1,5 +1,8 @@
 #include "Status.h"
 
+#include "stm32f4xx_hal.h"
+#include "cubemx/Inc/mxconstants.h"
+
 using namespace digitalcave;
 
 Status::Status() :
@@ -11,21 +14,33 @@ Status::Status() :
 }
 
 void Status::poll(uint32_t time) {
-	// LED_PORT |= RED | GREEN | BLUE;	// turn off active low LED
-	//
-	// uint32_t currentPeriod = time - lastTime;
-	// if (currentPeriod < 250) {
-	// 	if (status & 0x1) LED_PORT &= ~RED;
-	// } else if (currentPeriod < 500) {
-	// 	if (status & 0x2) LED_PORT &= ~GREEN;
-	// } else if (currentPeriod < 750) {
-	// 	if (status & 0x4) LED_PORT &= ~BLUE;
-	// } else {
-	// 	if (status == 0x0) LED_PORT &= ~(RED | GREEN | BLUE);
-	// }
-	// if (currentPeriod > 1000) {
-	// 	lastTime = time;
-	// }
+	// Turn off active low LED (set pins high)
+	HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_SET);
+
+	uint32_t currentPeriod = time - lastTime;
+	if (currentPeriod < 250) {
+		if (status & 0x1) HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
+	}
+	else if (currentPeriod < 500) {
+		if (status & 0x2) HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
+	}
+	else if (currentPeriod < 750) {
+		if (status & 0x4) HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_RESET);
+	}
+	else {
+		if (status == 0x0) {
+			//Turn on white light
+			HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_RESET);
+		};
+	}
+
+	if (currentPeriod > 1000) {
+		lastTime = time;
+	}
 }
 
 void Status::batteryLow() {

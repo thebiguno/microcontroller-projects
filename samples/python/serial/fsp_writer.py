@@ -13,6 +13,7 @@ ser = serial.Serial(sys.argv[1], sys.argv[2])
 sleep(1);
 
 while True:
+		print("Foo")
 		ser.write("\x7e")
 		ser.write("\x11")
 		ser.write("\x05")
@@ -33,7 +34,7 @@ while True:
 		ser.write("\x21")
 		ser.write("\x21")
 		ser.write("\x39")
-		sleep(2)
+		sleep(0.5)
 		ser.write("\x7e")
 		ser.write("\x11")
 		ser.write("\x05")
@@ -54,4 +55,4 @@ while True:
 		ser.write("\x21")
 		ser.write("\x21")
 		ser.write("\xa6")
-		sleep(2)
+		sleep(0.5)

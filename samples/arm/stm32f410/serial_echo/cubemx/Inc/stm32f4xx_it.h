@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : mxconstants.h
-  * Description        : This file contains the common defines of the application
+  * @file    stm32f4xx_it.h
+  * @brief   This file contains the headers of the interrupt handlers.
   ******************************************************************************
   *
   * COPYRIGHT(c) 2016 STMicroelectronics
@@ -30,50 +30,27 @@
   *
   ******************************************************************************
   */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __STM32F4xx_IT_H
+#define __STM32F4xx_IT_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif 
+
 /* Includes ------------------------------------------------------------------*/
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
 
-/* USER CODE BEGIN Includes */
+void SysTick_Handler(void);
 
-/* USER CODE END Includes */
+#ifdef __cplusplus
+}
+#endif
 
-/* Private define ------------------------------------------------------------*/
-
-#define LED_G_Pin GPIO_PIN_0
-#define LED_G_GPIO_Port GPIOC
-#define LED_B_Pin GPIO_PIN_1
-#define LED_B_GPIO_Port GPIOC
-#define LED_R_Pin GPIO_PIN_2
-#define LED_R_GPIO_Port GPIOC
-#define MOTOR_1_Pin GPIO_PIN_0
-#define MOTOR_1_GPIO_Port GPIOA
-#define MOTOR_5_Pin GPIO_PIN_1
-#define MOTOR_5_GPIO_Port GPIOA
-#define MOTOR_8_Pin GPIO_PIN_2
-#define MOTOR_8_GPIO_Port GPIOA
-#define MOTOR_4_Pin GPIO_PIN_3
-#define MOTOR_4_GPIO_Port GPIOA
-#define IMU_I2C2_SCL_Pin GPIO_PIN_10
-#define IMU_I2C2_SCL_GPIO_Port GPIOB
-#define MOTOR_3_Pin GPIO_PIN_8
-#define MOTOR_3_GPIO_Port GPIOA
-#define MOTOR_7_Pin GPIO_PIN_9
-#define MOTOR_7_GPIO_Port GPIOA
-#define MOTOR_6_Pin GPIO_PIN_10
-#define MOTOR_6_GPIO_Port GPIOA
-#define MOTOR_2_Pin GPIO_PIN_11
-#define MOTOR_2_GPIO_Port GPIOA
-#define IMU_I2C2_SDA_Pin GPIO_PIN_11
-#define IMU_I2C2_SDA_GPIO_Port GPIOB
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-*/ 
+#endif /* __STM32F4xx_IT_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
