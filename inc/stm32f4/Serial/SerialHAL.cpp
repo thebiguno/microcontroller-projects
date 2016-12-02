@@ -1,4 +1,5 @@
 #include "SerialHAL.h"
+#include <dcutil/delay.h>
 
 using namespace digitalcave;
 
@@ -6,7 +7,11 @@ SerialHAL::SerialHAL(UART_HandleTypeDef* huart, uint8_t bufferSize):
 	rxBuffer(bufferSize),
 	huart(huart)
 {
-	HAL_UART_Receive_IT(huart, &incomingByte, 1);	//Start listening
+	HAL_StatusTypeDef ret = HAL_UART_Receive_IT(huart, &incomingByte, 1);	//Start listening
+	while (ret != HAL_OK) {
+		delay_ms(100);
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	}
 }
 
 uint8_t SerialHAL::read(uint8_t *c){
@@ -25,5 +30,9 @@ uint8_t SerialHAL::write(uint8_t b){
 
 void SerialHAL::isr(){
 	rxBuffer.write(incomingByte);
-	HAL_UART_Receive_IT(huart, &incomingByte, 1);	//Keep on listening
+	HAL_StatusTypeDef ret = HAL_UART_Receive_IT(huart, &incomingByte, 1);	//Keep on listening
+	while (ret != HAL_OK) {
+		delay_ms(100);
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	}
 }

@@ -29,6 +29,7 @@ void dc_main(){
 	uint32_t lastSend = timer_millis();
 	while (1){
 		if ((timer_millis() - lastSend) > 500){
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_1);
 			char buffer[32];
 			snprintf(buffer, sizeof(buffer), "Time: %d\n", (uint16_t) timer_millis());
 			serial->write(buffer);
@@ -43,7 +44,7 @@ void dc_main(){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
 	if (serial){
 		serial->isr();
 	}
