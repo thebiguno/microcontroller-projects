@@ -77,8 +77,8 @@ static void MX_SPI2_Init(void);
 static void MX_DAC_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
-
+                                
+                                
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -142,13 +142,13 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-    /**Configure the main internal regulator output voltage
+    /**Configure the main internal regulator output voltage 
     */
   __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    /**Initializes the CPU, AHB and APB busses clocks
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -166,7 +166,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -180,11 +180,11 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-    /**Configure the Systick interrupt time
+    /**Configure the Systick interrupt time 
     */
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-    /**Configure the Systick
+    /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -198,7 +198,7 @@ static void MX_ADC1_Init(void)
 
   ADC_ChannelConfTypeDef sConfig;
 
-    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
     */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
@@ -216,7 +216,7 @@ static void MX_ADC1_Init(void)
     Error_Handler();
   }
 
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
   sConfig.Channel = ADC_CHANNEL_13;
   sConfig.Rank = 1;
@@ -234,7 +234,7 @@ static void MX_DAC_Init(void)
 
   DAC_ChannelConfTypeDef sConfig;
 
-    /**DAC Initialization
+    /**DAC Initialization 
     */
   hdac.Instance = DAC;
   if (HAL_DAC_Init(&hdac) != HAL_OK)
@@ -242,7 +242,7 @@ static void MX_DAC_Init(void)
     Error_Handler();
   }
 
-    /**DAC channel OUT1 config
+    /**DAC channel OUT1 config 
     */
   sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
@@ -513,9 +513,9 @@ static void MX_USART6_UART_Init(void)
 
 }
 
-/** Configure pins as
-        * Analog
-        * Input
+/** Configure pins as 
+        * Analog 
+        * Input 
         * Output
         * EVENT_OUT
         * EXTI
@@ -531,7 +531,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|LED_G_Pin
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|LED_G_Pin 
                           |LED_B_Pin|LED_R_Pin|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -540,9 +540,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PC13 PC14 PC15 LED_G_Pin
+  /*Configure GPIO pins : PC13 PC14 PC15 LED_G_Pin 
                            LED_B_Pin LED_R_Pin PC4 PC5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|LED_G_Pin
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|LED_G_Pin 
                           |LED_B_Pin|LED_R_Pin|GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -587,7 +587,7 @@ void Error_Handler(void)
   while(1)
   {
   }
-  /* USER CODE END Error_Handler */
+  /* USER CODE END Error_Handler */ 
 }
 
 #ifdef USE_FULL_ASSERT
@@ -612,10 +612,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-*/
+*/ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -8,7 +8,7 @@
  * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
  *
  *		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
- * 			if (serial->getHandleTypeDef() == huart){
+ * 			if (serial && serial->getHandleTypeDef() == huart){
  *				serial->isr();
  * 			}
  *		}
@@ -55,6 +55,7 @@ namespace digitalcave {
 
 			//Notify serial library that there is a byte ready for reading.  This MUST be called by the serial read ISR.
 			void isr();
+			void error();
 
 			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
 			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.

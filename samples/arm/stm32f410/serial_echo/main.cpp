@@ -27,25 +27,33 @@ void dc_main(){
 	serial = &s;
 
 	uint32_t lastSend = timer_millis();
+
 	while (1){
 		if ((timer_millis() - lastSend) > 500){
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_1);
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
 			char buffer[32];
 			snprintf(buffer, sizeof(buffer), "Time: %d\n", (uint16_t) timer_millis());
 			serial->write(buffer);
 			lastSend = timer_millis();
-		}
 
-		uint8_t b = 0;
-		if (serial->read(&b)){
-			serial->write(b);
+			uint8_t b = 0;
+			while (serial->read(&b)){
+				serial->write(b);
+			}
 		}
 	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
-	if (serial){
+	//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_0);
+	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+	if (serial && serial->getHandleTypeDef() == huart){
 		serial->isr();
+	}
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
+	if (serial && serial->getHandleTypeDef() == huart){
+		serial->error();
 	}
 }
