@@ -3,6 +3,7 @@
 #include <SerialHAL.h>
 #include <TimerHAL.h>
 #include <I2CHAL.h>
+#include <MS5611.h>
 #include <MPU6050.h>
 #include <dctypes.h>
 
@@ -27,6 +28,7 @@ void dc_main(){
 
 	SerialHAL serial(&huart6, 64);
 	I2CHAL i2cHal(&hi2c2);
+	MS5611 ms5611(&i2cHal, MS5611_OVERSAMPLE_ULTRA_HIGH_RES);
 	MPU6050 mpu6050(&i2cHal);
 	mpu6050.calibrate();
 
@@ -42,18 +44,30 @@ void dc_main(){
 		if ((timer_millis() - lastSend) > 1000){
 			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_1);
 
-			mpu6050.getRaw(raw);
-			uint8_t size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8], raw[9], raw[10], raw[11], raw[12], raw[13]);
-			serial.write((uint8_t*) temp, size);
+			uint8_t size;
 
+			serial.write("MPU6050:\n");
 			mpu6050.getValuesFromRaw(&accel, &gyro, &temperature, raw);
-
+			mpu6050.getRaw(raw);
+			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8], raw[9], raw[10], raw[11], raw[12], raw[13]);
+			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Gyro: X: %.02f  Y: %.02f  Z: %.02f\n", gyro.x, gyro.y, gyro.z);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Temperature: %.1f\n", temperature);
 			serial.write((uint8_t*) temp, size);
+
+			serial.write("MS5611:\n");
+			ms5611.getRaw(raw);
+			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x%02x %02x%02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), "Pressure: %ld\n", ms5611.getPressureFromRaw(raw));
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), "Temperature: %ld\n", ms5611.getTemperatureFromRaw(raw));
+			serial.write((uint8_t*) temp, size);
+
+			serial.write("\n");
 
 			// mpu6050.getValues(&accel, &gyro, &temperature);
 			//
