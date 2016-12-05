@@ -27,9 +27,6 @@ extern TIM_HandleTypeDef htim5;
 
 using namespace digitalcave;
 
-//This cannot be a class variable, since it needs to be accessed by an ISR
-static SerialHAL serialHal(&huart6, 128);
-
 extern "C" {
 	void chiindii_main();
 }
@@ -38,6 +35,7 @@ void chiindii_main(){
 	battery_init();
 	timer_init();
 
+	SerialHAL serialHal(&huart6, 128);
 	I2CHAL i2cHal(&hi2c2);
 
 	Chiindii chiindii(&serialHal, &i2cHal);
@@ -447,13 +445,4 @@ void Chiindii::saveConfig(){
 // 	sei();
 //
 // 	sendStatus("Save EEPROM   ", 14);
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_RESET);
-	if (serialHal.getHandleTypeDef() == huart){
-		serialHal.isr();
-	}
 }
