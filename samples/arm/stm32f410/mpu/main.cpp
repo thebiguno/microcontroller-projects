@@ -3,6 +3,7 @@
 #include <SerialHAL.h>
 #include <TimerHAL.h>
 #include <I2CHAL.h>
+#include <HMC5883L.h>
 #include <MS5611.h>
 #include <MPU6050.h>
 #include <dctypes.h>
@@ -28,8 +29,9 @@ void dc_main(){
 
 	SerialHAL serial(&huart6, 64);
 	I2CHAL i2cHal(&hi2c2);
-	MS5611 ms5611(&i2cHal, MS5611_OVERSAMPLE_ULTRA_HIGH_RES);
 	MPU6050 mpu6050(&i2cHal);
+	HMC5883L hmc5883l(&i2cHal);
+	MS5611 ms5611(&i2cHal);
 	mpu6050.calibrate();
 
 	char temp[128];
@@ -47,8 +49,8 @@ void dc_main(){
 			uint8_t size;
 
 			serial.write("MPU6050:\n");
-			mpu6050.getValuesFromRaw(&accel, &gyro, &temperature, raw);
 			mpu6050.getRaw(raw);
+			mpu6050.getValuesFromRaw(&accel, &gyro, &temperature, raw);
 			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8], raw[9], raw[10], raw[11], raw[12], raw[13]);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
@@ -57,6 +59,15 @@ void dc_main(){
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Temperature: %.1f\n", temperature);
 			serial.write((uint8_t*) temp, size);
+
+			serial.write("HMC5883L:\n");
+			hmc5883l.getRaw(raw);
+			vector_t mag = hmc5883l.getValuesFromRaw(raw);
+			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), "Mag: X: %.02f  Y: %.02f  Z: %.02f\n", mag.x, mag.y, mag.z);
+			serial.write((uint8_t*) temp, size);
+
 
 			serial.write("MS5611:\n");
 			ms5611.getRaw(raw);

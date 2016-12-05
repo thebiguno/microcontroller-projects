@@ -26,7 +26,7 @@ namespace digitalcave {
 	class MS5611 {
 		public:
 			//Inits the MS5611 control object and sends the power up commands to the chip.
-			MS5611(I2C* i2c, uint8_t oversampling = MS5611_OVERSAMPLE_STANDARD);
+			MS5611(I2C* i2c, uint8_t oversampling = MS5611_OVERSAMPLE_ULTRA_HIGH_RES);
 
 			//You should only call this when the chip is on a flat, nonmoving surface.  We find the average error
 			// and set the calibration variables accordingly.  You can read the calibration via get*Calib(), and persist

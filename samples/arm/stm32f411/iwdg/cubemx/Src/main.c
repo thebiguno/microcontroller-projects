@@ -83,8 +83,8 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 	HAL_Delay(100);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-	
-	//The IWDG runs on an independent 32khz clock (see CubeMX Clocks page: LSI RC).  To find the time between a refresh and 
+
+	//The IWDG runs on an independent 32khz clock (see CubeMX Clocks page: LSI RC).  To find the time between a refresh and
 	// a reset can be determined by the formula period = 1 / (clock / prescaler / reload).  The default values for these
 	// variables are clock = 32khz, prescaler = 4, reload = 4095; thus, we get a theoretical period of about 0.511s (511 ms).
 	// Experimentation in this sample shows a real world time of just over 500ms, so pretty close.
@@ -99,7 +99,15 @@ int main(void)
   {
 	//A real program would call this regularly more frequently than the calculated period above.  For this sample, we want to
 	// just force a reset to demonstrate how WDT works.
-	//HAL_IWDG_Refresh(&hiwdg);		
+	//HAL_IWDG_Refresh(&hiwdg);
+
+	//For long running tasks that you don't want the watchdog to be active for, you can call the macro:
+	//__HAL_DBGMCU_FREEZE_IWDG();
+	// to disable the watchdog.
+	//To re-enable it, call
+	//__HAL_DBGMCU_UNFREEZE_IWDG();
+
+	
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -160,9 +168,9 @@ void MX_IWDG_Init(void)
 
 }
 
-/** Configure pins as 
-        * Analog 
-        * Input 
+/** Configure pins as
+        * Analog
+        * Input
         * Output
         * EVENT_OUT
         * EXTI
@@ -213,10 +221,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
