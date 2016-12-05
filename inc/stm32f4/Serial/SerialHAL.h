@@ -4,22 +4,6 @@
  * ***** IMPORTANT: *****
  * You need to enable the USART interrupt in CubeMX, under NVIC Settings for the USART.  Without this, Tx will
  * work but you will never receive anything.
- * You also need to put an ISR callback into your own code somewhere to handle incoming characters and pass them to the
- * serial object.  To keep the library code separate and clean, we can't put this into the library itself.
- *
- *		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
- * 			if (serial && serial->getHandleTypeDef() == huart){
- *				serial->isr();
- * 			}
- *		}
- *
- * Note that the serial object must not be initialized until after MX_USARTx_UART_Init is called in the main code.
- * The best way to handle this is to define a pointer:
- *		SerialHAL* serial;
- * as a global variable, but don't initialize it until later:
- *		SerialHAL s(&huart2, 64);
- *		serial = &s;
- * See sample serial_echo for an example of this.
  *
  * Note that this library currently uses blocking mode for writing, and non blocking (1 byte at a time) interrupt mode
  * for reading.  Some people have reported issues with reading one byte at a time when using a fast baud rate and with
@@ -34,6 +18,8 @@
 #include <Stream.h>
 #include <ArrayStream.h>
 
+#define SERIAL_HAL_MAX_INSTANCES			8
+
 namespace digitalcave {
 
 	class SerialHAL : public Stream {
@@ -43,6 +29,9 @@ namespace digitalcave {
 			UART_HandleTypeDef* huart;
 
 		public:
+			//Keep track of instantiated instances, to delegate isr() and error() calls
+			static SerialHAL* instances[SERIAL_HAL_MAX_INSTANCES];
+
 			//Initialize specifying baud rate and all other optional parameters
 			SerialHAL(UART_HandleTypeDef* huart, uint8_t bufferSize);
 

@@ -17,8 +17,8 @@ namespace digitalcave {
 			I2CHAL(I2C_HandleTypeDef* hi2c);
 
 			// Implementation of virtual functions declared in superclass
-			void read(uint8_t address, I2CMessage* m, uint8_t length, uint8_t i2cStop);
-			void write(uint8_t address, I2CMessage* m, uint8_t i2cBlock, uint8_t i2cStop);
+			void read(uint8_t address, I2CMessage* m) { HAL_I2C_Master_Receive(hi2c, address << 1, m->getData(), m->getLength(), 10); }
+			void write(uint8_t address, I2CMessage* m) { HAL_I2C_Master_Transmit(hi2c, address << 1, m->getData(), m->getLength(), 10); }
 
 			using I2C::read; // Allow other overloaded functions from superclass to show up in subclass.
 			using I2C::write; // Allow other overloaded functions from superclass to show up in subclass.

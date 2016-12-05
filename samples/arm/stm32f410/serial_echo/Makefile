@@ -1,3 +1,3 @@
-PROJECT=project_layout_test
+PROJECT=serial_echo
 
 include ../../../../build/stm32f410.mk

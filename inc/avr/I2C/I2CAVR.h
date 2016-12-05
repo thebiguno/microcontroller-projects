@@ -17,8 +17,8 @@ namespace digitalcave {
 			I2CAVR();
 
 			// Implementation of virtual functions declared in superclass
-			void write(uint8_t address, I2CMessage* m, uint8_t i2cBlock, uint8_t i2cStop) { twi_write_to(address, m->getData(), m->getLength(), I2C_BLOCK, I2C_STOP); }
-			void read(uint8_t address, I2CMessage* m, uint8_t length, uint8_t i2cStop) { twi_read_from(address, m->getData(), m->getLength(), I2C_STOP); }
+			void write(uint8_t address, I2CMessage* m) { twi_write_to(address, m->getData(), m->getLength(), I2C_BLOCK, I2C_STOP); }
+			void read(uint8_t address, I2CMessage* m) { twi_read_from(address, m->getData(), m->getLength(), I2C_STOP); }
 
 			using I2C::read; // Allow other overloaded functions from superclass to show up in subclass.
 			using I2C::write; // Allow other overloaded functions from superclass to show up in subclass.
