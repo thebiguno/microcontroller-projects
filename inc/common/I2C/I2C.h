@@ -16,14 +16,12 @@ namespace digitalcave {
 			/*
 			 * Writes the specified message to the given 7 bit address.
 			 */
-			void write(uint8_t address, I2CMessage* m) { this->write(address, m, I2C_BLOCK, I2C_STOP); }
-			virtual void write(uint8_t address, I2CMessage* m, uint8_t i2cBlock, uint8_t i2cStop);
+			virtual void write(uint8_t address, I2CMessage* m);
 
 			/*
 			 * Reads into the specified message from the given 7 bit address.
 			 */
-			void read(uint8_t address, I2CMessage* m) { this->read(address, m, m->getLength(), I2C_STOP); }
-			virtual void read(uint8_t address, I2CMessage* m, uint8_t length, uint8_t i2cStop);
+			virtual void read(uint8_t address, I2CMessage* m);
 
 		private:
 			//Data
