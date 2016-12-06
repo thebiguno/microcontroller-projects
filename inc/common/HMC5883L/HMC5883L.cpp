@@ -76,8 +76,41 @@ vector_t HMC5883L::getValuesFromRaw(uint8_t* raw){
 	return getValuesConverted(raw, calibration);
 }
 
+double HMC5883L::getHeading(vector_t values){
+	double radians = atan2(values.y, values.x);
+
+	while (radians > M_PI){
+		radians += (M_PI * -2);
+	}
+	while (radians < (M_PI * -1)){
+		radians += (M_PI * 2);
+	}
+	return radians;
+}
+
 void HMC5883L::calibrate(){
-	//We do a simplistic calibration here by averaging each axis value.  Assuming you are turning it
-	// at a constant rate, over time the average on each axis should be the center.
-	
+	//We do a simplistic calibration here by averaging the min and max of each axis.
+	// In theory this should be the center, assuming you get all the way around.
+	vector_t min = {0, 0, 0};
+	vector_t max = {0, 0, 0};
+	vector_t zero = {0, 0, 0};
+
+	for (uint16_t i = 0; i < 20000; i++){
+		uint8_t raw[6];
+		getRaw(raw);
+		vector_t reading = getValuesConverted(raw, zero);
+
+		if (reading.x < min.x && reading.x > -500) min.x = reading.x;
+		if (reading.y < min.y && reading.y > -500) min.y = reading.y;
+		if (reading.z < min.z && reading.z > -500) min.z = reading.z;
+		if (reading.x > max.x && reading.x < 500) max.x = reading.x;
+		if (reading.y > max.y && reading.y < 500) max.y = reading.y;
+		if (reading.z > max.z && reading.z < 500) max.z = reading.z;
+
+		delay_ms(1);
+	}
+
+	calibration.x = (max.x + min.x) / 2;
+	calibration.y = (max.y + min.y) / 2;
+	calibration.z = (max.z + min.z) / 2;
 }

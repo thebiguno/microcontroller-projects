@@ -32,9 +32,9 @@ namespace digitalcave {
 			// Probably useful for debugging rather than real world data.
 			// Pass in a uint8_t[6] array to return the data
 			//Since it takes a relatively long time between starting a conversion and obtaining the result,
-			// we use a staggered approach where you call the same method 4 times with sufficient time
-			// in between.  The raw data is double buffered, so each time you call the method, it will
-			// return valid data, which is at most 30ms old (assuming ultra high resolution oversampling and
+			// we use a staggered approach where you each time you call the same method it loads a different
+			// value (temperature or pressure).  The raw data is double buffered, so each time you call the method,
+			// it will return valid data, which is at most 10ms old (assuming ultra high resolution oversampling and
 			// calling getRaw() sufficiently fast).
 			void getRaw(uint8_t* raw, uint32_t time);
 

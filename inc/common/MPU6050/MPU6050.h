@@ -1,3 +1,12 @@
+/*
+ * Library for using MPU6050 chip.
+ *
+ * IMPORTANT:
+ * If you are trying to connect to a magnetometer sensor on the XDA bus (this is
+ * how the cheap eBay GY-86 10 DOF modules are set up), then you MUST
+ * instantiate the MPU6050 module BEFORE instantiating the magnetometer.
+ */
+
 #ifndef MPU6050_h
 #define MPU6050_h
 

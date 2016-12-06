@@ -32,7 +32,10 @@ void dc_main(){
 	MPU6050 mpu6050(&i2cHal);
 	HMC5883L hmc5883l(&i2cHal);
 	MS5611 ms5611(&i2cHal);
-	mpu6050.calibrate();
+	// mpu6050.calibrate();
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	hmc5883l.calibrate();
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
 
 	char temp[128];
 	uint8_t raw[14];
@@ -51,51 +54,40 @@ void dc_main(){
 			serial.write("MPU6050:\n");
 			mpu6050.getRaw(raw);
 			mpu6050.getValuesFromRaw(&accel, &gyro, &temperature, raw);
-			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8], raw[9], raw[10], raw[11], raw[12], raw[13]);
+			size = snprintf(temp, sizeof(temp), " Raw: %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8], raw[9], raw[10], raw[11], raw[12], raw[13]);
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
+			size = snprintf(temp, sizeof(temp), " Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Gyro: X: %.02f  Y: %.02f  Z: %.02f\n", gyro.x, gyro.y, gyro.z);
+			size = snprintf(temp, sizeof(temp), " Gyro: X: %.02f  Y: %.02f  Z: %.02f\n", gyro.x, gyro.y, gyro.z);
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Temperature: %.1f\n", temperature);
+			size = snprintf(temp, sizeof(temp), " Temperature: %.1f\n", temperature);
 			serial.write((uint8_t*) temp, size);
 
 			serial.write("HMC5883L:\n");
 			hmc5883l.getRaw(raw);
 			vector_t mag = hmc5883l.getValuesFromRaw(raw);
-			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+			size = snprintf(temp, sizeof(temp), " Raw: %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Mag: X: %.02f  Y: %.02f  Z: %.02f\n", mag.x, mag.y, mag.z);
+			size = snprintf(temp, sizeof(temp), " Mag: X: %.02f  Y: %.02f  Z: %.02f\n", mag.x, mag.y, mag.z);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), " Calibration: X: %.02f  Y: %.02f  Z: %.02f\n", hmc5883l.getCalibration().x, hmc5883l.getCalibration().y, hmc5883l.getCalibration().z);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), " Heading: %.02f\n", hmc5883l.getHeading(mag) * 180 / M_PI);
 			serial.write((uint8_t*) temp, size);
 
 
 			serial.write("MS5611:\n");
 			ms5611.getRaw(raw, timer_millis());
-			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x%02x %02x%02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
+			size = snprintf(temp, sizeof(temp), " Raw: %02x%02x%02x %02x%02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Pressure: %ld\n", ms5611.getPressureFromRaw(raw));
+			size = snprintf(temp, sizeof(temp), " Pressure: %ld\n", ms5611.getPressureFromRaw(raw));
 			serial.write((uint8_t*) temp, size);
-			size = snprintf(temp, sizeof(temp), "Temperature: %ld\n", ms5611.getTemperatureFromRaw(raw));
+			size = snprintf(temp, sizeof(temp), " Temperature: %ld\n", ms5611.getTemperatureFromRaw(raw));
 			serial.write((uint8_t*) temp, size);
 
 			serial.write("\n");
 
-			// mpu6050.getValues(&accel, &gyro, &temperature);
-			//
-			// uint8_t size = 0;
-			// char temp[64];
-			// size = snprintf(temp, sizeof(temp), "Accel: X: %.02f  Y: %.02f  Z: %.02f\n", accel.x, accel.y, accel.z);
-			// serial.write((uint8_t*) temp, size);
-			// size = snprintf(temp, sizeof(temp), "Gyro:  X: %.02f  Y: %.02f  Z: %.02f\n", gyro.x, gyro.y, gyro.z);
-			// serial.write((uint8_t*) temp, size);
-			// size = snprintf(temp, sizeof(temp), "Temperature: %.1f\n", temperature);
-			// serial.write((uint8_t*) temp, size);
 			lastSend = timer_millis();
-			//
-			// uint8_t b = 0;
-			// while (serial.read(&b)){
-			// 	serial.write(b);
-			// }
 		}
 	}
 }

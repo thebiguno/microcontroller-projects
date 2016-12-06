@@ -18,6 +18,16 @@ MPU6050::MPU6050(I2C* i2c, uint8_t accelRange, uint8_t gyroRange) :
 
 	delay_ms(100);
 
+	//Set I2C Master enable bit; this is required to put the auxiluary I2C bus onto the main I2C bus
+	data[0] = MPU6050_USER_CTRL;
+	data[1] = 0x00;
+	i2c->write(MPU6050_ADDRESS, &message);
+
+	//Set I2C Bypass enable bit; this puts the aux I2C bus onto the main bus.
+	data[0] = MPU6050_INT_PIN_CFG;
+	data[1] = 0x02;
+	i2c->write(MPU6050_ADDRESS, &message);
+
 	//Wake up
 	data[0] = MPU6050_PWR_MGMT_1;
 	data[1] = 0x00;
