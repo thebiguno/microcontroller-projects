@@ -33,6 +33,9 @@ void dc_main(){
 	HMC5883L hmc5883l(&i2cHal);
 	MS5611 ms5611(&i2cHal);
 	// mpu6050.calibrate();
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
+	hmc5883l.calibrate();
+	HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_2);
 
 	char temp[128];
 	uint8_t raw[14];
@@ -66,6 +69,10 @@ void dc_main(){
 			size = snprintf(temp, sizeof(temp), " Raw: %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), " Mag: X: %.02f  Y: %.02f  Z: %.02f\n", mag.x, mag.y, mag.z);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), " Calibration: X: %.02f  Y: %.02f  Z: %.02f\n", hmc5883l.getCalibration().x, hmc5883l.getCalibration().y, hmc5883l.getCalibration().z);
+			serial.write((uint8_t*) temp, size);
+			size = snprintf(temp, sizeof(temp), " Heading: %.02f\n", hmc5883l.getHeading(mag) * 180 / M_PI);
 			serial.write((uint8_t*) temp, size);
 
 
