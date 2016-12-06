@@ -70,7 +70,7 @@ void dc_main(){
 
 
 			serial.write("MS5611:\n");
-			ms5611.getRaw(raw);
+			ms5611.getRaw(raw, timer_millis());
 			size = snprintf(temp, sizeof(temp), "Raw: %02x%02x%02x %02x%02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), "Pressure: %ld\n", ms5611.getPressureFromRaw(raw));

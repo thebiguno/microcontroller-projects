@@ -1,9 +1,15 @@
 #include "MS5611.h"
 
+#define MS5611_STATE_START_D1			(0x00)
+#define MS5611_STATE_READ_D1			(0x01)
+#define MS5611_STATE_START_D2			(0x02)
+#define MS5611_STATE_READ_D2			(0x03)
+
 using namespace digitalcave;
 
 MS5611::MS5611(I2C* i2c, uint8_t oversampling) :
 	i2c(i2c),
+	state(MS5611_STATE_START_D1),
 	oversampling(oversampling)
 {
 	if (oversampling == MS5611_OVERSAMPLE_ULTRA_LOW_POWER){
@@ -27,11 +33,11 @@ MS5611::MS5611(I2C* i2c, uint8_t oversampling) :
 	I2CMessage message(data, sizeof(data));
 
 	//Send reset signal
-	delay_ms(100);
+	delay_ms(20);
 	message.setLength(1);
 	data[0] = MS5611_CMD_RESET;
 	i2c->write(MS5611_ADDRESS, &message);				//Send reset command
-	delay_ms(100);
+	delay_ms(20);
 
 
 	//Read the factory calibration data in PROM
@@ -49,41 +55,73 @@ MS5611::MS5611(I2C* i2c, uint8_t oversampling) :
 			coefficient[i] = data[0] << 8 | data[1];
 		}
 	}
+
+	//Read raw values 4 times with conversionDelay ms in between to ensure that valid data is loaded into lastRaw initially
+	uint8_t raw[6];
+	getRaw(raw, (conversionDelay + 1) * 0);
+	delay_ms(conversionDelay + 1);
+	getRaw(raw, (conversionDelay + 1) * 1);
+	delay_ms(conversionDelay + 1);
+	getRaw(raw, (conversionDelay + 1) * 2);
+	delay_ms(conversionDelay + 1);
+	getRaw(raw, (conversionDelay + 1) * 3);
 }
 
-void MS5611::getRaw(uint8_t* raw){
+void MS5611::getRaw(uint8_t* raw, uint32_t time){
 	uint8_t data[3];
 	I2CMessage message(data, sizeof(data));
 
-	message.setLength(1);
-	data[0] = MS5611_CMD_CONV_D1 + oversampling;
-	i2c->write(MS5611_ADDRESS, &message);				//Start D1 conversion with desired oversampling
+	if (time - lastTime >= conversionDelay){
+		if (state == MS5611_STATE_START_D1){
+			//Start a new conversion on D1
+			message.setLength(1);
+			data[0] = MS5611_CMD_CONV_D1 + oversampling;
+			i2c->write(MS5611_ADDRESS, &message);				//Start D1 conversion with desired oversampling
+			state = MS5611_STATE_READ_D1;						//Next state is to read D1
+		}
+		else if (state == MS5611_STATE_READ_D1){
+			//Read last conversion from D1
+			message.setLength(1);
+			data[0] = MS5611_CMD_ADC_READ;
+			i2c->write(MS5611_ADDRESS, &message);				//Read result of D1 conversion
+			message.setLength(3);
+			i2c->read(MS5611_ADDRESS, &message);				//Read 3 bytes, 24 bits unsigned
+			state = MS5611_STATE_START_D2;						//Next state is to start D2
 
-	delay_ms(conversionDelay);
+			lastRaw[0] = data[0];
+			lastRaw[1] = data[1];
+			lastRaw[2] = data[2];
+		}
+		else if (state == MS5611_STATE_START_D2){
+			//Start a new conversion on D2
+			message.setLength(1);
+			data[0] = MS5611_CMD_CONV_D2 + oversampling;
+			i2c->write(MS5611_ADDRESS, &message);				//Start D2 conversion with desired oversampling
+			state = MS5611_STATE_READ_D2;						//Next state is to read D2
+		}
+		else if (state == MS5611_STATE_READ_D2){
+			//Read last conversion from D2
+			message.setLength(1);
+			data[0] = MS5611_CMD_ADC_READ;
+			i2c->write(MS5611_ADDRESS, &message);				//Read result of D1 conversion
+			message.setLength(3);
+			i2c->read(MS5611_ADDRESS, &message);				//Read 3 bytes, 24 bits unsigned
+			state = MS5611_STATE_START_D1;						//Next state is to start D1
 
-	data[0] = MS5611_CMD_ADC_READ;
-	i2c->write(MS5611_ADDRESS, &message);				//Read result of D1 conversion
-	message.setLength(3);
-	i2c->read(MS5611_ADDRESS, &message);				//Read 3 bytes, 24 bits unsigned
+			lastRaw[3] = data[0];
+			lastRaw[4] = data[1];
+			lastRaw[5] = data[2];
+		}
 
-	raw[0] = data[0];
-	raw[1] = data[1];
-	raw[2] = data[2];
+		lastTime = time;
+	}
 
-	message.setLength(1);
-	data[0] = MS5611_CMD_CONV_D2 + oversampling;
-	i2c->write(MS5611_ADDRESS, &message);				//Start D2 conversion with desired oversampling
-
-	delay_ms(conversionDelay);
-
-	data[0] = MS5611_CMD_ADC_READ;
-	i2c->write(MS5611_ADDRESS, &message);				//Read result of D1 conversion
-	message.setLength(3);
-	i2c->read(MS5611_ADDRESS, &message);				//Read 3 bytes, 24 bits unsigned
-
-	raw[3] = data[0];
-	raw[4] = data[1];
-	raw[5] = data[2];
+	raw[0] = lastRaw[0];
+	raw[1] = lastRaw[1];
+	raw[2] = lastRaw[2];
+	raw[3] = lastRaw[3];
+	raw[4] = lastRaw[4];
+	raw[5] = lastRaw[5];
 }
 
 inline int32_t getDt(uint8_t* raw, uint16_t* coefficient){
@@ -133,9 +171,10 @@ inline int32_t getPressureConverted(uint8_t* raw, uint16_t* coefficient){
 	return p;
 }
 
-int32_t MS5611::getPressure(){
+int32_t MS5611::getPressure(uint32_t time){
+	//See datasheet page 8 for variable naming and formulae
 	uint8_t raw[6];
-	getRaw(raw);
+	getRaw(raw, time);
 
 	return getPressureConverted(raw, coefficient);
 }
@@ -144,10 +183,10 @@ int32_t MS5611::getPressureFromRaw(uint8_t* raw){
 	return getPressureConverted(raw, coefficient);
 }
 
-int32_t MS5611::getTemperature(){
+int32_t MS5611::getTemperature(uint32_t time){
 	//See datasheet page 8 for variable naming and formulae
 	uint8_t raw[6];
-	getRaw(raw);
+	getRaw(raw, time);
 
 	return getTemperatureConverted(getDt(raw, coefficient), coefficient);
 }
