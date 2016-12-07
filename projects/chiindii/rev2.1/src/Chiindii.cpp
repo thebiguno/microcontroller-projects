@@ -52,6 +52,8 @@ Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 	protocol(128),
 	i2c(i2c),
 	mpu6050(i2c),
+	ms5611(i2c),
+	hmc5883l(i2c),
 
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 0),

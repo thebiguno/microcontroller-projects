@@ -21,6 +21,8 @@
 #endif
 #include <I2CHAL.h>
 #include <MPU6050.h>
+#include <MS5611.h>
+#include <HMC5883L.h>
 #include <SerialHAL.h>
 #include <PID.h>
 
@@ -50,39 +52,6 @@
 namespace digitalcave {
 	class Chiindii {
 
-		private:
-			uint8_t mode;
-			uint8_t battery_level;
-			double throttle_sp;
-			vector_t angle_sp;
-			vector_t rate_sp;
-
-			Stream* serial;
-			FramedSerialProtocol protocol;
-			I2C* i2c;
-			MPU6050 mpu6050;
-
-			PID rate_x;
-			PID rate_y;
-			PID rate_z;
-			PID angle_x;
-			PID angle_y;
-			PID angle_z;
-			PID gforce;
-
-#if defined MAHONY
-			Mahony imu;
-#elif defined MADGWICK
-			Madgwick imu;
-#endif
-
-			General general;
-			Calibration calibration;
-			Direct direct;
-			UniversalController universalController;
-
-			Status status;
-
 		public:
 			Chiindii(Stream* serial, I2C* i2c);
 
@@ -105,12 +74,13 @@ namespace digitalcave {
 			PID* getAngleZ() { return &angle_z; }
 			PID* getGforce() { return &gforce; }
 
-#if defined MAHONY
-			Mahony* getImu() { return &imu; }
-#elif defined MADGWICK
 			Madgwick* getImu() { return &imu; }
-#endif
+
+			//Sensor Hardware
 			MPU6050* getMpu6050() { return &mpu6050; }
+			MS5611* getMs5611() { return &ms5611; }
+			HMC5883L* getHmc5883l() { return &hmc5883l; }
+
 			Status* getStatus();
 
 			uint8_t getBatteryLevel() { return battery_level; }
@@ -127,6 +97,43 @@ namespace digitalcave {
 			void sendStatus(const char* message, uint8_t length) { sendStatus((char*) message, length); }
 
 			void sendMessage(FramedSerialMessage* message) { protocol.write(serial, message); }
+
+		private:
+			uint8_t mode;
+			uint8_t battery_level;
+			double throttle_sp;
+			vector_t angle_sp;
+			vector_t rate_sp;
+
+			Stream* serial;
+			FramedSerialProtocol protocol;
+			I2C* i2c;
+
+			MPU6050 mpu6050;
+			MS5611 ms5611;
+			HMC5883L hmc5883l;
+
+			PID rate_x;
+			PID rate_y;
+			PID rate_z;
+			PID angle_x;
+			PID angle_y;
+			PID angle_z;
+			PID gforce;
+
+			#if defined MAHONY
+			Mahony imu;
+			#elif defined MADGWICK
+			Madgwick imu;
+			#endif
+
+			General general;
+			Calibration calibration;
+			Direct direct;
+			UniversalController universalController;
+
+			Status status;
 	};
+
 }
 #endif
