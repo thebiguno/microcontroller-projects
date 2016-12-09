@@ -41,9 +41,9 @@ namespace digitalcave {
 			// Pass in a uint8_t[6] array to return the data
 			void getRaw(uint8_t* raw);
 
-			//Returns the reading values.  The units will depend on the gain; default gain results in 0.92mG / LSB.
-			vector_t getValues();
-			vector_t getValuesFromRaw(uint8_t* raw);
+			//Returns the magnetometer reading values.  The units will depend on the gain; default gain results in 0.92mG / LSB.
+			vector_t getMag();
+			vector_t getMagFromRaw(uint8_t* raw);
 
 			//Returns a compass heading in radians, from -PI to PI.  Only uses the X and Y axis,
 			// so accuracy will be reduced if the module is not flat.

@@ -65,7 +65,7 @@ void dc_main(){
 
 			serial.write("HMC5883L:\n");
 			hmc5883l.getRaw(raw);
-			vector_t mag = hmc5883l.getValuesFromRaw(raw);
+			vector_t mag = hmc5883l.getMagFromRaw(raw);
 			size = snprintf(temp, sizeof(temp), " Raw: %02x%02x %02x%02x %02x%02x\n", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5]);
 			serial.write((uint8_t*) temp, size);
 			size = snprintf(temp, sizeof(temp), " Mag: X: %.02f  Y: %.02f  Z: %.02f\n", mag.x, mag.y, mag.z);

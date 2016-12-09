@@ -98,10 +98,13 @@ void Chiindii::run() {
 
 	loadConfig(); // load previously saved PID and comp tuning values from EEPROM
 
-	vector_t gyro = {0, 0, 0};
 	vector_t accel = {0, 0, 0};
+	vector_t gyro = {0, 0, 0};
+	vector_t mag = {0, 0, 0};
+
 	vector_t rate_pv = {0, 0, 0};
 	vector_t angle_mv = {0, 0, 0};
+
 	double gyro_z_average = 0;
 //	double gforce_z_average = 1;
 	uint32_t time = 0;
@@ -183,6 +186,8 @@ void Chiindii::run() {
 		//Update IMU calculations.
 		accel = mpu6050.getAccel();
 		gyro = mpu6050.getGyro();
+		mag = hmc5883l.getMag();
+
 		gyro_z_average = gyro_z_average + gyro.z - (gyro_z_average / GYRO_AVERAGE_COUNT);
 
 		//Send telemetry if something is strange...
@@ -196,7 +201,7 @@ void Chiindii::run() {
 // 			sendMessage(&response);
 // 		}
 
-		imu.compute(accel, gyro, mode, time);
+		imu.compute(accel, gyro, mag, mode, time);
 //		gforce_z_average = gforce_z_average + imu.getZAcceleration(accel) - (gforce_z_average / GFORCE_AVERAGE_COUNT);
 
 		//Update PID calculations and adjust motors

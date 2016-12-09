@@ -65,14 +65,14 @@ inline vector_t getValuesConverted(uint8_t* raw, vector_t calibration){
 	return result;
 }
 
-vector_t HMC5883L::getValues(){
+vector_t HMC5883L::getMag(){
 	uint8_t raw[6];
 	getRaw(raw);
 
 	return getValuesConverted(raw, calibration);
 }
 
-vector_t HMC5883L::getValuesFromRaw(uint8_t* raw){
+vector_t HMC5883L::getMagFromRaw(uint8_t* raw){
 	return getValuesConverted(raw, calibration);
 }
 
