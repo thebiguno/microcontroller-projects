@@ -1,8 +1,8 @@
 /*
- * Read the buttons on the PS2 Controller, and send them over the 
+ * Read the buttons on the PS2 Controller, and send them over the
  * serial link.  We send all button events and changes to analog state.
  * We let the receiving end decide what to do with this information.
- * Initially designed for a hexapod controller, but it should be usable 
+ * Initially designed for a hexapod controller, but it should be usable
  * for most robotics / gaming interface tasks.
  *
  * There is an idle poll which re-sends button state on a regular basis
@@ -15,7 +15,7 @@
  * is the Universal Controller's battery.  The second farthest right char on the top row
  * is the TX / RX status (flashes when TX / RX events happen); the bottom row is the
  * radio switch position (XBee or Bluetooth).
- * 
+ *
  * The rest of the display can be used for debug / status messages from the remote device.
  *
  * By default, all 16 buttons and both joysticks are enabled.  To change this,
@@ -87,7 +87,7 @@ uint16_t average_throttle = 0;
 uint8_t last_stick[4] = {0, 0, 0, 0};
 uint8_t last_throttle = 0;
 
-Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, 
+Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8,
 	&PORTF, PORTF0,
 	&PORTF, PORTF1,
 	&PORTF, PORTF4,
@@ -97,15 +97,16 @@ Hd44780_Direct hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8,
 CharDisplay display(&hd44780, 2, 16);
 
 FramedSerialProtocol fspSerial(255);
-FramedSerialProtocol fspUsb(255);
+//FramedSerialProtocol fspUsb(255);
 
 PSX_AVR psx(&PORTD, PORTD4, //Data (Brown)
 	&PORTD, PORTD5, //Command (Orange)
 	&PORTD, PORTD6, //Clock (Blue)
 	&PORTD, PORTD7); //Attention (Yellow)
-	
+
 SerialAVR serialAvr(38400, 8, 0, 1, 1);
 SoftwareSerialAVR softwareSerialAvr(&PORTE, PORTE6, 9600);
+SerialUSB serialUSB;
 NullStream nullSerial;
 
 Analog analog;
@@ -137,9 +138,7 @@ void sendMessage(FramedSerialMessage* m){
 int main (void){
 	//Do setup here
 	clock_prescale_set(clock_div_2);	//Run at 8MHz so that we can run on 3.3v
-	
-	SerialUSB serialUSB;
-	
+
 	uint8_t custom[64] = {
 		0x0e,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,	// 0 (Battery Full)
 		0x0e,0x11,0x11,0x11,0x1f,0x1f,0x1f,0x1f,	// 1 (Battery Half)
@@ -153,27 +152,27 @@ int main (void){
 	display.set_custom_chars(custom);
 
 	FramedSerialMessage incoming(0, 32);
-	
+
 	//Set up timer0 to output PWM for negative voltage generation
 	DDRB |= _BV(PORTB7);
 	TCCR0A = _BV(COM0A0) | _BV(WGM01);			//CTC Mode (mode 2), Toggle OC0A on compare match
 	TCCR0B = _BV(CS01) | _BV(CS00);				//Div 64 prescaler
 	OCR0A = 5;									//Set compare value
 	sei();
-	
+
 	//Timer 1 is the millis counter
 	timer_init();
-	
+
 	//Turn the switch sensors' pullups on
 	PORTC |= _BV(PORTC6) | _BV(PORTC7);
-	
+
 	display.write_text(0, 15, (uint8_t) BATTERY_UNKNOWN_ICON);
 	display.refresh();
-	
+
 	//Main program loop
 	while (1){
 		uint32_t time = timer_millis();
-	
+
 		if ((time - battery_timer) > BATTERY_TIME){
 			uint8_t reading = (analog.read(ADC_BATTERY));
 			if (battery_level == 0 && reading < (BATTERY_FULL_THRESHOLD - 5)) battery_level = BATTERY_HALF_ICON;			//Move from full to med
@@ -181,7 +180,7 @@ int main (void){
 			else if (battery_level == 1 && reading <= (BATTERY_EMPTY_THRESHOLD - 5)) battery_level = BATTERY_EMPTY_ICON;	//Move from med to empty
 			else if (battery_level == 2 && reading >= (BATTERY_EMPTY_THRESHOLD + 5)) battery_level = BATTERY_HALF_ICON;		//Move from empty to med
 			battery_timer = time;
-			
+
 			//Request battery from remote device
 			FramedSerialMessage m(MESSAGE_BATTERY, 0x00, 0);
 			sendMessage(&m);
@@ -194,7 +193,7 @@ int main (void){
 			display.write_text(0, 15, (uint8_t) BATTERY_UNKNOWN_ICON);
 			remote_battery_timeout_timer = time;
 		}
-		
+
 		//Read the switch state
 		if ((PINC & _BV(PORTC6)) == 0){
 			serial = &softwareSerialAvr;
@@ -227,10 +226,10 @@ int main (void){
 						}
 					}
 				}
-				
+
 				digital_poll_timer = time;
 			}
-			
+
 			//Button repeat
 			if ((time - digital_poll_timer) > DIGITAL_POLL_TIME){
 				if (buttons){
@@ -248,17 +247,17 @@ int main (void){
 
 				digital_poll_timer = time;
 			}
-			
+
 			//Analog transmission section
-			
+
 			//Add in the current analog values to the running average
 			average_stick[0] = average_stick[0] + psx.stick(PSS_LX) - (average_stick[0] >> AVERAGE_DIVISOR_EXPONENT);
 			average_stick[1] = average_stick[1] + psx.stick(PSS_LY) - (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT);
 			average_stick[2] = average_stick[2] + psx.stick(PSS_RX) - (average_stick[2] >> AVERAGE_DIVISOR_EXPONENT);
 			average_stick[3] = average_stick[3] + psx.stick(PSS_RY) - (average_stick[3] >> AVERAGE_DIVISOR_EXPONENT);
-			
+
 			average_throttle = average_throttle + analog.read(ADC_THROTTLE) - (average_throttle >> AVERAGE_DIVISOR_EXPONENT);
-			
+
 			if ((time - analog_poll_timer) > ANALOG_POLL_TIME
 					|| abs((average_stick[0] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[0]) > STICK_THRESHOLD
 					|| abs((average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) - last_stick[1]) > STICK_THRESHOLD
@@ -274,10 +273,10 @@ int main (void){
 
 				FramedSerialMessage sticks(MESSAGE_UC_JOYSTICK_MOVE, last_stick, 4);
 				sendMessage(&sticks);
-				
+
 				FramedSerialMessage throttle(MESSAGE_UC_THROTTLE_MOVE, &last_throttle, 1);
 				sendMessage(&throttle);
-				
+
 				analog_poll_timer = time;
 			}
 		}
@@ -302,23 +301,23 @@ int main (void){
 //
 //		snprintf(buf, sizeof(buf), "%02X,%02X %02X,%02X %02X  ", psx.stick(PSS_LX), psx.stick(PSS_LY), psx.stick(PSS_RX), psx.stick(PSS_RY), throttle_position);
 //		display.write_text(1, 0, buf, 16);
-		
+
 		//Show local battery level
 		display.write_text(1, 15, battery_level);
-		
+
 		//Read any incoming bytes and handle completed messages if applicable
 		if (fspSerial.read(&serialAvr, &incoming)){
 			communication |= COMM_RX;
 			communication_timer = time;
 			//TODO
-			
+
 			switch(incoming.getCommand()){
 				case MESSAGE_BATTERY:
 					if (incoming.getLength() == 1){
 						if (incoming.getData()[0] >= 60) display.write_text(0, 15, BATTERY_FULL_ICON);
 						else if (incoming.getData()[0] >= 25) display.write_text(0, 15, BATTERY_HALF_ICON);
 						else display.write_text(0, 15, BATTERY_EMPTY_ICON);
-					
+
 						remote_battery_timeout_timer = time;
 					}
 					break;
@@ -349,23 +348,24 @@ int main (void){
 					display.write_text(1, 0, buf, 14);
 					break;
 			}
-			
-			//Pass messages from radio to USB
-			if (serialUSB.isConnected()){
-				if (incoming.getCommand() != MESSAGE_BATTERY){
-					fspUsb.write(&serialUSB, &incoming);
-				}
-			}
+
+			// //Pass messages from radio to USB
+			// if (serialUSB.isConnected()){
+			// 	if (incoming.getCommand() != MESSAGE_BATTERY){
+			// 		fspUsb.write(&serialUSB, &incoming);
+			// 	}
+			// }
 		}
-		
+
 		if (serialUSB.isConnected()){
 			//Pass messages from USB to radio
-			if (fspUsb.read(&serialUSB, &incoming)){
-				fspSerial.write(&serialAvr, &incoming);
+			uint8_t data = 0;
+			while (serialUSB.read(&data)){
+				serialAvr.write(data);
 			}
 		}
-		
-		
+
+
 		//Show radio icons according to serial device / switch state
 		if (serial == &softwareSerialAvr){
 			display.write_text(1, 14, (char) 0x04);	//XBee
@@ -376,7 +376,7 @@ int main (void){
 		else {
 			display.write_text(1, 14, (char) 0xFE);	//Nothing
 		}
-		
+
 		//Show Rx / Tx Status
 		if (communication == COMM_RX_TX){
 			display.write_text(0, 14, (char) 0x07);	//Rx + Tx
@@ -390,7 +390,7 @@ int main (void){
 		else {
 			display.write_text(0, 14, (char) 0xFE);	//Nothing
 		}
-		
+
 		//Hold down circle + triangle and push left stick all the way up for BOOTLOADER_TIME ms to enter bootloader mode
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0x00){
 			if ((time - bootloader_timer) >= BOOTLOADER_TIME){
@@ -403,12 +403,12 @@ int main (void){
 		else {
 			bootloader_timer = time;
 		}
-		
+
 		//Hold down circle + triangle and push left stick all the way down for DISABLE_TIME ms to disable the controls.  This can be useful when hooked up to computer via USB
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && (average_stick[1] >> AVERAGE_DIVISOR_EXPONENT) == 0xFF){
 			if ((time - disable_timer) >= DISABLE_TIME){
 				disable_controls ^= 1;
-				
+
 				if (disable_controls){
 					display.write_text(0, 0, "Controls      ", 14);
 					display.write_text(1, 0, "Disabled      ", 14);
@@ -418,14 +418,14 @@ int main (void){
 					display.write_text(1, 0, "Enabled       ", 14);
 				}
 				display.refresh();
-				
+
 				disable_timer = time;
 			}
 		}
 		else {
 			disable_timer = time;
 		}
-		
+
 		if (psx.button(PSB_TRIANGLE) && psx.button(PSB_CIRCLE) && psx.button(PSB_PAD_UP)){
 			if ((time - contrast_timer) > CONTRAST_TIME){
 				OCR0A--;
@@ -441,11 +441,18 @@ int main (void){
 		else {
 			contrast_timer = time;
 		}
-		
+
 		display.refresh();
 	}
+
+	return 0;
 }
 
 ISR(USART1_RX_vect){
 	serialAvr.isr();
+
+	//Copy incoming bytes from radio to USB
+	if (serialUSB.isConnected()){
+		serialUSB.write(UDR1);
+	}
 }
