@@ -116,7 +116,7 @@ void MS5611::getRaw(uint8_t* raw, uint32_t time){
 }
 
 inline int32_t getDt(uint8_t* raw, uint16_t* coefficient){
-	uint32_t d2 = raw[3] << 16 | raw[4] << 8 | raw[5];
+	uint32_t d2 = ((uint32_t) raw[3]) << 16 | ((uint32_t) raw[4]) << 8 | raw[5];
 
 	int32_t dt = d2 - (coefficient[5] << 8);
 	return dt;
@@ -133,7 +133,7 @@ inline int32_t getTemperatureConverted(int32_t dt, uint16_t* coefficient){
 
 inline int32_t getPressureConverted(uint8_t* raw, uint16_t* coefficient){
 	//See datasheet page 8 for variable naming and formulae
-	uint32_t d1 = raw[0] << 16 | raw[1] << 8 | raw[2];
+	uint32_t d1 = ((uint32_t) raw[0]) << 16 | ((uint32_t) raw[1]) << 8 | raw[2];
 
 	int32_t dt = getDt(raw, coefficient);
 	int32_t temp = getTemperatureConverted(dt, coefficient);
