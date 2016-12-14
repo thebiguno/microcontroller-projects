@@ -34,7 +34,7 @@ endif
 CDEFS+=
 
 #C and C++ flags
-CXXFLAGS += -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -Os -DARM_MATH_CM4 -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding 
+CXXFLAGS += -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -Os -DARM_MATH_CM4 -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding
 
 #C flags only
 CFLAGS += -std=gnu99
@@ -79,7 +79,7 @@ flash: all
 ifeq 'nucleo' '$(PROGRAMMER)'
 	@cp $(PROJECT).bin $(NUCLEO_FOLDER)/
 else
-	st-flash write $(PROJECT).bin 0x8000000 
+	st-flash write $(PROJECT).bin 0x8000000
 endif
 
 
@@ -123,4 +123,3 @@ clean:
 	@echo Cleaning...
 	@rm -rf "$(BUILDDIR)"
 	@rm -f "$(PROJECT).elf" "$(PROJECT).bin"
-
