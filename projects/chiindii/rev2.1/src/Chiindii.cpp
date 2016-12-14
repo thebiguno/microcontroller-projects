@@ -3,6 +3,7 @@
 #include <I2CHAL.h>
 #include <SerialHAL.h>
 #include <TimerHAL.h>
+#include <dcutil/persist.h>
 
 #include "motor/motor.h"
 
@@ -72,8 +73,13 @@ Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 	direct(this),
 	universalController(this)
 {
-	//Turn off motors
+	//Turn on white light
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
 
+	//Turn off motors
+	motor_stop();
 
 	//Output of angle PID is a rate (rad / s) for each axis.
 	angle_x.setOutputLimits(-10, 10);
@@ -347,59 +353,73 @@ void Chiindii::run() {
 }
 
 void Chiindii::loadConfig(){
-// 	if (eeprom_read_byte((uint8_t*) EEPROM_MAGIC) == 0x42){
-// 		double kp, ki, kd;
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 0));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 4));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 8));
-// 		rate_x.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 12));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 16));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 20));
-// 		rate_y.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 24));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 28));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 32));
-// 		rate_z.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 36));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 40));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 44));
-// 		angle_x.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 48));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 52));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 56));
-// 		angle_y.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 60));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 64));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 68));
-// 		angle_z.setTunings(kp, ki, kd);
-//
-// 		kp = eeprom_read_float((float*) (EEPROM_OFFSET + 72));
-// 		ki = eeprom_read_float((float*) (EEPROM_OFFSET + 76));
-// 		kd = eeprom_read_float((float*) (EEPROM_OFFSET + 80));
-// 		gforce.setTunings(kp, ki, kd);
-//
-// #if defined MAHONY
-// #elif defined MADGWICK
-// 		double t = eeprom_read_float((float*) (EEPROM_OFFSET + 84));
-// 		imu.setBeta(t);
-// #endif
-//
-// 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
-// 		int16_t calibration[6];
-// 		eeprom_read_block(calibration, (void*) (EEPROM_OFFSET + 88), 12);
-// 		mpu6050.setCalibration(calibration);
-// 		sendStatus("Load EEPROM   ", 14);
-// 	}
-// 	else {
-// 		sendStatus("Load Defaults ", 14);
-// 	}
+	uint8_t config[116];
+	persist_read(0, config, sizeof(config));
+
+	if (config[0] == 0x42 && config[1] == 0x42){
+		double kp, ki, kd;
+		uint8_t i = 2;
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		rate_x.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		rate_y.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		rate_z.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		angle_x.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		angle_y.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		angle_z.setTunings(kp, ki, kd);
+
+		kp = (float) *(&config[i+=4]);
+		ki = (float) *(&config[i+=4]);
+		kd = (float) *(&config[i+=4]);
+		gforce.setTunings(kp, ki, kd);
+
+		double t = (float) *(&config[i+=4]);
+		imu.setBeta(t);
+
+		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
+		int16_t mpuCalibration[6];
+		mpuCalibration[0] = (uint16_t) *(&config[i+=2]);
+		mpuCalibration[1] = (uint16_t) *(&config[i+=2]);
+		mpuCalibration[2] = (uint16_t) *(&config[i+=2]);
+		mpuCalibration[3] = (uint16_t) *(&config[i+=2]);
+		mpuCalibration[4] = (uint16_t) *(&config[i+=2]);
+		mpuCalibration[5] = (uint16_t) *(&config[i+=2]);
+		mpu6050.setCalibration(mpuCalibration);
+
+		//3 * 4 bytes = 12 bytes total for magnetometer calibration
+		vector_t magCalibration;
+		magCalibration.x = (double) *(&config[i+=4]);
+		magCalibration.y = (double) *(&config[i+=4]);
+		magCalibration.z = (double) *(&config[i+=4]);
+		hmc5883l.setCalibration(magCalibration);
+
+		sendStatus("Load Config   ", 14);
+	}
+	else {
+		sendStatus("Load Defaults ", 14);
+	}
 }
 
 void Chiindii::saveConfig(){
