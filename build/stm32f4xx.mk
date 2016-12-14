@@ -43,7 +43,7 @@ CFLAGS += -std=gnu99
 CPPFLAGS += -std=gnu++11 -fno-rtti
 
 # linker options
-LDFLAGS += -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -mthumb -Wall -Os -Wl,--gc-sections -Wl,--relax --specs=nano.specs
+LDFLAGS += -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -mthumb -Wall -Os -Wl,--gc-sections -Wl,--relax --specs=rdimon.specs --specs=nano.specs  --specs=nosys.specs -lm -lc
 
 AS = arm-none-eabi-as
 CC = arm-none-eabi-gcc
