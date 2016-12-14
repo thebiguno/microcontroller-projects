@@ -137,7 +137,7 @@ void MPU6050::calibrate(){
 	calibration[5] = 0 - totals[5] / count;
 }
 
-inline vector_t getAccelConverted(uint8_t* data, int16_t* calibration, double accelScale){
+inline vector_t getAccelConverted(uint8_t* data, int16_t* calibration, float accelScale){
 	vector_t result;
 	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[0]) * accelScale;
 	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[1]) * accelScale;
@@ -145,7 +145,7 @@ inline vector_t getAccelConverted(uint8_t* data, int16_t* calibration, double ac
 	return result;
 }
 
-inline vector_t getGyroConverted(uint8_t* data, int16_t* calibration, double gyroScale){
+inline vector_t getGyroConverted(uint8_t* data, int16_t* calibration, float gyroScale){
 	vector_t result;
 	result.x = (((int16_t) (((uint16_t) data[0] << 8) | data[1])) + calibration[3]) * gyroScale;
 	result.y = (((int16_t) (((uint16_t) data[2] << 8) | data[3])) + calibration[4]) * gyroScale;
@@ -153,7 +153,7 @@ inline vector_t getGyroConverted(uint8_t* data, int16_t* calibration, double gyr
 	return result;
 }
 
-inline double getTemperatureConverted(uint8_t* data){
+inline float getTemperatureConverted(uint8_t* data){
 	return (((int16_t) (((uint16_t) data[0] << 8) | data[1])) / 340.0) + 36.53;	//equation for temperature in degrees C from datasheet
 }
 
@@ -182,7 +182,7 @@ vector_t MPU6050::getGyro(){
 }
 
 //Returns the temperature (in C)
-double MPU6050::getTemperature(){
+float MPU6050::getTemperature(){
 	uint8_t data[2];
 	I2CMessage message(data, 1);
 	data[0] = MPU6050_TEMP_OUT_H;
@@ -193,7 +193,7 @@ double MPU6050::getTemperature(){
 	return getTemperatureConverted(data);
 }
 
-void MPU6050::getValues(vector_t* accel, vector_t* gyro, double* temperature){
+void MPU6050::getValues(vector_t* accel, vector_t* gyro, float* temperature){
 	uint8_t data[14];
 	I2CMessage message(data, 1);
 	data[0] = MPU6050_ACCEL_XOUT_H;
@@ -204,7 +204,7 @@ void MPU6050::getValues(vector_t* accel, vector_t* gyro, double* temperature){
 	getValuesFromRaw(accel, gyro, temperature, data);
 }
 
-void MPU6050::getValuesFromRaw(vector_t* accel, vector_t* gyro, double* temperature, uint8_t* data){
+void MPU6050::getValuesFromRaw(vector_t* accel, vector_t* gyro, float* temperature, uint8_t* data){
 	*accel = getAccelConverted(data + 0, calibration, accelScale);
 	*temperature = getTemperatureConverted(data + 6);
 	*gyro = getGyroConverted(data + 8, calibration, gyroScale);

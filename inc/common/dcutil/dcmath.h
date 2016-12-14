@@ -12,20 +12,23 @@ extern "C" {
 #endif
 
 /*
+ * Lookup-table based acos implementation.
  * Returns an angle (in degrees) given the input value.  If the value is
  * outside of the domain [-1, 1] then it returns 255 to indicate NaN.
  */
-double acos_f(double value);
+float acos_f(float value);
 
 /*
+ * Lookup-table based cos implementation.
  * Returns the cosine value of the given angle (in degrees).
  */
-double cos_f(double angle);
+float cos_f(float angle);
 
 /*
+ * Lookup-table based sin implementation.
  * Returns the sine value of the given angle (in degrees).
  */
-double sin_f(double angle);
+float sin_f(float angle);
 
 /*
  * Fast square root function; from http://www.mikrocontroller.net/articles/AVR_Arithmetik#avr-gcc_Implementierung_.2816_Bit.29

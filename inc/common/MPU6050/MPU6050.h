@@ -52,13 +52,13 @@ namespace digitalcave {
 			//Returns all data in a single operation.  Raw data is obtained from
 			// a single I2C read, so it should be a bit faster for cases where you always
 			// need everything.
-			void getValues(vector_t* accel, vector_t* gyro, double* temperature);
+			void getValues(vector_t* accel, vector_t* gyro, float* temperature);
 
 			//Same as getValues, but allow you to pass in raw data.
-			void getValuesFromRaw(vector_t* accel, vector_t* gyro, double* temperature, uint8_t* data);
+			void getValuesFromRaw(vector_t* accel, vector_t* gyro, float* temperature, uint8_t* data);
 
 			//Returns the temperature (in C)
-			double getTemperature();
+			float getTemperature();
 
 			//Get / set calibration data.  Order is Accel X, Y, Z, Gyro X, Y, Z, sent as an int16_t array.
 			// These functions can be used to persist to / from EEPROM from main program.
@@ -70,8 +70,8 @@ namespace digitalcave {
 			int16_t calibration[6];
 
 			//The scaling factors to convert raw values to output values
-			double accelScale;
-			double gyroScale;
+			float accelScale;
+			float gyroScale;
 
 			//We need to keep this for the calibration routines
 			uint8_t accelRange;
