@@ -3,9 +3,6 @@
 
 #define DEBUG
 
-//Set exactly one of these
-#define MADGWICK
-
 //How many motors.  Check doc/motor_arrangement.txt for how the motors are arranged in various configurations.
 #define MOTOR_COUNT			8
 
@@ -13,11 +10,7 @@
 #include <dcutil/dcmath.h>
 #include <dctypes.h>
 #include <FramedSerialProtocol.h>
-#if defined MAHONY
-#include <Mahony.h>
-#elif defined MADGWICK
 #include <Madgwick.h>
-#endif
 #include <I2CHAL.h>
 #include <MPU6050.h>
 #include <MS5611.h>
@@ -120,11 +113,7 @@ namespace digitalcave {
 			PID angle_z;
 			PID gforce;
 
-			#if defined MAHONY
-			Mahony imu;
-			#elif defined MADGWICK
 			Madgwick imu;
-			#endif
 
 			General general;
 			Calibration calibration;

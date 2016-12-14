@@ -22,13 +22,10 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 		chiindii->loadConfig();
 	}
 	else if (cmd == MESSAGE_CALIBRATE_IMU){
-		//TODO wdt_enable(WDTO_8S);	//This takes a bit of time... we need to make sure the WDT doesn't reset.
+		__HAL_DBGMCU_FREEZE_IWDG();	//This takes a bit of time... we need to make sure the WDT doesn't reset.
 		chiindii->getMpu6050()->calibrate();
-		//TODO wdt_enable(WDTO_120MS);
+		__HAL_DBGMCU_UNFREEZE_IWDG();
 	}
-#if defined MAHONY
-	//TODO Add support for Mahoney tuning
-#elif defined MADGWICK
 	else if (cmd == MESSAGE_MADGWICK_TUNING){
 		Madgwick* m = chiindii->getImu();
 		if (request->getLength() == 0){
@@ -41,7 +38,6 @@ void Calibration::dispatch(FramedSerialMessage* request) {
 			m->setBeta(data[0]);
 		}
 	}
-#endif
 	else if (cmd == MESSAGE_RATE_PID_TUNING){
 		PID* x = chiindii->getRateX();
 		PID* y = chiindii->getRateY();
