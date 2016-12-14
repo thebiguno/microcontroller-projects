@@ -31,10 +31,10 @@ ifndef OBJDUMP
 endif
 
 
-CDEFS+=
+CDEFS+= -DARM_MATH_CM4 -D__FPU_PRESENT=1U
 
 #C and C++ flags
-CXXFLAGS += -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb -Os -DARM_MATH_CM4 -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding 
+CXXFLAGS += -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -mthumb -Wall -Os -flto -ffunction-sections -fdata-sections -fno-builtin -fno-exceptions -g -ffreestanding
 
 #C flags only
 CFLAGS += -std=gnu99
@@ -43,7 +43,7 @@ CFLAGS += -std=gnu99
 CPPFLAGS += -std=gnu++11 -fno-rtti
 
 # linker options
-LDFLAGS += -mcpu=cortex-m4 -Os -mlittle-endian -mthumb -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs -Wl,--start-group -lgcc -lc -Wl,--end-group
+LDFLAGS += -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -mthumb -Wall -Os -Wl,--gc-sections -Wl,--relax --specs=nano.specs
 
 AS = arm-none-eabi-as
 CC = arm-none-eabi-gcc
@@ -79,7 +79,7 @@ flash: all
 ifeq 'nucleo' '$(PROGRAMMER)'
 	@cp $(PROJECT).bin $(NUCLEO_FOLDER)/
 else
-	st-flash write $(PROJECT).bin 0x8000000 
+	st-flash write $(PROJECT).bin 0x8000000
 endif
 
 
@@ -123,4 +123,3 @@ clean:
 	@echo Cleaning...
 	@rm -rf "$(BUILDDIR)"
 	@rm -f "$(PROJECT).elf" "$(PROJECT).bin"
-
