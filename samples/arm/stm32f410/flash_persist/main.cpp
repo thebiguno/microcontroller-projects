@@ -34,7 +34,7 @@ void dc_main(){
 	snprintf(buffer, sizeof(buffer), "%02x %02x %02x %02x %02x %02x %02x %02x \n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 	serial.write(buffer);
 
-	if (data[0] == 0x43 && data[1] == 0x55){
+	if (data[0] == 0x42 && data[1] == 0x00){
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 
 		serial.write("Flash verified\n");
@@ -42,8 +42,8 @@ void dc_main(){
 	else {
 		//If not, we show a red light and write it now
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-		data[0] = 0x43;
-		data[1] = 0x55;
+		data[0] = 0x42;
+		data[1] = 0x00;
 		data[2] = 0x01;
 		data[3] = 0x02;
 		data[4] = 0x03;
