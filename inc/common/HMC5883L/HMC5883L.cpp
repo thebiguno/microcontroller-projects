@@ -76,8 +76,8 @@ vector_t HMC5883L::getMagFromRaw(uint8_t* raw){
 	return getValuesConverted(raw, calibration);
 }
 
-double HMC5883L::getHeading(vector_t values){
-	double radians = atan2(values.y, values.x);
+float HMC5883L::getHeading(vector_t values){
+	float radians = atan2(values.y, values.x);
 
 	while (radians > M_PI){
 		radians += (M_PI * -2);

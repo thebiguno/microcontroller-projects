@@ -47,7 +47,7 @@ namespace digitalcave {
 
 			//Returns a compass heading in radians, from -PI to PI.  Only uses the X and Y axis,
 			// so accuracy will be reduced if the module is not flat.
-			double getHeading(vector_t values);
+			float getHeading(vector_t values);
 
 			vector_t getCalibration() { return calibration; }
 			void setCalibration(vector_t calibration) { this->calibration = calibration; }
