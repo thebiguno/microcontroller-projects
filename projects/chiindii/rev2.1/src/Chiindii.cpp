@@ -65,11 +65,7 @@ Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 
 	gforce(0.1, 0, 0, DIRECTION_NORMAL, 0),
 
-#if defined MAHONY
-	imu(1, 0, 0),
-#elif defined MADGWICK
 	imu(0.01, 0),
-#endif
 
 	general(this),
 	calibration(this),

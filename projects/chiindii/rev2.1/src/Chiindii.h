@@ -4,7 +4,6 @@
 #define DEBUG
 
 //Set exactly one of these
-//#define MAHONY
 #define MADGWICK
 
 //How many motors.  Check doc/motor_arrangement.txt for how the motors are arranged in various configurations.
