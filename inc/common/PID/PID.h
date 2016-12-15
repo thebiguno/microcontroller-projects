@@ -38,7 +38,8 @@ namespace digitalcave {
 			//Clamps the output to a specific range. (0-255 by default)
 			void setOutputLimits(float min, float max);
 
-			//Change PID tunings
+			//Get / Set PID tunings
+			void getTunings(float* kp, float* ki, float* kd);
 			void setTunings(float kp, float ki, float kd);
 
 			//Sets the direction.  Normal means output will increase if error is positive.  Reverse is the opposite.
@@ -46,13 +47,6 @@ namespace digitalcave {
 
 			//Reset all internal state
 			void reset(uint32_t time);
-
-			float getKp();
-			float getKi();
-			float getKd();
-			void setKp(float Kp);
-			void setKi(float Ki);
-			void setKd(float Kd);
 	};
 }
 #endif

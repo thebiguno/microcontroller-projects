@@ -49,9 +49,21 @@ float PID::compute(float setPoint, float measured, uint32_t time){
 	return result;
 }
 
+void PID::getTunings(float* kp, float* ki, float* kd){
+	if(direction == DIRECTION_REVERSE){
+		*kp = (0 - this->kp);
+		*ki = (0 - this->ki);
+		*kd = (0 - this->kd);
+	}
+	else {
+		*kp = this->kp;
+		*ki = this->ki;
+		*kd = this->kd;
+	}
+}
 
 void PID::setTunings(float kp, float ki, float kd){
-	if (kp < 0 || ki < 0 || kd < 0) return;
+	//if (kp < 0 || ki < 0 || kd < 0) return;
 
 	if(direction == DIRECTION_REVERSE){
 		this->kp = (0 - kp);
@@ -85,26 +97,4 @@ void PID::reset(uint32_t time){
 	integratedError = 0;
 	lastMeasured = 0;
 	lastTime = time;
-}
-
-float PID::getKp() {
-	return kp;
-}
-
-float PID::getKi() {
-	return ki;
-}
-
-float PID::getKd() {
-	return kd;
-}
-
-void PID::setKp(float Kp){
-	kp = Kp;
-}
-void PID::setKi(float Ki){
-	ki = Ki;
-}
-void PID::setKd(float Kd){
-	kd = Kd;
 }
