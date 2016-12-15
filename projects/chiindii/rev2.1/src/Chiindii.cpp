@@ -33,6 +33,11 @@ extern "C" {
 }
 
 void chiindii_main(){
+	// Turn off active low LED (set pins high)
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_SET);		//Red
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);		//Green
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);		//Blue
+
 	battery_init();
 	timer_init();
 
@@ -45,16 +50,20 @@ void chiindii_main(){
 }
 
 Chiindii::Chiindii(Stream* serial, I2C* i2c) :
-	mode(MODE_UNARMED),
-	throttle_sp(0),
-	angle_sp({0, 0, 0}),
-	rate_sp({0, 0, 0}),
 	serial(serial),
-	protocol(128),
 	i2c(i2c),
+
 	mpu6050(i2c),
 	ms5611(i2c),
 	hmc5883l(i2c),
+
+	protocol(128),
+
+	mode(MODE_UNARMED),
+	battery_level(0),
+	throttle_sp(0),
+	angle_sp({0, 0, 0}),
+	rate_sp({0, 0, 0}),
 
 	rate_x(0.1, 0, 0, DIRECTION_NORMAL, 0),
 	rate_y(0.1, 0, 0, DIRECTION_NORMAL, 0),
@@ -73,11 +82,6 @@ Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 	direct(this),
 	universalController(this)
 {
-	//Turn on white light
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-
 	//Turn off motors
 	motor_stop();
 
@@ -127,10 +131,9 @@ void Chiindii::run() {
 		HAL_IWDG_Refresh(&hiwdg);
 		time = timer_millis();
 
-		delay_ms(100);
-		sendStatus("Test          ", 14);
-
+//		delay_ms(100);
 		if (protocol.read(serial, &request)) {
+			sendStatus("Rx            ", 14);
 			uint8_t cmd = request.getCommand();
 
 			if ((cmd & 0xF0) == 0x00){
@@ -346,7 +349,7 @@ void Chiindii::run() {
 // 		}
 // #endif
 
-		status.poll(time);
+		//status.poll(time);
 
 		loopCounter++;
 	}

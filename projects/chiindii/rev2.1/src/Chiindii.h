@@ -91,19 +91,21 @@ namespace digitalcave {
 			void sendMessage(FramedSerialMessage* message) { protocol.write(serial, message); }
 
 		private:
+			Stream* serial;
+			I2C* i2c;
+
+			MPU6050 mpu6050;
+			MS5611 ms5611;
+			HMC5883L hmc5883l;
+
+			FramedSerialProtocol protocol;
+
 			uint8_t mode;
 			uint8_t battery_level;
 			double throttle_sp;
 			vector_t angle_sp;
 			vector_t rate_sp;
 
-			Stream* serial;
-			FramedSerialProtocol protocol;
-			I2C* i2c;
-
-			MPU6050 mpu6050;
-			MS5611 ms5611;
-			HMC5883L hmc5883l;
 
 			PID rate_x;
 			PID rate_y;
