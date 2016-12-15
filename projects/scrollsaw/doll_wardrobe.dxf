@@ -1051,7 +1051,7 @@ textstyle1
 1001
 ACAD
 1000
-Arial
+
 1071
 0
   0
@@ -1083,7 +1083,7 @@ textstyle2
 1001
 ACAD
 1000
-
+textstyle2
 1071
 0
   0
@@ -1595,7 +1595,7 @@ textstyle18
 1001
 ACAD
 1000
-
+textstyle18
 1071
 0
   0
@@ -2261,9 +2261,9 @@ AcDbMText
   6
 BYLAYER
  10
-78.7652953967981659
+59.8015185491742898
  20
-74.4596347686872377
+77.6712421380428992
  30
 0.0
  40
@@ -2275,7 +2275,7 @@ BYLAYER
  72
 1
   1
-\H2;Back
+\H2;Back (a bit more than 40 maybe)
   7
 textstyle1
  50
