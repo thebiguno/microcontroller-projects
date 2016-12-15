@@ -5,7 +5,7 @@
 using namespace digitalcave;
 
 UniversalController::UniversalController(Chiindii *chiindii) :
-	mode(MODE_FLIGHT),
+	mode(UC_MODE_NORMAL),
 	axis(AXIS_RX),
 	pid(PID_P),
 	rawThrottle(0),
@@ -72,26 +72,31 @@ void UniversalController::updatePidDisplay(){
 			selectedPid = chiindii->getGforce();
 			break;
 	}
+
+	float kp, ki, kd;
+	selectedPid->getTunings(&kp, &ki, &kd);
+
 	switch(pid){
 		case PID_P:
 			pidLabel = "P";
-			value = selectedPid->getKp() * 100;
+			value = kp * 100;
 			break;
 		case PID_I:
 			pidLabel = "I";
-			value = selectedPid->getKi() * 100;
+			value = ki * 100;
 			break;
 		default:
 			pidLabel = "D";
-			value = selectedPid->getKd() * 100;
+			value = kd * 100;
 			break;
 	}
 
-	snprintf(temp, sizeof(temp), "%s %s: %03d      ", axisLabel, pidLabel, value);
-	for(uint8_t i = 14; i >= 7; i--){
+	snprintf(temp, sizeof(temp), "%s %s: %04d      ", axisLabel, pidLabel, value);
+	for(uint8_t i = 14; i >= 8; i--){
 		temp[i] = temp[i-1];
 	}
-	temp[7] = '.';
+	temp[8] = '.';
+	if (value >= 0) temp[6] = ' ';
 	chiindii->sendDebug(temp, 14);
 }
 
@@ -148,30 +153,30 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 
 		//To disarm, press the cross (bottom discrete) button at any time
 		if (button == CONTROLLER_BUTTON_VALUE_CROSS){
-			mode = MODE_FLIGHT;
+			mode = UC_MODE_NORMAL;
 			chiindii->sendStatus("Disarmed      ", 14);
 			chiindii->sendDebug("              ", 14);
 			chiindii->setMode(MODE_UNARMED);
 			chiindii->setThrottle(0);
 		}
-		else if (mode == MODE_FLIGHT){
+		else if (mode == UC_MODE_NORMAL){
 			//To arm in angle mode, press the triangle (top discrete) button while the throttle is all the way down.
 // 			if (button == CONTROLLER_BUTTON_VALUE_TRIANGLE && rawThrottle <= 1){
-// 				mode = MODE_FLIGHT;
+// 				mode = UC_MODE_NORMAL;
 // 				chiindii->sendStatus("Armed (Angle) ", 14);
 // 				chiindii->sendDebug("              ", 14);
 // 				chiindii->setMode(MODE_ARMED_ANGLE);
 // 			}
 			//To arm in throttle mode, press the circle (right discrete) button while the throttle is all the way down.
 			if (button == CONTROLLER_BUTTON_VALUE_CIRCLE && rawThrottle <= 1){
-				mode = MODE_FLIGHT;
+				mode = UC_MODE_NORMAL;
 				chiindii->sendStatus("Armed (Throt.)", 14);
 				chiindii->sendDebug("              ", 14);
 				chiindii->setMode(MODE_ARMED_THROTTLE);
 			}
 			//Square (left discrete) button is PID tuning
 			else if (button == CONTROLLER_BUTTON_VALUE_SQUARE && chiindii->getMode() == MODE_UNARMED){
-				mode = MODE_TUNING;
+				mode = UC_MODE_TUNING;
 				chiindii->sendStatus("PID Tuning    ", 14);
 				chiindii->setMode(MODE_UNARMED);
 				chiindii->setThrottle(0);
@@ -190,31 +195,64 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 				else if (angle_sp->z > M_PI) angle_sp->z -= M_PI * 2;
 			}
 		}
-		else if (mode == MODE_TUNING){
+		else if (mode == UC_MODE_TUNING){
 			//Up / down adjusts selected value
 			if (button == CONTROLLER_BUTTON_VALUE_PADUP || button == CONTROLLER_BUTTON_VALUE_PADDOWN){
 				int8_t direction = (button == CONTROLLER_BUTTON_VALUE_PADUP ? 1 : -1);
+				float kp, ki, kd;
+				getPid()->getTunings(&kp, &ki, &kd);
 				switch(pid){
 					case PID_P:
-						getPid()->setKp(getPid()->getKp() + direction * 0.01);
+						kp += (direction * 0.01);
 						break;
 					case PID_I:
-						getPid()->setKi(getPid()->getKi() + direction * 0.01);
+						ki += (direction * 0.01);
 						break;
 					case PID_D:
-						getPid()->setKd(getPid()->getKd() + direction * 0.01);
+						kd += (direction * 0.01);
 						break;
 				}
+				getPid()->setTunings(kp, ki, kd);
 			}
 			//Right selects between P/I/D
 			else if (button == CONTROLLER_BUTTON_VALUE_PADRIGHT){
-				pid++;
-				if (pid > PID_D) pid = PID_P;
+				switch(pid){
+					case PID_P:
+						pid = PID_I;
+						break;
+					case PID_I:
+						pid = PID_D;
+						break;
+					case PID_D:
+						pid = PID_P;
+						break;
+				}
 			}
 			//Left selects between axis
 			else if (button == CONTROLLER_BUTTON_VALUE_PADLEFT){
-				axis++;
-				if (axis > AXIS_T) axis = AXIS_RX;
+				switch(axis){
+					case AXIS_RX:
+						axis = AXIS_RY;
+						break;
+					case AXIS_RY:
+						axis = AXIS_RZ;
+						break;
+					case AXIS_RZ:
+						axis = AXIS_AX;
+						break;
+					case AXIS_AX:
+						axis = AXIS_AY;
+						break;
+					case AXIS_AY:
+						axis = AXIS_AZ;
+						break;
+					case AXIS_AZ:
+						axis = AXIS_T;
+						break;
+					case AXIS_T:
+						axis = AXIS_RX;
+						break;
+				}
 			}
 			//Square (left discrete) saves to EEPROM
 			else if (button == CONTROLLER_BUTTON_VALUE_SQUARE){

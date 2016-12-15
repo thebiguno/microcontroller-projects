@@ -56,7 +56,7 @@ void motor_stop(){
 	HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_4);
 }
 
-void motor_set(double* motorValues){
+void motor_set(float* motorValues){
 	uint16_t pwm[8];
 	for(uint8_t i = 0; i < 8; i++){
 		pwm[i] = motorValues[i] * 1024;

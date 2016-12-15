@@ -1,8 +1,6 @@
 #ifndef CHIINDII_H
 #define CHIINDII_H
 
-#define DEBUG
-
 //How many motors.  Check doc/motor_arrangement.txt for how the motors are arranged in various configurations.
 #define MOTOR_COUNT			8
 
@@ -19,27 +17,17 @@
 #include <PID.h>
 
 #include "Status.h"
+#include "battery/battery.h"
 #include "controllers/General.h"
 #include "controllers/UniversalController.h"
-#include "controllers/Calibration.h"
-#include "controllers/Direct.h"
-#include "battery/battery.h"
 
 
-#ifdef DEBUG
-#include <stdio.h>
-#endif
-
-#define MODE_UNARMED		0x00
-#define MODE_ARMED_ANGLE	0x01
-#define MODE_ARMED_RATE		0x02
-#define MODE_ARMED_THROTTLE	0x03
-
-#define CONTROLLER_NONE			0x00
-#define CONTROLLER_UC			0x01
-#define CONTROLLER_DIRECT		0x02
-#define CONTROLLER_CALIBRATION	0x03
-
+enum chiindii_mode_t {
+	MODE_UNARMED		=	0x00,
+	MODE_ARMED_ANGLE	=	0x01,
+	MODE_ARMED_RATE		=	0x02,
+	MODE_ARMED_THROTTLE	=	0x03
+};
 
 namespace digitalcave {
 	class Chiindii {
@@ -78,8 +66,8 @@ namespace digitalcave {
 			uint8_t getBatteryLevel() { return battery_level; }
 			uint8_t getBatteryPercent() { return battery_pct(); }
 
-			uint8_t getMode() { return mode; }
-			void setMode(uint8_t mode) { this->mode = mode; }
+			chiindii_mode_t getMode() { return mode; }
+			void setMode(chiindii_mode_t mode) { this->mode = mode; }
 
 			void saveConfig();
 			void loadConfig();
@@ -100,7 +88,7 @@ namespace digitalcave {
 
 			FramedSerialProtocol protocol;
 
-			uint8_t mode;
+			chiindii_mode_t mode;
 			uint8_t battery_level;
 			double throttle_sp;
 			vector_t angle_sp;
@@ -118,8 +106,6 @@ namespace digitalcave {
 			Madgwick imu;
 
 			General general;
-			Calibration calibration;
-			Direct direct;
 			UniversalController universalController;
 
 			Status status;

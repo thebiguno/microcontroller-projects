@@ -78,8 +78,6 @@ Chiindii::Chiindii(Stream* serial, I2C* i2c) :
 	imu(0.01, 0),
 
 	general(this),
-	calibration(this),
-	direct(this),
 	universalController(this)
 {
 	//Turn off motors
@@ -111,12 +109,12 @@ void Chiindii::run() {
 	vector_t rate_pv = {0, 0, 0};
 	vector_t angle_mv = {0, 0, 0};
 
-	double gyro_z_average = 0;
-//	double gforce_z_average = 1;
+	float gyro_z_average = 0;
+//	float gforce_z_average = 1;
 	uint32_t time = 0;
 	uint32_t lastReceiveMessageTime = 0;
 	uint32_t lastLowBatteryTime = 0;
-	double lowBatteryThrottle = 0;
+	float lowBatteryThrottle = 0;
 	uint16_t loopCounter = 0;
 
 	motor_start();
@@ -131,9 +129,7 @@ void Chiindii::run() {
 		HAL_IWDG_Refresh(&hiwdg);
 		time = timer_millis();
 
-//		delay_ms(100);
 		if (protocol.read(serial, &request)) {
-			sendStatus("Rx            ", 14);
 			uint8_t cmd = request.getCommand();
 
 			if ((cmd & 0xF0) == 0x00){
@@ -141,12 +137,6 @@ void Chiindii::run() {
 			}
 			else if ((cmd & 0xF0) == 0x10){
 				universalController.dispatch(&request);
-			}
-			else if ((cmd & 0xF0) == 0x20){
-				direct.dispatch(&request);
-			}
-			else if ((cmd & 0xF0) == 0x30){
-				calibration.dispatch(&request);
 			}
 			else {
 				//TODO Send debug message 'unknown command' or similar
@@ -212,7 +202,7 @@ void Chiindii::run() {
 		//Update PID calculations and adjust motors
 		angle_mv = imu.getEuler();
 
-		double throttle;
+		float throttle;
 
 		//We only do angle PID in mode angle or throttle.
 		if (mode == MODE_ARMED_THROTTLE) { // 0x02
@@ -266,7 +256,7 @@ void Chiindii::run() {
 			// will result in not enough attitude control.
 			//By making this dynamic, we allow for more throttle control at the bottom of the throttle
 			// range, and more manouverability at the middle / top.
-			double throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
+			float throttleWeight = fmax(-3.0 * throttle + 2.5, 1);
 			throttle = throttle * throttleWeight;
 
 			//Give a bit more throttle when pitching / rolling.  The magic number '10' means that, with a max of 30 degrees (~0.5 radians)
@@ -274,7 +264,7 @@ void Chiindii::run() {
 			throttle += fmax(abs(angle_sp.x), abs(angle_sp.y)) / 10;
 
 			//The 2.1 hardware supports up to 8 motors
-			double m[8];
+			float m[8];
 
 #if MOTOR_COUNT == 8
 			//This assumes an MPU that has a gyro output corresponding to the notes in doc/motor_arrangement.txt, in X + T configuration
@@ -349,7 +339,7 @@ void Chiindii::run() {
 // 		}
 // #endif
 
-		//status.poll(time);
+		status.poll(time);
 
 		loopCounter++;
 	}
@@ -360,7 +350,7 @@ void Chiindii::loadConfig(){
 	persist_read(0, config, sizeof(config));
 
 	if (config[0] == 0x42 && config[1] == 0x42){
-		double kp, ki, kd;
+		float kp, ki, kd;
 		uint8_t i = 2;
 
 		kp = (float) *(&config[i+=4]);
@@ -398,7 +388,7 @@ void Chiindii::loadConfig(){
 		kd = (float) *(&config[i+=4]);
 		gforce.setTunings(kp, ki, kd);
 
-		double t = (float) *(&config[i+=4]);
+		float t = (float) *(&config[i+=4]);
 		imu.setBeta(t);
 
 		//6 * 2 bytes = 12 bytes total for accel + gyro calibration
@@ -413,9 +403,9 @@ void Chiindii::loadConfig(){
 
 		//3 * 4 bytes = 12 bytes total for magnetometer calibration
 		vector_t magCalibration;
-		magCalibration.x = (double) *(&config[i+=4]);
-		magCalibration.y = (double) *(&config[i+=4]);
-		magCalibration.z = (double) *(&config[i+=4]);
+		magCalibration.x = (float) *(&config[i+=4]);
+		magCalibration.y = (float) *(&config[i+=4]);
+		magCalibration.z = (float) *(&config[i+=4]);
 		hmc5883l.setCalibration(magCalibration);
 
 		sendStatus("Load Config   ", 14);
@@ -426,6 +416,16 @@ void Chiindii::loadConfig(){
 }
 
 void Chiindii::saveConfig(){
+	float kp, ki, kd;
+	uint8_t config[116];
+
+	uint8_t i = 0;
+	config[i++] = 0x42;
+	config[i++] = 0x42;
+
+	rate_x.getTunings(&kp, &ki, &kd);
+
+
 // 	cli();
 // 	wdt_disable();
 //

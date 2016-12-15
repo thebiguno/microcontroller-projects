@@ -19,7 +19,7 @@ extern "C" {
 /*
  * Sets the phase for each of the motors.  Limited to 10 bit values 1023 is 100%, 512 is 50%, etc.
  */
-void motor_set(double* motorValues);
+void motor_set(float* motorValues);
 
 /*
  * Turns on the PWM.
