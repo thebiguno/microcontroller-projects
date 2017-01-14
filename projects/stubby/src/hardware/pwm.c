@@ -4,14 +4,11 @@ typedef struct pwm_pin_t {
 	volatile uint8_t *port;
 	uint8_t pin;
 	uint16_t compare_value;
-	uint8_t counter;			//Set this to 0xFF if you want the PWM signal to always fire.  Otherwise, it will decrement each iteration until it is 0, at which point it will
-								// stop sending the PWM signal.  This allows us to move a servo only for a certain amount of time, and then stop sending the signal.  It can
-								// help to reduce servo jitter on cheap, worn-out servos.
 } pwm_pin_t;
 
 typedef struct pwm_event_t {
-	//Only used in OCR1B; ignored for high event in OCR1A.  This is the value which TCNT1 is firing
-	// on *now*; you need to reference the next element in the array to get the value which is
+	//Only used in OCR1B; ignored for high event in OCR1A.  This is the value which TCNT1 is firing 
+	// on *now*; you need to reference the next element in the array to get the value which is 
 	// to be reset for next time.
 	uint16_t compare_value;
 
@@ -60,7 +57,7 @@ static uint16_t _pwm_micros_to_clicks(uint32_t micros){
 	// a 32 bit variable.  If this happens, we can divide micros by prescaler before multiplying
 	// with F_CPU, although this will give a loss of precision.  Leave as-is for now.
 	return (((F_CPU / 1000000) * micros) / _prescaler) & 0xFFF0;
-
+	
 	//TODO Rounding, based on 10MHz clock and various prescalers:
 	//Prescaler: 1, AND with 0xFF80
 	//Prescaler: 8, AND with 0xFFF0
@@ -70,10 +67,10 @@ static uint16_t _pwm_micros_to_clicks(uint32_t micros){
 }
 
 /*
- * Note: We extrapolate the DDR registers based off of the associated PORT
+ * Note: We extrapolate the DDR registers based off of the associated PORT 
  * register.  This assumes that the DDR registers come directly after the PORT
- * equivalents, with DDRX at the next address after PORTX.  This is valid for
- * all the chips I have looked at; however, it is highly recommended that you
+ * equivalents, with DDRX at the next address after PORTX.  This is valid for 
+ * all the chips I have looked at; however, it is highly recommended that you 
  * check any new chips which you want to use this library with.
  */
 void pwm_init(volatile uint8_t *ports[],
@@ -82,15 +79,14 @@ void pwm_init(volatile uint8_t *ports[],
 				uint32_t period) {
 
 	_count = (count <= PWM_MAX_PINS ? count : PWM_MAX_PINS);
-
+	
 	//Store values
 	for (uint8_t i = 0; i < _count; i++){
 		_pwm_pins[i].port = ports[i];
 		_pwm_pins[i].pin = pins[i];
 		*(_pwm_pins[i].port - 0x1) |= _BV(_pwm_pins[i].pin);
-		_pwm_pins[i].counter = 0x00;	//This needs to be set to non-zero before we will actually send a signal.
 	}
-
+	
 	//This is calculated by the focumula:
 	// CUTOFF_VALUE = PRESCALER * MAX_VALUE / (F_CPU / 1000000)
 	// where CUTOFF_VALUE is the period comparison for each if block,
@@ -102,14 +98,14 @@ void pwm_init(volatile uint8_t *ports[],
 #else
 	uint32_t max_value = 65535;
 #endif
-
+	
 	if (period < (1 * max_value / (F_CPU / 1000000))){
 		_prescaler = 1;
 		_prescaler_mask = _BV(CS10);
 	}
 	else if (period < (8 * max_value / (F_CPU / 1000000))){
 		_prescaler = 8;
-		_prescaler_mask = _BV(CS11);
+		_prescaler_mask = _BV(CS11);	
 	}
 	else if (period < (64 * max_value / (F_CPU / 1000000))){
 		_prescaler = 64;
@@ -128,22 +124,22 @@ void pwm_init(volatile uint8_t *ports[],
 		_prescaler = 1024;
 		_prescaler_mask = _BV(CS12) | _BV(CS10);
 	}
-
+				
 	TCCR1A = 0x00;
 	TCCR1B |= _prescaler_mask;
-
+	
 	//OCR1A controls the PWM period
 	OCR1A = _pwm_micros_to_clicks(period);
 	//OCR1B controls the PWM phase.  It is initialized later.
-
+	
 	//Enable compare interrupt on both channels
 	TIMSK1 = _BV(OCIE1A) | _BV(OCIE1B);
-
+	
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
 #endif
-
+	
 	//Force interrupt on compare A initially
 	TCCR1C |= _BV(FOC1A);
 }
@@ -177,16 +173,14 @@ void pwm_set_phase_batch(uint8_t index, uint32_t phase, uint8_t counter){
 	if (index >= _count) {
 		return;
 	}
-
+	
 	//The new compare value, in clock ticks
 	uint16_t new_clicks = _pwm_micros_to_clicks(phase);
 	pwm_pin_t *p = &(_pwm_pins[index]);
 
 	if (p->compare_value != new_clicks){
 		_set_phase_batch = 1;
-		p->counter = counter;
 	}
-	
 	//Set the new compare value
 	p->compare_value = new_clicks;
 }
@@ -195,7 +189,7 @@ void pwm_apply_batch(){
 	if (_set_phase_batch == 0){
 		return;	//No need to re-calculate if there was no changed phases.
 	}
-
+	
 	_set_phase_lock = 1;
 
 	//Copy _pwm_pins to _pwm_pins_sorted, and then sort it by value
@@ -205,7 +199,7 @@ void pwm_apply_batch(){
 	}
 	qsort(_pwm_pins_sorted, _count, sizeof _pwm_pins_sorted[0], _compare_values);
 
-	//Populate the _pwm_events_high variable and _pwm_events_low_new array, used in
+	//Populate the _pwm_events_high variable and _pwm_events_low_new array, used in 
 	// OCR1A and OCR1B respectively to turn pins on / off.
 	//First we reset everything in this array...
 #ifndef PWM_PORTA_UNUSED
@@ -239,7 +233,7 @@ void pwm_apply_batch(){
 	// set at the same compare values into a single event.
 	uint16_t last_compare_value = _pwm_pins_sorted[0].compare_value;
 	uint8_t last_index = 0;
-
+	
 	for (uint8_t i = 0; i < _count; i++){
 		pwm_pin_t *p = &(_pwm_pins_sorted[i]);
 		if (p->compare_value > last_compare_value){
@@ -250,7 +244,7 @@ void pwm_apply_batch(){
 			last_compare_value = p->compare_value;
 		}
 
-		if (p->compare_value > 0 && p->counter > 0){
+		if (p->compare_value > 0){
 			//Set pins to high
 #ifndef PWM_PORTA_UNUSED
 			if (p->port == &PORTA) _pwm_event_high_new.porta_mask |= _BV(p->pin);
@@ -306,7 +300,7 @@ void pwm_set_period(uint32_t period){
 
 
 
-/*
+/* 
  * The frequency comparison.  When it overflows, we reset the timer to 0.
  */
 #ifdef PWM_8_BIT
@@ -324,42 +318,13 @@ ISR(TIMER1_COMPA_vect){
 		_pwm_event_high = _pwm_event_high_new;
 		_set_phase = 0;
 	}
-	//Decrement counters and update the port masks on counters that have run out.
-	//TODO This may take too long to be included in the ISR... verification needed.
-	for (uint8_t i = 0; i < _count; i++){
-		pwm_pin_t *p = &(_pwm_pins[i]);
-		if (p->counter != 0xFF && p->counter != 0x00){
-			p->counter--;
-			if (p->counter == 0x00){
-				//Set port masks low for pins whose counters have run out.
-#ifndef PWM_PORTA_UNUSED
-				if (p->port == &PORTA) _pwm_event_high.porta_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTB_UNUSED
-				if (p->port == &PORTB) _pwm_event_high.portb_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTC_UNUSED
-				if (p->port == &PORTC) _pwm_event_high.portc_mask &= ~_BV(p->pin);
-				else
-#endif
-#ifndef PWM_PORTD_UNUSED
-				if (p->port == &PORTD) _pwm_event_high.portd_mask &= ~_BV(p->pin);
-				else
-#endif
-				if (0);	//Nop so that ignored ports dont break things
-			}
-		}
-	}
-
 	if (_set_period){
 		OCR1A = _set_period;
 		_set_period = 0;
 	}
 	if (_set_stop){
 		TCCR1B = 0x00;
-
+		
 #ifndef PWM_PORTA_UNUSED
 		PORTA &= ~_pwm_event_high.porta_mask;
 #endif
@@ -372,23 +337,22 @@ ISR(TIMER1_COMPA_vect){
 #ifndef PWM_PORTD_UNUSED
 		PORTD &= ~_pwm_event_high.portd_mask;
 #endif
-
+		
 		_set_stop = 0;
 		return;
 	}
-	//Reset counter after the new compare values are updated (otherwise it affects the phase
+	//Reset counter after the new compare values are updated (otherwise it affects the phase 
 	// of the next execution, causing jitter).
-	TCNT1 = 0;
-
-	//Set to the first (sorted) compare value in the pwm_events_low array.  This is calculated
+	TCNT1 = 0;	
+	
+	//Set to the first (sorted) compare value in the pwm_events_low array.  This is calculated 
 	// in pwm_apply_batch(), and updated above in this ISR.
 	_pwm_events_low_ptr = (void*) _pwm_events_low;
 	OCR1B = _pwm_events_low[0].compare_value;
-
-	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase
+	
+	//Set pins high.  We do this after re-enabling the clock so that we do not artificially increase 
 	// the phase.  We turn off the ports (in COMPB) in the same order that we turn them on here,
 	// so that the delta of any delay between PORTA and PORTD should be reduced or eliminated.
-	PORTC ^= _BV(PORTC6);
 #ifndef PWM_PORTA_UNUSED
 	PORTA |= _pwm_event_high.porta_mask;
 #endif
@@ -403,14 +367,14 @@ ISR(TIMER1_COMPA_vect){
 #endif
 }
 
-/*
+/* 
  * The phase comparison, implemented in C.  When it overflows, we find the next highest value.
- * For a faster alternative, comment this out and use the ASM version in pwm_fast.S
+ * For a faster alternative, comment this out and use the ASM version in pwm.S
  *
 ISR(TIMER1_COMPB_vect){
 	pwm_event_t* e = (pwm_event_t*) _pwm_events_low_ptr;
 	_pwm_events_low_ptr = (uint8_t*) _pwm_events_low_ptr + sizeof(pwm_event_t);
-
+	
 #ifndef PWM_PORTA_UNUSED
 	PORTA &= e->porta_mask;
 #endif
@@ -423,7 +387,7 @@ ISR(TIMER1_COMPB_vect){
 #ifndef PWM_PORTD_UNUSED
 	PORTD &= e->portd_mask;
 #endif
-
+	
 	//Set the timer for the next lowest value.
 	OCR1B = ((pwm_event_t*) _pwm_events_low_ptr)->compare_value;
 }

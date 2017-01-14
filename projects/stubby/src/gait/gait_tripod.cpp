@@ -118,14 +118,14 @@ void gait_step(Stubby* stubby){
 
 				legs[i]->setOffset(result);
 				
-				static uint32_t last_debug = 0;
-				if (i == 0 && time - last_debug > 500){
-					//Print status on leg 0
-					char temp[15];
-					snprintf(temp, sizeof(temp), "%d %d %d           ", result.x, result.y, result.z);
-					stubby->sendDebug(temp, 14);
-					last_debug = time;
-				}
+// 				static uint32_t last_debug = 0;
+// 				if (i == 0 && time - last_debug > 500){
+// 					//Print status on leg 0
+// 					char temp[15];
+// 					snprintf(temp, sizeof(temp), "%d %d %d           ", result.x, result.y, result.z);
+// 					stubby->sendDebug(temp, 14);
+// 					last_debug = time;
+// 				}
 			}
 		}
 		else {
