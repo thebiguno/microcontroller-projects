@@ -1,4 +1,4 @@
-update=Fri 03 Mar 2017 09:50:27 PM MST
+update=Wednesday, March 08, 2017 'pmt' 12:42:01 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,21 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=output
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=../../../lib/kicad/library
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -57,15 +69,3 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=/home/wyatt/Documents/Electronics/projects/lib/kicad/library/custom
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=output
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=Pcbnew
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
-[general]
-version=1
