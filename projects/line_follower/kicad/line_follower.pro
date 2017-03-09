@@ -1,4 +1,4 @@
-update=Wednesday, March 08, 2017 'pmt' 12:42:01 pm
+update=Thursday, March 09, 2017 'pmt' 01:05:17 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -33,8 +33,6 @@ NetFmtName=Pcbnew
 SpiceForceRefPrefix=0
 SpiceUseNetNumbers=0
 LabSize=60
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=../../../lib/kicad/library
@@ -68,4 +66,6 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=/home/wyatt/Documents/Electronics/projects/lib/kicad/library/custom
+LibName30=custom
+[general]
+version=1
