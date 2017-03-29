@@ -12,7 +12,7 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 		UCSRB = &UCSR0B;
 		UCSRC = &UCSR0C;
 		UDR = &UDR0;
-		
+
 		UDRE = UDRE0;
 		UCSZ0 = UCSZ00;
 		UCSZ1 = UCSZ01;
@@ -34,7 +34,7 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 		UCSRB = &UCSR1B;
 		UCSRC = &UCSR1C;
 		UDR = &UDR1;
-		
+
 		UDRE = UDRE1;
 		UCSZ0 = UCSZ10;
 		UCSZ1 = UCSZ11;
@@ -52,20 +52,25 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 		//TODO Support other serial ports if needed
 		return;
 	}
-	
-	
+
+
 	//Set baud rate
-	uint16_t calculated_baud = (F_CPU / 16 / baud) - 1;
+	uint16_t calculated_baud = (F_CPU / 4 / baud - 1) / 2;
+	*UCSRA |= _BV(U2X1);
+	if (((F_CPU == 16000000UL) && (baud == 57600)) || (calculated_baud > 4095)){
+		*UCSRA &= ~_BV(U2X1);
+		calculated_baud = (F_CPU / 8 / baud - 1) / 2;
+	}
 	*UBRRH = calculated_baud >> 8;
 	*UBRRL = calculated_baud & 0xFF;
 
-	//Make sure 2x and multi processor comm modes are off
-	*UCSRA &= ~(_BV(U2X) | _BV(MPCM));
-	
+	//Make sure multi processor comm mode is off
+	*UCSRA &= ~(_BV(MPCM));
+
 	//Calculate frame format
 	//Init to 0; we populate this later
 	*UCSRC = 0x0;
-	
+
 	//Data bits
 	if (dataBits == 9){
 		//9 bits use an extra bit in register UCSR0B
@@ -75,10 +80,10 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 	else {
 		*UCSRC |= ((dataBits - 5) << UCSZ0);
 	}
-	
+
 	//Parity, Stop bits
 	*UCSRC |= (parity << UPM0) | ((stopBits - 1) << USBS);
-	
+
 	//Enable Rx (interrupt) / Tx (blocking)
 	*UCSRB |= _BV(RXEN) | _BV(TXEN) | _BV(RXCIE);
 }
