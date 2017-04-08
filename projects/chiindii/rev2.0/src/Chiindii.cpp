@@ -400,33 +400,41 @@ void Chiindii::saveConfig(){
 	cli();
 	wdt_disable();
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 0), rate_x.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 4), rate_x.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 8), rate_x.getKd());
+	float p, i, d;
+	rate_x.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 0), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 4), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 8), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 12), rate_y.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 16), rate_y.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 20), rate_y.getKd());
+	rate_y.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 12), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 16), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 20), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 24), rate_z.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 28), rate_z.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 32), rate_z.getKd());
+	rate_z.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 24), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 28), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 32), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 36), angle_x.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 40), angle_x.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 44), angle_x.getKd());
+	angle_x.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 36), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 40), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 44), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 48), angle_y.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 52), angle_y.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 56), angle_y.getKd());
+	angle_y.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 48), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 52), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 56), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 60), angle_z.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 64), angle_z.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 68), angle_z.getKd());
+	angle_z.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 60), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 64), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 68), d);
 
-	eeprom_update_float((float*) (EEPROM_OFFSET + 72), gforce.getKp());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 76), gforce.getKi());
-	eeprom_update_float((float*) (EEPROM_OFFSET + 80), gforce.getKd());
+	gforce.getTunings(&p, &i, &d);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 72), p);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 76), i);
+	eeprom_update_float((float*) (EEPROM_OFFSET + 80), d);
 
 #if defined MAHONY
 #elif defined MADGWICK

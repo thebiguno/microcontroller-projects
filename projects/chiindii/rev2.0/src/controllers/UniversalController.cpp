@@ -73,17 +73,19 @@ void UniversalController::updatePidDisplay(){
 			break;
 	}
 	switch(pid){
+		float tunings[3];
+		selectedPid->getTunings(&tunings[0], &tunings[1], &tunings[2]);
 		case PID_P:
 			pidLabel = "P";
-			value = selectedPid->getKp() * 100;
+			value = tunings[0] * 100;
 			break;
 		case PID_I:
 			pidLabel = "I";
-			value = selectedPid->getKi() * 100;
+			value = tunings[1] * 100;
 			break;
 		default:
 			pidLabel = "D";
-			value = selectedPid->getKd() * 100;
+			value = tunings[2] * 100;
 			break;
 	}
 	
@@ -194,17 +196,20 @@ void UniversalController::dispatch(FramedSerialMessage* message) {
 			//Up / down adjusts selected value
 			if (button == CONTROLLER_BUTTON_VALUE_PADUP || button == CONTROLLER_BUTTON_VALUE_PADDOWN){
 				int8_t direction = (button == CONTROLLER_BUTTON_VALUE_PADUP ? 1 : -1);
+				float tunings[3];
+				getPid()->getTunings(&tunings[0], &tunings[1], &tunings[2]);
 				switch(pid){
 					case PID_P:
-						getPid()->setKp(getPid()->getKp() + direction * 0.01);
+						tunings[0] = tunings[0] + direction * 0.01;
 						break;
 					case PID_I:
-						getPid()->setKi(getPid()->getKi() + direction * 0.01);
+						tunings[1] = tunings[1] + direction * 0.01;
 						break;
 					case PID_D:
-						getPid()->setKd(getPid()->getKd() + direction * 0.01);
+						tunings[2] = tunings[2] + direction * 0.01;
 						break;
 				}
+				getPid()->setTunings(tunings[0], tunings[1], tunings[2]);
 			}
 			//Right selects between P/I/D
 			else if (button == CONTROLLER_BUTTON_VALUE_PADRIGHT){
