@@ -9,6 +9,6 @@ typedef struct ws2811_t {
 	uint8_t blue;
 } ws2811_t;
 
-void ws281x_set(const void *values);
+void ws2811_set(const void *values);
 	
 #endif
