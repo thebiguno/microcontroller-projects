@@ -1,7 +1,7 @@
 #define WS2811_PORT PORTB
 
 #include <avr/interrupt.h>
-#include "lib/ws281x/ws2811.h"
+#include "lib/ws281x/ws2812.h"
 #include "lib/rtc/ds1307/ds1307.h"
 #include "lib/twi/twi.h"
 //#include "lib/serial/serial.h"
@@ -33,7 +33,7 @@ int r(int max) {
 	return rand() % max;
 }
 // translate hue to rgb
-void h2rgb(struct ws2811_t *rgb, float h) {
+void h2rgb(struct ws2812_t *rgb, float h) {
 	h /= 60;		// sector 0 to 5
 	int i = floor(h);
 	float f = h - i;	// factorial part of h
@@ -119,10 +119,10 @@ int main() {
 
 	DDRB |= _BV(2); // led strip output
 
-	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
+	ws2812_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
+	ws2812_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
 
-	struct ws2811_t palette[12];
+	struct ws2812_t palette[12];
 	h2rgb(&palette[0],    0);	// red
 	h2rgb(&palette[1],   30);	// orange
 	h2rgb(&palette[2],   60);	// yellow
@@ -136,7 +136,7 @@ int main() {
 	h2rgb(&palette[10], 300);	// magenta
 	h2rgb(&palette[11], 330);	// rose
 
-	struct ws2811_t colors[60];
+	struct ws2812_t colors[60];
 
 	// initialize hardware
 	DDRB |= _BV(PB0);			// test output
@@ -206,9 +206,9 @@ int main() {
 
 	uint8_t base_index = 0;
 
-	struct ws2811_t base = black;
-	struct ws2811_t primary = black;
-	struct ws2811_t secondary = black;
+	struct ws2812_t base = black;
+	struct ws2812_t primary = black;
+	struct ws2812_t secondary = black;
 
 	while (1) {
 		if (TCNT0 > 0) {
@@ -235,14 +235,10 @@ int main() {
 				primary = palette[complementary(base_index)];
 				secondary = white;
 			} else if (harmony == 1) {
-				// analogous
-				primary = palette[analagous_a(base_index)];
-				secondary = palette[analagous_b(base_index)];
-			} else if (harmony == 2) {
 				// split complementary
 				primary = palette[analagous_a(complementary(base_index))];
 				secondary = palette[analagous_b(complementary(base_index))];
-			} else if (harmony == 3) {
+			} else if (harmony == 2) {
 				// triadic
 				primary = palette[triad(base_index)];
 				secondary = palette[triad(triad(base_index))];
@@ -384,29 +380,29 @@ int main() {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
 				}
-				colors[sys.tm_year] = palette[2];
+				colors[sys.tm_year] = palette[2]; // yellow
 			} else if (mode == MODE_MONTH) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
 				}
 				uint8_t mon = sys.tm_mon * 5;
-				colors[mon] = palette[4];
+				colors[mon] = palette[4]; // green
 			} else if (mode == MODE_DAY) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
 				}
-				colors[sys.tm_mday - 1] = palette[6];
+				colors[sys.tm_mday - 1] = palette[6]; // cyan
 			} else if (mode == MODE_HOUR) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
 				}
 				uint8_t hour = (sys.tm_hour % 12) * 5;
-				colors[hour] = (sys.tm_hour > 12) ? palette[8] : palette[1];
+				colors[hour] = (sys.tm_hour >= 12) ? palette[8] : palette[2] ; // 0-12=blue : 13-23=yellow
 			} else if (mode == MODE_MIN) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
 				}
-				colors[sys.tm_min] = palette[10];
+				colors[sys.tm_min] = palette[10]; // magenta
 			} else if (mode == MODE_SEC) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
 					colors[i] = white;
@@ -414,11 +410,11 @@ int main() {
 				colors[sys.tm_sec] = palette[0];
 			}
 
-			struct ws2811_t tx[60];
+			struct ws2812_t tx[60];
 			//for (int i = 0; i < 60; i++) tx[i] = colors[i];
 			// translate the top to the bottom
 			for (int i = 0; i < 60; i++) tx[i] = colors[(i + 30) % 60];
-			ws2811_set(tx);
+			ws281x_set(tx);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
@@ -447,7 +443,7 @@ int main() {
 				if (base_index > 12) base_index = 11;
 			} else if (command == REMOTE_CENTER) {
 				harmony++;
-				harmony %= 4;
+				harmony %= 3;
 			}
 		} else {
 			if (command == REMOTE_UP) {

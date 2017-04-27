@@ -1,5 +1,5 @@
-#ifndef WS2811_PIN
-#define WS2811_PIN 2
+#ifndef WS281X_PIN
+#define WS281X_PIN 2
 #endif
 
 #include <stdint.h>
@@ -24,11 +24,11 @@ http://wavedrom.com/editor.html
  * v a pointer to the first GRB tuple
  * s the number of GRB tuples
  */
-void ws2811_set(const void *values) {
+void ws281x_set(const void *values) {
 	cli();
 
-	uint8_t low_val = WS2811_PORT & ~_BV(WS2811_PIN);
-	uint8_t high_val = WS2811_PORT | _BV(WS2811_PIN);
+	uint8_t low_val = WS281X_PORT & ~_BV(WS281X_PIN);
+	uint8_t high_val = WS281X_PORT | _BV(WS281X_PIN);
 
 	asm volatile(
 			// current byte being sent is in r0
@@ -126,7 +126,7 @@ void ws2811_set(const void *values) {
 	[ptr]   "e" (values), 	// pointer to grb values
 	[high]  "r" (high_val),	// register that contains the "up" value for the output port (constant)
 	[low]   "r" (low_val),	// register that contains the "down" value for the output port (constant)
-	[port]  "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
+	[port]  "I" (_SFR_IO_ADDR(WS281X_PORT)) // The port to use
 		);
 
 	sei();
