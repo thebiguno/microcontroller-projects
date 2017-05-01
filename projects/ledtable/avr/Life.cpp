@@ -23,9 +23,9 @@ Life::~Life() {
 void Life::run() {
 	uint8_t running = 1;
 	uint8_t overflow = 128;
-	
+
 	reset();
-	
+
 	while (running) {
 		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
@@ -81,6 +81,7 @@ void Life::run() {
 
 		b1.sample(ms);
 		b2.sample(ms);
+
 		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
@@ -89,12 +90,14 @@ void Life::run() {
 			// change speed
 			overflow += 64;
 		}
-		
-		for (int i = 0; i < overflow; i = i + 16) {
-			_delay_ms(16);
 
-			b1.sample(ms);
-			b2.sample(ms);
+		for (int i = 0; i < overflow; i = i + 16) {
+			for (int j = 0; j < 16; j++) {
+				_delay_ms(1);
+
+				b1.sample(ms);
+				b2.sample(ms);
+			}
 		}
 	}
 }
@@ -104,7 +107,7 @@ uint8_t Life::getState(int8_t x, int8_t y) {
 	else if (x > 11) x = 0;
 	if (y < 0) y = 11;
 	else if (y > 11) y = 0;
-	return state[x][y]; 
+	return state[x][y];
 }
 
 uint8_t Life::getNeighborCount(int8_t x, int8_t y) {
@@ -152,15 +155,21 @@ void Life::reset() {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
 			matrix.setPixel(x, y);
 		}
-    }
+	}
 	matrix.flush();
-	_delay_ms(255);
-	
+
+	for (int i = 0; i < 255; i++) {
+		_delay_ms(1);
+
+		b1.sample(ms);
+		b2.sample(ms);
+	}
+
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
 		hashes[i] = 0;
 	}
 	matches = 0;
-	
+
 	// random start positions
 	for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
 		for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
@@ -171,9 +180,14 @@ void Life::reset() {
 			}
 		}
 	}
-	
+
 	flush();
-	
+
 	// pause to show start position
-	_delay_ms(255);
+	for (int i = 0; i < 255; i++) {
+		_delay_ms(1);
+
+		b1.sample(ms);
+		b2.sample(ms);
+	}
 }

@@ -4,7 +4,7 @@
 #include <Rgb.h>
 #include <stdlib.h>
 #include <util/delay.h>
-#include <math.h> 
+#include <math.h>
 
 using namespace digitalcave;
 
@@ -24,7 +24,7 @@ void Plasma::run() {
 	uint8_t running = 1;
 
 	uint8_t overflow = 128;
-	
+
 	const float k = 10.0;
 	float v = 0.0;
 	float xx;
@@ -35,7 +35,7 @@ void Plasma::run() {
 	uint8_t g;
 	uint8_t b;
 	float time = 0;
-	
+
 	while (running > 0) {
 		// plasma
 		// http://www.bidouille.org/prog/plasma
@@ -49,10 +49,10 @@ void Plasma::run() {
 				v += sin((k*xx+k*yy+time)/2.0);
 				cx = (.5 * sin(time/5.0)) + xx;
 				cy = (.5 * cos(time/3.0)) + yy;
-		
+
 				v += sin(sqrt(100.0*(cx*cx+cy*cy)+1.0)+time);
 				v /= 2.0;
-		
+
 				if (running == 1) {
 					r = 64.0*(.5+.5*sin(M_PI*v));
 					g = 64.0*(.5+.5*cos(M_PI*v));
@@ -82,10 +82,10 @@ void Plasma::run() {
 		}
 		matrix.flush();
 		time++;
-		
+
 		b1.sample(ms);
 		b2.sample(ms);
-		
+
 		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
@@ -100,12 +100,14 @@ void Plasma::run() {
 			// change speed
 			overflow += 64;
 		}
-		
+
 		for (int i = 0; i < overflow; i = i + 16) {
-			_delay_ms(16);
-			
-			b1.sample(ms);
-			b2.sample(ms);
+			for (int j = 0; j < 16; j++) {
+				_delay_ms(1);
+
+				b1.sample(ms);
+				b2.sample(ms);
+			}
 		}
 	}
 }
