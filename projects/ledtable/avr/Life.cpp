@@ -22,62 +22,76 @@ Life::~Life() {
 
 void Life::run() {
 	uint8_t running = 1;
-	uint8_t overflow = 128;
+	uint8_t frame = 0;   // only paint 1 in every delay frames
+	uint8_t pause = 100; // pause for 1 second whenever reset
+	uint8_t delay = 5;   // the length of the delay
 
 	reset();
 
 	while (running) {
-		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
-			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-				tempstate[x][y] = state[x][y];
+		_delay_ms(10);
+		if (pause > 0) {
+			pause--;
+		} else if (frame > 0) {
+			frame--;
+		} else {
+			frame = delay;
+
+			for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+				for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+					tempstate[x][y] = state[x][y];
+				}
 			}
-		}
-		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
-			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-				uint8_t count = getNeighborCount(x, y);
-				if (state[x][y] > 0) {
-					// alive
-					if (count == 2 || count == 3) {
-						// staying alive; do nothing
+			for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+				for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+					uint8_t count = getNeighborCount(x, y);
+					if (state[x][y] > 0) {
+						// alive
+						if (count == 2 || count == 3) {
+							// staying alive; do nothing
+							tempstate[x][y] = 0x01;
+						}
+						else {
+							// overpopulation or underpopulation
+							tempstate[x][y] = 0x00;
+						}
+					}
+					else if (count == 3) {
+						// birth
 						tempstate[x][y] = 0x01;
 					}
-					else {
-						// overpopulation or underpopulation
-						tempstate[x][y] = 0x00;
-					}
-				}
-				else if (count == 3) {
-					// birth
-					tempstate[x][y] = 0x01;
 				}
 			}
-		}
-		for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
-			for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
-				state[x][y] = tempstate[x][y];
+			for (uint8_t x = 0; x < MATRIX_WIDTH; x++) {
+				for (uint8_t y = 0; y < MATRIX_HEIGHT; y++) {
+					state[x][y] = tempstate[x][y];
+				}
 			}
-		}
 
-		flush();
-
-		//Store board hash
-		for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
-			hashes[i] = hashes[i - 1];
-		}
-		hashes[0] = getStateHash();
-
-		uint8_t m = 0;
-		for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
-			for (uint8_t j = i + 1; j < LIFE_HASH_COUNT; j++) {
-				if (hashes[i] == hashes[j]) m++;
+			//Store board hash
+			for (uint8_t i = LIFE_HASH_COUNT - 1; i > 0; i--) {
+				hashes[i] = hashes[i - 1];
 			}
-		}
-		if (m == 0) matches = 0;
-		else matches++;
+			hashes[0] = getStateHash();
 
-		if (matches >= LIFE_MATCH_COUNT) {
-			reset();
+			uint8_t m = 0;
+			for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
+				for (uint8_t j = i + 1; j < LIFE_HASH_COUNT; j++) {
+					if (hashes[i] == hashes[j]) m++;
+				}
+			}
+			if (m == 0) matches = 0;
+			else matches++;
+
+			if (matches >= LIFE_MATCH_COUNT) {
+				reset();
+				pause = 100; // 1s
+			}
+
+			flush();
 		}
+
+		// handle buttons
 
 		b1.sample(ms);
 		b2.sample(ms);
@@ -85,18 +99,11 @@ void Life::run() {
 		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
-		}
-		else if (b2.releaseEvent()) {
+		} else if (b2.releaseEvent()) {
 			// change speed
-			overflow += 64;
-		}
-
-		for (int i = 0; i < overflow; i = i + 16) {
-			for (int j = 0; j < 16; j++) {
-				_delay_ms(1);
-
-				b1.sample(ms);
-				b2.sample(ms);
+			delay += 5;
+			if (delay > 20) {
+				delay = 5;
 			}
 		}
 	}
@@ -156,14 +163,6 @@ void Life::reset() {
 			matrix.setPixel(x, y);
 		}
 	}
-	matrix.flush();
-
-	for (int i = 0; i < 255; i++) {
-		_delay_ms(1);
-
-		b1.sample(ms);
-		b2.sample(ms);
-	}
 
 	for (uint8_t i = 0; i < LIFE_HASH_COUNT; i++) {
 		hashes[i] = 0;
@@ -179,15 +178,5 @@ void Life::reset() {
 				state[x][y] = 0x00;
 			}
 		}
-	}
-
-	flush();
-
-	// pause to show start position
-	for (int i = 0; i < 255; i++) {
-		_delay_ms(1);
-
-		b1.sample(ms);
-		b2.sample(ms);
 	}
 }

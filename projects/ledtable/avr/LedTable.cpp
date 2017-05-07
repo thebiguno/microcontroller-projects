@@ -35,38 +35,45 @@ int main() {
 	twi_init();
 
 	while (1) {
+		_delay_ms(10);
+		uint8_t change = 1;
+		if (change) {
+			matrix.setColor(0,0,0);
+			matrix.rectangle(0,0,11,11, DRAW_FILLED);
 
-		matrix.setColor(0,0,0);
-		matrix.rectangle(0,0,11,11, DRAW_FILLED);
+			matrix.setColor(Rgb(hsv));
 
-		matrix.setColor(Rgb(hsv));
+			if (selected == 0) {
+				matrix.text(0, 0, "CL", 0);
+				matrix.text(0, 6, "CK", 0);
+			}
+			else if (selected == 1) {
+				matrix.text(0, 0, "LI", 0);
+				matrix.text(0, 6, "FE", 0);
+			}
+			else if (selected == 2) {
+				matrix.text(0, 0, "PL", 0);
+				matrix.text(0, 6, "AS", 0);
+			}
+			else if (selected == 3) {
+				matrix.text(0, 0, "TI", 0);
+				matrix.text(0, 6, "CK", 0);
+			} else {
+				matrix.text(0, 0, "BO", 0);
+				matrix.text(0, 6, "OT", 0);
+			}
 
-		if (selected == 0) {
-			matrix.text(0, 0, "CL", 0);
-			matrix.text(0, 6, "CK", 0);
-		}
-		else if (selected == 1) {
-			matrix.text(0, 0, "LI", 0);
-			matrix.text(0, 6, "FE", 0);
-		}
-		else if (selected == 2) {
-			matrix.text(0, 0, "PL", 0);
-			matrix.text(0, 6, "AS", 0);
-		}
-		else if (selected == 3) {
-			matrix.text(0, 0, "TI", 0);
-			matrix.text(0, 6, "CK", 0);
-		} else {
-			matrix.text(0, 0, "BO", 0);
-			matrix.text(0, 6, "OT", 0);
+			matrix.flush();
+			change = 0;
 		}
 
-		matrix.flush();
+		// handle buttons
 
 		b1.sample(ms);
 		b2.sample(ms);
 
 		if (b1.longReleaseEvent()) {
+			change = 1;
 			// decrease brightness;
 			uint8_t v = hsv.getValue();
 			switch (v) {
@@ -79,12 +86,13 @@ int main() {
 				case 0x03: hsv.setValue(0x01); break;
 				default: hsv.setValue(0x00);
 			}
-		}
-		else if (b1.releaseEvent()) {
+		} else if (b1.releaseEvent()) {
+			// change selection
+			change = 1;
 			selected++;
 			selected %= 5;
-		}
-		else if (b2.longReleaseEvent()) {
+		} else if (b2.longReleaseEvent()) {
+			change = 1;
 			// increase brightness
 			uint8_t v = hsv.getValue();
 			switch (v) {
@@ -97,8 +105,9 @@ int main() {
 				case 0x3f: hsv.setValue(0x7f); break;
 				default: hsv.setValue(0xff);
 			}
-		}
-		else if (b2.releaseEvent()) {
+		} else if (b2.releaseEvent()) {
+			// activate selection
+			change = 1;
 			switch (selected) {
 				case 0: { Clock clk; clk.run(); break; }
 				case 1: { Life life; life.run(); break; }
