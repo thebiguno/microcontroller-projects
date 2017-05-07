@@ -44,20 +44,14 @@ int main() {
 			matrix.setColor(Rgb(hsv));
 
 			if (selected == 0) {
-				matrix.text(0, 0, "CL", 0);
-				matrix.text(0, 6, "CK", 0);
-			}
-			else if (selected == 1) {
+				matrix.text(0, 0, "TI", 0);
+				matrix.text(0, 6, "ME", 0);
+			} else if (selected == 1) {
 				matrix.text(0, 0, "LI", 0);
 				matrix.text(0, 6, "FE", 0);
-			}
-			else if (selected == 2) {
+			} else if (selected == 2) {
 				matrix.text(0, 0, "PL", 0);
 				matrix.text(0, 6, "AS", 0);
-			}
-			else if (selected == 3) {
-				matrix.text(0, 0, "TI", 0);
-				matrix.text(0, 6, "CK", 0);
 			} else {
 				matrix.text(0, 0, "BO", 0);
 				matrix.text(0, 6, "OT", 0);
@@ -90,7 +84,7 @@ int main() {
 			// change selection
 			change = 1;
 			selected++;
-			selected %= 5;
+			selected %= 4;
 		} else if (b2.longReleaseEvent()) {
 			change = 1;
 			// increase brightness
@@ -112,8 +106,7 @@ int main() {
 				case 0: { Clock clk; clk.run(); break; }
 				case 1: { Life life; life.run(); break; }
 				case 2: { Plasma plasma; plasma.run(); break; }
-				case 3: { Tictactoe ttt; ttt.run(); break; }
-				case 4: {
+				case 3: {
 					UDCON = 1;
 					USBCON = (1<<FRZCLK);  // disable USB
 					UCSR1B = 0;

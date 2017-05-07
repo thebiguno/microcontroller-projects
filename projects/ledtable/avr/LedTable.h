@@ -15,6 +15,5 @@
 #include "Clock.h"
 #include "Life.h"
 #include "Plasma.h"
-#include "Tictactoe.h"
 
 #endif
