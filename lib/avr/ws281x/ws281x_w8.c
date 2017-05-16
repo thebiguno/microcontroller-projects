@@ -1,5 +1,5 @@
-#ifndef WS2811_PIN
-#define WS2811_PIN 2
+#ifndef WS281X_PIN
+#define WS281X_PIN 2
 #endif
 
 #include <stdint.h>
@@ -9,7 +9,7 @@
 /*
 http://wavedrom.com/editor.html
 {signal: [
-  {name: 'inst', wave: '22.23453434.5345.434.535535355.55..3', 
+  {name: 'inst', wave: '22.23453434.5345.434.535535355.55..3',
    	data: ['ldi','ld','lsl','out','nop','brcs','out','nop','out','nop','lsl','out','nop','brcs','nop','out','nop','lsl','out','dec','brcs','out','cpi','out','breq','ld','lsl','jmp','out']},
   {name: 'wire', wave: 'xxxxx1..0.....1....0...1..0........1' },
   {name: 'time', wave: 'xxxxx2..2.....2....2...2..2........2', data: ['375ns','750ns','625ns','500ns','375ns','1250ns'] },
@@ -24,15 +24,16 @@ http://wavedrom.com/editor.html
  * v a pointer to the first GRB tuple
  * s the number of GRB tuples
  */
-void ws2811_set(const void *values) {
+void ws281x_set(const void *values) {
 	cli();
-	
-	uint8_t low_val = WS2811_PORT & ~_BV(WS2811_PIN);
-	uint8_t high_val = WS2811_PORT | _BV(WS2811_PIN);
 
-	asm volatile( 
+	uint8_t low_val = WS281X_PORT & ~_BV(WS281X_PIN);
+	uint8_t high_val = WS281X_PORT | _BV(WS281X_PIN);
+
+	asm volatile(
 			// current byte being sent is in r0
 			// address of the end of the array is in r16
+			"            PUSH r16\n"
 			"            LDI r16, 180\n"						// load the byte count into r2 (1)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
@@ -117,16 +118,17 @@ void ws2811_set(const void *values) {
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
 			"            JMP start_byte\n"						// start the next byte (3)
-			
+
 			"end:        NOP\n" "NOP\n"
+			"            POP r16\n"
 	: // no outputs
 	: // inputs
 	[ptr]   "e" (values), 	// pointer to grb values
 	[high]  "r" (high_val),	// register that contains the "up" value for the output port (constant)
 	[low]   "r" (low_val),	// register that contains the "down" value for the output port (constant)
-	[port]  "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
+	[port]  "I" (_SFR_IO_ADDR(WS281X_PORT)) // The port to use
 		);
-	
+
 	sei();
 	_delay_us(6);  // hold the line low for 50 microseconds to send the reset signal.
 }

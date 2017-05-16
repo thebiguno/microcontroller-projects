@@ -10,5 +10,5 @@ typedef struct ws2811_t {
 } ws2811_t;
 
 void ws281x_set(const void *values);
-	
+
 #endif

@@ -26,60 +26,69 @@ void ClockSet::run() {
 	uint8_t running = 1;
 	uint8_t a;
 	uint8_t b;
-	
+
 	mcp79410_get(&time);
 
 	while (running) {
+		_delay_ms(10);
+
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
 		matrix.setColor(Rgb(hsv));
-		
+
 		if (running == 1) {
 			a = time.year / 10;
 			b = time.year - (10 * a);
-			
+
 			matrix.text(0,0,"YR",0);
+			matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 			matrix.character(0,6,0x30+a,0);
 			matrix.character(6,6,0x30+b,0);
 		}
 		else if (running == 2) {
 			a = time.month / 10;
 			b = time.month - (10 * a);
-			
+
 			matrix.text(0,0,"MO",0);
+			matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 			matrix.character(0,6,0x30+a,0);
 			matrix.character(6,6,0x30+b,0);
 		}
 		else if (running == 3) {
 			a = time.mday / 10;
 			b = time.mday - (10 * a);
-			
+
 			matrix.text(0,0,"DY",0);
+			matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 			matrix.character(0,6,0x30+a,0);
 			matrix.character(6,6,0x30+b,0);
 		}
 		else if (running == 4) {
 			a = time.hour / 10;
 			b = time.hour - (10 * a);
-			
+
 			matrix.text(0,0,"HR",0);
+			matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 			matrix.character(0,6,0x30+a,0);
 			matrix.character(6,6,0x30+b,0);
 		}
 		if (running == 5) {
 			a = time.minute / 10;
 			b = time.minute - (10 * a);
-			
+
 			matrix.text(0,0,"MI",0);
+			matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 			matrix.character(0,6,0x30+a,0);
 			matrix.character(6,6,0x30+b,0);
 		}
 
 		matrix.flush();
-		
+
+		// handle buttons
+
 		b1.sample(ms);
 		b2.sample(ms);
-		
+
 		if (b1.longReleaseEvent()) {
 			// exit
 			time.second = 0;
@@ -89,7 +98,7 @@ void ClockSet::run() {
 		if (b1.releaseEvent()) {
 			// change field
 			running++;
-			
+
 			if (running == 6) {
 				time.second = 0;
 				mcp79410_set(&time);

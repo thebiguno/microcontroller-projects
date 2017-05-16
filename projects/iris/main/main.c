@@ -1,7 +1,7 @@
 #define WS2811_PORT PORTB
 
 #include <avr/interrupt.h>
-#include "lib/ws281x/ws2811.h"
+#include "lib/ws281x/ws2812.h"
 #include "lib/rtc/ds1307/ds1307.h"
 #include "lib/twi/twi.h"
 //#include "lib/serial/serial.h"
@@ -32,7 +32,8 @@
 int r(int max) {
 	return rand() % max;
 }
-void h2rgb(struct ws2811_t *rgb, float h) {
+// translate hue to rgb
+void h2rgb(struct ws2812_t *rgb, float h) {
 	h /= 60;		// sector 0 to 5
 	int i = floor(h);
 	float f = h - i;	// factorial part of h
@@ -74,20 +75,20 @@ void h2rgb(struct ws2811_t *rgb, float h) {
 // recursive function to fill in the the spaces between two points in the plasma
 void a(uint8_t p1, uint8_t p2, float *hues) {
 	if (p1 == p2) return;
-	
+
 	uint8_t p = p1 + p2;
 	if (p2 < p1) p += 60;
 	p /= 2;
 	if (p == p1 || p == p2) return;
 	p %= 60;
-	
+
 	float v = hues[p1] + hues[p2];
 	if (hues[p2] < hues[p1]) v += 360;
 	v /= 2;
 	if (v > 360) v -= 360;
-	
+
 	hues[p] = v;
-	
+
 	a(p1, p, hues);
 	a(p, p2, hues);
 }
@@ -110,39 +111,39 @@ inline uint8_t analagous_b(uint8_t c) {
 }
 
 int main() {
-	
+
 	// the rtc has a slow start up time from power on, so just delay a bit here
 	_delay_ms(500);
-	
-	twi_init();
-	
-	DDRB |= _BV(2); // led strip output
-	
-	ws2811_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
-	ws2811_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
 
-	struct ws2811_t palette[12];
-	h2rgb(&palette[0],0);	// red
-	h2rgb(&palette[1],30);	// orange
-	h2rgb(&palette[2],60);	// yellow
-	h2rgb(&palette[3],90);	// chartreuse
-	h2rgb(&palette[4],120);	// green
-	h2rgb(&palette[5],150);	// spring
-	h2rgb(&palette[6],180);	// cyan
-	h2rgb(&palette[7],210);	// azure
-	h2rgb(&palette[8],240);	// blue
-	h2rgb(&palette[9],270);	// violet
-	h2rgb(&palette[10],300);	// magenta
-	h2rgb(&palette[11],330);	// rose
-	
-	struct ws2811_t colors[60];
+	twi_init();
+
+	DDRB |= _BV(2); // led strip output
+
+	ws2812_t black = {.red = 0x00, .green = 0x00, .blue = 0x00 };
+	ws2812_t white = {.red = 0xff, .green = 0xff, .blue = 0xff };
+
+	struct ws2812_t palette[12];
+	h2rgb(&palette[0],    0);	// red
+	h2rgb(&palette[1],   30);	// orange
+	h2rgb(&palette[2],   60);	// yellow
+	h2rgb(&palette[3],   90);	// chartreuse
+	h2rgb(&palette[4],  120);	// green
+	h2rgb(&palette[5],  150);	// spring
+	h2rgb(&palette[6],  180);	// cyan
+	h2rgb(&palette[7],  210);	// azure
+	h2rgb(&palette[8],  240);	// blue
+	h2rgb(&palette[9],  270);	// violet
+	h2rgb(&palette[10], 300);	// magenta
+	h2rgb(&palette[11], 330);	// rose
+
+	struct ws2812_t colors[60];
 
 	// initialize hardware
 	DDRB |= _BV(PB0);			// test output
 
 	// INT1 / PD3 and Timer2 are used by the IR receiver
 	remote_init(0x00);
-	
+
 	// Timer0 / T0 / PD4 is the 1 Hz square output of the RTC
 	TCCR0B |= _BV(CS02) | _BV(CS01) | _BV(CS00);
 	DDRD &= ~_BV(PD4);			// input
@@ -153,9 +154,9 @@ int main() {
 	TCCR1B |= _BV(CS12) | _BV(CS10); // clk / 1024 (about 1/10 second resolution)
 
 	sei();
-	
+
 	_delay_ms(500);
-	
+
 	// Initialize serial
 	//serial_init_b(9600);
 
@@ -182,7 +183,7 @@ int main() {
 	hues[p1] = 0;
 	hues[p2] = 120;
 	hues[p3] = 240;
-	
+
 	uint16_t hue = 0;	// current solid hue
 
 	// hard coded location and time zone for now
@@ -194,75 +195,55 @@ int main() {
 	ds1307_get(&rtc);
 	ds1307_init();
 	sys.tm_year = rtc.year - 1900;
-	sys.tm_mon = rtc.month - 1;				// rtc is 1 based; time lib is 0 based
-	sys.tm_mday = rtc.mday;
-	sys.tm_hour = rtc.hour;
-	sys.tm_min = rtc.minute;
-	sys.tm_sec = rtc.second;
+	sys.tm_mon = rtc.month - 1;	// 0-11; rtc is 1 based; time lib is 0 based
+	sys.tm_mday = rtc.mday;		// 1-31; rtc & time lib both 1 based
+	sys.tm_hour = rtc.hour;		// 0-23
+	sys.tm_min = rtc.minute;	// 0-59
+	sys.tm_sec = rtc.second;	// 0-59
 	systime = mktime(&sys);
 	set_system_time(systime);
-	ds1307_set(&rtc);
-	
+	ds1307_set(&rtc); // start the rtc
+
 	uint8_t base_index = 0;
-	
-	struct ws2811_t base = black;
-	struct ws2811_t markers = black;
-	struct ws2811_t fill = black;
-	struct ws2811_t other1 = black;
-	struct ws2811_t other2 = black;
-	
+
+	struct ws2812_t base = black;
+	struct ws2812_t primary = black;
+	struct ws2812_t secondary = black;
+
 	while (1) {
 		if (TCNT0 > 0) {
 			system_tick();
 			TCNT0 = 0;
 			update = 1;
 		}
-		
+
 		if (mode == MODE_PLASMA && TCNT1 > 1024) {
 			TCNT1 = 0x00;
 			update = 1;
 		}
-		
+
 		// update display
 		// * if the update flag is set and the remote isn't in the middle of receiving a message
 		if (update == 1 && remote_state() == 0) {
 			update = 0;
-			
+
 			PORTB |= _BV(PB0);
-			
+
 			base = palette[base_index];
 			if (harmony == 0) {
 				// complementary
-				markers = white;
-				fill = base;
-				other1 = palette[complementary(base_index)];
-				other2 = base;
+				primary = palette[complementary(base_index)];
+				secondary = white;
 			} else if (harmony == 1) {
-				// analogous
-				markers = white;
-				fill = base;
-				other1 = palette[analagous_a(base_index)];
-				other2 = palette[analagous_b(base_index)];
-			} else if (harmony == 2) {
 				// split complementary
-				markers = white;
-				fill = base;
-				other1 = palette[analagous_a(complementary(base_index))];
-				other2 = palette[analagous_b(complementary(base_index))];
-			} else if (harmony == 3) {
+				primary = palette[analagous_a(complementary(base_index))];
+				secondary = palette[analagous_b(complementary(base_index))];
+			} else if (harmony == 2) {
 				// triadic
-				markers = white;
-				fill = base;
-				other1 = palette[triad(base_index)];
-				other2 = palette[triad(triad(base_index))];
-			} else if (harmony == 4) {
-				// tetradic
-				markers = base;
-				fill = palette[complementary(base_index)];
-				other1 = palette[triad(base_index)];
-				other2 = palette[complementary(triad(base_index))];
+				primary = palette[triad(base_index)];
+				secondary = palette[triad(triad(base_index))];
 			}
-			
+
 			if (mode <= MODE_MOON) {
 				// recompute time structure
 				time(&systime);
@@ -277,75 +258,77 @@ int main() {
 					localtime_r(&settime, &set);
 					week = week_of_year(&sys, 0);
 					int8_t mp = moon_phase(&systime);
-					
+
 					phase = 0.3 * mp;
 				}
 			}
-			
+
 			for (uint8_t i = 0; i < 60; i++) {
 				colors[i] = black;
 			}
 
+			uint8_t blink = (sys.tm_sec & 0x01) == 0x00;
 			if (mode == MODE_HMS) {
 				// hours, minutes, seconds
-				// markers
+				// markers for each hour, each 5 minutes
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = base;
 				}
+				uint8_t hour = (sys.tm_hour % 12) * 5;
 				// replace one of the marker points with the hour hand (0-11)
-				colors[sys.tm_hour * 5] = fill;
+				colors[hour] = primary;
 				// for even numbered seconds, draw the minute hand (0-59)
-				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_min] = other1;
+				if (blink) colors[sys.tm_min] = secondary;
 			} else if (mode == MODE_MD) {
 				// month, day of month
-				// markers
+				// markers for month, each 5 days
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = base;
 				}
 				// replace one of the marker points with the month hand (0-11)
-				colors[sys.tm_hour * 5] = fill;
+				colors[sys.tm_mon * 5] = primary;
 				// for even numbered seconds, draw the day of the month (0-30)
-				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_mday - 1] = other1;
+				if (blink) colors[sys.tm_mday - 1] = secondary;
 			} else if (mode == MODE_WD) {
-				// week, day of week
-				// markers
-				colors[0] = markers;
-				for (uint8_t i = 10; i < 60; i = i + 8) {
-					colors[i] = markers;
+				// week of the year, day of week
+				// markers for each 5 weeks, each day of the week
+				colors[0] = base;
+				for (uint8_t i = 0; i < 60; i = i + 5) {
+					colors[i] = base;
 				}
 				// draw the week of the year (0 to 51)
-				colors[week] = fill;
+				colors[week] = primary;
 				// for even numbered seconds, replace one of the marker points with the day of the week
-				if (sys.tm_sec & 0x01 == 0x00) colors[sys.tm_wday * 5] = other1;
+				if (blink) colors[sys.tm_wday * 5] = secondary;
 			} else if (mode == MODE_PCT) {
 				// persoixante of day
 				uint8_t ps = ((sys.tm_hour * 60) + sys.tm_min) / 24;
 				uint8_t sr = ((rise.tm_hour * 60) + rise.tm_min) / 24;
 				uint8_t ss = ((set.tm_hour * 60) + set.tm_min) / 24;
 				for (uint8_t i = 0; i < ps; i ++) {
-					colors[i] = fill;
+					colors[i] = base;
 				}
-				colors[sr] = other1;
-				colors[ss] = other2;
+				colors[sr] = primary;
+				colors[ss] = secondary;
 			} else if (mode == MODE_MOON) {
 				// moon phase
 				if (phase > 0) {
 					// waxing
 					// 15 -> 45
 					for (int8_t i = 14; i < 14 + phase; i++) {
-						colors[i] = fill;
+						colors[i] = base;
 					}
-					
+
 					for (int8_t i = 14; i > 14 - phase; i--) {
-						colors[i < 0 ? i + 60 : i] = fill;
+						colors[i < 0 ? i + 60 : i] = base;
 					}
 				} else {
 					// waning
 					for (int8_t i = 44; i < 44 - phase; i++) {
-						colors[i > 60 ? i - 60 : i] = fill;
+						colors[i > 60 ? i - 60 : i] = base;
 					}
 					for (int8_t i = 44; i > 44 + phase; i--) {
-						colors[i] = fill;
+						colors[i] = base;
 					}
 				}
 			} else if (mode == MODE_SPECTRUM) {
@@ -367,7 +350,7 @@ int main() {
 				colors[p2] = white;
 				colors[p3] = white;
 				*/
-				
+
 				p1 += r(5) - 2;
 				p2 += r(5) - 2;
 				p3 += r(5) - 2;
@@ -377,7 +360,7 @@ int main() {
 				if (p1 > 59) p1 = 0;
 				if (p2 > 50) p2 = 0;
 				if (p3 > 59) p3 = 0;
-				
+
 				hues[p1] += (r(31) - 15);
 				hues[p2] += (r(31) - 15);
 				hues[p3] += (r(31) - 15);
@@ -395,54 +378,43 @@ int main() {
 				hue %= 360;
 			} else if (mode == MODE_YEAR) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = white;
 				}
-				colors[sys.tm_year] = palette[2];
+				colors[sys.tm_year] = palette[2]; // yellow
 			} else if (mode == MODE_MONTH) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = white;
 				}
-				uint8_t mon = (sys.tm_mon % 12) * 5;
-				for (uint8_t i = mon + 1; i < mon + 5; i++) {
-					colors[i] = palette[4];
-				}
+				uint8_t mon = sys.tm_mon * 5;
+				colors[mon] = palette[4]; // green
 			} else if (mode == MODE_DAY) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = white;
 				}
-				if (sys.tm_mday < 31) {
-					uint8_t i = (sys.tm_mday - 1) * 2;
-					colors[i] = palette[6];
-					colors[i+1] = palette[6];
-				} else {
-					colors[58] = palette[6];
-					colors[59] = palette[6];
-					colors[0] = palette[6];
-					colors[1] = palette[6];
-				}
+				colors[sys.tm_mday - 1] = palette[6]; // cyan
 			} else if (mode == MODE_HOUR) {
-				uint8_t hour = (sys.tm_hour % 12) * 5;
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = (sys.tm_hour > 11) ? palette[3] : palette[9];
+					colors[i] = white;
 				}
-				for (uint8_t i = hour + 1; i < hour + 5; i++) {
-					colors[i] = palette[8];
-				}
+				uint8_t hour = (sys.tm_hour % 12) * 5;
+				colors[hour] = (sys.tm_hour >= 12) ? palette[8] : palette[2] ; // 0-12=blue : 13-23=yellow
 			} else if (mode == MODE_MIN) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = white;
 				}
-				colors[sys.tm_min] = palette[10];
+				colors[sys.tm_min] = palette[10]; // magenta
 			} else if (mode == MODE_SEC) {
 				for (uint8_t i = 0; i < 60; i = i + 5) {
-					colors[i] = markers;
+					colors[i] = white;
 				}
 				colors[sys.tm_sec] = palette[0];
 			}
 
-			struct ws2811_t tx[60];
+			struct ws2812_t tx[60];
+			//for (int i = 0; i < 60; i++) tx[i] = colors[i];
+			// translate the top to the bottom
 			for (int i = 0; i < 60; i++) tx[i] = colors[(i + 30) % 60];
-			ws2811_set(tx);
+			ws281x_set(tx);
 			remote_reset();
 
 			PORTB &= ~_BV(PB0);
@@ -471,7 +443,7 @@ int main() {
 				if (base_index > 12) base_index = 11;
 			} else if (command == REMOTE_CENTER) {
 				harmony++;
-				harmony %= 5;
+				harmony %= 3;
 			}
 		} else {
 			if (command == REMOTE_UP) {
@@ -509,7 +481,7 @@ int main() {
 					sys.tm_year += 100;
 					systime = mktime(&sys);
 					set_system_time(systime);
-					
+
 					// store the new system time to the rtc
 					ds1307_init();
 					ds1307_set(&rtc);
