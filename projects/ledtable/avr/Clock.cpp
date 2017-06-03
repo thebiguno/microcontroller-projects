@@ -30,8 +30,10 @@ void Clock::run() {
 	char c[4];
 
 	while (running) {
+		_delay_ms(10);
+
 		mcp79410_get(&time);
-		
+
 		hsv.setHue(time.second * 6);
 
 		if (running == 1) {
@@ -56,27 +58,29 @@ void Clock::run() {
 				case 9: c[i] = '9'; break;
 			}
 		}
-		
+
 		// draw
 		matrix.setColor(0,0,0);
 		matrix.rectangle(0,0,11,11,DRAW_FILLED);
-		
+
 		matrix.setColor(Rgb(hsv));
 		matrix.character(0,0, c[0], 0);
 		matrix.character(6,0, c[1], 0);
+		matrix.setColor(Rgb(Hsv((hsv.getHue() + 180) % 360, hsv.getSaturation(), hsv.getValue())));
 		matrix.character(0,6, c[2], 0);
 		matrix.character(6,6, c[3], 0);
 
 		matrix.flush();
-		
+
+		// handle buttons;
+
 		b1.sample(ms);
 		b2.sample(ms);
-		
+
 		if (b1.longReleaseEvent()) {
 			// exit
 			running = 0;
-		}
-		else if (b2.longReleaseEvent()) {
+		} else if (b2.longReleaseEvent()) {
 			// set date/time
 			ClockSet cs = ClockSet();
 			cs.run();

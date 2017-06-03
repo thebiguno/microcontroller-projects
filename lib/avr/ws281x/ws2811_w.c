@@ -13,13 +13,14 @@
  */
 void ws2811_set(const void *values) {
 	cli();
-	
+
 	uint8_t low_val = WS2811_PORT & ~_BV(WS2811_PIN);
 	uint8_t high_val = WS2811_PORT | _BV(WS2811_PIN);
 
-	asm volatile( 
+	asm volatile(
 			// current byte being sent is in r0
 			// address of the end of the array is in r16
+			"            PUSH r16\n"
 			"            LDI r16, 180\n"						// load the byte count into r2 (1)
 			"            LD r0, %a[ptr]+\n"						// load next byte into temp reg (2)
 			"            LSL r0\n"								// left shift to set carry flag with bit value (1)
@@ -84,9 +85,10 @@ void ws2811_set(const void *values) {
 			"            NOP\n"									// (1)													L H
 			"            OUT %[port], %[low]\n"					// drive the line low (1)								L H
 			"            JMP start_byte\n"						// start the next byte									L L
-			
+
 			"end:        NOP\n" "NOP\n"							// (2)													L H (2)
 			"            OUT %[port], %[low]\n"					// drive the line low (1)								L H
+			"            POP r16\n"
 	: // no outputs
 	: // inputs
 	[ptr]   "e" (values), 	// pointer to grb values
@@ -94,7 +96,7 @@ void ws2811_set(const void *values) {
 	[low]   "r" (low_val),	// register that contains the "down" value for the output port (constant)
 	[port]  "I" (_SFR_IO_ADDR(WS2811_PORT)) // The port to use
 		);
-	
+
 	sei();
 	_delay_us(50);  // hold the line low for 50 microseconds to send the reset signal.
 }
