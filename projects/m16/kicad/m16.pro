@@ -1,4 +1,4 @@
-update=Saturday, July 08, 2017 'pmt' 09:48:03 pm
+update=Tuesday, July 11, 2017 'pmt' 09:53:21 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -57,5 +57,6 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=/Users/warren/Documents/Warren/Projects/dcprojects/lib/kicad/library/custom
+LibName31=switches
 [general]
 version=1
