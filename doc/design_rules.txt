@@ -1,0 +1,14 @@
+The following settings work well with DirtyPCB and make routing on a 25 mil grid easy.
+
+Net Classes:
+         Clearance  Track Width  Via Dia  Via Drill  uVia Dia  uVia Drill
+Default:     0.006         0.01    0.027      0.014    0.0118     0.00393
+Power:       0.006         0.02    0.027      0.014    0.0118     0.00393
+
+Global Design Rules:
+Min track width : 0.008
+Min via dia     : 0.02
+Min via drill   : 0.012
+Min uvia dia    : 0
+Min uvia drill  : 0
+
