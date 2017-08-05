@@ -24,7 +24,7 @@
 #define MSB(n) ((n >> 8) & 255)
 
 #if defined(__AVR_AT90USB162__) || defined(__AVR_ATmega32U2__)
-#define HW_CONFIG() 
+#define HW_CONFIG()
 #define PLL_CONFIG() (PLLCSR = ((1<<PLLE)|(1<<PLLP0)))
 #define USB_CONFIG() (USBCON = (1<<USBE))
 #define USB_FREEZE() (USBCON = ((1<<USBE)|(1<<FRZCLK)))
@@ -72,30 +72,32 @@ namespace digitalcave {
 
 	class SerialUSB : public Stream {
 		private:
-			
+
 		public:
 			//Initialize specifying baud rate and all other optional parameters
 			SerialUSB();
-			
-			//Is the USB port configured.  This will return non-zero if USB serial 
+
+			//Is the USB port configured.  This will return non-zero if USB serial
 			// is connected to a computer.
 			uint8_t isConnected();
-			
+
 			//The number of bytes remaining in the buffer
 			uint8_t available();
-			
+
 			//Discard any buffered input
 			void flushInput();
 			//Try to flush any buffered output to the computer ASAP
 			void flushOutput();
-			
+
 			// Implementation of virtual functions declared in superclass
 			uint8_t read(uint8_t *b);
 			uint8_t write(uint8_t data);
-			
+
 			//Override write buffer function
 			uint8_t write(uint8_t* data, uint8_t len);
-			
+
+			using Stream::skip;
+			using Stream::reset;
 			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
 			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
 	};

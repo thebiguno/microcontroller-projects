@@ -12,17 +12,21 @@ namespace digitalcave {
 
 	class NullStream : public Stream {
 		private:
-			
+
 		public:
 			//Initialize specifying baud rate and all other optional parameters
 			NullStream();
-			
+
 			// Implementation of virtual functions declared in superclass
 			uint8_t read(uint8_t *b);
 			uint8_t write(uint8_t data);
-			
-			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
-			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
+
+			// Allow other overloaded functions from superclass to show up in subclass.
+			using Stream::skip;
+			using Stream::reset;
+			using Stream::read;
+			using Stream::write;
+
 	};
 }
 

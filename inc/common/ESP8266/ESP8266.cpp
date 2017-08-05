@@ -4,29 +4,29 @@ using namespace digitalcave;
 
 ESP8266::ESP8266(Stream* serial, uint8_t rxBufferSize, uint8_t txBufferSize) : rxBuffer(rxBufferSize), txBuffer(txBufferSize) {
 //	serial.setBaud(115200);
-	reset();
-	setMode();
-	setMux();
+	atReset();
+	atMode();
+	atMux();
 }
 
 ESP8266::~ESP8266() {
 }
 
-void ESP8266::reset() {
+void ESP8266::atReset() {
 	serial->write("AT+RST\n");
 //	_delay_ms(2000);
 	uint8_t b;
 	while (serial->read(&b));
 }
 
-void ESP8266::setMode() {
+void ESP8266::atMode() {
 	serial->write("AT+CWMODE=");
 	serial->write(48 + 1); // station mode
 	serial->write('\r');
 	serial->write('\n');
 	response();
 }
-void ESP8266::setMux() {
+void ESP8266::atMux() {
 	serial->write("AT+CIPMUX=");
 	serial->write(48 + 0); // single connection mode
 	serial->write('\r');
@@ -82,7 +82,7 @@ uint8_t ESP8266::response() {
 uint8_t ESP8266::connect(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
-	
+
 	serial->write("AT+CIPSTART=");
 //	serial->write(48 + id);
 //	serial->write(',');
@@ -108,7 +108,7 @@ uint8_t ESP8266::read(uint8_t* b) {
 	return rxBuffer.read(b);
 }
 
-uint8_t ESP8266::read(uint8_t* a, uint8_t len) {
+uint16_t ESP8266::read(uint8_t* a, uint16_t len) {
 	return rxBuffer.read(a, len);
 }
 

@@ -30,8 +30,11 @@ namespace digitalcave {
 			uint8_t isEmpty();
 			uint8_t isFull();
 
-			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
-			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
+			// Allow other overloaded functions from superclass to show up in subclass.
+			using Stream::skip;
+			using Stream::read;
+			using Stream::write;
+			using Stream::reset;
 	};
 }
 
