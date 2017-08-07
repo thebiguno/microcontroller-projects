@@ -19,7 +19,7 @@ namespace digitalcave {
 			uint32_t cluster_begin_lba;
 
 			// file
-			uint8_t* name; // 8+3 = 11 bytes
+			uint8_t name[11];
 			uint8_t attrib;
 			uint32_t start_cluster;
 			uint32_t size;
@@ -45,10 +45,7 @@ namespace digitalcave {
 			uint8_t isHidden();
 			uint8_t isDirectory();
 
-			/* Takes a function pointer which will be called for every file in the directory.
-			 * If the function returns the file then iteration stops.
-			 */
-			//*File ls( uint8_t (*f)(File) );
+			File ls( uint8_t (*f)(File*) );
 
 			uint8_t reset();
 			uint16_t skip(uint16_t n);

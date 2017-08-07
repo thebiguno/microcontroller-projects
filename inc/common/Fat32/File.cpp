@@ -8,17 +8,23 @@ File::File(File* parent, uint8_t* name, uint8_t attrib, uint32_t cluster, uint32
 	fat_begin_lba(parent->fat_begin_lba),
 	reserved_sectors(parent->reserved_sectors),
 	cluster_begin_lba(parent->cluster_begin_lba),
-	name(name),
 	attrib(attrib),
  	start_cluster(cluster),
 	size(size),
 	current_cluster(cluster),
 	sector(0),
 	position(0)
-{}
+{
+	for (uint8_t i = 0; i < 11; i++) {
+		this->name[i] = name[i];
+	}
+}
 
 File::File(BlockDevice* bd) :
-	bd(bd)
+	bd(bd),
+	attrib(0x18), // Filename is Volume ID, Is a subdirectory
+	sector(0),
+	position(0)
 {
 	// read the MBR
 	uint8_t a[37];
@@ -52,39 +58,39 @@ File::File(BlockDevice* bd) :
 File::~File() {
 }
 
-/*
-File* File::ls( File* (*f)(File*) ) {
-	Stream s = this->open();
-	uint8_t[512] b;
-	while (true) {
-			uint16_t read = s.read(b,512)
-			while (read > 0) {
-				for (uint16_t i = 0; i < c; i += 32) {
-					uint8_t attrib = b[11];
-					uint32_t cluster = (b[i+20] << 24) | (b[i+21] << 16) | (b[i+26] << 8) | b[i+27];
-					uint32_t size = (b[i+28] << 24) | (b[i+29] << 16) | (b[i+30] << 8) | b[i+31];
+File File::ls( uint8_t (*f)(File*) ) {
+	if (!this->isDirectory()) return NULL;
 
-					if (attrib & 0xf == 0xf) {
-						// long file name; ignore
-					} else if (filename[0] = 0xe5) {
-						// unused / deleted file; ignore
-					} else if (filename[0] == 0x0) {
-						// end of directory marker; stop
-						return 0;
-					} else {
-						// normal file / directory
-						File file = File(&this->volume, &b[i], b[11], cluster, size);
-						File* ret = f(&file);
-						if (ret) {
-							return ret;
-						}
+	uint8_t b[512];
+	reset();
+	while (1) {
+		uint16_t c = read(b,512);
+		while (c > 0) {
+			for (uint16_t i = 0; i < c; i += 32) {
+				uint8_t attrib = b[11];
+				uint32_t cluster = (((uint32_t)b[i+20]) << 24) | (((uint32_t)b[i+21]) << 16) | (((uint16_t)b[i+26]) << 8) | b[i+27];
+				uint32_t size = (((uint32_t)b[i+28]) << 24) | (((uint32_t)b[i+29]) << 16) | (((uint16_t)b[i+30]) << 8) | b[i+31];
+
+				if ((attrib & 0xf) == 0xf) {
+					// long file name; ignore
+				} else if (b[i] == 0xe5) {
+					// unused / deleted file; ignore
+				} else if (b[i] == 0x0) {
+					// end of directory marker; stop
+					return 0;
+				} else {
+					// normal file / directory
+					File file = File(this, &b[i], b[11], cluster, size);
+					uint8_t ret = f(&file);
+					if (ret) {
+						return file;
 					}
 				}
+			}
 		}
 	}
-	return 0;
 }
-*/
+
 
 void File::filename(uint8_t* name) {
 	for (uint8_t i = 0; i < 11; i++) {
