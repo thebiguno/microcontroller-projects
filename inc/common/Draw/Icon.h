@@ -11,20 +11,23 @@ namespace digitalcave {
 	 * Icons contain multiple frames which may be animated or not (e.g. a font).
 	 * This class is designed to allow streaming from resettable (e.g. flash, SD)
 	 * or non-resettable streams (e.g. wifi, serial).
+	 * Icon data consists of a 3 byte header (width, height, config),
+	 * and for then for each frame pixel data and a 1 byte footer.
+	 * The config byte is unused [7:3], palette [2:0]
+	 * The footer byte is loop [7], more [6], delay (50-3150 ms) [5:0]
 	 */
 	class Icon {
 	private:
 		Stream* stream;
 		uint8_t width;
 		uint8_t height;
-		uint8_t config; // bit depth [0-2], use alpha [3]; use delay [4]; unused [5-7]
-		uint8_t last;   // delay 50-3150 ms [0-5], has more frames [6], loop [7];
+		uint8_t config; // unused [7:3], palette [2:0]
+		uint8_t last;   // loop [7], more frames [6], delay 50-3150 ms [0-5]
 		uint8_t bpp;    // the number of bits per pixel
 		uint8_t bytes;  // the total number of bytes per frame, including delay
 		uint8_t bits;   // the number of bits to use in the first byte
 
-		uint8_t getDepth();
-		uint8_t useAlpha();
+		uint8_t getPalette();
 		void draw_(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		void draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		void draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);

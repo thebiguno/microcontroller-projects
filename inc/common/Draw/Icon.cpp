@@ -6,8 +6,8 @@ Icon::Icon(Stream* stream) :
 	stream(stream),
 	last(0x40) // has more frames, no delay, no loop
 {
-	uint8_t header[4];
-	this->stream->read(header, 4);
+	uint8_t header[3];
+	this->stream->read(header, 3);
 	this->width = header[0];
 	this->height = header[1];
 	this->config = header[2];
@@ -29,7 +29,7 @@ Icon::Icon(Stream* stream) :
 		// first byte contains partial info
 		bytes++;
 	}
-	bytes++; // foot byte
+	bytes++; // footer byte
 
 	this->bytes = bytes;
 	this->bits = bits;
@@ -43,20 +43,16 @@ void Icon::setFrame(uint8_t frame) {
 	}
 }
 
-uint8_t Icon::getDepth() {
-	return this->config >> 5;
-}
-
-uint8_t Icon::useAlpha() {
-	return ((this->config >> 4) & 0x01) ? 1 : 0;
+uint8_t Icon::getPalette() {
+	return this->config & 0x07;
 }
 
 uint8_t Icon::hasMore() {
-	return (this->last && 0x40) ? 1 : 0;
+	return (this->last & 0x40) ? 1 : 0;
 }
 
 uint8_t Icon::hasLoop() {
-	return (this->last && 0x80) ? 1 : 0;
+	return (this->last & 0x80) ? 1 : 0;
 }
 
 uint8_t Icon::getDelay() {
@@ -82,6 +78,7 @@ void Icon::draw_(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 }
 
 //0: 1bpp = 1bit monochrome
+// no rgb value, drawn in active draw context colour
 void Icon::draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	if (pixel[0] & bv(bit--)){
 		draw->setPixel(x, y);
@@ -89,69 +86,75 @@ void Icon::draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 }
 
 //1: 4bpp = 3bit monochrome, 1bit alpha (8 levels, on/off alpha)
+// rgb hex values 000000, 242424, 484848, 6c6c6c, 909090, b4b4b4, d8d8d8, fcfcfc
 void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
-	uint8_t l2 = (pixel[0] & bv(bit--)) << 2;
-	uint8_t l1 = (pixel[0] & bv(bit--)) << 1;
-	uint8_t l0 = (pixel[0] & bv(bit--));
-	uint8_t a = useAlpha() ? (pixel[0] & bv(bit--)) * 0xff : 0xff;
+	uint8_t l2 = (pixel[0] & bv(bit--)) >> 1;
+	uint8_t l1 = (pixel[0] & bv(bit--)) >> 1;
+	uint8_t l0 = (pixel[0] & bv(bit--)) >> 1;
+	uint8_t a = (pixel[0] & bv(bit--)) * 0xff;
 	uint8_t l = (l2 | l1 | l0) * 36;
 	draw->setColor(l,l,l,a);
 	draw->setPixel(x, y);
 }
 
 //2: 4bpp = 1bit red, 1bit green, 1bit blue, 1bit alpha (8 colours, on/off alpha)
+// rgb hex values 00, FF
 void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t r = (pixel[0] & bv(bit--)) * 0xff;
 	uint8_t g = (pixel[0] & bv(bit--)) * 0xff;
 	uint8_t b = (pixel[0] & bv(bit--)) * 0xff;
-	uint8_t a = useAlpha() ? (pixel[0] & bv(bit--)) * 0xff : 0xff;
+	uint8_t a = (pixel[0] & bv(bit--)) * 0xff;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
 //3: 8bpp = 2bit red, 2bit green, 2bit blue, 2bit alpha (64 colours, 4 alpha levels)
+// rgb hex values 00, 55, AA, FF
 void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t r = (pixel[0] >> 6) * 85;
 	uint8_t g = ((pixel[0] >> 4) & 0x3) * 85;
 	uint8_t b = ((pixel[0] >> 2) & 0x3) * 85;
-	uint8_t a = useAlpha() ? (pixel[0] & 0x3) * 85 : 0xff;
+	uint8_t a = (pixel[0] & 0x3) * 85;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
 //4: 16bpp = 4bit red, 4bit green, 4bit blue, 4bit alpha (8192 colours, 16 alpha levels)
+// rgb hex values 00, 11, 22, 33, 44, 55, 66, 77, 88, 99, AA, BB, CC, DD, EE, FF
 void Icon::draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t r = (pixel[0] >> 4) * 17;
 	uint8_t g = (pixel[0] & 0xf) * 17;
 	uint8_t b = (pixel[1] >> 4) * 17;
-	uint8_t a = useAlpha() ? (pixel[1] & 0xf) * 17 : 0xff;
+	uint8_t a = (pixel[1] & 0xf) * 17;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
 //5: 16bpp = 5bit red, 5bit green, 5bit blue, 1bit alpha (32768 colours, on/off alpha)
+// rgb hex values 00, 08, 10, 18, ..., e8, f0, f8
 void Icon::draw5(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t r = (pixel[0] >> 3) * 8;
 	uint8_t g = (((pixel[0] & 0x7) << 2) | (pixel[1] >> 6)) * 8;
 	uint8_t b = (pixel[1] >> 1) * 8;
-	uint8_t a = useAlpha() ? (pixel[1] & 0x1) * 0xff : 0xff;
+	uint8_t a = (pixel[1] & 0x1) * 0xff;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
 //5: 24bpp = 6bit red, 6bit green, 6bit blue, 6bit alpha (262144 colours, 64 alpha levels)
+// rgb hex value 00, 04, 08, 10, ..., ec, f0, f4, f8, fc
 void Icon::draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t r = (pixel[0] >> 2) * 4;
 	uint8_t g = (((pixel[0] & 0x3) << 4) | (pixel[1] >> 4)) * 4;
 	uint8_t b = (((pixel[1] & 0xf) << 2) | (pixel[2] >> 6)) * 4;
-	uint8_t a = useAlpha() ? (pixel[2] & 0x3f) * 0xff : 0xff;
+	uint8_t a = (pixel[2] & 0x3f) * 0xff;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
 //7: 32bpp = 8bit red, 8bit green, 8bit blue, 8bit alpha (16777216 colours, 256 alpha levels)
 void Icon::draw7(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	draw->setColor(pixel[0], pixel[1], pixel[2], useAlpha() ? pixel[3] : 0xff);
+	draw->setColor(pixel[0], pixel[1], pixel[2], pixel[3]);
 	draw->setPixel(x, y);
 }
 
