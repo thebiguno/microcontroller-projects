@@ -1,4 +1,4 @@
-update=Friday, August 11, 2017 'pmt' 07:10:16 pm
+update=Friday, August 11, 2017 'pmt' 10:36:52 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,11 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=../../../../lib/kicad/library
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -59,5 +61,4 @@ LibName29=valves
 LibName30=stm32
 LibName31=nxp
 LibName32=diode
-[general]
-version=1
+LibName33=/Users/warren/Documents/Projects/c/microcontroller-projects/lib/kicad/library/custom
