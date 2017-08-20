@@ -123,6 +123,7 @@ uint8_t SD::init() {
 	this->slow_clock();
 
 	// send clock pulses for 80 cycles
+	// it's this clocking that switches the card from SDIO to SPI mode
 	this->select();
 	for (i=0; i<10; i++) {
 		this->transfer(0xff);
