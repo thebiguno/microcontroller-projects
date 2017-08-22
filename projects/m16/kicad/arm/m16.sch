@@ -58,9 +58,9 @@ F 3 "" H 5750 3900 50  0001 C CNN
 	1    5750 3900
 	1    0    0    -1  
 $EndComp
-Text Label 8650 2500 0    60   ~ 0
+Text Label 8650 3200 0    60   ~ 0
 TX_RX
-Text Label 8650 2600 0    60   ~ 0
+Text Label 8650 3300 0    60   ~ 0
 RX_TX
 Text Label 2850 3900 2    60   ~ 0
 WS_D33
@@ -501,11 +501,11 @@ Text Label 2850 4800 2    60   ~ 0
 SDIO_D1
 Text Label 2850 4700 2    60   ~ 0
 SDIO_D0
-Text Label 8650 5400 0    60   ~ 0
+Text Label 2850 5100 2    60   ~ 0
 SDIO_CK
-Text Label 8650 3200 0    60   ~ 0
+Text Label 2850 4900 2    60   ~ 0
 SDIO_D2
-Text Label 8650 2900 0    60   ~ 0
+Text Label 2850 3700 2    60   ~ 0
 SDIO_CMD
 Text Label 10700 4500 2    60   ~ 0
 SDIO_D3
@@ -1044,13 +1044,10 @@ $EndComp
 Wire Wire Line
 	2350 3050 2500 3050
 NoConn ~ 2850 5200
-NoConn ~ 2850 5100
-NoConn ~ 2850 4900
 NoConn ~ 2850 4600
 NoConn ~ 2850 4200
 NoConn ~ 2850 4100
 NoConn ~ 2850 4000
-NoConn ~ 2850 3700
 NoConn ~ 8650 5300
 NoConn ~ 8650 5200
 NoConn ~ 8650 5100
@@ -1066,7 +1063,6 @@ NoConn ~ 8650 4100
 NoConn ~ 8650 3800
 NoConn ~ 8650 3500
 NoConn ~ 8650 3400
-NoConn ~ 8650 3300
 NoConn ~ 8650 2700
 $Comp
 L PWR_FLAG #FLG023
@@ -1111,7 +1107,7 @@ Text Label 8650 2300 0    60   ~ 0
 EN1_A
 Text Label 8650 2400 0    60   ~ 0
 EN1_B
-Text Label 2850 4500 2    60   ~ 0
+Text Label 8650 2900 0    60   ~ 0
 EN2_A
 Text Label 8650 3000 0    60   ~ 0
 EN2_B
@@ -1291,4 +1287,8 @@ Text Label 1800 5300 0    60   ~ 0
 EN1_A
 Connection ~ 1350 5300
 Connection ~ 1350 6800
+NoConn ~ 2850 4500
+NoConn ~ 8650 2500
+NoConn ~ 8650 2600
+NoConn ~ 8650 5400
 $EndSCHEMATC
