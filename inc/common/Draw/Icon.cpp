@@ -85,9 +85,8 @@ void Icon::draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 	}
 }
 
-//1: 4bpp = 4bit monochrome, (off + 15 gray levels)
-// rgb hex values xxxxxx, 111111, 222222, ... ffffff
-// there is no true black, 111111 is close enough
+// 1: 4bpp = 4bit monochrome, (16 gray levels)
+// rgb hex values 00, 11, 22, ... FF
 void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t l3 = (pixel[0] & bv(bit--)) ? 8 : 0;
 	uint8_t l2 = (pixel[0] & bv(bit--)) ? 4 : 0;
@@ -100,74 +99,92 @@ void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 	}
 }
 
-//2: 4bpp = 1bit high/low, 1bit red, 1bit green, 1bit blue (16 colours, no alpha)
+// 2: 4bpp RGBI = 1bit high/low, 1bit red, 1bit green, 1bit blue (16 colours, no alpha)
 // rgb hex values 00, 55, AA, FF
+// L = 00, AA
+// H = 55, FF
 // this mode is just like CGA
+// this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
 void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
-	uint8_t r = (pixel[0] & bv(bit--)) ? 1 : 0;
-	uint8_t g = (pixel[0] & bv(bit--)) ? 1 : 0;
-	uint8_t b = (pixel[0] & bv(bit--)) ? 1 : 0;
-	uint8_t x = (pixel[0] & bv(bit--)) ? 1 : 0;
-	if (x) {
-		draw->setColor(r?0xff:0x55, g?0xff:0x55,b?0xff:0x55);
-	} else {
-		if (r & g & !b) {
+	uint8_t r = (pixel[0] & bv(bit--)) * 0x55;
+	uint8_t g = (pixel[0] & bv(bit--)) * 0x55;
+	uint8_t b = (pixel[0] & bv(bit--)) * 0x55;
+	uint8_t i = (pixel[0] & bv(bit--)) ? 0x55;
+		if (r & g & !b & !i) {
 			// use an orange/brown instead of a dark yellow (just like CGA)
-			draw.setColor(0xaa,0x55,0x00);
+			draw.setColor(0xaa, 0x55, 0x00);
 		} else {
-			draw->setColor(r?0xaa:0x00, g?0xaa:0x00,b?0xaa:0x00);
+			draw->setColor(r+i, g+i, b+i, 0xff)
 		}
 	}
 	draw->setPixel(x, y);
 }
 
-//3: 8bpp = 2bit red, 2bit green, 2bit blue, 2bit alpha (64 colours, 4 alpha levels)
-// rgb hex values 00, 55, AA, FF
+// 3: 8bpp R2G2B2I1A1 (128 colours, on/off alpha)
+// L = 11, 55, 99, DD
+// H = 33, 77, BB, FF
 void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 6) * 85;
-	uint8_t g = ((pixel[0] >> 4) & 0x3) * 85;
-	uint8_t b = ((pixel[0] >> 2) & 0x3) * 85;
-	uint8_t a = (pixel[0] & 0x3) * 85;
-	draw->setColor(r,g,b,a);
+	uint8_t i = ((pixel[0] >> 1) & 0x1) << 2;
+	uint8_t r = pixel[0] >> 6;
+	r = ((r | i) << 1) | 0x1;		// add intensity, add 1
+	r = (r << 4) | r;
+	uint8_t g = (pixel[0] >> 4) & 0x3;
+	g = ((g | i) << 1) | 0x1;
+	g = (g << 4) | g;
+	uint8_t b = (pixel[0] >> 4) & 0x3;
+	b = ((b | i) << 1) | 0x1;
+	b = (b << 4) | b;
+	draw->setColor(r, g, b, a)
 	draw->setPixel(x, y);
 }
 
-//4: 16bpp = 4bit red, 4bit green, 4bit blue, 4bit alpha (4096 colours, 16 alpha levels)
-// rgb hex values 00, 11, 22, 33, 44, 55, 66, 77, 88, 99, AA, BB, CC, DD, EE, FF
+// 4: 16bpp R4G4B4A4 (4,096 colours)
+// this mode requires 12 bpp in the framebuffer
+// rgb hex values 00, 11, 22, ... FF
 void Icon::draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 4) * 17;
-	uint8_t g = (pixel[0] & 0xf) * 17;
-	uint8_t b = (pixel[1] >> 4) * 17;
-	uint8_t a = (pixel[1] & 0xf) * 17;
+	uint8_t r = (pixel[0] >> 4)
+	r = (r << 4) | r;
+	uint8_t g = (pixel[0] & 0xf);
+	g = (g << 4) | g;
+	uint8_t b = (pixel[1] >> 4);
+	b = (b << 4) | b;
+	uint8_t a = (pixel[1] & 0xf);
+	a = (a << 4) | a;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
-//5: 16bpp = 5bit red, 5bit green, 5bit blue, 1bit alpha (32768 colours, on/off alpha)
-// rgb hex values 00, 08, 10, 18, ..., e8, f0, f8
+// 5: 16bpp R5G5B5A1 (32,767 colours)
+// this mode requires a minimum of 15 bpp in the framebuffer
 void Icon::draw5(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 3) * 8;
-	uint8_t g = (((pixel[0] & 0x7) << 2) | (pixel[1] >> 6)) * 8;
-	uint8_t b = (pixel[1] >> 1) * 8;
+	uint8_t r = (pixel[0] >> 3);
+	r = (r << 3) | (r >> 2);
+	uint8_t g = ((pixel[0] & 0x7) << 2) | (pixel[1] >> 6);
+	g = (g << 3) | (g >> 2);
+	uint8_t b = ((pixel[1] & 0x3e) >> 1);
+	b = (b << 3) | (b >> 2);
 	uint8_t a = (pixel[1] & 0x1) * 0xff;
 	draw->setColor(r,g,b,a);
 	draw->setPixel(x, y);
 }
 
-//6: 24bpp = 6bit red, 6bit green, 6bit blue, 6bit alpha (262144 colours, 64 alpha levels)
-// rgb hex value 00, 04, 08, 10, ..., ec, f0, f4, f8, fc
+// 6: 16bpp R5G6B5 (65,535 colours)
+// this mode requires a minimum of 18 bpp in the framebuffer
 void Icon::draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 2) * 4;
-	uint8_t g = (((pixel[0] & 0x3) << 4) | (pixel[1] >> 4)) * 4;
-	uint8_t b = (((pixel[1] & 0xf) << 2) | (pixel[2] >> 6)) * 4;
-	uint8_t a = (pixel[2] & 0x3f) * 0xff;
-	draw->setColor(r,g,b,a);
+	uint8_t r = (pixel[0] >> 3);
+	r = (r << 3) | (r >> 2);
+	uint8_t g = ((pixel[0] & 0x7) << 3) | (pixel[1] >> 5);
+	g = (g << 2) | (g >> 3);
+	uint8_t b = (pixel[1] & 0x1f);
+	b = (b << 3) | (b >> 2);
+	draw->setColor(r,g,b,0xff);
 	draw->setPixel(x, y);
 }
 
-//7: 32bpp = 8bit red, 8bit green, 8bit blue, 8bit alpha (16777216 colours, 256 alpha levels)
+// 7: 24bpp R8G8B8
+// this mode requires a minimum of 24 bpp in the framebuffer
 void Icon::draw7(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	draw->setColor(pixel[0], pixel[1], pixel[2], pixel[3]);
+	draw->setColor(pixel[0], pixel[1], pixel[2], 0xff);
 	draw->setPixel(x, y);
 }
 

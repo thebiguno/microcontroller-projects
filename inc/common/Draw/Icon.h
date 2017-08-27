@@ -15,6 +15,17 @@ namespace digitalcave {
 	 * and for then for each frame pixel data and a 1 byte footer.
 	 * The config byte is unused [7:3], palette [2:0]
 	 * The footer byte is loop [7], more [6], delay (50-3150 ms) [5:0]
+	 * Palette options are:
+	 * - 0: 1 bit A1
+	 * - 1: 4 bit L4
+	 * - 2: 4 bit R1 G1 B1 I1			(8-bit framebuffer)
+	 * - 3: 8 bit R2 G2 B2 I1 A1  (8-bit framebuffer)
+	 * - 4: 16 bit R4 G4 B4 A4		(12-bit framebuffer)
+	 * - 5: 16 bit R5 G5 B5 A1		(16-bit framebuffer)
+	 * - 6: 16 bit R5 G6 B5				(24-bit framebuffer)
+	 * - 7: 24 bit R8 G8 B8				(24-bit framebuffer)
+	 * the different modes have different framebuffer requirements
+	 * so some modes may not be applicable
 	 */
 	class Icon {
 	private:
