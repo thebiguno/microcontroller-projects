@@ -11,7 +11,6 @@
 namespace digitalcave {
 	class ArrayStream : public Stream {
 
-
 		private:
 			uint8_t capacity;
 			volatile uint8_t* data;
@@ -24,14 +23,19 @@ namespace digitalcave {
 			uint8_t read(uint8_t *b);
 			uint8_t write(uint8_t b);
 
+			void clear();
 			uint8_t remaining();
 			uint8_t size();
 
 			uint8_t isEmpty();
 			uint8_t isFull();
 
-			using Stream::read; // Allow other overloaded functions from superclass to show up in subclass.
-			using Stream::write; // Allow other overloaded functions from superclass to show up in subclass.
+			// Allow other overloaded functions from superclass to show up in subclass.
+			using Stream::skip;
+
+			using Stream::read;
+			using Stream::write;
+			using Stream::reset;
 	};
 }
 

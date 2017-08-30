@@ -2,7 +2,7 @@
 #define DRAW_H
 
 #include <stdlib.h>
-#include <stdint.h> 
+#include <stdint.h>
 
 //Orientation modes.
 #define DRAW_ORIENTATION_NORMAL	0		//Normal, left to right
@@ -36,30 +36,41 @@ namespace digitalcave {
 		uint8_t font_height;
 		uint8_t* font;
 		uint8_t* font_codepage;
+		uint8_t red;
+		uint8_t green;
+		uint8_t blue;
+		uint8_t alpha;
 
 	protected:
 		uint8_t overlay = DRAW_OVERLAY_REPLACE;
-		
-	public:	
+
+	public:
 		virtual void setPixel(int16_t x, int16_t y);
 		virtual void flush();
-		
+
 		void setOverlay(uint8_t o);
 		uint8_t getOverlay();
-		
+
+		/*
+		 * Sets the color and alpha for draw operations.
+		 * Not all devices are required to support color.
+		 */
+		void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+
 		/*
 		 * Draws a bitmap from flash memory of the specified size on the screen at the specified position.
-		 * For ever bit set in the bitmap a pixel of the specified value will be drawn with the specified overlay.
+		 * For every bit set in the bitmap a pixel of the specified value will be drawn with the specified overlay.
+		 * Deprecated, use the Icon class instead
 		 */
 		void bitmap(int16_t x, int16_t y, uint8_t width, uint8_t height, uint8_t orientation, uint8_t* bitmap);
-		
+
 		void setFont(uint8_t* font, uint8_t* codepage, uint8_t width, uint8_t height);
 		/*
 		 * Draws text on screen at the specified position, using the given font, in the given overlay mode.
 		 */
 		void text(int16_t x, int16_t y, const char* text, uint8_t orientation);
 		void character(int16_t x, int16_t y, char c, uint8_t orientation);
-		
+
 		/*
 		 * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the
 		 * overlay mode to use.
@@ -80,7 +91,7 @@ namespace digitalcave {
 		 * the overlay method to use.
 		 */
 		 void circle(int16_t x, int16_t y, uint8_t r, uint8_t fill);
-	};		
+	};
 }
 
 #endif

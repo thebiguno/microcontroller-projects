@@ -8,6 +8,10 @@ void Draw::setFont(uint8_t* font, uint8_t* codepage, uint8_t width, uint8_t heig
 	this->font_codepage = codepage;
 	this->font_width = width;
 	this->font_height = height;
+	this->alpha = 255;
+	this->red = 255;
+	this->green = 255;
+	this->blue = 255;
 
 	//We need to figure out which bit the beginning of the character is, and how
 	// many bytes are used for a glyph.
@@ -150,4 +154,5 @@ void Draw::circle(int16_t x0, int16_t y0, uint8_t r, uint8_t fill){
 			setPixel(x0 - y, y0 - x);
 		}
 	}
+
 }

@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:microsd-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -10,7 +11,6 @@ LIBS:cmos4000
 LIBS:adc-dac
 LIBS:memory
 LIBS:xilinx
-LIBS:special
 LIBS:microcontrollers
 LIBS:dsp
 LIBS:microchip
@@ -30,7 +30,8 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:custom
-EELAYER 27 0
+LIBS:microsd-cache
+EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -57,7 +58,7 @@ GND
 Text Label 6850 4750 2    60   ~ 0
 DO
 $Comp
-L C C2
+L C-RESCUE-microsd C2
 U 1 1 5466C04B
 P 4750 1950
 F 0 "C2" H 4750 2050 40  0000 L CNN
@@ -68,7 +69,7 @@ F 3 "~" H 4750 1950 60  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C C1
+L C-RESCUE-microsd C1
 U 1 1 5466C058
 P 4750 1700
 F 0 "C1" H 4750 1800 40  0000 L CNN
@@ -160,7 +161,7 @@ $EndComp
 Text Label 2850 3750 0    60   ~ 0
 MOSI
 $Comp
-L R R1
+L R-RESCUE-microsd R1
 U 1 1 5466CB39
 P 5700 2450
 F 0 "R1" V 5780 2450 40  0000 C CNN
@@ -321,7 +322,7 @@ Wire Wire Line
 	5950 2450 5950 2250
 Connection ~ 5950 2250
 $Comp
-L R R2
+L R-RESCUE-microsd R2
 U 1 1 5474AAA2
 P 3750 3550
 F 0 "R2" V 3830 3550 40  0000 C CNN

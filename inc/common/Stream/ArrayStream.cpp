@@ -13,6 +13,11 @@ ArrayStream::~ArrayStream() {
 	free((void*) data);
 }
 
+void ArrayStream::clear() {
+	head = 0x00;
+	tail = 0x00;
+}
+
 uint8_t ArrayStream::remaining() {
 	return capacity - size();
 }
