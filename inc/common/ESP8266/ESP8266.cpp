@@ -2,17 +2,22 @@
 
 using namespace digitalcave;
 
-ESP8266::ESP8266(Stream* serial, uint8_t txBufferSize) :
+ESP8266::ESP8266(Stream* serial, uint8_t rxtxBufferSize) :
 	serial(serial),
-	txBuffer(txBufferSize)
+	buffer(rxtxBufferSize)
 {
 	at_reset();
 	at_mode();
+	at_cifsr();
 	at_mux();
 }
 
 ESP8266::~ESP8266() {
 	free((void*) data);
+}
+
+void ESP8266::address() {
+	return this->addr;
 }
 
 void ESP8266::at_reset() {
@@ -24,12 +29,37 @@ void ESP8266::at_reset() {
 
 void ESP8266::at_mode() {
 	serial->write("AT+CWMODE=1\r\n");
-	at_response();
+	at_response(0);
 }
 
 void ESP8266::at_mux() {
 	serial->write("AT+CIPMUX=1\r\n");
-	at_response();
+	at_response(0);
+}
+
+void ESP8266::at_cifsr() {
+	uint8_t x;
+	uint8_t b;
+	uint8_t status[26]; // + CIFSR:xxx.xxx.xxx.xxx0
+	serial->write("AT+CIFSR");
+	if (at_response(&status)) {
+		while (b != 0x3a && i < 26) {
+			b = status[i++];
+		}
+		while (b != 0 && i < 26) {
+			b = status[i++];
+			if (b == 0) {
+				addr |= x;
+				break;
+			} else if (b == 0x2e) {
+				addr |= x;
+				addr << 8;
+			} else {
+				x *= 10;
+				x += (b - 0x30);
+			}
+		}
+	}
 }
 
 uint8_t ESP8266::join(char* ssid, char* password) {
@@ -38,28 +68,32 @@ uint8_t ESP8266::join(char* ssid, char* password) {
 	serial->write("\",\"");
 	serial->write(password);
 	serial->write("\"\r\n");
-	return at_response();
+	return at_response(0);
 }
 
-void ESP8266::leave() {
-	serial->write("AT+CWLAP\r\n");
-	at_response();
+void ESP8266::quit() {
+	serial->write("AT+CWQAP\r\n");
+	at_response(0);
 }
 
-uint8_t ESP8266::at_response() {
+uint8_t ESP8266::at_response(uint8_t* status) {
 	// <status>\r\n 		(optional status line)
 	// \r\n					    (blank line)
-	// [OK|ERROR|ALREAY CONNECT|SEND OK]\r\n		(required status line)
+	// [OK|ERROR|ALREAY CONNECT|SEND OK]\r\n		(status line)
 	uint8_t result;
 	uint8_t i = 0;
 	uint8_t b;
-	// read and ignore the optional status line and the blank line
+	// read the optional status line and the blank line
 	while (1) {
 		i++;
 		serial->read(&b);
-		if (b == '\n' && i == 1) break; 	// \r\n
-		else if (b == '\n') i = 0;				// <status>\r\n
+		if (b == '\r') {}
+		else if (b == '\n' && i == 1) { break; }	// \r\n
+		else if (b == '\n') { i = 0; }				// <status>\r\n
+		else { if (status != 0) *status++ = b; }
 	}
+	if (status != 0) *status = 0;
+
 	// use the first char of the status to determine the result
 	serial->read(&b);
 	if (b == 'O' || b == 'S') {					// OK, SEND OK
@@ -84,7 +118,7 @@ void ESP8266::start_server(uint16_t port) {
 	this->serial->write("AT+CIPSERVER=1,");
 	this->serial->write(buf);
 	this->serial->write("\r\n");
-	this->at_response();
+	this->at_response(0);
 }
 
 void ESP8266::stop_server(uint16_t port) {
@@ -94,38 +128,35 @@ void ESP8266::stop_server(uint16_t port) {
 	this->serial->write("AT+CIPSERVER=0,");
 	this->serial->write(buf);
 	this->serial->write("\r\n");
-	this->at_response();
+	this->at_response(0);
 }
 
-int8_t ESP8266::open(char* address, uint16_t port) {
+void ESP8266::open(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
 	for (int8_t id = 0; id < 5; id++) {
 		this->serial->write("AT+CIPSTART=");
-		this->serial->write(48 + id);
+		this->serial->write(itoa(id));
 		this->serial->write(",\"TCP\",\"");
 		this->serial->write(address);
 		this->serial->write("\",");
 		this->serial->write(buf);
 		this->serial->write("\r\n");
-		uint8_t status = this->at_response();
+		uint8_t status = this->at_response(0);
 		if (status == 0) {
+			this->mask |= (1 << id);
 			this->id = id;
-			free((void*) data);
-			data = NULL;
-			txBuffer.clear();
-			return id;
 		}
 	}
-	return -1;
 }
 
-uint8_t ESP8266::close(uint8_t id) {
+uint8_t ESP8266::close() {
 	this->serial->write("AT+CIPCLOSE=");
-	this->serial->write(48 + id);
+	this->serial->write(itoa(this->id));
 	this->serial->write("\r\n");
- 	return this->at_response();
+	this->mask &= ~(1 << id);
+ 	this->at_response();
 }
 
 uint8_t ESP8266::read(uint8_t* b) {
@@ -141,63 +172,62 @@ uint8_t ESP8266::read(uint8_t* b) {
 void ESP8266::select(uint8_t id) {
 	this->id = id;
 	this->flush();
-	free((void*) data);
-	data = NULL;
-	txBuffer.clear();
+	buffer.clear();
 }
 
-uint8_t ESP8266::select() {
+uint16_t ESP8266::accept() {
 	this->flush();
-	free((void*) data);
-	data = NULL;
-	txBuffer.clear();
+	buffer.clear();
 
-	uint8_t state = 0; // 0 = ipd, 1 = id, 2 = len, 3 = data
+	uint16_t length = 0;
+	uint8_t state = 0; // 1 = +ipd, 2 = id, 3 = len, 4 = data
 	uint8_t b;
 	position = 0;
 
-	this->serial->write("+IPD\r\n");
 	while (1) {
 		if (serial->read(&b)) {
 			switch (state) {
 				case 0:
-					if (b == ',') state = 1;
+					if (b == '+') state = 1;
 					break;
 				case 1:
 					if (b == ',') state = 2;
-					else this->id = b - 48;
 					break;
 				case 2:
+					if (b == ',') state = 3;
+					else this->id = atoi(b);
+					break;
+				case 3:
 					if (b == ':') {
-						state = 3;
-						data = (uint8_t*) malloc(length);
+						state = 4;
 					} else {
 						length *= 10;
-						length += b - 48;
+						length += atoi(b);
 					}
 					break;
 				default:
-					data[position++] = b;
-					if (position == length) {
-						position = 0;
-						return this->id;
-					}
+					// fill the buffer with the request body
+					if (!buffer.isFull()) buffer.write(b);
+					if (position++ == length) return length;
 			}
+		} else if (state == 0) {
+			// nothing to read
+			return 0;
 		}
 	}
 }
 
 uint8_t ESP8266::write(uint8_t b) {
-	if (txBuffer.isFull()) flush();
-	return txBuffer.write(b);
+	if (buffer.isFull()) flush();
+	return buffer.write(b);
 }
 
 uint8_t ESP8266::flush() {
-	if (txBuffer.size() == 0) return 1; // nothing to write
+	if (buffer.size() == 0) return 1; // nothing to write
 
-	uint8_t len = txBuffer.size();
+	uint8_t len = buffer.size();
 	uint8_t b;
-	char buf[3];
+	char buf[5];
 	sprintf(buf, "%d", len);
 
 	serial->write("AT+CIPSEND=");
@@ -205,8 +235,8 @@ uint8_t ESP8266::flush() {
 	serial->write("\r\n");
 	serial->read(&b); 			// >
 	serial->read(&b); 			// sp
-	while (txBuffer.read(&b)) {
+	while (buffer.read(&b)) {
 		serial->write(b);
 	}
-	return at_response();
+	return at_response(0);
 }
