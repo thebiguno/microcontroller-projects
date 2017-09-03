@@ -439,7 +439,7 @@ F 3 "" H 10150 1400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 5500 7150 2    60   ~ 0
-IR_OUT
+IR_DI
 $Comp
 L C_Small C15
 U 1 1 598E57C2
@@ -850,17 +850,6 @@ Connection ~ 5750 5900
 Wire Wire Line
 	5950 5900 5950 5800
 Connection ~ 5850 5900
-$Comp
-L CONN_02X07 J3
-U 1 1 598EF9F8
-P 5750 7050
-F 0 "J3" H 5750 7450 50  0000 C CNN
-F 1 "CONN_02X07" V 5750 7050 50  0000 C CNN
-F 2 "Connectors_JST:JST_PUD_B14B-PUDSS_2x07x2.00mm_Straight" H 5750 5850 50  0001 C CNN
-F 3 "" H 5750 5850 50  0001 C CNN
-	1    5750 7050
-	1    0    0    -1  
-$EndComp
 Text Label 5500 6750 2    60   ~ 0
 EN1A
 Text Label 5500 6850 2    60   ~ 0
@@ -877,9 +866,9 @@ Text Label 6000 6950 0    60   ~ 0
 EN2_SW
 Text Label 6000 7050 0    60   ~ 0
 GND
-Text Label 5500 7350 2    60   ~ 0
+Text Label 5500 7450 2    60   ~ 0
 VIN
-Text Label 6000 7350 0    60   ~ 0
+Text Label 6000 7450 0    60   ~ 0
 GND
 Text Notes 10350 6450 0    60   ~ 0
 TSOP39338
@@ -898,9 +887,9 @@ IR_VS
 Wire Wire Line
 	10750 6300 10350 6300
 Text Label 10700 2550 0    60   ~ 0
-WS_D5
+WS_DO
 Text Label 6000 7150 0    60   ~ 0
-WS_D5
+WS_DO
 Text Label 8950 800  2    60   ~ 0
 VIN
 Text Label 9000 1300 2    60   ~ 0
@@ -1054,16 +1043,13 @@ NoConn ~ 8650 5100
 NoConn ~ 8650 5000
 NoConn ~ 8650 4900
 NoConn ~ 8650 4800
-NoConn ~ 8650 4700
-NoConn ~ 8650 4600
 NoConn ~ 8650 4500
 NoConn ~ 8650 4400
 NoConn ~ 8650 4300
-NoConn ~ 8650 4100
 NoConn ~ 8650 3800
 NoConn ~ 8650 3500
 NoConn ~ 8650 3400
-NoConn ~ 8650 2700
+NoConn ~ 8650 4700
 $Comp
 L PWR_FLAG #FLG023
 U 1 1 598F835F
@@ -1102,7 +1088,7 @@ Wire Wire Line
 Wire Wire Line
 	7200 1000 7200 900 
 Text Label 8650 4000 0    60   ~ 0
-IR_OUT
+IR_DI
 Text Label 8650 2300 0    60   ~ 0
 EN1_A
 Text Label 8650 2400 0    60   ~ 0
@@ -1271,7 +1257,7 @@ Connection ~ 1100 6800
 Wire Wire Line
 	1550 6500 1550 6600
 Wire Wire Line
-	1350 5000 1350 5300
+	1350 5300 1350 5000
 Wire Wire Line
 	1000 5300 1800 5300
 Connection ~ 1100 5300
@@ -1288,7 +1274,52 @@ EN1_A
 Connection ~ 1350 5300
 Connection ~ 1350 6800
 NoConn ~ 2850 4500
-NoConn ~ 8650 2500
-NoConn ~ 8650 2600
+NoConn ~ 8650 4600
+NoConn ~ 8650 2700
 NoConn ~ 8650 5400
+$Comp
+L CONN_01X02 J6
+U 1 1 59A57618
+P 9200 2550
+F 0 "J6" H 9200 2700 50  0000 C CNN
+F 1 "CONN_01X02" V 9300 2550 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm" H 9200 2550 50  0001 C CNN
+F 3 "" H 9200 2550 50  0001 C CNN
+	1    9200 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8650 2500 9000 2500
+Wire Wire Line
+	8650 2600 9000 2600
+$Comp
+L CONN_02X08 J3
+U 1 1 59A593A9
+P 5750 7100
+F 0 "J3" H 5750 7550 50  0000 C CNN
+F 1 "CONN_02X08" V 5750 7100 50  0000 C CNN
+F 2 "Connectors_JST:JST_PUD_B16B-PUDSS_2x08x2.00mm_Straight" H 5750 5900 50  0001 C CNN
+F 3 "" H 5750 5900 50  0001 C CNN
+	1    5750 7100
+	1    0    0    -1  
+$EndComp
+Text Label 6000 7350 0    60   ~ 0
+GND
+Text Label 5500 7350 2    60   ~ 0
+PZ_DO
+$Comp
+L R_Small R5
+U 1 1 59A5A93A
+P 9100 4200
+F 0 "R5" H 9130 4220 50  0000 L CNN
+F 1 "100" H 9130 4160 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 9100 4200 50  0001 C CNN
+F 3 "" H 9100 4200 50  0001 C CNN
+	1    9100 4200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8650 4100 9100 4100
+Text Label 9100 4300 3    60   ~ 0
+PZ_DO
 $EndSCHEMATC
