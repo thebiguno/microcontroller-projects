@@ -8,10 +8,11 @@ namespace digitalcave {
 	class SD : public BlockDevice {
 
 		private:
+			
 			uint32_t block;
 			uint16_t position;
 			uint8_t status;
-			SD_HandleTypeDef* hsd;
+			SD_HandleTypeDef hsd;
 
 			uint8_t init();
 			uint8_t command(uint8_t cmd, uint32_t arg, uint32_t* resp);
