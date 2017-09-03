@@ -22,6 +22,22 @@ void Draw::setFont(uint8_t* font, uint8_t* codepage, uint8_t width, uint8_t heig
 	}
 }
 
+void Draw::setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	this->setColor(r,g,b);
+	this->setAlpha(a);
+}
+void Draw::setColor(uint8_t r, uint8_t g, uint8_t b) {
+	this->r = r;
+	this->g = g;
+	this->b = b;
+}
+void Draw::setColor(Rgb &rgb) {
+	this->setColor(rgb->getRed(), rgb->getGreen(), rgb->getBlue());
+}
+void Draw::setAlpha(uint8_t a) {
+	this->a = a;
+}
+
 void Draw::setOverlay(uint8_t o) {
 	overlay = o;
 }

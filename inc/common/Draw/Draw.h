@@ -54,8 +54,12 @@ namespace digitalcave {
 		/*
 		 * Sets the color and alpha for draw operations.
 		 * Not all devices are required to support color.
+		 * Device framebuffers are not required to store 8-bits per channel
 		 */
 		void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+		void setColor(uint8_t r, uint8_t g, uint8_t b);
+		void setColor(Rgb &rgb);
+		void setAlpha(uint8_t a);
 
 		/*
 		 * Draws a bitmap from flash memory of the specified size on the screen at the specified position.
