@@ -32,8 +32,8 @@ namespace digitalcave {
 		Stream* stream;
 		uint8_t width;
 		uint8_t height;
-		uint8_t config; // unused [7:3], palette [2:0]
-		uint8_t last;   // loop [7], more frames [6], delay 50-3150 ms [0-5]
+		uint8_t config; // has footer [7], unused [6:3], palette [2:0]
+		uint8_t footer; // loop [7], more frames [6], delay 50-3150 ms [5:0]
 		uint8_t bpp;    // the number of bits per pixel
 		uint8_t bytes;  // the total number of bytes per frame, including delay
 		uint8_t bits;   // the number of bits to use in the first byte

@@ -4,7 +4,7 @@ using namespace digitalcave;
 
 Icon::Icon(Stream* stream) :
 	stream(stream),
-	last(0x40) // has more frames, no delay, no loop
+	footer(0x40) // has more frames, no delay, no loop
 {
 	uint8_t header[3];
 	this->stream->read(header, 3);
@@ -29,7 +29,9 @@ Icon::Icon(Stream* stream) :
 		// first byte contains partial info
 		bytes++;
 	}
-	bytes++; // footer byte
+	if (config & 0x80) {
+		bytes++; // footer byte
+	}
 
 	this->bytes = bytes;
 	this->bits = bits;
@@ -48,15 +50,15 @@ uint8_t Icon::getPalette() {
 }
 
 uint8_t Icon::hasMore() {
-	return (this->last & 0x40) ? 1 : 0;
+	return (this->footer & 0x40) ? 1 : 0;
 }
 
 uint8_t Icon::hasLoop() {
-	return (this->last & 0x80) ? 1 : 0;
+	return (this->footer & 0x80) ? 1 : 0;
 }
 
 uint8_t Icon::getDelay() {
-	return this->last && 0x3F;
+	return this->footer && 0x3F;
 }
 
 uint16_t Icon::getDelayMs() {
@@ -273,7 +275,9 @@ void Icon::draw(Draw* draw, int16_t x, int16_t y, uint8_t orientation) {
 		}
 	}
 
-	this->last = buf[i];
+	if (this->config & 0x80) {
+		this->footer = buf[i];
+	}
 	free(buf);
 }
 
