@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/wyatt/Documents/Electronics/projects/projects/wifi_adaptor/wifi_adaptor.sch)
-    (date "Thursday, September 07, 2017 'pmt' 12:03:01 pm")
+    (date "Wednesday, September 13, 2017 'pmt' 12:37:44 pm")
     (tool "Eeschema 4.0.5")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -44,7 +44,13 @@
       (footprint DigitalCave:SM0603_VALUE)
       (libsource (lib custom) (part RESISTOR))
       (sheetpath (names /) (tstamps /))
-      (tstamp 59B02C51)))
+      (tstamp 59B02C51))
+    (comp (ref MP2)
+      (value GRAPHIC)
+      (footprint DigitalCave:DIGITALCAVE_LOGO)
+      (libsource (lib custom) (part GRAPHIC))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 59B97AEA)))
   (libparts
     (libpart (lib custom) (part APPLE_WIFI_CARD)
       (fields
@@ -86,6 +92,10 @@
         (pin (num 2) (name P2) (type passive))
         (pin (num 3) (name P3) (type passive))
         (pin (num 4) (name P4) (type passive))))
+    (libpart (lib custom) (part GRAPHIC)
+      (fields
+        (field (name Reference) MP)
+        (field (name Value) GRAPHIC)))
     (libpart (lib custom) (part MOUNTING_HOLE)
       (fields
         (field (name Reference) MP)
@@ -168,10 +178,10 @@
         (pin (num 55) (name REFCLKP) (type input))
         (pin (num 56) (name SCREW) (type input)))))
   (libraries
-    (library (logical custom)
-      (uri /Users/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib))
     (library (logical conn)
-      (uri "/Library/Application Support/kicad/library/conn.lib")))
+      (uri "/Library/Application Support/kicad/library/conn.lib"))
+    (library (logical custom)
+      (uri /Users/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib)))
   (nets
     (net (code 1) (name "Net-(J1-Pad10)")
       (node (ref J2) (pin 43))
