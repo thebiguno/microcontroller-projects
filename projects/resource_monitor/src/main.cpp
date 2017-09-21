@@ -3,8 +3,9 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "lib/Hd44780/Hd44780_Direct.h"
-#include "lib/usb/rawhid.h"
+#include <FramedSerialProtocol.h>
+#include <Serial/SerialUSB.h>
+#include <HD44780/Hd44780_Direct.h>
 
 using namespace digitalcave;
 
@@ -21,17 +22,18 @@ using namespace digitalcave;
 //When at display, if you do not receive a message for TIMEOUT seconds, go back to splash screen
 //When at splash screen, if you do not receive a message for TIMEOUT seconds, turn display off.
 
-static uint8_t rx_buffer[64];
 static volatile uint16_t timeout_millis = 0;
 static volatile uint8_t state;
+
 static Hd44780_Direct display(display.FUNCTION_LINE_2 | display.FUNCTION_SIZE_5x8, &PORTB, 1, &PORTB, 2, &PORTD, 4, &PORTD, 5, &PORTD, 6, &PORTD, 7);
+SerialUSB serialUSB;
+FramedSerialProtocol fsp(64);
 
 void initUsb(){
-	// Initialize the USB, and then wait for the host to set configuration.
+	// Wait for the host to set configuration.
 	// If the AVR is powered without a PC connected to the USB port,
 	// this will wait forever.
-	usb_init();
-	while (!usb_configured());
+	while (!serialUSB.isConnected());
 
 	// Wait an extra second for the PC's operating system to load drivers
 	// and do whatever it does to actually be ready for input
@@ -66,28 +68,28 @@ void initTimer(){
 void doSplash(){
 	state = STATE_SPLASH;
 	timeout_millis = 0;
-	
+
 	display.set_ddram_address(0x00);
 	display.write_bytes((char*) "  Wyatt  Olson  ", 16);
 	display.set_ddram_address(0x40);
 	display.write_bytes((char*) " digitalcave.ca ", 16);
 }
 
-void doDisplay(){
+void doDisplay(FramedSerialMessage *message){
 	BACKLIGHT_PORT |= _BV(BACKLIGHT_PIN);
-	
+
 	state = STATE_DISPLAY;
 	timeout_millis = 0;
-	
+
 	display.set_ddram_address(0x00);
-	display.write_bytes((char*) &rx_buffer[1], 16);
+	display.write_bytes(message->getData() + 0, 16);
 	display.set_ddram_address(0x40);
-	display.write_bytes((char*) &rx_buffer[17], 16);
+	display.write_bytes(message->getData() + 16, 16);
 }
 
 void doSleep(){
 	BACKLIGHT_PORT &= ~_BV(BACKLIGHT_PIN);
-	
+
 	display.set_ddram_address(0x00);
 	display.write_bytes((char*) "                ", 16);
 	display.set_ddram_address(0x40);
@@ -99,16 +101,17 @@ int main (void){
 	initDisplay();
 	initTimer();
 	BACKLIGHT_DDR |= _BV(BACKLIGHT_PIN);
-	
+	FramedSerialMessage incoming(0, 64);
 	doSplash();
-	
+
 	while (1) {
-		// if received data, do something with it
-		uint8_t count = usb_rawhid_recv(rx_buffer, 0);
-		if (count >= 33 && rx_buffer[0] == 0x01) {
-			doDisplay();
+		// If we received data, do something with it
+		if (fsp.read(&serialUSB, &incoming)){
+			if (incoming.getCommand() == 0x01 && incoming.getLength() == 32){
+				doDisplay(&incoming);
+			}
 		}
-		
+
 		if (state != STATE_SLEEP && timeout_millis > TIMEOUT_MILLIS){
 			if (state == STATE_DISPLAY){
 				doSplash();
