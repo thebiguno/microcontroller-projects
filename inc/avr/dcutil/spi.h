@@ -23,8 +23,9 @@
 #define DDR_SPI DDRB
 
 #elif defined(__AVR_ATmega16U4__) || \
-	defined(__AVR_ATmega32U4__)
-
+	defined(__AVR_ATmega32U4__) || \
+	defined(__AVR_ATmega16U2__) || \
+	defined(__AVR_ATmega32U2__)
 #define DD_MOSI 2
 #define DD_MISO 3
 #define DD_SCK 1

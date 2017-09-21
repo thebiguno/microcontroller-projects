@@ -30,7 +30,6 @@
 //TWI_SLAVE_TX_WRITER			Set a writer function to supply each byte as it is sent.  See twi_attach_slave_tx_writer
 //TWI_MASTER_TX_WRITER			Set a writer function to supply each byte as it is sent.  See twi_attach_slave_tx_writer
 
-
 #ifndef TWI_H
 #define TWI_H
 
@@ -129,4 +128,4 @@ void twi_attach_slave_tx_callback( void (*)(void) );
 }
 #endif
 
-#endif
+#endif	//TWI_H
