@@ -121,6 +121,8 @@ int main (void){
 			}
 		}
 	}
+	
+	return 0;
 }
 
 EMPTY_INTERRUPT(TIMER0_COMPB_vect)
