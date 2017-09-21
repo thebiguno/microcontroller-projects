@@ -1,17 +1,17 @@
 /* USB Serial Example for Teensy USB Development Board
  * http://www.pjrc.com/teensy/usb_serial.html
  * Copyright (c) 2008,2010,2011 PJRC.COM, LLC
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -81,8 +81,12 @@ using namespace digitalcave;
 // Windows, even though the driver is supplied by Microsoft, an
 // INF file is needed to load the driver.  These numbers need to
 // match the INF file.
+#ifndef VENDOR_ID
 #define VENDOR_ID		0x16C0
+#endif
+#ifndef PRODUCT_ID
 #define PRODUCT_ID		0x047A
+#endif
 
 // When you write data, it goes into a USB endpoint buffer, which
 // is transmitted to the PC when it becomes full, or after a timeout
@@ -373,7 +377,7 @@ uint8_t SerialUSB::read(uint8_t* b)
 		if (c & (1<<RXOUTI)) {
 			UEINTX = 0x6B;
 			goto retry;
-		}	
+		}
 		SREG = intr_state;
 		return 0;
 	}
@@ -382,7 +386,7 @@ uint8_t SerialUSB::read(uint8_t* b)
 	// if buffer completely used, release it
 	if (!(UEINTX & (1<<RWAL))) UEINTX = 0x6B;
 	SREG = intr_state;
-	
+
 	*b = c;
 	return 1;
 }
@@ -416,7 +420,7 @@ void SerialUSB::flushInput()
 		cli();
 		UENUM = CDC_RX_ENDPOINT;
 		while ((UEINTX & (1<<RWAL))) {
-			UEINTX = 0x6B; 
+			UEINTX = 0x6B;
 		}
 		SREG = intr_state;
 	}
@@ -472,7 +476,7 @@ uint8_t SerialUSB::write(uint8_t c)
 
 /*  We don't implement this function in the class at this time...
 // transmit a character, but do not wait if the buffer is full,
-//   0 returned on success, -1 on buffer full or error 
+//   0 returned on success, -1 on buffer full or error
 int8_t usb_serial_write_c_nowait(uint8_t c){
 	return usb_serial_write_b_nowait((uint8_t) c);
 }
@@ -964,4 +968,3 @@ uint8_t SerialUSB::write(uint8_t* buffer, uint8_t size){
 	return 0;
 }
 #endif
-
