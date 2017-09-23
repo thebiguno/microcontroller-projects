@@ -4,7 +4,7 @@
 #include <util/delay.h>
 
 #include "lib/Hd44780/Hd44780_Direct.h"
-#include "lib/usb/rawhid.h"
+#include "lib/usb/serial.h"
 
 using namespace digitalcave;
 
