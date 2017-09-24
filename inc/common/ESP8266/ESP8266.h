@@ -33,10 +33,10 @@ namespace digitalcave {
 			void at_mode();					// send AT+CWMODE=1 to configure station mode
 			void at_cifsr();				// send AT+CIFSR to lease an IP address
 			void at_mux();					// send AT+CIPMUX=1 to configure multiple connection
-			uint8_t at_response();	// handle the responses for atCommands
+			uint8_t at_response(char* status);	// handle the responses for atCommands
 
 		public:
-			ESP8266(Stream* serial, uint8_t rxtxBufferSize = 1500);
+			ESP8266(Stream* serial, uint8_t rxtxBufferSize = 255);  // TODO increase to 1500
 			~ESP8266();
 
 			/* Join an access point */
@@ -55,7 +55,7 @@ namespace digitalcave {
 			void open(char* address, uint16_t port);
 
 			/* Close the current connection */
-			void close();
+			uint8_t close();
 
 			/* Read incoming data and selects the channel the data belongs to.
 			 * Output buffer is flushed and input buffer will contain the data to read.
@@ -74,7 +74,7 @@ namespace digitalcave {
 			void clear();
 
 			/* Flushes the buffer */
-			void flush();
+			uint8_t flush();
 
 			using Stream::reset;
 			using Stream::write;
