@@ -48,6 +48,22 @@
 
 #define WS2812_Pin GPIO_PIN_0
 #define WS2812_GPIO_Port GPIOC
+#define ENC1A_Pin GPIO_PIN_0
+#define ENC1A_GPIO_Port GPIOA
+#define ENC1B_Pin GPIO_PIN_1
+#define ENC1B_GPIO_Port GPIOA
+#define ENC2A_Pin GPIO_PIN_6
+#define ENC2A_GPIO_Port GPIOA
+#define ENC2B_Pin GPIO_PIN_7
+#define ENC2B_GPIO_Port GPIOA
+#define ENC1SW_Pin GPIO_PIN_4
+#define ENC1SW_GPIO_Port GPIOC
+#define ENC2SW_Pin GPIO_PIN_5
+#define ENC2SW_GPIO_Port GPIOC
+#define IR_OUT_Pin GPIO_PIN_0
+#define IR_OUT_GPIO_Port GPIOB
+#define SD_DET_Pin GPIO_PIN_8
+#define SD_DET_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
