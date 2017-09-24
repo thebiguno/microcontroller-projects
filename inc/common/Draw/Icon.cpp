@@ -111,13 +111,12 @@ void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 	uint8_t r = (pixel[0] & bv(bit--)) * 0x55;
 	uint8_t g = (pixel[0] & bv(bit--)) * 0x55;
 	uint8_t b = (pixel[0] & bv(bit--)) * 0x55;
-	uint8_t i = (pixel[0] & bv(bit--)) ? 0x55;
-		if (r & g & !b & !i) {
-			// use an orange/brown instead of a dark yellow (just like CGA)
-			draw.setColor(0xaa, 0x55, 0x00);
-		} else {
-			draw->setColor(r+i, g+i, b+i, 0xff)
-		}
+	uint8_t i = (pixel[0] & bv(bit--)) * 0x55;
+	if (r & g & !b & !i) {
+		// use an orange/brown instead of a dark yellow (just like CGA)
+		draw->setColor(0xaa, 0x55, 0x00);
+	} else {
+		draw->setColor(r+i, g+i, b+i, 0xff);
 	}
 	draw->setPixel(x, y);
 }
@@ -126,6 +125,7 @@ void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 // L = 11, 55, 99, DD
 // H = 33, 77, BB, FF
 void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
+	uint8_t a = (pixel[0] & 0x1) * 0xff;
 	uint8_t i = ((pixel[0] >> 1) & 0x1) << 2;
 	uint8_t r = pixel[0] >> 6;
 	r = ((r | i) << 1) | 0x1;		// add intensity, add 1
@@ -136,7 +136,7 @@ void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t b = (pixel[0] >> 4) & 0x3;
 	b = ((b | i) << 1) | 0x1;
 	b = (b << 4) | b;
-	draw->setColor(r, g, b, a)
+	draw->setColor(r, g, b, a);
 	draw->setPixel(x, y);
 }
 
@@ -144,7 +144,7 @@ void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 // this mode requires 12 bpp in the framebuffer
 // rgb hex values 00, 11, 22, ... FF
 void Icon::draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 4)
+	uint8_t r = (pixel[0] >> 4);
 	r = (r << 4) | r;
 	uint8_t g = (pixel[0] & 0xf);
 	g = (g << 4) | g;

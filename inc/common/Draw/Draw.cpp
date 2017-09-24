@@ -1,41 +1,21 @@
 #include "Draw.h"
-#include <avr/pgmspace.h>
 
 using namespace digitalcave;
-
-void Draw::setFont(uint8_t* font, uint8_t* codepage, uint8_t width, uint8_t height) {
-	this->font = font;
-	this->font_codepage = codepage;
-	this->font_width = width;
-	this->font_height = height;
-	this->alpha = 255;
-	this->red = 255;
-	this->green = 255;
-	this->blue = 255;
-
-	//We need to figure out which bit the beginning of the character is, and how
-	// many bytes are used for a glyph.
-	this->font_glyph_byte_ct = ((width * height) >> 3); //(w*h)/8, int math
-	uint8_t glyph_bit_ct = (width * height) & 0x7; //(w*h)%8
-	if (glyph_bit_ct != 0){
-		this->font_glyph_byte_ct++;
-	}
-}
 
 void Draw::setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	this->setColor(r,g,b);
 	this->setAlpha(a);
 }
 void Draw::setColor(uint8_t r, uint8_t g, uint8_t b) {
-	this->r = r;
-	this->g = g;
-	this->b = b;
+	this->red = r;
+	this->green = g;
+	this->blue = b;
 }
-void Draw::setColor(Rgb &rgb) {
+void Draw::setColor(Rgb *rgb) {
 	this->setColor(rgb->getRed(), rgb->getGreen(), rgb->getBlue());
 }
 void Draw::setAlpha(uint8_t a) {
-	this->a = a;
+	this->alpha = a;
 }
 
 void Draw::setOverlay(uint8_t o) {
@@ -99,27 +79,6 @@ void Draw::rectangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t f) 
 			if (f || x == x0 || x == x1 || y == y0 || y == y1) setPixel(x, y);
 		}
 	}
-}
-
-void Draw::text(int16_t x, int16_t y, const char* text, uint8_t orientation) {
-	uint8_t i = 0;
-
-	while (text[i]) {
-		this->character(x, y, text[i], orientation);
-		i++;
-		x += this->font_width + 1;
-	}
-}
-void Draw::character(int16_t x, int16_t y, char c, uint8_t orientation) {
-	//Find the entry in the code page
-	uint8_t glyph_index = pgm_read_byte_near(font_codepage + (uint8_t) c);
-
-	if (glyph_index != 0xFF) {
-		bitmap(x, y, font_width, font_height, orientation, font + (glyph_index * font_glyph_byte_ct));
-	}
-
-	if (orientation == DRAW_ORIENTATION_NORMAL) x += (font_width + 1);
-	else if (orientation == DRAW_ORIENTATION_DOWN) y += (font_width + 1);
 }
 
 //Implementation of Bresenham Algorithm for a full circle, adapted from Wikipedia sample
