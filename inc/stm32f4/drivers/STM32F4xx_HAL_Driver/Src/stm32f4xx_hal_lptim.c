@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_lptim.c
   * @author  MCD Application Team
-  * @version V1.4.4
-  * @date    22-January-2016
+  * @version V1.7.1
+  * @date    14-April-2017
   * @brief   LPTIM HAL module driver. 
   *          This file provides firmware functions to manage the following 
   *          functionalities of the Low Power Timer (LPTIM) peripheral:
@@ -33,7 +33,7 @@
          (##) The instance: LPTIM1.
          (##) Clock: the counter clock.
              (+++) Source   : it can be either the ULPTIM input (IN1) or one of
-                              the internal clock; (APB, LSE, LSI or MSI).
+                              the internal clock; (APB, LSE or LSI).
              (+++) Prescaler: select the clock divider.
          (##)  UltraLowPowerClock : To be used only if the ULPTIM is selected
                as counter clock source.
@@ -92,7 +92,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@
   */
 
 #ifdef HAL_LPTIM_MODULE_ENABLED
-#if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
+#if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx) || defined(STM32F413xx) || defined(STM32F423xx)
 /* Private types -------------------------------------------------------------*/
 /** @defgroup LPTIM_Private_Types LPTIM Private Types
   * @{
@@ -1160,6 +1160,12 @@ HAL_StatusTypeDef HAL_LPTIM_TimeOut_Start_IT(LPTIM_HandleTypeDef *hlptim, uint32
   /* Set the LPTIM state */
   hlptim->State= HAL_LPTIM_STATE_BUSY;
  
+  /* Enable EXTI Line interrupt on the LPTIM Wake-up Timer */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_IT(); 
+  
+  /* Enable rising edge trigger on the LPTIM Wake-up Timer Exti line */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_RISING_EDGE();
+ 
   /* Set TIMOUT bit to enable the timeout function */
   hlptim->Instance->CFGR |= LPTIM_CFGR_TIMOUT;
   
@@ -1197,6 +1203,12 @@ HAL_StatusTypeDef HAL_LPTIM_TimeOut_Stop_IT(LPTIM_HandleTypeDef *hlptim)
   
   /* Set the LPTIM state */
   hlptim->State= HAL_LPTIM_STATE_BUSY;
+  
+  /* Disable rising edge trigger on the LPTIM Wake-up Timer Exti line */ 
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_DISABLE_RISING_EDGE();
+  
+  /* Disable EXTI Line interrupt on the LPTIM Wake-up Timer */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_DISABLE_IT(); 
   
   /* Disable the Peripheral */
   __HAL_LPTIM_DISABLE(hlptim);
@@ -1293,6 +1305,12 @@ HAL_StatusTypeDef HAL_LPTIM_Counter_Start_IT(LPTIM_HandleTypeDef *hlptim, uint32
                
   /* Set the LPTIM state */
   hlptim->State= HAL_LPTIM_STATE_BUSY;
+
+  /* Enable EXTI Line interrupt on the LPTIM Wake-up Timer */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_IT(); 
+  
+  /* Enable rising edge trigger on the LPTIM Wake-up Timer Exti line */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_ENABLE_RISING_EDGE();  
   
   /* If clock source is not ULPTIM clock and counter source is external, then it must not be prescaled */
   if((hlptim->Init.Clock.Source != LPTIM_CLOCKSOURCE_ULPTIM) && (hlptim->Init.CounterSource == LPTIM_COUNTERSOURCE_EXTERNAL))
@@ -1337,6 +1355,12 @@ HAL_StatusTypeDef HAL_LPTIM_Counter_Stop_IT(LPTIM_HandleTypeDef *hlptim)
   
   /* Set the LPTIM state */
   hlptim->State= HAL_LPTIM_STATE_BUSY;
+  
+  /* Disable rising edge trigger on the LPTIM Wake-up Timer Exti line */ 
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_DISABLE_RISING_EDGE();
+  
+  /* Disable EXTI Line interrupt on the LPTIM Wake-up Timer */
+  __HAL_LPTIM_WAKEUPTIMER_EXTI_DISABLE_IT(); 
   
   /* Disable the Peripheral */
   __HAL_LPTIM_DISABLE(hlptim);
@@ -1659,7 +1683,7 @@ HAL_LPTIM_StateTypeDef HAL_LPTIM_GetState(LPTIM_HandleTypeDef *hlptim)
   * @}
   */
 
-#endif /* STM32F410Tx || STM32F410Cx || STM32F410Rx */ 
+#endif /* STM32F410Tx || STM32F410Cx || STM32F410Rx || STM32F413xx || STM32F423xx */ 
 #endif /* HAL_LPTIM_MODULE_ENABLED */
 /**
   * @}

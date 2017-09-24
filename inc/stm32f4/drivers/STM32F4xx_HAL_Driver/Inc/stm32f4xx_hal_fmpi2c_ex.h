@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_fmpi2c_ex.h
   * @author  MCD Application Team
-  * @version V1.4.4
-  * @date    22-January-2016
+  * @version V1.7.1
+  * @date    14-April-2017
   * @brief   Header file of FMPI2C HAL Extended module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -43,7 +43,8 @@
  extern "C" {
 #endif
 
-#if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx) || defined(STM32F446xx)
+#if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx) || defined(STM32F446xx) || defined(STM32F412Zx) ||\
+    defined(STM32F412Vx) || defined(STM32F412Rx) || defined(STM32F412Cx) || defined(STM32F413xx) || defined(STM32F423xx)
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal_def.h"
@@ -66,7 +67,7 @@
 /** @defgroup FMPI2CEx_Analog_Filter FMPI2C Extended Analog Filter
   * @{
   */
-#define FMPI2C_ANALOGFILTER_ENABLE        ((uint32_t)0x00000000U)
+#define FMPI2C_ANALOGFILTER_ENABLE        0x00000000U
 #define FMPI2C_ANALOGFILTER_DISABLE       FMPI2C_CR1_ANFOFF
 /**
   * @}
@@ -100,8 +101,6 @@
 /* Peripheral Control functions  ************************************************/
 HAL_StatusTypeDef HAL_FMPI2CEx_ConfigAnalogFilter(FMPI2C_HandleTypeDef *hfmpi2c, uint32_t AnalogFilter);
 HAL_StatusTypeDef HAL_FMPI2CEx_ConfigDigitalFilter(FMPI2C_HandleTypeDef *hfmpi2c, uint32_t DigitalFilter);
-HAL_StatusTypeDef HAL_FMPI2CEx_EnableWakeUp (FMPI2C_HandleTypeDef *hfmpi2c);
-HAL_StatusTypeDef HAL_FMPI2CEx_DisableWakeUp (FMPI2C_HandleTypeDef *hfmpi2c);
 void HAL_FMPI2CEx_EnableFastModePlus(uint32_t ConfigFastModePlus);
 void HAL_FMPI2CEx_DisableFastModePlus(uint32_t ConfigFastModePlus);
 
@@ -153,7 +152,7 @@ void HAL_FMPI2CEx_DisableFastModePlus(uint32_t ConfigFastModePlus);
 /**
   * @}
   */
-#endif /* STM32F410xx || STM32F446xx */
+#endif /* STM32F410xx || STM32F446xx || STM32F412Zx || STM32F412Vx || STM32F412Rx || STM32F412Cx || STM32F413xx || STM32F423xx */  
 #ifdef __cplusplus
 }
 #endif
