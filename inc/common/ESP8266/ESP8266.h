@@ -33,10 +33,10 @@ namespace digitalcave {
 			void at_mode();					// send AT+CWMODE=1 to configure station mode
 			void at_cifsr();				// send AT+CIFSR to lease an IP address
 			void at_mux();					// send AT+CIPMUX=1 to configure multiple connection
-			uint8_t at_response(char* status);	// handle the responses for atCommands
+			uint8_t at_response(char* status);	// handle the responses for AT commands
 
 		public:
-			ESP8266(Stream* serial, uint8_t rxtxBufferSize = 255);  // TODO increase to 1500
+			ESP8266(Stream* serial, uint16_t rxtxBufferSize = 1024);
 			~ESP8266();
 
 			/* Join an access point */
@@ -52,7 +52,8 @@ namespace digitalcave {
 			void stop_server(uint16_t port);
 
 			/* Open a client connection. */
-			void open(char* address, uint16_t port);
+			void open_tcp(char* address, uint16_t port);
+			void open_ucp(char* address, uint16_t port);
 
 			/* Close the current connection */
 			uint8_t close();

@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-ArrayStream::ArrayStream(uint8_t capacity) {
+ArrayStream::ArrayStream(uint16_t capacity) {
 	if (capacity == 0) capacity = 1;	//Only YOU can prevent divide by zero exceptions!
 	data = (uint8_t*) malloc(capacity);
 	this->capacity = capacity;
@@ -18,11 +18,11 @@ void ArrayStream::clear() {
 	tail = 0x00;
 }
 
-uint8_t ArrayStream::remaining() {
+uint16_t ArrayStream::remaining() {
 	return capacity - size();
 }
 
-uint8_t ArrayStream::size() {
+uint16_t ArrayStream::size() {
 	return (head > tail) ? head - tail : capacity - tail + head;
 }
 

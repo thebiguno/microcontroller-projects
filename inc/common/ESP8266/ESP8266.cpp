@@ -4,7 +4,7 @@
 
 using namespace digitalcave;
 
-ESP8266::ESP8266(Stream* serial, uint8_t rxtxBufferSize) :
+ESP8266::ESP8266(Stream* serial, uint16_t rxtxBufferSize) :
 	serial(serial),
 	buffer(ArrayStream(rxtxBufferSize))
 {
@@ -135,7 +135,7 @@ void ESP8266::stop_server(uint16_t port) {
 	this->at_response(0);
 }
 
-void ESP8266::open(char* address, uint16_t port) {
+void ESP8266::open_tcp(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
@@ -154,11 +154,31 @@ void ESP8266::open(char* address, uint16_t port) {
 	}
 }
 
+void ESP8266::open_ucp(char* address, uint16_t port) {
+	char buf[5];
+	sprintf(buf, "%d", port);
+
+	for (int8_t id = 0; id < 5; id++) {
+		this->serial->write("AT+CIPSTART=");
+		this->serial->write(id + 0x30);
+		this->serial->write(",\"UCP\",\"");
+		this->serial->write(address);
+		this->serial->write("\",");
+		this->serial->write(buf);
+		this->serial->write("\r\n");
+		uint8_t status = this->at_response(0);
+		if (status == 0) {
+			this->id = id;
+		}
+	}
+}
+
 uint8_t ESP8266::close() {
+	this->flush();
 	this->serial->write("AT+CIPCLOSE=");
 	this->serial->write(this->id + 0x30);
 	this->serial->write("\r\n");
- 	this->at_response(0);
+ 	return this->at_response(0);
 }
 
 uint8_t ESP8266::read(uint8_t* b) {
