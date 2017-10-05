@@ -1,4 +1,4 @@
-update=Friday, August 11, 2017 'pmt' 10:36:52 pm
+update=Wednesday, October 04, 2017 'pmt' 09:34:54 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,8 +23,6 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=../../../../lib/kicad/library
@@ -62,3 +60,5 @@ LibName30=stm32
 LibName31=nxp
 LibName32=diode
 LibName33=/Users/warren/Documents/Projects/c/microcontroller-projects/lib/kicad/library/custom
+[general]
+version=1
