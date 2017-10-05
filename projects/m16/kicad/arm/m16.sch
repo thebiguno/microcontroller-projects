@@ -32,6 +32,7 @@ LIBS:stm32
 LIBS:nxp
 LIBS:diode
 LIBS:custom
+LIBS:m16-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -164,9 +165,9 @@ F 3 "" H 10900 2700 50  0001 C CNN
 	1    10900 2700
 	1    0    0    -1  
 $EndComp
-Text Label 10350 2500 0    60   ~ 0
-RX_TX
 Text Label 9900 3400 2    60   ~ 0
+RX_TX
+Text Label 10350 2500 0    60   ~ 0
 TX_RX
 $Comp
 L GND #PWR05
@@ -1225,9 +1226,9 @@ VCC
 Text Notes 10150 3200 3    60   ~ 0
 EN
 Text Notes 10050 3200 3    60   ~ 0
-RXD
+TX
 Text Notes 10350 2700 1    60   ~ 0
-TXD
+RX
 Text Notes 10250 2700 1    60   ~ 0
 GPIO0
 Text Notes 10150 2700 1    60   ~ 0
