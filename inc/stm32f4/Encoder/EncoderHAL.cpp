@@ -35,11 +35,11 @@ EncoderHAL::EncoderHAL(TIM_TypeDef* instance, GPIO_TypeDef* port)
 		alternate = GPIO_AF1_TIM1;
 		port = GPIOA;
 		pins = GPIO_PIN_8 | GPIO_PIN_9;
-		HAL_NVIC_SetPriority(TIM1_IRQn, 0, 1);
-		HAL_NVIC_EnableIRQ(TIM1_IRQn);
+		HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 1);
+		HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
 	} else if (instance == TIM2) {
 		__TIM2_CLK_ENABLE();
-		alternate = GPIO_AF2_TIM1;
+		alternate = GPIO_AF1_TIM2;
 		port = GPIOA;
 		pins = GPIO_PIN_0 | GPIO_PIN_1;
 		HAL_NVIC_SetPriority(TIM2_IRQn, 0, 1);
@@ -94,11 +94,11 @@ EncoderHAL::EncoderHAL(TIM_TypeDef* instance, GPIO_TypeDef* port)
 	HAL_GPIO_Init(port, &GPIO_InitStruct);
 
 	if (HAL_TIM_Encoder_Init(&timer, &encoder) != HAL_OK) {
-		Error_Handler();
+		//TODO Error_Handler();
 	}
 
 	if (HAL_TIM_Encoder_Start_IT(&timer, TIM_CHANNEL_1) != HAL_OK){
-		Error_Handler();
+		//TODO Error_Handler();
 	}
 }
 
@@ -106,5 +106,5 @@ void EncoderHAL::poll() {
 	HAL_TIM_IRQHandler(&timer);
 }
 uint16_t EncoderHAL::read() {
-	return timer->instance->CNT;
+	return timer.Instance->CNT;
 }

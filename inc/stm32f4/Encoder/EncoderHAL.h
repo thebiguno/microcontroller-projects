@@ -9,7 +9,7 @@
 
 namespace digitalcave {
 
-	class ButtonHAL {
+	class EncoderHAL {
 		private:
 			TIM_Encoder_InitTypeDef encoder;
 			TIM_HandleTypeDef timer;
