@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/Users/warren/Documents/Warren/Projects/dcprojects/projects/m16/arm/cubemx/Inc
+HeaderPath=/Users/warren/Projects/dc/projects/m16/arm/cubemx/Inc
 HeaderFiles=ffconf.h;bsp_driver_sd.h;fatfs.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=/Users/warren/Documents/Warren/Projects/dcprojects/projects/m16/arm/cubemx/Src
+SourcePath=/Users/warren/Projects/dc/projects/m16/arm/cubemx/Src
 SourceFiles=ffconf.h;bsp_driver_sd.h;fatfs.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;bsp_driver_sd.c;fatfs.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
