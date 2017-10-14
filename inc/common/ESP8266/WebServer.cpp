@@ -36,9 +36,9 @@ conn_t WebServer::accept() {
 			line[i] = 0;
 
 			if (i == 255 && l == 0) {
-				result.resp_status = 414;
-				send_resp(&result);
+				send_identity(414, NULL, 0);
 				close();
+				return result;
 			}
 
 			if (strcmp("\r\n", line)) {
@@ -67,6 +67,94 @@ conn_t WebServer::accept() {
 	return result;
 }
 
+void WebServer::send_identity(uint16_t status, char* content_type, char* body) {
+	start_identity(status, content_type, strlen(body));
+	write(body);
+	flush();
+}
+
+void WebServer::start_identity(uint16_t status, char* content_type, uint16_t len) {
+	send(status, len, content_type, "identity");
+}
+
+void WebServer::start_chunked(uint16_t status, char* content_type) {
+	send(status, 0, content_type, "chunked");
+}
+
+void WebServer::send_chunk(char* chunk) {
+	start_chunk(strlen(chunk));
+	write(chunk);
+	write("\r\n");
+	flush();
+}
+
+void WebServer::start_chunk(uint16_t len) {
+	char buf[6];
+	snprintf(buf, 5, "%x", len);
+	write(buf);
+	write("\r\n");
+}
+
+void WebServer::send(uint16_t status, uint16_t len, char* content_type, const char* transfer_enc) {
+	char buf[4];
+	snprintf(buf, 3, "%u", status);
+
+	write("HTTP/1.1 ");
+	write(buf);
+	write(' ');
+	switch (status) {
+		case 200: write("OK"); break;
+		case 201: write("Created"); break;
+		case 202: write("Accepted"); break;
+		case 203: write("Non-Authoritative Information"); break;
+		case 204: write("No Content"); break;
+		case 205: write("Reset Content"); break;
+		case 300: write("Multiple Choices"); break;
+		case 301: write("Moved Permanently"); break;
+		case 302: write("Found"); break;
+		case 303: write("See Other"); break;
+		case 305: write("Use Proxy"); break;
+		case 307: write("Temporary Redirect"); break;
+		case 400: write("Bad Request"); break;
+		case 402: write("Payment Required"); break;
+		case 403: write("Forbidden"); break;
+		case 404: write("Not Found"); break;
+		case 405: write("Method Not Allowed"); break;
+		case 406: write("Not Acceptable"); break;
+		case 408: write("Request Timeout"); break;
+		case 409: write("Conflict"); break;
+		case 410: write("Gone"); break;
+		case 411: write("Length Required"); break;
+		case 413: write("Payload Too Large"); break;
+		case 414: write("URI Too Long"); break;
+		case 415: write("Unsupported Media Type"); break;
+		case 417: write("Expectation Failed"); break;
+		case 500: write("Internal Server Error"); break;
+		default: write("Unknown"); break;
+	}
+	write("\r\n");
+	send_header("Transfer-Encoding", transfer_enc);
+	//send_header("Content-Encoding", content_enc); //
+	if (content_type != NULL) {
+		send_header("Content-Type", content_type);
+	}
+	if (len != 0) {
+		char buf[6];
+		snprintf(buf, 5, "%u", len);
+		send_header("Content-Length", buf);
+	}
+	send_header("Server", "DigitalCave (ESP8266)");
+	send_header("Connection", "close");
+	write("\r\n");
+}
+
+void WebServer::send_header(const char* k, const char* v) {
+	write(k);
+	write(": ");
+	write(v);
+	write("\r\n");
+}
+
 uint8_t WebServer::read(uint8_t* b) {
 	uint8_t result = wifi->read(b);
 	if (result == 0 && available > 0) {
@@ -90,71 +178,6 @@ uint16_t WebServer::read(uint8_t* a, uint16_t len) {
 
 uint8_t WebServer::write(uint8_t b) {
 	return wifi->write(b);
-}
-
-uint8_t WebServer::send_resp(conn_t* conn) {
-	char buf[5];
-	itoa(conn->resp_status, buf, 10);
-
-	wifi->write("HTTP/1.1 ");
-	wifi->write(buf);
-	wifi->write(' ');
-	switch (conn->resp_status) {
-		case 200: wifi->write("OK"); break;
-		case 201: wifi->write("Created"); break;
-		case 202: wifi->write("Accepted"); break;
-		case 203: wifi->write("Non-Authoritative Information"); break;
-		case 204: wifi->write("No Content"); break;
-		case 205: wifi->write("Reset Content"); break;
-		case 300: wifi->write("Multiple Choices"); break;
-		case 301: wifi->write("Moved Permanently"); break;
-		case 302: wifi->write("Found"); break;
-		case 303: wifi->write("See Other"); break;
-		case 305: wifi->write("Use Proxy"); break;
-		case 307: wifi->write("Temporary Redirect"); break;
-		case 400: wifi->write("Bad Request"); break;
-		case 402: wifi->write("Payment Required"); break;
-		case 403: wifi->write("Forbidden"); break;
-		case 404: wifi->write("Not Found"); break;
-		case 405: wifi->write("Method Not Allowed"); break;
-		case 406: wifi->write("Not Acceptable"); break;
-		case 408: wifi->write("Request Timeout"); break;
-		case 409: wifi->write("Conflict"); break;
-		case 410: wifi->write("Gone"); break;
-		case 411: wifi->write("Length Required"); break;
-		case 413: wifi->write("Payload Too Large"); break;
-		case 414: wifi->write("URI Too Long"); break;
-		case 415: wifi->write("Unsupported Media Type"); break;
-		case 417: wifi->write("Expectation Failed"); break;
-		case 500: wifi->write("Internal Server Error"); break;
-		default: wifi->write("Unknown"); break;
-	}
-	wifi->write("\r\n");
-	if (conn->resp_type != NULL) {
-		send_header("Content-Type", conn->resp_type);
-	}
-	if (conn->resp_encoding != NULL) {
-		send_header("Content-Encoding", conn->resp_encoding);
-	}
-	if (conn->resp_length != 0) {
-		itoa(conn->resp_length, buf, 10);
-		send_header("Content-Length", buf);
-	}
-	send_header("Server", "DigitalCave (ESP8266)");
-	send_header("Connection", "close");
-
-	wifi->write("\r\n");
-
-	wifi->flush();
-
-	return 1;
-}
-
-void WebServer::send_header(char* k, char* v) {
-	wifi->write(k);
-	wifi->write(": ");
-	wifi->write(v);
-	wifi->write("\r\n");
 }
 
 uint8_t WebServer::flush() {
