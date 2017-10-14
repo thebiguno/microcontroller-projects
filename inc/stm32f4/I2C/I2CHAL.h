@@ -6,6 +6,7 @@
 #define I2C_HAL_H
 
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_i2c.h"
 
 #include <I2C.h>
 

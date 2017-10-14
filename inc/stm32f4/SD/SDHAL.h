@@ -1,6 +1,9 @@
 #ifndef SD_H
 #define SD_H
 
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_sd.h"
+
 #include <Stream.h>
 #include <BlockDevice.h>
 
@@ -8,7 +11,7 @@ namespace digitalcave {
 	class SD : public BlockDevice {
 
 		private:
-			
+
 			uint32_t block;
 			uint16_t position;
 			uint8_t status;

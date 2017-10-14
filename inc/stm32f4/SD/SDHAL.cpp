@@ -3,10 +3,7 @@
  * and http://alumni.cs.ucr.edu/~amitra/sdcard/Additional/sdcard_appnote_foust.pdf
  * and https://github.com/LonelyWolf/stm32/blob/master/cube-usb-msc/sdcard-sdio.c
  */
-#include "SD.h"
-#include <stm32f4xx_rcc.h>
-#include <stm32f4xx_gpio.h>
-#include <stm32f4xx_sd.h>
+#include "SDHAL.h"
 
 using namespace digitalcave;
 
@@ -16,41 +13,40 @@ SD::SD(uint8_t wide) :
 {
 	// 0. Initialize the GPIO
 	GPIO_InitTypeDef gpio;
-	gpio.GPIO_Mode = GPIO_Mode_AF; // Alternative function mode
-	gpio.GPIO_Speed = GPIO_Speed_40MHz; // High speed
-	gpio.GPIO_OType = GPIO_OType_PP; // Output push-pull
-	gpio.GPIO_PuPd = GPIO_PuPd_UP; // Pull-up
+	gpio.Mode = GPIO_MODE_AF_PP;
+	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+	gpio.Pull = GPIO_PULLUP;
 
 	// SDIO_CMD (PD2)
-	gpio.GPIO_Pin = GPIO_Pin_2;
-	GPIO_Init(GPIOD, &gpio);
-	GPIO_PinAFConfig(GPIOD,GPIO_PinSource2,SDIO_GPIO_AF);
+	gpio.Pin = GPIO_PIN_2;
+	gpio.Alternate = GPIO_AF12_SDIO;
+	HAL_GPIO_Init(GPIOD, &gpio);
 
 	// SDIO_D0 (PC8)
-	gpio.GPIO_Pin = GPIO_Pin_8;
-	GPIO_Init(GPIOC, &gpio);
-	GPIO_PinAFConfig(GPIOC,GPIO_PinSource8,SDIO_GPIO_AF);
+	gpio.Pin = GPIO_PIN_8;
+	gpio.Alternate = GPIO_AF12_SDIO;
+	HAL_GPIO_Init(GPIOC, &gpio);
 
 	// SDIO_CK (PC12)
-	gpio.GPIO_Pin = GPIO_Pin_12;
-	GPIO_Init(GPIOC, &gpio);
-	GPIO_PinAFConfig(GPIOC,GPIO_PinSource12,SDIO_GPIO_AF);
+	gpio.Pin = GPIO_PIN_12;
+	gpio.Alternate = GPIO_AF12_SDIO;
+	HAL_GPIO_Init(GPIOC, &gpio);
 
 	if (wide) {
 		// SDIO_D1 (PC9)
-		gpio.GPIO_Pin = GPIO_Pin_9;
-		GPIO_Init(GPIOC, &gpio);
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource9,SDIO_GPIO_AF);
+		gpio.Pin = GPIO_PIN_9;
+		gpio.Alternate = GPIO_AF12_SDIO;
+		HAL_GPIO_Init(GPIOC, &gpio);
 
 		// SDIO_D2 (PC10)
-		gpio.GPIO_Pin = GPIO_Pin_10;
-		GPIO_Init(GPIOC, &gpio);
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource10,SDIO_GPIO_AF);
+		gpio.Pin = GPIO_PIN_10;
+		gpio.Alternate = GPIO_AF12_SDIO;
+		HAL_GPIO_Init(GPIOC, &gpio);
 
 		// SDIO_D3 (PC11)
-		gpio.GPIO_Pin = GPIO_Pin_11;
-		GPIO_Init(GPIOC, &gpio);
-		GPIO_PinAFConfig(GPIOC,GPIO_PinSource11,SDIO_GPIO_AF);
+		gpio.Pin = GPIO_PIN_11;
+		gpio.Alternate = GPIO_AF12_SDIO;
+		HAL_GPIO_Init(GPIOC, &gpio);
 	}
 
 	// 1. Initialize the SDIO peripheral interface with defaullt configuration.
@@ -62,7 +58,6 @@ SD::SD(uint8_t wide) :
 	hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
 	hsd.Init.ClockDiv = 120; // 48MHz / (118+2) = 400KHz
 	HAL_SD_Init(&hsd);
-	SDIO_PowerState_ON();
 
 	// 2. Initialize the SD card.
 	HAL_SD_InitCard(&hsd);
@@ -72,13 +67,12 @@ SD::SD(uint8_t wide) :
 	HAL_SD_Init(&hsd);
 
 	if (wide) {
-		HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
+		HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B);
 	}
 }
 
 SD::~SD() {
-	HAL_SD_DeInit(hsd);
-	SDIO_PowerState_OFF();
+	HAL_SD_DeInit(&hsd);
 }
 
 void SD::setBlock(uint32_t block) {
@@ -100,9 +94,10 @@ uint8_t SD::read(uint8_t* a){
 	return (read == 1) ? result : 0;
 }
 
-uint16_t read(uint8_t* a, uint16_t len) {
-	HAL_SD_ReadBlocks(&hsd, a, block, 1, uint32_t Timeout);
+uint16_t SD::read(uint8_t* a, uint16_t len) {
+	HAL_SD_ReadBlocks(&hsd, a, block, 1, 1);
 	HAL_SD_GetCardState(&hsd);
+	return 1;
 }
 
 // TODO for now just read-only
