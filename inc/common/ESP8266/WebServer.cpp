@@ -30,34 +30,41 @@ conn_t WebServer::accept() {
 
 	while (1) {
 			while (b != '\n' && i < 255) {
+				// read headers line by line
 				wifi->read(&b);
 				line[i++] = b;
 			}
 			line[i] = 0;
 
 			if (i == 255 && l == 0) {
+				// each line can be no longer than 255 chars
 				send_identity(414, NULL, 0);
 				close();
 				return result;
 			}
 
+			// empty line means headers are over and stream positioned at the body
 			if (strcmp("\r\n", line)) {
-				// stream now positioned at the body
 				break;
 			}
 
 			if (result.method[0] == 0) {
+				// first line has the method, path and query
 				strcpy(result.method, strtok(line, " "));
 				strcpy(result.path, strtok(NULL, " "));
 				strtok(result.path, "?");
 				result.query = strtok(NULL, "");
 			} else {
+				// header lines
 				char* k = strtok(line, ":");
 				char* v = trim(strtok(NULL, "\n"));
 
 				if (strcmp("Content-Length", k)) {
 					available = atoi(v);
 					result.req_length = available;
+				}
+				else if (strcmp("Transfer-Encoding", k)) {
+					if(strcmp("chunked", v)) { flags |= 0x2; }
 				}
 			}
 
@@ -166,13 +173,36 @@ uint8_t WebServer::read(uint8_t* b) {
 }
 
 uint16_t WebServer::read(uint8_t* a, uint16_t len) {
+	uint8_t b;
+	uint8_t i;
+	if (flags & 0x02) {
+		// chunked
+		if (available == 0) {
+			// need to read a new chunk
+			// read size header
+			char line[8]; // FFFF\r\n0
+			while (b != '\n') {
+				wifi->read(&b);
+				line[i++] = b;
+			}
+			line[i] = 0;
+			available = strtol(line, NULL, 16);
+		}
+	}
+
 	if (len > available) len = available;
 	uint16_t result = wifi->read(a, len);
 	if (result == 0 && available > 0) {
-		wifi->accept(); // try to read more
+		wifi->accept(); // try to read more TODO roll this extra step into read
 		result = wifi->read(a, len);
 	}
 	available -= result;
+
+	if (available == 0 && flags & 0x02) {
+		// discard the newline at the end of the chunk
+		wifi->read(&b);
+		wifi->read(&b);
+	}
 	return result;
 }
 

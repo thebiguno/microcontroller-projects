@@ -13,7 +13,7 @@ namespace digitalcave {
 		char method[7];
 		char path[256];		// this is the storage for both path and query
 		char* query = NULL;
-		uint16_t req_length = 0;
+		uint16_t req_length = 0; // the value of the content length header
 	};
 
 	/* In order to use this class, make the following calls:
@@ -28,7 +28,8 @@ namespace digitalcave {
 		private:
 			ESP8266* wifi;
 			ArrayStream buffer;
-			uint16_t available; // remaining bytes to read according to Content-Length
+			uint16_t available; // remaining bytes in the identity or chunk
+			uint8_t flags = 0;  // [7..2] unused; [1] chunked; [0] fully read
 
 			void send(uint16_t status, uint16_t len, char* content_type, const char* transfer_enc);
 			/* Adds a header to the response */
@@ -39,8 +40,10 @@ namespace digitalcave {
 			WebServer(ESP8266* wifi, uint16_t buffer_size);
 			~WebServer();
 
-			/* Reads an incoming request */
+			/* Reads incoming request headers */
 			conn_t accept();
+			/* Read additional data from a request */
+			void accept(conn_t conn);
 
 			/* Sends a response to the client with identity transfer encoding. */
 			void send_identity(uint16_t status, char* content_type, char* body);
