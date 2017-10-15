@@ -20,23 +20,28 @@ namespace digitalcave {
 
 		private:
 			Stream* serial;
-			ArrayStream buffer;
+			ArrayStream output;
+			ArrayStream input;
 
 			uint32_t addr;
 			uint16_t length;
 			uint16_t position;
+
+			char command[16];
+			char data[16];
+			char status[16];
 
 			uint8_t id;							// the current connection id (0 - 4);
 
 			void poll();						// process whatever is in the serial receive buffer
 			void at_reset();				// send AT+RST
 			void at_mode();					// send AT+CWMODE=1 to configure station mode
-			void at_cifsr();				// send AT+CIFSR to lease an IP address
+			uint32_t at_cifsr();				// send AT+CIFSR to lease an IP address
 			void at_mux();					// send AT+CIPMUX=1 to configure multiple connection
-			uint8_t at_response(char* status);	// handle the responses for AT commands
+			uint8_t at_response();	// handle the responses for AT commands
 
 		public:
-			ESP8266(Stream* serial, uint16_t rxtxBufferSize = 1024);
+			ESP8266(Stream* serial);
 			~ESP8266();
 
 			/* Join an access point */
@@ -52,8 +57,8 @@ namespace digitalcave {
 			void stop_server(uint16_t port);
 
 			/* Open a client connection. */
-			void open_tcp(char* address, uint16_t port);
-			void open_ucp(char* address, uint16_t port);
+			uint8_t open_tcp(char* address, uint16_t port);
+			uint8_t open_ucp(char* address, uint16_t port);
 
 			/* Close the current connection */
 			uint8_t close();

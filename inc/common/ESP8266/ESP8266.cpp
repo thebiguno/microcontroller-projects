@@ -4,18 +4,20 @@
 
 using namespace digitalcave;
 
-ESP8266::ESP8266(Stream* serial, uint16_t rxtxBufferSize) :
+ESP8266::ESP8266(Stream* serial) :
 	serial(serial),
-	buffer(ArrayStream(rxtxBufferSize))
+	output(ArrayStream(512)), // this must be <= 2048
+	input(ArrayStream(1460))  // the normal packet size (but could potentially 4 * 1460)
 {
 	at_reset();
 	at_mode();
-	at_cifsr();
+	addr = at_cifsr();
 	at_mux();
 }
 
 ESP8266::~ESP8266() {
-	buffer.clear();
+	input.clear();
+	output.clear();
 }
 
 uint32_t ESP8266::address() {
@@ -24,46 +26,45 @@ uint32_t ESP8266::address() {
 
 void ESP8266::at_reset() {
 	serial->write("AT+RST\r\n");
-//	_delay_ms(2000);
+	//_delay_ms(1000);
 	uint8_t b;
-	while (serial->read(&b));
+	while (serial->read(&b)); // don't parse this garbage, just read until it's over
 }
 
 void ESP8266::at_mode() {
 	serial->write("AT+CWMODE=1\r\n");
-	at_response(0);
+	while ('+' == at_response());
 }
 
 void ESP8266::at_mux() {
 	serial->write("AT+CIPMUX=1\r\n");
-	at_response(0);
+	while ('+' == at_response());
 }
 
-void ESP8266::at_cifsr() {
+uint32_t ESP8266::at_cifsr() {
 	uint8_t x = 0;
 	uint8_t b = 0;
 	uint8_t i = 0;
-	uint32_t addr = 0;
-	char status[26]; // + CIFSR:xxx.xxx.xxx.xxx0
+	uint32_t result = 0;
 	serial->write("AT+CIFSR");
-	if (at_response(status)) {
-		while (b != 0x3a && i < 26) {
-			b = status[i++];
-		}
+	while('+' == at_response());
+	if ('O' == status[0]) {
+		// data = xxx.xxx.xxx.xxx
 		while (b != 0 && i < 26) {
-			b = status[i++];
+			b = data[i++];
 			if (b == 0) {
-				addr |= x;
+				result |= x;
 				break;
 			} else if (b == 0x2e) {
-				addr |= x;
-				addr = addr << 8;
+				result |= x;
+				result = result << 8;
 			} else {
 				x *= 10;
 				x += (b - 0x30);
 			}
 		}
 	}
+	return result;
 }
 
 uint8_t ESP8266::join(char* ssid, char* password) {
@@ -72,46 +73,98 @@ uint8_t ESP8266::join(char* ssid, char* password) {
 	serial->write("\",\"");
 	serial->write(password);
 	serial->write("\"\r\n");
-	return at_response(0);
+	while ('+' == at_response());
+	return 'O' == status[0];
 }
 
 void ESP8266::quit() {
 	serial->write("AT+CWQAP\r\n");
-	this->at_response(0);
+	while ('+' == at_response());
 }
 
-uint8_t ESP8266::at_response(char* status) {
-	// <status>\r\n 		(optional status line)
-	// \r\n					    (blank line)
+// when parsing a command it will always be either a response to the last
+// command issued OR asynchronous IPD
+// returns 0 when no data was available
+// returns '+' when a command response was read
+// returns '<' when IP data was read
+// returns '>' when ready to receive was read (for +cipsend* commands)
+uint8_t ESP8266::at_response() {
+	// +<command>:<data>\r\n 										(optional line)
+	// \r\n																			(blank line)
 	// [OK|ERROR|ALREAY CONNECT|SEND OK]\r\n		(status line)
-	uint8_t result;
-	uint8_t i = 0;
-	uint8_t b;
-	// read the optional status line and the blank line
-	while (1) {
-		i++;
-		serial->read(&b);
-		if (b == '\r') {}
-		else if (b == '\n' && i == 1) { break; }	// \r\n
-		else if (b == '\n') { i = 0; }				// <status>\r\n
-		else { if (status != 0) *status++ = b; }
-	}
-	if (status != 0) *status = 0;
 
-	// use the first char of the status to determine the result
-	serial->read(&b);
-	if (b == 'O' || b == 'S') {					// OK, SEND OK
-		result = 1;
-	} else if (b == 'E' || b == 'A') {	// ERROR, ALREADY CONNECT
-		result = 0;
-	} else {
-		result = 0;
-	}
-	// read ignore the rest of the required status line
+	// steps
+	// 0 start
+	// 1 +
+	// 2 command
+	// 3 :
+	// 4 data
+	// 5 command:info line \r\n
+	// 6 blank line \r\n
+	// 7 status
+	// 8 status \r\n
+
+	// 1 >
+	// 21 sp
+
+	// IPD,id,len:data
+	// 3 ,
+	// 41 ,
+	// 42 id
+	// 43 ,
+	// 44 len
+	// 45 :
+	// 46 data
+
+	uint16_t len;
+	uint16_t i;
+	uint8_t step = 0;
+	uint8_t result;
+	uint8_t b;
+
+	char* command = this->command;
+	char* data = this->data;
+	char* status = this->status;
+
 	while (1) {
-		serial->read(&b);
-		if (b == '\n') break; 						// <status>\r\n
+		uint8_t ct = serial->read(&b);
+		// command flow
+		if (step == 0 && ct == 0) { result = 0; break; } // there was nothing available
+		else if (step == 0 && b == '+') { step = 1; }
+		else if (step == 0 && b == '>') { step = 21; } // break out to +cipsend flow
+		else if (step == 0 && b == '\r') { step = 6; } // skip forward in command flow
+		else if (step == 2 && b == ',')  { step = 41; } // break out to +ipd flow
+		else if (step == 2 && b == ':')  { step = 4; }
+		else if (step == 2) { *command++ = b; }
+		else if (step == 3) { step = 4; }
+		else if (step == 4 && b == '\r') { step = 5; }
+		else if (step == 4) { *data++ = b; }
+		else if (step == 5 && b == '\n') { step = 6; }
+		else if (step == 6 && b == '\n') { step = 7; }
+		else if (step == 7 && b == '\r') { step = 8; }
+		else if (step == 7) { *status++ = b; }
+		else if (step == 8 && b == '\n') { result = 1; break; } // don't read anything more
+
+		// +cipsend flow
+		else if (step == 21) { result = '>'; break; }
+
+		// +ipd flow
+		else if (step == 41) { step = 42; }
+		else if (step == 42 && b == ',') { step = 43; }
+		else if (step == 42) { id = b - 0x30; step = 43; }
+		else if (step == 43) { step = 44; }
+		else if (step == 44 && b == ':') { len *= 10; len += b - 0x30; step = 45; }
+		else if (step == 44) { len *= 10; len += b - 0x30; }
+		else if (step == 45) { step = 56; }
+		else if (step == 46 && i == len) { input.write(b); result = 2; break; } // don't read anything more
+		else if (step == 46) { input.write(b); i++; }
+		else { step = 0; } // give up and start over
 	}
+	// add null terminators
+	if (command != 0) { *command++ = 0;}
+	if (data != 0) { *data++ = 0; }
+	if (status != 0) { *status++ = 0; }
+
 	return result;
 }
 
@@ -119,123 +172,87 @@ void ESP8266::start_server(uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
-	this->serial->write("AT+CIPSERVER=1,");
-	this->serial->write(buf);
-	this->serial->write("\r\n");
-	this->at_response(0);
+	serial->write("AT+CIPSERVER=1,");
+	serial->write(buf);
+	serial->write("\r\n");
+	while ('+' == at_response());
 }
 
 void ESP8266::stop_server(uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
-	this->serial->write("AT+CIPSERVER=0,");
-	this->serial->write(buf);
-	this->serial->write("\r\n");
-	this->at_response(0);
+	serial->write("AT+CIPSERVER=0,");
+	serial->write(buf);
+	serial->write("\r\n");
+	while ('+' == at_response());
 }
 
-void ESP8266::open_tcp(char* address, uint16_t port) {
+uint8_t ESP8266::open_tcp(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
 	for (int8_t id = 0; id < 5; id++) {
-		this->serial->write("AT+CIPSTART=");
-		this->serial->write(id + 0x30);
-		this->serial->write(",\"TCP\",\"");
-		this->serial->write(address);
-		this->serial->write("\",");
-		this->serial->write(buf);
-		this->serial->write("\r\n");
-		uint8_t status = this->at_response(0);
-		if (status == 0) {
+		serial->write("AT+CIPSTART=");
+		serial->write(id + 0x30);
+		serial->write(",\"TCP\",\"");
+		serial->write(address);
+		serial->write("\",");
+		serial->write(buf);
+		serial->write("\r\n");
+		while ('+' == at_response());
+		if ('O' == status[0]) {
 			this->id = id;
+			return 1;
 		}
 	}
+	return 0;
 }
 
-void ESP8266::open_ucp(char* address, uint16_t port) {
+uint8_t ESP8266::open_ucp(char* address, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
 	for (int8_t id = 0; id < 5; id++) {
-		this->serial->write("AT+CIPSTART=");
-		this->serial->write(id + 0x30);
-		this->serial->write(",\"UCP\",\"");
-		this->serial->write(address);
-		this->serial->write("\",");
-		this->serial->write(buf);
-		this->serial->write("\r\n");
-		uint8_t status = this->at_response(0);
-		if (status == 0) {
+		serial->write("AT+CIPSTART=");
+		serial->write(id + 0x30);
+		serial->write(",\"UCP\",\"");
+		serial->write(address);
+		serial->write("\",");
+		serial->write(buf);
+		serial->write("\r\n");
+		while ('+' == at_response());
+		if ('O' == status[0]) {
 			this->id = id;
+			return 1;
 		}
 	}
+	return 0;
 }
 
 uint8_t ESP8266::close() {
-	this->flush();
-	this->serial->write("AT+CIPCLOSE=");
-	this->serial->write(this->id + 0x30);
-	this->serial->write("\r\n");
- 	return this->at_response(0);
+	flush();
+	serial->write("AT+CIPCLOSE=");
+	serial->write(this->id + 0x30);
+	serial->write("\r\n");
+	char status[6]; // OK or ERROR
+ 	while ('+' == at_response());
+	return 'O' == status[0];
 }
 
 uint8_t ESP8266::read(uint8_t* b) {
-	return buffer.read(b);
-}
-
-uint16_t ESP8266::accept() {
-	this->flush();
-	buffer.clear();
-
-	uint16_t length = 0;
-	uint8_t state = 0; // 1 = +ipd, 2 = id, 3 = len, 4 = data
-	uint8_t b;
-	position = 0;
-
-	while (1) {
-		if (serial->read(&b)) {
-			switch (state) {
-				case 0:
-					if (b == '+') state = 1;
-					break;
-				case 1:
-					if (b == ',') state = 2;
-					break;
-				case 2:
-					if (b == ',') state = 3;
-					else this->id = b - 0x30;
-					break;
-				case 3:
-					if (b == ':') {
-						state = 4;
-					} else {
-						length *= 10;
-						length += b - 0x30;
-					}
-					break;
-				default:
-					// fill the buffer with the request body
-					if (!buffer.isFull()) buffer.write(b);
-					if (position++ == length) return length;
-			}
-		} else if (state == 0) {
-			// nothing to read
-			return 0;
-		}
-	}
+	return input.read(b);
 }
 
 uint8_t ESP8266::write(uint8_t b) {
-	if (buffer.isFull()) flush();
-	return buffer.write(b);
+	if (output.isFull()) flush();
+	return output.write(b);
 }
 
 uint8_t ESP8266::flush() {
-	if (buffer.size() == 0) return 1; // nothing to write
+	if (output.size() == 0) return 1; // nothing to write
 
-	uint8_t len = buffer.size();
+	uint8_t len = output.size();
 	uint8_t b;
 	char buf[5];
 	sprintf(buf, "%d", len);
@@ -243,10 +260,10 @@ uint8_t ESP8266::flush() {
 	serial->write("AT+CIPSEND=");
 	serial->write(buf);
 	serial->write("\r\n");
-	serial->read(&b); 			// >
-	serial->read(&b); 			// sp
-	while (buffer.read(&b)) {
+	while ('>' == at_response());
+	while (output.read(&b)) {
 		serial->write(b);
 	}
-	return this->at_response(0);
+	while ('+' == at_response());
+	return 'S' == status[0];
 }
