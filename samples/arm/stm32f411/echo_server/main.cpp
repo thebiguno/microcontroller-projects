@@ -32,9 +32,3 @@ void dc_main(){
 	}
 
 }
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	if (serial){
-		serial->isr();
-	}
-}
