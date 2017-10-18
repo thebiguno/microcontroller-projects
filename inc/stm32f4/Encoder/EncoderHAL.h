@@ -6,6 +6,7 @@
 #define ENCODER_HAL_H
 
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_tim.h"
 
 namespace digitalcave {
 
