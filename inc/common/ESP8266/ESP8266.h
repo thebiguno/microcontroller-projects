@@ -37,9 +37,6 @@ namespace digitalcave {
 			uint8_t at_cipclose(uint8_t id);
 			uint8_t at_cipsend(uint8_t id, uint16_t len, Stream* stream);
 			uint8_t at_response();	// handle the responses for AT commands
-
-			void open_socket(uint8_t id, uint8_t flags);
-			void close_socket(uint8_t id);
 		public:
 			ESP8266(Stream* serial);
 			~ESP8266();

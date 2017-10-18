@@ -21,7 +21,7 @@ namespace digitalcave {
 	class ESP8266Socket : public Stream {
 
 		private:
-			ESP8266Socket(ESP8266* wifi, uint8_t id, uint8_t flags);
+			ESP8266Socket(ESP8266* wifi, uint8_t id);
 			~ESP8266Socket();
 
 			ESP8266* wifi;
@@ -29,6 +29,7 @@ namespace digitalcave {
 			uint8_t flags; // [7..2] unused; [1] acceptable; [0] server
 			ArrayStream* input;
 			ArrayStream* output;
+			void open(uint8_t flags);
 		public:
 			uint8_t id();
 			uint16_t available();
@@ -37,6 +38,7 @@ namespace digitalcave {
 			uint8_t write(uint8_t b);
 			uint8_t flush();
 			uint8_t close();
+			uint8_t is_closed();
 
 			using Stream::reset;
 			using Stream::write;

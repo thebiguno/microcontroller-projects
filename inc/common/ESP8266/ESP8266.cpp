@@ -11,6 +11,11 @@ ESP8266::ESP8266(Stream* serial) :
 	at_mode();
 	addr = at_cifsr();
 	at_cipmux();
+
+	for (uint8_t i = 0; i < 5; i++) {
+		ESP8266Socket s(this, 0);
+		sockets[i] = &s;
+	}
 }
 
 ESP8266::~ESP8266() {
@@ -123,7 +128,7 @@ ESP8266Socket* ESP8266::open_tcp(char* address, uint16_t port) {
 		serial->write("\r\n");
 		while ('+' == at_response());
 		if ('O' == status[0]) {
-			open_socket(id, 0x0);
+			sockets[id]->open(0x0);
 			return sockets[id];
 		}
 	}
@@ -144,7 +149,7 @@ ESP8266Socket* ESP8266::open_ucp(char* address, uint16_t port) {
 		serial->write("\r\n");
 		while ('+' == at_response());
 		if ('O' == status[0]) {
-			open_socket(id, 0x0);
+			sockets[id]->open(0x0);
 			return sockets[id];
 		}
 	}
@@ -176,19 +181,10 @@ uint8_t ESP8266::at_cipsend(uint8_t id, uint16_t len, Stream* stream) {
 		serial->write(b);
 	}
 	while ('+' == at_response());
+	if ('E' == status[0]) {
+		sockets[id]->close();
+	}
 	return 'S' == status[0];
-}
-
-void ESP8266::open_socket(uint8_t id, uint8_t flags) {
-	if (sockets[id] == NULL) {
-		sockets[id] = new ESP8266Socket(this, id, flags);
-	}
-}
-void ESP8266::close_socket(uint8_t id) {
-	if (sockets[id] != NULL) {
-		delete sockets[id];
-		sockets[id] = NULL;
-	}
 }
 
 // when parsing a command it will always be either a response to the last
@@ -261,7 +257,7 @@ uint8_t ESP8266::at_response() {
 		// +ipd flow
 		else if (step == 41) { step = 42; }
 		else if (step == 42 && b == ',') { step = 43; }
-		else if (step == 42) { id = b - 0x30; open_socket(id, 0x3); step = 43; }
+		else if (step == 42) { id = b - 0x30; sockets[id]->open(0x3); step = 43; }
 		else if (step == 43) { step = 44; }
 		else if (step == 44 && b == ':') { len *= 10; len += b - 0x30; step = 45; }
 		else if (step == 44) { len *= 10; len += b - 0x30; }
