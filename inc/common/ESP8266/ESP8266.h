@@ -53,6 +53,13 @@ namespace digitalcave {
 			/* Stop a server connection listener.  */
 			void stop_server(uint16_t port);
 
+			/* Advertices a service with mDNS.
+			 * service will be available at host_name.local
+			 * server_name should be from http://dns-sd.org/ServiceTypes.html
+			 */
+			void start_mdns(char* host_name, char* server_name, uint16_t port);
+			void stop_mdns(char* host_name, char* server_name, uint16_t port);
+
 			/* Open a client connection. */
 			ESP8266Socket* open_tcp(char* address, uint16_t port);
 			ESP8266Socket* open_ucp(char* address, uint16_t port);

@@ -103,6 +103,34 @@ void ESP8266::stop_server(uint16_t port) {
 	while ('+' == at_response());
 }
 
+void ESP8266::start_mdns(char* host_name, char* server_name, uint16_t port) {
+	char buf[5];
+	sprintf(buf, "%d", port);
+
+	serial->write("AT+MDNS=1,");
+	serial->write(host_name);
+	serial->write(',');
+	serial->write(server_name);
+	serial->write(',');
+	serial->write(buf);
+	serial->write("\r\n");
+	while ('+' == at_response());
+}
+
+void ESP8266::stop_mdns(char* host_name, char* server_name, uint16_t port) {
+	char buf[5];
+	sprintf(buf, "%d", port);
+
+	serial->write("AT+MDNS=0,");
+	serial->write(host_name);
+	serial->write(',');
+	serial->write(server_name);
+	serial->write(',');
+	serial->write(buf);
+	serial->write("\r\n");
+	while ('+' == at_response());
+}
+
 ESP8266Socket* ESP8266::accept() {
 	while ('<' == at_response());
 	for (uint8_t i = 0; i < 5; i++) {

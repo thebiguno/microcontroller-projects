@@ -21,6 +21,7 @@ void dc_main(){
 	ESP8266 wifi(serial);
 	wifi.join("sloth","password");
 	wifi.start_server(1234);
+	wifi.start_mdns("echoserver", "telnet", 1234);
 
 	while (1) {
 		uint8_t b = 0;
