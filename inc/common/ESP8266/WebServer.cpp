@@ -19,17 +19,9 @@ WebServerConn* WebServer::accept() {
 	if (socket == NULL) return NULL;
 
 	uint8_t id = socket->id();
-
 	if (conns[id] == NULL) {
 		conns[id] = new WebServerConn(this, socket);
 		conns[id]->read_headers();
 	}
 	return conns[id];
-}
-
-void WebServer::close_conn(uint8_t id) {
-	if (conns[id] != NULL) {
-		delete conns[id];
-		conns[id] = NULL;
-	}
 }

@@ -13,7 +13,7 @@ ESP8266::ESP8266(Stream* serial) :
 	at_cipmux();
 
 	for (uint8_t i = 0; i < 5; i++) {
-		ESP8266Socket s(this, 0);
+		ESP8266Socket s(this, i);
 		sockets[i] = &s;
 	}
 }

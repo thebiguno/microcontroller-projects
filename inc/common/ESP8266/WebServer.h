@@ -15,8 +15,6 @@ namespace digitalcave {
 		private:
 			ESP8266* wifi;
 			WebServerConn* conns[5];
-
-			void close_conn(uint8_t id);
 		public:
 			/* Consume the entire ESP8266 module for the task of being a webserver. */
 			WebServer(ESP8266* wifi);
