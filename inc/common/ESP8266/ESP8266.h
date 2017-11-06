@@ -23,53 +23,48 @@ namespace digitalcave {
 			Stream* serial;
 			ESP8266Socket* sockets[5];
 
-			uint32_t addr;
+			char data[32];
+			char status[8];
 
-			char command[16];
-			char data[16];
-			char status[16];
+			uint8_t at_response();
 
-			void poll();						// process whatever is in the serial receive buffer
-			void at_reset();				// send AT+RST
-			void at_mode();					// send AT+CWMODE=1 to configure station mode
-			uint32_t at_cifsr();		// send AT+CIFSR to lease an IP address
-			void at_cipmux();				// send AT+CIPMUX=1 to configure multiple connection
-			uint8_t at_cipclose(uint8_t id);
 			uint8_t at_cipsend(uint8_t id, uint16_t len, Stream* stream);
-			uint8_t at_response();	// handle the responses for AT commands
+			uint8_t at_cipclose(uint8_t id);
+			ESP8266Socket* at_cipstart(const char* type, const char* addr, uint16_t port);
 		public:
 			ESP8266(Stream* serial);
 			~ESP8266();
 
-			/* Join an access point */
-			uint8_t join(char* ssid, char* password);
-			/* Quit an access point */
-			void quit();
-			/* Return the current IP address */
-			uint32_t address();
+			// helper
 
-			/* Start a server connection listener. */
-			void start_server(uint16_t port);
-			/* Stop a server connection listener.  */
-			void stop_server(uint16_t port);
+			void init();
 
-			/* Advertices a service with mDNS.
-			 * service will be available at host_name.local
-			 * server_name should be from http://dns-sd.org/ServiceTypes.html
-			 */
-			void start_mdns(char* host_name, char* server_name, uint16_t port);
-			void stop_mdns(char* host_name, char* server_name, uint16_t port);
+			// basic
 
-			/* Open a client connection. */
-			ESP8266Socket* open_tcp(char* address, uint16_t port);
-			ESP8266Socket* open_ucp(char* address, uint16_t port);
+			uint8_t at();
+			uint8_t at_rst();
+
+			// wifi
+
+			uint8_t at_cwmode_cur_sta();
+			uint8_t at_cwdhcp_cur_sta(uint8_t en);
+			uint8_t at_cwjap_cur(char* ssid, char* password);
+			uint8_t at_cwqap();
+			uint32_t at_cifsr();
+			uint8_t at_mdns(uint8_t en, char* host_name, char* server_name, uint16_t port);
+
+			// IP
+
+			uint8_t at_cipmux(uint8_t en);
+			uint8_t at_cipserver(uint8_t en, uint16_t port);
+			ESP8266Socket* at_cipstart_tcp(const char* addr, uint16_t port);
+			ESP8266Socket* at_cipstart_udp(const char* addr, uint16_t port);
+			ESP8266Socket* at_cipstart_ssl(const char* addr, uint16_t port);
 
 			/* Read incoming data and selects the channel the data belongs to.
 			 * Output buffer is flushed and input buffer will contain the data to read.
 			 * Returns the id of the connection that was selected.
 			 * A server should call this repeatedly to receive new requests.
-			 * A client should call this after flush when response is expected.
-			 * Returns the number of bytes available to read.
 			 */
 			ESP8266Socket* accept();
 
