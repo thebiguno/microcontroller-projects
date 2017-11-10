@@ -5,8 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <ESP8266.h>
+#include <ESP8266Socket.h>
 #include "MockStream.h"
-#include "../../../inc/common/ESP8266/ESP8266.h"
 
 namespace digitalcave {
 
@@ -17,9 +18,9 @@ namespace digitalcave {
 			MockStream mockStream;
 			ESP8266 wifi;
 
-			void assert(uint8_t truth);
-			void assert(char* expected, char* actual);
-			void assert(uint8_t expected, uint8_t actual);
+			void assert(const char* message, uint8_t truth);
+			void assert(const char* message, char* expected, char* actual);
+			void assert(const char* message, uint8_t expected, uint8_t actual);
 
 			void test_at_rst();
 			void test_at__echo();

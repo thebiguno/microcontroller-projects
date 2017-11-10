@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "../../../inc/common/Stream/Stream.h"
-#include "../../../inc/common/Stream/ArrayStream.h"
+#include <Stream.h>
+#include <ArrayStream.h>
 
 namespace digitalcave {
 
