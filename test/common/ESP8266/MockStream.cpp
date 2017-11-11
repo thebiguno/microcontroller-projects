@@ -8,7 +8,6 @@ MockStream::MockStream(uint16_t input_buffer_length, uint16_t output_buffer_leng
 {}
 
 MockStream::~MockStream() {
-	puts("mock stream destroyed");
 }
 
 void MockStream::clear() {

@@ -8,7 +8,9 @@ using namespace digitalcave;
 ESP8266Socket::ESP8266Socket(ESP8266* wifi, uint8_t id) :
 	wifi(wifi),
 	_id(id)
-{}
+{
+	flags = 0;
+}
 
 ESP8266Socket::~ESP8266Socket() {
 	close();
@@ -20,10 +22,8 @@ uint8_t ESP8266Socket::id() {
 
 uint16_t ESP8266Socket::available() {
 	if (input == NULL) {
-		puts("0");
 		return 0;
 	} else {
-		puts("size");
 		return input->size();
 	}
 }
@@ -41,24 +41,23 @@ uint8_t ESP8266Socket::flush() {
 	return wifi->at_cipsend(_id, output->size(), output);
 }
 
-void ESP8266Socket::open(uint8_t x) {
-	flags = x;
+void ESP8266Socket::open(uint8_t f) {
+	flags = f;
 	if (input == NULL) {
 		input = new ArrayStream(1460);
 	}
 	if (output == NULL) {
 		output = new ArrayStream(512);
 	}
-	puts("open");
 }
 
 uint8_t ESP8266Socket::close() {
+	flags = 0x00;
 	if (is_closed()) return 1;
 	flush();
-	uint8_t ok = wifi->at_cipclose(_id);
-	flags = 0x00;
 	delete input;
 	delete output;
+	uint8_t ok = wifi->at_cipclose(_id);
 	return ok;
 }
 

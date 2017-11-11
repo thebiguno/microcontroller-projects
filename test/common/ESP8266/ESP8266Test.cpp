@@ -12,7 +12,6 @@ ESP8266Test::ESP8266Test() :
 {}
 
 ESP8266Test::~ESP8266Test() {
-	puts("test destroyed");
 }
 
 void ESP8266Test::test() {
@@ -26,7 +25,7 @@ void ESP8266Test::test() {
 	// test_at_cifsr();
 	// test_at_cipmux();
 	test_at_cipserver();
-	// test_at_cipstart_tcp();
+	test_at_cipstart_tcp();
 }
 
 void ESP8266Test::test_at_rst() {
@@ -97,6 +96,9 @@ void ESP8266Test::test_at_cipserver() {
 	ESP8266Socket* s = wifi.accept();
 	assert("accept didn't return a socket", s != NULL);
 	assert("socket has wrong id", 4, s->id());
+
+	mockStream.enqueue("AT+CIPCLOSE=0\r\n\r\n4,CLOSED\r\n\r\nOK\r\n");
+	s->close();
 }
 
 void ESP8266Test::test_at_cipstart_tcp() {

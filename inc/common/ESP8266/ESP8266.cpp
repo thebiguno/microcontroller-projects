@@ -135,9 +135,12 @@ uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* server_name, uint16_
 
 ESP8266Socket* ESP8266::accept() {
 	at_response('<');
+
 	for (uint8_t a = 0; a < 5; a++) {
-		ESP8266Socket* socket = sockets[id++];
 		id %= 5;
+		ESP8266Socket* socket = sockets[id];
+		id++;
+
 		if (socket->is_server() && socket->available() > 0) {
 			return socket;
 		}
@@ -270,7 +273,7 @@ void ESP8266::at_response(char until) {
 		uint8_t ct = serial->read(&b);
 
 		// detect which flow to process
-		if (max == 0) { result = 0; break; }
+		if (max == 0) { d("max"); result = 0; abort(); break; }
 		else if (ct == 0) { max--; } // TODO delay 20ms
 
 		else if (step == 0 && j == 1 && b == '\n') { d("0 -> 1"); step = 1; } 	  // a blank line; normal command
@@ -301,7 +304,7 @@ void ESP8266::at_response(char until) {
 		if (b == '\n') { j = 0; }
 		else { j++; }
 
-		if (result == until) { break; }
+		if (result == until) { d("until"); break; }
 	}
 	// add null terminators
 	if (data != 0) { *data = 0; }
