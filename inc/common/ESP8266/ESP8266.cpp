@@ -8,9 +8,16 @@ using namespace digitalcave;
 
 ESP8266::ESP8266(Stream* serial) :
 	serial(serial)
-{}
+{
+	for (uint8_t id = 0; id < 5; id++) {
+		sockets[id] = new ESP8266Socket(this, id);
+	}
+}
 
 ESP8266::~ESP8266() {
+	for (uint8_t id = 0; id < 5; id++) {
+		delete sockets[id];
+	}
 }
 
 void ESP8266::init() {
@@ -128,10 +135,11 @@ uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* server_name, uint16_
 
 ESP8266Socket* ESP8266::accept() {
 	at_response('<');
-	for (uint8_t i = 0; i < 5; i++) {
-		if (sockets[i].flags & 0x2) {
-			sockets[i].flags &= ~0x2;
-			return &sockets[i];
+	for (uint8_t a = 0; a < 5; a++) {
+		ESP8266Socket* socket = sockets[id++];
+		id %= 5;
+		if (socket->is_server() && socket->available() > 0) {
+			return socket;
 		}
 	}
 	return NULL;
@@ -153,8 +161,8 @@ ESP8266Socket* ESP8266::at_cipstart(const char* type, const char* addr, uint16_t
 		serial->write("\r\n");
 		at_response('+');
 		if ('O' == status[0]) {
-			sockets[id].open(0x0);
-			return &sockets[id];
+			sockets[id]->open(0x01);
+			return sockets[id];
 		}
 	}
 	return 0;
@@ -198,7 +206,7 @@ uint8_t ESP8266::at_cipsend(uint8_t id, uint16_t len, Stream* stream) {
 	}
 	uint8_t ok = at_cipsend_response();
 	if (ok == 0) {
-		sockets[id].close();
+		sockets[id]->close();
 	}
 
 	return ok;
@@ -279,12 +287,13 @@ void ESP8266::at_response(char until) {
 
 		// +IPD
 		else if (step == 21 && b == ',') { d("22 -> 22"); step = 22; }						// read +IPD,
-		else if (step == 22 && b == ',') { d("22 -> 23, l = 0"); step = 23; len = 0; }	// read id,
-		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; sockets[id].open(0x3); }
-		else if (step == 23 && b == ':') { d("23 -> 23, i -> 0"); step = 24; i = 0; }			// read len:
-		else if (step == 23) { d("23 -> 23, l"); len *= 10; len += b - 0x30; }
-		else if (step == 24 && i == len) { d("24 -> 24, r -> <"); sockets[id].input->write(b); result = '<'; break; }
-		else if (step == 24) { d("24 -> 24, i++"); sockets[id].input->write(b); i++; }
+		else if (step == 21) { }
+		else if (step == 22 && b == ',') { d("22 -> 23, len = 0"); step = 23; len = 0; }	// read id,
+		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; sockets[id]->open(0x02); }
+		else if (step == 23 && b == ':') { d("23 -> 23, i -> 0"); step = 24; i = 0; len--; }			// read len:
+		else if (step == 23) { d("23 -> 23, len"); len *= 10; len += (b - 0x30); }
+		else if (step == 24 && i == len) { d("24 -> x, r -> <"); sockets[id]->input->write(b); result = '<'; break; }
+		else if (step == 24) { d("24 -> 24, i++"); sockets[id]->input->write(b); i++; }
 
 		// give up and start over
 		else { d("? -> 0"); step = 0; }

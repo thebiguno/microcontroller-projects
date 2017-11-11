@@ -21,14 +21,9 @@ namespace digitalcave {
 
 		private:
 			Stream* serial;
-			ESP8266Socket sockets[5] = {
-				ESP8266Socket(this,0),
-				ESP8266Socket(this,1),
-				ESP8266Socket(this,2),
-				ESP8266Socket(this,3),
-				ESP8266Socket(this,4)
-			};
+			ESP8266Socket* sockets[5];
 
+			uint8_t id;
 			char data[32];
 			char status[8];
 

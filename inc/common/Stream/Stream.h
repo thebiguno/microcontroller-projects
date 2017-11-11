@@ -7,6 +7,8 @@
 namespace digitalcave {
 	class Stream {
 		public:
+			virtual ~Stream() {}
+
 			/*
 			 * Reads a single byte from the stream.  Pass in a pointer to a byte, and
 			 * the function will write a single byte to that pointer.  If the read was successful,

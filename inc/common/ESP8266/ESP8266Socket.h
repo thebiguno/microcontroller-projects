@@ -26,9 +26,11 @@ namespace digitalcave {
 
 			ESP8266* wifi;
 			uint8_t _id;
-			uint8_t flags; // [7..2] unused; [1] acceptable; [0] server
+
+			uint8_t flags;
 			ArrayStream* input;
 			ArrayStream* output;
+
 			void open(uint8_t flags);
 		public:
 			uint8_t id();
@@ -39,6 +41,8 @@ namespace digitalcave {
 			uint8_t flush();
 			uint8_t close();
 			uint8_t is_closed();
+			uint8_t is_client();
+			uint8_t is_server();
 
 			using Stream::reset;
 			using Stream::write;
