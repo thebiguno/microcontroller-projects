@@ -8,10 +8,10 @@ MockStream::MockStream(uint16_t input_buffer_length, uint16_t output_buffer_leng
 {}
 
 MockStream::~MockStream() {
+	puts("mock stream destroyed");
 }
 
 void MockStream::clear() {
-	input.clear();
 	output.clear();
 }
 
@@ -24,8 +24,9 @@ uint8_t MockStream::write(uint8_t b) {
 }
 
 uint8_t MockStream::enqueue(const char* a) {
+	output.clear();
 	return input.write(a);
 }
-uint16_t MockStream::dequeue(char* a, uint16_t len) {
+uint16_t MockStream::dequeue(uint8_t* a, uint16_t len) {
 	return output.read((uint8_t*)a, len);
 }

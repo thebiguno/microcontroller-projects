@@ -20,7 +20,7 @@ namespace digitalcave {
 
 			void assert(const char* message, uint8_t truth);
 			void assert(const char* message, char* expected, char* actual);
-			void assert(const char* message, uint8_t expected, uint8_t actual);
+			void assert(const char* message, uint32_t expected, uint32_t actual);
 
 			void test_at_rst();
 			void test_at__echo();

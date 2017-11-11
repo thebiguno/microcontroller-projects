@@ -21,16 +21,25 @@ namespace digitalcave {
 
 		private:
 			Stream* serial;
-			ESP8266Socket* sockets[5];
+			ESP8266Socket sockets[5] = {
+				ESP8266Socket(this,0),
+				ESP8266Socket(this,1),
+				ESP8266Socket(this,2),
+				ESP8266Socket(this,3),
+				ESP8266Socket(this,4)
+			};
 
 			char data[32];
 			char status[8];
 
-			uint8_t at_response();
+			void at_response(char until);
+			uint8_t at_cipsend_response();
 
 			uint8_t at_cipsend(uint8_t id, uint16_t len, Stream* stream);
 			uint8_t at_cipclose(uint8_t id);
 			ESP8266Socket* at_cipstart(const char* type, const char* addr, uint16_t port);
+
+			void d(const char* debug);
 		public:
 			ESP8266(Stream* serial);
 			~ESP8266();
@@ -50,7 +59,7 @@ namespace digitalcave {
 			uint8_t at_cwdhcp_cur_sta(uint8_t en);
 			uint8_t at_cwjap_cur(char* ssid, char* password);
 			uint8_t at_cwqap();
-			uint32_t at_cifsr();
+			uint32_t at_cifsr(char* addr);
 			uint8_t at_mdns(uint8_t en, char* host_name, char* server_name, uint16_t port);
 
 			// IP

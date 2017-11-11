@@ -1,5 +1,6 @@
 all:
 	g++ -pedantic -Os -Wall \
+	-DESP8266_DEBUG \
 	-I../../../inc/common/Stream/ \
 	-I../../../inc/common/ESP8266/ \
 	-I./ \

@@ -12,21 +12,21 @@ ESP8266Test::ESP8266Test() :
 {}
 
 ESP8266Test::~ESP8266Test() {
+	puts("test destroyed");
 }
 
 void ESP8266Test::test() {
-	mockStream.clear();
-	test_at_rst(); mockStream.clear();
-	test_at__echo(); mockStream.clear();
-	test_at__noecho(); mockStream.clear();
-	test_at_cwmode_cur_sta(); mockStream.clear();
-	test_at_cwjap_cur__ok(); mockStream.clear();
-	test_at_cwjap_cur__fail(); mockStream.clear();
-	test_at_cwqap(); mockStream.clear();
-	test_at_cifsr(); mockStream.clear();
-	test_at_cipmux(); mockStream.clear();
-	test_at_cipserver(); mockStream.clear();
-	test_at_cipstart_tcp();	mockStream.clear();
+	test_at_rst();
+	test_at__echo();
+	test_at__noecho();
+	test_at_cwmode_cur_sta();
+	test_at_cwjap_cur__ok();
+	test_at_cwjap_cur__fail();
+	test_at_cwqap();
+	test_at_cifsr();
+	test_at_cipmux();
+	test_at_cipserver();
+	test_at_cipstart_tcp();
 }
 
 void ESP8266Test::test_at_rst() {
@@ -63,20 +63,23 @@ void ESP8266Test::test_at_cwjap_cur__ok() {
 void ESP8266Test::test_at_cwjap_cur__fail() {
 	mockStream.enqueue("AT+CWJAP_CUR=\"test\",\"pass\"\r\n\r\n+CWJAP:1\r\n\r\nFAIL\r\n");
 	uint8_t ok = wifi.at_cwjap_cur((char*)"test",(char*)"pass");
-	assert("at_cwjap_cur didn't fail", ok);
+	assert("at_cwjap_cur didn't fail", !ok);
 }
 
 void ESP8266Test::test_at_cwqap() {
-	mockStream.enqueue("AT+CWQAP\r\n\r\nOK\r\n");
+	mockStream.enqueue("AT+CWQAP\r\n\r\n\r\nOK\r\n");
 	uint8_t ok = wifi.at_cwqap();
 	assert("at_cwqap failed", ok);
 }
 
 void ESP8266Test::test_at_cifsr() {
+	char addr[16];
 	// 192.168.0.4 = C0:A8:00:04 = 3_232_235_524
 	mockStream.enqueue("AT+CIFSR\r\n\r\n+CIFSR:STAIP,\"192.168.0.4\"\r\nCIFSR:STAMAC,\"xx:xx:xx:xx:xx:xx\"\r\n\r\nOK\r\n");
-	uint32_t address = wifi.at_cifsr();
-	assert("incorrect address returned by at_cifsr", 3232235524 == address);
+	uint32_t decimal = wifi.at_cifsr(addr);
+	puts(addr);
+	assert("incorrect string address returned by at_cifsr", (char*)"192.168.0.4", addr);
+	assert("incorrect decimal address returned by at_cifsr", 3232235524, decimal);
 }
 
 void ESP8266Test::test_at_cipmux() {
@@ -92,39 +95,40 @@ void ESP8266Test::test_at_cipserver() {
 }
 
 void ESP8266Test::test_at_cipstart_tcp() {
-	char buf[32];
+	uint8_t buf[32];
 
 	mockStream.enqueue("AT+CIPSTART=\"TCP\",\"192.168.0.4\",8080\r\n\r\n\r\nOK\r\n");
 	ESP8266Socket* s = wifi.at_cipstart_tcp("192.168.0.4", 8080);
 	assert("at_cipstart_tcp didn't return a socket", s != NULL);
 
-	mockStream.clear();
-
-	mockStream.enqueue("AT+CIPSEND=0,4\r\n> SEND OK\r\n");
+	mockStream.enqueue("AT+CIPSEND=0,4\r\n> ");
 	s->write("test");
+	mockStream.enqueue("\r\nRecv 4 bytes\r\nSEND OK\r\n");
+	puts("flush");
 	s->flush();
 
 	mockStream.dequeue(buf, 21);
-	assert("flushing socket didn't result in at_cipsend", 0 == strcmp("AT+CIPSEND=0,4\r\ntest", buf));
+	buf[20] = 0;
+	assert("flushing socket didn't result in at_cipsend", "AT+CIPSEND=0,4\r\ntest", (char*)buf);
+
+	mockStream.enqueue("AT+CIPCLOSE=0\r\n\r\n\r\nOK\r\n");
+	s->close();
 }
 
 void ESP8266Test::assert(const char* message, char* expected, char* actual) {
 	if (strcmp(expected, actual) != 0) {
 		puts(message);
-		puts("\n");
 	}
 }
 
-void ESP8266Test::assert(const char* message, uint8_t expected, uint8_t actual) {
-		if (expected != actual) {
-			puts(message);
-			puts("\n");
-		}
+void ESP8266Test::assert(const char* message, uint32_t expected, uint32_t actual) {
+	if (expected != actual) {
+		puts(message);
+	}
 }
 
 void ESP8266Test::assert(const char* message, uint8_t truth) {
 		if (!truth) {
 			puts(message);
-			puts("\n");
 		}
 }

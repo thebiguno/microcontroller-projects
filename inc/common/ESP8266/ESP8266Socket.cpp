@@ -46,6 +46,7 @@ void ESP8266Socket::open(uint8_t flags) {
 }
 
 uint8_t ESP8266Socket::close() {
+	if (flags == 0xff) return 0;
 	flags = 0xff;
 	flush();
 	uint8_t result = wifi->at_cipclose(_id);

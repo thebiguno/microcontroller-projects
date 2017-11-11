@@ -12,8 +12,9 @@ void handler(int sig) {
   exit(1);
 }
 
-int main(void) {
-	signal(SIGSEGV, handler);
+int main() {
+	//signal(SIGSEGV, handler);
+	//signal(SIGABRT, handler);
 	digitalcave::ESP8266Test().test();
-	return 0;
+	return 1;
 }
