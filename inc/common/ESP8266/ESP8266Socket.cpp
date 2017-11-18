@@ -5,12 +5,17 @@
 
 using namespace digitalcave;
 
+const uint8_t SOCKET_CLOSED = 0;
+const uint8_t SOCKET_CLIENT = 1;
+const uint8_t SOCKET_SERVER = 2;
+
 ESP8266Socket::ESP8266Socket(ESP8266* wifi, uint8_t id) :
 	wifi(wifi),
-	_id(id)
-{
-	flags = 0;
-}
+	_id(id),
+	flags(SOCKET_CLOSED),
+	input(NULL),
+	output(NULL)
+{}
 
 ESP8266Socket::~ESP8266Socket() {
 	close();
@@ -50,25 +55,33 @@ void ESP8266Socket::open(uint8_t f) {
 		output = new ArrayStream(512);
 	}
 }
+void ESP8266Socket::openClient() {
+	open(SOCKET_CLIENT);
+}
+void ESP8266Socket::openServer() {
+	open(SOCKET_SERVER);
+}
 
 uint8_t ESP8266Socket::close() {
-	flags = 0x00;
 	if (is_closed()) return 1;
+	flags = SOCKET_CLOSED;
 	flush();
 	delete input;
 	delete output;
+	input = NULL;
+	output = NULL;
 	uint8_t ok = wifi->at_cipclose(_id);
 	return ok;
 }
 
 uint8_t ESP8266Socket::is_closed() {
-	return (0x00 == flags);
+	return (SOCKET_CLOSED == flags);
 }
 
 uint8_t ESP8266Socket::is_client() {
-	return (0x01 == flags);
+	return (SOCKET_CLIENT == flags);
 }
 
 uint8_t ESP8266Socket::is_server() {
-	return (0x02 == flags);
+	return (SOCKET_SERVER == flags);
 }

@@ -24,7 +24,7 @@ namespace digitalcave {
 			ESP8266Socket* sockets[5];
 
 			uint8_t id;
-			char data[32];
+			char data[128]; // enough for cifsr, but not cwlap
 			char status[8];
 
 			void at_response(char until);
@@ -54,7 +54,7 @@ namespace digitalcave {
 			uint8_t at_cwdhcp_cur_sta(uint8_t en);
 			uint8_t at_cwjap_cur(char* ssid, char* password);
 			uint8_t at_cwqap();
-			uint32_t at_cifsr(char* addr);
+			uint8_t at_cifsr(char* addr, char* mac);
 			uint8_t at_mdns(uint8_t en, char* host_name, char* server_name, uint16_t port);
 
 			// IP

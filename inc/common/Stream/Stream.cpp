@@ -10,7 +10,7 @@ uint16_t Stream::read(uint8_t* a, uint16_t len){
 	uint16_t count = 0;
 	uint8_t data = 0;
 
-	while (count < (len - 1) && read(&data)){
+	while (count < len && read(&data)){
 		a[count++] = data;
 	}
 

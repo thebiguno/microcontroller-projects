@@ -64,27 +64,30 @@ uint8_t ESP8266::at_cipmux(uint8_t en) {
 	return 'O' == status[0];
 }
 
-uint32_t ESP8266::at_cifsr(char* addr) {
-	uint32_t result = 0;
+uint8_t ESP8266::at_cifsr(char* addr, char* mac) {
 	serial->write("AT+CIFSR");
 	at_response('+');
 	if ('O' == status[0]) {
 		// data: +CIFSR:STAIP,"xxx.xxx.xxx.xxx"\r\nCIFSR:STAMAC,"xx:xx:xx:xx:xx:x"\r\n
-		char* s;
-		s = strtok(data,"\r\n");
-		s = strtok(s, ",");
-		s = strtok(NULL, ",");
-		s = strtok(s, "\"");
-		strcpy(addr, s);
-		s = strtok(s, ".");
+		char* a = strtok(data,"\r\n");
+		char* m = strtok(NULL,"\r\n");
 
-		while (s != NULL) {
-			result = result << 8;
-			result |= atoi(s);
-			s = strtok(NULL, ".");
+		if (addr != 0) {
+			a = strtok(a, ",");
+			a = strtok(NULL, ",");
+			a = strtok(a, "\"");
+			strcpy(addr, a);
 		}
+
+		if (mac != 0) {
+			m = strtok(m, ",");
+			m = strtok(NULL, ",");
+			m = strtok(m, "\"");
+			strcpy(mac, m);
+		}
+		return 1;
 	}
-	return result;
+	return 0;
 }
 
 uint8_t ESP8266::at_cwjap_cur(char* ssid, char* password) {
@@ -164,7 +167,7 @@ ESP8266Socket* ESP8266::at_cipstart(const char* type, const char* addr, uint16_t
 		serial->write("\r\n");
 		at_response('+');
 		if ('O' == status[0]) {
-			sockets[id]->open(0x01);
+			sockets[id]->openClient();
 			return sockets[id];
 		}
 	}
@@ -283,16 +286,16 @@ void ESP8266::at_response(char until) {
 		// normal command response
 		else if (step == 1 && j == 0 && b == '\r') { }
 		else if (step == 1 && j == 1 && b == '\n') { d("1 -> 2"); step = 2; }
-		else if (step == 1) { d("1 -> 1, data"); *data++ = b; }
+		else if (step == 1) { d("1 -> 1, data"); *data++ = b; *data = 0; d(this->data); }
 		else if (step == 2 && b == '\r') { }
 		else if (step == 2 && b == '\n') { d("2 -> x, r -> +"); result = '+'; break; }
-		else if (step == 2) { d("2 -> 2, status"); *status++ = b; }
+		else if (step == 2) { d("2 -> 2, status"); *status++ = b; *status = 0; d(this->status); }
 
 		// +IPD
 		else if (step == 21 && b == ',') { d("22 -> 22"); step = 22; }						// read +IPD,
 		else if (step == 21) { }
 		else if (step == 22 && b == ',') { d("22 -> 23, len = 0"); step = 23; len = 0; }	// read id,
-		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; sockets[id]->open(0x02); }
+		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; sockets[id]->openServer(); }
 		else if (step == 23 && b == ':') { d("23 -> 23, i -> 0"); step = 24; i = 0; len--; }			// read len:
 		else if (step == 23) { d("23 -> 23, len"); len *= 10; len += (b - 0x30); }
 		else if (step == 24 && i == len) { d("24 -> x, r -> <"); sockets[id]->input->write(b); result = '<'; break; }
@@ -306,9 +309,6 @@ void ESP8266::at_response(char until) {
 
 		if (result == until) { d("until"); break; }
 	}
-	// add null terminators
-	if (data != 0) { *data = 0; }
-	if (status != 0) { *status = 0; }
 
 	#ifdef ESP8266_DEBUG
 	puts(this->data);

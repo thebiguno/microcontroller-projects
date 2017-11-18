@@ -23,7 +23,7 @@ namespace digitalcave {
 			/* Make data available to read */
 			uint8_t enqueue(const char* a);
 			/* Get data that was written */
-			uint16_t dequeue(uint8_t* a, uint16_t len);
+			uint16_t dequeue(char* a, uint16_t len);
 
 			void clear();
 

@@ -32,6 +32,8 @@ namespace digitalcave {
 			ArrayStream* output;
 
 			void open(uint8_t flags);
+			void openClient();
+			void openServer();
 		public:
 			uint8_t id();
 			uint16_t available();

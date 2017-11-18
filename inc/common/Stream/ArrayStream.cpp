@@ -23,7 +23,7 @@ uint16_t ArrayStream::remaining() {
 }
 
 uint16_t ArrayStream::size() {
-	return (head > tail) ? head - tail : capacity - tail + head;
+	return (head >= tail) ? head - tail : capacity - tail + head;
 }
 
 uint8_t ArrayStream::isEmpty(){

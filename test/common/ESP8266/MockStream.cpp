@@ -26,6 +26,8 @@ uint8_t MockStream::enqueue(const char* a) {
 	output.clear();
 	return input.write(a);
 }
-uint16_t MockStream::dequeue(uint8_t* a, uint16_t len) {
-	return output.read((uint8_t*)a, len);
+uint16_t MockStream::dequeue(char* a, uint16_t len) {
+	uint16_t sz = output.read((uint8_t*)a, len);
+	a[len] = 0;
+	return sz;
 }
