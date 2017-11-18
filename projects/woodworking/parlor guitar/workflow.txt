@@ -1,0 +1,47 @@
+Rim assembly
+	Bend sides to match template
+	Glue tail block (grain parallel to side grain) (http://www.kennethmichaelguitars.com/rim.html)
+		Ensure the butt joint is square and centered
+	Drill bolt holes in neck block
+	Glue neck block (http://www.kennethmichaelguitars.com/rim2.html)
+	Plane back side of rim down to approximate desired contour (3" to 3.75"?  Depends on wood width).  Measure and mark lines then plane to lines.
+	Install lining
+	Install side reinforcements
+		Scrap spruce, 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
+		One piece on the tail block (since the grain runs parallel to sides)
+	Contour the back of the sides using a 15' radius bar (http://www.kennethmichaelguitars.com/backrimcontouro3.html)
+Top assembly
+	Join top
+	Install rosette
+	Thickness top
+	Cut out top (slightly larger than needed)
+	Sand top
+	Glue bracing
+	Trim bracing (tap tones)
+	Trim lining to accept braces (http://www.kennethmichaelguitars.com/attachingtop.html)
+	Glue top to body
+	Sand (flapper discs?) top flush with sides
+Back assembly
+	Join back (https://www.jsbguitars.com/learn-guitar-making-techniques/plate-joining/)
+	Glue center stripe (spruce)
+	Cut ladder braces
+	Radius ladder braces (15')
+	Glue ladder braces
+	Trim lining on body to accept braces (http://www.kennethmichaelguitars.com/attachback.html)
+	Glue back to body
+	Sand (flapper discs?) top flush with sides
+Rough neck assembly
+	Laminate strips (Sapele outside, veneer of walnut, maple center?  Perhaps just leave out the walnut?  Perhaps replace walnut with rosewood if there is enough left over?)
+	Cut to approx width (2"?)
+	Glue heel using same laminations
+	Cut scarf joint
+	Add to sides of headstock
+	Apply headstock veneer (Perhaps bookmatched rosewood outside and maple wedge to match end graft?  http://3.bp.blogspot.com/_n4VnkbsUaD0/SN1JeDszvjI/AAAAAAAAAS0/E_R8JxE_5yA/s320/234.jpg)
+	Shape heel and drill to accept captive nuts
+	
+Attach neck (http://www.kennethmichaelguitars.com/neckfitpart1.html)
+	Cut mortise in body
+	Cut matching tenon on neck
+	
+
+Install binding + perfling on Body and Neck
