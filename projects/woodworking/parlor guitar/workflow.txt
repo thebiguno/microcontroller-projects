@@ -1,14 +1,17 @@
 Rim assembly
 	Bend sides to match template
-	Laminate neck and tail blocks (three layers, outer layers have grain parallel to side grain, inner layer is perpendicular)
-		Tail block total size: 2" wide / 3/4" thick (3x 1/4" thick laminates) ???
-		Neck block total size: 3" wide / 5/4" thick (5x 1/4" thick laminates) ???
-	Glue tail block to sides (http://www.kennethmichaelguitars.com/rim.html)
-		Ensure the butt joint is square and centered
+	Laminate neck and tail blocks (multiple layers, outer layers have grain parallel to side grain, inner layer is perpendicular)
+		Tail block total size: 3" wide / 3/4" thick (3x 1/4" thick laminates) ???
+		Neck block total size: 2.5" wide / 2" thick (5x 3/8" thick laminates) ???
+	Cut mortise into neck block (3/4" wide, 3/4" deep)
 	Drill bolt holes in neck block
+	Plug bottom part of mortise
+	Glue neck and tail blocks to sides (http://www.kennethmichaelguitars.com/rim.html)
+		Ensure the butt joint is square and centered
 	Glue neck block (http://www.kennethmichaelguitars.com/rim2.html)
 	Install side reinforcements
-		Scrap spruce, 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
+		Scrap spruce (mahogany?), 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
+		Lining will be cut to accept these reinfocements
 Top assembly
 	Join top
 	Install rosette
@@ -43,15 +46,15 @@ Binding / Purfling on body
 	Cut slot for end graft wedge
 	Use a sizing mixture of 2:1 water:hide glue (or thin, super blonde shellac) to seal wood around channel and binding strips
 	Dry fit, with mitered purfling, starting at wedge
-	Use thin CA glue to glue in place
+	Glue wedge + mitered purfling in place
+	Use thin CA glue to glue binding in place
 	Thoroughly sand to remove any surface glue
-	
-
 Rough neck assembly
 	Laminate strips (Sapele outside, veneer of walnut, maple center?  Perhaps just leave out the walnut?  Perhaps replace walnut with rosewood if there is enough left over?)
 	Cut to approx width (2"?)
 	Glue heel using same laminations
 	Cut scarf joint
+	Cut tenon
 	Add to sides of headstock
 	Apply headstock veneer (Perhaps bookmatched rosewood outside and maple wedge to match end graft?  http://3.bp.blogspot.com/_n4VnkbsUaD0/SN1JeDszvjI/AAAAAAAAAS0/E_R8JxE_5yA/s320/234.jpg)
 	Shape heel and drill to accept captive nuts
