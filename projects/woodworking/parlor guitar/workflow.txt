@@ -1,10 +1,8 @@
 Rim assembly
 	Bend sides to match template
-	Laminate neck and tail blocks (multiple layers, outer layers have grain parallel to side grain, inner layer is perpendicular)
-		Tail block total size: 3" wide / 3/4" thick (3x 1/4" thick laminates) ???
-		Neck block total size: 2.5" wide / 2" thick (5x 3/8" thick laminates) ???
-	Cut mortise into neck block (3/4" wide, 3/4" deep)
+	Laminate neck block (see diagram)
 	Drill bolt holes in neck block
+	Cut tail block (3" wide / 3/4" thick), and install vertical dowels to help prevent splitting
 	Plug bottom part of mortise
 	Glue neck and tail blocks to sides (http://www.kennethmichaelguitars.com/rim.html)
 		Ensure the butt joint is square and centered
