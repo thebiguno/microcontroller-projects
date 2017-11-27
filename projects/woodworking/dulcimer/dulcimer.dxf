@@ -957,9 +957,9 @@ AcDbLayerTableRecord
   2
 alignment_marks
  70
-0
+1
  62
-7
+-7
 420
 0
   6
@@ -19099,7 +19099,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19127,7 +19127,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19155,7 +19155,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19183,7 +19183,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19211,7 +19211,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19239,7 +19239,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19267,7 +19267,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -19295,7 +19295,7 @@ AcDbEntity
 100
 AcDbLine
   8
-0
+alignment_marks
  62
 256
 370
@@ -20795,7 +20795,7 @@ AcDbXrecord
 280
 1
  40
-331.7034886527765707
+-213.4888115183891841
   0
 XRECORD
   5
@@ -20807,7 +20807,7 @@ AcDbXrecord
 280
 1
  40
--107.0496485358264778
+-454.6097398949447097
   0
 XRECORD
   5
