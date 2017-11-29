@@ -36,15 +36,17 @@ Back assembly
 	Trim lining on body to accept braces (http://www.kennethmichaelguitars.com/attachback.html)
 	Glue back to body
 	Sand (flapper discs?) top flush with sides?  Router could work but is scary.
+Install ede graft wedge
+	Cut a slot (tapered)
+	Glue end graft in place, optionally with purfling
 Binding / Purfling on body
 	Cut rabbets in body top / back with router
 		Create a sort of sled for the body; some sort of shims to account for radiused top / bottom and keep everything flat.  Cork strips?
 		If purfling is to be used, use 3/16" groove, followed by deeper 1/8" groove.
 		If only binding is to be used, use 1/8" groove.
-	Cut slot for end graft wedge
+		To miter the purfling on the end wedge, don't cut all the way to the wedge, then clean up with a chisel.  See https://www.youtube.com/watch?v=6haG-aDM-eg at about 7:30 for instructions.
 	Use a sizing mixture of 2:1 water:hide glue (or thin, super blonde shellac) to seal wood around channel and binding strips
-	Dry fit, with mitered purfling, starting at wedge
-	Glue wedge + mitered purfling in place
+	Dry fit, with mitered purfling, starting at tail, making sure that the binding is exactly square
 	Use thin CA glue to glue binding in place
 	Thoroughly sand to remove any surface glue
 Rough neck assembly
