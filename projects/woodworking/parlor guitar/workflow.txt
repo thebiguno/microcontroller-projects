@@ -1,22 +1,20 @@
 Rim assembly
 	Bend sides to match template
-	Laminate neck and tail blocks (multiple layers, outer layers have grain parallel to side grain, inner layer is perpendicular)
-		Tail block total size: 3" wide / 3/4" thick (3x 1/4" thick laminates) ???
-		Neck block total size: 2.5" wide / 2" thick (5x 3/8" thick laminates) ???
-	Cut mortise into neck block (3/4" wide, 3/4" deep)
-	Drill bolt holes in neck block
+	Make neck and tail blocks
+        Tail block: single piece of bass wood, 3" wide / 1" thick, grain parallel to sides, with 3 holes drilled downward (across grain) with dowels glued inside to prevent cracking
+        Neck block: Laminated bass wood, 3" wide / 1" thick, 3 layers, outer layers parallel side grain, inner layer perpendicular, with holes drilled for neck, reinforced with CA glue around holes
 	Plug bottom part of mortise
 	Glue neck and tail blocks to sides (http://www.kennethmichaelguitars.com/rim.html)
 		Ensure the butt joint is square and centered
 	Glue neck block (http://www.kennethmichaelguitars.com/rim2.html)
 	Install side reinforcements
-		Scrap spruce (mahogany?), 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
+		Basswood, 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
 		Lining will be cut to accept these reinfocements
 Top assembly
 	Join top
 	Install rosette
 	Thickness top
-	Cut out top (slightly larger than needed)
+	Cut out top slightly larger than needed
 	Sand / scrape top
 	Cut bracing, radius to 25'
 	Glue bracing
