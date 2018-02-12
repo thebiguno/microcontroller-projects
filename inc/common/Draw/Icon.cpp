@@ -15,13 +15,13 @@ Icon::Icon(Stream* stream) :
 	uint8_t palette = 0x07 && this->config;
 	switch (palette) {
 		case 0: bpp = 1; bytes = (width * height) >> 3; bits = (width * height) & 0x7; break;
-		case 1: bpp = 4; bytes = (width * height) >> 1; bits = (width * height) & 0x3; break;
-		case 2: bpp = 4; bytes = (width * height) >> 1; bits = (width * height) & 0x3; break;
+		case 1: bpp = 4; bytes = (width * height) >> 1; bits = ((width * height) & 0x1) << 2; break;
+		case 2: bpp = 4; bytes = (width * height) >> 1; bits = ((width * height) & 0x1) << 2; break;
 		case 3: bpp = 8; bytes = width * height; bits = 0; break;
-		case 4: bpp = 16; bytes = (width * height) << 1; bits = 0; break;
-		case 5: bpp = 16; bytes = (width * height) << 1; bits = 0; break;
-		case 6: bpp = 24; bytes = (width * height) * 3; bits = 0; break;
-		case 7: bpp = 32; bytes = (width * height) << 2; bits = 0; break;
+		case 4: bpp = 8; bytes = width * height; bits = 0; break;
+		case 5: bpp = 12; bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
+		case 6: bpp = 16; bytes = (width * height) << 1; bits = 0; break;
+		case 7: bpp = 24; bytes = (width * height) * 3; bits = 0; break;
 		default: bpp = 0; bytes = 0; bits = 0;
 	}
 
@@ -68,14 +68,17 @@ uint16_t Icon::getDelayMs() {
 void Icon::draw_(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t palette = 0x07 && this->config;
 	switch (palette) {
-		case 0: this->draw0(draw, x, y, bit, pixel); break;
-		case 1: this->draw1(draw, x, y, bit, pixel); break;
-		case 2: this->draw2(draw, x, y, bit, pixel); break;
-		case 3: this->draw3(draw, x, y, pixel); break;
-		case 4: this->draw4(draw, x, y, pixel); break;
-		case 5: this->draw5(draw, x, y, pixel); break;
-		case 6: this->draw6(draw, x, y, pixel); break;
-		case 7: this->draw7(draw, x, y, pixel); break;
+		case 0: this->draw0(draw, x, y bit, pixel); break;
+		case 1: this->draw1(draw, bit, pixel); break;
+		case 2: this->draw2(draw, bit, pixel); break;
+		case 3: this->draw3(draw, pixel); break;
+		case 4: this->draw4(draw, pixel); break;
+		case 5: this->draw5(draw, pixel); break;
+		case 6: this->draw6(draw, pixel); break;
+		case 7: this->draw7(draw, pixel); break;
+	}
+	if (palette > 0) {
+		draw->setPixel(x,y);
 	}
 }
 
@@ -89,15 +92,14 @@ void Icon::draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 
 // 1: 4bpp = 4bit monochrome, (16 gray levels)
 // rgb hex values 00, 11, 22, ... FF
-void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
+void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	uint8_t l3 = (pixel[0] & bv(bit--)) ? 8 : 0;
 	uint8_t l2 = (pixel[0] & bv(bit--)) ? 4 : 0;
 	uint8_t l1 = (pixel[0] & bv(bit--)) ? 2 : 0;
 	uint8_t l0 = (pixel[0] & bv(bit--)) ? 1 : 0;
 	uint8_t l = (l3 | l2 | l1 | l0) * 0x11;
 	if (l > 0) {
-		draw->setColor(l,l,l,0xff);
-		draw->setPixel(x, y);
+		draw->setColor(l,l,l);
 	}
 }
 
@@ -105,9 +107,9 @@ void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 // rgb hex values 00, 55, AA, FF
 // L = 00, AA
 // H = 55, FF
-// this mode is just like CGA
+// simulates CGA / Tandy palette
 // this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
-void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
+void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	uint8_t r = (pixel[0] & bv(bit--)) * 0x55;
 	uint8_t g = (pixel[0] & bv(bit--)) * 0x55;
 	uint8_t b = (pixel[0] & bv(bit--)) * 0x55;
@@ -118,13 +120,14 @@ void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 	} else {
 		draw->setColor(r+i, g+i, b+i, 0xff);
 	}
-	draw->setPixel(x, y);
 }
 
-// 3: 8bpp R2G2B2I1A1 (128 colours, on/off alpha)
+// 3: 8bpp RRGGBBIA (128 colours, on/off alpha)
+// simulates Sam Coupé 7-bit palette
 // L = 11, 55, 99, DD
 // H = 33, 77, BB, FF
-void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
+// this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
+void Icon::draw3(Draw* draw, uint8_t* pixel) {
 	uint8_t a = (pixel[0] & 0x1) * 0xff;
 	uint8_t i = ((pixel[0] >> 1) & 0x1) << 2;
 	uint8_t r = pixel[0] >> 6;
@@ -137,42 +140,46 @@ void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	b = ((b | i) << 1) | 0x1;
 	b = (b << 4) | b;
 	draw->setColor(r, g, b, a);
-	draw->setPixel(x, y);
 }
 
-// 4: 16bpp R4G4B4A4 (4,096 colours)
-// this mode requires 12 bpp in the framebuffer
-// rgb hex values 00, 11, 22, ... FF
-void Icon::draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 4);
-	r = (r << 4) | r;
-	uint8_t g = (pixel[0] & 0xf);
-	g = (g << 4) | g;
-	uint8_t b = (pixel[1] >> 4);
-	b = (b << 4) | b;
-	uint8_t a = (pixel[1] & 0xf);
-	a = (a << 4) | a;
-	draw->setColor(r,g,b,a);
-	draw->setPixel(x, y);
+// 4: 8bpp RRRGGGBB (256 colours)
+void Icon::draw4(Draw* draw, uint8_t* pixel) {
+	// r & g have the values 0x03, 0x27, 0x4b, 0x6f, 0x93, 0xb7, 0xdb, 0xff
+	// b has the values 0x27, 0x6f, 0xb7, 0xff
+	// they are assigned in this way to preserve the ability to make gray
+	uint8_t r = pixel[0] >> 5;
+	r = (r * 0x24) + 0x03;
+	uint8_t g = (pixel[0] >> 2) & 0x07;
+	g = (g * 0x24) + 0x03;
+	uint8_t b = pixel[0] & 0x03;
+	b = (b * 0x24) + 0x03;
+	draw->setColor(r,g,b);
 }
 
-// 5: 16bpp R5G5B5A1 (32,767 colours)
-// this mode requires a minimum of 15 bpp in the framebuffer
-void Icon::draw5(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
-	uint8_t r = (pixel[0] >> 3);
-	r = (r << 3) | (r >> 2);
-	uint8_t g = ((pixel[0] & 0x7) << 2) | (pixel[1] >> 6);
-	g = (g << 3) | (g >> 2);
-	uint8_t b = ((pixel[1] & 0x3e) >> 1);
-	b = (b << 3) | (b >> 2);
-	uint8_t a = (pixel[1] & 0x1) * 0xff;
-	draw->setColor(r,g,b,a);
-	draw->setPixel(x, y);
+// 4: 12bpp RRRRGGGGBBBB (4096 colours)
+// this is like using web colors like #abc instead of #aabbcc
+void Icon::draw5(Draw* draw, uint8_t bit, uint8_t* pixel) {
+	uint8_t i = 0;
+	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
+	r = (r << 4) | r
+	bit-=4
+	if (bit > 7) {
+		bit = 7; i++;
+	}
+	uint8_t g = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
+	g = (g << 4) | g
+	bit-=4
+	if (bit > 7) {
+		bit = 7; i++;
+	}
+	uint8_t b = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
+	b = (g << 4) | b
+	draw->setColor(r,g,b)
 }
 
-// 6: 16bpp R5G6B5 (65,535 colours)
-// this mode requires a minimum of 18 bpp in the framebuffer
-void Icon::draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
+// 6: 16bpp RRRRRGGG GGGBBBBB (65,535 colours)
+void Icon::draw6(Draw* draw, uint8_t* pixel) {
+	// TODO should this be re-worked to preseve grays?
 	uint8_t r = (pixel[0] >> 3);
 	r = (r << 3) | (r >> 2);
 	uint8_t g = ((pixel[0] & 0x7) << 3) | (pixel[1] >> 5);
@@ -180,14 +187,11 @@ void Icon::draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t b = (pixel[1] & 0x1f);
 	b = (b << 3) | (b >> 2);
 	draw->setColor(r,g,b,0xff);
-	draw->setPixel(x, y);
 }
 
-// 7: 24bpp R8G8B8
-// this mode requires a minimum of 24 bpp in the framebuffer
-void Icon::draw7(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
+// 7: 24bpp RRRRRRRR GGGGGGGG BBBBBBBB
+void Icon::draw7(Draw* draw, uint8_t* pixel) {
 	draw->setColor(pixel[0], pixel[1], pixel[2], 0xff);
-	draw->setPixel(x, y);
 }
 
 void Icon::draw(Draw* draw, int16_t x, int16_t y, uint8_t orientation) {
