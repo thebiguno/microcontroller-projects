@@ -124,8 +124,8 @@ void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
 
 // 3: 8bpp RRGGBBIA (128 colours, on/off alpha)
 // simulates Sam Coupé 7-bit palette
-// L = 11, 55, 99, DD
-// H = 33, 77, BB, FF
+// L = 0x11, 0x55, 0x99, 0xdd
+// H = 0x33, 0x77, 0xbb, 0xff
 // this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
 void Icon::draw3(Draw* draw, uint8_t* pixel) {
 	uint8_t a = (pixel[0] & 0x1) * 0xff;
@@ -144,20 +144,19 @@ void Icon::draw3(Draw* draw, uint8_t* pixel) {
 
 // 4: 8bpp RRRGGGBB (256 colours)
 void Icon::draw4(Draw* draw, uint8_t* pixel) {
-	// r & g have the values 0x03, 0x27, 0x4b, 0x6f, 0x93, 0xb7, 0xdb, 0xff
-	// b has the values 0x27, 0x6f, 0xb7, 0xff
-	// they are assigned in this way to preserve the ability to make gray
+	// r & g have the values 0x11, 0x33, 0x55, 0x77, 0x99, 0xbb, 0xdd, 0xff
+	// b has the values            0x33,       0x77,       0xbb,       0xff
 	uint8_t r = pixel[0] >> 5;
-	r = (r * 0x24) + 0x03;
+	r = (r * 0x22) + 0x11;
 	uint8_t g = (pixel[0] >> 2) & 0x07;
-	g = (g * 0x24) + 0x03;
+	g = (g * 0x22) + 0x11;
 	uint8_t b = pixel[0] & 0x03;
-	b = (b * 0x24) + 0x03;
+	b = (b * 0x44) + 0x33;
 	draw->setColor(r,g,b);
 }
 
-// 4: 12bpp RRRRGGGGBBBB (4096 colours)
-// this is like using web colors like #abc instead of #aabbcc
+// 5: 12bpp RRRRGGGGBBBB (4096 colours)
+// this is like using web colors like #rgb instead of #rrggbb
 void Icon::draw5(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	uint8_t i = 0;
 	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
@@ -179,14 +178,19 @@ void Icon::draw5(Draw* draw, uint8_t bit, uint8_t* pixel) {
 
 // 6: 16bpp RRRRRGGG GGGBBBBB (65,535 colours)
 void Icon::draw6(Draw* draw, uint8_t* pixel) {
+	// g have the values 0x00, 0x04, 0x08, 0x12, 0x16, 0x20, ..., 0xfb, 0xff
+	// r & b has the values 0x00, 0x08, 0x10, 0x19, 0x21, ..., 0xf7, 0xff
+
 	// TODO should this be re-worked to preseve grays?
 	uint8_t r = (pixel[0] >> 3);
-	r = (r << 3) | (r >> 2);
 	uint8_t g = ((pixel[0] & 0x7) << 3) | (pixel[1] >> 5);
-	g = (g << 2) | (g >> 3);
 	uint8_t b = (pixel[1] & 0x1f);
-	b = (b << 3) | (b >> 2);
-	draw->setColor(r,g,b,0xff);
+
+	R8 = (r * 527 + 23) >> 6;
+	G8 = (g * 259 + 33) >> 6;
+	B8 = (b * 527 + 23) >> 6;
+
+	draw->setColor(r,g,b);
 }
 
 // 7: 24bpp RRRRRRRR GGGGGGGG BBBBBBBB

@@ -88,11 +88,11 @@
         set('palette', palette)
 
         switch (palette) {
-          case 0: bpp = 1; bytes = (width * height) >> 3; bits = (width * height) & 0x7;
-          case 1: bpp = 4; bytes = (width * height) >> 1; bits = (width * height) & 0x3;
-          case 2: bpp = 4; bytes = (width * height) >> 1; bits = (width * height) & 0x3;
+          case 0: bpp = 1; bytes = (width * height) / 8; bits = (width * height) & 0x7;
+          case 1: bpp = 4; bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4
+          case 2: bpp = 4; bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4
           case 3: bpp = 8; bytes = width * height; bits = 0;
-          // case 4: bpp = 16; bytes = (width * height) << 1; bits = 0;
+          case 4: bpp = 8; bytes = width * height; bits = 0;
           // case 5: bpp = 16; bytes = (width * height) << 1; bits = 0;
           // case 6: bpp = 24; bytes = (width * height) * 3; bits = 0;
           // case 7: bpp = 32; bytes = (width * height) << 2; bits = 0;
@@ -170,6 +170,8 @@
 
       read2: function(icon, byte, bit, buffer) {
         // 4-bit RGBI 16 colour
+        // L = 00, AA
+        // H = 55, FF
         var v = buffer(byte)
         var r = (v & bv(bit--)) * 0x55;
         var g = (v & bv(bit--)) * 0x55;
@@ -187,6 +189,8 @@
 
       read3: function(icon, byte, buffer) {
         // 8-bit RRGGBBIA 128 colour
+        // L = 0x11, 0x55, 0x99, 0xdd
+        // H = 0x33, 0x77, 0xbb, 0xff
         var v = buffer[byte]
         var a = (v & 0x1) * 0xff;
         var i = ((v >> 1) & 0x1) << 2;
@@ -199,6 +203,20 @@
         var b = (v >> 4) & 0x3;
         b = ((b | i) << 1) | 0x1;
         b = (b << 4) | b;
+        setColor(r, g, b, a);
+      },
+
+      read4: function(icon, byte, buffer) {
+        // 4: 8bpp RRRGGGBB (256 colours)
+        // r & g have the values 0x11, 0x33, 0x55, 0x77, 0x99, 0xbb, 0xdd, 0xff
+        // b has the values            0x33,       0x77,       0xbb,       0xff
+        var v = buffer[byte]
+        var r = pixel[0] >> 5;
+      	r = (r * 0x22) + 0x11;
+      	var g = (buffer[0] >> 2) & 0x07;
+      	g = (g * 0x22) + 0x11;
+      	var b = buffer[0] & 0x03;
+      	b = (b * 0x44) + 0x33;
         setColor(r, g, b, a);
       },
 
@@ -234,6 +252,14 @@
                 for (var b = 0x11; b <= 0xdd; b += 0x44) {
                   result.push([r+i, g+i, b+i])
                 }
+              }
+            }
+          }
+        } else if (mode == 4) {
+          for (var r = 0x11; r <= 0xff; r += 0x22) {
+            for (var g = 0x11; g <= 0xff; g += 0x22) {
+              for (var b = 0x33; b <= 0xff; b += 0x44) {
+                result.push([r, g, b])
               }
             }
           }
@@ -384,20 +410,27 @@
                     },{
                       xtype: 'selectfield',
                       reference: 'selectpalette',
+                      required: true,
                       label: 'Palette',
                       value: 3,
                       options: [{
-                        text: '1 bpp: monochrome',
+                        text: '1 bpp monochrome',
                         value: 0
                       },{
-                        text: '4 bpp: 16 grays',
+                        text: '4 bpp 16 grays',
                         value: 1
                       },{
-                        text: '4 bpp: 16 colours (CGA)',
+                        text: '4 bpp 16 colours',
                         value: 2
                       },{
-                        text: '8 bpp: 128 colours (SAM Coupé)',
+                        text: '8 bpp 128 colours',
                         value: 3
+                      },{
+                        text: '8 bpp 256 colours',
+                        value: 4
+                      },{
+                        text: '12 bpp 4096 colours',
+                        value: 5
                       }],
                       listeners: {
                         change: 'onPaletteChange'
@@ -418,6 +451,15 @@
                     xtype: 'fieldset',
                     title: 'Pixel',
                     items: [{
+                      xtype: 'textfield',
+                      reference: 'hex',
+                      label: 'Color',
+                      value: 'f00',
+                      required: true,
+                      listeners: {
+                        change: 'onColorChange'
+                      }
+                    },{
                       xtype: 'panel',
                       layout: 'card',
                       reference: 'palette',
@@ -652,51 +694,33 @@
         this.sprites_d = [
           { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#d99', value: 58 },
           { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#d55', value: 53 },
-          //{ type: 'hexagon', x: 170, y: 70, l: 9, fillStyle: '#d11', value: 48 },
 
           { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#d95', value: 57 },
-          // { type: 'hexagon', x: 150, y: 40, l: 9, fillStyle: '#d91', value: 56 },
-          // { type: 'hexagon', x: 160, y: 55, l: 9, fillStyle: '#d51', value: 52 },
 
           { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#dd9', value: 62 },
           { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#dd5', value: 61 },
-          // { type: 'hexagon', x: 140, y: 25, l: 9, fillStyle: '#dd1', value: 60 },
 
           { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#9d5', value: 45 },
-          // { type: 'hexagon', x: 120, y: 25, l: 9, fillStyle: '#9d1', value: 44 },
-          // { type: 'hexagon', x: 100, y: 25, l: 9, fillStyle: '#5d1', value: 28 },
 
           { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#9d9', value: 46 },
           { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#5d5', value: 29 },
-          // { type: 'hexagon', x: 80, y: 25, l: 9, fillStyle: '#1d1', value: 12 },
 
           { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#5d9', value: 30 },
-          // { type: 'hexagon', x: 60, y: 55, l: 9, fillStyle: '#1d9', value: 14 },
-          // { type: 'hexagon', x: 70, y: 40, l: 9, fillStyle: '#1d5', value: 13 },
 
           { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#9dd', value: 47 },
           { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#5dd', value: 31 },
-          // { type: 'hexagon', x: 50, y: 70, l: 9, fillStyle: '#1dd', value: 15 },
 
           { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#59d', value: 27 },
-          // { type: 'hexagon', x: 60, y: 85, l: 9, fillStyle: '#19d', value: 11 },
-          // { type: 'hexagon', x: 70, y: 100, l: 9, fillStyle: '#15d', value: 7 },
 
           { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#99d', value: 43 },
           { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#55d', value: 23 },
-          // { type: 'hexagon', x: 80, y: 115, l: 9, fillStyle: '#11d', value: 3 },
 
           { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#95d', value: 39 },
-          // { type: 'hexagon', x: 120, y: 115, l: 9, fillStyle: '#91d', value: 35 },
-          // { type: 'hexagon', x: 100, y: 115, l: 9, fillStyle: '#51d', value: 19 },
 
           { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#d9d', value: 59 },
           { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#d5d', value: 55 },
-          // { type: 'hexagon', x: 140, y: 115, l: 9, fillStyle: '#d1d', value: 51 },
 
           { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#d59', value: 54 },
-          // { type: 'hexagon', x: 150, y: 100, l: 9, fillStyle: '#d19', value: 50 },
-          // { type: 'hexagon', x: 160, y: 85, l: 9, fillStyle: '#d15', value: 49 },
 
           { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#ddd', value: 63 }
         ].concat(this.sprites_x);
@@ -727,51 +751,33 @@
         this.sprites_3 = [
           { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#733', value: 16 },
           { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#b33', value: 32 },
-          //{ type: 'hexagon', x: 170, y: 70, l: 9, fillStyle: '#f33', value: 48 },
 
           { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#b73', value: 36 },
-          //{ type: 'hexagon', x: 160, y: 55, l: 9, fillStyle: '#f73', value: 52 },
-          //{ type: 'hexagon', x: 150, y: 40, l: 9, fillStyle: '#fb3', value: 56 },
 
           { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#773', value: 20 },
           { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#bb3', value: 40 },
-          //{ type: 'hexagon', x: 140, y: 25, l: 9, fillStyle: '#ff3', value: 60 },
 
           { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#7b3', value: 24 },
-          //{ type: 'hexagon', x: 100, y: 25, l: 9, fillStyle: '#7f3', value: 28 },
-          //{ type: 'hexagon', x: 120, y: 25, l: 9, fillStyle: '#bf3', value: 44 },
 
           { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#373', value: 4 },
           { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#3b3', value: 8 },
-          //{ type: 'hexagon', x: 80, y: 25, l: 9, fillStyle: '#3f3', value: 12 },
 
           { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#3b7', value: 9 },
-          //{ type: 'hexagon', x: 70, y: 40, l: 9, fillStyle: '#3f7', value: 13 },
-          //{ type: 'hexagon', x: 60, y: 55, l: 9, fillStyle: '#3fb', value: 14 },
 
           { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#377', value: 5 },
           { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#3bb', value: 10 },
-          //{ type: 'hexagon', x: 50, y: 70, l: 9, fillStyle: '#3ff', value: 15 },
 
           { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#37b', value: 6 },
-          //{ type: 'hexagon', x: 70, y: 100, l: 9, fillStyle: '#37f', value: 7 },
-          //{ type: 'hexagon', x: 60, y: 85, l: 9, fillStyle: '#3bf', value: 11 },
 
           { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#337', value: 1 },
           { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#33b', value: 2 },
-          //{ type: 'hexagon', x: 80, y: 115, l: 9, fillStyle: '#33f', value: 3 },
 
           { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#73b', value: 18 },
-          //{ type: 'hexagon', x: 100, y: 115, l: 9, fillStyle: '#73f', value: 19 },
-          //{ type: 'hexagon', x: 120, y: 115, l: 9, fillStyle: '#b3f', value: 35 },
 
           { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#737', value: 17 },
           { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#b3b', value: 34 },
-          //{ type: 'hexagon', x: 140, y: 115, l: 9, fillStyle: '#f3f', value: 51 },
 
           { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#b37', value: 33 },
-          //{ type: 'hexagon', x: 160, y: 85, l: 9, fillStyle: '#f37', value: 49 },
-          //{ type: 'hexagon', x: 150, y: 100, l: 9, fillStyle: '#f3b', value: 50 },
 
           { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#333', value: 0 }
         ].concat(this.sprites_x);
