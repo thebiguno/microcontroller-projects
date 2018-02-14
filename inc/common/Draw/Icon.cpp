@@ -104,21 +104,26 @@ void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
 }
 
 // 2: 4bpp RGBI = 1bit high/low, 1bit red, 1bit green, 1bit blue (16 colours, no alpha)
-// rgb hex values 00, 55, AA, FF
-// L = 00, AA
-// H = 55, FF
+// L = 0x22, 0xaa
+// H = 0x77, 0xff
 // simulates CGA / Tandy palette
 // this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
 void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
-	uint8_t r = (pixel[0] & bv(bit--)) * 0x55;
-	uint8_t g = (pixel[0] & bv(bit--)) * 0x55;
-	uint8_t b = (pixel[0] & bv(bit--)) * 0x55;
-	uint8_t i = (pixel[0] & bv(bit--)) * 0x55;
+	uint8_t r = (pixel[0] & bv(bit--));
+	uint8_t g = (pixel[0] & bv(bit--));
+	uint8_t b = (pixel[0] & bv(bit--));
+	uint8_t i = (pixel[0] & bv(bit--));
+
+	r*=0x88
+	g*=0x88
+	b*=0x88
+	i*=0x55
+
 	if (r & g & !b & !i) {
 		// use an orange/brown instead of a dark yellow (just like CGA)
-		draw->setColor(0xaa, 0x55, 0x00);
+		draw->setColor(0xaa, 0x55, 0x22);
 	} else {
-		draw->setColor(r+i, g+i, b+i, 0xff);
+		draw->setColor(r+i+2, g+i+2, b+i+2);
 	}
 }
 
@@ -131,15 +136,16 @@ void Icon::draw3(Draw* draw, uint8_t* pixel) {
 	uint8_t a = (pixel[0] & 0x1) * 0xff;
 	uint8_t i = ((pixel[0] >> 1) & 0x1) << 2;
 	uint8_t r = pixel[0] >> 6;
-	r = ((r | i) << 1) | 0x1;		// add intensity, add 1
-	r = (r << 4) | r;
 	uint8_t g = (pixel[0] >> 4) & 0x3;
-	g = ((g | i) << 1) | 0x1;
-	g = (g << 4) | g;
 	uint8_t b = (pixel[0] >> 4) & 0x3;
-	b = ((b | i) << 1) | 0x1;
-	b = (b << 4) | b;
-	draw->setColor(r, g, b, a);
+
+	// (i * 2) + (x * 4) + 1
+	r*=0x44
+	g*=0x44
+	b*=0x44
+	i*=0x22
+
+	draw->setColor(r+i+1, g+i+1, b+i+1);
 }
 
 // 4: 8bpp RRRGGGBB (256 colours)

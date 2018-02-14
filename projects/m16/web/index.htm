@@ -383,7 +383,7 @@
                 border: true,
                 xtype: 'panel',
                 layout: 'vbox',
-                width: 250,
+                width: 240,
                 items: [{
                   xtype: 'formpanel',
                   items: [{
@@ -478,6 +478,12 @@
                       },{
                         xtype: 'palette3',
                         listeners: {change: 'onColorChange'}
+                      },{
+                        xtype: 'palette4',
+                        listeners: {change: 'onColorChange'}
+                      },{
+                        xtype: 'palette5',
+                        listeners: {change: 'onColorChange'}
                       }]
                     }]
                   }]
@@ -537,10 +543,30 @@
       extend: 'Ext.draw.Container',
       alias: 'widget.palette0',
       plugins: ['spriteevents'],
-      sprites: [
-        { type: 'hexagon', x: 80, y: 20, l: 39, fillStyle: '#fff', strokeStyle: '#aaa', value: 1 },
-        { type: 'hexagon', x: 160, y: 20, l: 39, fillStyle: '#000', value: 0 },
-      ],
+      initialize: function() {
+        var sprites = []
+        var y = 0;
+        // colors
+        for (var i = 0; i < 2; i++) {
+          var l = (15*i).toString(16)
+          var fill = "#"+l+l+l
+          sprites.push({ type: 'rect', x: i*96, y: 0, width: 96, height: 12, fillStyle: fill, strokeStyle: '#000', kind: 'gray', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (var j = 0; j < 2; j++) {
+          for (var i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
+        this.callParent();
+        this.setSprites(sprites);
+      },
       listeners: {
         spriteclick: function (item, event) {
           var sprite = item && item.sprite;
@@ -556,24 +582,30 @@
       extend: 'Ext.draw.Container',
       alias: 'widget.palette1',
       plugins: ['spriteevents'],
-      sprites: [
-        { type: 'hexagon', x: 70, y: 10, l: 19, fillStyle: '#000', value: 0 },
-        { type: 'hexagon', x: 50, y: 40, l: 19, fillStyle: '#111', value: 1 },
-        { type: 'hexagon', x: 30, y: 70, l: 19, fillStyle: '#222', value: 2 },
-        { type: 'hexagon', x: 50, y: 100, l: 19, fillStyle: '#333', value: 3 },
-        { type: 'hexagon', x: 70, y: 70, l: 19, fillStyle: '#444', value: 4 },
-        { type: 'hexagon', x: 90, y: 40, l: 19, fillStyle: '#555', value: 5 },
-        { type: 'hexagon', x: 110, y: 10, l: 19, fillStyle: '#666', value: 6 },
-        { type: 'hexagon', x: 150, y: 10, l: 19, fillStyle: '#777', value: 7 },
-        { type: 'hexagon', x: 130, y: 40, l: 19, fillStyle: '#888', value: 8 },
-        { type: 'hexagon', x: 110, y: 70, l: 19, fillStyle: '#999', value: 9 },
-        { type: 'hexagon', x: 90, y: 100, l: 19, fillStyle: '#aaa', value: 10 },
-        { type: 'hexagon', x: 130, y: 100, l: 19, fillStyle: '#bbb', value: 11 },
-        { type: 'hexagon', x: 150, y: 70, l: 19, fillStyle: '#ccc', value: 12 },
-        { type: 'hexagon', x: 170, y: 40, l: 19, fillStyle: '#ddd', value: 13 },
-        { type: 'hexagon', x: 190, y: 70, l: 19, fillStyle: '#eee', value: 14 },
-        { type: 'hexagon', x: 170, y: 100, l: 19, fillStyle: '#fff', value: 15, strokeStyle: '#aaa' },
-      ],
+      initialize: function() {
+        var sprites = []
+        var y = 0
+        // colors
+        for (var i = 0; i < 16; i++) {
+          var l = i.toString(16)
+          var fill = "#"+l+l+l
+          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: fill, strokeStyle: '#000', kind: 'grey', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (var j = 0; j < 2; j++) {
+          for (var i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
+        this.callParent();
+        this.setSprites(sprites);
+      },
       listeners: {
         spriteclick: function (item, event) {
           var sprite = item && item.sprite;
@@ -590,24 +622,55 @@
       extend: 'Ext.draw.Container',
       alias: 'widget.palette2',
       plugins: ['spriteevents'],
-      sprites: [
-        { type: 'hexagon', x: 150, y: 70, l: 19, fillStyle: '#f55', value: 4 },
-    		{ type: 'hexagon', x: 190, y: 70, l: 19, fillStyle: '#a00', value: 12 },
-    		{ type: 'hexagon', x: 130, y: 40, l: 19, fillStyle: '#ff5', value: 6 },
-    		{ type: 'hexagon', x: 150, y: 10, l: 19, fillStyle: '#a50', value: 14 },
-    		{ type: 'hexagon', x: 90, y: 40, l: 19, fillStyle: '#5f5', value: 2 },
-    		{ type: 'hexagon', x: 70, y: 10, l: 19, fillStyle: '#0a0', value: 10 },
-        { type: 'hexagon', x: 70, y: 70, l: 19, fillStyle: '#5ff', value: 3 },
-    		{ type: 'hexagon', x: 30, y: 70, l: 19, fillStyle: '#0aa', value: 11 },
-        { type: 'hexagon', x: 90, y: 100, l: 19, fillStyle: '#55f', value: 1 },
-    		{ type: 'hexagon', x: 70, y: 130, l: 19, fillStyle: '#00a', value: 9 },
-    		{ type: 'hexagon', x: 130, y: 100, l: 19, fillStyle: '#f5f', value: 5 },
-        { type: 'hexagon', x: 150, y: 130, l: 19, fillStyle: '#a0a', value: 13 },
-    		{ type: 'hexagon', x: 50, y: 100, l: 19, fillStyle: '#000', value: 0 },
-    		{ type: 'hexagon', x: 170, y: 100, l: 19, fillStyle: '#555', value: 8 },
-    		{ type: 'hexagon', x: 110, y: 10, l: 19, fillStyle: '#aaa', value: 7 },
-    		{ type: 'hexagon', x: 110, y: 70, l: 19, fillStyle: '#fff', value: 15, strokeStyle: '#aaa' }
-      ],
+      initialize: function() {
+        var f = function(r,g,b,n) {
+          if (r & g & !b & !n) {
+            return "#a52"
+          } else {
+            r*=0x8
+            g*=0x8
+            b*=0x8
+            n*=0x5
+            return "#" + (r+n+2).toString(16) + (g+n+2).toString(16) + (b+n+2).toString(16)
+          }
+        }
+        var sprites = []
+        var n = 0
+        var r = 1
+        var g = 0
+        var b = 0
+        var y = 0
+        // colors
+        for (var i = 0; i < 2; i++) {
+          sprites.push({ type: 'rect', x: i*96, y: y, width: 96, height: 12, fillStyle: f(r,g,b,i), strokeStyle: '#000', kind: 'intensity', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 2; i++) {
+          sprites.push({ type: 'rect', x: i*96, y: y, width: 96, height: 12, fillStyle: f(i,g,b,n), strokeStyle: '#000', kind: 'red', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 2; i++) {
+          sprites.push({ type: 'rect', x: i*96, y: y, width: 96, height: 12, fillStyle: f(r,i,b,n), strokeStyle: '#000', kind: 'green', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 2; i++) {
+          sprites.push({ type: 'rect', x: i*96, y: y, width: 96, height: 12, fillStyle: f(r,g,i,n), strokeStyle: '#000', kind: 'blue', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (j = 0; j < 2; j++) {
+          for (i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
+        this.callParent();
+        this.setSprites(sprites);
+      },
       listeners: {
         spriteclick: function (item, event) {
           var sprite = item && item.sprite;
@@ -625,297 +688,165 @@
       alias: 'widget.palette3',
       plugins: ['spriteevents'],
       initialize: function() {
-        // the greys at the bottom
-        this.sprites_x = [
-          { type: 'hexagon', x: 30, y: 130, l: 9, fillStyle: '#000', strokeStyle: '#a00', value: 0 },
-          { type: 'hexagon', x: 50, y: 130, l: 9, fillStyle: '#111', value: 1 },
-          { type: 'hexagon', x: 70, y: 130, l: 9, fillStyle: '#333', value: 3 },
-          { type: 'hexagon', x: 90, y: 130, l: 9, fillStyle: '#555', value: 85 },
-          { type: 'hexagon', x: 110, y: 130, l: 9, fillStyle: '#777', value: 87 },
-          { type: 'hexagon', x: 130, y: 130, l: 9, fillStyle: '#999', value: 169 },
-          { type: 'hexagon', x: 150, y: 130, l: 9, fillStyle: '#bbb', value: 171 },
-          { type: 'hexagon', x: 170, y: 130, l: 9, fillStyle: '#ddd', value: 253 },
-          { type: 'hexagon', x: 190, y: 130, l: 9, fillStyle: '#fff', strokeStyle: '#aaa', value: 255 }
-        ];
-        // L = 11, 55, 99, DD
-        // H = 33, 77, BB, FF
-
-        this.sprites_f = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#fbb', value: 58 },
-          { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#f77', value: 53 },
-          { type: 'hexagon', x: 170, y: 70, l: 9, fillStyle: '#f33', value: 48 },
-
-          { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#fb7', value: 57 },
-          { type: 'hexagon', x: 150, y: 40, l: 9, fillStyle: '#fb3', value: 56 },
-          { type: 'hexagon', x: 160, y: 55, l: 9, fillStyle: '#f73', value: 52 },
-
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#ffb', value: 62 },
-          { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#ff7', value: 61 },
-          { type: 'hexagon', x: 140, y: 25, l: 9, fillStyle: '#ff3', value: 60 },
-
-          { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#bf7', value: 45 },
-          { type: 'hexagon', x: 120, y: 25, l: 9, fillStyle: '#bf3', value: 44 },
-          { type: 'hexagon', x: 100, y: 25, l: 9, fillStyle: '#7f3', value: 28 },
-
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#bfb', value: 46 },
-          { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#7f7', value: 29 },
-          { type: 'hexagon', x: 80, y: 25, l: 9, fillStyle: '#3f3', value: 12 },
-
-          { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#7fb', value: 30 },
-          { type: 'hexagon', x: 60, y: 55, l: 9, fillStyle: '#3fb', value: 14 },
-          { type: 'hexagon', x: 70, y: 40, l: 9, fillStyle: '#3f7', value: 13 },
-
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#bff', value: 47 },
-          { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#7ff', value: 31 },
-          { type: 'hexagon', x: 50, y: 70, l: 9, fillStyle: '#3ff', value: 15 },
-
-          { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#7bf', value: 27 },
-          { type: 'hexagon', x: 60, y: 85, l: 9, fillStyle: '#3bf', value: 11 },
-          { type: 'hexagon', x: 70, y: 100, l: 9, fillStyle: '#37f', value: 7 },
-
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#bbf', value: 43 },
-          { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#77f', value: 23 },
-          { type: 'hexagon', x: 80, y: 115, l: 9, fillStyle: '#33f', value: 3 },
-
-          { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#b7f', value: 39 },
-          { type: 'hexagon', x: 120, y: 115, l: 9, fillStyle: '#b3f', value: 35 },
-          { type: 'hexagon', x: 100, y: 115, l: 9, fillStyle: '#73f', value: 19 },
-
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#fbf', value: 59 },
-          { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#f7f', value: 55 },
-          { type: 'hexagon', x: 140, y: 115, l: 9, fillStyle: '#f3f', value: 51 },
-
-          { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#f7b', value: 54 },
-          { type: 'hexagon', x: 150, y: 100, l: 9, fillStyle: '#f3b', value: 50 },
-          { type: 'hexagon', x: 160, y: 85, l: 9, fillStyle: '#f37', value: 49 },
-
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#fff', strokeStyle: '#bbb', value: 63 }
-        ].concat(this.sprites_x);
-        this.sprites_d = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#d99', value: 58 },
-          { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#d55', value: 53 },
-
-          { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#d95', value: 57 },
-
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#dd9', value: 62 },
-          { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#dd5', value: 61 },
-
-          { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#9d5', value: 45 },
-
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#9d9', value: 46 },
-          { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#5d5', value: 29 },
-
-          { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#5d9', value: 30 },
-
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#9dd', value: 47 },
-          { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#5dd', value: 31 },
-
-          { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#59d', value: 27 },
-
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#99d', value: 43 },
-          { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#55d', value: 23 },
-
-          { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#95d', value: 39 },
-
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#d9d', value: 59 },
-          { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#d5d', value: 55 },
-
-          { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#d59', value: 54 },
-
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#ddd', value: 63 }
-        ].concat(this.sprites_x);
-        this.sprites_b = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#b77', value: 37 },
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#bb7', value: 41 },
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#7b7', value: 25 },
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#7bb', value: 26 },
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#77b', value: 22 },
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#b7b', value: 38 },
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#bbb', value: 42 }
-        ].concat(this.sprites_x);
-        this.sprites_9 = [
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#999', value: 42 }
-        ].concat(this.sprites_x);
-        this.sprites_7 = [
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#777', value: 21 }
-        ].concat(this.sprites_x);
-        this.sprites_5 = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#955', value: 37 },
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#995', value: 41 },
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#595', value: 25 },
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#599', value: 26 },
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#559', value: 22 },
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#959', value: 38 },
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#555', value: 42 }
-        ].concat(this.sprites_x);
-        this.sprites_3 = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#733', value: 16 },
-          { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#b33', value: 32 },
-
-          { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#b73', value: 36 },
-
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#773', value: 20 },
-          { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#bb3', value: 40 },
-
-          { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#7b3', value: 24 },
-
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#373', value: 4 },
-          { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#3b3', value: 8 },
-
-          { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#3b7', value: 9 },
-
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#377', value: 5 },
-          { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#3bb', value: 10 },
-
-          { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#37b', value: 6 },
-
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#337', value: 1 },
-          { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#33b', value: 2 },
-
-          { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#73b', value: 18 },
-
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#737', value: 17 },
-          { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#b3b', value: 34 },
-
-          { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#b37', value: 33 },
-
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#333', value: 0 }
-        ].concat(this.sprites_x);
-        this.sprites_1 = [
-          { type: 'hexagon', x: 130, y: 70, l: 9, fillStyle: '#511', value: 16 },
-          { type: 'hexagon', x: 150, y: 70, l: 9, fillStyle: '#911', value: 32 },
-          { type: 'hexagon', x: 170, y: 70, l: 9, fillStyle: '#d11', value: 48 },
-
-          { type: 'hexagon', x: 140, y: 55, l: 9, fillStyle: '#951', value: 36 },
-          { type: 'hexagon', x: 160, y: 55, l: 9, fillStyle: '#d51', value: 52 },
-          { type: 'hexagon', x: 150, y: 40, l: 9, fillStyle: '#d91', value: 56 },
-
-          { type: 'hexagon', x: 120, y: 55, l: 9, fillStyle: '#551', value: 20 },
-          { type: 'hexagon', x: 130, y: 40, l: 9, fillStyle: '#991', value: 40 },
-          { type: 'hexagon', x: 140, y: 25, l: 9, fillStyle: '#dd1', value: 60 },
-
-          { type: 'hexagon', x: 110, y: 40, l: 9, fillStyle: '#591', value: 24 },
-          { type: 'hexagon', x: 100, y: 25, l: 9, fillStyle: '#5d1', value: 28 },
-          { type: 'hexagon', x: 120, y: 25, l: 9, fillStyle: '#9d1', value: 44 },
-
-          { type: 'hexagon', x: 100, y: 55, l: 9, fillStyle: '#151', value: 4 },
-          { type: 'hexagon', x: 90, y: 40, l: 9, fillStyle: '#191', value: 8 },
-          { type: 'hexagon', x: 80, y: 25, l: 9, fillStyle: '#1d1', value: 12 },
-
-          { type: 'hexagon', x: 80, y: 55, l: 9, fillStyle: '#195', value: 9 },
-          { type: 'hexagon', x: 70, y: 40, l: 9, fillStyle: '#1d5', value: 13 },
-          { type: 'hexagon', x: 60, y: 55, l: 9, fillStyle: '#1d9', value: 14 },
-
-          { type: 'hexagon', x: 90, y: 70, l: 9, fillStyle: '#155', value: 5 },
-          { type: 'hexagon', x: 70, y: 70, l: 9, fillStyle: '#199', value: 10 },
-          { type: 'hexagon', x: 50, y: 70, l: 9, fillStyle: '#1dd', value: 15 },
-
-          { type: 'hexagon', x: 80, y: 85, l: 9, fillStyle: '#159', value: 6 },
-          { type: 'hexagon', x: 70, y: 100, l: 9, fillStyle: '#15d', value: 7 },
-          { type: 'hexagon', x: 60, y: 85, l: 9, fillStyle: '#19d', value: 11 },
-
-          { type: 'hexagon', x: 100, y: 85, l: 9, fillStyle: '#115', value: 1 },
-          { type: 'hexagon', x: 90, y: 100, l: 9, fillStyle: '#119', value: 2 },
-          { type: 'hexagon', x: 80, y: 115, l: 9, fillStyle: '#11d', value: 3 },
-
-          { type: 'hexagon', x: 110, y: 100, l: 9, fillStyle: '#519', value: 18 },
-          { type: 'hexagon', x: 100, y: 115, l: 9, fillStyle: '#51d', value: 19 },
-          { type: 'hexagon', x: 120, y: 115, l: 9, fillStyle: '#91d', value: 35 },
-
-          { type: 'hexagon', x: 120, y: 85, l: 9, fillStyle: '#515', value: 17 },
-          { type: 'hexagon', x: 130, y: 100, l: 9, fillStyle: '#919', value: 34 },
-          { type: 'hexagon', x: 140, y: 115, l: 9, fillStyle: '#d1d', value: 51 },
-
-          { type: 'hexagon', x: 140, y: 85, l: 9, fillStyle: '#915', value: 33 },
-          { type: 'hexagon', x: 160, y: 85, l: 9, fillStyle: '#d15', value: 49 },
-          { type: 'hexagon', x: 150, y: 100, l: 9, fillStyle: '#d19', value: 50 },
-
-          { type: 'hexagon', x: 110, y: 70, l: 9, fillStyle: '#111', value: 0 }
-        ].concat(this.sprites_x);
+        var f = function(r,g,b,n) {
+          r*=4
+          g*=4
+          b*=4
+          n*=2
+          return "#" + (r+n+1).toString(16) + (g+n+1).toString(16) + (b+n+1).toString(16)
+        }
+        var sprites = []
+        var n = 1
+        var r = 3
+        var g = 0
+        var b = 0
+        var y = 0
+        // colors
+        for (var i = 0; i < 2; i++) {
+          sprites.push({ type: 'rect', x: i*96, y: y, width: 96, height: 12, fillStyle: f(r,g,b,i), strokeStyle: '#000', kind: 'intensity', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 4; i++) {
+          sprites.push({ type: 'rect', x: i*48, y: y, width: 48, height: 12, fillStyle: f(i,g,b,n), strokeStyle: '#000', kind: 'red', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 4; i++) {
+          sprites.push({ type: 'rect', x: i*48, y: y, width: 48, height: 12, fillStyle: f(r,i,b,n), strokeStyle: '#000', kind: 'green', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 4; i++) {
+          sprites.push({ type: 'rect', x: i*48, y: y, width: 48, height: 12, fillStyle: f(r,g,i,n), strokeStyle: '#000', kind: 'blue', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (j = 0; j < 2; j++) {
+          for (i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
         this.callParent();
-        this.setSprites(this.sprites_f);
+        this.setSprites(sprites);
       },
       listeners: {
         spriteclick: function (item, event) {
           var sprite = item && item.sprite;
           if (sprite) {
-            if (sprite.value == 255) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_f);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 253) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_d);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 171) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_b);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 169) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_9);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 87) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_7);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 85) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_5);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 3) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_3);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 1) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_1);
-              this.getSurface().renderFrame();
-            } else if (sprite.value == 0) {
-              this.getSurface().removeAll();
-              this.getSurface().add(this.sprites_x);
-              this.getSurface().renderFrame();
-            }
             this.fireEvent('change', sprite.value, sprite.fillStyle)
-         }
-       }
-     }
-    });
-
-    Ext.define('Icon.sprite.Hexagon', {
-        extend: 'Ext.draw.sprite.Path',
-        alias: 'sprite.hexagon',
-        type: 'hexagon',
-        inheritableStatics: {
-            def: {
-                processors: {
-                    x: 'number',
-                    y: 'number',
-                    l: 'number'
-                },
-                aliases: {
-                },
-                triggers: {
-                    x: 'path',
-                    y: 'path',
-                    l: 'path'
-                },
-                defaults: {
-                    x: 0,
-                    y: 0,
-                    l: 9
-                }
-            }
-        },
-        updatePath: function (path, attr) {
-            var x = attr.x,
-                y = attr.y,
-                l = attr.l,        // side length
-                h = attr.l / 2;    // half side length
-
-            path.fromSvgString('M'.concat(x-h, ',', y-h, 'l', [l, h, 0, l, -l, h, -l, -h, 0, -l, 'z']));
+          }
         }
+      }
     });
+
+    // palette 4 = 8 bit 3:3:2
+    Ext.define('MyApp.view.Palette4', {
+      extend: 'Ext.draw.Container',
+      alias: 'widget.palette4',
+      plugins: ['spriteevents'],
+      initialize: function() {
+        var f = function(r,g,b) {
+          r=r*2+1
+          g=g*2+1
+          b=b*4+3
+          return "#" + r.toString(16) + g.toString(16) + b.toString(16)
+        }
+        var sprites = []
+        var r = 7
+        var g = 0
+        var b = 0
+        var y = 0
+        // colors
+        for (var i = 0; i < 8; i++) {
+          sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 12, fillStyle: f(i,g,b), strokeStyle: '#000', kind: 'red', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 8; i++) {
+          sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 12, fillStyle: f(r,i,b), strokeStyle: '#000', kind: 'green', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 4; i++) {
+          sprites.push({ type: 'rect', x: i*48, y: y, width: 48, height: 12, fillStyle: f(r,g,i), strokeStyle: '#000', kind: 'blue', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (j = 0; j < 2; j++) {
+          for (i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
+        this.callParent();
+        this.setSprites(sprites);
+      },
+      listeners: {
+        spriteclick: function (item, event) {
+          var sprite = item && item.sprite;
+          if (sprite) {
+            this.fireEvent('change', sprite.value, sprite.fillStyle)
+          }
+        }
+      }
+    });
+
+    // palette 5 = 12 bit 4:4:4
+    Ext.define('MyApp.view.Palette5', {
+      extend: 'Ext.draw.Container',
+      alias: 'widget.palette5',
+      plugins: ['spriteevents'],
+      initialize: function() {
+        var f = function(r,g,b) {
+          return "#" + r.toString(16) + g.toString(16) + b.toString(16)
+        }
+        var sprites = []
+        var r = 15
+        var g = 0
+        var b = 0
+        var y = 0
+        // colors
+        for (var i = 0; i < 16; i++) {
+          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: f(i,g,b), strokeStyle: '#000', kind: 'red', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 16; i++) {
+          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: f(r,i,b), strokeStyle: '#000', kind: 'green', value: i })
+        }
+        y+=12
+        for (var i = 0; i < 16; i++) {
+          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: f(r,g,i), strokeStyle: '#000', kind: 'blue', value: i })
+        }
+        y+=12
+        // current color
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        // chips
+        y+=36
+        for (j = 0; j < 2; j++) {
+          for (i = 0; i < 8; i++) {
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+          }
+          y+=24
+        }
+        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
+        this.callParent();
+        this.setSprites(sprites);
+      },
+      listeners: {
+        spriteclick: function (item, event) {
+          var sprite = item && item.sprite;
+          if (sprite) {
+            this.fireEvent('change', sprite.value, sprite.fillStyle)
+          }
+        }
+      }
+    });
+
     </script>
 </head>
 <body>
