@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include <ESP8266.h>
-#include <ESP8266Socket.h>
+#include <ESP8266Stream.h>
 #include "MockStream.h"
 
 namespace digitalcave {

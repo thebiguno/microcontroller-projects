@@ -21,7 +21,7 @@ namespace digitalcave {
 			 * write is completed.
 			 * Returns 1 if the write was successful; 0 otherwise.
 			 */
-			virtual uint8_t write(uint8_t data) = 0;
+			virtual uint8_t write(uint8_t b) = 0;
 
 			/*
 			 * Reads data into buffer of (at most) the given length - 1.  Returns the number of bytes
@@ -45,6 +45,11 @@ namespace digitalcave {
 			 * Returns the number of bytes which were written successfully.
 			 */
 			uint16_t write(uint8_t* data, uint16_t len);
+
+			/*
+			 * Flushes any buffered output.
+			 */
+			uint8_t flush();
 
 			/*
 			 * Skip over n bytes in the stream.

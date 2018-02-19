@@ -1,6 +1,6 @@
 #include "ESP8266.h"
 
-#include "ESP8266Socket.h"
+#include "ESP8266Stream.h"
 
 #include <string.h>
 
@@ -10,13 +10,13 @@ ESP8266::ESP8266(Stream* serial) :
 	serial(serial)
 {
 	for (uint8_t id = 0; id < 5; id++) {
-		sockets[id] = new ESP8266Socket(this, id);
+		connections[id] = new ESP8266Stream(this, id);
 	}
 }
 
 ESP8266::~ESP8266() {
 	for (uint8_t id = 0; id < 5; id++) {
-		delete sockets[id];
+		delete connections[id];
 	}
 }
 
@@ -136,22 +136,30 @@ uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* server_name, uint16_
 	return 'O' == status[0];
 }
 
-ESP8266Socket* ESP8266::accept() {
+ESP8266Stream* ESP8266::accept() {
 	at_response('<');
 
 	for (uint8_t a = 0; a < 5; a++) {
 		id %= 5;
-		ESP8266Socket* socket = sockets[id];
+		ESP8266Stream* stream = connections[id];
 		id++;
 
-		if (socket->is_server() && socket->available() > 0) {
-			return socket;
+		if (stream->is_server() && stream->available() > 0) {
+			return stream;
 		}
 	}
 	return NULL;
 }
 
-ESP8266Socket* ESP8266::at_cipstart(const char* type, const char* addr, uint16_t port) {
+void ESP8266::accept(void (* f) (Stream*)) {
+	ESP8266Stream* s = accept();
+	if (s != NULL) {
+		f(s);
+		s->close();
+	}
+}
+
+ESP8266Stream* ESP8266::at_cipstart(const char* type, const char* addr, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
@@ -167,22 +175,40 @@ ESP8266Socket* ESP8266::at_cipstart(const char* type, const char* addr, uint16_t
 		serial->write("\r\n");
 		at_response('+');
 		if ('O' == status[0]) {
-			sockets[id]->openClient();
-			return sockets[id];
+			connections[id]->open_client();
+			return connections[id];
 		}
 	}
 	return 0;
 }
-ESP8266Socket* ESP8266::at_cipstart_tcp(const char* address, uint16_t port) {
+ESP8266Stream* ESP8266::at_cipstart_tcp(const char* address, uint16_t port) {
 	return at_cipstart("TCP", address, port);
 }
 
-ESP8266Socket* ESP8266::at_cipstart_udp(const char* address, uint16_t port) {
+ESP8266Stream* ESP8266::at_cipstart_udp(const char* address, uint16_t port) {
 	return at_cipstart("UDP", address, port);
 }
 
-ESP8266Socket* ESP8266::at_cipstart_ssl(const char* address, uint16_t port) {
+ESP8266Stream* ESP8266::at_cipstart_ssl(const char* address, uint16_t port) {
 	return at_cipstart("SSL", address, port);
+}
+
+void ESP8266::at_cipstart_tcp(const char* address, uint16_t port, void (* f) (Stream*)) {
+	ESP8266Stream* s = at_cipstart("TCP", address, port);
+	f(s);
+	s->close();
+}
+
+void ESP8266::at_cipstart_udp(const char* address, uint16_t port, void (* f) (Stream*)) {
+	ESP8266Stream* s = at_cipstart("UDP", address, port);
+	f(s);
+	s->close();
+}
+
+void ESP8266::at_cipstart_ssl(const char* address, uint16_t port, void (* f) (Stream*)) {
+	ESP8266Stream* s = at_cipstart("SSL", address, port);
+	f(s);
+	s->close();
 }
 
 uint8_t ESP8266::at_cipclose(uint8_t id) {
@@ -212,7 +238,7 @@ uint8_t ESP8266::at_cipsend(uint8_t id, uint16_t len, Stream* stream) {
 	}
 	uint8_t ok = at_cipsend_response();
 	if (ok == 0) {
-		sockets[id]->close();
+		connections[id]->close();
 	}
 
 	return ok;
@@ -295,11 +321,11 @@ void ESP8266::at_response(char until) {
 		else if (step == 21 && b == ',') { d("22 -> 22"); step = 22; }						// read +IPD,
 		else if (step == 21) { }
 		else if (step == 22 && b == ',') { d("22 -> 23, len = 0"); step = 23; len = 0; }	// read id,
-		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; sockets[id]->openServer(); }
+		else if (step == 22) { d("22 -> 22, id"); id = b - 0x30; connections[id]->open_server(); }
 		else if (step == 23 && b == ':') { d("23 -> 23, i -> 0"); step = 24; i = 0; len--; }			// read len:
 		else if (step == 23) { d("23 -> 23, len"); len *= 10; len += (b - 0x30); }
-		else if (step == 24 && i == len) { d("24 -> x, r -> <"); sockets[id]->input->write(b); result = '<'; break; }
-		else if (step == 24) { d("24 -> 24, i++"); sockets[id]->input->write(b); i++; }
+		else if (step == 24 && i == len) { d("24 -> x, r -> <"); connections[id]->input->write(b); result = '<'; break; }
+		else if (step == 24) { d("24 -> 24, i++"); connections[id]->input->write(b); i++; }
 
 		// give up and start over
 		else { d("? -> 0"); step = 0; }

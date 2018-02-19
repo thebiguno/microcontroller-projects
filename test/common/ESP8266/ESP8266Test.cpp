@@ -95,9 +95,9 @@ void ESP8266Test::test_at_cipserver() {
 
 	mockStream.enqueue("+IPD,4,13:Hello World\r\n");
 	puts("* accept");
-	ESP8266Socket* s = wifi.accept();
-	assert("accept didn't return a socket", s != NULL);
-	assert("socket has wrong id", 4, s->id());
+	ESP8266Stream* s = wifi.accept();
+	assert("accept didn't return a stream", s != NULL);
+	assert("stream has wrong id", 4, s->id());
 
 	mockStream.enqueue("AT+CIPCLOSE=4\r\n\r\n4,CLOSED\r\n\r\nOK\r\n");
 	puts("* close");
@@ -109,8 +109,8 @@ void ESP8266Test::test_at_cipstart_tcp() {
 
 	mockStream.enqueue("*echo*\r\n\r\n\r\nOK\r\n");
 	puts("* at_cipstart_tcp");
-	ESP8266Socket* s = wifi.at_cipstart_tcp("192.168.0.4", 8080);
-	assert("at_cipstart_tcp didn't return a socket", s != NULL);
+	ESP8266Stream* s = wifi.at_cipstart_tcp("192.168.0.4", 8080);
+	assert("at_cipstart_tcp didn't return a stream", s != NULL);
 
 	mockStream.enqueue("AT+CIPSEND=0,4\r\n> ");
 	puts("* write");
@@ -120,7 +120,6 @@ void ESP8266Test::test_at_cipstart_tcp() {
 	assert("flush didn't return ok", 1, s->flush());
 
 	mockStream.dequeue(buf, 20);
-	puts(buf);
 	assert("flush didn't result in cipsend", "AT+CIPSEND=0,4\r\ntest", buf);
 
 	mockStream.enqueue("*echo*\r\n\r\n4,CLOSED\r\n\r\nOK\r\n");
@@ -128,7 +127,6 @@ void ESP8266Test::test_at_cipstart_tcp() {
 	assert("close didn't return ok", 1, s->close());
 
 	mockStream.dequeue(buf, 15);
-	puts(buf);
 	assert("close didn't result in cipclose", "AT+CIPCLOSE=0\r\n", buf);
 }
 

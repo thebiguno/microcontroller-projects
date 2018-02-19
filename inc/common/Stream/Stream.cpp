@@ -2,6 +2,10 @@
 
 using namespace digitalcave;
 
+uint8_t Stream::flush() {
+	return 0;
+}
+
 uint8_t Stream::reset() {
 	return 0;
 }

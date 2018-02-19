@@ -1,5 +1,5 @@
-#ifndef ESP8266_SOCKET_H
-#define ESP8266_SOCKET_H
+#ifndef ESP8266_STREAM_H
+#define ESP8266_STREAM_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -12,17 +12,12 @@ namespace digitalcave {
 
 	class ESP8266; // forward declaration
 
-	/* A stream wrapper for an ESP8266 Wifi module.
-	 * Requests and responses are fully buffered with a shared buffer.
-	 * Provides single threaded access to channels which means you can't act
-	 * as a client and server at the same time, or act as multiple servers
-	 * at the same time.
-	 */
-	class ESP8266Socket : public Stream {
+	/* A stream wrapper for an ESP8266 Wifi channel. */
+	class ESP8266Stream : public Stream {
 
 		private:
-			ESP8266Socket(ESP8266* wifi, uint8_t id);
-			~ESP8266Socket();
+			ESP8266Stream(ESP8266* wifi, uint8_t id);
+			~ESP8266Stream();
 
 			ESP8266* wifi;
 			uint8_t _id;
@@ -32,8 +27,8 @@ namespace digitalcave {
 			ArrayStream* output;
 
 			void open(uint8_t flags);
-			void openClient();
-			void openServer();
+			void open_client();
+			void open_server();
 		public:
 			uint8_t id();
 			uint16_t available();

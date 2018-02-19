@@ -7,7 +7,7 @@
 
 #include <Stream.h>
 
-#include "ESP8266Socket.h"
+#include "ESP8266Stream.h"
 
 namespace digitalcave {
 
@@ -21,7 +21,7 @@ namespace digitalcave {
 
 		private:
 			Stream* serial;
-			ESP8266Socket* sockets[5];
+			ESP8266Stream* connections[5];
 
 			uint8_t id;
 			char data[128]; // enough for cifsr, but not cwlap
@@ -32,7 +32,7 @@ namespace digitalcave {
 
 			uint8_t at_cipsend(uint8_t id, uint16_t len, Stream* stream);
 			uint8_t at_cipclose(uint8_t id);
-			ESP8266Socket* at_cipstart(const char* type, const char* addr, uint16_t port);
+			ESP8266Stream* at_cipstart(const char* type, const char* addr, uint16_t port);
 
 			void d(const char* debug);
 		public:
@@ -60,19 +60,20 @@ namespace digitalcave {
 			// IP
 
 			uint8_t at_cipmux(uint8_t en);
+
 			uint8_t at_cipserver(uint8_t en, uint16_t port);
-			ESP8266Socket* at_cipstart_tcp(const char* addr, uint16_t port);
-			ESP8266Socket* at_cipstart_udp(const char* addr, uint16_t port);
-			ESP8266Socket* at_cipstart_ssl(const char* addr, uint16_t port);
+			void accept(void (* f) (Stream*));
+			ESP8266Stream* accept();
 
-			/* Read incoming data and selects the channel the data belongs to.
-			 * Output buffer is flushed and input buffer will contain the data to read.
-			 * Returns the id of the connection that was selected.
-			 * A server should call this repeatedly to receive new requests.
-			 */
-			ESP8266Socket* accept();
+			ESP8266Stream* at_cipstart_tcp(const char* addr, uint16_t port);
+			ESP8266Stream* at_cipstart_udp(const char* addr, uint16_t port);
+			ESP8266Stream* at_cipstart_ssl(const char* addr, uint16_t port);
 
-			friend class ESP8266Socket;
+			void at_cipstart_tcp(const char* addr, uint16_t port, void (* f) (Stream*));
+			void at_cipstart_udp(const char* addr, uint16_t port, void (* f) (Stream*));
+			void at_cipstart_ssl(const char* addr, uint16_t port, void (* f) (Stream*));
+
+			friend class ESP8266Stream;
 	};
 }
 
