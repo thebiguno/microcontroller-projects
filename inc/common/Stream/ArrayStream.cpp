@@ -31,19 +31,19 @@ uint8_t ArrayStream::isEmpty(){
 }
 
 uint8_t ArrayStream::isFull(){
-	return ((head + 1) % capacity == tail);
+	return size() == capacity;
 }
 
 uint8_t ArrayStream::read(uint8_t* b){
 	if (isEmpty()) return 0;
-	*b = data[tail];
-	if (++tail >= capacity) tail = 0;
+	*b = data[tail++];
+	if (tail > capacity) tail = 0;
 	return 1;
 }
 
 uint8_t ArrayStream::write(uint8_t b){
 	if (isFull()) return 0;
-	data[head] = b;
-	if (++head >= capacity) head = 0;
+	data[head++] = b;
+	if (head > capacity) head = 0;
 	return 1;
 }
