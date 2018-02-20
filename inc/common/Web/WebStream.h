@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <Stream.h>
+#include <ArrayStream.h>
 
 namespace digitalcave {
 
@@ -24,8 +25,10 @@ namespace digitalcave {
 	class WebStream : public Stream {
 		private:
 			Stream* stream;
+			ArrayStream* chunk;
 
-			uint8_t _state;  					// [7:2] unused [1] identity/chunked [0] headers/entity
+			uint8_t _state;  					// read:  [3:2] unused [1] identity/chunked [0] headers/entity
+																// write: [7:6] unused [5] identity/chunked [4] headers/entity
 			uint16_t _available; 			// remaining bytes in the identity or chunk
 			char _method[7];
 			char _path[256];					// this is the storage for both path and query
@@ -35,6 +38,8 @@ namespace digitalcave {
 
 			void read_headers();
 			void read_chunk_size();
+
+			void write_chunk();
 		public:
 			WebStream(Stream* stream);
 			~WebStream();
@@ -49,21 +54,16 @@ namespace digitalcave {
 
 			/* Sends a header.  Must be called after request/response and before any
 			 * of the entity sending methods. */
-			void send_header(const char* key, char* value);
+			void header(const char* key, char* value);
 
 			/* Sends a response to the client with identity transfer encoding. */
-			void send_identity(char* body);
-			void send_identity(const char* body);
-			/* Sends a response to the client with identity transfer encoding to be written using the stream interface. */
-			void start_identity(uint16_t len);
+			void body(char* body);
+			void body(const char* body);
+			void body_start(uint16_t len);
 
 			/* Starts a chunked entity.*/
-			void start_chunked();
-			/* Writes a string body chunk */
-			void send_chunk(char* chunk);
-			void send_chunk(const char* chunk);
-			/* Starts a binary body chunk to be written using the stream interface. */
-			void start_chunk(uint16_t len);
+			void body_chunked_start(uint8_t buflen);
+			void body_chunked_end();
 
 			/* Gets the response status */
 			uint16_t status();
@@ -79,7 +79,6 @@ namespace digitalcave {
 
 			// implementation of virtual methods
 			uint8_t read(uint8_t* b);
-			uint16_t read(uint8_t* a, uint16_t len);
 			uint8_t write(uint8_t b);
 
 			uint16_t available();

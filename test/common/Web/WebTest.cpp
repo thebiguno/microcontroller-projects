@@ -22,8 +22,8 @@ void WebTest::test_client_get() {
 	MockStream mockStream = MockStream(2048, 2048);
 	WebStream stream = WebStream(&mockStream);
 	stream.request("GET", "/hello?world", NULL);
-	stream.send_header("Accept", "x");
-	stream.send_identity("");
+	stream.header("Accept", "x");
+	stream.body("");
 
 	mockStream.dequeue(buf, 40);
 	puts(buf);
@@ -46,7 +46,7 @@ void WebTest::test_client_put_identity() {
 	MockStream mockStream = MockStream(2048, 2048);
 	WebStream stream = WebStream(&mockStream);
 	stream.request("PUT", "/hello?world", "text/plain");
-	stream.send_identity("Hello");
+	stream.body("Hello");
 
 	mockStream.dequeue(buf, 79);
 	puts(buf);
@@ -68,10 +68,14 @@ void WebTest::test_client_put_chunked() {
 	MockStream mockStream = MockStream(2048, 2048);
 	WebStream stream = WebStream(&mockStream);
 	stream.request("PUT", "/hello", "text/plain");
-	stream.start_chunked();
-	stream.send_chunk("Hello");
-	stream.send_chunk("World");
-	stream.send_chunk("");
+	stream.body_chunked_start(5);
+	stream.write('H');
+	stream.write('e');
+	stream.write('l');
+	stream.write('l');
+	stream.write('o');
+	stream.write("World");
+	stream.body_chunked_end();
 
 	mockStream.dequeue(buf, 102);
 	puts(buf);
@@ -81,7 +85,7 @@ void WebTest::test_client_put_chunked() {
 	assert("incorrect status", 200, stream.status());
 	assert("incorrect content length", 0, stream.content_length());
 
-	uint16_t read = stream.read((uint8_t*) buf, 10);
+	uint16_t read = stream.read((uint8_t*) buf, 12);
 	buf[read] = 0;
 	puts(buf);
 	assert("incorrect entity", "HelloWorld", buf);
@@ -104,7 +108,7 @@ void WebTest::test_server_get() {
 	assert("incorrect content length", 0, stream.content_length());
 
 	stream.response(200, "text/plain");
-	stream.send_identity("Hello");
+	stream.body("Hello");
 
 	mockStream.dequeue(buf, 69);
 	puts(buf);
