@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name DigitalCave)(type KiCad)(uri /home/wyatt/Documents/Electronics/projects/lib/kicad/modules/DigitalCave.pretty)(options "")(descr ""))
+)
