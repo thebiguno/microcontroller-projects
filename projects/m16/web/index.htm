@@ -550,20 +550,20 @@
         for (var i = 0; i < 2; i++) {
           var l = (15*i).toString(16)
           var fill = "#"+l+l+l
-          sprites.push({ type: 'rect', x: i*96, y: 0, width: 96, height: 12, fillStyle: fill, strokeStyle: '#000', kind: 'gray', value: i })
+          sprites.push({ type: 'rect', x: i*96, y: 0, width: 96, height: 12, fillStyle: fill, strokeStyle: '#000', surface: 'gray' })
         }
+        sprites.push({ type: 'rect', x: 1, y: y+1, width: 94, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'selection' })
         y+=12
         // current color
-        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', surface: 'current'})
         // chips
         y+=36
         for (var j = 0; j < 2; j++) {
           for (var i = 0; i < 8; i++) {
-            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', surface: 'chip' })
           }
           y+=24
         }
-        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
         this.callParent();
         this.setSprites(sprites);
       },
@@ -583,26 +583,30 @@
       alias: 'widget.palette1',
       plugins: ['spriteevents'],
       initialize: function() {
+        var select = function(item, event) {
+          
+        }
+
         var sprites = []
         var y = 0
         // colors
         for (var i = 0; i < 16; i++) {
           var l = i.toString(16)
           var fill = "#"+l+l+l
-          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: fill, strokeStyle: '#000', kind: 'grey', value: i })
+          sprites.push({ type: 'rect', x: i*12, y: y, width: 12, height: 12, fillStyle: fill, strokeStyle: '#000', surface: 'grey' })
         }
+        sprites.push({ type: 'rect', x: 1, y: y+1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'selection' })
         y+=12
         // current color
-        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', kind: 'current'})
+        sprites.push({ type: 'rect', x: 0, y: y, width: 192, height: 36, fillStyle: '#fff', strokeStyle: '#000', surface: 'current'})
         // chips
         y+=36
         for (var j = 0; j < 2; j++) {
           for (var i = 0; i < 8; i++) {
-            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', kind: 'chip', value: j*8+i })
+            sprites.push({ type: 'rect', x: i*24, y: y, width: 24, height: 24, fillStyle: '#fff', strokeStyle: '#000', surface: 'chip' })
           }
           y+=24
         }
-        sprites.push({ type: 'rect', x: 13, y: 1, width: 10, height: 10, fillStyle: 'none', strokeStyle: '#fff', kind: 'sel' })
         this.callParent();
         this.setSprites(sprites);
       },

@@ -6,9 +6,8 @@
 using namespace digitalcave;
 
 extern "C" {
-	        void dc_main();
+	void loop();
 }
 
-void dc_main() {
+void loop() {
 }
-
