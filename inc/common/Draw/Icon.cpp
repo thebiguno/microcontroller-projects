@@ -109,15 +109,15 @@ void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
 // simulates CGA / Tandy palette
 // this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
 void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
+	uint8_t i = (pixel[0] & bv(bit--));
 	uint8_t r = (pixel[0] & bv(bit--));
 	uint8_t g = (pixel[0] & bv(bit--));
 	uint8_t b = (pixel[0] & bv(bit--));
-	uint8_t i = (pixel[0] & bv(bit--));
 
-	r*=0x88
-	g*=0x88
-	b*=0x88
-	i*=0x55
+	r*=0x8
+	g*=0x8
+	b*=0x8
+	i*=0x5
 
 	if (r & g & !b & !i) {
 		// use an orange/brown instead of a dark yellow (just like CGA)
@@ -127,25 +127,20 @@ void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	}
 }
 
-// 3: 8bpp RRGGBBIA (128 colours, on/off alpha)
-// simulates Sam Coupé 7-bit palette
-// L = 0x11, 0x55, 0x99, 0xdd
-// H = 0x33, 0x77, 0xbb, 0xff
-// this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
+// 3: 8bpp RRGGBBII (256 colours)
+// simulates Sam Coupé 7-bit palette but with 2 bits for intensity
+// L0 = 0x00, 0x44, 0x88, 0xcc
+// L1 = 0x11, 0x55, 0x99, 0xdd
+// L2 = 0x22, 0x66, 0xaa, 0xee
+// L3 = 0x33, 0x77, 0xbb, 0xff
+// this mode is irregular and requires a minimum of 8 bpp in a regular RGB framebuffer
 void Icon::draw3(Draw* draw, uint8_t* pixel) {
-	uint8_t a = (pixel[0] & 0x1) * 0xff;
-	uint8_t i = ((pixel[0] >> 1) & 0x1) << 2;
-	uint8_t r = pixel[0] >> 6;
-	uint8_t g = (pixel[0] >> 4) & 0x3;
-	uint8_t b = (pixel[0] >> 4) & 0x3;
+	uint8_t i = ((pixel[0] >> 6) & 0x3) * 0x11;
+	uint8_t r = ((pixel[0] >> 4) & 0x3) * 0x44;
+	uint8_t g = ((pixel[0] >> 2) & 0x3) * 0x44;
+	uint8_t b = ((pixel[0] >> 0) & 0x3) * 0x44;
 
-	// (i * 2) + (x * 4) + 1
-	r*=0x44
-	g*=0x44
-	b*=0x44
-	i*=0x22
-
-	draw->setColor(r+i+1, g+i+1, b+i+1);
+	draw->setColor(r+i, g+i, b+i);
 }
 
 // 4: 8bpp RRRGGGBB (256 colours)
