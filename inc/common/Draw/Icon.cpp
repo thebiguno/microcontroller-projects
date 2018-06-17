@@ -103,38 +103,46 @@ void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	}
 }
 
-// 2: 4bpp RGBI = 1bit high/low, 1bit red, 1bit green, 1bit blue (16 colours, no alpha)
-// L = 0x22, 0xaa
-// H = 0x77, 0xff
-// simulates CGA / Tandy palette
-// this mode is irregular and requires a minimum of 6 bpp in a regular RGB framebuffer
+// 2: 4bpp RRGG
 void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
-	uint8_t i = (pixel[0] & bv(bit--));
-	uint8_t r = (pixel[0] & bv(bit--));
-	uint8_t g = (pixel[0] & bv(bit--));
-	uint8_t b = (pixel[0] & bv(bit--));
+    uint8_t c = pixel[0];
 
-	r*=0x8
-	g*=0x8
-	b*=0x8
-	i*=0x5
+    // 4-bit RRGG 16 color
+    uint8_t r = ((color >> 2) & 0x3);
+    uint8_t g = ((color >> 0) & 0x3);
+    r = (r << 2) + r;
+    g = (g << 2) + g;
+    draw->setColor(r,g,0);
+}
 
-	if (r & g & !b & !i) {
+// 4bpp IRGB
+// L = 0x00, 0xaa  H = 0x55, 0xff
+void Icon::draw3(Draw* draw, uint8_t bit, uint8_t* pixel) {
+    uint8_t c = pixel[0];
+
+	if (c == 6) {
 		// use an orange/brown instead of a dark yellow (just like CGA)
 		draw->setColor(0xaa, 0x55, 0x22);
 	} else {
-		draw->setColor(r+i+2, g+i+2, b+i+2);
+        uint8_t i = (c & bv(bit--)) * 0x5;
+        uint8_t r = (c & bv(bit--)) * 0x8;
+        uint8_t g = (c & bv(bit--)) * 0x8;
+        uint8_t b = (c & bv(bit--)) * 0x8;
+        if (r > 0) r+=2;
+        if (g > 0) g+=2;
+        if (b > 0) b+=2;
+		draw->setColor(r+i, g+i, b+i);
 	}
 }
 
-// 3: 8bpp RRGGBBII (256 colours)
+// 8bpp IIRRGGBB (256 colours)
 // simulates Sam Coupé 7-bit palette but with 2 bits for intensity
 // L0 = 0x00, 0x44, 0x88, 0xcc
 // L1 = 0x11, 0x55, 0x99, 0xdd
 // L2 = 0x22, 0x66, 0xaa, 0xee
 // L3 = 0x33, 0x77, 0xbb, 0xff
 // this mode is irregular and requires a minimum of 8 bpp in a regular RGB framebuffer
-void Icon::draw3(Draw* draw, uint8_t* pixel) {
+void Icon::draw4(Draw* draw, uint8_t* pixel) {
 	uint8_t i = ((pixel[0] >> 6) & 0x3) * 0x11;
 	uint8_t r = ((pixel[0] >> 4) & 0x3) * 0x44;
 	uint8_t g = ((pixel[0] >> 2) & 0x3) * 0x44;
@@ -143,8 +151,8 @@ void Icon::draw3(Draw* draw, uint8_t* pixel) {
 	draw->setColor(r+i, g+i, b+i);
 }
 
-// 4: 8bpp RRRGGGBB (256 colours)
-void Icon::draw4(Draw* draw, uint8_t* pixel) {
+// 8bpp RRRGGGBB (256 colours)
+void Icon::draw5(Draw* draw, uint8_t* pixel) {
 	// r & g have the values 0x11, 0x33, 0x55, 0x77, 0x99, 0xbb, 0xdd, 0xff
 	// b has the values            0x33,       0x77,       0xbb,       0xff
 	uint8_t r = pixel[0] >> 5;
@@ -156,47 +164,25 @@ void Icon::draw4(Draw* draw, uint8_t* pixel) {
 	draw->setColor(r,g,b);
 }
 
-// 5: 12bpp RRRRGGGGBBBB (4096 colours)
+// 12bpp RRRRGGGGBBBB (4096 colours)
 // this is like using web colors like #rgb instead of #rrggbb
-void Icon::draw5(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw6(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	uint8_t i = 0;
-	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
-	r = (r << 4) | r
-	bit-=4
+	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf;
+	r = (r << 4) | r;
+	bit-=4;
 	if (bit > 7) {
 		bit = 7; i++;
 	}
-	uint8_t g = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
-	g = (g << 4) | g
-	bit-=4
+	uint8_t g = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf;
+	g = (g << 4) | g;
+	bit-=4;
 	if (bit > 7) {
 		bit = 7; i++;
 	}
-	uint8_t b = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf
-	b = (g << 4) | b
-	draw->setColor(r,g,b)
-}
-
-// 6: 16bpp RRRRRGGG GGGBBBBB (65,535 colours)
-void Icon::draw6(Draw* draw, uint8_t* pixel) {
-	// g have the values 0x00, 0x04, 0x08, 0x12, 0x16, 0x20, ..., 0xfb, 0xff
-	// r & b has the values 0x00, 0x08, 0x10, 0x19, 0x21, ..., 0xf7, 0xff
-
-	// TODO should this be re-worked to preseve grays?
-	uint8_t r = (pixel[0] >> 3);
-	uint8_t g = ((pixel[0] & 0x7) << 3) | (pixel[1] >> 5);
-	uint8_t b = (pixel[1] & 0x1f);
-
-	R8 = (r * 527 + 23) >> 6;
-	G8 = (g * 259 + 33) >> 6;
-	B8 = (b * 527 + 23) >> 6;
-
+	uint8_t b = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf;
+	b = (g << 4) | b;
 	draw->setColor(r,g,b);
-}
-
-// 7: 24bpp RRRRRRRR GGGGGGGG BBBBBBBB
-void Icon::draw7(Draw* draw, uint8_t* pixel) {
-	draw->setColor(pixel[0], pixel[1], pixel[2], 0xff);
 }
 
 void Icon::draw(Draw* draw, int16_t x, int16_t y, uint8_t orientation) {
