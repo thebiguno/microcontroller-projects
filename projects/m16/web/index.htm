@@ -153,8 +153,12 @@
       setColor: function(value) {
         this.set('color', value);
       },
+      setDelay: function(delay) {
+        var frame = this.frames().data.items[this.getFrame()];
+        frame.setDelay(delay);
+      },
       setAt: function(index) {
-        var frame = this.frames().data.items[this.get('frame')];
+        var frame = this.frames().data.items[this.getFrame()];
         var pixel = frame.pixels().data.items[index];
         pixel.setColor(this.getColor());
       },
@@ -176,15 +180,17 @@
           case 0: bytes = (width * height) / 8; bits = (width * height) & 0x7; break;
           case 1: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
           case 2: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 3: bytes = width * height; bits = 0; break;
+          case 3: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
           case 4: bytes = width * height; bits = 0; break;
-          case 5:  bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
+          case 5: bytes = width * height; bits = 0; break;
+          case 6:  bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
           default: bytes = 0; bits = 0;
         }
 
         var byte = 3; // position in the buffer
 
         for (var frame = 0; frame < frames.length; frame++) {
+          var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
           var f = frames[frame];
           var pixels = f.pixels().data.items;
 
@@ -195,9 +201,10 @@
               case 0: buffer[byte] |= c << bv(bit--); if (bit < 0) { bit = 7; byte++; }; break;
               case 1: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 2: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 3: buffer[byte++] = c; break;
+              case 3: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 4: buffer[byte++] = c; break;
-              case 5:
+              case 5: buffer[byte++] = c; break;
+              case 6:
                 buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; c >> 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
                 buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; c >> 4; bit -= 4;
@@ -225,9 +232,10 @@
         var config = buffer[2];
         var palette = config & 0x7;
 
-        set('width', width);
-        set('height', height);
-        set('palette', palette);
+        this.set('width', width);
+        this.set('height', height);
+        this.set('palette', palette);
+        this.set('frame', 0);
 
         var bytes = 0;
         var bits = 0;
@@ -235,9 +243,10 @@
           case 0: bytes = (width * height) / 8; bits = (width * height) & 0x7; break;
           case 1: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
           case 2: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 3: bytes = width * height; bits = 0; break;
+          case 3: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
           case 4: bytes = width * height; bits = 0; break;
-          case 5: bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
+          case 5: bytes = width * height; bits = 0; break;
+          case 6: bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
           default: bytes = 0; bits = 0;
         }
 
@@ -245,41 +254,43 @@
         var more = true;
         var byte = 3; // position in the buffer
 
-        frames().removeAll()
+        this.frames().removeAll();
         while (more) {
-          frames().add({});
-          var f = frames.get(frame);
-          frame++;
-
-          var pixels = frames.get(frame).pixels()
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
+          this.frames().add({});
+          var f = this.frames().data.items[frame];
+
+          var pixels = f.pixels()
 
           for (var i = 0; i < (width * height); i++) {
             pixels.add({})
 
             var b = buffer[byte];
             switch (palette) {
-              case 0: setColor(b & bv(bit--) > 0 ? 1 : 0); if (bit < 0) { bit = 7; byte++; } break;
-              case 1: setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 2: setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 3: setColor(b); byte++; break;
-              case 4: setColor(b); byte++; break;
-              case 5:
+              case 0: this.setColor(b & bv(bit--) > 0 ? 1 : 0); if (bit < 0) { bit = 7; byte++; } break;
+              case 1: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 2: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 3: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 4: this.setColor(b); byte++; break;
+              case 5: this.setColor(b); byte++; break;
+              case 6:
                 var c = bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
                 c |= bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
                 c |= bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
-                setColor(c);
+                this.setColor(c);
                 break;
             }
-            setAt(index);
+            this.setAt(i);
+
+            frame++;
           }
 
           var footer = buffer[byte++];
           f.setDelay(footer & 0x1f);
-          f.setMore((footer >> 6) & 0x01 ? true : false);
+          more = ((footer >> 6) & 0x01 ? true : false);
           f.setLoop(footer >> 7 ? true : false);
         }
       }
@@ -320,41 +331,31 @@
       alias: 'controller.tools',
 
       control: {
-        'button#new': {
-          tap: 'onNewTap'
-        },
         'draw': {
-          change: 'onColorChange'
+          change: 'onColorChange',
+          draw: 'onDraw'
         },
-        'filefield': {
-          tap: 'onFileLoad'
+        'button#iconNew': {
+          tap: 'onIconNew'
         },
-        'textfield#save': {
-          trigger: 'onFileSave'
-        }
-      },
-
-      onFileSave: function(event) {
-        var buffer = icon.write();
-        var blob = new Blob([buffer], {type:"application/octet-stream"});
-        var downloadLink = document.createElement("a");
-        downloadLink.download = "foo.dat";
-        downloadLink.innerHTML = "Download File";
-        downloadLink.href = window.URL.createObjectURL(blob);
-        downloadLink.onclick = function(event) { document.body.removeChild(event.target); };
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-      },
-
-      onFileLoad: function(event) {
-        var file = event.target.files[0];
-        var reader = new FileReader();
-        reader.onload = function() {
-            var buffer = reader.result;
-            icon.read(buffer);
-        };
-        fileReader.readAsArrayBuffer(file);
+        'button#iconSave': {
+          tap: 'onIconSave'
+        },
+        'button#iconLoad': {
+          tap: 'onIconLoad'
+        },
+        'button#frameAdd': {
+          tap: 'onFrameAdd'
+        },
+        'button#frameDelete': {
+          tap: 'onFrameDelete'
+        },
+        'button#frameUp': {
+          tap: 'onFrameUp'
+        },
+        'button#frameDown': {
+          tap: 'onFrameDown'
+        },
       },
 
       onColorChange: function(value) {
@@ -363,7 +364,37 @@
         text.setValue(hex(icon.getPalette(), value));
       },
 
-      onNewTap: function() {
+      onDraw: function(index) {
+        icon.setAt(index);
+      },
+
+      onIconSave: function(event) {
+        var buffer = icon.write();
+        var blob = new Blob([buffer], {type:"application/octet-stream"});
+        var downloadLink = document.createElement("a");
+        downloadLink.download = this.lookupReference('fileToSave').getValue();
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.onclick = function(event) { document.body.removeChild(event.target); };
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+      },
+
+      onIconLoad: function(event) {
+        var filefield = this.lookupReference('fileToLoad');
+        var file = filefield.el.down('input[type=file]').dom.files[0];
+        var reader = new FileReader();
+        var canvas = this.lookupReference('canvas');
+        reader.onload = function() {
+            icon = Ext.create('MyApp.model.Icon');
+            icon.read(new Uint8Array(reader.result));
+            canvas.paint(icon);
+        };
+        reader.readAsArrayBuffer(file);
+      },
+
+      onIconNew: function() {
         var h = parseInt(this.lookupReference('height').getValue());
         var w = parseInt(this.lookupReference('width').getValue());
 
@@ -382,8 +413,19 @@
             frame.pixels().add({});
         }
 
-        var c = this.lookupReference('canvas');
-        c.paint(icon);
+        this.lookupReference('canvas').paint(icon);
+      },
+
+      onFrameAdd: function() {
+      },
+
+      onFrameDelete: function() {
+      },
+
+      onFrameUp: function() {
+      },
+
+      onFrameDown: function() {
       }
 
     });
@@ -403,7 +445,19 @@
               title: 'Icon Editor',
               items: [{
                 xtype: 'button',
-                iconCls: 'x-fa fa-hdd-o'
+                itemId: 'iconNew',
+                iconCls: 'x-fa fa-file',
+                tooltip: 'New'
+              },{
+                xtype: 'button',
+                itemId: 'iconLoad',
+                iconCls: 'x-fa fa-upload',
+                tooltip: 'Load'
+              },{
+                xtype: 'button',
+                itemId: 'iconSave',
+                iconCls: 'x-fa fa-download',
+                tooltip: 'Save'
               },{
                 xtype: 'spacer', width: 50
               },{
@@ -419,16 +473,24 @@
                 xtype: 'spacer'
               },{
                 xtype: 'button',
-                iconCls: 'x-fa fa-arrow-up'
+                itemId: 'frameUp',
+                iconCls: 'x-fa fa-arrow-up',
+                tooltip: 'Move Up'
               },{
                 xtype: 'button',
-                iconCls: 'x-fa fa-arrow-down'
+                itemId: 'frameDown',
+                iconCls: 'x-fa fa-arrow-down',
+                tooltip: 'Move Down'
               },{
                 xtype: 'button',
-                iconCls: 'x-fa fa-plus'
+                itemId: 'frameAdd',
+                iconCls: 'x-fa fa-plus',
+                tooltip: 'Add Frame'
               },{
                 xtype: 'button',
-                iconCls: 'x-fa fa-minus'
+                itemId: 'frameDelete',
+                iconCls: 'x-fa fa-minus',
+                tooltip: 'Delete Frame'
               }]
             },{
               xtype: 'panel',
@@ -486,35 +548,30 @@
                         value: 6
                       }],
                     },{
-                      xtype: 'button',
-                      itemId: 'new',
-                      text: 'New Icon'
-                    },{
                       xtype: 'filefield',
+                      reference: 'fileToLoad',
                       width: 192,
                       label: 'Load',
-                      name: 'file',
-                      accept: 'application/octet-stream'
+                      name: 'file'
                     },{
                       xtype: 'textfield',
+                      reference: 'fileToSave',
                       itemId: 'save',
                       label: 'Save As...',
-                      value: 'icon.dat',
-                      triggers: {
-                        save: {
-                        }
-                      }
+                      value: 'icon.dat'
                     }]
                   },{
                     xtype: 'fieldset',
                     title: 'Frame',
                     items: [{
-                      xtype: 'sliderfield',
+                      xtype: 'spinnerfield',
                       reference: 'delay',
-                      label: 'Delay',
+                      label: 'Delay (ms)',
                       value: 0,
                       minValue: 0,
-                      maxValue: 63
+                      maxValue: 3150,
+                      stepValue: 50,
+                      cycle: true
                     }]
                   },{
                     xtype: 'fieldset',
