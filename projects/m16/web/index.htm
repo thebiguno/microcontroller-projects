@@ -360,14 +360,24 @@
         },
         'list': {
           select: 'onListSelect'
+        },
+        'spinnerfield': {
+          change: 'onDelayChange'
         }
+      },
+
+      onDelayChange: function(spinner, value) {
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var frame = framesStore.getAt(icon.getFrame());
+        frame.setDelay(value / 50);
       },
 
       onListSelect: function(list, record, opts) {
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         var index = framesStore.indexOf(record);
         icon.setFrame(index);
-        var canvas = this.lookupReference('canvas').paint(icon);
+        this.lookupReference('canvas').paint(icon);
+        this.lookupReference('delay').setValue(record.getDelay() * 50);
       },
 
       onColorChange: function(value) {
@@ -598,6 +608,7 @@
                     title: 'Frame',
                     items: [{
                       xtype: 'spinnerfield',
+                      itemId: 'delay',
                       reference: 'delay',
                       label: 'Delay (ms)',
                       value: 0,
