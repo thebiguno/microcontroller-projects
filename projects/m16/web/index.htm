@@ -103,6 +103,10 @@
       },
       setLoop: function(loop) {
         this.set('loop', loop);
+      },
+      setAt: function(index) {
+        var pixel = this.pixels().data.items[index];
+        pixel.setColor(icon.getColor());
       }
     });
     Ext.define('MyApp.model.Icon', {
@@ -114,11 +118,10 @@
       // palette 0 = 1 bit A1 (color value must be supplied externally)
       // palette 1 = 4 bit L4 (16-gray)
       // palette 2 = 4 bit I1 R1 G1 B1 (16-color i.e. CGA)
-      // palette 3 = 8 bit I2 R2 G2 B2 (256-color i.e. SAM Coupé ++)
+      // palette 3 = 4 bit R2 G2
+      // palette 4 = 8 bit I2 R2 G2 B2 (256-color i.e. SAM Coupé ++)
       // palette 5 = 8 bit R3 G3 B2 (256-color)
-      // palette 5 = 12 bit R4 G4 B4 (4096-color)
-      // palette 6 = 16 bit R5 G6 B5 (65,536-color)
-      // palette 7 = 24 bit R8 G8 B8 (16,777,216-color)
+      // palette 6 = 12 bit R4 G4 B4 (4096-color)
 
       extend: 'Ext.data.Model',
       fields: [
@@ -127,9 +130,6 @@
           {name: 'palette', type: 'int'},
           {name: 'color', type: 'int'},   // transient: the current color
           {name: 'frame', type: 'int'}    // transient: the current frame
-      ],
-      hasMany: [
-        {name: 'frames', model: 'MyApp.model.Frame'}
       ],
 
       getWidth: function() {
@@ -157,17 +157,13 @@
         var frame = this.frames().data.items[this.getFrame()];
         frame.setDelay(delay);
       },
-      setAt: function(index) {
-        var frame = this.frames().data.items[this.getFrame()];
-        var pixel = frame.pixels().data.items[index];
-        pixel.setColor(this.getColor());
-      },
 
       write: function() {
         var width = this.getWidth();
         var height = this.getHeight();
         var palette = this.getPalette();
-        var frames = this.frames().data.items;
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var frames = framesStore.getData();
         var size = 3 + ((width * height) + 1) * frames.length
         var buffer = new Uint8Array(new ArrayBuffer(size));
         buffer[0] = width;
@@ -189,10 +185,10 @@
 
         var byte = 3; // position in the buffer
 
-        for (var frame = 0; frame < frames.length; frame++) {
+        for (var f = 0; f < frames.length; f++) {
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
-          var f = frames[frame];
-          var pixels = f.pixels().data.items;
+          var frame = frames.getAt(f);
+          var pixels = frame.pixels().data.items;
 
           for (var pixel = 0; pixel < pixels.length; pixel++) {
             var c = pixels[pixel].getColor();
@@ -215,9 +211,9 @@
             }
           }
 
-          var delay = f.getDelay();
-          var more = pixel == pixels.length - 1;
-          var loop = f.getLoop();
+          var delay = frame.getDelay();
+          var more = f < frames.length - 1;
+          var loop = frame.getLoop();
           var footer = loop ? 0x80 : 0x00;
           footer |= more ? 0x40 : 0x00;
           footer |= delay;
@@ -250,17 +246,18 @@
           default: bytes = 0; bits = 0;
         }
 
-        var frame = 0;
+        var f = 0;
         var more = true;
         var byte = 3; // position in the buffer
 
-        this.frames().removeAll();
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        framesStore.removeAll();
+
         while (more) {
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
-          this.frames().add({});
-          var f = this.frames().data.items[frame];
+          var frame = framesStore.add({})[0];
 
-          var pixels = f.pixels()
+          var pixels = frame.pixels()
 
           for (var i = 0; i < (width * height); i++) {
             pixels.add({})
@@ -283,15 +280,15 @@
                 this.setColor(c);
                 break;
             }
-            this.setAt(i);
+            frame.setAt(i);
 
-            frame++;
+            f++;
           }
 
           var footer = buffer[byte++];
-          f.setDelay(footer & 0x1f);
+          frame.setDelay(footer & 0x1f);
           more = ((footer >> 6) & 0x01 ? true : false);
-          f.setLoop(footer >> 7 ? true : false);
+          frame.setLoop(footer >> 7 ? true : false);
         }
       }
     });
@@ -299,7 +296,6 @@
     Ext.define('MyApp.controller.IconController', {
       extend: 'Ext.app.Controller',
       models: ['Icon'],
-      stores: ['Icon','Frames'],
 
       // calculates the 3D distance between two colors
       distance: function(a, b) {
@@ -356,6 +352,16 @@
         'button#frameDown': {
           tap: 'onFrameDown'
         },
+        'list': {
+          select: 'onListSelect'
+        }
+      },
+
+      onListSelect: function(list, record, opts) {
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var index = framesStore.indexOf(record);
+        icon.setFrame(index);
+        var canvas = this.lookupReference('canvas').paint(icon);
       },
 
       onColorChange: function(value) {
@@ -365,7 +371,9 @@
       },
 
       onDraw: function(index) {
-        icon.setAt(index);
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var frame = framesStore.getAt(icon.getFrame());
+        frame.setAt(index);
       },
 
       onIconSave: function(event) {
@@ -408,18 +416,35 @@
             palette: p.getValue(),
             frame: 0
         });
-        var frame = icon.frames().add({ delay: 0 })[0];
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        framesStore.removeAll();
+        var frame = framesStore.add({})[0];
         for (i = 0; i < h*w; i++) {
             frame.pixels().add({});
         }
 
-        this.lookupReference('canvas').paint(icon);
+        this.lookupReference('framesList').setSelection(frame);
       },
 
       onFrameAdd: function() {
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var frame = framesStore.add({})[0];
+        for (i = 0; i < icon.getHeight() * icon.getWidth(); i++) {
+            frame.pixels().add({});
+        }
+        icon.setFrame(framesStore.getCount() - 1);
+        this.lookupReference('framesList').setSelection(frame);
       },
 
       onFrameDelete: function() {
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        if (framesStore.getCount() > 1) {
+          framesStore.removeAt(icon.getFrame());
+          if (icon.getFrame() > 0) {
+            icon.setFrame(icon.getFrame() - 1);
+          }
+          this.lookupReference('framesList').setSelection(framesStore.getAt(0));
+        }
       },
 
       onFrameUp: function() {
@@ -655,7 +680,8 @@
                   var w = model.data.width;
                   var p = model.data.palette;
                   var s = 512 / Math.max(h,w);
-                  var frame = model.frames().data.items[model.data.frame];
+                  var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                  var frame = framesStore.getAt(icon.getFrame());
                   var pixels = frame.pixels().data.items;
                   for (var x = 0; x < w; x++) {
                     for (var y = 0; y < h; y++) {
@@ -675,8 +701,16 @@
               width: 100,
               items: [{
                 xtype: 'list',
-                itemTpl: '{title}',
-                data: []
+                reference: 'framesList',
+                itemTpl: 'Frame',
+                store: {
+                  model: 'MyApp.model.Frame',
+                  storeId: 'framesStore',
+                  proxy: {
+                      type: 'memory'
+                  },
+                  autoLoad: false
+                }
               }]
             }
           ]
