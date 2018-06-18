@@ -40,7 +40,7 @@ Icon::Icon(Stream* stream) :
 
 void Icon::setFrame(uint8_t frame) {
 	if (this->stream->reset()) {
-		this->stream->skip(4); // skip the header
+		this->stream->skip(3); // skip the header
 		this->stream->skip(frame * this->bytes); // advance to the start of the frame
 	}
 }

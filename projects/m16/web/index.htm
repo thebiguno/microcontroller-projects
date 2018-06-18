@@ -19,6 +19,10 @@
 
     <script type="text/javascript">
 
+    bv = function(n) {
+      return 1 << n;
+    };
+
     hex = function(palette, color) {
       if (palette == 0) {
         return color ? '#fff' : '#000';
@@ -164,28 +168,29 @@
         var palette = this.getPalette();
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         var frames = framesStore.getData();
-        var size = 3 + ((width * height) + 1) * frames.length
-        var buffer = new Uint8Array(new ArrayBuffer(size));
+
+        var bpf = 0;
+        var bits = 0;
+        switch (palette) {
+          case 0: bpf = (width * height) >> 3; bits = (width * height) & 0x7; break;
+          case 1: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 2: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 3: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 4: bpf = width * height; bits = 0; break;
+          case 5: bpf = width * height; bits = 0; break;
+          case 6:  bpf = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
+          default: bpf = 0; bits = 0;
+        }
+        if (bits != 0) bpf++; // optional padded byte at the front of the frame
+        bpf++;                // footer
+
+        var buffer = new Uint8Array(new ArrayBuffer(bpf * frames.length + 3));
         buffer[0] = width;
         buffer[1] = height;
         buffer[2] = palette;
 
-        var bytes = 0;
-        var bits = 0;
-        switch (palette) {
-          case 0: bytes = (width * height) / 8; bits = (width * height) & 0x7; break;
-          case 1: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 2: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 3: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 4: bytes = width * height; bits = 0; break;
-          case 5: bytes = width * height; bits = 0; break;
-          case 6:  bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
-          default: bytes = 0; bits = 0;
-        }
-
-        var byte = 3; // position in the buffer
-
         for (var f = 0; f < frames.length; f++) {
+          var byte = f * bpf + 3;
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
           var frame = frames.getAt(f);
           var pixels = frame.pixels().data.items;
@@ -194,7 +199,7 @@
             var c = pixels[pixel].getColor();
 
             switch (palette) {
-              case 0: buffer[byte] |= c << bv(bit--); if (bit < 0) { bit = 7; byte++; }; break;
+              case 0: buffer[byte] |= (c << bit--); if (bit < 0) { bit = 7; byte++; }; break;
               case 1: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 2: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 3: buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
@@ -233,27 +238,29 @@
         this.set('palette', palette);
         this.set('frame', 0);
 
-        var bytes = 0;
+        var bpf = 0;
         var bits = 0;
         switch (palette) {
-          case 0: bytes = (width * height) / 8; bits = (width * height) & 0x7; break;
-          case 1: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 2: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 3: bytes = (width * height) / 2; bits = ((width * height) & 0x1) * 4; break;
-          case 4: bytes = width * height; bits = 0; break;
-          case 5: bytes = width * height; bits = 0; break;
-          case 6: bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
-          default: bytes = 0; bits = 0;
+          case 0: bpf = (width * height) >> 3; bits = (width * height) & 0x7; break;
+          case 1: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 2: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 3: bpf = (width * height) >> 1; bits = ((width * height) & 0x1) * 4; break;
+          case 4: bpf = width * height; bits = 0; break;
+          case 5: bpf = width * height; bits = 0; break;
+          case 6: bpf = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
+          default: bpf = 0; bits = 0;
         }
+        if (bits != 0) bpf++; // optional padded byte at the front of the frame
+        bpf++;                // footer
 
         var f = 0;
         var more = true;
-        var byte = 3; // position in the buffer
 
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         framesStore.removeAll();
 
         while (more) {
+          var byte = f * bpf + 3;
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
           var frame = framesStore.add({})[0];
 
@@ -264,7 +271,7 @@
 
             var b = buffer[byte];
             switch (palette) {
-              case 0: this.setColor(b & bv(bit--) > 0 ? 1 : 0); if (bit < 0) { bit = 7; byte++; } break;
+              case 0: this.setColor((b & bv(bit--)) > 0 ? 1 : 0); if (bit < 0) { bit = 7; byte++; } break;
               case 1: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 2: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
               case 3: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
@@ -281,14 +288,13 @@
                 break;
             }
             frame.setAt(i);
-
-            f++;
           }
 
           var footer = buffer[byte++];
           frame.setDelay(footer & 0x1f);
           more = ((footer >> 6) & 0x01 ? true : false);
           frame.setLoop(footer >> 7 ? true : false);
+          f++;
         }
       }
     });
@@ -394,10 +400,12 @@
         var file = filefield.el.down('input[type=file]').dom.files[0];
         var reader = new FileReader();
         var canvas = this.lookupReference('canvas');
+        var palette = this.lookupReference('palette');
         reader.onload = function() {
             icon = Ext.create('MyApp.model.Icon');
             icon.read(new Uint8Array(reader.result));
             canvas.paint(icon);
+            palette.setActiveItem(icon.getPalette());
         };
         reader.readAsArrayBuffer(file);
       },
@@ -644,18 +652,13 @@
                 fillStyle: '#000',
                 color: 0,
                 listeners: {
-                  spriteclick: function(item, event) {
-                    var sprite = item && item.sprite;
-                    if (sprite) {
-                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor()), value: icon.getColor()});
-                      sprite.getSurface().renderFrame();
-                      this.fireEvent('draw', sprite.index)
-                    }
-                  },
                   spritemousedown: function(item, event) {
                     var sprite = item && item.sprite;
                     if (sprite) {
                       this.mousedown = true;
+                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor()), value: icon.getColor()});
+                      sprite.getSurface().renderFrame();
+                      this.fireEvent('draw', sprite.index)
                     }
                   },
                   spritemouseup: function(item, event) {
