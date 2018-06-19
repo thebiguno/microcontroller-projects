@@ -124,7 +124,8 @@
           {name: 'height',  type: 'int'},
           {name: 'palette', type: 'int'},
           {name: 'color', type: 'int'},   // transient: the current color
-          {name: 'frame', type: 'int'}    // transient: the current frame
+          {name: 'frame', type: 'int'},   // transient: the current frame
+          {name: 'pasteboard', type: 'auto'}
       ],
 
       getWidth: function() {
@@ -147,6 +148,12 @@
       },
       setColor: function(value) {
         this.set('color', value);
+      },
+      getPasteboard: function() {
+        return this.get('pasteboard');
+      },
+      setPasteboard: function(value) {
+        this.set('pasteboard', value);
       },
       setDelay: function(delay) {
         var frame = this.frames().data.items[this.getFrame()];
@@ -348,6 +355,15 @@
         'button#frameDown': {
           tap: 'onFrameDown'
         },
+        'button#frameErase': {
+          tap: 'onFrameErase'
+        },
+        'button#frameCopy': {
+          tap: 'onFrameCopy'
+        },
+        'button#framePaste': {
+          tap: 'onFramePaste'
+        },
         'list': {
           select: 'onListSelect'
         },
@@ -432,6 +448,27 @@
         this.lookupReference('framesList').setSelection(frame);
       },
 
+      onFrameErase: function() {
+        var c = icon.getColor();
+        var pixels = this.lookupReference('framesList').getSelection().getPixels();
+        for (var i = 0; i < icon.getWidth() * icon.getHeight(); i++) {
+          pixels[i] = c;
+        }
+        this.lookupReference('canvas').paint(icon);
+      },
+
+      onFrameCopy: function() {
+        var pixels = this.lookupReference('framesList').getSelection().getPixels();
+        icon.setPasteboard(pixels.slice());
+        this.lookupReference('canvas').paint(icon);
+      },
+
+      onFramePaste: function() {
+        var frame = this.lookupReference('framesList').getSelection();
+        frame.setPixels(icon.getPasteboard().slice());
+        this.lookupReference('canvas').paint(icon);
+      },
+
       onFrameAdd: function() {
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         var frame = framesStore.add({})[0];
@@ -505,17 +542,17 @@
                 xtype: 'spacer'
               },{
                 xtype: 'button',
-                itemId: 'frameUp',
+                itemId: 'frameCopy',
                 iconCls: 'x-fa fa-copy',
                 tooltip: 'Copy'
               },{
                 xtype: 'button',
-                itemId: 'frameUp',
+                itemId: 'framePaste',
                 iconCls: 'x-fa fa-paste',
                 tooltip: 'Paste'
               },{
                 xtype: 'button',
-                itemId: 'frameUp',
+                itemId: 'frameErase',
                 iconCls: 'x-fa fa-eraser',
                 tooltip: 'Erase'
               },{
