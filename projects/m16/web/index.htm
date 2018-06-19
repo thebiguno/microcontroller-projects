@@ -75,26 +75,12 @@
       }
     };
 
-    Ext.define('MyApp.model.Pixel', {
-      extend: 'Ext.data.Model',
-      fields: [
-        {name: 'color', type: 'int', defaultValue: 0}
-      ],
-      getColor: function() {
-        return this.get('color');
-      },
-      setColor: function(value) {
-        this.set('color', value);
-      },
-    });
     Ext.define('MyApp.model.Frame', {
       extend: 'Ext.data.Model',
       fields: [
         {name: 'delay', type: 'int', defaultValue: 0},
         {name: 'loop', type: 'boolean', defaultValue: false},
-      ],
-      hasMany: [
-        {name: 'pixels', model:'MyApp.model.Pixel'}
+        {name: 'pixels', type: 'auto'}
       ],
       getDelay: function() {
         return this.get('delay');
@@ -108,9 +94,14 @@
       setLoop: function(loop) {
         this.set('loop', loop);
       },
-      setAt: function(index) {
-        var pixel = this.pixels().data.items[index];
-        pixel.setColor(icon.getColor());
+      getPixels: function() {
+        return this.get('pixels');
+      },
+      setPixels: function(pixels) {
+        this.set('pixels', pixels);
+      },
+      setAt: function(index, color) {
+        this.getPixels()[index] = color;
       }
     });
     Ext.define('MyApp.model.Icon', {
@@ -193,10 +184,10 @@
           var byte = f * bpf + 3;
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
           var frame = frames.getAt(f);
-          var pixels = frame.pixels().data.items;
+          var pixels = frame.getPixels();
 
           for (var pixel = 0; pixel < pixels.length; pixel++) {
-            var c = pixels[pixel].getColor();
+            var c = pixels[pixel];
 
             switch (palette) {
               case 0: buffer[byte] |= (c << bit--); if (bit < 0) { bit = 7; byte++; }; break;
@@ -264,30 +255,29 @@
           var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
           var frame = framesStore.add({})[0];
 
-          var pixels = frame.pixels()
+          var pixels = new Array(width * height);
+          frame.setPixels(pixels);
 
           for (var i = 0; i < (width * height); i++) {
-            pixels.add({})
-
+            var c = 0;
             var b = buffer[byte];
             switch (palette) {
-              case 0: this.setColor((b & bv(bit--)) > 0 ? 1 : 0); if (bit < 0) { bit = 7; byte++; } break;
-              case 1: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 2: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 3: this.setColor(bit == 7 ? b >> 4 : b & 0xf); bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
-              case 4: this.setColor(b); byte++; break;
-              case 5: this.setColor(b); byte++; break;
+              case 0: c = (b & bv(bit--)) > 0 ? 1 : 0; if (bit < 0) { bit = 7; byte++; } break;
+              case 1: c = bit == 7 ? b >> 4 : b & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 2: c = bit == 7 ? b >> 4 : b & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 3: c = bit == 7 ? b >> 4 : b & 0xf; bit -= 4; if (bit < 0) { bit = 7; byte++; }; break;
+              case 4: c = b; byte++; break;
+              case 5: c = b; byte++; break;
               case 6:
-                var c = bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
-                if (bit < 0) { bit = 7; byte++; }
                 c |= bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
                 c |= bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
-                this.setColor(c);
+                c |= bit == 7 ? b >> 4 : b & 0xf; c << 4; bit -= 4;
+                if (bit < 0) { bit = 7; byte++; }
                 break;
             }
-            frame.setAt(i);
+            frame.setAt(i, c);
           }
 
           var footer = buffer[byte++];
@@ -389,7 +379,7 @@
       onDraw: function(index) {
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         var frame = framesStore.getAt(icon.getFrame());
-        frame.setAt(index);
+        frame.setAt(index, icon.getColor());
       },
 
       onIconSave: function(event) {
@@ -437,9 +427,7 @@
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         framesStore.removeAll();
         var frame = framesStore.add({})[0];
-        for (i = 0; i < h*w; i++) {
-            frame.pixels().add({});
-        }
+        frame.setPixels(new Array(w*h));
 
         this.lookupReference('framesList').setSelection(frame);
       },
@@ -447,9 +435,7 @@
       onFrameAdd: function() {
         var framesStore = Ext.data.StoreManager.lookup('framesStore');
         var frame = framesStore.add({})[0];
-        for (i = 0; i < icon.getHeight() * icon.getWidth(); i++) {
-            frame.pixels().add({});
-        }
+        frame.setPixels(new Array(icon.getWidth() * icon.getHeight()));
         icon.setFrame(framesStore.getCount() - 1);
         this.lookupReference('framesList').setSelection(frame);
       },
@@ -513,7 +499,27 @@
                 xtype: 'button',
                 iconCls: 'x-fa fa-step-forward'
               },{
+                xtype: 'button',
+                iconCls: 'x-fa fa-wifi'
+              },{
                 xtype: 'spacer'
+              },{
+                xtype: 'button',
+                itemId: 'frameUp',
+                iconCls: 'x-fa fa-copy',
+                tooltip: 'Copy'
+              },{
+                xtype: 'button',
+                itemId: 'frameUp',
+                iconCls: 'x-fa fa-paste',
+                tooltip: 'Paste'
+              },{
+                xtype: 'button',
+                itemId: 'frameUp',
+                iconCls: 'x-fa fa-eraser',
+                tooltip: 'Erase'
+              },{
+                xtype: 'spacer', width: 50
               },{
                 xtype: 'button',
                 itemId: 'frameUp',
@@ -696,11 +702,11 @@
                   var s = 512 / Math.max(h,w);
                   var framesStore = Ext.data.StoreManager.lookup('framesStore');
                   var frame = framesStore.getAt(icon.getFrame());
-                  var pixels = frame.pixels().data.items;
+                  var pixels = frame.getPixels();
                   for (var x = 0; x < w; x++) {
                     for (var y = 0; y < h; y++) {
                       var i = (y*w)+x;
-                      var v = pixels[i].getColor();
+                      var v = pixels[i];
                       sprites.push({ type: 'rect', x: x*s, y: y*s, index: i, value: v, width: s, height:s, fillStyle: hex(p,v), strokeStyle: '#ccc' })
                     }
                   }
