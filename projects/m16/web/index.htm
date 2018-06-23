@@ -40,7 +40,7 @@
       } else if (palette == 3) {
         // 4-bit IRGB 16 colour
         if (color == 6) {
-          return "#a52";
+          return "#a50";
         } else {
           var n = ((color >> 3) & 0x1) * 0x5;
           var r = ((color >> 2) & 0x1) * 0x8;
@@ -204,11 +204,11 @@
               case 4: buffer[byte++] = c; break;
               case 5: buffer[byte++] = c; break;
               case 6:
-                buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; c >> 4; bit -= 4;
+                buffer[byte] |= bit == 7 ? (c << 4) & 0xf : c & 0xf; c >> 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
-                buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; c >> 4; bit -= 4;
+                buffer[byte] |= bit == 7 ? (c << 4) & 0xf : c & 0xf; c >> 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
-                buffer[byte] |= bit == 7 ? c << 4 : c & 0xf; c >> 4; bit -= 4;
+                buffer[byte] |= bit == 7 ? (c << 4) & 0xf : c & 0xf; c >> 4; bit -= 4;
                 if (bit < 0) { bit = 7; byte++; }
                 break;
             }
