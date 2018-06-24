@@ -199,7 +199,7 @@ typedef struct __DMA_HandleTypeDef
 
 /** @defgroup DMA_Error_Code DMA Error Code
   * @brief    DMA Error Code 
-  * @{
+  * @{DMA_InitStructure
   */ 
 #define HAL_DMA_ERROR_NONE            0x00000000U    /*!< No error                               */
 #define HAL_DMA_ERROR_TE              0x00000001U    /*!< Transfer error                         */
