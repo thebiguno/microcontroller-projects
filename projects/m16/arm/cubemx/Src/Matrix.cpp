@@ -106,8 +106,8 @@ void initHardware() {
     // Timer 8 is used to drive DMA Str
 
     GPIO_InitTypeDef GPIO_InitStruct;
-    TIM_HandleTypeDef htim4;
-    DMA_HandleTypeDef hdma_gpioc;
+    TIM_HandleTypeDef htim3;
+    DMA_HandleTypeDef hdma_tim3_ch4_up;
 
     // Prepare GPIOC
     __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -122,13 +122,13 @@ void initHardware() {
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     // Configure Timer 4 to drive DMA and GPIOC9
-    __HAL_RCC_TIM8_CLK_ENABLE();
-    htim4.Instance = TIM4;
-    htim4.Init.Prescaler = 0;
-    htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim4.Init.Period = 9;
-    htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    htim4.Init.RepetitionCounter = 0;
+    __HA3_RCC_TIM3_CLK_ENABLE();
+    htim3.Instance = TIM3;
+    htim3.Init.Prescaler = 0;
+    htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim3.Init.Period = 0;
+    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim3.Init.RepetitionCounter = 0;
     HAL_TIM_Base_Init(&htim4)
 
     // Configure GPIOC pin 9 as a clock source
@@ -141,25 +141,25 @@ void initHardware() {
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     // Configure DMA Stream 1 Channel 7 to transfer from BAM buffer to GPIOC
-    DMA_HandleTypeDef *hdma_gpioc;
-    hdma_gpioc.Instance = DMA1_Stream2;
-    hdma_gpioc.Init.Channel = DMA_Channel_4;
-    hdma_gpioc.Init.Direction = DMA_MEMORY_TO_PERIPH;
-    hdma_gpioc.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_gpioc.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_gpioc.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_gpioc.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_gpioc.Init.Mode = DMA_CIRCULAR;
-    hdma_gpioc.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
-    hdma_gpioc.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
-    hdma_gpioc.Init.MemBurst = DMA_MBURST_SINGLE;
-    hdma_gpioc.Init.PeriphBurst = DMA_PBURST_SINGLE;
-    hdma_gpioc.Init.Priority = DMA_PRIORITY_HIGH;
-    HAL_DMA_Init(&hdma_gpioc);
+    __HAL_RCC_DMA1_CLK_ENABLE();
+    hdma_tim3_ch4_up.Instance = DMA1_Stream2;
+    hdma_tim3_ch4_up.Init.Channel = DMA_Channel_4;
+    hdma_tim3_ch4_up.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_tim3_ch4_up.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_tim3_ch4_up.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_tim3_ch4_up.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_tim3_ch4_up.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_tim3_ch4_up.Init.Mode = DMA_CIRCULAR;
+    hdma_tim3_ch4_up.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+    hdma_tim3_ch4_up.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+    hdma_tim3_ch4_up.Init.MemBurst = DMA_MBURST_SINGLE;
+    hdma_tim3_ch4_up.Init.PeriphBurst = DMA_PBURST_SINGLE;
+    hdma_tim3_ch4_up.Init.Priority = DMA_PRIORITY_HIGH;
+    HAL_DMA_Init(&hdma_tim3_ch4_up);
     __HAL_DMA2_REMAP(HAL_DMA1_CH4_TIM3_CH1);
-    __HAL_LINKDMA(&htim4, hdma[TIM_DMA_ID_UPDATE], hdma_gpioc);
-    HAL_NVIC_SetPriority(DMA1_Ch7_3_DMA2_Ch7_2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Ch7_3_DMA2_Ch1_2_IRQn);
+    __HAL_LINKDMA(&htim4, hdma[TIM_DMA_ID_UPDATE], hdma_tim3_ch4_up);
+    HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
 
     // Configure DMA callbacks
     htim->hdma[TIM_DMA_ID_UPDATE]->XferCpltCallback = data_transmitted_handler_0;
@@ -167,7 +167,7 @@ void initHardware() {
     htim->hdma[TIM_DMA_ID_UPDATE]->XferErrorCallback = transmit_error_handler;
 
     // Enable DMA
-    HAL_DMAEx_MultiBufferStart_IT(&hdma_gpioc, (uint32_t) &dma[0], (uint32_t) &GPIOC->ODR, (uint32_t) &dma[BAM_SIZE], BAM_SIZE);
+    HAL_DMAEx_MultiBufferStart_IT(&hdma_tim3_ch4_up, (uint32_t) &dma[0], (uint32_t) &GPIOC->ODR, (uint32_t) &dma[BAM_SIZE], BAM_SIZE);
 
     // Start Timer
     __HAL_TIM_ENABLE(&htim8);

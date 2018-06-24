@@ -1,7 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : main.h
-  * Description        : This file contains the common defines of the application
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -9,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2017 STMicroelectronics
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -35,10 +36,12 @@
   *
   ******************************************************************************
   */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
-  /* Includes ------------------------------------------------------------------*/
+#ifndef __MAIN_H__
+#define __MAIN_H__
+
+/* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
 
@@ -46,40 +49,68 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define WS2812_Pin GPIO_PIN_0
+#define WS2812_Pin GPIO_PIN_13
 #define WS2812_GPIO_Port GPIOC
+#define RGB_A_Pin GPIO_PIN_0
+#define RGB_A_GPIO_Port GPIOC
+#define RGB_B_Pin GPIO_PIN_1
+#define RGB_B_GPIO_Port GPIOC
+#define RGB_C_Pin GPIO_PIN_2
+#define RGB_C_GPIO_Port GPIOC
+#define RGB_D_Pin GPIO_PIN_3
+#define RGB_D_GPIO_Port GPIOC
 #define ENC1A_Pin GPIO_PIN_0
 #define ENC1A_GPIO_Port GPIOA
 #define ENC1B_Pin GPIO_PIN_1
 #define ENC1B_GPIO_Port GPIOA
-#define ENC2A_Pin GPIO_PIN_6
-#define ENC2A_GPIO_Port GPIOA
-#define ENC2B_Pin GPIO_PIN_7
-#define ENC2B_GPIO_Port GPIOA
-#define ENC1SW_Pin GPIO_PIN_4
-#define ENC1SW_GPIO_Port GPIOC
-#define ENC2SW_Pin GPIO_PIN_5
-#define ENC2SW_GPIO_Port GPIOC
-#define IR_OUT_Pin GPIO_PIN_0
-#define IR_OUT_GPIO_Port GPIOB
+#define RGB_STB_Pin GPIO_PIN_4
+#define RGB_STB_GPIO_Port GPIOC
+#define RGB_OE_Pin GPIO_PIN_5
+#define RGB_OE_GPIO_Port GPIOC
+#define IR_DI_Pin GPIO_PIN_0
+#define IR_DI_GPIO_Port GPIOB
+#define PZ_DO_Pin GPIO_PIN_1
+#define PZ_DO_GPIO_Port GPIOB
+#define R0_Pin GPIO_PIN_6
+#define R0_GPIO_Port GPIOC
+#define G0_Pin GPIO_PIN_7
+#define G0_GPIO_Port GPIOC
+#define B0_Pin GPIO_PIN_8
+#define B0_GPIO_Port GPIOC
 #define SD_DET_Pin GPIO_PIN_8
 #define SD_DET_GPIO_Port GPIOA
+#define EN2_SW_Pin GPIO_PIN_11
+#define EN2_SW_GPIO_Port GPIOA
+#define EN1_SW_Pin GPIO_PIN_12
+#define EN1_SW_GPIO_Port GPIOA
+#define R1_Pin GPIO_PIN_10
+#define R1_GPIO_Port GPIOC
+#define G1_Pin GPIO_PIN_11
+#define G1_GPIO_Port GPIOC
+#define B1_Pin GPIO_PIN_12
+#define B1_GPIO_Port GPIOC
+
+/* ########################## Assert Selection ############################## */
+/**
+  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
+  *        HAL drivers code
+  */
+/* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
 void _Error_Handler(char *, int);
 
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+#ifdef __cplusplus
+}
+#endif
 
-/**
-  * @}
-  */ 
+#endif /* __MAIN_H__ */
 
-/**
-  * @}
-*/ 
-
-#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
