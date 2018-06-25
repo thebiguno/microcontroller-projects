@@ -28,7 +28,7 @@ namespace digitalcave {
 
 		// 8 levels BAM of [x:x:x:b1:g1:r1:ck:b0:g0:r0:oe:st:d:c:b:a]
 		// this maps directly onto GPIOC and is transferred using DMA
-		// ck is driven at double the rate by dedicated timer and not part of the BAM codes
+		// ck is driven by the same timer as DMA and not part of the BAM codes
 		// two rows (top half, bottom half) are driven at a time
 		// there are 8 unique values spread across 256 time slices
 		uint16_t bam[BAM_SIZE * 8]; // 16640 bytes

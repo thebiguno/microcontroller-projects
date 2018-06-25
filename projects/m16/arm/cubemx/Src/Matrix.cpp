@@ -103,7 +103,7 @@ void buffer_to_bam() {
 }
 
 void initHardware() {
-    // Timer 8 is used to drive DMA Str
+    // Timer 3 is used to drive DMA Str
 
     GPIO_InitTypeDef GPIO_InitStruct;
     TIM_HandleTypeDef htim3;
@@ -140,7 +140,7 @@ void initHardware() {
     GPIO_InitStruct.Alternate = GPIO_AF_TIM3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    // Configure DMA Stream 1 Channel 7 to transfer from BAM buffer to GPIOC
+    // Configure DMA Stream 2 Channel ? to transfer from BAM buffer to GPIOC
     __HAL_RCC_DMA1_CLK_ENABLE();
     hdma_tim3_ch4_up.Instance = DMA1_Stream2;
     hdma_tim3_ch4_up.Init.Channel = DMA_Channel_4;
@@ -170,7 +170,7 @@ void initHardware() {
     HAL_DMAEx_MultiBufferStart_IT(&hdma_tim3_ch4_up, (uint32_t) &dma[0], (uint32_t) &GPIOC->ODR, (uint32_t) &dma[BAM_SIZE], BAM_SIZE);
 
     // Start Timer
-    __HAL_TIM_ENABLE(&htim8);
+    __HAL_TIM_ENABLE(&htim3);
 }
 
 void data_transmitted_handler_0(UART_HandleTypeDef *handle) {
