@@ -5,12 +5,16 @@
 #include <stdint.h>
 
 namespace digitalcave {
-	class Clock : public Module {
-	public:
-		Clock();
-		~Clock();
-		void run();
-	};
+    class Clock : public Module {
+    private:
+        RTC_DateTypeDef date;
+        RTC_TimeTypeDef time;
+        uint8_t stale;
+    public:
+        Clock();
+        ~Clock();
+        void paint();
+    };
 }
 
 #endif

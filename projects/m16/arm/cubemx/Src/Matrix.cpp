@@ -57,7 +57,7 @@ void Matrix::flush(){
 	}
 }
 
-uint8_t time_index_to_bam_index(uint8_t time_index) {
+uint8_t Matrix::time_index_to_bam_index(uint8_t time_index) {
     if (time_index == 0) return 0;       //         0 = 1
     else if (time_index < 3) return 1;   //   1 -   2 = 2
     else if (time_index < 7) return 2;   //   3 -   6 = 4
@@ -68,7 +68,7 @@ uint8_t time_index_to_bam_index(uint8_t time_index) {
     else return 7;                       // 127 - 255 = 128
 }
 
-void buffer_to_bam() {
+void Matrix::buffer_to_bam() {
     for (uint16_t x = 0; x < MATRIX_WIDTH + 1; x++) {
         for (uint16_t y = 0; y < MATRIX_HEIGHT / 2; y++) {
             if (x == MATRIX_WIDTH) {
@@ -102,7 +102,7 @@ void buffer_to_bam() {
     }
 }
 
-void initHardware() {
+void Matrix::initHardware() {
     // Timer 3 is used to drive DMA Str
 
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -173,17 +173,17 @@ void initHardware() {
     __HAL_TIM_ENABLE(&htim3);
 }
 
-void data_transmitted_handler_0(UART_HandleTypeDef *handle) {
+void Matrix::data_transmitted_handler_0(UART_HandleTypeDef *handle) {
     uint8_t i = time_index_to_bam_index(time_index++);
     HAL_DMAEx_ChangeMemory(&handle, (uint32_t) &dma[BAM_SIZE * i], MEMORY0);
 }
 
-void data_transmitted_handler_1(UART_HandleTypeDef *handle) {
+void Matrix::data_transmitted_handler_1(UART_HandleTypeDef *handle) {
     uint8_t i = time_index_to_bam_index(time_index++);
     HAL_DMAEx_ChangeMemory(&handle, (uint32_t) &dma[BAM_SIZE * i], MEMORY1);
 }
 
-void transmit_error_handler(DMA_HandleTypeDef *hdma) {
+void Matrix::transmit_error_handler(DMA_HandleTypeDef *hdma) {
     __HAL_TIM_DISABLE(&htim8);
 }
 

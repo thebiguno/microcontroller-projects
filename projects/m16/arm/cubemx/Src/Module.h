@@ -2,10 +2,10 @@
 #define Module_H
 
 namespace digitalcave {
-	class Module {
-	public:
-		void run();
-	};
+    class Module {
+    public:
+        void paint();
+    };
 }
 
 #endif

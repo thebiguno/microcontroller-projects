@@ -1,19 +1,45 @@
 #ifndef STATE_H
 #define STATE_H
 
+
 namespace digitalcave {
+
+    struct State::time {
+        uint8_t  second; // 0-59
+        uint8_t  minute; // 0-59
+        uint8_t  hour;   // 0-23
+        uint8_t  wday;   //
+        uint8_t  mday;   //
+        uint8_t  month;  // 0-11
+        uint8_t  year;   // 
+    };
+
+    union E {
+        char[32] darkskyApiKey;
+        char[8] latitude;
+        char[8] longitude;
+    };
+
     class State {
     private:
+        // transient
         uint8_t brightness;
-        float latitude;
-        float longitude;
-        char[] darkskyApiKey;
-        int8_t zoneOffset;
         uint32_t sunrise;
         uint32_t sunset;
         int8_t temperature;
         int8_t apparentTemperature;
         uint8_t weatherIcon;
+
+        // eeprom
+
+
+        int8_t zoneOffset;
+        float latitude;
+        float longitude;
+        char[] darkskyApiKey;
+
+        // rtc
+        uint32_t time;
 
     public:
         uint8_t getBrightness();
@@ -53,6 +79,12 @@ namespace digitalcave {
         void readEeprom();
         /* Write latitude, longitude, darksky API key, TZ offset from the eeprom */
         void writeEeprom();
+
+        /* Read the date/time from the RTC */
+        void readRtc();
+        /* Write the date/time to the RTC */
+        void writeRtc();
+
         /* Read current time and weather data from darksky.net */
         void readDarksky();
 

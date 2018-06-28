@@ -14,4 +14,16 @@
 #include "Weather.h"
 #include "Plasma.h"
 
+
+namespace digitalcave {
+    class Main {
+        
+    public:
+        Main();
+        ~Main();
+        
+        void run();
+    };
+}
+
 #endif
