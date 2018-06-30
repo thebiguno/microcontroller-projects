@@ -39,6 +39,8 @@ namespace digitalcave {
 
 	protected:
 		uint8_t overlay = DRAW_OVERLAY_REPLACE;
+		int8_t translate_x = 0;
+		int8_t translate_y = 0;
 
 	public:
 		virtual void setPixel(int16_t x, int16_t y);
@@ -56,6 +58,8 @@ namespace digitalcave {
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		void setColor(Rgb *rgb);
 		void setAlpha(uint8_t a);
+
+		void translate(int8_t x, int8_t y);
 
 		/*
 		 * Draws a line between two points x0,y0 to x1,y1.  Overlay (o) determines the

@@ -25,6 +25,11 @@ uint8_t Draw::getOverlay() {
 	return overlay;
 }
 
+void Draw::translate(int8_t x, int8_t y) {
+    this->translate_x = x;
+    this->translate_y = y;
+}
+
 // Implementation of Bresenham's algorithm; adapted from Lady Ada's GLCD library,
 // which was in turn adapted from Wikpedia.
 void Draw::line(int16_t x0, int16_t y0, int16_t x1, int16_t y1){

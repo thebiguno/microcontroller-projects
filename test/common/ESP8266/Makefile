@@ -3,6 +3,7 @@ all:
 	-DESP8266_DEBUG \
 	-I../../../inc/common/Stream/ \
 	-I../../../inc/common/ESP8266/ \
+	-I../Test/ \
 	-I./ \
 	-o test.out \
 	Main.cpp \
@@ -10,6 +11,7 @@ all:
 	../../../inc/common/Stream/ArrayStream.cpp \
 	../../../inc/common/ESP8266/ESP8266.cpp \
 	../../../inc/common/ESP8266/ESP8266Stream.cpp \
-	MockStream.cpp \
+	../Test/MockStream.cpp \
+	../Test/Test.cpp \
 	ESP8266Test.cpp
 	./test.out

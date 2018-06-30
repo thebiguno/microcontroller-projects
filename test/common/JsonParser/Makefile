@@ -3,6 +3,7 @@ all:
 	-I../../../inc/common/dcutil/ \
 	-I../../../inc/common/Stream/ \
 	-I../../../inc/common/Web/ \
+	-I../../../inc/common/Json/ \
 	-I../Test/ \
 	-I./ \
 	-o test.out \
@@ -10,8 +11,8 @@ all:
 	../../../inc/common/dcutil/dcstring.c \
 	../../../inc/common/Stream/Stream.cpp \
 	../../../inc/common/Stream/ArrayStream.cpp \
-	../../../inc/common/Web/WebStream.cpp \
+	../../../inc/common/Json/JsonParser.cpp \
 	../Test/MockStream.cpp \
 	../Test/Test.cpp \
-	WebTest.cpp
+	JsonParserTest.cpp
 	./test.out
