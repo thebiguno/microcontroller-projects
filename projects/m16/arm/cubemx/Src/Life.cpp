@@ -19,7 +19,7 @@ void Life::paint() {
     } else if (frame > 0) {
         frame--;
     } else {
-        frame = 5; // only re-paint every 5 frames
+        frame = 5;  // repaint every 50 ms
 
         for (uint8_t x = 0; x < width; x++) {
             for (uint8_t y = 0; y < height; y++) {

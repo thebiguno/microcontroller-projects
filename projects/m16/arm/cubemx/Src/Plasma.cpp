@@ -18,7 +18,7 @@ void Plasma::paint() {
     if (frame > 0) {
         frame--;
     } else {
-        frame = 5; // only re-paint every 5 frames
+        frame = 5; // repaint every 50 ms
         // plasma
         // http://www.bidouille.org/prog/plasma
         for (uint8_t x = 0; x < 12; x++) {

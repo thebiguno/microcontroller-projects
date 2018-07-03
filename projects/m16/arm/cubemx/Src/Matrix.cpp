@@ -14,47 +14,50 @@ Matrix::~Matrix() {
 }
 
 void Matrix::setColor(Rgb rgb) {
-	setColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+    setColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
 }
 
 void Matrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
     // use only the top nibble
-	uint16_t red = (r & 0xf0) >> 4;
-	uint8_t green = (b & 0xf0) >> 4;
-	uint8_t blue = (b & 0xf0) >> 4;
+    uint16_t red = (r & 0xf0) >> 4;
+    uint8_t green = (b & 0xf0) >> 4;
+    uint8_t blue = (b & 0xf0) >> 4;
 
-	color = (red << 8) | (green << 4) | blue
+    color = (red << 8) | (green << 4) | blue
 }
 
 void Matrix::setPixel(int16_t x, int16_t y) {
-	int16_t i = (x & 0x01) ? (x * MATRIX_WIDTH + MATRIX_HEIGHT - 1 - y) : (x * MATRIX_HEIGHT + y);
-	//int16_t i = (x * 12) + y;
-	if (i >= MATRIX_WIDTH * MATRIX_HEIGHT || i < 0) return;
+    x += this->translate_x;
+    y += this->translate_y;
+
+    int16_t i = (x & 0x01) ? (x * MATRIX_WIDTH + MATRIX_HEIGHT - 1 - y) : (x * MATRIX_HEIGHT + y);
+    //int16_t i = (x * 12) + y;
+    if (i >= MATRIX_WIDTH * MATRIX_HEIGHT || i < 0) return;
 
     uint16_t current = buffer[i];
 
-	uint8_t overlay = getOverlay();
-	if (overlay == DRAW_OVERLAY_REPLACE){
-		buffer[i] = color;
-	}
-	else if (overlay == DRAW_OVERLAY_OR){
-		buffer[i] |= color;
-	}
-	else if (overlay == DRAW_OVERLAY_NAND){
-		buffer[i] &= ~color;
-	}
-	else if (overlay == DRAW_OVERLAY_XOR){
-		buffer[i] ^= color;
-	}
+    uint8_t overlay = getOverlay();
+    if (overlay == DRAW_OVERLAY_REPLACE){
+        buffer[i] = color;
+    }
+    else if (overlay == DRAW_OVERLAY_OR){
+        buffer[i] |= color;
+    }
+    else if (overlay == DRAW_OVERLAY_NAND){
+        buffer[i] &= ~color;
+    }
+    else if (overlay == DRAW_OVERLAY_XOR){
+        buffer[i] ^= color;
+    }
 
-	if (buffer[i] != current) changed = 1;
+    if (buffer[i] != current) changed = 1;
 }
 
 void Matrix::flush(){
-	if (changed) {
-		buffer_to_bam();
-		changed = 0;
-	}
+    if (changed) {
+        buffer_to_bam();
+        changed = 0;
+    }
 }
 
 uint8_t Matrix::time_index_to_bam_index(uint8_t time_index) {

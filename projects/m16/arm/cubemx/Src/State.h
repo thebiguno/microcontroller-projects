@@ -11,7 +11,7 @@ namespace digitalcave {
         uint8_t  wday;   //
         uint8_t  mday;   //
         uint8_t  month;  // 0-11
-        uint8_t  year;   // 
+        uint8_t  year;   //
     };
 
     union E {
@@ -24,14 +24,11 @@ namespace digitalcave {
     private:
         // transient
         uint8_t brightness;
-        uint32_t sunrise;
-        uint32_t sunset;
         int8_t temperature;
         int8_t apparentTemperature;
         uint8_t weatherIcon;
 
         // eeprom
-
 
         int8_t zoneOffset;
         float latitude;
@@ -45,9 +42,9 @@ namespace digitalcave {
         uint8_t getBrightness();
         void setBrightness();
 
-        float getLatitude();
-        float getLongitude();
-        char[] getDarkskyApiKey();
+        char* getLatitude();
+        char* getLongitude();
+        char* getDarkskyApiKey();
 
         uint32_t getTime();
         void setTime(uint32_t time);

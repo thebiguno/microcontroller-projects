@@ -10,6 +10,7 @@ namespace digitalcave {
         RTC_DateTypeDef date;
         RTC_TimeTypeDef time;
         uint8_t stale;
+        uint8_t frame;
     public:
         Clock();
         ~Clock();

@@ -24,10 +24,11 @@
     };
 
     hex = function(palette, color) {
+      if (color == undefined) color = 0;
       if (palette == 0) {
         return color ? '#fff' : '#000';
       } else if (palette == 1) {
-        var l = color.toString(16)
+        var l = color.toString(16);
         return "#"+l+l+l;
       } else if (palette == 2) {
         // 4-bit RRGG 16 color
@@ -102,12 +103,15 @@
       },
       setAt: function(index, color) {
         this.getPixels()[index] = color;
+      },
+      getAt: function(index) {
+        return this.getPixels()[index];
       }
     });
     Ext.define('MyApp.model.Icon', {
       // each icon consists of a 3 byte header
       // then for each frame consists of n bytes data + 1 byte footer
-      // header = [width 7:0][height 7:0][config 7:0]
+      // header = [width 7:0] [height 7:0] [config 7:0]
       // config = [unused 7:3][palette 2:0]
       // footer = [unused 7][more 6][delay 5:0] (50 - 3150 ms; 0 = don't animate)
       // palette 0 = 1 bit A1 (color value must be supplied externally)
@@ -332,7 +336,8 @@
       control: {
         'draw': {
           change: 'onColorChange',
-          draw: 'onDraw'
+          draw: 'onDraw',
+          copy: 'onColorCopy'
         },
         'button#iconNew': {
           tap: 'onIconNew'
@@ -390,6 +395,20 @@
         icon.setColor(value);
         var text = this.lookupReference('hex');
         text.setValue(hex(icon.getPalette(), value));
+      },
+
+      onColorCopy: function(index) {
+        var framesStore = Ext.data.StoreManager.lookup('framesStore');
+        var frame = framesStore.getAt(icon.getFrame());
+        var color = frame.getAt(index);
+        icon.setColor(color);
+
+        var text = this.lookupReference('hex');
+        text.setValue(hex(icon.getPalette(), color));
+
+        var palette = this.lookupReference('palette').getActiveItem();
+        palette.color = color;
+        palette.draw();
       },
 
       onDraw: function(index) {
@@ -708,11 +727,14 @@
                 listeners: {
                   spritemousedown: function(item, event) {
                     var sprite = item && item.sprite;
-                    if (sprite) {
+                    if (sprite && event.button == 0) {
                       this.mousedown = true;
-                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor()), value: icon.getColor()});
+                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor())});
                       sprite.getSurface().renderFrame();
                       this.fireEvent('draw', sprite.index)
+                    }
+                    if (sprite && event.button == 2) {
+                      this.fireEvent('copy', sprite.index)
                     }
                   },
                   spritemouseup: function(item, event) {
@@ -724,7 +746,7 @@
                   spritemouseover: function(item, event) {
                     var sprite = item && item.sprite;
                     if (sprite && this.mousedown) {
-                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor()), value: icon.getColor()});
+                      sprite.setAttributes({fillStyle: hex(icon.getPalette(),icon.getColor())});
                       sprite.getSurface().renderFrame();
                       this.fireEvent('draw', sprite.index)
                     }
@@ -744,7 +766,7 @@
                     for (var y = 0; y < h; y++) {
                       var i = (y*w)+x;
                       var v = pixels[i];
-                      sprites.push({ type: 'rect', x: x*s, y: y*s, index: i, value: v, width: s, height:s, fillStyle: hex(p,v), strokeStyle: '#ccc' })
+                      sprites.push({ type: 'rect', x: x*s, y: y*s, index: i, width: s, height:s, fillStyle: hex(p,v), strokeStyle: '#ccc' })
                     }
                   }
                   this.getSurface().add(sprites);
@@ -994,7 +1016,12 @@
       }
     });
 
-
+    Ext.onReady(function () {
+        Ext.get(window.document).on('contextmenu',function (e) {
+            e.preventDefault();
+            return false;
+        });
+    });
     </script>
 </head>
 <body>
