@@ -108,7 +108,7 @@ def main():
 			#CPU Temperature:
 			for chip in sensors.iter_detected_chips():
 				for feature in chip:
-					if (feature.label == "Physical id 0"):
+					if (feature.label == "Package id 0"):
 						cpu_temp = int(feature.get_value())
 						if (cpu_temp > 99):
 							cpu_temp = 99
