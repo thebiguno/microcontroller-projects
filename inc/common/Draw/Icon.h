@@ -49,6 +49,7 @@ namespace digitalcave {
 		void draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
 		void draw7(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
 		uint8_t bv(uint8_t bit);
+        float hue2rgb(float p, float q, float t);
 
 	public:
 		Icon(Stream* stream);

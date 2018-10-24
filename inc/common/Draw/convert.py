@@ -14,7 +14,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv[1:], "p:i:o:", ["pal=", "in=", "out="])
     except getopt.GetoptError:
-        print('convert.py -p <0-5> -i <inputfile> -o <outputfile>')
+        print('convert.py -p <0-7> -i <inputfile> -o <outputfile>')
         sys.exit(2)
     input_file = ''
     output_file = ''
@@ -43,7 +43,8 @@ def main(argv):
         3: lambda w, h: (w * h) >> 1,
         4: lambda w, h: w * h,
         5: lambda w, h: w * h,
-        6: lambda w, h: (w * h) + ((w * h) >> 1)
+        6: lambda w, h: w * h,
+        7: lambda w, h: (w * h) + ((w * h) >> 1)
     }[palette](width, height)
 
     buffer = [0 for _ in range(bpf + 3 + 1)]
@@ -58,7 +59,8 @@ def main(argv):
         3: lambda w, h: ((w * h) & 0x1) * 4,
         4: lambda w, h: 0,
         5: lambda w, h: 0,
-        6: lambda w, h: ((w * h) & 0x1) << 2
+        6: lambda w, h: 0,
+        7: lambda w, h: ((w * h) & 0x1) << 2
     }[palette](width, height)
 
     if bits != 0:
@@ -90,21 +92,24 @@ def main(argv):
                     if bit < 0:
                         bit = 7
                         byte = byte + 1
-                elif palette < 6:  # 8-bit
+                elif palette < 7:  # 8-bit
                     buffer[byte] = c
                     byte = byte + 1
                 else:  # 12-bit
-                    buffer[byte] |= (c << 4) & 0xf if bit == 7 else c & 0xf
+                    rn = (c >> 8) & 0xf
+                    gn = (c >> 4) & 0xf
+                    bn = (c >> 0) & 0xf
+                    buffer[byte] |= rn << 4 if bit == 7 else rn
                     bit = bit - 4
                     if bit < 0:
                         bit = 7
                         byte = byte + 1
-                    buffer[byte] |= (c << 4) & 0xf if bit == 7 else c & 0xf
+                    buffer[byte] |= gn << 4 if bit == 7 else gn
                     bit = bit - 4
                     if bit < 0:
                         bit = 7
                         byte = byte + 1
-                    buffer[byte] |= (c << 4) & 0xf if bit == 7 else c & 0xf
+                    buffer[byte] |= bn << 4 if bit == 7 else bn
                     bit = bit - 4
                     if bit < 0:
                         bit = 7
@@ -145,7 +150,8 @@ def colors(palette):
         3: lambda: map(lambda i: c3(i), range(16)),
         4: lambda: map(lambda i: c4(i), range(256)),
         5: lambda: map(lambda i: c5(i), range(256)),
-        6: lambda: map(lambda i: c6(i), range(4096))
+        6: lambda: map(lambda i: c6(i), range(256)),
+        7: lambda: map(lambda i: c7(i), range(4096))
     }[palette]())
 
 
@@ -183,21 +189,49 @@ def c3(i):
 
 
 def c4(i):
-    n = ((i >> 6) & 0x3) * 1
-    r = ((i >> 4) & 0x3) * 4
-    g = ((i >> 2) & 0x3) * 4
-    b = ((i >> 0) & 0x3) * 4
-    return [d(r + n), d(g + n), d(b + n), i]
+    n = ((i >> 6) & 0x3) * 0x11
+    r = ((i >> 4) & 0x3) * 0x44
+    g = ((i >> 2) & 0x3) * 0x44
+    b = ((i >> 0) & 0x3) * 0x44
+    return [r + n, g + n, b + n, i]
 
 
 def c5(i):
-    r = ((i >> 5) & 0x7) * 2 + 1
-    g = ((i >> 2) & 0x7) * 2 + 1
-    b = ((i >> 0) & 0x3) * 4 + 3
-    return [d(r), d(g), d(b), i]
+    r = ((i >> 5) & 0x7) * 0x22 + 0x11
+    g = ((i >> 2) & 0x7) * 0x22 + 0x11
+    b = ((i >> 0) & 0x3) * 0x44 + 0x33
+    return [r, g, b, i]
 
+def hue2rgb(p, q, t):
+    if t < 0: t += 1
+    if t > 1: t -= 1
+    if t < 1 / 6: return p + (q - p) * 6.0 * t
+    if t < 1 / 2: return q
+    if t < 2 / 3: return p + (q - p) * (2.0 / 3.0 - t) * 6.0
+    return p
 
 def c6(i):
+    h = i >> 3
+    l = i & 0x07
+
+    if h == 0:
+        l *= 2
+        return [l, l, l, i]
+    elif h == 31:
+        l = (l * 2) + 1;
+        return [l, l, l, i]
+    else:
+        h = (h - 1) / 30.0
+        l = (l / 11.0) + 0.2
+        s = 1.0;
+        q = l * (1.0 + s) if l < 0.5 else l + s - l * s
+        p = 2.0 * l - q
+        r = round(0xf * hue2rgb(p, q, h + 1.0 / 3.0))
+        g = round(0xf * hue2rgb(p, q, h))
+        b = round(0xf * hue2rgb(p, q, h - 1.0 / 3.0))
+    return [d(r), d(g), d(b), i]
+
+def c7(i):
     r = (i >> 8) & 0xf
     g = (i >> 4) & 0xf
     b = (i >> 0) & 0xf

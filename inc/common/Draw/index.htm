@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <script type="text/javascript"
+            src="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-modern-all-debug.js"></script>
+
+    <link rel="stylesheet" type="text/css"
+          href="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/modern/theme-material/resources/theme-material-all-debug.css">
+    <script type="text/javascript"
+            src="http://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/modern/theme-material/theme-material-debug.js"></script>
+
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/packages/charts/classic/classic/resources/charts-all-debug.css">
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/packages/charts/modern/charts-debug.js"></script>
+
+    <script type="text/javascript">
+
+        bv = function (n) {
+            return 1 << n;
+        };
+
+        hex = function (palette, color) {
+            if (color == undefined) color = 0;
+            if (palette == 0) {
+                return color ? '#fff' : '#000';
+            } else if (palette == 1) {
+                var l = color.toString(16);
+                return "#" + l + l + l;
+            } else if (palette == 2) {
+                // 4-bit RRGG 16 color
+                var r = ((color >> 2) & 0x3);
+                var g = ((color >> 0) & 0x3);
+                r = (r << 2) + r;
+                g = (g << 2) + g;
+                var b = 0;
+                return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            } else if (palette == 3) {
+                // 4-bit IRGB 16 colour
+                if (color == 6) {
+                    return "#a50";
+                } else {
+                    var n = ((color >> 3) & 0x1) * 0x5;
+                    var r = ((color >> 2) & 0x1) * 0x8;
+                    var g = ((color >> 1) & 0x1) * 0x8;
+                    var b = ((color >> 0) & 0x1) * 0x8;
+                    if (r > 0) r += 2;
+                    if (g > 0) g += 2;
+                    if (b > 0) b += 2;
+                    return "#" + (r + n).toString(16) + (g + n).toString(16) + (b + n).toString(16);
+                }
+            } else if (palette == 4) {
+                // 8-bit IIRRGGBB 256 color
+                var i = ((color >> 6) & 0x3) * 1;
+                var r = ((color >> 4) & 0x3) * 4;
+                var g = ((color >> 2) & 0x3) * 4;
+                var b = ((color >> 0) & 0x3) * 4;
+                return "#" + (r + i).toString(16) + (g + i).toString(16) + (b + i).toString(16)
+            } else if (palette == 5) {
+                // 8-bit RRRGGGBB 256 color
+                var r = ((color >> 5) & 0x7) * 2 + 1;
+                var g = ((color >> 2) & 0x7) * 2 + 1;
+                var b = ((color >> 0) & 0x3) * 4 + 3;
+                return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            } else if (palette == 6) {
+                // 8-bit HHHHHLLL 256 color
+                var h = color >> 3;
+                var l = color & 0x07;
+
+                var r, g, b;
+                if (h == 0) {
+                    r = g = b = (l * 2);
+                } else if (h == 31) {
+                    r = g = b = (l * 2) + 1;
+                } else {
+                    var hue2rgb = function hue2rgb(p, q, t) {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1 / 6) return p + (q - p) * 6 * t;
+                        if (t < 1 / 2) return q;
+                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                        return p;
+                    }
+                    h = ((h - 1) / 30);
+                    l = (l / 11) + .20;
+                    var s = 1;
+                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    var p = 2 * l - q;
+                    r = Math.round(0xf * hue2rgb(p, q, h + 1 / 3));
+                    g = Math.round(0xf * hue2rgb(p, q, h));
+                    b = Math.round(0xf * hue2rgb(p, q, h - 1 / 3));
+                }
+                console.log("#" + r.toString(16) + g.toString(16) + b.toString(16));
+                return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            } else if (palette == 7) {
+                // 12-bit RRRRGGGGBBBB 1024 color
+                var r = (color >> 8) & 0xf;
+                var g = (color >> 4) & 0xf;
+                var b = (color >> 0) & 0xf;
+                return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            } else {
+                return "#000";
+            }
+        };
+
+        Ext.define('MyApp.model.Frame', {
+            extend: 'Ext.data.Model',
+            fields: [
+                {name: 'delay', type: 'int', defaultValue: 0},
+                {name: 'loop', type: 'boolean', defaultValue: false},
+                {name: 'pixels', type: 'auto'}
+            ],
+            getDelay: function () {
+                return this.get('delay');
+            },
+            setDelay: function (delay) {
+                this.set('delay', delay);
+            },
+            getLoop: function () {
+                return this.get('loop');
+            },
+            setLoop: function (loop) {
+                this.set('loop', loop);
+            },
+            getPixels: function () {
+                return this.get('pixels');
+            },
+            setPixels: function (pixels) {
+                this.set('pixels', pixels);
+            },
+            setAt: function (index, color) {
+                this.getPixels()[index] = color;
+            },
+            getAt: function (index) {
+                return this.getPixels()[index];
+            }
+        });
+        Ext.define('MyApp.model.Icon', {
+            // each icon consists of a 3 byte header
+            // then for each frame consists of n bytes data + 1 byte footer
+            // header = [width 7:0] [height 7:0] [config 7:0]
+            // config = [unused 7:3][palette 2:0]
+            // footer = [unused 7][more 6][delay 5:0] (50 - 3150 ms; 0 = don't animate)
+            // palette 0 = 1 bit A1 (color value must be supplied externally)
+            // palette 1 = 4 bit L4 (16-gray)
+            // palette 2 = 4 bit I1 R1 G1 B1 (16-color i.e. CGA)
+            // palette 3 = 4 bit R2 G2
+            // palette 4 = 8 bit I2 R2 G2 B2 (256-color i.e. SAM Coupé ++)
+            // palette 5 = 8 bit R3 G3 B2 (256-color)
+            // palette 6 = 8 bit H5 L3 (256-color)
+            // palette 7 = 12 bit R4 G4 B4 (4096-color)
+
+            extend: 'Ext.data.Model',
+            fields: [
+                {name: 'width', type: 'int'},
+                {name: 'height', type: 'int'},
+                {name: 'palette', type: 'int'},
+                {name: 'color', type: 'int'},   // transient: the current color
+                {name: 'frame', type: 'int'},   // transient: the current frame
+                {name: 'pasteboard', type: 'auto'}
+            ],
+
+            getWidth: function () {
+                return this.get('width');
+            },
+            getHeight: function () {
+                return this.get('height');
+            },
+            getPalette: function () {
+                return this.get('palette');
+            },
+            getFrame: function () {
+                return this.get('frame');
+            },
+            setFrame: function (frame) {
+                this.set('frame', frame);
+            },
+            getColor: function () {
+                return this.get('color');
+            },
+            setColor: function (value) {
+                this.set('color', value);
+            },
+            getPasteboard: function () {
+                return this.get('pasteboard');
+            },
+            setPasteboard: function (value) {
+                this.set('pasteboard', value);
+            },
+            setDelay: function (delay) {
+                var frame = this.frames().data.items[this.getFrame()];
+                frame.setDelay(delay);
+            },
+
+            write: function () {
+                var width = this.getWidth();
+                var height = this.getHeight();
+                var palette = this.getPalette();
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var frames = framesStore.getData();
+
+                var bpf = 0;
+                var bits = 0;
+                switch (palette) {
+                    case 0:
+                        bpf = (width * height) >> 3;
+                        bits = (width * height) & 0x7;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        bpf = (width * height) >> 1;
+                        bits = ((width * height) & 0x1) * 4;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        bpf = width * height;
+                        bits = 0;
+                        break;
+                    case 7:
+                        bpf = (width * height) + ((width * height) >> 1);
+                        bits = ((width * height) & 0x1) << 2;
+                        break;
+                    default:
+                        bpf = 0;
+                        bits = 0;
+                }
+                if (bits != 0) bpf++; // optional padded byte at the front of the frame
+                bpf++;                // footer
+
+                var buffer = new Uint8Array(new ArrayBuffer(bpf * frames.length + 3));
+                buffer[0] = width;
+                buffer[1] = height;
+                buffer[2] = palette;
+
+                for (var f = 0; f < frames.length; f++) {
+                    var byte = f * bpf + 3;
+                    var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
+                    var frame = frames.getAt(f);
+                    var pixels = frame.getPixels();
+
+                    for (var pixel = 0; pixel < pixels.length; pixel++) {
+                        var c = pixels[pixel];
+
+                        switch (palette) {
+                            case 0:
+                                buffer[byte] |= (c << bit--);
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                ;
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                                buffer[byte] |= bit == 7 ? c << 4 : c & 0xf;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                ;
+                                break;
+                            case 4:
+                            case 5:
+                            case 6:
+                                buffer[byte++] = c;
+                                break;
+                            case 7:
+                                var rn = (c >> 8) & 0xf;
+                                var gn = (c >> 4) & 0xf;
+                                var bn = (c >> 0) & 0xf;
+
+                                buffer[byte] |= bit == 7 ? rn << 4 : rn;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                buffer[byte] |= bit == 7 ? gn << 4 : gn;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                buffer[byte] |= bit == 7 ? bn << 4 : bn;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                break;
+                        }
+                    }
+
+                    var delay = frame.getDelay();
+                    var more = f < frames.length - 1;
+                    var loop = frame.getLoop();
+                    var footer = loop ? 0x80 : 0x00;
+                    footer |= more ? 0x40 : 0x00;
+                    footer |= delay;
+                    buffer[byte++] = footer;
+                }
+                return buffer;
+            },
+
+            read: function (buffer) {
+                var width = buffer[0];
+                var height = buffer[1];
+                var config = buffer[2];
+                var palette = config & 0x7;
+
+                this.set('width', width);
+                this.set('height', height);
+                this.set('palette', palette);
+                this.set('frame', 0);
+
+                var bpf = 0;
+                var bits = 0;
+                switch (palette) {
+                    case 0:
+                        bpf = (width * height) >> 3;
+                        bits = (width * height) & 0x7;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        bpf = (width * height) >> 1;
+                        bits = ((width * height) & 0x1) * 4;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        bpf = width * height;
+                        bits = 0;
+                        break;
+                    case 7:
+                        bpf = (width * height) + ((width * height) >> 1);
+                        bits = ((width * height) & 0x1) << 2;
+                        break;
+                    default:
+                        bpf = 0;
+                        bits = 0;
+                }
+                if (bits != 0) bpf++; // optional padded byte at the front of the frame
+                bpf++;                // footer
+
+                var f = 0;
+                var more = true;
+
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                framesStore.removeAll();
+
+                while (more) {
+                    var byte = f * bpf + 3;
+                    var bit = bits == 0 ? 7 : bits - 1; // current bit in the current byte
+                    var frame = framesStore.add({})[0];
+
+                    var pixels = new Array(width * height);
+                    frame.setPixels(pixels);
+
+                    for (var i = 0; i < (width * height); i++) {
+                        var c = 0;
+                        var b = buffer[byte];
+                        switch (palette) {
+                            case 0:
+                                c = (b & bv(bit--)) > 0 ? 1 : 0;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                                c = bit == 7 ? b >> 4 : b & 0xf;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                break;
+                            case 4:
+                            case 5:
+                            case 6:
+                                c = b;
+                                byte++;
+                                break;
+                            case 7:
+                                var rn = b >> (bit == 7 ? 4 : 0) & 0xf;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                    b = buffer[byte];
+                                }
+                                var gn = b >> (bit == 7 ? 4 : 0) & 0xf;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                    b = buffer[byte];
+                                }
+                                var bn = b >> (bit == 7 ? 4 : 0) & 0xf;
+                                bit -= 4;
+                                if (bit < 0) {
+                                    bit = 7;
+                                    byte++;
+                                }
+                                c = (rn << 8) | (gn << 4) | bn;
+                                break;
+                        }
+                        frame.setAt(i, c);
+                    }
+
+                    var footer = buffer[byte++];
+                    frame.setDelay(footer & 0x1f);
+                    more = ((footer >> 6) & 0x01 ? true : false);
+                    frame.setLoop(footer >> 7 ? true : false);
+                    f++;
+                }
+            }
+        });
+
+        Ext.define('MyApp.controller.IconController', {
+            extend: 'Ext.app.Controller',
+            models: ['Icon'],
+
+            // calculates the 3D distance between two colors
+            distance: function (a, b) {
+                Pr = .2126;
+                Pg = .7152;
+                Pb = .0722;
+
+                Dr = a[0] - b[0];
+                Dg = a[1] - b[1];
+                Db = a[2] - b[2];
+
+                return sqrt((Pr * Dr * Dr) + (Pg * Dg * Dg) + (Pb * Db * Db));
+            },
+
+            // finds the nearest color from a list of colors in a palette
+            nearest: function (color, palette) {
+                return palette.reduce(function (a, c) {
+                    return min(a, distance(c, color));
+                });
+            },
+
+            bv: function (bit) {
+                (1 << (bit));
+            },
+        })
+
+        Ext.define('MyApp.view.ToolsController', {
+            extend: 'Ext.app.ViewController',
+            alias: 'controller.tools',
+
+            control: {
+                'draw': {
+                    change: 'onColorChange',
+                    draw: 'onDraw',
+                    copy: 'onColorCopy'
+                },
+                'button#iconNew': {
+                    tap: 'onIconNew'
+                },
+                'button#iconSave': {
+                    tap: 'onIconSave'
+                },
+                'button#iconLoad': {
+                    tap: 'onIconLoad'
+                },
+                'button#frameAdd': {
+                    tap: 'onFrameAdd'
+                },
+                'button#frameDelete': {
+                    tap: 'onFrameDelete'
+                },
+                'button#frameUp': {
+                    tap: 'onFrameUp'
+                },
+                'button#frameDown': {
+                    tap: 'onFrameDown'
+                },
+                'button#frameErase': {
+                    tap: 'onFrameErase'
+                },
+                'button#frameCopy': {
+                    tap: 'onFrameCopy'
+                },
+                'button#framePaste': {
+                    tap: 'onFramePaste'
+                },
+                'list': {
+                    select: 'onListSelect'
+                },
+                'spinnerfield': {
+                    change: 'onDelayChange'
+                }
+            },
+
+            onDelayChange: function (spinner, value) {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var frame = framesStore.getAt(icon.getFrame());
+                frame.setDelay(value / 50);
+            },
+
+            onListSelect: function (list, record, opts) {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var index = framesStore.indexOf(record);
+                icon.setFrame(index);
+                this.lookupReference('canvas').paint(icon);
+                this.lookupReference('delay').setValue(record.getDelay() * 50);
+            },
+
+            onColorChange: function (value) {
+                icon.setColor(value);
+                var text = this.lookupReference('hex');
+                text.setValue(hex(icon.getPalette(), value));
+            },
+
+            onColorCopy: function (index) {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var frame = framesStore.getAt(icon.getFrame());
+                var color = frame.getAt(index);
+                icon.setColor(color);
+
+                var text = this.lookupReference('hex');
+                text.setValue(hex(icon.getPalette(), color));
+
+                var palette = this.lookupReference('palette').getActiveItem();
+                palette.color = color;
+                palette.draw();
+            },
+
+            onDraw: function (index) {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var frame = framesStore.getAt(icon.getFrame());
+                frame.setAt(index, icon.getColor());
+            },
+
+            onIconSave: function (event) {
+                var buffer = icon.write();
+                var blob = new Blob([buffer], {type: "application/octet-stream"});
+                var downloadLink = document.createElement("a");
+                downloadLink.download = this.lookupReference('fileToSave').getValue();
+                downloadLink.innerHTML = "Download File";
+                downloadLink.href = window.URL.createObjectURL(blob);
+                downloadLink.onclick = function (event) {
+                    document.body.removeChild(event.target);
+                };
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            onIconLoad: function (event) {
+                var filefield = this.lookupReference('fileToLoad');
+                var file = filefield.el.down('input[type=file]').dom.files[0];
+                var reader = new FileReader();
+                var canvas = this.lookupReference('canvas');
+                var palette = this.lookupReference('palette');
+                reader.onload = function () {
+                    icon = Ext.create('MyApp.model.Icon');
+                    icon.read(new Uint8Array(reader.result));
+                    canvas.paint(icon);
+                    palette.setActiveItem(icon.getPalette());
+                };
+                reader.readAsArrayBuffer(file);
+            },
+
+            onIconNew: function () {
+                var h = parseInt(this.lookupReference('height').getValue());
+                var w = parseInt(this.lookupReference('width').getValue());
+
+                var p = this.lookupReference('selectpalette');
+                this.lookupReference('palette').setActiveItem(p.getValue());
+
+                // build an initial model
+                icon = Ext.create('MyApp.model.Icon', {
+                    width: w,
+                    height: h,
+                    palette: p.getValue(),
+                    frame: 0
+                });
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                framesStore.removeAll();
+                var frame = framesStore.add({})[0];
+                frame.setPixels(new Array(w * h));
+
+                this.lookupReference('framesList').setSelection(frame);
+            },
+
+            onFrameErase: function () {
+                var c = icon.getColor();
+                var pixels = this.lookupReference('framesList').getSelection().getPixels();
+                for (var i = 0; i < icon.getWidth() * icon.getHeight(); i++) {
+                    pixels[i] = c;
+                }
+                this.lookupReference('canvas').paint(icon);
+            },
+
+            onFrameCopy: function () {
+                var pixels = this.lookupReference('framesList').getSelection().getPixels();
+                icon.setPasteboard(pixels.slice());
+                this.lookupReference('canvas').paint(icon);
+            },
+
+            onFramePaste: function () {
+                var frame = this.lookupReference('framesList').getSelection();
+                frame.setPixels(icon.getPasteboard().slice());
+                this.lookupReference('canvas').paint(icon);
+            },
+
+            onFrameAdd: function () {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                var frame = framesStore.add({})[0];
+                frame.setPixels(new Array(icon.getWidth() * icon.getHeight()));
+                icon.setFrame(framesStore.getCount() - 1);
+                this.lookupReference('framesList').setSelection(frame);
+            },
+
+            onFrameDelete: function () {
+                var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                if (framesStore.getCount() > 1) {
+                    framesStore.removeAt(icon.getFrame());
+                    if (icon.getFrame() > 0) {
+                        icon.setFrame(icon.getFrame() - 1);
+                    }
+                    this.lookupReference('framesList').setSelection(framesStore.getAt(0));
+                }
+            },
+
+            onFrameUp: function () {
+            },
+
+            onFrameDown: function () {
+            }
+
+        });
+
+        Ext.application({
+            name: 'icon editor',
+
+            launch: function () {
+                icon = Ext.create('MyApp.model.Icon', {width: 8, height: 8, palette: 3});
+
+                Ext.Viewport.setController('tools');
+                Ext.Viewport.add([
+                    {
+                        xtype: 'toolbar',
+                        itemId: 'toolbar',
+                        docked: 'top',
+                        title: 'Icon Editor',
+                        items: [{
+                            xtype: 'button',
+                            itemId: 'iconNew',
+                            iconCls: 'x-fa fa-file',
+                            tooltip: 'New'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'iconLoad',
+                            iconCls: 'x-fa fa-upload',
+                            tooltip: 'Load'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'iconSave',
+                            iconCls: 'x-fa fa-download',
+                            tooltip: 'Save'
+                        }, {
+                            xtype: 'spacer', width: 50
+                        }, {
+                            xtype: 'button',
+                            iconCls: 'x-fa fa-step-backward'
+                        }, {
+                            xtype: 'button',
+                            iconCls: 'x-fa fa-play'
+                        }, {
+                            xtype: 'button',
+                            iconCls: 'x-fa fa-step-forward'
+                        }, {
+                            xtype: 'button',
+                            iconCls: 'x-fa fa-wifi'
+                        }, {
+                            xtype: 'spacer'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameCopy',
+                            iconCls: 'x-fa fa-copy',
+                            tooltip: 'Copy'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'framePaste',
+                            iconCls: 'x-fa fa-paste',
+                            tooltip: 'Paste'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameErase',
+                            iconCls: 'x-fa fa-eraser',
+                            tooltip: 'Erase'
+                        }, {
+                            xtype: 'spacer', width: 50
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameUp',
+                            iconCls: 'x-fa fa-arrow-up',
+                            tooltip: 'Move Up'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameDown',
+                            iconCls: 'x-fa fa-arrow-down',
+                            tooltip: 'Move Down'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameAdd',
+                            iconCls: 'x-fa fa-plus',
+                            tooltip: 'Add Frame'
+                        }, {
+                            xtype: 'button',
+                            itemId: 'frameDelete',
+                            iconCls: 'x-fa fa-minus',
+                            tooltip: 'Delete Frame'
+                        }]
+                    }, {
+                        xtype: 'panel',
+                        layout: 'hbox',
+                        padding: 0,
+                        items: [{
+                            padding: 0,
+                            border: true,
+                            xtype: 'panel',
+                            layout: 'vbox',
+                            width: 240,
+                            items: [{
+                                xtype: 'formpanel',
+                                items: [{
+                                    xtype: 'fieldset',
+                                    title: 'Image',
+                                    items: [{
+                                        xtype: 'textfield',
+                                        reference: 'width',
+                                        label: 'Width',
+                                        value: '16',
+                                        required: true,
+                                    }, {
+                                        xtype: 'textfield',
+                                        reference: 'height',
+                                        label: 'Height',
+                                        value: '16',
+                                        required: true,
+                                    }, {
+                                        xtype: 'selectfield',
+                                        reference: 'selectpalette',
+                                        required: true,
+                                        label: 'Palette',
+                                        value: 3,
+                                        options: [{
+                                            text: '1 bpp',
+                                            value: 0
+                                        }, {
+                                            text: '4 bpp 16 monochrome',
+                                            value: 1
+                                        }, {
+                                            text: '4 bpp red/green',
+                                            value: 2
+                                        }, {
+                                            text: '4 bpp color (CGA)',
+                                            value: 3
+                                        }, {
+                                            text: '8 bpp 256 colour (IRGB)',
+                                            value: 4
+                                        }, {
+                                            text: '8 bpp 256 colour (3-3-2)',
+                                            value: 5
+                                        }, {
+                                            text: '8 bpp 256 colour (H/L)',
+                                            value: 6
+                                        }, {
+                                            text: '12 bpp 4096 colour',
+                                            value: 7
+                                        }],
+                                    }, {
+                                        xtype: 'filefield',
+                                        reference: 'fileToLoad',
+                                        width: 192,
+                                        label: 'Load',
+                                        name: 'file'
+                                    }, {
+                                        xtype: 'textfield',
+                                        reference: 'fileToSave',
+                                        itemId: 'save',
+                                        label: 'Save As...',
+                                        value: 'icon.dat'
+                                    }]
+                                }, {
+                                    xtype: 'fieldset',
+                                    title: 'Frame',
+                                    items: [{
+                                        xtype: 'spinnerfield',
+                                        itemId: 'delay',
+                                        reference: 'delay',
+                                        label: 'Delay (ms)',
+                                        value: 0,
+                                        minValue: 0,
+                                        maxValue: 3150,
+                                        stepValue: 50,
+                                        cycle: true
+                                    }]
+                                }, {
+                                    xtype: 'fieldset',
+                                    title: 'Pixel',
+                                    items: [{
+                                        xtype: 'textfield',
+                                        itemId: 'hex',
+                                        reference: 'hex',
+                                        label: 'Color',
+                                        value: 'f00',
+                                        required: true
+                                    }, {
+                                        xtype: 'panel',
+                                        layout: 'card',
+                                        itemId: 'palette',
+                                        reference: 'palette',
+                                        label: 'Colour',
+                                        height: 200,
+                                        activeItem: 3,
+                                        items: [
+                                            {xtype: 'palette0'},
+                                            {xtype: 'palette1'},
+                                            {xtype: 'palette2'},
+                                            {xtype: 'palette3'},
+                                            {xtype: 'palette4'},
+                                            {xtype: 'palette5'},
+                                            {xtype: 'palette6'},
+                                            {xtype: 'palette7'}
+                                        ]
+                                    }]
+                                }]
+                            }]
+                        }, {
+                            xtype: 'panel',
+                            flex: 1,
+                            border: true,
+                            items: [{
+                                xtype: 'draw',
+                                plugins: ['spriteevents'],
+                                color: '#ccc',
+                                reference: 'canvas',
+                                centered: true,
+                                border: true,
+                                width: 512,
+                                height: 512,
+                                fillStyle: '#000',
+                                color: 0,
+                                listeners: {
+                                    spritemousedown: function (item, event) {
+                                        var sprite = item && item.sprite;
+                                        if (sprite && event.button == 0) {
+                                            this.mousedown = true;
+                                            sprite.setAttributes({fillStyle: hex(icon.getPalette(), icon.getColor())});
+                                            sprite.getSurface().renderFrame();
+                                            this.fireEvent('draw', sprite.index)
+                                        }
+                                        if (sprite && event.button == 2) {
+                                            this.fireEvent('copy', sprite.index)
+                                        }
+                                    },
+                                    spritemouseup: function (item, event) {
+                                        var sprite = item && item.sprite;
+                                        if (sprite) {
+                                            this.mousedown = false;
+                                        }
+                                    },
+                                    spritemouseover: function (item, event) {
+                                        var sprite = item && item.sprite;
+                                        if (sprite && this.mousedown) {
+                                            sprite.setAttributes({fillStyle: hex(icon.getPalette(), icon.getColor())});
+                                            sprite.getSurface().renderFrame();
+                                            this.fireEvent('draw', sprite.index)
+                                        }
+                                    }
+                                },
+                                paint: function (model) {
+                                    this.getSurface().removeAll();
+                                    var sprites = [];
+                                    var h = model.data.height;
+                                    var w = model.data.width;
+                                    var p = model.data.palette;
+                                    var s = 512 / Math.max(h, w);
+                                    var framesStore = Ext.data.StoreManager.lookup('framesStore');
+                                    var frame = framesStore.getAt(icon.getFrame());
+                                    var pixels = frame.getPixels();
+                                    for (var x = 0; x < w; x++) {
+                                        for (var y = 0; y < h; y++) {
+                                            var i = (y * w) + x;
+                                            var v = pixels[i];
+                                            sprites.push({
+                                                type: 'rect',
+                                                x: x * s,
+                                                y: y * s,
+                                                index: i,
+                                                width: s,
+                                                height: s,
+                                                fillStyle: hex(p, v),
+                                                strokeStyle: '#ccc'
+                                            })
+                                        }
+                                    }
+                                    this.getSurface().add(sprites);
+                                    this.getSurface().renderFrame();
+                                }
+                            }]
+                        }, {
+                            border: true,
+                            xtype: 'panel',
+                            layout: 'fit',
+                            width: 100,
+                            items: [{
+                                xtype: 'list',
+                                reference: 'framesList',
+                                itemTpl: 'Frame',
+                                store: {
+                                    model: 'MyApp.model.Frame',
+                                    storeId: 'framesStore',
+                                    proxy: {
+                                        type: 'memory'
+                                    },
+                                    autoLoad: false
+                                }
+                            }]
+                        }
+                        ]
+                    }]);
+            }
+        });
+
+        Ext.define('MyApp.view.AbstractPalette', {
+            extend: 'Ext.draw.Container',
+            plugins: ['spriteevents'],
+            color: 0,
+            initialize: function () {
+                this.callParent();
+                this.draw();
+            },
+            listeners: {
+                spriteclick: function (item, event) {
+                    var sprite = item && item.sprite;
+                    if (sprite) {
+                        this.color = sprite.value;
+                        this.draw();
+                        this.fireEvent('change', sprite.value)
+                    }
+                }
+            }
+        });
+
+        // 1 bit L1 (color value must be supplied externally)
+        Ext.define('MyApp.view.Palette0', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette0',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var color = this.color;
+                var sprites = [];
+                sprites.push({
+                    value: 0,
+                    type: 'rect',
+                    x: 0,
+                    y: 36,
+                    width: 96,
+                    height: 24,
+                    fillStyle: '#000',
+                    strokeStyle: color == 0 ? '#ccc' : '#333'
+                });
+                sprites.push({
+                    value: 1,
+                    type: 'rect',
+                    x: 96,
+                    y: 36,
+                    width: 96,
+                    height: 24,
+                    fillStyle: '#fff',
+                    strokeStyle: color == 1 ? '#ccc' : '#333'
+                });
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 4 bit L4 (for one-color LEDs)
+        Ext.define('MyApp.view.Palette1', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette1',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var sprites = []
+                var y = 0;
+                var color = this.color;
+
+                for (var j = 0; j < 2; j++) {
+                    for (var i = 0; i < 8; i++) {
+                        var c = j * 8 + i;
+                        sprites.push({
+                            value: c,
+                            type: 'rect',
+                            x: i * 24,
+                            y: y,
+                            width: 24,
+                            height: 24,
+                            fillStyle: hex(1, c),
+                            strokeStyle: c == color ? '#ccc' : '#333'
+                        });
+                    }
+                    y += 24;
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 4 bit R2 G2 (for bi-color LEDs)
+        Ext.define('MyApp.view.Palette2', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette2',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var sprites = []
+                var y = 0
+                var color = this.color;
+
+                // colors
+                for (var i = 0; i < 2; i++) {
+                    for (var x = 0; x < 8; x++) {
+                        var c = i * 8 + x;
+                        sprites.push({
+                            value: c,
+                            type: 'rect',
+                            x: x * 24,
+                            y: y,
+                            width: 24,
+                            height: 24,
+                            fillStyle: hex(2, c),
+                            strokeStyle: c == color ? '#ccc' : '#333'
+                        });
+                    }
+                    y += 24;
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 4 bit R1 G1 B1 I1 (i.e. GCA)
+        Ext.define('MyApp.view.Palette3', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette3',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var sprites = []
+                var y = 0
+                var color = this.color;
+
+                // colors
+                for (var i = 0; i < 2; i++) {
+                    for (var x = 0; x < 8; x++) {
+                        var c = i * 8 + x;
+                        sprites.push({
+                            value: c,
+                            type: 'rect',
+                            x: x * 24,
+                            y: y,
+                            width: 24,
+                            height: 24,
+                            fillStyle: hex(3, c),
+                            strokeStyle: c == color ? '#ccc' : '#333'
+                        });
+                    }
+                    y += 24;
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 8 bit I2 R2 G2 B2
+        Ext.define('MyApp.view.Palette4', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette4',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var f = function (i, r, g, b) {
+                    return (i << 6) | (r << 4) | (g << 2) | (b << 0);
+                };
+                var sprites = []
+                var color = this.color;
+                var n = (color >> 6) & 0x3;
+                var r = (color >> 4) & 0x3;
+                var g = (color >> 2) & 0x3;
+                var b = (color >> 0) & 0x3;
+                var y = 0;
+                for (var i = 0; i < 4; i++) {
+                    var c = f(i, r, g, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 48,
+                        y: y,
+                        width: 48,
+                        height: 24,
+                        fillStyle: hex(4, c),
+                        strokeStyle: i == n ? '#ccc' : '#333'
+                    });
+                }
+                y += 24;
+                for (var i = 0; i < 4; i++) {
+                    var c = f(n, i, g, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 48,
+                        y: y,
+                        width: 48,
+                        height: 24,
+                        fillStyle: hex(4, c),
+                        strokeStyle: i == r ? '#ccc' : '#333'
+                    });
+                }
+                y += 24;
+                for (var i = 0; i < 4; i++) {
+                    var c = f(n, r, i, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 48,
+                        y: y,
+                        width: 48,
+                        height: 24,
+                        fillStyle: hex(4, c),
+                        strokeStyle: i == g ? '#ccc' : '#333'
+                    });
+                }
+                y += 24;
+                for (var i = 0; i < 4; i++) {
+                    var c = f(n, r, g, i);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 48,
+                        y: y,
+                        width: 48,
+                        height: 24,
+                        fillStyle: hex(4, c),
+                        strokeStyle: i == b ? '#ccc' : '#333'
+                    });
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 8 bit R3 G3 B2
+        Ext.define('MyApp.view.Palette5', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette5',
+            plugins: ['spriteevents'],
+            rgb: [0, 0, 0],
+            draw: function () {
+                var f = function (r, g, b) {
+                    return (r << 5) | (g << 2) | (b << 0);
+                };
+                var sprites = [];
+                var color = this.color;
+                var r = (color >> 5) & 0x7;
+                var g = (color >> 2) & 0x7;
+                var b = (color >> 0) & 0x3;
+                var y = 0;
+                for (var i = 0; i < 8; i++) {
+                    var c = f(i, g, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 24,
+                        y: y,
+                        width: 24,
+                        height: 24,
+                        fillStyle: hex(5, c),
+                        strokeStyle: i == r ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 8; i++) {
+                    var c = f(r, i, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 24,
+                        y: y,
+                        width: 24,
+                        height: 24,
+                        fillStyle: hex(5, c),
+                        strokeStyle: i == g ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 4; i++) {
+                    var c = f(r, g, i);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 48,
+                        y: y,
+                        width: 48,
+                        height: 24,
+                        fillStyle: hex(5, c),
+                        strokeStyle: i == b ? '#ccc' : '#333'
+                    })
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 8 bit H5 L3
+        Ext.define('MyApp.view.Palette6', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette6',
+            plugins: ['spriteevents'],
+            rgb: [0, 0, 0],
+            draw: function () {
+                var f = function (h, l) {
+                    return (h << 3) | (l << 0);
+                };
+                var sprites = [];
+                var color = this.color;
+                var h = (color >> 3) & 0x1f;
+                var l = (color >> 0) & 0x07;
+                var y = 0;
+                for (var i = 0; i < 16; i++) {
+                    var c = f(i, l);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 12,
+                        y: y,
+                        width: 12,
+                        height: 24,
+                        fillStyle: hex(6, c),
+                        strokeStyle: i == h ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 16; i++) {
+                    var c = f(31-i, l);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 12,
+                        y: y,
+                        width: 12,
+                        height: 24,
+                        fillStyle: hex(6, c),
+                        strokeStyle: (31-i == h) ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 8; i++) {
+                    var c = f(h, i);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 24,
+                        y: y,
+                        width: 24,
+                        height: 24,
+                        fillStyle: hex(6, c),
+                        strokeStyle: i == l ? '#ccc' : '#333'
+                    })
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        // 12 bit R4 G4 B4
+        Ext.define('MyApp.view.Palette7', {
+            extend: 'MyApp.view.AbstractPalette',
+            alias: 'widget.palette7',
+            plugins: ['spriteevents'],
+            color: 0,
+            draw: function () {
+                var f = function (r, g, b) {
+                    return (r << 8) | (g << 4) | (b << 0);
+                }
+                var sprites = [];
+                var color = this.color;
+                var r = (color >> 8) & 0xf;
+                var g = (color >> 4) & 0xf;
+                var b = (color >> 0) & 0xf;
+                var y = 0;
+                // colors
+                for (var i = 0; i < 16; i++) {
+                    var c = f(i, g, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 12,
+                        y: y,
+                        width: 12,
+                        height: 24,
+                        fillStyle: hex(7, c),
+                        strokeStyle: i == r ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 16; i++) {
+                    var c = f(r, i, b);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 12,
+                        y: y,
+                        width: 12,
+                        height: 24,
+                        fillStyle: hex(7, c),
+                        strokeStyle: i == g ? '#ccc' : '#333'
+                    })
+                }
+                y += 24;
+                for (var i = 0; i < 16; i++) {
+                    var c = f(r, g, i);
+                    sprites.push({
+                        value: c,
+                        type: 'rect',
+                        x: i * 12,
+                        y: y,
+                        width: 12,
+                        height: 24,
+                        fillStyle: hex(7, c),
+                        strokeStyle: i == b ? '#ccc' : '#333'
+                    })
+                }
+                this.setSprites(sprites);
+                this.getSurface().renderFrame();
+            }
+        });
+
+        Ext.onReady(function () {
+            Ext.get(window.document).on('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+</body>
+</html>

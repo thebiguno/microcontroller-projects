@@ -17,11 +17,11 @@ Icon::Icon(Stream* stream) :
 		case 0: bpp = 1; bytes = (width * height) >> 3; bits = (width * height) & 0x7; break;
 		case 1: bpp = 4; bytes = (width * height) >> 1; bits = ((width * height) & 0x1) << 2; break;
 		case 2: bpp = 4; bytes = (width * height) >> 1; bits = ((width * height) & 0x1) << 2; break;
-		case 3: bpp = 8; bytes = width * height; bits = 0; break;
+		case 3: bpp = 4; bytes = (width * height) >> 1; bits = ((width * height) & 0x1) << 2; break;
 		case 4: bpp = 8; bytes = width * height; bits = 0; break;
-		case 5: bpp = 12; bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
-		case 6: bpp = 16; bytes = (width * height) << 1; bits = 0; break;
-		case 7: bpp = 24; bytes = (width * height) * 3; bits = 0; break;
+		case 5: bpp = 8; bytes = width * height; bits = 0; break;
+		case 6: bpp = 8; bytes = width * height; bits = 0; break;
+		case 7: bpp = 12; bytes = (width * height) + ((width * height) >> 1); bits = ((width * height) & 0x1) << 2; break;
 		default: bpp = 0; bytes = 0; bits = 0;
 	}
 
@@ -164,9 +164,48 @@ void Icon::draw5(Draw* draw, uint8_t* pixel) {
 	draw->setColor(r,g,b);
 }
 
+float Icon::hue2rgb = function hue2rgb(float p, float q, float t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+}
+
+// 8bpp HHHHHLLL (256 colours)
+// 30 hues, every 12 degrees, each with 30 lightness levels (240 colors)
+// primary and secondary colors are present (60 degrees divides by 12)
+// 16 grayscale levels
+void Icon::draw6(Draw* draw, uint8_t* pixel) {
+    uint8_t h = pixel[0] >> 3;
+    uint8_t l = pixel[0] & 0x07
+
+    if (h == 0) {
+        l *= 2;
+        draw->setColor(l, l, l);
+    } else if (h == 31) {
+        l = (l * 2) + 1;
+        draw->setColor(l, l, l);
+    } else {
+        float hp = ((h - 1) / 30.0);
+        float lp = (l / 11.0) + 0.2;
+        float s = 1.0;
+        float q = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
+        float p = 2.0 * l - q;
+        uint8_t r = 0xf * hue2rgb(p, q, h + 1.0 / 3.0);
+        r = (r << 4) | r;
+        uint8_t g = 0xf * hue2rgb(p, q, h);
+        g = (g << 4) | g;
+        uint8_t b = 0xf * hue2rgb(p, q, h - 1.0 / 3.0);
+        b = (g << 4) | b;
+    }
+    draw->setColor(r, g, b);
+}
+
 // 12bpp RRRRGGGGBBBB (4096 colours)
 // this is like using web colors like #rgb instead of #rrggbb
-void Icon::draw6(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw7(Draw* draw, uint8_t bit, uint8_t* pixel) {
 	uint8_t i = 0;
 	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf;
 	r = (r << 4) | r;
