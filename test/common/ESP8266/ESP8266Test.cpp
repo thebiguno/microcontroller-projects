@@ -130,23 +130,3 @@ void ESP8266Test::test_at_cipstart_tcp() {
 	assert("close didn't result in cipclose", "AT+CIPCLOSE=0\r\n", buf);
 }
 
-void ESP8266Test::assert(const char* message, const char* expected, char* actual) {
-	if (strcmp(expected, actual) != 0) {
-		puts(message);
-		abort();
-	}
-}
-
-void ESP8266Test::assert(const char* message, uint32_t expected, uint32_t actual) {
-	if (expected != actual) {
-		puts(message);
-		abort();
-	}
-}
-
-void ESP8266Test::assert(const char* message, uint8_t truth) {
-	if (!truth) {
-		puts(message);
-		abort();
-	}
-}

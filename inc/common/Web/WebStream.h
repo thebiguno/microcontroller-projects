@@ -13,12 +13,9 @@ namespace digitalcave {
 	 * the content type, method, path, query, and data stream are available.
 	 * After the request is read the response can be initiated using one of four
 	 * mechanisms:
-	 * - a fixed length string response is sent with send_identity
-	 * - a fixed length binary response is sent with start_identity and subsequent calls to write
-	 * - a chunked response is started with start_chunked
-	 * - one or more string chunks is sent with send_chunk
-	 * - one or more binary chunks is sent with start_chunk and subsequent calls to write
-	 * - a chunked response is completed by calling close or by sending a 0 length chunk
+	 * - a fixed length entity is sent with body or body_start
+	 * - a variable length entity is sent with body_chunked_start and ended with body_chunked_end
+	 *
 	 * calls to write that exceed the size of the entity or chunk are ignored
 	 * calling close for identity responses is optional
 	 */
@@ -27,13 +24,13 @@ namespace digitalcave {
 			Stream* stream;
 			ArrayStream* chunk;
 
-			uint8_t _state;  					// read:  [3:2] unused [1] identity/chunked [0] headers/entity
-																// write: [7:6] unused [5] identity/chunked [4] headers/entity
-			uint16_t _available; 			// remaining bytes in the identity or chunk
+			uint8_t _state;  					// read:  [3:2] unused [1] identity/chunked [0] headers 1 / entity 0
+												// write: [7:6] unused [5] identity/chunked [4] headers 1 / entity 0
+			uint16_t _available; 			    // remaining bytes in the identity or chunk
 			char _method[7];
 			char _path[256];					// this is the storage for both path and query
 			char* _query;
-			uint16_t _content_length; // the value of the content length header
+			uint16_t _content_length;           // the value of the content length header
 			uint16_t _status;					// the status code
 
 			void read_headers();
@@ -56,12 +53,12 @@ namespace digitalcave {
 			 * of the entity sending methods. */
 			void header(const char* key, char* value);
 
-			/* Sends a response to the client with identity transfer encoding. */
+			/* Sends an entity with identity encoding. */
 			void body(char* body);
 			void body(const char* body);
 			void body_start(uint16_t len);
 
-			/* Starts a chunked entity.*/
+			/* Starts an entity with chunked encoding. */
 			void body_chunked_start(uint8_t buflen);
 			void body_chunked_end();
 

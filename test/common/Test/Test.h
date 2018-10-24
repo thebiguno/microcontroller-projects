@@ -5,8 +5,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "MockStream.h"
-
 namespace digitalcave {
 
 	class Test {
@@ -15,6 +13,7 @@ namespace digitalcave {
 			void assert(const char* message, uint8_t truth);
 			void assert(const char* message, const char* expected, char* actual);
 			void assert(const char* message, uint32_t expected, uint32_t actual);
+			void assert_64(const char* message, int64_t expected, int64_t actual);
 
 		public:
 			Test();

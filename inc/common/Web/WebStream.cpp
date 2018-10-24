@@ -4,11 +4,19 @@
 #include <stdio.h>
 #include <dcstring.h>
 
+#define STATE_IDLE 0x00
+#define STATE_READ_HEADERS 0x01
+#define STATE_READ_ENTITY_IDENTITY 0x02
+#define STATE_READ_ENTITY_CHUNKED 0x03
+#define STATE_WRITE_HEADERS 0x10
+#define STATE_WRITE_ENTITY_IDENTITY 0x20
+#define STATE_WRITE_ENTITY_CHUNKED 0x30
+
 using namespace digitalcave;
 
 WebStream::WebStream(Stream* stream) :
 	stream(stream),
-	_state(0),
+	_state(STATE_IDLE),
 	_available(0),
 	_content_length(0),
 	_status(0)
@@ -18,8 +26,15 @@ WebStream::~WebStream() {
 }
 
 void WebStream::read_headers() {
-	if (_state & 0x01) return;
-	_state |= 0x01;
+	if (_state != STATE_IDLE) return;
+	if (stream->available() == 0) return;
+
+	_state = STATE_READ_HEADERS;
+    _method[0] = 0;
+    _path[0] = 0;
+    _status = 0;
+    _content_length = 0;
+    _available = 0;
 
 	char line[255];
 	uint8_t l = 0;
@@ -35,6 +50,7 @@ void WebStream::read_headers() {
 			}
 
 			if (i == 255) {
+			    // each header line has max length 254
 				response(414, (char*) NULL);
 				body("");
 				return;
@@ -46,7 +62,9 @@ void WebStream::read_headers() {
 
 		// empty line means headers are over and stream positioned at the body
 		if (strcmp("\r\n", line) == 0) {
-			read_chunk_size();
+        	if (_state == STATE_READ_HEADERS) {
+        	    _state = STATE_READ_ENTITY_IDENTITY;
+        	}
 			break;
 		}
 
@@ -75,7 +93,7 @@ void WebStream::read_headers() {
 				_content_length = _available;
 			} else if (strcmp("Transfer-Encoding", k) == 0) {
 				if (strcmp("chunked", v) == 0) {
-					_state |= 0x2;
+					_state = STATE_READ_ENTITY_CHUNKED;
 				}
 			}
 		}
@@ -106,6 +124,8 @@ uint16_t WebStream::content_length() {
 }
 
 void WebStream::request(char* method, char* uri, char* content_type) {
+    _state = STATE_WRITE_HEADERS;
+
 	stream->write(method);
 	stream->write(' ');
 	stream->write(uri);
@@ -121,6 +141,8 @@ void WebStream::request(const char* method, const char* uri, const char* content
 }
 
 void WebStream::response(uint16_t status, char* content_type) {
+    _state = STATE_WRITE_HEADERS;
+
 	char buf[4];
 	snprintf(buf, 4, "%u", status);
 
@@ -168,6 +190,9 @@ void WebStream::response(uint16_t status, const char* content_type) {
 }
 
 void WebStream::body(char* b) {
+    if (_state != STATE_WRITE_HEADERS) return;
+	_state = STATE_WRITE_ENTITY_IDENTITY;
+
 	body_start(strlen(b));
 	stream->write(b);
 	stream->flush();
@@ -177,7 +202,9 @@ void WebStream::body(const char* b) {
 }
 
 void WebStream::body_start(uint16_t len) {
-	_state |= 0x10;
+    if (_state != STATE_WRITE_HEADERS) return;
+	_state = STATE_WRITE_ENTITY_IDENTITY;
+
 	if (len > 0) {
 		char buf[6];
 		snprintf(buf, 5, "%u", len);
@@ -189,7 +216,8 @@ void WebStream::body_start(uint16_t len) {
 }
 
 void WebStream::body_chunked_start(uint8_t buflen) {
-	_state |= 0x30;
+    if (_state != STATE_WRITE_HEADERS) return;
+	_state = STATE_WRITE_ENTITY_CHUNKED;
 	header("Transfer-Encoding", (char*) "chunked");
 	stream->write("\r\n");
 	stream->flush();
@@ -199,6 +227,7 @@ void WebStream::body_chunked_start(uint8_t buflen) {
 }
 
 void WebStream::body_chunked_end() {
+    if (_state != STATE_WRITE_ENTITY_CHUNKED) return;
 	write_chunk();
 	stream->write("0\r\n");
 	delete chunk;
@@ -206,6 +235,7 @@ void WebStream::body_chunked_end() {
 }
 
 void WebStream::write_chunk() {
+    if (_state != STATE_WRITE_ENTITY_CHUNKED) return;
 	uint16_t sz = chunk->size();
 	if (sz > 0) {
 		char buf[6];
@@ -225,6 +255,7 @@ void WebStream::write_chunk() {
 }
 
 void WebStream::header(const char* k, char* v) {
+    if (_state != STATE_WRITE_HEADERS) return;
 	if (k != NULL && v != NULL) {
 		stream->write(k);
 		stream->write(": ");
@@ -239,7 +270,7 @@ uint16_t WebStream::available() {
 }
 
 void WebStream::read_chunk_size() {
-	if (_state & 0x02 && _available == 0) {
+	if (_state == STATE_READ_ENTITY_CHUNKED && _available == 0) {
 
 		uint8_t b = 0;
 		uint8_t i = 0;
@@ -258,8 +289,7 @@ void WebStream::read_chunk_size() {
 			stream->read(&b);
 			stream->read(&b);
 
-			// drop out of chunked mode
-			_state &= ~0x02;
+			_state = STATE_IDLE;
 		}
 	}
 }
@@ -276,7 +306,7 @@ uint8_t WebStream::read(uint8_t* b) {
 	if (ok) {
 		_available--;
 
-		if (_state & 0x20 && _available == 0) {
+		if (_state == STATE_READ_ENTITY_CHUNKED && _available == 0) {
 			uint8_t x[1];
 			// read the crlf at the end of the data chunk
 			stream->read(x);
@@ -287,13 +317,12 @@ uint8_t WebStream::read(uint8_t* b) {
 }
 
 uint8_t WebStream::write(uint8_t b) {
-	if (_state & 0x20) {
-		// chunked
+	if (__state == STATE_WRITE_ENTITY_CHUNKED) {
 		if (chunk->size() == 5) {
 			write_chunk();
 		}
 		return chunk->write(b);
-	} else if (_state & 0x01) {
+	} else if (_state == STATE_WRITE_ENTITY_IDENTITY) {
 		return stream->write(b);
 	} else {
 		// not in the right state to write to the body
@@ -302,7 +331,7 @@ uint8_t WebStream::write(uint8_t b) {
 }
 
 uint8_t WebStream::flush() {
-	if (_state & 0x20) {
+	if (_state == STATE_WRITE_ENTITY_CHUNKED) {
 		write_chunk();
 	}
 	return stream->flush();

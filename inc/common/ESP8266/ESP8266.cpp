@@ -106,20 +106,32 @@ uint8_t ESP8266::at_cwqap() {
 	return 'O' == status[0];
 }
 
-uint8_t ESP8266::at_cipserver(uint8_t en, uint16_t port) {
+uint8_t ESP8266::at_cipserver(uint8_t ssl, uint8_t en, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
 	serial->write("AT+CIPSERVER=");
-	serial->write(en ? '1' : 0);
+	serial->write(en ? '1' : '0');
 	serial->write(',');
 	serial->write(buf);
+	if (ssl == 1) {
+	    serial->write(',');
+	    serial->write("SSL");
+	}
 	serial->write("\r\n");
 	at_response('+');
 	return 'O' == status[0];
 }
 
-uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* server_name, uint16_t port) {
+uint8_t ESP8266::at_cipserver_tcp(uint8_t en, uint16_t port) {
+    at_cipserver(0, en, port);
+}
+
+uint8_t ESP8266::at_cipserver_ssl(uint8_t en, uint16_t port) {
+    at_cipserver(1, en, port);
+}
+
+uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* service_name, uint16_t port) {
 	char buf[5];
 	sprintf(buf, "%d", port);
 
@@ -128,7 +140,7 @@ uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* server_name, uint16_
 	serial->write(',');
 	serial->write(host_name);
 	serial->write(',');
-	serial->write(server_name);
+	serial->write(service_name);
 	serial->write(',');
 	serial->write(buf);
 	serial->write("\r\n");

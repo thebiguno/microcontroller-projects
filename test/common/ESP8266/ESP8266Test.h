@@ -12,15 +12,11 @@
 namespace digitalcave {
 
 	/* Used to simulate intaction with the serial port */
-	class ESP8266Test {
+	class ESP8266Test : Test {
 
 		private:
 			MockStream mockStream;
 			ESP8266 wifi;
-
-			void assert(const char* message, uint8_t truth);
-			void assert(const char* message, const char* expected, char* actual);
-			void assert(const char* message, uint32_t expected, uint32_t actual);
 
 			void test_at_rst();
 			void test_at__echo();
