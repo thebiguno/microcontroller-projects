@@ -1,4 +1,4 @@
-update=Monday, June 25, 2018 'amt' 08:03:02 am
+update=Tuesday, July 10, 2018 'pmt' 01:00:17 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,11 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=../../../../lib/kicad/library
+LibDir=../../../../lib/kicad/library;/Users/warren.janssens/Projects/digikey-kicad-library/digikey-symbols
 [eeschema/libraries]
 LibName1=m16-rescue
 LibName2=power
@@ -61,5 +63,4 @@ LibName31=stm32
 LibName32=nxp
 LibName33=diode
 LibName34=/Users/warren/Documents/Projects/c/microcontroller-projects/lib/kicad/library/custom
-[general]
-version=1
+LibName35=dk_TVS-Diodes
