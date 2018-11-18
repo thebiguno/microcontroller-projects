@@ -274,7 +274,7 @@ F 3 "" H 6200 6550 50  0001 C CNN
 	1    6200 6550
 	0    -1   -1   0   
 $EndComp
-Text Label 8600 3550 0    60   ~ 0
+Text Label 8650 2900 0    60   ~ 0
 SDIO_CMD
 $Comp
 L C_Small C8
@@ -870,9 +870,9 @@ F 3 "" H 5500 1500 50  0001 C CNN
 	1    5500 1500
 	-1   0    0    1   
 $EndComp
-Text Label 8750 4600 0    60   ~ 0
+Text Label 8650 4600 0    60   ~ 0
 SCL
-Text Label 8750 4700 0    60   ~ 0
+Text Label 8650 4700 0    60   ~ 0
 SDA
 Text Label 1150 3400 2    60   ~ 0
 IDC_R0
@@ -1457,10 +1457,6 @@ Wire Wire Line
 Wire Wire Line
 	5500 800  5500 700 
 Wire Wire Line
-	8650 4600 8750 4600
-Wire Wire Line
-	8650 4700 8750 4700
-Wire Wire Line
 	1150 5100 1700 5100
 Wire Wire Line
 	1150 4800 1700 4800
@@ -1533,7 +1529,6 @@ Connection ~ 1850 6300
 NoConn ~ 8650 4000
 NoConn ~ 8650 4100
 NoConn ~ 2850 5200
-NoConn ~ 2850 3700
 NoConn ~ 8650 3100
 NoConn ~ 1300 2050
 Wire Wire Line
@@ -1842,4 +1837,45 @@ Wire Wire Line
 	8550 1450 8450 1450
 Wire Wire Line
 	8550 1550 8450 1550
+$Comp
+L LED D3
+U 1 1 5BF1CBE9
+P 7750 6100
+F 0 "D3" H 7750 6200 50  0000 C CNN
+F 1 "LED" H 7750 6000 50  0000 C CNN
+F 2 "LEDs:LED_0603" H 7750 6100 50  0001 C CNN
+F 3 "" H 7750 6100 50  0001 C CNN
+	1    7750 6100
+	1    0    0    -1  
+$EndComp
+Text Label 7900 6100 0    60   ~ 0
+LED
+$Comp
+L R_Small R10
+U 1 1 5BF1CF60
+P 7400 6100
+F 0 "R10" H 7430 6120 50  0000 L CNN
+F 1 "68" H 7430 6060 50  0000 L CNN
+F 2 "Resistors_SMD:R_0603" H 7400 6100 50  0001 C CNN
+F 3 "" H 7400 6100 50  0001 C CNN
+	1    7400 6100
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR051
+U 1 1 5BF1D0D7
+P 7200 6100
+F 0 "#PWR051" H 7200 5850 50  0001 C CNN
+F 1 "GND" H 7200 5950 50  0000 C CNN
+F 2 "" H 7200 6100 50  0001 C CNN
+F 3 "" H 7200 6100 50  0001 C CNN
+	1    7200 6100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	7200 6100 7300 6100
+Wire Wire Line
+	7500 6100 7600 6100
+Text Label 2850 3700 2    60   ~ 0
+LED
 $EndSCHEMATC
