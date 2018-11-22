@@ -1,4 +1,4 @@
-update=Tuesday, July 10, 2018 'pmt' 01:00:17 pm
+update=Wednesday, November 21, 2018 'pmt' 09:35:51 pm
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,8 +23,6 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
-[general]
-version=1
 [eeschema]
 version=1
 LibDir=../../../../lib/kicad/library;/Users/warren.janssens/Projects/digikey-kicad-library/digikey-symbols
@@ -64,3 +62,5 @@ LibName32=nxp
 LibName33=diode
 LibName34=/Users/warren/Documents/Projects/c/microcontroller-projects/lib/kicad/library/custom
 LibName35=dk_TVS-Diodes
+[general]
+version=1
