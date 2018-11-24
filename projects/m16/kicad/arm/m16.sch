@@ -1270,28 +1270,6 @@ Text Label 10700 5450 0    60   ~ 0
 IDC_G0
 Text Label 10700 5550 0    60   ~ 0
 IDC_R0
-$Comp
-L +5V #PWR41
-U 1 1 5BF09D4B
-P 9500 5850
-F 0 "#PWR41" H 9500 5700 50  0001 C CNN
-F 1 "+5V" H 9500 5990 50  0000 C CNN
-F 2 "" H 9500 5850 50  0001 C CNN
-F 3 "" H 9500 5850 50  0001 C CNN
-	1    9500 5850
-	0    -1   -1   0   
-$EndComp
-$Comp
-L +5V #PWR40
-U 1 1 5BF09FEA
-P 9500 3800
-F 0 "#PWR40" H 9500 3650 50  0001 C CNN
-F 1 "+5V" H 9500 3940 50  0000 C CNN
-F 2 "" H 9500 3800 50  0001 C CNN
-F 3 "" H 9500 3800 50  0001 C CNN
-	1    9500 3800
-	0    -1   -1   0   
-$EndComp
 Text Label 3750 1650 0    60   ~ 0
 TX
 Text Label 3750 1750 0    60   ~ 0
@@ -1860,7 +1838,7 @@ Wire Wire Line
 Wire Wire Line
 	9600 5950 9700 5950
 Wire Wire Line
-	9600 5950 9600 6250
+	9600 5850 9600 6250
 Wire Wire Line
 	9600 6250 10200 6250
 Wire Wire Line
@@ -1870,15 +1848,11 @@ Wire Wire Line
 Wire Wire Line
 	9700 3900 9600 3900
 Wire Wire Line
-	9600 3900 9600 4200
+	9600 3800 9600 4200
 Wire Wire Line
 	9600 4200 10200 4200
 Wire Wire Line
 	10200 2600 10200 2700
-Wire Wire Line
-	9500 5850 9700 5850
-Wire Wire Line
-	9500 3800 9700 3800
 Wire Wire Line
 	6600 1750 6600 1650
 Wire Wire Line
@@ -1996,4 +1970,10 @@ F 3 "" H 6450 6900 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6750 6900 6650 6900
+Wire Wire Line
+	9700 5850 9600 5850
+Connection ~ 9600 5950
+Wire Wire Line
+	9700 3800 9600 3800
+Connection ~ 9600 3900
 $EndSCHEMATC
