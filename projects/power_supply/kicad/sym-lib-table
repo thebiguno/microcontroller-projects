@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name power_supply-rescue)(type Legacy)(uri ${KIPRJMOD}/power_supply-rescue.lib)(options "")(descr ""))
+  (lib (name custom)(type Legacy)(uri /Users/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib)(options "")(descr ""))
+  (lib (name power_supply)(type Legacy)(uri ${KIPRJMOD}/power_supply.lib)(options "")(descr ""))
+)
