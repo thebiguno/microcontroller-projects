@@ -52,7 +52,17 @@ namespace digitalcave {
 		/*
 		 * Sets the color and alpha for draw operations.
 		 * Not all devices are required to support color.
-		 * Device framebuffers are not required to store 8-bits per channel
+		 * Device frame-buffers are not required to store 8-bits per channel
+		 * Typical frame-buffers are
+		 * - 16-bit 4-4-4-bit 0000RRRRGGGGBBBB for 4096 colors
+		 * - 16-bit 5-5-5-bit 0RRRRRGGGGGBBBBB for 32768 colors
+		 * - 16-bit 5-6-5-bit RRRRRGGGGGGBBBBB for 65536 colors
+		 * - 8-bit 2-2-2-bit 00RRGGBB for 64 colors
+		 * - 8-bit 3-3-2-bit RRRGGGBB for 256 colors
+		 * - 4-bit 3-bpp 0RGB for 8 colors
+		 * Alpha information is not stored in the frame-buffer, but rather used
+		 * when drawing onto the frame-buffer to determine how to alter any existing
+		 * value in the buffer.  Implementations are not required to support alpha.
 		 */
 		void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 		void setColor(uint8_t r, uint8_t g, uint8_t b);

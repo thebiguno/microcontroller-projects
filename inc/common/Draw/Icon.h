@@ -13,7 +13,7 @@ namespace digitalcave {
 	 * or non-resettable streams (e.g. wifi, serial).
 	 * Icon data consists of a 3 byte header (width, height, config),
 	 * and for then for each frame pixel data and a 1 byte footer.
-	 * The config byte is unused [7:3], palette [2:0]
+	 * The config byte is unused [7:4], palette [3:0]
 	 * The footer byte is loop [7], more [6], delay (50-3150 ms) [5:0]
 	 * Palette options are:
 	 * - 0: 1 bit A1
@@ -24,8 +24,9 @@ namespace digitalcave {
 	 * - 5: 16 bit R5 G5 B5 A1		(16-bit framebuffer)
 	 * - 6: 16 bit R5 G6 B5				(24-bit framebuffer)
 	 * - 7: 24 bit R8 G8 B8				(24-bit framebuffer)
+	 * - 8-15: not yet defined
 	 * the different modes have different framebuffer requirements
-	 * so some modes may not be applicable
+	 * so some modes may not be applicable to some hardware
 	 */
 	class Icon {
 	private:

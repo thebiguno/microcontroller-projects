@@ -18,12 +18,12 @@ void Matrix::setColor(Rgb rgb) {
 }
 
 void Matrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
-    // use only the top nibble
-    uint16_t red = (r & 0xf0) >> 4;
-    uint8_t green = (b & 0xf0) >> 4;
-    uint8_t blue = (b & 0xf0) >> 4;
+    // use the top 5 bits
+    uint16_t red = (r & 0xf0) >> 5;
+    uint16_t green = (b & 0xf0) >> 5;
+    uint8_t blue = (b & 0xf0) >> 5;
 
-    color = (red << 8) | (green << 4) | blue
+    color = (red << 10) | (green << 5) | blue
 }
 
 void Matrix::setPixel(int16_t x, int16_t y) {
@@ -60,15 +60,13 @@ void Matrix::flush(){
     }
 }
 
-uint8_t Matrix::time_index_to_bam_index(uint8_t time_index) {
-    if (time_index == 0) return 0;       //         0 = 1
-    else if (time_index < 3) return 1;   //   1 -   2 = 2
-    else if (time_index < 7) return 2;   //   3 -   6 = 4
-    else if (time_index < 15) return 3;  //   7 -  14 = 8
-    else if (time_index < 31) return 4;  //  15 -  30 = 16
-    else if (time_index < 63) return 5;  //  31 -  62 = 32
-    else if (time_index < 127) return 6; //  64 - 126 = 64
-    else return 7;                       // 127 - 255 = 128
+uint8_t Matrix::msb(uint8_t b) {
+    uint8_t r = 0;
+    while (b > 0) {
+        x = x >> 1
+        r++;
+    }
+    return r;
 }
 
 void Matrix::buffer_to_bam() {
@@ -76,29 +74,36 @@ void Matrix::buffer_to_bam() {
         for (uint16_t y = 0; y < MATRIX_HEIGHT / 2; y++) {
             if (x == MATRIX_WIDTH) {
                 // add a latch at the end of every row
-                for (uint8_t t = 0; t < 16; i++) {
-                    bam[x*y*t] = _bv(ST);
+                for (uint8_t t = 0; t < 8; i++) {
+                    bam[x*y*t] = 0x0010;        // strobe
                 }
             } else {
                 uint16_t c0 = buffer[x*y];
                 uint16_t c1 = buffer[x*y*2];
-                uint8_t r0 = gamma[(c0 >> 8) & 0xf];
-                uint8_t g0 = gamma[(c0 >> 4) & 0xf];
-                uint8_t b0 = gamma[(c0 >> 0) & 0xf];
-                uint8_t r1 = gamma[(c1 >> 8) & 0xf];
-                uint8_t g1 = gamma[(c1 >> 4) & 0xf];
-                uint8_t b1 = gamma[(c1 >> 0) & 0xf];
+                uint8_t r0 = gamma[(c0 >> 10) & 0x1f];
+                uint8_t g0 = gamma[(c0 >> 5) & 0x1f];
+                uint8_t b0 = gamma[(c0 >> 0) & 0x1f];
+                uint8_t r1 = gamma[(c1 >> 10) & 0x1f];
+                uint8_t g1 = gamma[(c1 >> 5) & 0x1f];
+                uint8_t b1 = gamma[(c1 >> 0) & 0x1f];
 
-                for (uint8_t t = 0; t < 16; i++) {
+                for (uint8_t t = 0; t < 8; i++) {
                     uint8_t bvt = _bv(t);
 
-                    bam[x*y*t] = x              // x == abcd
-                    | ((bvt & r0) v) << R0
-                    | ((bvt & g0) v} << G0
-                    | ((bvt & b0) v} << B0
-                    | ((bvt & r1) v} << R1
-                    | ((bvt & g1) v} << G1
-                    | ((bvt & b1) v} << B1;
+                    // [x:x:x:b1:g1:r1:ck:b0:g0:r0:oe:st:d:c:b:a]
+                    bam[x*y*t] = x                 // x == abcd
+                    | 0x0020                       // output enable
+                    | ((bvt & r0) >> i) << 0x0040  // red 0
+                    | ((bvt & g0) >> i) << 0x0080  // green 0
+                    | ((bvt & b0) >> i) << 0x0100  // blue 0
+                                                   // ck is driven directly by the timer
+                    | ((bvt & r1) >> i) << 0x0400  // red 1
+                    | ((bvt & g1) >> i) << 0x0800  // green 1
+                    | ((bvt & b1) >> i) << 0x1000; // blue 1
+
+                    // each bam time index maps to a bit in the color value
+                    // bam[x*y*0] has bit 1 of the color
+                    // bam[x*y*7] has bit 8 of the color
                 }
             }
         }
@@ -170,6 +175,8 @@ void Matrix::initHardware() {
     htim->hdma[TIM_DMA_ID_UPDATE]->XferErrorCallback = transmit_error_handler;
 
     // Enable DMA
+    // transmit a single BAM, starting with time index 0 (bit 1); when the transfer is complete the callbacks
+    // below will set up for the next time index
     HAL_DMAEx_MultiBufferStart_IT(&hdma_tim3_ch4_up, (uint32_t) &dma[0], (uint32_t) &GPIOC->ODR, (uint32_t) &dma[BAM_SIZE], BAM_SIZE);
 
     // Start Timer
@@ -177,12 +184,14 @@ void Matrix::initHardware() {
 }
 
 void Matrix::data_transmitted_handler_0(UART_HandleTypeDef *handle) {
-    uint8_t i = time_index_to_bam_index(time_index++);
+    uint8_t i = msb(time_index++);
+    i = i == 0 ? 0 : i - 1; // change from 0-8 to 0-7 since there are only 8 patterns not 9
     HAL_DMAEx_ChangeMemory(&handle, (uint32_t) &dma[BAM_SIZE * i], MEMORY0);
 }
 
 void Matrix::data_transmitted_handler_1(UART_HandleTypeDef *handle) {
-    uint8_t i = time_index_to_bam_index(time_index++);
+    uint8_t i = msb(time_index++);
+    i = i == 0 ? 0 : i - 1; // change from 0-8 to 0-7 since there are only 8 patterns not 9
     HAL_DMAEx_ChangeMemory(&handle, (uint32_t) &dma[BAM_SIZE * i], MEMORY1);
 }
 
