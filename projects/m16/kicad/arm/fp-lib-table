@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name DigitalCave)(type KiCad)(uri /Users/warren.janssens/Projects/c/microcontroller-projects/lib/kicad/modules/DigitalCave.pretty)(options "")(descr ""))
+)
