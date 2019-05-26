@@ -979,9 +979,9 @@ AcDbLayerTableRecord
   2
 dimensions
  70
-1
+0
  62
--252
+252
 420
 10526884
   6
@@ -1089,7 +1089,7 @@ STYLE
 100
 AcDbSymbolTable
  70
-107
+108
   0
 STYLE
   5
@@ -3767,7 +3767,7 @@ textstyle82
  71
 0
  42
-25.0
+2.5
   3
 
   4
@@ -3799,7 +3799,7 @@ textstyle83
  71
 0
  42
-25.0
+2.5
   3
 
   4
@@ -4311,7 +4311,7 @@ textstyle99
  71
 0
  42
-2.5
+1.0
   3
 
   4
@@ -4319,7 +4319,7 @@ textstyle99
 1001
 ACAD
 1000
-Arial
+standard
 1071
 0
   0
@@ -4343,7 +4343,7 @@ textstyle100
  71
 0
  42
-2.5
+1.0
   3
 
   4
@@ -4351,7 +4351,7 @@ textstyle100
 1001
 ACAD
 1000
-Arial
+standard
 1071
 0
   0
@@ -4375,7 +4375,7 @@ textstyle101
  71
 0
  42
-1.0
+2.5
   3
 
   4
@@ -4383,7 +4383,7 @@ textstyle101
 1001
 ACAD
 1000
-standard
+Arial
 1071
 0
   0
@@ -4407,7 +4407,7 @@ textstyle102
  71
 0
  42
-1.0
+2.5
   3
 
   4
@@ -4415,7 +4415,7 @@ textstyle102
 1001
 ACAD
 1000
-standard
+Arial
 1071
 0
   0
@@ -4439,7 +4439,7 @@ textstyle103
  71
 0
  42
-2.5
+10.0
   3
 
   4
@@ -4471,7 +4471,7 @@ textstyle104
  71
 0
  42
-2.5
+10.0
   3
 
   4
@@ -4504,6 +4504,38 @@ textstyle105
 0
  42
 10.0
+  3
+
+  4
+
+1001
+ACAD
+1000
+Arial
+1071
+0
+  0
+STYLE
+  5
+B4
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+  2
+textstyle106
+ 70
+0
+ 40
+0.0
+ 41
+1.0
+ 50
+0.0
+ 71
+0
+ 42
+2.5
   3
 
   4
@@ -4565,7 +4597,7 @@ ACAD
   0
 APPID
   5
-B4
+B5
 100
 AcDbSymbolTableRecord
 100
@@ -4695,7 +4727,7 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-B5
+B6
 100
 AcDbSymbolTableRecord
 100
@@ -4707,7 +4739,7 @@ switch
   0
 BLOCK_RECORD
   5
-B6
+B7
 100
 AcDbSymbolTableRecord
 100
@@ -4719,7 +4751,7 @@ outlet_220
   0
 BLOCK_RECORD
   5
-B7
+B8
 100
 AcDbSymbolTableRecord
 100
@@ -4731,7 +4763,7 @@ outlet
   0
 BLOCK_RECORD
   5
-B8
+B9
 100
 AcDbSymbolTableRecord
 100
@@ -4743,7 +4775,7 @@ smoke_detector
   0
 BLOCK_RECORD
   5
-B9
+BA
 100
 AcDbSymbolTableRecord
 100
@@ -4869,7 +4901,7 @@ AcDbBlockEnd
   0
 BLOCK
   5
-BA
+BB
 100
 AcDbEntity
   8
@@ -4893,7 +4925,7 @@ switch
   0
 ARC
   5
-BB
+BC
 100
 AcDbEntity
   8
@@ -4923,7 +4955,7 @@ AcDbArc
   0
 ARC
   5
-BC
+BD
 100
 AcDbEntity
   8
@@ -4953,7 +4985,7 @@ AcDbArc
   0
 ARC
   5
-BD
+BE
 100
 AcDbEntity
   8
@@ -4983,7 +5015,7 @@ AcDbArc
   0
 LINE
   5
-BE
+BF
 100
 AcDbEntity
 100
@@ -5011,7 +5043,7 @@ BYLAYER
   0
 ENDBLK
   5
-BF
+C0
 100
 AcDbEntity
   8
@@ -5021,7 +5053,7 @@ AcDbBlockEnd
   0
 BLOCK
   5
-C0
+C1
 100
 AcDbEntity
   8
@@ -5045,7 +5077,7 @@ outlet_220
   0
 CIRCLE
   5
-C1
+C2
 100
 AcDbEntity
 100
@@ -5069,34 +5101,6 @@ BYLAYER
   0
 LINE
   5
-C2
-100
-AcDbEntity
-100
-AcDbLine
-  8
-electrical
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--1.0
- 20
-1.7320508075688963
- 30
-0.0
- 11
--1.0
- 21
--5.0
- 31
-0.0
-  0
-LINE
-  5
 C3
 100
 AcDbEntity
@@ -5111,15 +5115,15 @@ electrical
   6
 BYLAYER
  10
-1.0
+-1.0
  20
--5.0
+1.7320508075688963
  30
 0.0
  11
-1.0
+-1.0
  21
-1.7320508075688963
+-5.0
  31
 0.0
   0
@@ -5139,6 +5143,34 @@ electrical
   6
 BYLAYER
  10
+1.0
+ 20
+-5.0
+ 30
+0.0
+ 11
+1.0
+ 21
+1.7320508075688963
+ 31
+0.0
+  0
+LINE
+  5
+C5
+100
+AcDbEntity
+100
+AcDbLine
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 0.0
  20
 -5.0
@@ -5153,7 +5185,7 @@ BYLAYER
   0
 ENDBLK
   5
-C5
+C6
 100
 AcDbEntity
   8
@@ -5163,7 +5195,7 @@ AcDbBlockEnd
   0
 BLOCK
   5
-C6
+C7
 100
 AcDbEntity
   8
@@ -5187,7 +5219,7 @@ outlet
   0
 CIRCLE
   5
-C7
+C8
 100
 AcDbEntity
 100
@@ -5211,7 +5243,7 @@ BYLAYER
   0
 LINE
   5
-C8
+C9
 100
 AcDbEntity
 100
@@ -5239,7 +5271,7 @@ BYLAYER
   0
 LINE
   5
-C9
+CA
 100
 AcDbEntity
 100
@@ -5267,7 +5299,7 @@ BYLAYER
   0
 ENDBLK
   5
-CA
+CB
 100
 AcDbEntity
   8
@@ -5277,7 +5309,7 @@ AcDbBlockEnd
   0
 BLOCK
   5
-CB
+CC
 100
 AcDbEntity
   8
@@ -5301,7 +5333,7 @@ smoke_detector
   0
 CIRCLE
   5
-CC
+CD
 100
 AcDbEntity
 100
@@ -5325,7 +5357,7 @@ BYLAYER
   0
 MTEXT
   5
-CD
+CE
 100
 AcDbEntity
 100
@@ -5365,7 +5397,7 @@ textstyle0
   0
 ENDBLK
   5
-CE
+CF
 100
 AcDbEntity
   8
@@ -5375,7 +5407,7 @@ AcDbBlockEnd
   0
 BLOCK
   5
-CF
+D0
 100
 AcDbEntity
   8
@@ -5399,7 +5431,7 @@ light
   0
 CIRCLE
   5
-D0
+D1
 100
 AcDbEntity
 100
@@ -5423,7 +5455,7 @@ BYLAYER
   0
 LINE
   5
-D1
+D2
 100
 AcDbEntity
 100
@@ -5451,34 +5483,6 @@ BYLAYER
   0
 LINE
   5
-D2
-100
-AcDbEntity
-100
-AcDbLine
-  8
-electrical
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--2.0
- 20
-0.0
- 30
-0.0
- 11
--4.0
- 21
-0.0
- 31
-0.0
-  0
-LINE
-  5
 D3
 100
 AcDbEntity
@@ -5493,6 +5497,34 @@ electrical
   6
 BYLAYER
  10
+-2.0
+ 20
+0.0
+ 30
+0.0
+ 11
+-4.0
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+D4
+100
+AcDbEntity
+100
+AcDbLine
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 0.0
  20
 -2.0
@@ -5507,7 +5539,7 @@ BYLAYER
   0
 LINE
   5
-D4
+D5
 100
 AcDbEntity
 100
@@ -5535,7 +5567,7 @@ BYLAYER
   0
 ENDBLK
   5
-D5
+D6
 100
 AcDbEntity
   8
@@ -5551,7 +5583,7 @@ ENTITIES
   0
 LINE
   5
-D6
+D7
 100
 AcDbEntity
 100
@@ -5579,7 +5611,7 @@ BYLAYER
   0
 LINE
   5
-D7
+D8
 100
 AcDbEntity
 100
@@ -5607,7 +5639,7 @@ BYLAYER
   0
 LINE
   5
-D8
+D9
 100
 AcDbEntity
 100
@@ -5624,34 +5656,6 @@ BYLAYER
 166.5
  20
 -4.0
- 30
-0.0
- 11
-166.5
- 21
--93.5
- 31
-0.0
-  0
-LINE
-  5
-D9
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-83.5
- 20
--93.5
  30
 0.0
  11
@@ -5677,7 +5681,7 @@ AcDbLine
   6
 BYLAYER
  10
-166.5
+83.5
  20
 -93.5
  30
@@ -5685,7 +5689,7 @@ BYLAYER
  11
 166.5
  21
--4.0
+-93.5
  31
 0.0
   0
@@ -5705,6 +5709,34 @@ AcDbLine
   6
 BYLAYER
  10
+166.5
+ 20
+-93.5
+ 30
+0.0
+ 11
+166.5
+ 21
+-4.0
+ 31
+0.0
+  0
+LINE
+  5
+DC
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 83.5
  20
 -93.5
@@ -5719,7 +5751,7 @@ BYLAYER
   0
 LINE
   5
-DC
+DD
 100
 AcDbEntity
 100
@@ -5747,7 +5779,7 @@ BYLAYER
   0
 LINE
   5
-DD
+DE
 100
 AcDbEntity
 100
@@ -5775,7 +5807,7 @@ BYLAYER
   0
 LINE
   5
-DE
+DF
 100
 AcDbEntity
 100
@@ -5803,7 +5835,7 @@ BYLAYER
   0
 LINE
   5
-DF
+E0
 100
 AcDbEntity
 100
@@ -5831,7 +5863,7 @@ BYLAYER
   0
 LINE
   5
-E0
+E1
 100
 AcDbEntity
 100
@@ -5859,7 +5891,7 @@ BYLAYER
   0
 LINE
   5
-E1
+E2
 100
 AcDbEntity
 100
@@ -5887,7 +5919,7 @@ BYLAYER
   0
 LINE
   5
-E2
+E3
 100
 AcDbEntity
 100
@@ -5915,7 +5947,7 @@ BYLAYER
   0
 LINE
   5
-E3
+E4
 100
 AcDbEntity
 100
@@ -5943,7 +5975,7 @@ BYLAYER
   0
 LINE
   5
-E4
+E5
 100
 AcDbEntity
 100
@@ -5971,7 +6003,7 @@ BYLAYER
   0
 LINE
   5
-E5
+E6
 100
 AcDbEntity
 100
@@ -5999,7 +6031,7 @@ BYLAYER
   0
 LINE
   5
-E6
+E7
 100
 AcDbEntity
 100
@@ -6020,34 +6052,6 @@ BYLAYER
 0.0
  11
 -0.0000000000000071
- 21
-70.5
- 31
-0.0
-  0
-LINE
-  5
-E7
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--0.0000000000000071
- 20
-70.5
- 30
-0.0
- 11
--28.5000000000000071
  21
 70.5
  31
@@ -6069,6 +6073,34 @@ AcDbLine
   6
 BYLAYER
  10
+-0.0000000000000071
+ 20
+70.5
+ 30
+0.0
+ 11
+-28.5000000000000071
+ 21
+70.5
+ 31
+0.0
+  0
+LINE
+  5
+E9
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -28.5000000000000071
  20
 70.5
@@ -6083,7 +6115,7 @@ BYLAYER
   0
 LINE
   5
-E9
+EA
 100
 AcDbEntity
 100
@@ -6111,7 +6143,7 @@ BYLAYER
   0
 LINE
   5
-EA
+EB
 100
 AcDbEntity
 100
@@ -6139,7 +6171,7 @@ BYLAYER
   0
 LINE
   5
-EB
+EC
 100
 AcDbEntity
 100
@@ -6167,7 +6199,7 @@ BYLAYER
   0
 LINE
   5
-EC
+ED
 100
 AcDbEntity
 100
@@ -6195,7 +6227,7 @@ BYLAYER
   0
 LINE
   5
-ED
+EE
 100
 AcDbEntity
 100
@@ -6223,7 +6255,7 @@ BYLAYER
   0
 LINE
   5
-EE
+EF
 100
 AcDbEntity
 100
@@ -6251,7 +6283,7 @@ BYLAYER
   0
 LINE
   5
-EF
+F0
 100
 AcDbEntity
 100
@@ -6272,34 +6304,6 @@ BYLAYER
 0.0
  11
 166.5
- 21
--4.0
- 31
-0.0
-  0
-LINE
-  5
-F0
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-166.5
- 20
--4.0
- 30
-0.0
- 11
-122.5
  21
 -4.0
  31
@@ -6321,6 +6325,34 @@ AcDbLine
   6
 BYLAYER
  10
+166.5
+ 20
+-4.0
+ 30
+0.0
+ 11
+122.5
+ 21
+-4.0
+ 31
+0.0
+  0
+LINE
+  5
+F2
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 122.5
  20
 -4.0
@@ -6335,7 +6367,7 @@ BYLAYER
   0
 LINE
   5
-F2
+F3
 100
 AcDbEntity
 100
@@ -6363,7 +6395,7 @@ BYLAYER
   0
 LINE
   5
-F3
+F4
 100
 AcDbEntity
 100
@@ -6391,7 +6423,7 @@ BYLAYER
   0
 LINE
   5
-F4
+F5
 100
 AcDbEntity
 100
@@ -6419,7 +6451,7 @@ BYLAYER
   0
 LINE
   5
-F5
+F6
 100
 AcDbEntity
 100
@@ -6447,7 +6479,7 @@ BYLAYER
   0
 LINE
   5
-F6
+F7
 100
 AcDbEntity
 100
@@ -6475,7 +6507,7 @@ BYLAYER
   0
 LINE
   5
-F7
+F8
 100
 AcDbEntity
 100
@@ -6503,7 +6535,7 @@ BYLAYER
   0
 LINE
   5
-F8
+F9
 100
 AcDbEntity
 100
@@ -6531,7 +6563,7 @@ BYLAYER
   0
 LINE
   5
-F9
+FA
 100
 AcDbEntity
 100
@@ -6559,7 +6591,7 @@ BYLAYER
   0
 LINE
   5
-FA
+FB
 100
 AcDbEntity
 100
@@ -6587,7 +6619,7 @@ BYLAYER
   0
 LINE
   5
-FB
+FC
 100
 AcDbEntity
 100
@@ -6615,7 +6647,7 @@ BYLAYER
   0
 LINE
   5
-FC
+FD
 100
 AcDbEntity
 100
@@ -6643,7 +6675,7 @@ BYLAYER
   0
 LINE
   5
-FD
+FE
 100
 AcDbEntity
 100
@@ -6671,7 +6703,7 @@ BYLAYER
   0
 LINE
   5
-FE
+FF
 100
 AcDbEntity
 100
@@ -6699,7 +6731,7 @@ BYLAYER
   0
 LINE
   5
-FF
+100
 100
 AcDbEntity
 100
@@ -6727,7 +6759,7 @@ BYLAYER
   0
 LINE
   5
-100
+101
 100
 AcDbEntity
 100
@@ -6755,7 +6787,7 @@ BYLAYER
   0
 LINE
   5
-101
+102
 100
 AcDbEntity
 100
@@ -6783,7 +6815,7 @@ BYLAYER
   0
 LINE
   5
-102
+103
 100
 AcDbEntity
 100
@@ -6811,7 +6843,7 @@ BYLAYER
   0
 LINE
   5
-103
+104
 100
 AcDbEntity
 100
@@ -6828,34 +6860,6 @@ BYLAYER
 -180.0
  20
 -93.5
- 30
-0.0
- 11
--180.0
- 21
--0.4999999999999992
- 31
-0.0
-  0
-LINE
-  5
-104
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--207.0
- 20
--0.4999999999999992
  30
 0.0
  11
@@ -6883,6 +6887,34 @@ BYLAYER
  10
 -207.0
  20
+-0.4999999999999992
+ 30
+0.0
+ 11
+-180.0
+ 21
+-0.4999999999999992
+ 31
+0.0
+  0
+LINE
+  5
+106
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-207.0
+ 20
 4.0000000000000009
  30
 0.0
@@ -6895,7 +6927,7 @@ BYLAYER
   0
 LINE
   5
-106
+107
 100
 AcDbEntity
 100
@@ -6923,7 +6955,7 @@ BYLAYER
   0
 LINE
   5
-107
+108
 100
 AcDbEntity
 100
@@ -6951,7 +6983,7 @@ BYLAYER
   0
 LINE
   5
-108
+109
 100
 AcDbEntity
 100
@@ -6979,7 +7011,7 @@ BYLAYER
   0
 LINE
   5
-109
+10A
 100
 AcDbEntity
 100
@@ -7007,7 +7039,7 @@ BYLAYER
   0
 LINE
   5
-10A
+10B
 100
 AcDbEntity
 100
@@ -7035,7 +7067,7 @@ BYLAYER
   0
 LINE
   5
-10B
+10C
 100
 AcDbEntity
 100
@@ -7063,7 +7095,7 @@ BYLAYER
   0
 LINE
   5
-10C
+10D
 100
 AcDbEntity
 100
@@ -7091,7 +7123,7 @@ BYLAYER
   0
 LINE
   5
-10D
+10E
 100
 AcDbEntity
 100
@@ -7119,34 +7151,6 @@ BYLAYER
   0
 LINE
   5
-10E
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--207.0
- 20
-40.0
- 30
-0.0
- 11
--207.0
- 21
-38.0
- 31
-0.0
-  0
-LINE
-  5
 10F
 100
 AcDbEntity
@@ -7161,13 +7165,13 @@ AcDbLine
   6
 BYLAYER
  10
--202.5
+-207.0
  20
 40.0
  30
 0.0
  11
--202.5
+-207.0
  21
 38.0
  31
@@ -7195,6 +7199,34 @@ BYLAYER
  30
 0.0
  11
+-202.5
+ 21
+38.0
+ 31
+0.0
+  0
+LINE
+  5
+111
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-202.5
+ 20
+40.0
+ 30
+0.0
+ 11
 -200.5
  21
 40.0
@@ -7203,7 +7235,7 @@ BYLAYER
   0
 LINE
   5
-111
+112
 100
 AcDbEntity
 100
@@ -7231,7 +7263,7 @@ BYLAYER
   0
 LINE
   5
-112
+113
 100
 AcDbEntity
 100
@@ -7259,7 +7291,7 @@ BYLAYER
   0
 LINE
   5
-113
+114
 100
 AcDbEntity
 100
@@ -7287,7 +7319,7 @@ BYLAYER
   0
 LINE
   5
-114
+115
 100
 AcDbEntity
 100
@@ -7315,7 +7347,7 @@ BYLAYER
   0
 LINE
   5
-115
+116
 100
 AcDbEntity
 100
@@ -7343,7 +7375,7 @@ BYLAYER
   0
 LINE
   5
-116
+117
 100
 AcDbEntity
 100
@@ -7360,34 +7392,6 @@ BYLAYER
 -33.0
  20
 -54.0
- 30
-0.0
- 11
--33.0
- 21
--0.5
- 31
-0.0
-  0
-LINE
-  5
-117
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--69.0
- 20
--0.5
  30
 0.0
  11
@@ -7415,13 +7419,13 @@ BYLAYER
  10
 -69.0
  20
--10.5
+-0.5
  30
 0.0
  11
 -33.0
  21
--10.5
+-0.5
  31
 0.0
   0
@@ -7443,13 +7447,13 @@ BYLAYER
  10
 -69.0
  20
--20.5
+-10.5
  30
 0.0
  11
 -33.0
  21
--20.5
+-10.5
  31
 0.0
   0
@@ -7471,13 +7475,13 @@ BYLAYER
  10
 -69.0
  20
--30.5
+-20.5
  30
 0.0
  11
 -33.0
  21
--30.5
+-20.5
  31
 0.0
   0
@@ -7499,6 +7503,34 @@ BYLAYER
  10
 -69.0
  20
+-30.5
+ 30
+0.0
+ 11
+-33.0
+ 21
+-30.5
+ 31
+0.0
+  0
+LINE
+  5
+11C
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-69.0
+ 20
 -40.5
  30
 0.0
@@ -7511,7 +7543,7 @@ BYLAYER
   0
 LINE
   5
-11C
+11D
 100
 AcDbEntity
 100
@@ -7539,7 +7571,7 @@ BYLAYER
   0
 LINE
   5
-11D
+11E
 100
 AcDbEntity
 100
@@ -7567,7 +7599,7 @@ BYLAYER
   0
 LINE
   5
-11E
+11F
 100
 AcDbEntity
 100
@@ -7595,34 +7627,6 @@ BYLAYER
   0
 LINE
   5
-11F
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-83.5
- 20
--5.0
- 30
-0.0
- 11
-118.0
- 21
--5.0
- 31
-0.0
-  0
-LINE
-  5
 120
 100
 AcDbEntity
@@ -7639,13 +7643,13 @@ BYLAYER
  10
 83.5
  20
--15.0
+-5.0
  30
 0.0
  11
 118.0
  21
--15.0
+-5.0
  31
 0.0
   0
@@ -7667,6 +7671,34 @@ BYLAYER
  10
 83.5
  20
+-15.0
+ 30
+0.0
+ 11
+118.0
+ 21
+-15.0
+ 31
+0.0
+  0
+LINE
+  5
+122
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+83.5
+ 20
 -25.0
  30
 0.0
@@ -7679,7 +7711,7 @@ BYLAYER
   0
 LINE
   5
-122
+123
 100
 AcDbEntity
 100
@@ -7707,34 +7739,6 @@ BYLAYER
   0
 LINE
   5
-123
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--191.0
- 20
-75.0
- 30
-0.0
- 11
--164.0
- 21
-75.0
- 31
-0.0
-  0
-LINE
-  5
 124
 100
 AcDbEntity
@@ -7749,15 +7753,15 @@ AcDbLine
   6
 BYLAYER
  10
--164.0
+-191.0
  20
-88.0
+75.0
  30
 0.0
  11
--191.0
+-164.0
  21
-88.0
+75.0
  31
 0.0
   0
@@ -7777,6 +7781,34 @@ AcDbLine
   6
 BYLAYER
  10
+-164.0
+ 20
+88.0
+ 30
+0.0
+ 11
+-191.0
+ 21
+88.0
+ 31
+0.0
+  0
+LINE
+  5
+126
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -191.0
  20
 88.0
@@ -7791,7 +7823,7 @@ BYLAYER
   0
 LINE
   5
-126
+127
 100
 AcDbEntity
 100
@@ -7819,7 +7851,7 @@ BYLAYER
   0
 LINE
   5
-127
+128
 100
 AcDbEntity
 100
@@ -7847,7 +7879,7 @@ BYLAYER
   0
 LINE
   5
-128
+129
 100
 AcDbEntity
 100
@@ -7875,7 +7907,7 @@ BYLAYER
   0
 LINE
   5
-129
+12A
 100
 AcDbEntity
 100
@@ -7903,7 +7935,7 @@ BYLAYER
   0
 LINE
   5
-12A
+12B
 100
 AcDbEntity
 100
@@ -7931,7 +7963,7 @@ BYLAYER
   0
 DIMENSION
   5
-12B
+12C
 100
 AcDbEntity
   8
@@ -7999,7 +8031,7 @@ DSTYLE
   0
 DIMENSION
   5
-12C
+12D
 100
 AcDbEntity
   8
@@ -8067,7 +8099,7 @@ DSTYLE
   0
 DIMENSION
   5
-12D
+12E
 100
 AcDbEntity
   8
@@ -8135,7 +8167,7 @@ DSTYLE
   0
 DIMENSION
   5
-12E
+12F
 100
 AcDbEntity
   8
@@ -8203,7 +8235,7 @@ DSTYLE
   0
 DIMENSION
   5
-12F
+130
 100
 AcDbEntity
   8
@@ -8271,7 +8303,7 @@ DSTYLE
   0
 DIMENSION
   5
-130
+131
 100
 AcDbEntity
   8
@@ -8339,7 +8371,7 @@ DSTYLE
   0
 DIMENSION
   5
-131
+132
 100
 AcDbEntity
   8
@@ -8407,7 +8439,7 @@ DSTYLE
   0
 DIMENSION
   5
-132
+133
 100
 AcDbEntity
   8
@@ -8475,7 +8507,7 @@ DSTYLE
   0
 DIMENSION
   5
-133
+134
 100
 AcDbEntity
   8
@@ -8543,7 +8575,7 @@ DSTYLE
   0
 DIMENSION
   5
-134
+135
 100
 AcDbEntity
   8
@@ -8611,7 +8643,7 @@ DSTYLE
   0
 DIMENSION
   5
-135
+136
 100
 AcDbEntity
   8
@@ -8679,7 +8711,7 @@ DSTYLE
   0
 DIMENSION
   5
-136
+137
 100
 AcDbEntity
   8
@@ -8747,7 +8779,7 @@ DSTYLE
   0
 DIMENSION
   5
-137
+138
 100
 AcDbEntity
   8
@@ -8815,7 +8847,7 @@ DSTYLE
   0
 DIMENSION
   5
-138
+139
 100
 AcDbEntity
   8
@@ -8883,7 +8915,7 @@ DSTYLE
   0
 LINE
   5
-139
+13A
 100
 AcDbEntity
 100
@@ -8906,34 +8938,6 @@ BYLAYER
 194.5
  21
 157.5
- 31
-0.0
-  0
-LINE
-  5
-13A
-100
-AcDbEntity
-100
-AcDbLine
-  8
-hardwood_area
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-194.5
- 20
-157.5
- 30
-0.0
- 11
-194.5
- 21
-0.0
  31
 0.0
   0
@@ -8955,13 +8959,13 @@ BYLAYER
  10
 194.5
  20
-0.0
+157.5
  30
 0.0
  11
-118.0
+194.5
  21
--0.0
+0.0
  31
 0.0
   0
@@ -8981,15 +8985,15 @@ hardwood_area
   6
 BYLAYER
  10
-118.0
+194.5
  20
--0.0
+0.0
  30
 0.0
  11
 118.0
  21
--29.5
+-0.0
  31
 0.0
   0
@@ -9011,11 +9015,11 @@ BYLAYER
  10
 118.0
  20
--29.5
+-0.0
  30
 0.0
  11
-79.0
+118.0
  21
 -29.5
  31
@@ -9037,7 +9041,7 @@ hardwood_area
   6
 BYLAYER
  10
-79.0
+118.0
  20
 -29.5
  30
@@ -9045,7 +9049,7 @@ BYLAYER
  11
 79.0
  21
--93.5
+-29.5
  31
 0.0
   0
@@ -9067,11 +9071,11 @@ BYLAYER
  10
 79.0
  20
--93.5
+-29.5
  30
 0.0
  11
--28.5
+79.0
  21
 -93.5
  31
@@ -9093,15 +9097,15 @@ hardwood_area
   6
 BYLAYER
  10
--28.5
+79.0
  20
 -93.5
  30
 0.0
  11
--28.4999999999999964
+-28.5
  21
--54.0
+-93.5
  31
 0.0
   0
@@ -9121,13 +9125,13 @@ hardwood_area
   6
 BYLAYER
  10
--28.4999999999999964
+-28.5
  20
--54.0
+-93.5
  30
 0.0
  11
--33.0
+-28.4999999999999964
  21
 -54.0
  31
@@ -9149,6 +9153,34 @@ hardwood_area
   6
 BYLAYER
  10
+-28.4999999999999964
+ 20
+-54.0
+ 30
+0.0
+ 11
+-33.0
+ 21
+-54.0
+ 31
+0.0
+  0
+LINE
+  5
+143
+100
+AcDbEntity
+100
+AcDbLine
+  8
+hardwood_area
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -33.0
  20
 -54.0
@@ -9163,7 +9195,7 @@ BYLAYER
   0
 LINE
   5
-143
+144
 100
 AcDbEntity
 100
@@ -9191,7 +9223,7 @@ BYLAYER
   0
 LINE
   5
-144
+145
 100
 AcDbEntity
 100
@@ -9219,7 +9251,7 @@ BYLAYER
   0
 LINE
   5
-145
+146
 100
 AcDbEntity
 100
@@ -9247,7 +9279,7 @@ BYLAYER
   0
 LINE
   5
-146
+147
 100
 AcDbEntity
 100
@@ -9275,7 +9307,7 @@ BYLAYER
   0
 LINE
   5
-147
+148
 100
 AcDbEntity
 100
@@ -9303,7 +9335,7 @@ BYLAYER
   0
 LINE
   5
-148
+149
 100
 AcDbEntity
 100
@@ -9331,7 +9363,7 @@ BYLAYER
   0
 LINE
   5
-149
+14A
 100
 AcDbEntity
 100
@@ -9359,7 +9391,7 @@ BYLAYER
   0
 LINE
   5
-14A
+14B
 100
 AcDbEntity
 100
@@ -9387,7 +9419,7 @@ BYLAYER
   0
 LINE
   5
-14B
+14C
 100
 AcDbEntity
 100
@@ -9415,7 +9447,7 @@ BYLAYER
   0
 LINE
   5
-14C
+14D
 100
 AcDbEntity
 100
@@ -9443,7 +9475,7 @@ BYLAYER
   0
 LINE
   5
-14D
+14E
 100
 AcDbEntity
 100
@@ -9471,7 +9503,7 @@ BYLAYER
   0
 LINE
   5
-14E
+14F
 100
 AcDbEntity
 100
@@ -9499,7 +9531,7 @@ BYLAYER
   0
 LINE
   5
-14F
+150
 100
 AcDbEntity
 100
@@ -9527,7 +9559,7 @@ BYLAYER
   0
 LINE
   5
-150
+151
 100
 AcDbEntity
 100
@@ -9555,7 +9587,7 @@ BYLAYER
   0
 LINE
   5
-151
+152
 100
 AcDbEntity
 100
@@ -9583,7 +9615,7 @@ BYLAYER
   0
 DIMENSION
   5
-152
+153
 100
 AcDbEntity
   8
@@ -9651,7 +9683,7 @@ DSTYLE
   0
 HATCH
   5
-153
+154
   8
 hardwood_area
  62
@@ -9977,34 +10009,6 @@ ACAD
   0
 LINE
   5
-154
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-166.5
- 20
--238.5
- 30
-0.0
- 11
--312.5
- 21
--238.5
- 31
-0.0
-  0
-LINE
-  5
 155
 100
 AcDbEntity
@@ -10019,15 +10023,15 @@ AcDbLine
   6
 BYLAYER
  10
--312.5
+166.5
  20
--472.5
+-238.5
  30
 0.0
  11
-166.5
+-312.5
  21
--472.5
+-238.5
  31
 0.0
   0
@@ -10053,6 +10057,34 @@ BYLAYER
  30
 0.0
  11
+166.5
+ 21
+-472.5
+ 31
+0.0
+  0
+LINE
+  5
+157
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-312.5
+ 20
+-472.5
+ 30
+0.0
+ 11
 -312.5
  21
 -238.5
@@ -10061,7 +10093,7 @@ BYLAYER
   0
 LINE
   5
-157
+158
 100
 AcDbEntity
 100
@@ -10089,7 +10121,7 @@ BYLAYER
   0
 LINE
   5
-158
+159
 100
 AcDbEntity
 100
@@ -10117,7 +10149,7 @@ BYLAYER
   0
 LINE
   5
-159
+15A
 100
 AcDbEntity
 100
@@ -10145,7 +10177,7 @@ BYLAYER
   0
 LINE
   5
-15A
+15B
 100
 AcDbEntity
 100
@@ -10168,34 +10200,6 @@ BYLAYER
 -60.5000000000000071
  21
 -344.5
- 31
-0.0
-  0
-LINE
-  5
-15B
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--60.5000000000000071
- 20
--344.5
- 30
-0.0
- 11
--60.5000000000000071
- 21
--340.5
  31
 0.0
   0
@@ -10215,6 +10219,34 @@ AcDbLine
   6
 BYLAYER
  10
+-60.5000000000000071
+ 20
+-344.5
+ 30
+0.0
+ 11
+-60.5000000000000071
+ 21
+-340.5
+ 31
+0.0
+  0
+LINE
+  5
+15D
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -65.5
  20
 -340.5
@@ -10229,7 +10261,7 @@ BYLAYER
   0
 LINE
   5
-15D
+15E
 100
 AcDbEntity
 100
@@ -10257,7 +10289,7 @@ BYLAYER
   0
 LINE
   5
-15E
+15F
 100
 AcDbEntity
 100
@@ -10285,7 +10317,7 @@ BYLAYER
   0
 LINE
   5
-15F
+160
 100
 AcDbEntity
 100
@@ -10313,7 +10345,7 @@ BYLAYER
   0
 LINE
   5
-160
+161
 100
 AcDbEntity
 100
@@ -10341,7 +10373,7 @@ BYLAYER
   0
 LINE
   5
-161
+162
 100
 AcDbEntity
 100
@@ -10369,7 +10401,7 @@ BYLAYER
   0
 LINE
   5
-162
+163
 100
 AcDbEntity
 100
@@ -10392,34 +10424,6 @@ BYLAYER
 -196.5
  21
 -340.5
- 31
-0.0
-  0
-LINE
-  5
-163
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--201.5
- 20
--344.5
- 30
-0.0
- 11
--196.5
- 21
--344.5
  31
 0.0
   0
@@ -10445,9 +10449,9 @@ BYLAYER
  30
 0.0
  11
--201.5
+-196.5
  21
--340.5
+-344.5
  31
 0.0
   0
@@ -10467,9 +10471,9 @@ AcDbLine
   6
 BYLAYER
  10
--312.5
+-201.5
  20
--340.5
+-344.5
  30
 0.0
  11
@@ -10497,6 +10501,34 @@ BYLAYER
  10
 -312.5
  20
+-340.5
+ 30
+0.0
+ 11
+-201.5
+ 21
+-340.5
+ 31
+0.0
+  0
+LINE
+  5
+167
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-312.5
+ 20
 -336.0
  30
 0.0
@@ -10509,7 +10541,7 @@ BYLAYER
   0
 LINE
   5
-167
+168
 100
 AcDbEntity
 100
@@ -10530,34 +10562,6 @@ BYLAYER
 0.0
  11
 -196.5
- 21
--374.5
- 31
-0.0
-  0
-LINE
-  5
-168
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--201.0
- 20
--410.5
- 30
-0.0
- 11
--201.0
  21
 -374.5
  31
@@ -10581,6 +10585,34 @@ BYLAYER
  10
 -201.0
  20
+-410.5
+ 30
+0.0
+ 11
+-201.0
+ 21
+-374.5
+ 31
+0.0
+  0
+LINE
+  5
+16A
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-201.0
+ 20
 -374.5
  30
 0.0
@@ -10593,7 +10625,7 @@ BYLAYER
   0
 LINE
   5
-16A
+16B
 100
 AcDbEntity
 100
@@ -10621,7 +10653,7 @@ BYLAYER
   0
 LINE
   5
-16B
+16C
 100
 AcDbEntity
 100
@@ -10649,7 +10681,7 @@ BYLAYER
   0
 LINE
   5
-16C
+16D
 100
 AcDbEntity
 100
@@ -10677,7 +10709,7 @@ BYLAYER
   0
 LINE
   5
-16D
+16E
 100
 AcDbEntity
 100
@@ -10700,34 +10732,6 @@ BYLAYER
 -168.5
  21
 -472.5
- 31
-0.0
-  0
-LINE
-  5
-16E
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--326.5
- 20
--457.5
- 30
-0.0
- 11
--326.5
- 21
--395.5
  31
 0.0
   0
@@ -10753,6 +10757,34 @@ BYLAYER
  30
 0.0
  11
+-326.5
+ 21
+-395.5
+ 31
+0.0
+  0
+LINE
+  5
+170
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-326.5
+ 20
+-457.5
+ 30
+0.0
+ 11
 -312.5
  21
 -457.5
@@ -10761,7 +10793,7 @@ BYLAYER
   0
 LINE
   5
-170
+171
 100
 AcDbEntity
 100
@@ -10789,34 +10821,6 @@ BYLAYER
   0
 LINE
   5
-171
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--173.0
- 20
--406.0
- 30
-0.0
- 11
--173.0
- 21
--374.5
- 31
-0.0
-  0
-LINE
-  5
 172
 100
 AcDbEntity
@@ -10831,13 +10835,13 @@ AcDbLine
   6
 BYLAYER
  10
--168.5
+-173.0
  20
 -406.0
  30
 0.0
  11
--168.5
+-173.0
  21
 -374.5
  31
@@ -10859,9 +10863,9 @@ AcDbLine
   6
 BYLAYER
  10
--173.0
+-168.5
  20
--374.5
+-406.0
  30
 0.0
  11
@@ -10887,15 +10891,15 @@ AcDbLine
   6
 BYLAYER
  10
--168.5
+-173.0
  20
--464.0
+-374.5
  30
 0.0
  11
--108.5
+-168.5
  21
--464.0
+-374.5
  31
 0.0
   0
@@ -10915,9 +10919,9 @@ AcDbLine
   6
 BYLAYER
  10
--108.5
+-168.5
  20
--374.5
+-464.0
  30
 0.0
  11
@@ -10945,6 +10949,34 @@ BYLAYER
  10
 -108.5
  20
+-374.5
+ 30
+0.0
+ 11
+-108.5
+ 21
+-464.0
+ 31
+0.0
+  0
+LINE
+  5
+177
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-108.5
+ 20
 -434.5
  30
 0.0
@@ -10957,7 +10989,7 @@ BYLAYER
   0
 LINE
   5
-177
+178
 100
 AcDbEntity
 100
@@ -10985,7 +11017,7 @@ BYLAYER
   0
 LINE
   5
-178
+179
 100
 AcDbEntity
 100
@@ -11013,34 +11045,6 @@ BYLAYER
   0
 LINE
   5
-179
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--138.5
- 20
--374.5
- 30
-0.0
- 11
--168.5
- 21
--374.5
- 31
-0.0
-  0
-LINE
-  5
 17A
 100
 AcDbEntity
@@ -11057,13 +11061,13 @@ BYLAYER
  10
 -138.5
  20
--379.0
+-374.5
  30
 0.0
  11
 -168.5
  21
--379.0
+-374.5
  31
 0.0
   0
@@ -11085,11 +11089,11 @@ BYLAYER
  10
 -138.5
  20
--374.5
+-379.0
  30
 0.0
  11
--138.5
+-168.5
  21
 -379.0
  31
@@ -11111,15 +11115,15 @@ AcDbLine
   6
 BYLAYER
  10
--68.5
+-138.5
  20
--340.5
+-374.5
  30
 0.0
  11
--68.5
+-138.5
  21
--336.0
+-379.0
  31
 0.0
   0
@@ -11139,15 +11143,15 @@ AcDbLine
   6
 BYLAYER
  10
--100.5
+-68.5
  20
--336.0
+-340.5
  30
 0.0
  11
--100.5
+-68.5
  21
--340.5
+-336.0
  31
 0.0
   0
@@ -11167,15 +11171,15 @@ AcDbLine
   6
 BYLAYER
  10
--104.0
+-100.5
  20
--381.0
+-336.0
  30
 0.0
  11
--68.0
+-100.5
  21
--381.0
+-340.5
  31
 0.0
   0
@@ -11197,13 +11201,13 @@ BYLAYER
  10
 -104.0
  20
--391.0
+-381.0
  30
 0.0
  11
 -68.0
  21
--391.0
+-381.0
  31
 0.0
   0
@@ -11225,13 +11229,13 @@ BYLAYER
  10
 -104.0
  20
--401.0
+-391.0
  30
 0.0
  11
 -68.0
  21
--401.0
+-391.0
  31
 0.0
   0
@@ -11253,13 +11257,13 @@ BYLAYER
  10
 -104.0
  20
--411.0
+-401.0
  30
 0.0
  11
 -68.0
  21
--411.0
+-401.0
  31
 0.0
   0
@@ -11281,13 +11285,13 @@ BYLAYER
  10
 -104.0
  20
--421.0
+-411.0
  30
 0.0
  11
 -68.0
  21
--421.0
+-411.0
  31
 0.0
   0
@@ -11309,13 +11313,13 @@ BYLAYER
  10
 -104.0
  20
--431.0
+-421.0
  30
 0.0
  11
 -68.0
  21
--431.0
+-421.0
  31
 0.0
   0
@@ -11337,13 +11341,13 @@ BYLAYER
  10
 -104.0
  20
--441.0
+-431.0
  30
 0.0
  11
 -68.0
  21
--441.0
+-431.0
  31
 0.0
   0
@@ -11363,9 +11367,9 @@ AcDbLine
   6
 BYLAYER
  10
--68.0
+-104.0
  20
--374.5
+-441.0
  30
 0.0
  11
@@ -11393,7 +11397,7 @@ BYLAYER
  10
 -68.0
  20
--441.0
+-374.5
  30
 0.0
  11
@@ -11421,13 +11425,13 @@ BYLAYER
  10
 -68.0
  20
--374.5
+-441.0
  30
 0.0
  11
--63.5
+-68.0
  21
--374.5
+-441.0
  31
 0.0
   0
@@ -11447,9 +11451,9 @@ AcDbLine
   6
 BYLAYER
  10
--63.5
+-68.0
  20
--417.5
+-374.5
  30
 0.0
  11
@@ -11481,6 +11485,34 @@ BYLAYER
  30
 0.0
  11
+-63.5
+ 21
+-374.5
+ 31
+0.0
+  0
+LINE
+  5
+18A
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-63.5
+ 20
+-417.5
+ 30
+0.0
+ 11
 15.4999999999999858
  21
 -417.5
@@ -11489,7 +11521,7 @@ BYLAYER
   0
 LINE
   5
-18A
+18B
 100
 AcDbEntity
 100
@@ -11512,34 +11544,6 @@ BYLAYER
 15.4999999999999929
  21
 -383.5
- 31
-0.0
-  0
-LINE
-  5
-18B
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-15.4999999999999929
- 20
--383.5
- 30
-0.0
- 11
-15.4999999999999929
- 21
--372.5
  31
 0.0
   0
@@ -11561,6 +11565,34 @@ BYLAYER
  10
 15.4999999999999929
  20
+-383.5
+ 30
+0.0
+ 11
+15.4999999999999929
+ 21
+-372.5
+ 31
+0.0
+  0
+LINE
+  5
+18D
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+15.4999999999999929
+ 20
 -372.5
  30
 0.0
@@ -11573,7 +11605,7 @@ BYLAYER
   0
 LINE
   5
-18D
+18E
 100
 AcDbEntity
 100
@@ -11601,7 +11633,7 @@ BYLAYER
   0
 LINE
   5
-18E
+18F
 100
 AcDbEntity
 100
@@ -11629,7 +11661,7 @@ BYLAYER
   0
 LINE
   5
-18F
+190
 100
 AcDbEntity
 100
@@ -11657,7 +11689,7 @@ BYLAYER
   0
 LINE
   5
-190
+191
 100
 AcDbEntity
 100
@@ -11685,7 +11717,7 @@ BYLAYER
   0
 LINE
   5
-191
+192
 100
 AcDbEntity
 100
@@ -11713,7 +11745,7 @@ BYLAYER
   0
 LINE
   5
-192
+193
 100
 AcDbEntity
 100
@@ -11741,7 +11773,7 @@ BYLAYER
   0
 LINE
   5
-193
+194
 100
 AcDbEntity
 100
@@ -11769,7 +11801,7 @@ BYLAYER
   0
 LINE
   5
-194
+195
 100
 AcDbEntity
 100
@@ -11797,7 +11829,7 @@ BYLAYER
   0
 LINE
   5
-195
+196
 100
 AcDbEntity
 100
@@ -11825,7 +11857,7 @@ BYLAYER
   0
 LINE
   5
-196
+197
 100
 AcDbEntity
 100
@@ -11853,7 +11885,7 @@ BYLAYER
   0
 LINE
   5
-197
+198
 100
 AcDbEntity
 100
@@ -11874,34 +11906,6 @@ BYLAYER
 0.0
  11
 142.5
- 21
--397.5
- 31
-0.0
-  0
-LINE
-  5
-198
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-127.5
- 20
--409.5
- 30
-0.0
- 11
-127.5
  21
 -397.5
  31
@@ -11929,6 +11933,34 @@ BYLAYER
  30
 0.0
  11
+127.5
+ 21
+-397.5
+ 31
+0.0
+  0
+LINE
+  5
+19A
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+127.5
+ 20
+-409.5
+ 30
+0.0
+ 11
 102.5
  21
 -422.5
@@ -11937,7 +11969,7 @@ BYLAYER
   0
 LINE
   5
-19A
+19B
 100
 AcDbEntity
 100
@@ -11965,7 +11997,7 @@ BYLAYER
   0
 LINE
   5
-19B
+19C
 100
 AcDbEntity
 100
@@ -11993,7 +12025,7 @@ BYLAYER
   0
 LINE
   5
-19C
+19D
 100
 AcDbEntity
 100
@@ -12021,7 +12053,7 @@ BYLAYER
   0
 LINE
   5
-19D
+19E
 100
 AcDbEntity
 100
@@ -12049,34 +12081,6 @@ BYLAYER
   0
 LINE
   5
-19E
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--204.5
- 20
--304.5
- 30
-0.0
- 11
--204.5
- 21
--336.0
- 31
-0.0
-  0
-LINE
-  5
 19F
 100
 AcDbEntity
@@ -12091,13 +12095,13 @@ AcDbLine
   6
 BYLAYER
  10
--200.0
+-204.5
  20
 -304.5
  30
 0.0
  11
--200.0
+-204.5
  21
 -336.0
  31
@@ -12121,13 +12125,13 @@ BYLAYER
  10
 -200.0
  20
--274.5
+-304.5
  30
 0.0
  11
 -200.0
  21
--238.5
+-336.0
  31
 0.0
   0
@@ -12147,6 +12151,34 @@ AcDbLine
   6
 BYLAYER
  10
+-200.0
+ 20
+-274.5
+ 30
+0.0
+ 11
+-200.0
+ 21
+-238.5
+ 31
+0.0
+  0
+LINE
+  5
+1A2
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -204.5
  20
 -304.5
@@ -12161,7 +12193,7 @@ BYLAYER
   0
 LINE
   5
-1A2
+1A3
 100
 AcDbEntity
 100
@@ -12189,7 +12221,7 @@ BYLAYER
   0
 LINE
   5
-1A3
+1A4
 100
 AcDbEntity
 100
@@ -12217,7 +12249,7 @@ BYLAYER
   0
 LINE
   5
-1A4
+1A5
 100
 AcDbEntity
 100
@@ -12245,7 +12277,7 @@ BYLAYER
   0
 LINE
   5
-1A5
+1A6
 100
 AcDbEntity
 100
@@ -12262,34 +12294,6 @@ BYLAYER
 132.0
  20
 -402.0
- 30
-0.0
- 11
-138.0
- 21
--402.0
- 31
-0.0
-  0
-LINE
-  5
-1A6
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-138.0
- 20
--414.0
  30
 0.0
  11
@@ -12321,6 +12325,34 @@ BYLAYER
  30
 0.0
  11
+138.0
+ 21
+-402.0
+ 31
+0.0
+  0
+LINE
+  5
+1A8
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+138.0
+ 20
+-414.0
+ 30
+0.0
+ 11
 166.5
  21
 -414.0
@@ -12329,7 +12361,7 @@ BYLAYER
   0
 LINE
   5
-1A8
+1A9
 100
 AcDbEntity
 100
@@ -12357,7 +12389,7 @@ BYLAYER
   0
 LINE
   5
-1A9
+1AA
 100
 AcDbEntity
 100
@@ -12385,7 +12417,7 @@ BYLAYER
   0
 LINE
   5
-1AA
+1AB
 100
 AcDbEntity
 100
@@ -12413,7 +12445,7 @@ BYLAYER
   0
 LINE
   5
-1AB
+1AC
 100
 AcDbEntity
 100
@@ -12430,34 +12462,6 @@ BYLAYER
 -328.5
  20
 -488.5
- 30
-0.0
- 11
--328.5
- 21
--222.5
- 31
-0.0
-  0
-LINE
-  5
-1AC
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-182.5
- 20
--222.5
  30
 0.0
  11
@@ -12483,6 +12487,34 @@ AcDbLine
   6
 BYLAYER
  10
+182.5
+ 20
+-222.5
+ 30
+0.0
+ 11
+-328.5
+ 21
+-222.5
+ 31
+0.0
+  0
+LINE
+  5
+1AE
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 -328.5
  20
 -488.5
@@ -12497,7 +12529,7 @@ BYLAYER
   0
 LINE
   5
-1AE
+1AF
 100
 AcDbEntity
 100
@@ -12525,34 +12557,6 @@ BYLAYER
   0
 LINE
   5
-1AF
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-166.5
- 20
--356.5
- 30
-0.0
- 11
-166.5
- 21
--262.5
- 31
-0.0
-  0
-LINE
-  5
 1B0
 100
 AcDbEntity
@@ -12567,6 +12571,34 @@ AcDbLine
   6
 BYLAYER
  10
+166.5
+ 20
+-356.5
+ 30
+0.0
+ 11
+166.5
+ 21
+-262.5
+ 31
+0.0
+  0
+LINE
+  5
+1B1
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
 180.5
  20
 -356.5
@@ -12581,7 +12613,7 @@ BYLAYER
   0
 LINE
   5
-1B1
+1B2
 100
 AcDbEntity
 100
@@ -12609,34 +12641,6 @@ BYLAYER
   0
 LINE
   5
-1B2
-100
-AcDbEntity
-100
-AcDbLine
-  8
-0
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
-180.5
- 20
--262.5
- 30
-0.0
- 11
-166.5
- 21
--262.5
- 31
-0.0
-  0
-LINE
-  5
 1B3
 100
 AcDbEntity
@@ -12653,6 +12657,34 @@ BYLAYER
  10
 180.5
  20
+-262.5
+ 30
+0.0
+ 11
+166.5
+ 21
+-262.5
+ 31
+0.0
+  0
+LINE
+  5
+1B4
+100
+AcDbEntity
+100
+AcDbLine
+  8
+0
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+180.5
+ 20
 -356.5
  30
 0.0
@@ -12665,7 +12697,7 @@ BYLAYER
   0
 LINE
   5
-1B4
+1B5
 100
 AcDbEntity
 100
@@ -12693,7 +12725,7 @@ BYLAYER
   0
 LINE
   5
-1B5
+1B6
 100
 AcDbEntity
 100
@@ -12721,7 +12753,7 @@ BYLAYER
   0
 LINE
   5
-1B6
+1B7
 100
 AcDbEntity
 100
@@ -12749,7 +12781,7 @@ BYLAYER
   0
 DIMENSION
   5
-1B7
+1B8
 100
 AcDbEntity
   8
@@ -12817,7 +12849,7 @@ DSTYLE
   0
 DIMENSION
   5
-1B8
+1B9
 100
 AcDbEntity
   8
@@ -12885,7 +12917,7 @@ DSTYLE
   0
 DIMENSION
   5
-1B9
+1BA
 100
 AcDbEntity
   8
@@ -12953,7 +12985,7 @@ DSTYLE
   0
 DIMENSION
   5
-1BA
+1BB
 100
 AcDbEntity
   8
@@ -13021,7 +13053,7 @@ DSTYLE
   0
 DIMENSION
   5
-1BB
+1BC
 100
 AcDbEntity
   8
@@ -13089,7 +13121,7 @@ DSTYLE
   0
 DIMENSION
   5
-1BC
+1BD
 100
 AcDbEntity
   8
@@ -13157,7 +13189,7 @@ DSTYLE
   0
 MTEXT
   5
-1BD
+1BE
 100
 AcDbEntity
 100
@@ -13197,7 +13229,7 @@ textstyle1
   0
 INSERT
   5
-1BE
+1BF
 100
 AcDbEntity
 100
@@ -13221,7 +13253,7 @@ outlet
   0
 INSERT
   5
-1BF
+1C0
 100
 AcDbEntity
 100
@@ -13245,7 +13277,7 @@ light
   0
 MTEXT
   5
-1C0
+1C1
 100
 AcDbEntity
 100
@@ -13285,7 +13317,7 @@ textstyle2
   0
 MTEXT
   5
-1C1
+1C2
 100
 AcDbEntity
 100
@@ -13325,7 +13357,7 @@ textstyle3
   0
 INSERT
   5
-1C2
+1C3
 100
 AcDbEntity
 100
@@ -13349,7 +13381,7 @@ outlet
   0
 MTEXT
   5
-1C3
+1C4
 100
 AcDbEntity
 100
@@ -13389,7 +13421,7 @@ textstyle4
   0
 INSERT
   5
-1C4
+1C5
 100
 AcDbEntity
 100
@@ -13413,7 +13445,7 @@ outlet
   0
 MTEXT
   5
-1C5
+1C6
 100
 AcDbEntity
 100
@@ -13453,7 +13485,7 @@ textstyle5
   0
 INSERT
   5
-1C6
+1C7
 100
 AcDbEntity
 100
@@ -13477,7 +13509,7 @@ outlet
   0
 MTEXT
   5
-1C7
+1C8
 100
 AcDbEntity
 100
@@ -13517,7 +13549,7 @@ textstyle6
   0
 INSERT
   5
-1C8
+1C9
 100
 AcDbEntity
 100
@@ -13541,7 +13573,7 @@ outlet
   0
 MTEXT
   5
-1C9
+1CA
 100
 AcDbEntity
 100
@@ -13581,7 +13613,7 @@ textstyle7
   0
 LINE
   5
-1CA
+1CB
 100
 AcDbEntity
 100
@@ -13609,7 +13641,7 @@ BYLAYER
   0
 INSERT
   5
-1CB
+1CC
 100
 AcDbEntity
 100
@@ -13633,7 +13665,7 @@ switch
   0
 MTEXT
   5
-1CC
+1CD
 100
 AcDbEntity
 100
@@ -13673,7 +13705,7 @@ textstyle8
   0
 MTEXT
   5
-1CD
+1CE
 100
 AcDbEntity
 100
@@ -13701,7 +13733,7 @@ BYLAYER
  72
 1
   1
-21
+27
   7
 textstyle9
  50
@@ -13713,7 +13745,7 @@ textstyle9
   0
 INSERT
   5
-1CE
+1CF
 100
 AcDbEntity
 100
@@ -13737,7 +13769,7 @@ outlet
   0
 INSERT
   5
-1CF
+1D0
 100
 AcDbEntity
 100
@@ -13761,7 +13793,7 @@ switch
   0
 MTEXT
   5
-1D0
+1D1
 100
 AcDbEntity
 100
@@ -13801,7 +13833,7 @@ textstyle10
   0
 INSERT
   5
-1D1
+1D2
 100
 AcDbEntity
 100
@@ -13825,7 +13857,7 @@ light
   0
 MTEXT
   5
-1D2
+1D3
 100
 AcDbEntity
 100
@@ -13865,7 +13897,7 @@ textstyle11
   0
 INSERT
   5
-1D3
+1D4
 100
 AcDbEntity
 100
@@ -13889,7 +13921,7 @@ light
   0
 MTEXT
   5
-1D4
+1D5
 100
 AcDbEntity
 100
@@ -13929,7 +13961,7 @@ textstyle12
   0
 INSERT
   5
-1D5
+1D6
 100
 AcDbEntity
 100
@@ -13953,7 +13985,7 @@ light
   0
 MTEXT
   5
-1D6
+1D7
 100
 AcDbEntity
 100
@@ -13993,7 +14025,7 @@ textstyle13
   0
 INSERT
   5
-1D7
+1D8
 100
 AcDbEntity
 100
@@ -14017,7 +14049,7 @@ switch
   0
 MTEXT
   5
-1D8
+1D9
 100
 AcDbEntity
 100
@@ -14057,7 +14089,7 @@ textstyle14
   0
 INSERT
   5
-1D9
+1DA
 100
 AcDbEntity
 100
@@ -14081,7 +14113,7 @@ switch
   0
 MTEXT
   5
-1DA
+1DB
 100
 AcDbEntity
 100
@@ -14121,7 +14153,7 @@ textstyle15
   0
 INSERT
   5
-1DB
+1DC
 100
 AcDbEntity
 100
@@ -14145,7 +14177,7 @@ light
   0
 MTEXT
   5
-1DC
+1DD
 100
 AcDbEntity
 100
@@ -14185,7 +14217,7 @@ textstyle16
   0
 INSERT
   5
-1DD
+1DE
 100
 AcDbEntity
 100
@@ -14209,7 +14241,7 @@ switch
   0
 MTEXT
   5
-1DE
+1DF
 100
 AcDbEntity
 100
@@ -14249,7 +14281,7 @@ textstyle17
   0
 INSERT
   5
-1DF
+1E0
 100
 AcDbEntity
 100
@@ -14273,7 +14305,7 @@ switch
   0
 MTEXT
   5
-1E0
+1E1
 100
 AcDbEntity
 100
@@ -14313,7 +14345,7 @@ textstyle18
   0
 INSERT
   5
-1E1
+1E2
 100
 AcDbEntity
 100
@@ -14337,7 +14369,7 @@ switch
   0
 MTEXT
   5
-1E2
+1E3
 100
 AcDbEntity
 100
@@ -14377,7 +14409,7 @@ textstyle19
   0
 INSERT
   5
-1E3
+1E4
 100
 AcDbEntity
 100
@@ -14401,7 +14433,7 @@ switch
   0
 MTEXT
   5
-1E4
+1E5
 100
 AcDbEntity
 100
@@ -14441,7 +14473,7 @@ textstyle20
   0
 INSERT
   5
-1E5
+1E6
 100
 AcDbEntity
 100
@@ -14465,7 +14497,7 @@ light
   0
 MTEXT
   5
-1E6
+1E7
 100
 AcDbEntity
 100
@@ -14505,7 +14537,7 @@ textstyle21
   0
 INSERT
   5
-1E7
+1E8
 100
 AcDbEntity
 100
@@ -14529,7 +14561,7 @@ light
   0
 MTEXT
   5
-1E8
+1E9
 100
 AcDbEntity
 100
@@ -14569,7 +14601,7 @@ textstyle22
   0
 INSERT
   5
-1E9
+1EA
 100
 AcDbEntity
 100
@@ -14593,7 +14625,7 @@ switch
   0
 MTEXT
   5
-1EA
+1EB
 100
 AcDbEntity
 100
@@ -14633,7 +14665,7 @@ textstyle23
   0
 MTEXT
   5
-1EB
+1EC
 100
 AcDbEntity
 100
@@ -14673,7 +14705,7 @@ textstyle24
   0
 INSERT
   5
-1EC
+1ED
 100
 AcDbEntity
 100
@@ -14697,7 +14729,7 @@ outlet
   0
 MTEXT
   5
-1ED
+1EE
 100
 AcDbEntity
 100
@@ -14737,7 +14769,7 @@ textstyle25
   0
 INSERT
   5
-1EE
+1EF
 100
 AcDbEntity
 100
@@ -14761,7 +14793,7 @@ outlet
   0
 MTEXT
   5
-1EF
+1F0
 100
 AcDbEntity
 100
@@ -14801,7 +14833,7 @@ textstyle26
   0
 INSERT
   5
-1F0
+1F1
 100
 AcDbEntity
 100
@@ -14825,7 +14857,7 @@ outlet
   0
 INSERT
   5
-1F1
+1F2
 100
 AcDbEntity
 100
@@ -14849,7 +14881,7 @@ switch
   0
 MTEXT
   5
-1F2
+1F3
 100
 AcDbEntity
 100
@@ -14889,7 +14921,7 @@ textstyle27
   0
 INSERT
   5
-1F3
+1F4
 100
 AcDbEntity
 100
@@ -14913,7 +14945,7 @@ switch
   0
 MTEXT
   5
-1F4
+1F5
 100
 AcDbEntity
 100
@@ -14953,7 +14985,7 @@ textstyle28
   0
 MTEXT
   5
-1F5
+1F6
 100
 AcDbEntity
 100
@@ -14993,7 +15025,7 @@ textstyle29
   0
 INSERT
   5
-1F6
+1F7
 100
 AcDbEntity
 100
@@ -15017,7 +15049,7 @@ outlet
   0
 MTEXT
   5
-1F7
+1F8
 100
 AcDbEntity
 100
@@ -15057,7 +15089,7 @@ textstyle30
   0
 INSERT
   5
-1F8
+1F9
 100
 AcDbEntity
 100
@@ -15081,7 +15113,7 @@ switch
   0
 MTEXT
   5
-1F9
+1FA
 100
 AcDbEntity
 100
@@ -15121,7 +15153,7 @@ textstyle31
   0
 INSERT
   5
-1FA
+1FB
 100
 AcDbEntity
 100
@@ -15145,7 +15177,7 @@ switch
   0
 INSERT
   5
-1FB
+1FC
 100
 AcDbEntity
 100
@@ -15169,7 +15201,7 @@ light
   0
 MTEXT
   5
-1FC
+1FD
 100
 AcDbEntity
 100
@@ -15209,7 +15241,7 @@ textstyle32
   0
 INSERT
   5
-1FD
+1FE
 100
 AcDbEntity
 100
@@ -15233,7 +15265,7 @@ light
   0
 MTEXT
   5
-1FE
+1FF
 100
 AcDbEntity
 100
@@ -15273,7 +15305,7 @@ textstyle33
   0
 MTEXT
   5
-1FF
+200
 100
 AcDbEntity
 100
@@ -15313,7 +15345,7 @@ textstyle34
   0
 MTEXT
   5
-200
+201
 100
 AcDbEntity
 100
@@ -15353,7 +15385,7 @@ textstyle35
   0
 INSERT
   5
-201
+202
 100
 AcDbEntity
 100
@@ -15377,7 +15409,7 @@ outlet
   0
 INSERT
   5
-202
+203
 100
 AcDbEntity
 100
@@ -15401,7 +15433,7 @@ light
   0
 MTEXT
   5
-203
+204
 100
 AcDbEntity
 100
@@ -15441,7 +15473,7 @@ textstyle36
   0
 MTEXT
   5
-204
+205
 100
 AcDbEntity
 100
@@ -15481,7 +15513,7 @@ textstyle37
   0
 INSERT
   5
-205
+206
 100
 AcDbEntity
 100
@@ -15505,7 +15537,7 @@ outlet
   0
 INSERT
   5
-206
+207
 100
 AcDbEntity
 100
@@ -15529,7 +15561,7 @@ switch
   0
 MTEXT
   5
-207
+208
 100
 AcDbEntity
 100
@@ -15569,7 +15601,7 @@ textstyle38
   0
 INSERT
   5
-208
+209
 100
 AcDbEntity
 100
@@ -15593,7 +15625,7 @@ switch
   0
 MTEXT
   5
-209
+20A
 100
 AcDbEntity
 100
@@ -15633,7 +15665,7 @@ textstyle39
   0
 INSERT
   5
-20A
+20B
 100
 AcDbEntity
 100
@@ -15657,7 +15689,7 @@ light
   0
 MTEXT
   5
-20B
+20C
 100
 AcDbEntity
 100
@@ -15697,7 +15729,7 @@ textstyle40
   0
 INSERT
   5
-20C
+20D
 100
 AcDbEntity
 100
@@ -15721,7 +15753,7 @@ light
   0
 MTEXT
   5
-20D
+20E
 100
 AcDbEntity
 100
@@ -15761,7 +15793,7 @@ textstyle41
   0
 INSERT
   5
-20E
+20F
 100
 AcDbEntity
 100
@@ -15785,7 +15817,7 @@ light
   0
 MTEXT
   5
-20F
+210
 100
 AcDbEntity
 100
@@ -15825,7 +15857,7 @@ textstyle42
   0
 MTEXT
   5
-210
+211
 100
 AcDbEntity
 100
@@ -15865,7 +15897,7 @@ textstyle43
   0
 INSERT
   5
-211
+212
 100
 AcDbEntity
 100
@@ -15889,7 +15921,7 @@ outlet
   0
 MTEXT
   5
-212
+213
 100
 AcDbEntity
 100
@@ -15929,7 +15961,7 @@ textstyle44
   0
 INSERT
   5
-213
+214
 100
 AcDbEntity
 100
@@ -15953,7 +15985,7 @@ outlet
   0
 MTEXT
   5
-214
+215
 100
 AcDbEntity
 100
@@ -15993,7 +16025,7 @@ textstyle45
   0
 MTEXT
   5
-215
+216
 100
 AcDbEntity
 100
@@ -16033,7 +16065,7 @@ textstyle46
   0
 INSERT
   5
-216
+217
 100
 AcDbEntity
 100
@@ -16057,7 +16089,7 @@ outlet
   0
 MTEXT
   5
-217
+218
 100
 AcDbEntity
 100
@@ -16085,7 +16117,7 @@ BYLAYER
  72
 1
   1
-?
+13
   7
 textstyle47
  50
@@ -16097,7 +16129,7 @@ textstyle47
   0
 INSERT
   5
-218
+219
 100
 AcDbEntity
 100
@@ -16121,7 +16153,7 @@ outlet
   0
 MTEXT
   5
-219
+21A
 100
 AcDbEntity
 100
@@ -16161,7 +16193,7 @@ textstyle48
   0
 INSERT
   5
-21A
+21B
 100
 AcDbEntity
 100
@@ -16185,7 +16217,7 @@ outlet
   0
 MTEXT
   5
-21B
+21C
 100
 AcDbEntity
 100
@@ -16225,7 +16257,7 @@ textstyle49
   0
 INSERT
   5
-21C
+21D
 100
 AcDbEntity
 100
@@ -16249,7 +16281,7 @@ outlet
   0
 MTEXT
   5
-21D
+21E
 100
 AcDbEntity
 100
@@ -16289,7 +16321,7 @@ textstyle50
   0
 INSERT
   5
-21E
+21F
 100
 AcDbEntity
 100
@@ -16313,7 +16345,7 @@ outlet
   0
 MTEXT
   5
-21F
+220
 100
 AcDbEntity
 100
@@ -16353,7 +16385,7 @@ textstyle51
   0
 INSERT
   5
-220
+221
 100
 AcDbEntity
 100
@@ -16377,7 +16409,7 @@ outlet
   0
 MTEXT
   5
-221
+222
 100
 AcDbEntity
 100
@@ -16417,7 +16449,7 @@ textstyle52
   0
 INSERT
   5
-222
+223
 100
 AcDbEntity
 100
@@ -16441,7 +16473,7 @@ outlet
   0
 INSERT
   5
-223
+224
 100
 AcDbEntity
 100
@@ -16465,7 +16497,7 @@ light
   0
 MTEXT
   5
-224
+225
 100
 AcDbEntity
 100
@@ -16505,7 +16537,7 @@ textstyle53
   0
 INSERT
   5
-225
+226
 100
 AcDbEntity
 100
@@ -16529,7 +16561,7 @@ switch
   0
 MTEXT
   5
-226
+227
 100
 AcDbEntity
 100
@@ -16557,7 +16589,7 @@ BYLAYER
  72
 1
   1
-?
+13
   7
 textstyle54
  50
@@ -16569,7 +16601,7 @@ textstyle54
   0
 INSERT
   5
-227
+228
 100
 AcDbEntity
 100
@@ -16593,7 +16625,7 @@ switch
   0
 MTEXT
   5
-228
+229
 100
 AcDbEntity
 100
@@ -16633,7 +16665,7 @@ textstyle55
   0
 INSERT
   5
-229
+22A
 100
 AcDbEntity
 100
@@ -16657,7 +16689,7 @@ switch
   0
 MTEXT
   5
-22A
+22B
 100
 AcDbEntity
 100
@@ -16697,7 +16729,7 @@ textstyle56
   0
 INSERT
   5
-22B
+22C
 100
 AcDbEntity
 100
@@ -16721,7 +16753,7 @@ switch
   0
 MTEXT
   5
-22C
+22D
 100
 AcDbEntity
 100
@@ -16761,7 +16793,7 @@ textstyle57
   0
 INSERT
   5
-22D
+22E
 100
 AcDbEntity
 100
@@ -16785,7 +16817,7 @@ switch
   0
 MTEXT
   5
-22E
+22F
 100
 AcDbEntity
 100
@@ -16825,7 +16857,7 @@ textstyle58
   0
 MTEXT
   5
-22F
+230
 100
 AcDbEntity
 100
@@ -16865,7 +16897,7 @@ textstyle59
   0
 INSERT
   5
-230
+231
 100
 AcDbEntity
 100
@@ -16889,7 +16921,7 @@ outlet
   0
 INSERT
   5
-231
+232
 100
 AcDbEntity
 100
@@ -16913,7 +16945,7 @@ light
   0
 MTEXT
   5
-232
+233
 100
 AcDbEntity
 100
@@ -16953,7 +16985,7 @@ textstyle60
   0
 INSERT
   5
-233
+234
 100
 AcDbEntity
 100
@@ -16977,7 +17009,7 @@ light
   0
 MTEXT
   5
-234
+235
 100
 AcDbEntity
 100
@@ -17017,7 +17049,7 @@ textstyle61
   0
 INSERT
   5
-235
+236
 100
 AcDbEntity
 100
@@ -17041,7 +17073,7 @@ switch
   0
 MTEXT
   5
-236
+237
 100
 AcDbEntity
 100
@@ -17081,7 +17113,7 @@ textstyle62
   0
 INSERT
   5
-237
+238
 100
 AcDbEntity
 100
@@ -17105,7 +17137,7 @@ switch
   0
 MTEXT
   5
-238
+239
 100
 AcDbEntity
 100
@@ -17145,7 +17177,7 @@ textstyle63
   0
 INSERT
   5
-239
+23A
 100
 AcDbEntity
 100
@@ -17169,7 +17201,7 @@ switch
   0
 MTEXT
   5
-23A
+23B
 100
 AcDbEntity
 100
@@ -17209,7 +17241,7 @@ textstyle64
   0
 INSERT
   5
-23B
+23C
 100
 AcDbEntity
 100
@@ -17233,7 +17265,7 @@ switch
   0
 MTEXT
   5
-23C
+23D
 100
 AcDbEntity
 100
@@ -17273,7 +17305,7 @@ textstyle65
   0
 MTEXT
   5
-23D
+23E
 100
 AcDbEntity
 100
@@ -17313,7 +17345,7 @@ textstyle66
   0
 INSERT
   5
-23E
+23F
 100
 AcDbEntity
 100
@@ -17337,7 +17369,7 @@ switch
   0
 MTEXT
   5
-23F
+240
 100
 AcDbEntity
 100
@@ -17377,7 +17409,7 @@ textstyle67
   0
 INSERT
   5
-240
+241
 100
 AcDbEntity
 100
@@ -17401,7 +17433,7 @@ switch
   0
 MTEXT
   5
-241
+242
 100
 AcDbEntity
 100
@@ -17441,7 +17473,7 @@ textstyle68
   0
 INSERT
   5
-242
+243
 100
 AcDbEntity
 100
@@ -17465,7 +17497,7 @@ switch
   0
 MTEXT
   5
-243
+244
 100
 AcDbEntity
 100
@@ -17505,7 +17537,7 @@ textstyle69
   0
 INSERT
   5
-244
+245
 100
 AcDbEntity
 100
@@ -17529,7 +17561,7 @@ outlet
   0
 MTEXT
   5
-245
+246
 100
 AcDbEntity
 100
@@ -17569,7 +17601,7 @@ textstyle70
   0
 INSERT
   5
-246
+247
 100
 AcDbEntity
 100
@@ -17593,7 +17625,7 @@ outlet
   0
 INSERT
   5
-247
+248
 100
 AcDbEntity
 100
@@ -17617,7 +17649,7 @@ light
   0
 MTEXT
   5
-248
+249
 100
 AcDbEntity
 100
@@ -17657,7 +17689,7 @@ textstyle71
   0
 INSERT
   5
-249
+24A
 100
 AcDbEntity
 100
@@ -17681,7 +17713,7 @@ light
   0
 MTEXT
   5
-24A
+24B
 100
 AcDbEntity
 100
@@ -17721,7 +17753,7 @@ textstyle72
   0
 INSERT
   5
-24B
+24C
 100
 AcDbEntity
 100
@@ -17745,7 +17777,7 @@ light
   0
 MTEXT
   5
-24C
+24D
 100
 AcDbEntity
 100
@@ -17785,7 +17817,7 @@ textstyle73
   0
 INSERT
   5
-24D
+24E
 100
 AcDbEntity
 100
@@ -17809,7 +17841,7 @@ light
   0
 MTEXT
   5
-24E
+24F
 100
 AcDbEntity
 100
@@ -17837,7 +17869,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle74
  50
@@ -17849,7 +17881,7 @@ textstyle74
   0
 INSERT
   5
-24F
+250
 100
 AcDbEntity
 100
@@ -17873,7 +17905,7 @@ light
   0
 MTEXT
   5
-250
+251
 100
 AcDbEntity
 100
@@ -17901,7 +17933,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle75
  50
@@ -17913,7 +17945,7 @@ textstyle75
   0
 MTEXT
   5
-251
+252
 100
 AcDbEntity
 100
@@ -17941,7 +17973,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle76
  50
@@ -17953,7 +17985,7 @@ textstyle76
   0
 INSERT
   5
-252
+253
 100
 AcDbEntity
 100
@@ -17977,7 +18009,7 @@ outlet
   0
 MTEXT
   5
-253
+254
 100
 AcDbEntity
 100
@@ -18005,7 +18037,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle77
  50
@@ -18017,7 +18049,7 @@ textstyle77
   0
 INSERT
   5
-254
+255
 100
 AcDbEntity
 100
@@ -18041,7 +18073,7 @@ outlet
   0
 MTEXT
   5
-255
+256
 100
 AcDbEntity
 100
@@ -18069,7 +18101,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle78
  50
@@ -18081,7 +18113,7 @@ textstyle78
   0
 INSERT
   5
-256
+257
 100
 AcDbEntity
 100
@@ -18105,7 +18137,7 @@ outlet
   0
 MTEXT
   5
-257
+258
 100
 AcDbEntity
 100
@@ -18133,7 +18165,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle79
  50
@@ -18145,7 +18177,7 @@ textstyle79
   0
 INSERT
   5
-258
+259
 100
 AcDbEntity
 100
@@ -18169,7 +18201,7 @@ outlet
   0
 MTEXT
   5
-259
+25A
 100
 AcDbEntity
 100
@@ -18197,7 +18229,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle80
  50
@@ -18209,7 +18241,7 @@ textstyle80
   0
 INSERT
   5
-25A
+25B
 100
 AcDbEntity
 100
@@ -18233,7 +18265,7 @@ outlet
   0
 MTEXT
   5
-25B
+25C
 100
 AcDbEntity
 100
@@ -18261,7 +18293,7 @@ BYLAYER
  72
 1
   1
-?
+11
   7
 textstyle81
  50
@@ -18273,7 +18305,7 @@ textstyle81
   0
 INSERT
   5
-25C
+25D
 100
 AcDbEntity
 100
@@ -18297,87 +18329,7 @@ outlet
   0
 MTEXT
   5
-25D
-100
-AcDbEntity
-100
-AcDbMText
-  8
-electrical
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--296.0661664392906118
- 20
--27.2868349249658948
- 30
-0.0
- 40
-25.0
- 41
-0.0
- 71
-1
- 72
-1
-  1
-?
-  7
-textstyle82
- 50
-0.0
- 73
-2
- 44
-1.0
-  0
-MTEXT
-  5
 25E
-100
-AcDbEntity
-100
-AcDbMText
-  8
-electrical
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--248.0661664392905834
- 20
-128.7131650750341123
- 30
-0.0
- 40
-25.0
- 41
-0.0
- 71
-1
- 72
-1
-  1
-?
-  7
-textstyle83
- 50
-0.0
- 73
-2
- 44
-1.0
-  0
-MTEXT
-  5
-25F
 100
 AcDbEntity
 100
@@ -18405,9 +18357,9 @@ BYLAYER
  72
 1
   1
-?
+11
   7
-textstyle84
+textstyle82
  50
 0.0
  73
@@ -18417,7 +18369,7 @@ textstyle84
   0
 INSERT
   5
-260
+25F
 100
 AcDbEntity
 100
@@ -18441,7 +18393,7 @@ switch
   0
 MTEXT
   5
-261
+260
 100
 AcDbEntity
 100
@@ -18469,9 +18421,9 @@ BYLAYER
  72
 1
   1
-?
+11
   7
-textstyle85
+textstyle83
  50
 0.0
  73
@@ -18481,7 +18433,7 @@ textstyle85
   0
 INSERT
   5
-262
+261
 100
 AcDbEntity
 100
@@ -18505,7 +18457,7 @@ switch
   0
 MTEXT
   5
-263
+262
 100
 AcDbEntity
 100
@@ -18535,7 +18487,7 @@ BYLAYER
   1
 10,12
   7
-textstyle86
+textstyle84
  50
 0.0
  73
@@ -18545,7 +18497,7 @@ textstyle86
   0
 INSERT
   5
-264
+263
 100
 AcDbEntity
 100
@@ -18569,7 +18521,7 @@ outlet
   0
 MTEXT
   5
-265
+264
 100
 AcDbEntity
 100
@@ -18599,7 +18551,7 @@ BYLAYER
   1
 10,12
   7
-textstyle87
+textstyle85
  50
 0.0
  73
@@ -18609,7 +18561,7 @@ textstyle87
   0
 INSERT
   5
-266
+265
 100
 AcDbEntity
 100
@@ -18633,7 +18585,7 @@ outlet
   0
 MTEXT
   5
-267
+266
 100
 AcDbEntity
 100
@@ -18663,7 +18615,7 @@ BYLAYER
   1
 14,16
   7
-textstyle88
+textstyle86
  50
 0.0
  73
@@ -18673,7 +18625,7 @@ textstyle88
   0
 INSERT
   5
-268
+267
 100
 AcDbEntity
 100
@@ -18697,7 +18649,7 @@ outlet
   0
 MTEXT
   5
-269
+268
 100
 AcDbEntity
 100
@@ -18727,7 +18679,7 @@ BYLAYER
   1
 14,16
   7
-textstyle89
+textstyle87
  50
 0.0
  73
@@ -18737,7 +18689,7 @@ textstyle89
   0
 INSERT
   5
-26A
+269
 100
 AcDbEntity
 100
@@ -18761,7 +18713,7 @@ outlet
   0
 INSERT
   5
-26B
+26A
 100
 AcDbEntity
 100
@@ -18785,7 +18737,7 @@ switch
   0
 MTEXT
   5
-26C
+26B
 100
 AcDbEntity
 100
@@ -18813,9 +18765,9 @@ BYLAYER
  72
 1
   1
-?\PGarb.
+22\PGarb.
   7
-textstyle90
+textstyle88
  50
 0.0
  73
@@ -18825,7 +18777,7 @@ textstyle90
   0
 MTEXT
   5
-26D
+26C
 100
 AcDbEntity
 100
@@ -18853,9 +18805,9 @@ BYLAYER
  72
 1
   1
-?\PGarb.
+22\PGarb.
   7
-textstyle91
+textstyle89
  50
 0.0
  73
@@ -18865,7 +18817,7 @@ textstyle91
   0
 INSERT
   5
-26E
+26D
 100
 AcDbEntity
 100
@@ -18889,7 +18841,7 @@ outlet
   0
 MTEXT
   5
-26F
+26E
 100
 AcDbEntity
 100
@@ -18919,7 +18871,7 @@ BYLAYER
   1
 15\PFridge /\PDishwasher
   7
-textstyle92
+textstyle90
  50
 0.0
  73
@@ -18929,7 +18881,7 @@ textstyle92
   0
 INSERT
   5
-270
+26F
 100
 AcDbEntity
 100
@@ -18953,7 +18905,7 @@ outlet
   0
 MTEXT
   5
-271
+270
 100
 AcDbEntity
 100
@@ -18981,9 +18933,9 @@ BYLAYER
  72
 1
   1
-?
+17
   7
-textstyle93
+textstyle91
  50
 0.0
  73
@@ -18993,7 +18945,7 @@ textstyle93
   0
 INSERT
   5
-272
+271
 100
 AcDbEntity
 100
@@ -19017,7 +18969,7 @@ outlet
   0
 INSERT
   5
-273
+272
 100
 AcDbEntity
 100
@@ -19041,7 +18993,7 @@ light
   0
 MTEXT
   5
-274
+273
 100
 AcDbEntity
 100
@@ -19071,7 +19023,7 @@ BYLAYER
   1
 19
   7
-textstyle94
+textstyle92
  50
 0.0
  73
@@ -19081,7 +19033,7 @@ textstyle94
   0
 INSERT
   5
-275
+274
 100
 AcDbEntity
 100
@@ -19105,7 +19057,7 @@ light
   0
 MTEXT
   5
-276
+275
 100
 AcDbEntity
 100
@@ -19135,7 +19087,7 @@ BYLAYER
   1
 19
   7
-textstyle95
+textstyle93
  50
 0.0
  73
@@ -19145,7 +19097,7 @@ textstyle95
   0
 INSERT
   5
-277
+276
 100
 AcDbEntity
 100
@@ -19169,7 +19121,7 @@ light
   0
 MTEXT
   5
-278
+277
 100
 AcDbEntity
 100
@@ -19199,7 +19151,7 @@ BYLAYER
   1
 19
   7
-textstyle96
+textstyle94
  50
 0.0
  73
@@ -19209,7 +19161,7 @@ textstyle96
   0
 INSERT
   5
-279
+278
 100
 AcDbEntity
 100
@@ -19233,7 +19185,7 @@ light
   0
 MTEXT
   5
-27A
+279
 100
 AcDbEntity
 100
@@ -19263,7 +19215,7 @@ BYLAYER
   1
 9
   7
-textstyle97
+textstyle95
  50
 0.0
  73
@@ -19273,7 +19225,7 @@ textstyle97
   0
 MTEXT
   5
-27B
+27A
 100
 AcDbEntity
 100
@@ -19301,9 +19253,9 @@ BYLAYER
  72
 1
   1
-?
+7
   7
-textstyle98
+textstyle96
  50
 0.0
  73
@@ -19313,7 +19265,7 @@ textstyle98
   0
 INSERT
   5
-27C
+27B
 100
 AcDbEntity
 100
@@ -19337,7 +19289,7 @@ smoke_detector
   0
 MTEXT
   5
-27D
+27C
 100
 AcDbEntity
 100
@@ -19365,9 +19317,9 @@ BYLAYER
  72
 1
   1
-?
+7
   7
-textstyle99
+textstyle97
  50
 0.0
  73
@@ -19377,7 +19329,7 @@ textstyle99
   0
 INSERT
   5
-27E
+27D
 100
 AcDbEntity
 100
@@ -19401,7 +19353,7 @@ smoke_detector
   0
 INSERT
   5
-27F
+27E
 100
 AcDbEntity
 100
@@ -19417,7 +19369,7 @@ BYLAYER
   2
 outlet_220
  10
--4.0
+-6.4999999999999964
  20
 114.0
  30
@@ -19425,7 +19377,7 @@ outlet_220
   0
 MTEXT
   5
-280
+27F
 100
 AcDbEntity
 100
@@ -19439,7 +19391,7 @@ electrical
   6
 BYLAYER
  10
--2.0
+-4.4999999999999964
  20
 112.2679491924311321
  30
@@ -19453,9 +19405,9 @@ BYLAYER
  72
 1
   1
-?\PR
+2,4\PR
   7
-textstyle100
+textstyle98
  50
 0.0
  73
@@ -19465,7 +19417,7 @@ textstyle100
   0
 INSERT
   5
-281
+280
 100
 AcDbEntity
 100
@@ -19489,7 +19441,7 @@ outlet_220
   0
 LINE
   5
-282
+281
 100
 AcDbEntity
 100
@@ -19512,6 +19464,34 @@ BYLAYER
 -110.0
  21
 -93.5
+ 31
+0.0
+  0
+LINE
+  5
+282
+100
+AcDbEntity
+100
+AcDbLine
+  8
+tile_area
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-110.0
+ 20
+-93.5
+ 30
+0.0
+ 11
+-110.0
+ 21
+-60.0
  31
 0.0
   0
@@ -19533,34 +19513,6 @@ BYLAYER
  10
 -110.0
  20
--93.5
- 30
-0.0
- 11
--110.0
- 21
--60.0
- 31
-0.0
-  0
-LINE
-  5
-284
-100
-AcDbEntity
-100
-AcDbLine
-  8
-tile_area
- 62
-256
-370
--1
-  6
-BYLAYER
- 10
--110.0
- 20
 -60.0
  30
 0.0
@@ -19573,7 +19525,7 @@ BYLAYER
   0
 LINE
   5
-285
+284
 100
 AcDbEntity
 100
@@ -19601,7 +19553,7 @@ BYLAYER
   0
 HATCH
   5
-286
+285
   8
 tile_area
  62
@@ -19717,7 +19669,7 @@ ACAD
   0
 LINE
   5
-287
+286
 100
 AcDbEntity
 100
@@ -19745,7 +19697,7 @@ BYLAYER
   0
 LINE
   5
-288
+287
 100
 AcDbEntity
 100
@@ -19773,7 +19725,7 @@ BYLAYER
   0
 HATCH
   5
-289
+288
   8
 tile_area
  62
@@ -19939,7 +19891,7 @@ ACAD
   0
 LWPOLYLINE
   5
-28A
+289
   8
 tile_area
  62
@@ -19995,7 +19947,7 @@ AcDbPolyline
   0
 MTEXT
   5
-28B
+28A
 100
 AcDbEntity
 100
@@ -20025,7 +19977,7 @@ BYLAYER
   1
 2562.75
   7
-textstyle101
+textstyle99
  50
 0.0
  73
@@ -20035,7 +19987,7 @@ textstyle101
   0
 LWPOLYLINE
   5
-28C
+28B
   8
 tile_area
  62
@@ -20103,7 +20055,7 @@ AcDbPolyline
   0
 MTEXT
   5
-28D
+28C
 100
 AcDbEntity
 100
@@ -20133,7 +20085,7 @@ BYLAYER
   1
 6582.5
   7
-textstyle102
+textstyle100
  50
 0.0
  73
@@ -20143,7 +20095,7 @@ textstyle102
   0
 LWPOLYLINE
   5
-28E
+28D
   8
 baseboard
  62
@@ -20211,7 +20163,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-28F
+28E
   8
 baseboard
  62
@@ -20297,7 +20249,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-290
+28F
   8
 baseboard
  62
@@ -20353,7 +20305,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-291
+290
   8
 baseboard
  62
@@ -20391,7 +20343,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-292
+291
   8
 baseboard
  62
@@ -20501,7 +20453,7 @@ AcDbPolyline
   0
 DIMENSION
   5
-293
+292
 100
 AcDbEntity
   8
@@ -20569,7 +20521,7 @@ DSTYLE
   0
 DIMENSION
   5
-294
+293
 100
 AcDbEntity
   8
@@ -20637,7 +20589,7 @@ DSTYLE
   0
 DIMENSION
   5
-295
+294
 100
 AcDbEntity
   8
@@ -20705,7 +20657,7 @@ DSTYLE
   0
 DIMENSION
   5
-296
+295
 100
 AcDbEntity
   8
@@ -20773,7 +20725,7 @@ DSTYLE
   0
 DIMENSION
   5
-297
+296
 100
 AcDbEntity
   8
@@ -20841,7 +20793,7 @@ DSTYLE
   0
 DIMENSION
   5
-298
+297
 100
 AcDbEntity
   8
@@ -20909,7 +20861,7 @@ DSTYLE
   0
 DIMENSION
   5
-299
+298
 100
 AcDbEntity
   8
@@ -20977,7 +20929,7 @@ DSTYLE
   0
 MTEXT
   5
-29A
+299
 100
 AcDbEntity
 100
@@ -21007,7 +20959,7 @@ BYLAYER
   1
 5
   7
-textstyle103
+textstyle101
  50
 0.0
  73
@@ -21017,7 +20969,7 @@ textstyle103
   0
 INSERT
   5
-29B
+29A
 100
 AcDbEntity
 100
@@ -21041,7 +20993,7 @@ outlet
   0
 MTEXT
   5
-29C
+29B
 100
 AcDbEntity
 100
@@ -21071,7 +21023,7 @@ BYLAYER
   1
 5
   7
-textstyle104
+textstyle102
  50
 0.0
  73
@@ -21081,7 +21033,7 @@ textstyle104
   0
 INSERT
   5
-29D
+29C
 100
 AcDbEntity
 100
@@ -21105,7 +21057,7 @@ outlet
   0
 MTEXT
   5
-29E
+29D
 100
 AcDbEntity
 100
@@ -21135,7 +21087,155 @@ BYLAYER
   1
 Entire Garage: 20
   7
+textstyle103
+ 50
+0.0
+ 73
+2
+ 44
+1.0
+  0
+MTEXT
+  5
+29E
+100
+AcDbEntity
+100
+AcDbMText
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-661.4603635252582308
+ 20
+-653.6600426342027959
+ 30
+0.0
+ 40
+10.0
+ 41
+0.0
+ 71
+1
+ 72
+1
+  1
+22 Kitchen (Garberator)\P18/20 Garage\P14/16 Kitchen (Plugs)\P10/12 Kitchen (Plugs)\P6/8 Utility Room (Dryer)\P2/4 Kitchen (Stove)
+  7
+textstyle104
+ 50
+0.0
+ 73
+2
+ 44
+1.0
+  0
+MTEXT
+  5
+29F
+100
+AcDbEntity
+100
+AcDbMText
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-416.3724956922444562
+ 20
+-510.381576700439723
+ 30
+0.0
+ 40
+10.0
+ 41
+0.0
+ 71
+1
+ 72
+1
+  3
+31\P29\P27\P25\P23\P21\P19 Living Room (Light + Plugs), Front Entrance (Lights In + Out), Side Entrance (Lights In + Out)\P17\P15 Kitchen (Fridge + Dishwasher)\P13 Kitchen (Lights, Range Hood, Fan), Dining Room (Light + Plug), Living Room (Plug), Uti
+  3
+lity Room (Lights), Wood shop (Light)\P11Bedrooms Upstairs (Lights, Plugs)\P9 Bedroom Down (Lights, Plugs), Hallway (Light, Up + Down), Bathroom (Lights + Fan, Up), Bathroom (Vanity Light, Down)\P7 Hallway (Smoke Detector, Up + Down)\P5 Outside (Plug
+  1
+s)\P3 Utility Room (Washing Machine)\P1 Utility Room (Furnace)
+  7
 textstyle105
+ 50
+0.0
+ 73
+2
+ 44
+1.0
+  0
+INSERT
+  5
+2A0
+100
+AcDbEntity
+100
+AcDbBlockReference
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+  2
+light
+ 10
+-160.7618196415638465
+ 20
+-399.3503440342642534
+ 30
+0.0
+  0
+MTEXT
+  5
+2A1
+100
+AcDbEntity
+100
+AcDbMText
+  8
+electrical
+ 62
+256
+370
+-1
+  6
+BYLAYER
+ 10
+-158.330748700227133
+ 20
+-402.0952280724635557
+ 30
+0.0
+ 40
+2.5
+ 41
+0.0
+ 71
+1
+ 72
+1
+  1
+9
+  7
+textstyle106
  50
 0.0
  73
@@ -21181,11 +21281,11 @@ E
   3
 AcDbVariableDictionary
 350
-29F
+2A2
   3
 QCAD_OBJECTS
 350
-2A0
+2A3
   0
 DICTIONARY
   5
@@ -21649,7 +21749,7 @@ Layout2
   0
 DICTIONARY
   5
-29F
+2A2
 100
 AcDbDictionary
 281
@@ -21657,15 +21757,15 @@ AcDbDictionary
   3
 DIMASSOC
 350
-2A2
+2A5
   3
 HIDETEXT
 350
-2A1
+2A4
   0
 DICTIONARYVAR
   5
-2A1
+2A4
 100
 DictionaryVariables
 280
@@ -21675,7 +21775,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-2A2
+2A5
 100
 DictionaryVariables
 280
@@ -21685,7 +21785,7 @@ DictionaryVariables
   0
 DICTIONARY
   5
-2A0
+2A3
 100
 AcDbDictionary
 281
@@ -21693,201 +21793,201 @@ AcDbDictionary
   3
 DimensionSettings/AngularFormat
 350
-2A3
+2A6
   3
 DimensionSettings/AngularPrecision
 350
-2A4
+2A7
   3
 DimensionSettings/KeepProportions
 350
-2A5
+2A8
   3
 DimensionSettings/LinearFormat
 350
-2A6
+2A9
   3
 DimensionSettings/LinearPrecision
 350
-2A7
+2AA
   3
 Grid/DisplayGrid00
 350
-2A8
+2AB
   3
 Grid/DisplayGrid01
 350
-2A9
+2AC
   3
 Grid/DisplayGrid02
 350
-2AA
+2AD
   3
 Grid/DisplayGrid03
 350
-2AB
+2AE
   3
 Grid/GridSpacingX00
 350
-2AC
+2AF
   3
 Grid/GridSpacingX01
 350
-2AD
+2B0
   3
 Grid/GridSpacingX02
 350
-2AE
+2B1
   3
 Grid/GridSpacingX03
 350
-2AF
+2B2
   3
 Grid/GridSpacingY00
 350
-2B0
+2B3
   3
 Grid/GridSpacingY01
 350
-2B1
+2B4
   3
 Grid/GridSpacingY02
 350
-2B2
+2B5
   3
 Grid/GridSpacingY03
 350
-2B3
+2B6
   3
 Grid/IsometricGrid00
 350
-2B4
+2B7
   3
 Grid/IsometricGrid01
 350
-2B5
+2B8
   3
 Grid/IsometricGrid02
 350
-2B6
+2B9
   3
 Grid/IsometricGrid03
 350
-2B7
+2BA
   3
 Grid/IsometricProjection00
 350
-2B8
+2BB
   3
 Grid/IsometricProjection01
 350
-2B9
+2BC
   3
 Grid/IsometricProjection02
 350
-2BA
+2BD
   3
 Grid/IsometricProjection03
 350
-2BB
+2BE
   3
 Grid/MetaGridSpacingX00
 350
-2BC
+2BF
   3
 Grid/MetaGridSpacingX01
 350
-2BD
+2C0
   3
 Grid/MetaGridSpacingX02
 350
-2BE
+2C1
   3
 Grid/MetaGridSpacingX03
 350
-2BF
+2C2
   3
 Grid/MetaGridSpacingY00
 350
-2C0
+2C3
   3
 Grid/MetaGridSpacingY01
 350
-2C1
+2C4
   3
 Grid/MetaGridSpacingY02
 350
-2C2
+2C5
   3
 Grid/MetaGridSpacingY03
 350
-2C3
+2C6
   3
 MultiPageSettings/Columns
 350
-2C4
+2C7
   3
 MultiPageSettings/GlueMarginsBottom
 350
-2C5
+2C8
   3
 MultiPageSettings/GlueMarginsLeft
 350
-2C6
+2C9
   3
 MultiPageSettings/GlueMarginsRight
 350
-2C7
+2CA
   3
 MultiPageSettings/GlueMarginsTop
 350
-2C8
+2CB
   3
 MultiPageSettings/PrintCropMarks
 350
-2C9
+2CC
   3
 MultiPageSettings/Rows
 350
-2CA
+2CD
   3
 PageSettings/OffsetX
 350
-2CB
+2CE
   3
 PageSettings/OffsetY
 350
-2CC
+2CF
   3
 PageSettings/PageOrientation
 350
-2CD
+2D0
   3
 PageSettings/PaperHeight
 350
-2CE
+2D1
   3
 PageSettings/PaperWidth
 350
-2CF
+2D2
   3
 PageSettings/Scale
 350
-2D0
+2D3
   3
 PageSettings/ShowPaperBorders
 350
-2D1
+2D4
   3
 UnitSettings/PaperUnit
 350
-2D2
+2D5
   0
 XRECORD
   5
+2A6
+330
 2A3
-330
-2A0
 100
 AcDbXrecord
 280
@@ -21897,9 +21997,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2A4
+2A7
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -21909,9 +22009,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2A5
+2A8
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -21921,9 +22021,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2A6
+2A9
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -21933,9 +22033,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2A7
+2AA
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -21945,45 +22045,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2A8
-330
-2A0
-100
-AcDbXrecord
-280
-1
-290
-1
-  0
-XRECORD
-  5
-2A9
-330
-2A0
-100
-AcDbXrecord
-280
-1
-290
-1
-  0
-XRECORD
-  5
-2AA
-330
-2A0
-100
-AcDbXrecord
-280
-1
-290
-1
-  0
-XRECORD
-  5
 2AB
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -21995,43 +22059,43 @@ XRECORD
   5
 2AC
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+290
+1
   0
 XRECORD
   5
 2AD
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+290
+1
   0
 XRECORD
   5
 2AE
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+290
+1
   0
 XRECORD
   5
 2AF
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22043,7 +22107,7 @@ XRECORD
   5
 2B0
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22055,7 +22119,7 @@ XRECORD
   5
 2B1
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22067,7 +22131,7 @@ XRECORD
   5
 2B2
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22079,7 +22143,7 @@ XRECORD
   5
 2B3
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22091,43 +22155,43 @@ XRECORD
   5
 2B4
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-290
-0
+1000
+auto
   0
 XRECORD
   5
 2B5
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-290
-0
+1000
+auto
   0
 XRECORD
   5
 2B6
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-290
-0
+1000
+auto
   0
 XRECORD
   5
 2B7
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22139,43 +22203,43 @@ XRECORD
   5
 2B8
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
- 90
+290
 0
   0
 XRECORD
   5
 2B9
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
- 90
+290
 0
   0
 XRECORD
   5
 2BA
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
- 90
+290
 0
   0
 XRECORD
   5
 2BB
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22187,43 +22251,43 @@ XRECORD
   5
 2BC
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+ 90
+0
   0
 XRECORD
   5
 2BD
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+ 90
+0
   0
 XRECORD
   5
 2BE
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
 1
-1000
-auto
+ 90
+0
   0
 XRECORD
   5
 2BF
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22235,7 +22299,7 @@ XRECORD
   5
 2C0
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22247,7 +22311,7 @@ XRECORD
   5
 2C1
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22259,7 +22323,7 @@ XRECORD
   5
 2C2
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22271,7 +22335,7 @@ XRECORD
   5
 2C3
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22283,7 +22347,43 @@ XRECORD
   5
 2C4
 330
-2A0
+2A3
+100
+AcDbXrecord
+280
+1
+1000
+auto
+  0
+XRECORD
+  5
+2C5
+330
+2A3
+100
+AcDbXrecord
+280
+1
+1000
+auto
+  0
+XRECORD
+  5
+2C6
+330
+2A3
+100
+AcDbXrecord
+280
+1
+1000
+auto
+  0
+XRECORD
+  5
+2C7
+330
+2A3
 100
 AcDbXrecord
 280
@@ -22293,45 +22393,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2C5
-330
-2A0
-100
-AcDbXrecord
-280
-1
- 40
-10.0
-  0
-XRECORD
-  5
-2C6
-330
-2A0
-100
-AcDbXrecord
-280
-1
- 40
-10.0
-  0
-XRECORD
-  5
-2C7
-330
-2A0
-100
-AcDbXrecord
-280
-1
- 40
-10.0
-  0
-XRECORD
-  5
 2C8
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22343,7 +22407,43 @@ XRECORD
   5
 2C9
 330
-2A0
+2A3
+100
+AcDbXrecord
+280
+1
+ 40
+10.0
+  0
+XRECORD
+  5
+2CA
+330
+2A3
+100
+AcDbXrecord
+280
+1
+ 40
+10.0
+  0
+XRECORD
+  5
+2CB
+330
+2A3
+100
+AcDbXrecord
+280
+1
+ 40
+10.0
+  0
+XRECORD
+  5
+2CC
+330
+2A3
 100
 AcDbXrecord
 280
@@ -22353,9 +22453,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CA
+2CD
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22365,9 +22465,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CB
+2CE
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22377,9 +22477,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CC
+2CF
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22389,9 +22489,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CD
+2D0
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22401,9 +22501,9 @@ Portrait
   0
 XRECORD
   5
-2CE
+2D1
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22413,9 +22513,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CF
+2D2
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22425,9 +22525,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2D0
+2D3
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22437,9 +22537,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2D1
+2D4
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
@@ -22449,9 +22549,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2D2
+2D5
 330
-2A0
+2A3
 100
 AcDbXrecord
 280
