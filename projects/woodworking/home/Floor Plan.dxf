@@ -1421,7 +1421,7 @@ textstyle8
  71
 0
  42
-6.0
+12.0
   3
 
   4
@@ -1453,7 +1453,7 @@ textstyle9
  71
 0
  42
-6.0
+12.0
   3
 
   4
@@ -1485,7 +1485,7 @@ textstyle10
  71
 0
  42
-12.0
+2.0
   3
 
   4
@@ -1517,7 +1517,7 @@ textstyle11
  71
 0
  42
-12.0
+25.0
   3
 
   4
@@ -1549,7 +1549,7 @@ textstyle12
  71
 0
  42
-2.0
+2.5
   3
 
   4
@@ -1581,7 +1581,7 @@ textstyle13
  71
 0
  42
-25.0
+2.5
   3
 
   4
@@ -2925,7 +2925,7 @@ textstyle55
  71
 0
  42
-2.5
+25.0
   3
 
   4
@@ -2989,7 +2989,7 @@ textstyle57
  71
 0
  42
-25.0
+2.5
   3
 
   4
@@ -4653,7 +4653,7 @@ textstyle109
  71
 0
  42
-2.5
+1.0
   3
 
   4
@@ -4661,7 +4661,7 @@ textstyle109
 1001
 ACAD
 1000
-Arial
+standard
 1071
 0
   0
@@ -4685,7 +4685,7 @@ textstyle110
  71
 0
  42
-2.5
+1.0
   3
 
   4
@@ -4693,7 +4693,7 @@ textstyle110
 1001
 ACAD
 1000
-Arial
+standard
 1071
 0
   0
@@ -4717,7 +4717,7 @@ textstyle111
  71
 0
  42
-1.0
+2.5
   3
 
   4
@@ -4725,7 +4725,7 @@ textstyle111
 1001
 ACAD
 1000
-standard
+Arial
 1071
 0
   0
@@ -4749,7 +4749,7 @@ textstyle112
  71
 0
  42
-1.0
+2.5
   3
 
   4
@@ -4757,7 +4757,7 @@ textstyle112
 1001
 ACAD
 1000
-standard
+Arial
 1071
 0
   0
@@ -4781,7 +4781,7 @@ textstyle113
  71
 0
  42
-2.5
+10.0
   3
 
   4
@@ -4845,7 +4845,7 @@ textstyle115
  71
 0
  42
-10.0
+6.0
   3
 
   4
@@ -4877,7 +4877,7 @@ textstyle116
  71
 0
  42
-2.5
+6.0
   3
 
   4
@@ -5953,7 +5953,7 @@ BYLAYER
   1
 \H1.57143;SD
   7
-textstyle12
+textstyle10
  50
 0.0
  73
@@ -13785,7 +13785,7 @@ BYLAYER
   1
 ?
   7
-textstyle13
+textstyle11
  50
 0.0
  73
@@ -13873,7 +13873,7 @@ BYLAYER
   1
 21
   7
-textstyle14
+textstyle12
  50
 0.0
  73
@@ -13913,7 +13913,7 @@ BYLAYER
   1
 25
   7
-textstyle15
+textstyle13
  50
 0.0
  73
@@ -13977,7 +13977,7 @@ BYLAYER
   1
 25
   7
-textstyle16
+textstyle14
  50
 0.0
  73
@@ -14041,7 +14041,7 @@ BYLAYER
   1
 21
   7
-textstyle17
+textstyle15
  50
 0.0
  73
@@ -14105,7 +14105,7 @@ BYLAYER
   1
 21
   7
-textstyle18
+textstyle16
  50
 0.0
  73
@@ -14169,7 +14169,7 @@ BYLAYER
   1
 27
   7
-textstyle19
+textstyle17
  50
 0.0
  73
@@ -14261,7 +14261,7 @@ BYLAYER
   1
 27
   7
-textstyle20
+textstyle18
  50
 0.0
  73
@@ -14301,7 +14301,7 @@ BYLAYER
   1
 27
   7
-textstyle21
+textstyle19
  50
 0.0
  73
@@ -14389,7 +14389,7 @@ BYLAYER
   1
 27
   7
-textstyle22
+textstyle20
  50
 0.0
  73
@@ -14453,7 +14453,7 @@ BYLAYER
   1
 13
   7
-textstyle23
+textstyle21
  50
 0.0
  73
@@ -14517,7 +14517,7 @@ BYLAYER
   1
 13
   7
-textstyle24
+textstyle22
  50
 0.0
  73
@@ -14581,7 +14581,7 @@ BYLAYER
   1
 13
   7
-textstyle25
+textstyle23
  50
 0.0
  73
@@ -14645,7 +14645,7 @@ BYLAYER
   1
 13
   7
-textstyle26
+textstyle24
  50
 0.0
  73
@@ -14709,7 +14709,7 @@ BYLAYER
   1
 19
   7
-textstyle27
+textstyle25
  50
 0.0
  73
@@ -14773,7 +14773,7 @@ BYLAYER
   1
 19
   7
-textstyle28
+textstyle26
  50
 0.0
  73
@@ -14837,7 +14837,7 @@ BYLAYER
   1
 19
   7
-textstyle29
+textstyle27
  50
 0.0
  73
@@ -14901,7 +14901,7 @@ BYLAYER
   1
 19
   7
-textstyle30
+textstyle28
  50
 0.0
  73
@@ -14965,7 +14965,7 @@ BYLAYER
   1
 19
   7
-textstyle31
+textstyle29
  50
 0.0
  73
@@ -15029,7 +15029,7 @@ BYLAYER
   1
 9
   7
-textstyle32
+textstyle30
  50
 0.0
  73
@@ -15093,7 +15093,7 @@ BYLAYER
   1
 9
   7
-textstyle33
+textstyle31
  50
 0.0
  73
@@ -15157,7 +15157,7 @@ BYLAYER
   1
 9
   7
-textstyle34
+textstyle32
  50
 0.0
  73
@@ -15221,7 +15221,7 @@ BYLAYER
   1
 9
   7
-textstyle35
+textstyle33
  50
 0.0
  73
@@ -15261,7 +15261,7 @@ BYLAYER
   1
 9
   7
-textstyle36
+textstyle34
  50
 0.0
  73
@@ -15325,7 +15325,7 @@ BYLAYER
   1
 9
   7
-textstyle37
+textstyle35
  50
 0.0
  73
@@ -15389,7 +15389,7 @@ BYLAYER
   1
 9
   7
-textstyle38
+textstyle36
  50
 0.0
  73
@@ -15477,7 +15477,7 @@ BYLAYER
   1
 9
   7
-textstyle39
+textstyle37
  50
 0.0
  73
@@ -15541,7 +15541,7 @@ BYLAYER
   1
 31\PFan
   7
-textstyle40
+textstyle38
  50
 0.0
  73
@@ -15581,7 +15581,7 @@ BYLAYER
   1
 31
   7
-textstyle41
+textstyle39
  50
 0.0
  73
@@ -15645,7 +15645,7 @@ BYLAYER
   1
 31
   7
-textstyle42
+textstyle40
  50
 0.0
  73
@@ -15709,7 +15709,7 @@ BYLAYER
   1
 31
   7
-textstyle43
+textstyle41
  50
 0.0
  73
@@ -15797,7 +15797,7 @@ BYLAYER
   1
 31
   7
-textstyle44
+textstyle42
  50
 0.0
  73
@@ -15861,7 +15861,7 @@ BYLAYER
   1
 31
   7
-textstyle45
+textstyle43
  50
 0.0
  73
@@ -15901,7 +15901,7 @@ BYLAYER
   1
 6,8\PCD
   7
-textstyle46
+textstyle44
  50
 0.0
  73
@@ -15941,7 +15941,7 @@ BYLAYER
   1
 3
   7
-textstyle47
+textstyle45
  50
 0.0
  73
@@ -16029,7 +16029,7 @@ BYLAYER
   1
 27
   7
-textstyle48
+textstyle46
  50
 0.0
  73
@@ -16069,7 +16069,7 @@ BYLAYER
   1
 25
   7
-textstyle49
+textstyle47
  50
 0.0
  73
@@ -16157,7 +16157,7 @@ BYLAYER
   1
 23
   7
-textstyle50
+textstyle48
  50
 0.0
  73
@@ -16221,7 +16221,7 @@ BYLAYER
   1
 29
   7
-textstyle51
+textstyle49
  50
 0.0
  73
@@ -16285,7 +16285,7 @@ BYLAYER
   1
 29
   7
-textstyle52
+textstyle50
  50
 0.0
  73
@@ -16349,7 +16349,7 @@ BYLAYER
   1
 23
   7
-textstyle53
+textstyle51
  50
 0.0
  73
@@ -16413,7 +16413,7 @@ BYLAYER
   1
 13
   7
-textstyle54
+textstyle52
  50
 0.0
  73
@@ -16453,7 +16453,7 @@ BYLAYER
   1
 ?
   7
-textstyle55
+textstyle53
  50
 0.0
  73
@@ -16517,7 +16517,7 @@ BYLAYER
   1
 ?
   7
-textstyle56
+textstyle54
  50
 0.0
  73
@@ -16581,7 +16581,7 @@ BYLAYER
   1
 ?
   7
-textstyle57
+textstyle55
  50
 0.0
  73
@@ -16621,7 +16621,7 @@ BYLAYER
   1
 ?
   7
-textstyle58
+textstyle56
  50
 0.0
  73
@@ -16685,7 +16685,7 @@ BYLAYER
   1
 13
   7
-textstyle59
+textstyle57
  50
 0.0
  73
@@ -16749,7 +16749,7 @@ BYLAYER
   1
 19
   7
-textstyle60
+textstyle58
  50
 0.0
  73
@@ -16813,7 +16813,7 @@ BYLAYER
   1
 19
   7
-textstyle61
+textstyle59
  50
 0.0
  73
@@ -16877,7 +16877,7 @@ BYLAYER
   1
 19
   7
-textstyle62
+textstyle60
  50
 0.0
  73
@@ -16941,7 +16941,7 @@ BYLAYER
   1
 19
   7
-textstyle63
+textstyle61
  50
 0.0
  73
@@ -17005,7 +17005,7 @@ BYLAYER
   1
 13
   7
-textstyle64
+textstyle62
  50
 0.0
  73
@@ -17093,7 +17093,7 @@ BYLAYER
   1
 13
   7
-textstyle65
+textstyle63
  50
 0.0
  73
@@ -17157,7 +17157,7 @@ BYLAYER
   1
 13
   7
-textstyle66
+textstyle64
  50
 0.0
  73
@@ -17221,7 +17221,7 @@ BYLAYER
   1
 19
   7
-textstyle67
+textstyle65
  50
 0.0
  73
@@ -17285,7 +17285,7 @@ BYLAYER
   1
 13\PFan
   7
-textstyle68
+textstyle66
  50
 0.0
  73
@@ -17349,7 +17349,7 @@ BYLAYER
   1
 13
   7
-textstyle69
+textstyle67
  50
 0.0
  73
@@ -17413,7 +17413,7 @@ BYLAYER
   1
 13
   7
-textstyle70
+textstyle68
  50
 0.0
  73
@@ -17453,7 +17453,7 @@ BYLAYER
   1
 13\PFan
   7
-textstyle71
+textstyle69
  50
 0.0
  73
@@ -17541,7 +17541,7 @@ BYLAYER
   1
 13
   7
-textstyle72
+textstyle70
  50
 0.0
  73
@@ -17605,7 +17605,7 @@ BYLAYER
   1
 19
   7
-textstyle73
+textstyle71
  50
 0.0
  73
@@ -17669,7 +17669,7 @@ BYLAYER
   1
 19
   7
-textstyle74
+textstyle72
  50
 0.0
  73
@@ -17733,7 +17733,7 @@ BYLAYER
   1
 19
   7
-textstyle75
+textstyle73
  50
 0.0
  73
@@ -17797,7 +17797,7 @@ BYLAYER
   1
 19
   7
-textstyle76
+textstyle74
  50
 0.0
  73
@@ -17861,7 +17861,7 @@ BYLAYER
   1
 19
   7
-textstyle77
+textstyle75
  50
 0.0
  73
@@ -17901,7 +17901,7 @@ BYLAYER
   1
 9
   7
-textstyle78
+textstyle76
  50
 0.0
  73
@@ -17965,7 +17965,7 @@ BYLAYER
   1
 9\PFan
   7
-textstyle79
+textstyle77
  50
 0.0
  73
@@ -18029,7 +18029,7 @@ BYLAYER
   1
 9
   7
-textstyle80
+textstyle78
  50
 0.0
  73
@@ -18093,7 +18093,7 @@ BYLAYER
   1
 9\PFan
   7
-textstyle81
+textstyle79
  50
 0.0
  73
@@ -18157,7 +18157,7 @@ BYLAYER
   1
 9
   7
-textstyle82
+textstyle80
  50
 0.0
  73
@@ -18245,7 +18245,7 @@ BYLAYER
   1
 9
   7
-textstyle83
+textstyle81
  50
 0.0
  73
@@ -18309,7 +18309,7 @@ BYLAYER
   1
 13
   7
-textstyle84
+textstyle82
  50
 0.0
  73
@@ -18373,7 +18373,7 @@ BYLAYER
   1
 13
   7
-textstyle85
+textstyle83
  50
 0.0
  73
@@ -18437,7 +18437,7 @@ BYLAYER
   1
 11
   7
-textstyle86
+textstyle84
  50
 0.0
  73
@@ -18501,7 +18501,7 @@ BYLAYER
   1
 11
   7
-textstyle87
+textstyle85
  50
 0.0
  73
@@ -18541,7 +18541,7 @@ BYLAYER
   1
 11
   7
-textstyle88
+textstyle86
  50
 0.0
  73
@@ -18605,7 +18605,7 @@ BYLAYER
   1
 11
   7
-textstyle89
+textstyle87
  50
 0.0
  73
@@ -18669,7 +18669,7 @@ BYLAYER
   1
 11
   7
-textstyle90
+textstyle88
  50
 0.0
  73
@@ -18733,7 +18733,7 @@ BYLAYER
   1
 11
   7
-textstyle91
+textstyle89
  50
 0.0
  73
@@ -18797,7 +18797,7 @@ BYLAYER
   1
 11
   7
-textstyle92
+textstyle90
  50
 0.0
  73
@@ -18861,7 +18861,7 @@ BYLAYER
   1
 11
   7
-textstyle93
+textstyle91
  50
 0.0
  73
@@ -18925,7 +18925,7 @@ BYLAYER
   1
 11
   7
-textstyle94
+textstyle92
  50
 0.0
  73
@@ -18989,7 +18989,7 @@ BYLAYER
   1
 11
   7
-textstyle95
+textstyle93
  50
 0.0
  73
@@ -19053,7 +19053,7 @@ BYLAYER
   1
 10,12
   7
-textstyle96
+textstyle94
  50
 0.0
  73
@@ -19117,7 +19117,7 @@ BYLAYER
   1
 10,12
   7
-textstyle97
+textstyle95
  50
 0.0
  73
@@ -19181,7 +19181,7 @@ BYLAYER
   1
 14,16
   7
-textstyle98
+textstyle96
  50
 0.0
  73
@@ -19245,7 +19245,7 @@ BYLAYER
   1
 14,16
   7
-textstyle99
+textstyle97
  50
 0.0
  73
@@ -19333,7 +19333,7 @@ BYLAYER
   1
 22\PGarb.
   7
-textstyle100
+textstyle98
  50
 0.0
  73
@@ -19373,7 +19373,7 @@ BYLAYER
   1
 22\PGarb.
   7
-textstyle101
+textstyle99
  50
 0.0
  73
@@ -19437,7 +19437,7 @@ BYLAYER
   1
 15\PFridge /\PDishwasher
   7
-textstyle102
+textstyle100
  50
 0.0
  73
@@ -19501,7 +19501,7 @@ BYLAYER
   1
 17
   7
-textstyle103
+textstyle101
  50
 0.0
  73
@@ -19589,7 +19589,7 @@ BYLAYER
   1
 19
   7
-textstyle104
+textstyle102
  50
 0.0
  73
@@ -19653,7 +19653,7 @@ BYLAYER
   1
 19
   7
-textstyle105
+textstyle103
  50
 0.0
  73
@@ -19717,7 +19717,7 @@ BYLAYER
   1
 19
   7
-textstyle106
+textstyle104
  50
 0.0
  73
@@ -19781,7 +19781,7 @@ BYLAYER
   1
 9
   7
-textstyle107
+textstyle105
  50
 0.0
  73
@@ -19821,7 +19821,7 @@ BYLAYER
   1
 7
   7
-textstyle108
+textstyle106
  50
 0.0
  73
@@ -19885,7 +19885,7 @@ BYLAYER
   1
 7
   7
-textstyle109
+textstyle107
  50
 0.0
  73
@@ -19973,7 +19973,7 @@ BYLAYER
   1
 2,4\PR
   7
-textstyle110
+textstyle108
  50
 0.0
  73
@@ -20543,7 +20543,7 @@ BYLAYER
   1
 2562.75
   7
-textstyle111
+textstyle109
  50
 0.0
  73
@@ -20651,7 +20651,7 @@ BYLAYER
   1
 6582.5
   7
-textstyle112
+textstyle110
  50
 0.0
  73
@@ -21525,7 +21525,7 @@ BYLAYER
   1
 5
   7
-textstyle113
+textstyle111
  50
 0.0
  73
@@ -21589,7 +21589,7 @@ BYLAYER
   1
 5
   7
-textstyle114
+textstyle112
  50
 0.0
  73
@@ -21653,13 +21653,13 @@ BYLAYER
   3
 1 Utility Room (Furnace)\P2/4 Kitchen (Stove)\P3 Utility Room (Washing Machine)\P5 Outside (Plugs)\P6/8 Utility Room (Dryer)\P7 Hallway 1 & 2 (Smoke Detector)\P9 Bedroom 3 (Lights, Plugs), Hallway 1 & 2 (Light), \P    Bathroom 1 (Light + Fan + Plug),
   3
- Bathroom 2 (Vanity Light)\P10/12 Kitchen (Plugs)\P11 Bedroom 1 & 2 (Lights, Plugs)\P13 Kitchen (Lights, Range Hood, Fan), Dining Room (Light + Plug), \P    Living Room (Plug), Utility Room (Lights), Wood shop (Light)\P14/16 Kitchen (Plugs)\P15 Kitch
+Bathroom 2 (Vanity Light)\P10/12 Kitchen (Plugs)\P11 Bedroom 1 & 2 (Lights, Plugs)\P13 Kitchen (Lights, Range Hood, Fan), Dining Room (Light + Plug), \P    Living Room (Plug), Utility Room (Lights), Wood shop (Light)\P14/16 Kitchen (Plugs)\P15 Kitche
   3
-en (Fridge + Dishwasher)\P17\P18/20 Garage\P19 Living Room (Light + Plugs), Front Entrance (Lights In + Out), \P    Side Entrance (Lights In + Out)\P21 Rec Room (Plugs)\P22 Kitchen (Garburator)\P23 Nook (Light)\P25 Rec Room (Plugs)\P27 Rec Room (Ligh
+n (Fridge + Dishwasher)\P17\P18/20 Garage\P19 Living Room (Light + Plugs), Front Entrance (Lights In + Out), \P    Side Entrance (Lights In + Out)\P21 Rec Room (Plugs)\P22 Kitchen (Garburator)\P23 Nook (Light)\P25 Rec Room (Plugs)\P27 Rec Room (Light
   1
-t), Server Room (Light + Plug)\P29 Rec Room (Light)\P31 Bathroom 2 (Lights + Fan + Outlet)\P
+), Server Room (Light + Plug)\P29 Rec Room (Light)\P31 Bathroom 2 (Lights + Fan + Outlet)\P
   7
-textstyle115
+textstyle113
  50
 0.0
  73
@@ -21723,7 +21723,7 @@ BYLAYER
   1
 9
   7
-textstyle116
+textstyle114
  50
 0.0
  73
@@ -21763,7 +21763,7 @@ BYLAYER
   1
 Living Room
   7
-textstyle117
+textstyle115
  50
 0.0
  73
@@ -21803,7 +21803,7 @@ BYLAYER
   1
 Kitchen
   7
-textstyle118
+textstyle116
  50
 0.0
  73
@@ -21843,7 +21843,7 @@ BYLAYER
   1
 Dining Room
   7
-textstyle119
+textstyle117
  50
 0.0
  73
@@ -21883,7 +21883,7 @@ BYLAYER
   1
 Bathroom 1
   7
-textstyle120
+textstyle118
  50
 0.0
  73
@@ -21923,7 +21923,7 @@ BYLAYER
   1
 Bedroom 1
   7
-textstyle121
+textstyle119
  50
 0.0
  73
@@ -21963,7 +21963,7 @@ BYLAYER
   1
 Bedroom 2
   7
-textstyle122
+textstyle120
  50
 0.0
  73
@@ -22003,7 +22003,7 @@ BYLAYER
   1
 Front Entrance
   7
-textstyle123
+textstyle121
  50
 0.0
  73
@@ -22043,7 +22043,7 @@ BYLAYER
   1
 Side Entrance
   7
-textstyle0
+textstyle122
  50
 0.0
  73
@@ -22083,7 +22083,7 @@ BYLAYER
   1
 Rec Room
   7
-textstyle1
+textstyle123
  50
 0.0
  73
@@ -22123,7 +22123,7 @@ BYLAYER
   1
 Server Room
   7
-textstyle2
+textstyle0
  50
 0.0
  73
@@ -22163,7 +22163,7 @@ BYLAYER
   1
 Nook
   7
-textstyle3
+textstyle1
  50
 0.0
  73
@@ -22203,7 +22203,7 @@ BYLAYER
   1
 Bathroom 2
   7
-textstyle4
+textstyle2
  50
 0.0
  73
@@ -22243,7 +22243,7 @@ BYLAYER
   1
 Bedroom 3
   7
-textstyle5
+textstyle3
  50
 0.0
  73
@@ -22283,7 +22283,7 @@ BYLAYER
   1
 Utility Room
   7
-textstyle6
+textstyle4
  50
 0.0
  73
@@ -22323,7 +22323,7 @@ BYLAYER
   1
 Wood Shop
   7
-textstyle7
+textstyle5
  50
 0.0
  73
@@ -22363,7 +22363,7 @@ BYLAYER
   1
 Hallway 1
   7
-textstyle8
+textstyle6
  50
 0.0
  73
@@ -22403,7 +22403,7 @@ BYLAYER
   1
 Hallway 2
   7
-textstyle9
+textstyle7
  50
 0.0
  73
@@ -22443,7 +22443,7 @@ BYLAYER
   1
 Upstairs
   7
-textstyle10
+textstyle8
  50
 0.0
  73
@@ -22483,13 +22483,149 @@ BYLAYER
   1
 Downstairs
   7
-textstyle11
+textstyle9
  50
 0.0
  73
 2
  44
 1.0
+  0
+DIMENSION
+  5
+2C5
+100
+AcDbEntity
+  8
+dimensions
+ 62
+256
+370
+-1
+  6
+BYLAYER
+100
+AcDbDimension
+ 10
+85.0
+ 20
+-83.0
+ 30
+0.0
+ 11
+126.5
+ 21
+-79.25
+ 31
+0.0
+ 70
+1
+ 71
+8
+ 72
+2
+ 41
+1.0
+ 42
+0.0
+  1
+
+  3
+Standard
+100
+AcDbAlignedDimension
+ 13
+85.0
+ 23
+-57.0
+ 33
+0.0
+ 14
+168.0
+ 24
+-57.0
+ 34
+0.0
+1001
+ACAD
+1000
+DSTYLE
+1002
+{
+1070
+144
+1040
+1
+1002
+}
+  0
+DIMENSION
+  5
+2C6
+100
+AcDbEntity
+  8
+dimensions
+ 62
+256
+370
+-1
+  6
+BYLAYER
+100
+AcDbDimension
+ 10
+192.0
+ 20
+-57.0
+ 30
+0.0
+ 11
+188.25
+ 21
+-12.25
+ 31
+0.0
+ 70
+1
+ 71
+8
+ 72
+2
+ 41
+1.0
+ 42
+0.0
+  1
+
+  3
+Standard
+100
+AcDbAlignedDimension
+ 13
+168.0
+ 23
+-57.0
+ 33
+0.0
+ 14
+168.0
+ 24
+32.5
+ 34
+0.0
+1001
+ACAD
+1000
+DSTYLE
+1002
+{
+1070
+144
+1040
+1
+1002
+}
   0
 ENDSEC
   0
@@ -22529,11 +22665,11 @@ E
   3
 AcDbVariableDictionary
 350
-2C5
+2C7
   3
 QCAD_OBJECTS
 350
-2C6
+2C8
   0
 DICTIONARY
   5
@@ -22997,7 +23133,7 @@ Layout2
   0
 DICTIONARY
   5
-2C5
+2C7
 100
 AcDbDictionary
 281
@@ -23005,15 +23141,15 @@ AcDbDictionary
   3
 DIMASSOC
 350
-2C8
+2CA
   3
 HIDETEXT
 350
-2C7
+2C9
   0
 DICTIONARYVAR
   5
-2C7
+2C9
 100
 DictionaryVariables
 280
@@ -23023,7 +23159,7 @@ DictionaryVariables
   0
 DICTIONARYVAR
   5
-2C8
+2CA
 100
 DictionaryVariables
 280
@@ -23033,7 +23169,7 @@ DictionaryVariables
   0
 DICTIONARY
   5
-2C6
+2C8
 100
 AcDbDictionary
 281
@@ -23041,225 +23177,225 @@ AcDbDictionary
   3
 DimensionSettings/AngularFormat
 350
-2C9
+2CB
   3
 DimensionSettings/AngularPrecision
 350
-2CA
+2CC
   3
 DimensionSettings/KeepProportions
 350
-2CB
+2CD
   3
 DimensionSettings/LinearFormat
 350
-2CC
+2CE
   3
 DimensionSettings/LinearPrecision
 350
-2CD
+2CF
   3
 Grid/DisplayGrid00
 350
-2CE
+2D0
   3
 Grid/DisplayGrid01
 350
-2CF
+2D1
   3
 Grid/DisplayGrid02
 350
-2D0
+2D2
   3
 Grid/DisplayGrid03
 350
-2D1
+2D3
   3
 Grid/GridSpacingX00
 350
-2D2
+2D4
   3
 Grid/GridSpacingX01
 350
-2D3
+2D5
   3
 Grid/GridSpacingX02
 350
-2D4
+2D6
   3
 Grid/GridSpacingX03
 350
-2D5
+2D7
   3
 Grid/GridSpacingY00
 350
-2D6
+2D8
   3
 Grid/GridSpacingY01
 350
-2D7
+2D9
   3
 Grid/GridSpacingY02
 350
-2D8
+2DA
   3
 Grid/GridSpacingY03
 350
-2D9
+2DB
   3
 Grid/IsometricGrid00
 350
-2DA
+2DC
   3
 Grid/IsometricGrid01
 350
-2DB
+2DD
   3
 Grid/IsometricGrid02
 350
-2DC
+2DE
   3
 Grid/IsometricGrid03
 350
-2DD
+2DF
   3
 Grid/IsometricProjection00
 350
-2DE
+2E0
   3
 Grid/IsometricProjection01
 350
-2DF
+2E1
   3
 Grid/IsometricProjection02
 350
-2E0
+2E2
   3
 Grid/IsometricProjection03
 350
-2E1
+2E3
   3
 Grid/MetaGridSpacingX00
 350
-2E2
+2E4
   3
 Grid/MetaGridSpacingX01
 350
-2E3
+2E5
   3
 Grid/MetaGridSpacingX02
 350
-2E4
+2E6
   3
 Grid/MetaGridSpacingX03
 350
-2E5
+2E7
   3
 Grid/MetaGridSpacingY00
 350
-2E6
+2E8
   3
 Grid/MetaGridSpacingY01
 350
-2E7
+2E9
   3
 Grid/MetaGridSpacingY02
 350
-2E8
+2EA
   3
 Grid/MetaGridSpacingY03
 350
-2E9
+2EB
   3
 MultiPageSettings/Columns
 350
-2EA
+2EC
   3
 MultiPageSettings/GlueMarginsBottom
 350
-2EB
+2ED
   3
 MultiPageSettings/GlueMarginsLeft
 350
-2EC
+2EE
   3
 MultiPageSettings/GlueMarginsRight
 350
-2ED
+2EF
   3
 MultiPageSettings/GlueMarginsTop
 350
-2EE
+2F0
   3
 MultiPageSettings/PrintCropMarks
 350
-2EF
+2F1
   3
 MultiPageSettings/Rows
 350
-2F0
+2F2
   3
 PageSettings/OffsetX
 350
-2F1
+2F3
   3
 PageSettings/OffsetY
 350
-2F2
+2F4
   3
 PageSettings/PageOrientation
 350
-2F3
+2F5
   3
 PageSettings/PaperHeight
 350
-2F4
+2F6
   3
 PageSettings/PaperWidth
 350
-2F5
+2F7
   3
 PageSettings/Scale
 350
-2F6
+2F8
   3
 PageSettings/ShowPaperBorders
 350
-2F7
+2F9
   3
 UnitSettings/PaperUnit
 350
-2F8
-  0
-XRECORD
-  5
-2C9
-330
-2C6
-100
-AcDbXrecord
-280
-1
- 90
-0
-  0
-XRECORD
-  5
-2CA
-330
-2C6
-100
-AcDbXrecord
-280
-1
- 90
-0
+2FA
   0
 XRECORD
   5
 2CB
 330
-2C6
+2C8
+100
+AcDbXrecord
+280
+1
+ 90
+0
+  0
+XRECORD
+  5
+2CC
+330
+2C8
+100
+AcDbXrecord
+280
+1
+ 90
+0
+  0
+XRECORD
+  5
+2CD
+330
+2C8
 100
 AcDbXrecord
 280
@@ -23269,9 +23405,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CC
+2CE
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23281,9 +23417,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CD
+2CF
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23293,33 +23429,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2CE
-330
-2C6
-100
-AcDbXrecord
-280
-1
-290
-1
-  0
-XRECORD
-  5
-2CF
-330
-2C6
-100
-AcDbXrecord
-280
-1
-290
-1
-  0
-XRECORD
-  5
 2D0
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23331,7 +23443,7 @@ XRECORD
   5
 2D1
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23343,31 +23455,31 @@ XRECORD
   5
 2D2
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-1000
-auto
+290
+1
   0
 XRECORD
   5
 2D3
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-1000
-auto
+290
+1
   0
 XRECORD
   5
 2D4
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23379,7 +23491,7 @@ XRECORD
   5
 2D5
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23391,7 +23503,7 @@ XRECORD
   5
 2D6
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23403,7 +23515,7 @@ XRECORD
   5
 2D7
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23415,7 +23527,7 @@ XRECORD
   5
 2D8
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23427,7 +23539,7 @@ XRECORD
   5
 2D9
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23439,31 +23551,31 @@ XRECORD
   5
 2DA
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-290
-0
+1000
+auto
   0
 XRECORD
   5
 2DB
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-290
-0
+1000
+auto
   0
 XRECORD
   5
 2DC
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23475,7 +23587,7 @@ XRECORD
   5
 2DD
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23487,31 +23599,31 @@ XRECORD
   5
 2DE
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
- 90
+290
 0
   0
 XRECORD
   5
 2DF
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
- 90
+290
 0
   0
 XRECORD
   5
 2E0
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23523,7 +23635,7 @@ XRECORD
   5
 2E1
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23535,31 +23647,31 @@ XRECORD
   5
 2E2
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-1000
-auto
+ 90
+0
   0
 XRECORD
   5
 2E3
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
 1
-1000
-auto
+ 90
+0
   0
 XRECORD
   5
 2E4
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23571,7 +23683,7 @@ XRECORD
   5
 2E5
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23583,7 +23695,7 @@ XRECORD
   5
 2E6
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23595,7 +23707,7 @@ XRECORD
   5
 2E7
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23607,7 +23719,7 @@ XRECORD
   5
 2E8
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23619,7 +23731,7 @@ XRECORD
   5
 2E9
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23631,7 +23743,31 @@ XRECORD
   5
 2EA
 330
-2C6
+2C8
+100
+AcDbXrecord
+280
+1
+1000
+auto
+  0
+XRECORD
+  5
+2EB
+330
+2C8
+100
+AcDbXrecord
+280
+1
+1000
+auto
+  0
+XRECORD
+  5
+2EC
+330
+2C8
 100
 AcDbXrecord
 280
@@ -23641,33 +23777,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2EB
-330
-2C6
-100
-AcDbXrecord
-280
-1
- 40
-10.0
-  0
-XRECORD
-  5
-2EC
-330
-2C6
-100
-AcDbXrecord
-280
-1
- 40
-10.0
-  0
-XRECORD
-  5
 2ED
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23679,7 +23791,7 @@ XRECORD
   5
 2EE
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23691,7 +23803,31 @@ XRECORD
   5
 2EF
 330
-2C6
+2C8
+100
+AcDbXrecord
+280
+1
+ 40
+10.0
+  0
+XRECORD
+  5
+2F0
+330
+2C8
+100
+AcDbXrecord
+280
+1
+ 40
+10.0
+  0
+XRECORD
+  5
+2F1
+330
+2C8
 100
 AcDbXrecord
 280
@@ -23701,9 +23837,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F0
+2F2
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23713,9 +23849,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F1
+2F3
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23725,9 +23861,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F2
+2F4
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23737,9 +23873,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F3
+2F5
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23749,9 +23885,9 @@ Landscape
   0
 XRECORD
   5
-2F4
+2F6
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23761,9 +23897,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F5
+2F7
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23773,9 +23909,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F6
+2F8
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23785,9 +23921,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F7
+2F9
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
@@ -23797,9 +23933,9 @@ AcDbXrecord
   0
 XRECORD
   5
-2F8
+2FA
 330
-2C6
+2C8
 100
 AcDbXrecord
 280
