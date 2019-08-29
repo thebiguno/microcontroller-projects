@@ -2,11 +2,10 @@
 
 using namespace digitalcave;
 
-Buttons buttons(&PORTD, BUTTON_1 | BUTTON_2, 8, 8, 128, 0);
+ButtonAVR button1(&PORTD, PORTD2, 50, 25, 1000, 500);
+ButtonAVR button2(&PORTD, PORTD3, 50, 25, 1000, 500);
 static volatile int8_t encoder1_movement = 0;
 static volatile int8_t encoder2_movement = 0;
-volatile uint8_t buttons_held;
-volatile uint8_t buttons_released;
 
 Encoders::Encoders(){
 	PCICR |= _BV(PCIE0);												//Enable pin change interrupts for encoders
@@ -26,25 +25,13 @@ int8_t Encoders::get_encoder2_movement(){
 	return result;
 }
 
-uint8_t Encoders::get_held(){
-	uint8_t result = buttons_held;
-	buttons_held = 0x00;
-	return result;
-}
-
-uint8_t Encoders::get_released(){
-	uint8_t result = buttons_released;
-	buttons_released = 0x00;
-	return result;
-}
-
 ISR(PCINT0_vect){
 	static uint8_t encoder1 = 0x00;
 	static uint8_t encoder2 = 0x00;
-	
+
 	encoder1 = ((encoder1 << 2) | (PINB & 0x03)) & 0x0F;
 	encoder2 = ((encoder2 << 2) | ((PINB >> 2) & 0x03)) & 0x0F;
-	
+
 	switch(encoder1){
 		case 0x01:
 		case 0x07:
@@ -59,7 +46,7 @@ ISR(PCINT0_vect){
 			encoder1_movement++;	//Clockwise
 			break;
 	}
-	
+
 	switch(encoder2){
 		case 0x01:
 		case 0x07:

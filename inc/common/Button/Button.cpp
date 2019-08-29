@@ -25,7 +25,7 @@ uint8_t Button::sample(uint32_t time) {
 
 	uint8_t current = this->read();
 	eventState = 0;
-	
+
 	if (current){	//If the button is currently pressed (not counting debouncing)...
 		if (pressCounter == 0xFFFF){	//If the button has already passed the debounce threshold and has already fired a press event
 			repeatPressCounter += elapsedTime;
@@ -33,7 +33,7 @@ uint8_t Button::sample(uint32_t time) {
 				eventState |= STATE_REPEATPRESS;
 				repeatPressCounter = 0;
 			}
-			
+
 			if (longPressCounter < 0xFFFF){
 				if (longPressCounter < longPressTime){
 					longPressCounter += elapsedTime;
@@ -44,10 +44,10 @@ uint8_t Button::sample(uint32_t time) {
 					pressedState = 2;
 				}
 			}
-			
+
 			pressedState = 1;
 		}
-		else {	//If the button has not yet passed the deboune threshold
+		else {	//If the button has not yet passed the debounce threshold
 			pressCounter += elapsedTime;
 			if (pressCounter >= pressTime){	//We are just now passing the debounce threshold; fire the press event
 				eventState |= STATE_PRESS;
@@ -73,7 +73,7 @@ uint8_t Button::sample(uint32_t time) {
 			}
 		}
 	}
-	
+
 	return pressedState;
 }
 

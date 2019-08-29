@@ -1,6 +1,11 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include <bootloader/bootloader.h>
+#include <Button/ButtonAVR.h>
+
+#include <timer/timer.h>
+
 #include "Channel.h"
 #include "Encoders.h"
 

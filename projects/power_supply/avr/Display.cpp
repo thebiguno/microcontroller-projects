@@ -3,6 +3,8 @@
 using namespace digitalcave;
 
 extern Channel channels[CHANNEL_COUNT];
+extern ButtonAVR button1;
+extern ButtonAVR button2;
 
 Display::Display() :
 	hd44780(hd44780.FUNCTION_LINE_2 | hd44780.FUNCTION_SIZE_5x8, &PORTE, 6, &PORTE, 2, &PORTB, 7, &PORTD, 5, &PORTC, 6, &PORTC, 7),
@@ -54,9 +56,8 @@ void Display::update(State state){
 		char_display.write_text(2, 0, buffer, DISPLAY_COLS);
 
 		char_display.write_text(3, 0, "                    ", DISPLAY_COLS);
-
-		char_display.write_text(1, 4, 0x7e);
-		char_display.write_text(1, 19, 0x7f);
+		// char_display.write_text(1, 4, 0x7e);
+		// char_display.write_text(1, 19, 0x7f);
 	}
 	else if (state.get_state() == STATE_MENU){
 		char_display.write_text(0, 0, "  Calibrate Voltage ", DISPLAY_COLS);

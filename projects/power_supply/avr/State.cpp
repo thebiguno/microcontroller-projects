@@ -1,8 +1,10 @@
 #include "State.h"
-#include "Display.h"
-#include "lib/bootloader/bootloader.h"
+#include "Display.h"		//Included here instead of State.h to avoid circular dependency
 
 using namespace digitalcave;
+
+extern ButtonAVR button1;
+extern ButtonAVR button2;
 
 extern Channel channels[CHANNEL_COUNT];
 extern Display display;
@@ -38,20 +40,21 @@ int16_t State::calculate_delta_v(int8_t encoder_movement){
 
 //The UI state machine.  Takes current state + input and moves between states.
 void State::poll(){
+	uint32_t millis = timer_millis();
+	button1.sample(millis);
+	button2.sample(millis);
 	int8_t encoder1_movement = encoders.get_encoder1_movement();
 	int8_t encoder2_movement = encoders.get_encoder2_movement();
-	uint8_t released = encoders.get_released();
-	uint8_t held = encoders.get_held();
+
+	if (button1.releaseEvent()){
+		display.force_reset();
+	}
 
 	if (this->state == STATE_LOCKED){
-		if (held & BUTTON_1){
+		if (button1.longPressEvent()){
 			display.force_reset();
 			this->state = STATE_EDIT_ITEM;
 		}
-		// else if (held & BUTTON_2){
-		// 	display.force_reset();
-		// 	this->state = STATE_MENU;
-		// }
 		else if (encoder1_movement > 0){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
@@ -66,21 +69,21 @@ void State::poll(){
 		}
 	}
 	else if (this->state == STATE_EDIT_ITEM){
-		if (held & BUTTON_1){
+		if (button1.longPressEvent()){
 			display.force_reset();
 			this->state = STATE_LOCKED;
 		}
-		else if (held & BUTTON_2){
+		else if (button2.longPressEvent()){
 			display.force_reset();
 			this->state = STATE_MENU;
 		}
-		else if (released & BUTTON_1){
+		else if (button1.releaseEvent()){
 			this->scroll_channel--;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = CHANNEL_COUNT - 1;
 			}
 		}
-		else if (released & BUTTON_2){
+		else if (button2.releaseEvent()){
 			this->scroll_channel++;
 			if (this->scroll_channel >= CHANNEL_COUNT){
 				this->scroll_channel = 0;
@@ -109,11 +112,11 @@ void State::poll(){
 		}
 	}
 	else if (this->state == STATE_MENU){
-		if (held & BUTTON_1){	//Hold button 1 to go back
+		if (button1.longPressEvent()){	//Hold button 1 to go back
 			display.force_reset();
 			this->state = STATE_EDIT_ITEM;
 		}
-		else if (released & BUTTON_1){	//Press button 1 to descend into menu
+		else if (button1.releaseEvent()){	//Press button 1 to descend into menu
 			display.force_reset();
 			if (this->get_scroll_menu() == MENU_CALIBRATE_VOLTAGE){
 				this->state = STATE_CALIBRATE_VOLTAGE;
@@ -172,7 +175,7 @@ void State::poll(){
 				}
 			}
 			//Cancel calibration, and load last saved calibration values, and reset set points to startup values
-			else if (held & BUTTON_1){
+			else if (button1.longPressEvent()){
 				display.force_reset();
 				channel->load_calibration();
 				channel->set_voltage_setpoint(channel->get_voltage_startup());
@@ -180,7 +183,7 @@ void State::poll(){
 				this->state = STATE_MENU;
 			}
 			//Go back
-			else if (released & BUTTON_1){
+			else if (button1.releaseEvent()){
 				display.force_reset();
 				this->calibrate_index--;
 				if (this->calibrate_index > CALIBRATION_COUNT){	//unsigned int wraps to MAX
@@ -194,7 +197,7 @@ void State::poll(){
 				}
 			}
 			//Go forward
-			else if (released & BUTTON_2){
+			else if (button2.releaseEvent()){
 				display.force_reset();
 				this->calibrate_index++;
 				if (this->calibrate_index < CALIBRATION_COUNT){
@@ -209,7 +212,7 @@ void State::poll(){
 		}
 		//If we have finished calibration, HOLD LEFT goes back to beginning of calibration to allow more editing; HOLD RIGHT commits calibration and returns to menu.
 		else {
-			if (held & BUTTON_1){
+			if (button1.longPressEvent()){
 				display.force_reset();
 				this->calibrate_index = 0;
 				if (v_calib){
@@ -219,7 +222,7 @@ void State::poll(){
 					channel->set_current_setpoint(current_calibration_values[this->calibrate_index]);
 				}
 			}
-			else if (held & BUTTON_2){
+			else if (button2.longPressEvent()){
 				display.force_reset();
 				channel->save_calibration();
 				channel->set_voltage_setpoint(channel->get_voltage_startup());

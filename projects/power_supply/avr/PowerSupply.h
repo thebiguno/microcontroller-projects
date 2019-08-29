@@ -4,13 +4,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "lib/twi/twi.h"
+#include <twi/twi.h>
+#include <timer/timer.h>
 
 #include "Channel.h"
 #include "Display.h"
 #include "State.h"
-#include "timer0.h"
-#include "timer1.h"
 
 #ifndef CHANNEL_COUNT
 #define CHANNEL_COUNT					4

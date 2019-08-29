@@ -1,5 +1,5 @@
 /*
- * A single power supply channel.  Includes all variables needed for setting DAC, ADC readings, 
+ * A single power supply channel.  Includes all variables needed for setting DAC, ADC readings,
  * formatting display, setting values, etc.
  */
 #ifndef CHANNEL_H
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <util/delay.h>
 
-#include "lib/twi/twi.h"
+#include <twi/twi.h>
 
 #define CALIBRATION_COUNT					8
 
@@ -64,7 +64,7 @@ namespace digitalcave {
 	class Channel {
 		private:
 			uint8_t channel_index;
-			
+
 			uint8_t i2c_address;
 			uint8_t adc_channel_voltage;
 			uint8_t adc_channel_current;
@@ -79,10 +79,10 @@ namespace digitalcave {
 
 			int16_t voltage_limit;			//Max (or min, for negative) voltage
 			int16_t current_limit;			//Max current
-			
+
 			int16_t voltage_startup;		//Startup voltage
 			int16_t current_startup;		//Startup current
-			
+
 			int16_t voltage_setpoint;		//Desired voltage value (mV)
 			uint16_t voltage_setpoint_raw;	//Desired raw DAC value
 			uint16_t voltage_actual_raw;	//Actual raw 10 bit ADC value
@@ -90,14 +90,14 @@ namespace digitalcave {
 			uint16_t current_setpoint;		//Desired current value (mA)
 			uint16_t current_setpoint_raw;	//Desired raw DAC value
 			uint16_t current_actual_raw;	//Actual raw 10 bit ADC value
-			
+
 			void set_dac_raw(uint8_t dac_channel, uint16_t raw_value);
-			
+
 			int16_t get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_data);
 			uint16_t get_dac_from_adjusted(int16_t adjusted, calibration_t* calibration_data);
-			
+
 		public:
-		
+
 			/*
 			 * Initializes the channel
 			 */
@@ -117,7 +117,7 @@ namespace digitalcave {
 			void set_voltage_setpoint_raw(uint16_t raw_value);
 			int16_t get_voltage_startup();
 			void set_voltage_startup(int16_t startup);
-			
+
 			/*
 			 * Current functions
 			 */
@@ -130,18 +130,18 @@ namespace digitalcave {
 			void set_current_setpoint_raw(uint16_t raw_value);
 			int16_t get_current_startup();
 			void set_current_startup(int16_t startup);
-			
+
 			/*
 			 * ADC polling
 			 */
 			void sample_actual();
-			
+
 			/*
 			 * Persist / load calibration to / from EEPROM
 			 */
 			void save_calibration();
 			void load_calibration();
-			
+
 			/*
 			 * Get / set calibration values
 			 */

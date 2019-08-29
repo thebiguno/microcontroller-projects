@@ -23,30 +23,20 @@ Channel channels[CHANNEL_COUNT] = {
 };
 
 int main(){
-	timer0_init();
-	timer1_init();
+	timer_init();
 	twi_init();
-//	usb_init();
 
 	//Main program loop
 	while (1){
-		//Check if we are connected via USB
-//		if (usb_configured()){
-//			//handle any incoming requests
-//			usb_dispatch();
-//		}
-
 		//Read the current, actual values
 		for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
 			channels[i].sample_actual();
 		}
 
-		if (timer1_next_tick()){
-			//Check for state updates
-			state.poll();
+		//Check for state updates
+		state.poll();
 
-			//Refresh the display
-			display.update(state);
-		}
+		//Refresh the display
+		display.update(state);
 	}
 }

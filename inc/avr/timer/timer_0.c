@@ -5,8 +5,12 @@
  * You can use this file when you don't need high resolution timing, and don't care
  * about slight clock drift, inaccuracy, etc.  For timing most human-related activities,
  * though, it should be more than sufficient.
+ *
+ * To enable it, you need to add -DTIMER_HARDWARE=0 in your CDEFS.
  */
 #include "timer.h"
+
+#if defined(TIMER_HARDWARE) && TIMER_HARDWARE == 0
 
 #if TIMER_BITS == 64
 static volatile uint64_t _timer_millis;
@@ -133,3 +137,5 @@ ISR(TIMER0_COMPA_vect){
 	TCNT0 = 0;
 	_timer_millis++;
 }
+
+#endif
