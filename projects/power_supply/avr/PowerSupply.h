@@ -11,7 +11,6 @@
 #include "State.h"
 #include "timer0.h"
 #include "timer1.h"
-#include "usb.h"
 
 #ifndef CHANNEL_COUNT
 #define CHANNEL_COUNT					4
