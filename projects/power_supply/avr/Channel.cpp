@@ -1,6 +1,10 @@
 #include "Channel.h"
 
+//#include <Serial/SerialUSB.h>
+
 using namespace digitalcave;
+
+//extern SerialUSB serial;
 
 Channel::Channel(uint8_t channel_index, uint8_t i2c_address, uint8_t dac_channel_voltage, uint8_t dac_channel_current,
 		uint8_t adc_channel_voltage, uint8_t adc_channel_current,
@@ -58,8 +62,16 @@ uint16_t Channel::get_voltage_actual_raw(){
 }
 
 void Channel::set_voltage_setpoint(int16_t millivolts){
-	if ((this->voltage_limit > 0 && millivolts > this->voltage_limit) || (this->voltage_limit < 0 && millivolts < this->voltage_limit)) millivolts = this->voltage_limit;
-	if ((this->voltage_limit > 0 && millivolts < 0) || (this->voltage_limit < 0 && millivolts > 0)) millivolts = 0;
+	// char buffer[128];
+	// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_voltage_setpoint: %dmV\n\r", millivolts));
+	if ((this->voltage_limit > 0 && millivolts > this->voltage_limit) || (this->voltage_limit < 0 && millivolts < this->voltage_limit)){
+		millivolts = this->voltage_limit;
+		// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_voltage_setpoint over limit, adjusting to : %dmV\n\r", millivolts));
+	}
+	if ((this->voltage_limit > 0 && millivolts < 0) || (this->voltage_limit < 0 && millivolts > 0)){
+		millivolts = 0;
+		// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_voltage_setpoint under limit, adjusting to : %dmV\n\r", millivolts));
+	}
 
 	this->voltage_setpoint = millivolts;
 	this->set_voltage_setpoint_raw(get_dac_from_adjusted(millivolts, this->calibration_voltage));
@@ -73,6 +85,9 @@ void Channel::set_voltage_setpoint_raw(uint16_t raw_value){
 	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+
+	// char buffer[128];
+	// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_voltage_setpoint_raw: %d\n\r", raw_value));
 }
 
 int16_t Channel::get_voltage_startup(){
@@ -116,8 +131,17 @@ uint16_t Channel::get_current_actual_raw(){
 }
 
 void Channel::set_current_setpoint(int16_t milliamps){
-	if ((this->current_limit > 0 && milliamps > this->current_limit) || (this->current_limit < 0 && milliamps < this->current_limit)) milliamps = this->current_limit;
-	if ((this->current_limit > 0 && milliamps < 0) || (this->current_limit < 0 && milliamps > 0)) milliamps = 0;
+	// char buffer[128];
+	// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_current_setpoint: %dmA\n\r", milliamps));
+
+	if ((this->current_limit > 0 && milliamps > this->current_limit) || (this->current_limit < 0 && milliamps < this->current_limit)){
+		milliamps = this->current_limit;
+		// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_current_setpoint over limit, adjusting to : %dmA\n\r", milliamps));
+	}
+	if ((this->current_limit > 0 && milliamps < 0) || (this->current_limit < 0 && milliamps > 0)){
+		milliamps = 0;
+		// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_current_setpoint under limit, adjusting to : %dmA\n\r", milliamps));
+	}
 
 	this->current_setpoint = milliamps;
 	this->set_current_setpoint_raw(get_dac_from_adjusted(milliamps, this->calibration_current));
@@ -131,6 +155,9 @@ void Channel::set_current_setpoint_raw(uint16_t raw_value){
 	message[1] = 0x90 | ((raw_value >> 8) & 0x0F);	//First nibble is [VREF,PD1,PD0,Gx].  Set VREF and Gx high.
 	message[2] = (raw_value & 0xFF);
 	twi_write_to(this->i2c_address, message, 3, TWI_BLOCK, TWI_STOP);
+
+	// char buffer[128];
+	// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "set_current_setpoint_raw: %d\n\r", raw_value));
 }
 
 int16_t Channel::get_current_startup(){
@@ -153,19 +180,18 @@ void Channel::set_current_startup(int16_t startup){
  * ADC polling
  */
 
-void Channel::sample_actual(){
-	//*********** Sample voltage ***********//
+uint16_t sample_actual_adc(uint8_t adc_channel){
 	uint16_t sum = 0;
 
 	//Set up which pin to read for voltage
 	ADCSRA &= ~_BV(ADIF);
 	ADCSRB &= ~_BV(MUX5);
 	ADMUX &= ~(_BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0));
-	if (this->adc_channel_voltage <= 0x07){
-		ADMUX |= this->adc_channel_voltage;
+	if (adc_channel <= 0x07){
+		ADMUX |= adc_channel;
 	}
 	else {
-		ADMUX |= this->adc_channel_voltage - 0x08;
+		ADMUX |= adc_channel - 0x08;
 		ADCSRB |= _BV(MUX5);
 	}
 
@@ -178,35 +204,13 @@ void Channel::sample_actual(){
 		_delay_us(1);
 	}
 
-	this->voltage_actual_raw = sum >> 5;	//Average of 32 samples
+	return sum >> 5;		//Average of 32 samples
+}
 
+void Channel::sample_actual(){
+	this->voltage_actual_raw = sample_actual_adc(this->adc_channel_voltage);
 
-	//*********** Sample current ***********//
-	sum = 0;
-
-	//Set up which pin to read for current
-	ADCSRA &= ~_BV(ADIF);
-	ADCSRB &= ~_BV(MUX5);
-	ADMUX &= ~(_BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0));
-
-	if (this->adc_channel_current <= 0x07){
-		ADMUX |= this->adc_channel_current;
-	}
-	else {
-		ADMUX |= this->adc_channel_current - 0x08;
-		ADCSRB |= _BV(MUX5);
-	}
-
-	for (uint8_t i = 0; i < 32; i++){
-		ADCSRA |= _BV(ADSC);				//Start conversion
-		while (!(ADCSRA & _BV(ADIF)));		//Wait until conversion is complete
-
-		sum += ADC;
-
-		_delay_us(1);
-	}
-
-	this->current_actual_raw = sum >> 5;	//Average of 32 samples
+	this->current_actual_raw = sample_actual_adc(this->adc_channel_current);
 }
 
 //Uses the calibration ADC value to give meaning to the raw adc value.  We assume a linear progression
@@ -236,6 +240,7 @@ int16_t Channel::get_adjusted_from_adc(uint16_t adc, calibration_t* calibration_
 	return slope * ((double) adc - high.adc) + high.adjusted;
 }
 uint16_t Channel::get_dac_from_adjusted(int16_t adjusted, calibration_t* calibration_data){
+	adjusted = abs(adjusted);	//We only look at the absolute value here, so that negative channels are handled properly.
 	calibration_t low = calibration_data[CALIBRATION_COUNT - 2];
 	calibration_t high = calibration_data[CALIBRATION_COUNT - 1];
 
@@ -245,9 +250,11 @@ uint16_t Channel::get_dac_from_adjusted(int16_t adjusted, calibration_t* calibra
 	// adjusted value which does not have both a calibration point above it and a calibration point
 	// below it), and that the data set is in strictly increasing order.
 	for (uint8_t i = 0; i < CALIBRATION_COUNT; i++){
-		if (calibration_data[i].adjusted == adjusted) return calibration_data[i].dac;
-		else if (calibration_data[i].adjusted > adjusted){
-			if (i == 0) i++;	//Prevent index error if we are are at the bottom of the range
+		if (abs(calibration_data[i].adjusted) == adjusted) return calibration_data[i].dac;
+		else if (abs(calibration_data[i].adjusted) > adjusted){
+			if (i == 0){
+				i++;	//Prevent index error if we are are at the bottom of the range
+			}
 			low = calibration_data[i - 1];
 			high = calibration_data[i];
 			break;
@@ -256,8 +263,8 @@ uint16_t Channel::get_dac_from_adjusted(int16_t adjusted, calibration_t* calibra
 
 	//At this point we should have a valid high and low value.  Find the slope + offset from the high / low
 	// values, then return the interpolated adjusted value.
-	double slope = ((double) high.dac - low.dac) / (high.adjusted - low.adjusted);
-	return slope * ((double) adjusted - high.adjusted) + high.dac;
+	double slope = ((double) high.dac - low.dac) / (abs(high.adjusted) - abs(low.adjusted));
+	return slope * ((double) adjusted - abs(high.adjusted)) + high.dac;
 }
 
 

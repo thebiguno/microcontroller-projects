@@ -3,8 +3,9 @@
 using namespace digitalcave;
 
 Display display;
-
 State state;
+// SerialUSB serial;
+
 Channel channels[CHANNEL_COUNT] = {
 #if CHANNEL_COUNT > 0
 	Channel(0, DAC_ADDRESS_0, DAC_CHANNEL_0, DAC_CHANNEL_1, ADC_CHANNEL_0, ADC_CHANNEL_1, 12500, 5000),
@@ -24,7 +25,6 @@ Channel channels[CHANNEL_COUNT] = {
 
 int main(){
 	timer_init();
-	twi_init();
 
 	//Main program loop
 	while (1){

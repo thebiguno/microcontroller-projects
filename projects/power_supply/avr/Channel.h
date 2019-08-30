@@ -5,6 +5,7 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
+#include <stdlib.h>
 #include <avr/eeprom.h>
 #include <avr/io.h>
 #include <stdint.h>
@@ -80,7 +81,7 @@ namespace digitalcave {
 			int16_t voltage_limit;			//Max (or min, for negative) voltage
 			int16_t current_limit;			//Max current
 
-			int16_t voltage_startup;		//Startup voltage
+			int16_t voltage_startup;		//Startup voltageto
 			int16_t current_startup;		//Startup current
 
 			int16_t voltage_setpoint;		//Desired voltage value (mV)

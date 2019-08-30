@@ -2,8 +2,8 @@
 
 using namespace digitalcave;
 
-ButtonAVR button1(&PORTD, PORTD2, 50, 25, 1000, 500);
-ButtonAVR button2(&PORTD, PORTD3, 50, 25, 1000, 500);
+ButtonAVR button1(&PORTD, PORTD2, 30, 25, 800, 500);
+ButtonAVR button2(&PORTD, PORTD3, 30, 25, 800, 500);
 static volatile int8_t encoder1_movement = 0;
 static volatile int8_t encoder2_movement = 0;
 

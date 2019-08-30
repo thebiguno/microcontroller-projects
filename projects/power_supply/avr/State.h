@@ -3,7 +3,7 @@
 
 #include <bootloader/bootloader.h>
 #include <Button/ButtonAVR.h>
-
+#include <SerialUSB.h>
 #include <timer/timer.h>
 
 #include "Channel.h"
@@ -37,16 +37,19 @@
 //Allow user to define the startup set points
 #define STATE_STARTUP_SETPOINT			0x05
 
-#define STATE_FIRMWARE					0x06
+#define STATE_SET_AREF_SOURCE			0x06
+
+#define STATE_SET_DAC_ADDRESS			0x07
+
+#define STATE_FIRMWARE					0x08
 
 
 //The menu indices for various functions
 #define MENU_CALIBRATE_VOLTAGE			0x00
 #define MENU_CALIBRATE_CURRENT			0x01
 #define MENU_STARTUP_SETPOINT			0x02
-#define MENU_FIRMWARE					0x03
 
-#define MENU_SIZE						0x04
+#define MENU_SIZE						0x03
 
 namespace digitalcave {
 
@@ -61,6 +64,8 @@ namespace digitalcave {
 			uint8_t scroll_menu = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
 			uint8_t calibrate_index = 0;	//From 0 to CALIBRATION_COUNT - 1.  The currently selected calibration index.
 
+			int16_t voltage_setpoint = 0;		//Temp variable to hold voltage setpoint before it is saved
+			int16_t current_setpoint = 0;		//Temp variable to hold current setpoint before it is saved
 		public:
 			State();
 
@@ -70,6 +75,8 @@ namespace digitalcave {
 			uint8_t get_scroll_channel();
 			uint8_t get_scroll_menu();
 			uint8_t get_calibrate_index();
+			int16_t get_voltage_setpoint();
+			int16_t get_current_setpoint();
 	};
 }
 

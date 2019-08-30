@@ -34,6 +34,8 @@ uint8_t Button::sample(uint32_t time) {
 				repeatPressCounter = 0;
 			}
 
+			pressedState = BUTTON_PRESSED;
+
 			if (longPressCounter < 0xFFFF){
 				if (longPressCounter < longPressTime){
 					longPressCounter += elapsedTime;
@@ -41,11 +43,12 @@ uint8_t Button::sample(uint32_t time) {
 				else {
 					longPressCounter = 0xFFFF;
 					eventState |= STATE_LONGPRESS;
-					pressedState = 2;
 				}
 			}
-
-			pressedState = 1;
+			
+			if (longPressCounter == 0xFFFF){
+				pressedState = BUTTON_LONG_PRESSED;
+			}
 		}
 		else {	//If the button has not yet passed the debounce threshold
 			pressCounter += elapsedTime;
@@ -55,7 +58,7 @@ uint8_t Button::sample(uint32_t time) {
 				releaseCounter = 0x00;
 				longPressCounter = 0x00;
 				repeatPressCounter = 0x00;
-				pressedState = 1;
+				pressedState = BUTTON_PRESSED;
 			}
 		}
 	}
@@ -69,7 +72,7 @@ uint8_t Button::sample(uint32_t time) {
 				pressCounter = 0x00;
 				longPressCounter = 0x00;
 				repeatPressCounter = 0x00;
-				pressedState = 0;
+				pressedState = BUTTON_NOT_PRESSED;
 			}
 		}
 	}
