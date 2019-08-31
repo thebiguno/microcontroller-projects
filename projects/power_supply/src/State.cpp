@@ -201,7 +201,7 @@ void State::poll(){
 					calibration.dac += encoder1_movement / 2;
 					//
 					// char buffer[128];
-					// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "calibration: adc=%d, dac=%d, adjusted=%d\n\r", calibration.adc, calibration.dac, calibration.adjusted));
+					// serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "calibration: adc=%d, dac=%d, actual=%d\n\r", calibration.adc, calibration.dac, calibration.actual));
 				}
 				//Cancel calibration, and load last saved calibration values, and reset set points to startup values
 				else if (button1.longPressEvent()){
@@ -214,7 +214,7 @@ void State::poll(){
 
 				//Update the calibration object with current ADC values and target calibration
 				calibration.adc = v_calib ? channel->get_voltage_actual_raw() : channel->get_current_actual_raw();
-				calibration.adjusted = negate * (v_calib ? voltage_calibration_values[this->calibrate_index] : current_calibration_values[this->calibrate_index]);
+				calibration.actual = negate * (v_calib ? voltage_calibration_values[this->calibrate_index] : current_calibration_values[this->calibrate_index]);
 
 				if (v_calib){
 					if (channel->get_voltage_setpoint_raw() != calibration.dac){

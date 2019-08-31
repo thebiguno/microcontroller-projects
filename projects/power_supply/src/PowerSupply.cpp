@@ -1,10 +1,12 @@
 #include "PowerSupply.h"
 
+//#include <SerialUSB.h>
+
 using namespace digitalcave;
 
 Display display;
 State state;
-// SerialUSB serial;
+//SerialUSB serial;
 
 Channel channels[CHANNEL_COUNT] = {
 #if CHANNEL_COUNT > 0
@@ -25,10 +27,12 @@ Channel channels[CHANNEL_COUNT] = {
 
 int main(){
 	timer_init();
+	uint8_t analog_pins[CHANNEL_COUNT * 2] = {ADC_CHANNEL_0, ADC_CHANNEL_1, ADC_CHANNEL_4, ADC_CHANNEL_5, ADC_CHANNEL_6, ADC_CHANNEL_7, ADC_CHANNEL_8, ADC_CHANNEL_9};
+	analog_init(analog_pins, (CHANNEL_COUNT * 2), ANALOG_AREF);
 
 	//Main program loop
 	while (1){
-		//Read the current, actual values
+		//Read the current, actual values from the ADC mailbox
 		for(uint8_t i = 0; i < CHANNEL_COUNT; i++){
 			channels[i].sample_actual();
 		}

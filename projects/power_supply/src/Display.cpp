@@ -59,14 +59,14 @@ void Display::update(State state){
 
 			if (state.get_state() == STATE_CALIBRATE_VOLTAGE){
 				calibration_t calibration = channels[channel].get_calibration_voltage(state.get_calibrate_index());
-				snprintf(buffer, DISPLAY_COLS + 1, "%+6.2fV DAC: %4d   ", calibration.adjusted / 1000.0, calibration.dac);
+				snprintf(buffer, DISPLAY_COLS + 1, "%+6.2fV DAC: %4d   ", calibration.actual / 1000.0, calibration.dac);
 				char_display.write_text(1, 0, buffer, DISPLAY_COLS);
 				snprintf(buffer, DISPLAY_COLS + 1, "        ADC: %4d   ", calibration.adc);
 				char_display.write_text(2, 0, buffer, DISPLAY_COLS);
 			}
 			else {
 				calibration_t calibration = channels[channel].get_calibration_current(state.get_calibrate_index());
-				snprintf(buffer, DISPLAY_COLS + 1, "%+6.3fA DAC: %4d   ", calibration.adjusted / 1000.0, calibration.dac);
+				snprintf(buffer, DISPLAY_COLS + 1, "%+6.3fA DAC: %4d   ", calibration.actual / 1000.0, calibration.dac);
 				char_display.write_text(1, 0, buffer, DISPLAY_COLS);
 				snprintf(buffer, DISPLAY_COLS + 1, "        ADC: %4d   ", calibration.adc);
 				char_display.write_text(2, 0, buffer, DISPLAY_COLS);
