@@ -65,7 +65,7 @@ int16_t Buffer::write_char(char c, font_t font, int16_t x, int16_t y){
 		}
 	}
 
-	uint8_t char_width = pgm_read_byte_near(font.font_widths + glyph_index);
+	uint8_t char_width = font.variable_width == FONT_VARIABLE_WIDTH ? pgm_read_byte_near(font.font_widths + glyph_index) : 0xFF;
 	return char_width == 0xFF ? font.width : char_width;
 }
 
