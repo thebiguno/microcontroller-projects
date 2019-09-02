@@ -1,8 +1,13 @@
 #include "SI4703.h"
 
+#include <Serial/SerialUSB.h>
+
 using namespace digitalcave;
 
+extern SerialUSB serial;
+
 Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
+	serial.write("Constructor Start\n\r");
 	this->resetPort = resetPort;
 	this->resetPin = resetPin;
 
@@ -10,12 +15,14 @@ Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
 	*(resetPort - 0x01) |= _BV(resetPin);
 
 	//Configure the Si4703 for 2-wire communcation
-	DDRC |= _BV(PORTC4);	//SDIO is connected to A4 for I2C
-	PORTC &= ~_BV(PORTC4); //A low SDIO indicates a 2-wire interface
+	DDRD |= _BV(PORTD1);	//SDIO TODO Make this generic
+	PORTD &= ~_BV(PORTD1); //A low SDIO indicates a 2-wire interface
 	*resetPort &= ~_BV(resetPin); //Put Si4703 into reset
 	_delay_ms(1); //Some delays while we allow pins to settle
 	*resetPort |= _BV(resetPin); //Bring Si4703 out of reset with SDIO set to low and SEN pulled high with on-board resistor
 	_delay_ms(1); //Allow Si4703 to come out of reset
+	DDRD &= ~_BV(PORTD1);	//SDIO TODO Make this generic
+	_delay_ms(1);
 
 	//Configure the I2C connection
 	twi_init(); //Now that the unit is reset and I2C inteface mode, we need to begin I2C
@@ -42,6 +49,7 @@ Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
 	_delay_ms(110); //Max powerup time, from datasheet page 13
 
 	readRegisters();
+	serial.write("Constructor Done\n\r");
 }
 void Si4703_Breakout::powerOn()
 {
@@ -62,6 +70,7 @@ uint16_t Si4703_Breakout::getChannel() {
 }
 
 void Si4703_Breakout::setChannel(uint16_t channel) {
+	serial.write("setChannel Start\n\r");
 	uint16_t regValue = (channel - 875) / 2;
 
 	//These steps come from AN230 page 20 rev 0.5
@@ -77,6 +86,7 @@ void Si4703_Breakout::setChannel(uint16_t channel) {
 	while(1) {
 		readRegisters();
 		if( (si4703_registers[STATUSRSSI] & (1<<STC)) != 0) break; //Tuning complete!
+		_delay_ms(1000);
 	}
 
 	readRegisters();
@@ -87,7 +97,9 @@ void Si4703_Breakout::setChannel(uint16_t channel) {
 	while(1) {
 		readRegisters();
 		if( (si4703_registers[STATUSRSSI] & (1<<STC)) == 0) break; //Tuning complete!
+		_delay_ms(1000);
 	}
+	serial.write("setChannel Done\n\r");
 }
 
 uint16_t Si4703_Breakout::seekUp()
@@ -154,6 +166,7 @@ void Si4703_Breakout::readRDS(char* buffer, long timeout){
 //Read the entire register control set from 0x00 to 0x0F
 //Re-written by Wyatt Olson to use i2c_master library instead of Arduino Wire library.
 void Si4703_Breakout::readRegisters(){
+	serial.write("readRegisters Start\n\r");
 	uint8_t message[32];	//32 uint8_t
 
 	//Si4703 begins reading from register upper register of 0x0A and reads to 0x0F, then loops to 0x00. (see datasheet page 19)
@@ -170,6 +183,7 @@ void Si4703_Breakout::readRegisters(){
 
 		if (j == 34 || i == 0x09) break; //We're done!
 	}
+	serial.write("readRegisters Done\n\r");
 }
 
 //Write the current 9 control registers (0x02 to 0x07) to the Si4703
