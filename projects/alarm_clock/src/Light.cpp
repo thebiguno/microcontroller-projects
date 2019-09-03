@@ -12,17 +12,19 @@ volatile uint8_t lightPinMaskYellow = 0;
 volatile uint8_t lightPinMaskNeutral = 0;
 volatile uint8_t lightPinMaskBlue = 0;
 
-extern SerialUSB serial;
-
-/*
- * We assign LIGHT1 through LIGHT3 to OCR1B, OCR1C, OCR3B respectively
- */
-void light_start() {
+void light_init(){
 	//Set light pins as output
 	*(&LIGHT_PORT - 0x01) |= _BV(LIGHT_Y_PIN);
 	*(&LIGHT_PORT - 0x01) |= _BV(LIGHT_N_PIN);
 	*(&LIGHT_PORT - 0x01) |= _BV(LIGHT_B_PIN);
 
+	light_off();
+}
+
+/*
+ * We assign LIGHT1 through LIGHT3 to OCR1B, OCR1C, OCR3B respectively
+ */
+void light_on() {
 	//WGM mode 7 (Fast PWM, 10 bit)
 	TCCR1A = _BV(WGM11) | _BV(WGM10);
 	TCCR3A = _BV(WGM31) | _BV(WGM30);
@@ -44,7 +46,7 @@ void light_start() {
 #endif
 }
 
-void light_stop(){
+void light_off(){
 	LIGHT_PORT &= ~_BV(LIGHT_Y_PIN);		//OCR1B
 	LIGHT_PORT &= ~_BV(LIGHT_N_PIN);		//OCR1C
 	LIGHT_PORT &= ~_BV(LIGHT_B_PIN);		//OCR3B
@@ -106,9 +108,9 @@ void light_set(double brightness, double whiteBalance){
 	if (brightnessBlueScaled < PWM_MIN) lightPinMaskBlue = 0x00;
 	else lightPinMaskBlue = _BV(LIGHT_B_PIN);
 
-	char temp[64];
-	snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled);
-	serial.write(temp);
+	// char temp[64];
+	// snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled);
+	// serial.write(temp);
 }
 
 //Turn on pins at overflow
