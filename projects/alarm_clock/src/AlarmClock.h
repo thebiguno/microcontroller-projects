@@ -17,6 +17,7 @@
 #include <SerialUSB.h>
 
 #include "Buffer.h"
+#include "Light.h"
 #include "font/f_clockface.h"
 #include "font/f_3x3.h"
 #include "font/f_3x5.h"

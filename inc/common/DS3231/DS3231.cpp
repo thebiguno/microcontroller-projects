@@ -69,22 +69,3 @@ void DS3231::setTime(ds3231_time_t time){
 	I2CMessage message(data, sizeof(data));
 	i2c->write(DS3231_ADDRESS, &message);
 }
-//
-// void DS3231::read_registers(){
-// 	serial.write("read_registers\n\r");
-// 	uint8_t data[12];
-// 	data[0] = 0x00;
-// 	I2CMessage message(data, sizeof(data));
-// 	message.setLength(1);
-// 	i2c->write(DS3231_ADDRESS, &message);
-//
-// 	message.setLength(12);
-// 	i2c->read(DS3231_ADDRESS, &message);
-// 	char buffer[128];
-// 	serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11]));
-// }
-//
-// void DS3231::write_registers(){
-// 	I2CMessage message(registers, sizeof(registers));
-// 	i2c->write(DS3231_ADDRESS, &message);
-// }
