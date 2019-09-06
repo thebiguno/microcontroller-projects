@@ -7,7 +7,7 @@ static volatile int8_t encoder_movement = 0;
 Encoder::Encoder(){
 	PCICR |= _BV(PCIE0);												//Enable pin change interrupts for encoders
 	PCMSK0 |= _BV(PCINT5) | _BV(PCINT6);								//Enable bits 5 and 6 for pin change interrupts
-	PORTB |= _BV(PORTB5) | _BV(PORTB5);									//Pullups on 5 and 6
+	PORTB |= _BV(PORTB5) | _BV(PORTB6);									//Pullups on 5 and 6
 }
 
 int8_t Encoder::get_encoder_movement(){
