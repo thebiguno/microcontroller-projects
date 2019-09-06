@@ -16,16 +16,22 @@
 
 //Time mode (default state).  Shows the time.  Press the button to toggle light, turn encoder to
 // adjust light brightness.  Hold button to enter menu.
-#define STATE_TIME					0x00
+#define STATE_TIME						0x00
 
 //Menu mode: allow setting time, alarm, etc.
 #define STATE_MENU						0x01
 
-//The menu indices for various functions
-#define MENU_SET_ALARM					0x00
-#define MENU_SET_TIME					0x01
+//Edit whatever menu item you are currently in
+#define STATE_EDIT						0x02
 
-#define MENU_SIZE						0x02
+//The menu indices for various functions
+#define MENU_SET_ALARM_1				0x00
+#define MENU_SET_ALARM_2				0x01
+#define MENU_SET_ALARM_3				0x02
+#define MENU_SET_TIME					0x03
+#define MENU_12_24						0x04
+
+#define MENU_SIZE						0x05
 
 namespace digitalcave {
 

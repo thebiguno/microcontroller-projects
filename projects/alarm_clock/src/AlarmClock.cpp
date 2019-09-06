@@ -23,6 +23,8 @@ int main(){
 		state.poll();
 
 		display.update(state);
+
+		delay_ms(20);
 		//
 		// ds3231_time_t time = calendar.getTime();
 		// _delay_ms(100);

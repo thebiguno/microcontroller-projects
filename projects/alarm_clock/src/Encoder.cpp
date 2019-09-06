@@ -23,15 +23,15 @@ ISR(PCINT0_vect){
 
 	switch(encoder){
 		case 0x01:
-		case 0x07:
-		case 0x08:
-		case 0x0E:
+		//case 0x07:
+		//case 0x08:
+		//case 0x0E:
 			encoder_movement--;	//Counter Clockwise
 			break;
-		case 0x02:
-		case 0x04:
+		//case 0x02:
+		//case 0x04:
 		case 0x0B:
-		case 0x0D:
+		//case 0x0D:
 			encoder_movement++;	//Clockwise
 			break;
 	}
