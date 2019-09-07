@@ -58,6 +58,24 @@ void light_off(){
 	TCCR3B = 0x00;
 }
 
+uint8_t light_state(){
+	if (TCCR1B == 0x00){
+		return 0;
+	}
+	else {
+		return 1;
+	}
+}
+
+void light_toggle(){
+	if (TCCR1B == 0x00){
+		light_on();
+	}
+	else {
+		light_off();
+	}
+}
+
 void light_set(double brightness, double whiteBalance){
 	if (brightness < 0) brightness = 0;
 	else if (brightness > 1) brightness = 1;

@@ -20,7 +20,15 @@ Button::Button(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime,
 }
 
 uint8_t Button::sample(uint32_t time) {
-	uint16_t elapsedTime = time - lastTime;
+	uint16_t elapsedTime;
+
+	//Handle timer overflow in a sane manner
+	if (time < lastTime){
+		elapsedTime = 0;
+	}
+	else {
+		elapsedTime = time - lastTime;;
+	}
 	lastTime = time;
 
 	uint8_t current = this->read();
@@ -45,7 +53,7 @@ uint8_t Button::sample(uint32_t time) {
 					eventState |= STATE_LONGPRESS;
 				}
 			}
-			
+
 			if (longPressCounter == 0xFFFF){
 				pressedState = BUTTON_LONG_PRESSED;
 			}

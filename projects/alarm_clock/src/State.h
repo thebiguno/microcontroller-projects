@@ -1,6 +1,8 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include <avr/eeprom.h>
+
 #include <bootloader/bootloader.h>
 #include <Button/ButtonAVR.h>
 #include <timer/timer.h>
@@ -10,6 +12,9 @@
 
 #include "Light.h"
 #include "Encoder.h"
+
+//The start of the EEPROM
+#define EEPROM_CALIBRATION_OFFSET		0x00
 
 //We use a FSM to move between different modes.  Each mode will have differences in display
 // and user interface.  The modes are listed below, along with comments describing what is
@@ -52,10 +57,14 @@ namespace digitalcave {
 			Encoder encoder;
 			ButtonAVR button;
 
-			alarm_t alarm[ALARM_COUNT];
+			//Alarm stuff
+			alarm_t alarm[ALARM_COUNT];			//The actual alarms
+			uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  WHen it is non-zero, we incrememnt light / music gradually.
+			double light_brightness = 0;		//Keep track of light brightness...
+			double light_color = 0;				//... and light color temperature
 
+			//Stuff for menus
 			uint8_t mode = 0;
-			int16_t light_brightness = 0;
 			uint8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
 			uint8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like clock digits.
 

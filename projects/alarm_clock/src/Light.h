@@ -45,6 +45,16 @@ void light_on();
  */
 void light_off();
 
+/*
+ * Toggles the light on or off, depending on last state
+ */
+void light_toggle();
+
+/*
+ * Returns 0 if light is off, 1 if light is on
+ */
+uint8_t light_state();
+
 #if defined (__cplusplus)
 }
 #endif

@@ -12,14 +12,46 @@ State::State() :
 {
 	timer_init();
 	light_init();
+
+	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 }
 
 //The UI state machine.  Takes current state + input and moves between states.
 void State::poll(){
+	dc_time_t time = get_time();
 	uint32_t millis = timer_millis();
 	button.sample(millis);
 	int8_t encoder_movement = encoder.get_encoder_movement();
 	char buffer[64];
+
+	for (uint8_t i = 0; i < ALARM_COUNT; i++){
+		alarm_t a = alarm[i];
+
+		//Trigger alarm if time matches
+		if (a.enabled & _BV(time_get_day_of_week(time))
+				&& (alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
+				&& a.time.hour == time.hour
+				&& a.time.minute == time.minute
+				&& time.second == 0){
+			alarm_triggered |= _BV(i);
+			timer_init();		//Reset our timer; we will use this to track how long the light has been on
+			millis = 0;
+			light_brightness = 0;
+			light_color = -1;
+			light_set(0, -1);
+			light_on();
+			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
+		}
+
+		//Increment the brightness by the alarm ramp-up values
+		if (alarm_triggered & _BV(i)){
+			light_brightness = (double) a.lamp_speed * timer_millis() / 60 / 1000;			//Range 0 .. 1
+			light_color = ((double) a.lamp_speed * timer_millis() * 2 / 60 / 1000) - 1;		//Range -1 .. 1
+			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "bright=%f, color=%f (%d)\n\r", light_brightness, light_color, i));
+		}
+	}
+
+	light_set(light_brightness, light_color);
 
 	//serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "State: %d (%d)\n\r", state, millis));
 
@@ -30,24 +62,16 @@ void State::poll(){
 			serial.write("Enter Menu\n\r");
 		}
 		else if (button.releaseEvent()){
-			if (light_brightness){
-				light_brightness = 0;
-				light_off();
-				serial.write("Light Off\n\r");
-			}
-			else {
-				light_brightness = 512;
-				light_on();
-				serial.write("Light On\n\r");
-			}
+			alarm_triggered = 0x00;
+			light_toggle();
 		}
-		else if (encoder_movement != 0 && light_brightness != 0){
-			light_brightness += encoder_movement * 20;
-			if (light_brightness < 1) {
-				light_brightness = 1;
+		else if (encoder_movement != 0 && light_state()){
+			light_brightness += (double) encoder_movement / 100;
+			if (light_brightness < 0) {
+				light_brightness = 0;
 			}
-			else if (light_brightness > 1024){
-				light_brightness = 1024;
+			else if (light_brightness > 1){
+				light_brightness = 1;
 			}
 			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Light Brightness: %d\n\r", light_brightness));
 		}
@@ -82,7 +106,8 @@ void State::poll(){
 		//Long press from edit commits and returns to main screen
 		if (button.longPressEvent()){
 			mode = MODE_TIME;
-			//serial.write("Return to Time\n\r");
+
+			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 		}
 
 		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
@@ -120,8 +145,6 @@ void State::poll(){
 			}
 		}
 		else if (menu_item == MENU_SET_TIME){
-			dc_time_t time = get_time();
-
 			if (button.releaseEvent()){
 				edit_item = (edit_item + 1) % 7;	//Here edit_item goes from 0 to 6.  0 - 5 map to TIME_FIELD_X; 6 is 12 / 24 hour
 			}

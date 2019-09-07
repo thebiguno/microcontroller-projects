@@ -21,19 +21,16 @@ void Display::update(State state){
 
 	char temp[10];
 
-	if (state.get_light_brightness()){
-		light_set(state.get_light_brightness() / 1024.0, 0);
-	}
-
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
 		if (time.mode == TIME_MODE_24){
 			snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
+			buffer.write_string(temp, font_clockface, 0, 0);
 		}
 		else {
-			snprintf(temp, sizeof(temp), "%2d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
+			snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
+			buffer.write_string(temp, font_clockface, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
 		}
-		buffer.write_string(temp, font_clockface, 0, 0);
 	}
 	else if (mode == MODE_MENU){
 		if (menu_item == MENU_SET_ALARM_1){
