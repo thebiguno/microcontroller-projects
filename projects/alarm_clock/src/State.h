@@ -6,6 +6,7 @@
 #include <timer/timer.h>
 #include <I2CAVR.h>
 #include <DS3231.h>
+#include <SerialUSB.h>
 
 #include "Light.h"
 #include "Encoder.h"
@@ -29,9 +30,11 @@
 #define MENU_SET_ALARM_2				0x01
 #define MENU_SET_ALARM_3				0x02
 #define MENU_SET_TIME					0x03
-#define MENU_12_24						0x04
+#define MENU_SET_DATE					0x04
+#define MENU_12_24						0x05
 
-#define MENU_SIZE						0x05
+#define MENU_SIZE						0x06
+
 
 namespace digitalcave {
 
@@ -45,15 +48,17 @@ namespace digitalcave {
 			uint8_t state = 0;
 			int16_t light_brightness = 0;
 			uint8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
+			uint8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like clock digits.
 
 		public:
 			State();
 
 			void poll();
 
-			ds3231_time_t get_time();
+			dc_time_t get_time();
 			uint8_t get_state();
 			uint8_t get_menu_item();
+			uint8_t get_edit_item();
 			int16_t get_light_brightness();
 	};
 }

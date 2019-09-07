@@ -16,7 +16,7 @@ static inline uint8_t bcd_to_decimal(uint8_t bcd){
 	return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
-ds3231_time_t DS3231::getTime(){
+dc_time_t DS3231::getTime(){
 	uint8_t data[7];
 	data[0] = 0x00;
 	I2CMessage message(data, sizeof(data));
@@ -26,22 +26,22 @@ ds3231_time_t DS3231::getTime(){
 	message.setLength(7);
 	i2c->read(DS3231_ADDRESS, &message);
 
-	ds3231_time_t result;
-	result.year = bcd_to_decimal(data[6]);
+	dc_time_t result;
+	result.year = bcd_to_decimal(data[6]) + 2000;
 	result.month = bcd_to_decimal(data[5]);
 	result.day_of_month = bcd_to_decimal(data[4]);
 	result.day_of_week = bcd_to_decimal(data[3]);
 	if (data[2] & (1 << 6)){		//12 hour mode
 		if (data[2] & (1 << 5)){
-			result.mode = DS3231_MODE_PM;
+			result.mode = TIME_MODE_PM;
 		}
 		else {
-			result.mode = DS3231_MODE_AM;
+			result.mode = TIME_MODE_AM;
 		}
 		data[2] &= ~((1 << 6) | (1 << 5));
 	}
 	else {
-		result.mode = DS3231_MODE_24;
+		result.mode = TIME_MODE_24;
 	}
 	result.hour = bcd_to_decimal(data[2]);
 	result.minute = bcd_to_decimal(data[1]);
@@ -50,22 +50,22 @@ ds3231_time_t DS3231::getTime(){
 	return result;
 }
 
-void DS3231::setTime(ds3231_time_t time){
+void DS3231::setTime(dc_time_t time){
 	uint8_t data[8];
 	data[0] = 0x00;		//Register address
 	data[1] = decimal_to_bcd(time.second);
 	data[2] = decimal_to_bcd(time.minute);
 	data[3] = decimal_to_bcd(time.hour);
-	if (time.mode == DS3231_MODE_AM){
+	if (time.mode == TIME_MODE_AM){
 		data[3] |= (1 << 6);	//Set the 12 hour flag (6)
 	}
-	else if (time.mode == DS3231_MODE_PM){
+	else if (time.mode == TIME_MODE_PM){
 		data[3] |= (1 << 6) | (1 << 5);	//Set the 12 hour flag (6) and the PM flag (5)
 	}
 	data[4] = decimal_to_bcd(time.day_of_week);
 	data[5] = decimal_to_bcd(time.day_of_month);
 	data[6] = decimal_to_bcd(time.month);
-	data[7] = decimal_to_bcd(time.year);
+	data[7] = decimal_to_bcd(time.year - 2000);
 	I2CMessage message(data, sizeof(data));
 	i2c->write(DS3231_ADDRESS, &message);
 }

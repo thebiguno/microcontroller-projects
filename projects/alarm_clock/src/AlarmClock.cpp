@@ -2,7 +2,7 @@
 
 using namespace digitalcave;
 
-// SerialUSB serial;
+SerialUSB serial;
 
 int main(){
 	// I2CAVR i2c;
@@ -24,7 +24,7 @@ int main(){
 
 		display.update(state);
 
-		delay_ms(20);
+		delay_ms(100);	//TODO Change this back to 100 for better debouncing
 		//
 		// ds3231_time_t time = calendar.getTime();
 		// _delay_ms(100);
