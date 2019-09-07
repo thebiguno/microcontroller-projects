@@ -9,7 +9,6 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	int16_t year = time.year;
 	int16_t month = time.month;
 	int16_t day_of_month = time.day_of_month;
-	int16_t day_of_week = time.day_of_week;
 	int16_t hour = time.hour;
 	int16_t minute = time.minute;
 	int16_t second = time.second;
@@ -21,11 +20,8 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	else if (field == TIME_FIELD_MONTH){
 		month += amount;
 	}
-	else if (field == TIME_FIELD_DAY_OF_MONTH){
+	else if (field == TIME_FIELD_DAY_OF_MONTH || field == TIME_FIELD_DAY_OF_WEEK){
 		day_of_month += amount;
-	}
-	else if (field == TIME_FIELD_DAY_OF_WEEK){
-		day_of_week += amount;
 	}
 	else if (field == TIME_FIELD_HOUR){
 		hour += amount;
@@ -63,34 +59,24 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	while (hour < 0){
 		if (time_affects_date){
 			day_of_month--;
-			day_of_week--;
 		}
 		hour += 24;
 	}
 	while (hour >= 24){
 		if (time_affects_date){
 			day_of_month++;
-			day_of_week++;
 		}
 		hour -= 24;
 	}
 
-	//Valid range of 1 - 7
-	while (day_of_week < 1){
-		day_of_week += 7;
-	}
-	while (day_of_week > 7){
-		day_of_week += 7;
-	}
-
 	//Valid range of 1 - days_in_month
 	while (day_of_month < 1){
-		day_of_month += time_get_days_in_month(year, month);
 		month--;
 		if (month < TIME_MONTH_JAN){
 			month = TIME_MONTH_DEC;
 			year--;
 		}
+		day_of_month += time_get_days_in_month(year, month);
 	}
 	while (day_of_month > time_get_days_in_month(year, month)){
 		day_of_month -= time_get_days_in_month(year, month);
@@ -105,10 +91,16 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	while (month < TIME_MONTH_JAN){
 		year--;
 		month += 12;
+		while (day_of_month > time_get_days_in_month(year, month)){
+			day_of_month--;
+		}
 	}
 	while (month > TIME_MONTH_DEC){
 		year++;
 		month -= 12;
+		while (day_of_month > time_get_days_in_month(year, month)){
+			day_of_month--;
+		}
 	}
 
 	//Valid range of 2000 - 2099
@@ -122,7 +114,6 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	time.year = year;
 	time.month = month;
 	time.day_of_month = day_of_month;
-	time.day_of_week = day_of_week;
 	time.hour = hour;
 	time.minute = minute;
 	time.second = second;
@@ -131,6 +122,9 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 	if (mode != TIME_MODE_24){
 		time = time_set_mode(time, mode);
 	}
+
+	//Calculate the day of week
+	time.day_of_week = time_get_day_of_week(time);
 
 	return time;
 }
@@ -163,27 +157,52 @@ dc_time_t time_set_mode(dc_time_t time, uint8_t mode){
 	return time;
 }
 
+uint8_t time_is_leap_year(uint16_t year){
+	if ((year % 400) == 0){
+		return 1;					//Exactly divisible by 400
+	}
+	else if ((year % 100) == 0){
+		return 0;					//Exactly divisible by 100, but not 400
+	}
+	else if ((year % 4) == 0){
+		return 1;					//Exactly divisible by 4, but not by 100 or 400
+	}
+	else {
+		return 0;					//Fallback case
+	}
+
+}
+
 uint8_t time_get_days_in_month(uint16_t year, uint8_t month){
 	if (month == TIME_MONTH_JAN || month == TIME_MONTH_MAR || month == TIME_MONTH_MAY || month == TIME_MONTH_JUL || month == TIME_MONTH_AUG || month == TIME_MONTH_OCT || month == TIME_MONTH_DEC){
 		return 31;
 	}
-	else if (month == TIME_MONTH_APR || month == TIME_MONTH_JUN || TIME_MONTH_SEP || TIME_MONTH_NOV){
+	else if (month == TIME_MONTH_APR || month == TIME_MONTH_JUN || month == TIME_MONTH_SEP || month == TIME_MONTH_NOV){
 		return 30;
 	}
 	else if (month == TIME_MONTH_FEB){
-		if ((year % 400) == 0){
-			return 29;					//Exactly divisible by 400
-		}
-		else if ((year % 100) == 0){
-			return 28;					//Exactly divisible by 100, but not 400
-		}
-		else if ((year % 4) == 0){
-			return 29;					//Exactly divisible by 4, but not by 100 or 400
+		if (time_is_leap_year(year)){
+			return 29;
 		}
 		else {
-			return 28;					//Fallback case
+			return 28;
 		}
 	}
 
 	return 0xFF;
+}
+
+//We use the Key Value method to calculate day of week.
+uint8_t time_get_day_of_week(dc_time_t time){
+	int16_t t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+	time.year -= time.month < 3;
+	return ( time.year + time.year / 4 - time.year / 100 + time.year / 400 + t[time.month - 1] + time.day_of_month) % 7;
+	// //Months start at March = 1, April = 2, ... December = 10, January = 11, February = 12.
+	// int8_t month_number = time.month - 2;
+	// uint8_t year = time.year;
+	// if (month_number <= 0){	//
+	// 	month_number += 12;
+	// 	year--;
+	// }
+	// return (time.day_of_month + (int16_t) floor((13 * month_number - 1) / 5) + year + (int16_t) floor(year / 4) + (int16_t) floor(20 / 4) - 2 * 20) % 7;
 }

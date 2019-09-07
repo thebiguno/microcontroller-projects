@@ -6,6 +6,7 @@
 #define TIME_H
 
 #include <stdio.h>
+#include <math.h>
 
 #if defined (__cplusplus)
 extern "C" {
@@ -18,10 +19,10 @@ extern "C" {
 #define TIME_FIELD_YEAR				0x00
 #define TIME_FIELD_MONTH			0x01
 #define TIME_FIELD_DAY_OF_MONTH		0x02
-#define TIME_FIELD_DAY_OF_WEEK		0x03
-#define TIME_FIELD_HOUR				0x04
-#define TIME_FIELD_MINUTE			0x05
-#define TIME_FIELD_SECOND			0x06
+#define TIME_FIELD_HOUR				0x03
+#define TIME_FIELD_MINUTE			0x04
+#define TIME_FIELD_SECOND			0x05
+#define TIME_FIELD_DAY_OF_WEEK		0x06
 
 #define TIME_MONTH_JAN			1
 #define TIME_MONTH_FEB			2
@@ -55,6 +56,12 @@ dc_time_t time_set_mode(dc_time_t time, uint8_t mode);
 
 //Returns the number of days in the given month.  Accounts correctly for leap years.
 uint8_t time_get_days_in_month(uint16_t year, uint8_t month);
+
+//Returns 1 if the year is a leap year, 0 otherwise
+uint8_t time_is_leap_year(uint16_t year);
+
+//Returns the day of the week for a given date.  0 = Sunday, 1 = Monday, ... 6 = Saturday
+uint8_t time_get_day_of_week(dc_time_t time);
 
 #endif
 
