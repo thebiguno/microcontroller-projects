@@ -12,6 +12,7 @@
 #include "Light.h"
 #include "State.h"
 #include "font/f_clockface.h"
+#include "font/f_icon.h"
 #include "font/f_3x3.h"
 #include "font/f_3x5.h"
 

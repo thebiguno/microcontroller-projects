@@ -10,6 +10,7 @@ Display::Display() :
 	buffer(32, 8)
 {
 	buffer.clear();
+
 }
 
 void Display::update(State state){
@@ -23,27 +24,58 @@ void Display::update(State state){
 
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
-		if (time.mode == TIME_MODE_24){
-			snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
-			buffer.write_string(temp, font_clockface, 0, 0);
-		}
-		else {
-			snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
-			buffer.write_string(temp, font_clockface, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
-		}
+		// if (edit_item == 0){
+			//Time - default state
+			if (time.mode == TIME_MODE_24){
+				snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
+				buffer.write_string(temp, font_clockface, 0, 0);
+			}
+			else {
+				snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
+				buffer.write_string(temp, font_clockface, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
+			}
+		// }
+		// else if (edit_item == 1){
+			// //Date
+			// char day_of_week;
+			// switch (time_get_day_of_week(time)){
+			// 	case 0: day_of_week = 'U'; break;
+			// 	case 1: day_of_week = 'M'; break;
+			// 	case 2: day_of_week = 'T'; break;
+			// 	case 3: day_of_week = 'W'; break;
+			// 	case 4: day_of_week = 'H'; break;
+			// 	case 5: day_of_week = 'F'; break;
+			// 	case 6: day_of_week = 'S'; break;
+			// 	default: day_of_week = ' '; break;
+			// }
+			// snprintf(temp, sizeof(temp), "%02d.%02d.%02d", time.year - 2000, time.month, time.day_of_month);
+			// buffer.write_string(temp, font_3x5, 0, 1);
+			// snprintf(temp, sizeof(temp), "%c", day_of_week);
+			// buffer.write_string(temp, font_3x5, 29, 1);
+		// }
+		// else if (edit_item == 2){
+		// 	//buffer.write_string("TODO", font_3x5, 8, 1);
+		// }
 	}
 	else if (mode == MODE_MENU){
 		if (menu_item == MENU_SET_ALARM_1){
-			buffer.write_string("Alarm 1", font_3x5, 0, 0);
+			buffer.write_string("SET", font_3x5, 2, 2);
+			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
+			buffer.write_string("1", font_clockface, 25, 0);
 		}
 		else if (menu_item == MENU_SET_ALARM_2){
-			buffer.write_string("Alarm 2", font_3x5, 0, 0);
+			buffer.write_string("SET", font_3x5, 2, 2);
+			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
+			buffer.write_string("2", font_clockface, 25, 0);
 		}
 		else if (menu_item == MENU_SET_ALARM_3){
-			buffer.write_string("Alarm 3", font_3x5, 0, 0);
+			buffer.write_string("SET", font_3x5, 2, 2);
+			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
+			buffer.write_string("3", font_clockface, 25, 0);
 		}
 		else if (menu_item == MENU_SET_TIME){
-			buffer.write_string("DATETIME", font_3x5, 0, 0);
+			buffer.write_string("SET", font_3x5, 5, 2);
+			buffer.write_string("1", font_icon, 19, 0);			//1 is clock icon
 		}
 	}
 	else if (mode == MODE_EDIT){
@@ -168,4 +200,10 @@ void Display::update(State state){
 	}
 
 	display.write_buffer(buffer.get_data());
+
+	static uint8_t last_display_brightness = 0;
+	if (last_display_brightness != state.get_display_brightness()){
+		last_display_brightness = state.get_display_brightness();
+		display.set_brightness(last_display_brightness);
+	}
 }

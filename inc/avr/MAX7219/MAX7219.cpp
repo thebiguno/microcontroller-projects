@@ -23,6 +23,13 @@ MAX7219::MAX7219(Stream* spi, uint8_t display_count) :
 	write_command(MAX7219_INTENSITY, 0x00, display_count);
 }
 
+void MAX7219::set_brightness(uint8_t brightness){
+	if (brightness > 0x0F){
+		brightness = 0x0F;
+	}
+	write_command(MAX7219_INTENSITY, brightness, display_count);
+}
+
 void MAX7219::write_command(uint8_t reg, uint8_t data, uint8_t repeat){
 	PORTB |= _BV(DD_SS);
 

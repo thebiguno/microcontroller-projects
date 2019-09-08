@@ -1,14 +1,15 @@
 #include "Light.h"
 
 #include <stdio.h>
-#include <Serial/SerialUSB.h>
 
 #define PWM_MIN		0x03
 #define PWM_MAX		0x3FF
 
-using namespace digitalcave;
 
+#ifdef DEBUG
+using namespace digitalcave;
 extern SerialUSB serial;
+#endif
 
 volatile uint8_t lightPinMaskYellow = 0;
 volatile uint8_t lightPinMaskNeutral = 0;
@@ -82,7 +83,7 @@ void light_set(double brightness, double whiteBalance){
 	if (whiteBalance < -1) whiteBalance = -1;
 	else if (whiteBalance > 1) whiteBalance = 1;
 
-	//We use an eponential function to map the brightness to percieved brightness,
+	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
 	uint16_t brightnessNeutralScaled = pow(brightness * 32, 2);
 	uint16_t whiteBalanceScaled = pow(whiteBalance * 32, 2);
@@ -95,19 +96,19 @@ void light_set(double brightness, double whiteBalance){
 	uint16_t brightnessYellowScaled = brightnessNeutralScaled;
 	uint16_t brightnessBlueScaled = brightnessNeutralScaled;
 	if (whiteBalance < 0){
-		if (brightnessYellowScaled > whiteBalanceScaled){
-			brightnessYellowScaled -= whiteBalanceScaled;
-		}
-		else {
-			brightnessYellowScaled = 0;
-		}
-	}
-	else if (whiteBalance > 0){
 		if (brightnessBlueScaled > whiteBalanceScaled){
 			brightnessBlueScaled -= whiteBalanceScaled;
 		}
 		else {
 			brightnessBlueScaled = 0;
+		}
+	}
+	else if (whiteBalance > 0){
+		if (brightnessYellowScaled > whiteBalanceScaled){
+			brightnessYellowScaled -= whiteBalanceScaled;
+		}
+		else {
+			brightnessYellowScaled = 0;
 		}
 	}
 
@@ -138,8 +139,10 @@ void light_set(double brightness, double whiteBalance){
 	lightPinMaskNeutral = _BV(LIGHT_N_PIN);
 	lightPinMaskBlue = _BV(LIGHT_B_PIN);
 
-	// char temp[64];
-	// serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled));
+#ifdef DEBUG
+	char temp[64];
+	serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled));
+#endif
 }
 
 //Turn on pins at overflow

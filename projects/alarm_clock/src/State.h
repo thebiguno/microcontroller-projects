@@ -8,7 +8,10 @@
 #include <timer/timer.h>
 #include <I2CAVR.h>
 #include <DS3231.h>
+
+#ifdef DEBUG
 #include <SerialUSB.h>
+#endif
 
 #include "Light.h"
 #include "Encoder.h"
@@ -42,7 +45,7 @@
 
 typedef struct alarm {
 	dc_time_t time;
-	uint8_t enabled;		//Bit mask for which days are enabled.  Defined as _BV(DAY), where DAY 0 is Sunday, 1 is Monday, etc.
+	uint8_t enabled;		//Bit mask for which days are enabled.  Defined as _BV(DAY), where DAY 0 is Sunday, 1 is Monday, etc.  _BV(7) is the global enabled flag, allowing you to turn off an alarm without changing the days it is active for.
 	uint8_t lamp_speed;		//Time to go from 0 to full brightness, in minutes
 	uint8_t music_speed;	//Time to go from 0 to full loudness, in minutes
 	uint8_t music_index;	//Index of music to start playing.  0xFF means to play a random file.
@@ -63,10 +66,13 @@ namespace digitalcave {
 			double light_brightness = 0;		//Keep track of light brightness...
 			double light_color = 0;				//... and light color temperature
 
+			//General stuff
+			uint8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
+
 			//Stuff for menus
-			uint8_t mode = 0;
+			uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
 			uint8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
-			uint8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like clock digits.
+			uint8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like setting times and alarms.
 
 		public:
 			State();
@@ -76,12 +82,12 @@ namespace digitalcave {
 			dc_time_t get_time();
 
 			alarm_t get_alarm(uint8_t index);
-			void set_alarm(uint8_t index, alarm_t alarm);
+
+			uint8_t get_display_brightness();
 
 			uint8_t get_mode();
 			uint8_t get_menu_item();
 			uint8_t get_edit_item();
-			int16_t get_light_brightness();
 	};
 }
 

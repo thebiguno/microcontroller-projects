@@ -2,7 +2,9 @@
 
 using namespace digitalcave;
 
+#ifdef DEBUG
 extern SerialUSB serial;
+#endif
 
 State::State() :
 	i2c(),
@@ -20,9 +22,12 @@ State::State() :
 void State::poll(){
 	dc_time_t time = get_time();
 	uint32_t millis = timer_millis();
+
 	button.sample(millis);
 	int8_t encoder_movement = encoder.get_encoder_movement();
+#ifdef DEBUG
 	char buffer[64];
+#endif
 
 	for (uint8_t i = 0; i < ALARM_COUNT; i++){
 		alarm_t a = alarm[i];
@@ -40,51 +45,69 @@ void State::poll(){
 			light_color = -1;
 			light_set(0, -1);
 			light_on();
+#ifdef DEBUG
 			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
+#endif
 		}
 
 		//Increment the brightness by the alarm ramp-up values
 		if (alarm_triggered & _BV(i)){
-			light_brightness = (double) a.lamp_speed * timer_millis() / 60 / 1000;			//Range 0 .. 1
-			light_color = ((double) a.lamp_speed * timer_millis() * 2 / 60 / 1000) - 1;		//Range -1 .. 1
-			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "bright=%f, color=%f (%d)\n\r", light_brightness, light_color, i));
+			light_brightness = (double) timer_millis() / 60 / 1000 / a.lamp_speed;			//Range 0 .. 1 over lamp_speed minutes
+			light_color = ((double) timer_millis() * 2 / 60 / 1000 / a.lamp_speed) - 1;		//Range -1 .. 1 over lamp_speed minutes
+			display_brightness = 15;
 		}
 	}
 
-	light_set(light_brightness, light_color);
-
-	//serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "State: %d (%d)\n\r", state, millis));
+	if (light_state()){
+		light_set(light_brightness, light_color);
+	}
 
 	if (mode == MODE_TIME){
 		if (button.longPressEvent()){
 			mode = MODE_MENU;
 			menu_item = 0;
-			serial.write("Enter Menu\n\r");
 		}
 		else if (button.releaseEvent()){
 			alarm_triggered = 0x00;
+			light_color = 0;
 			light_toggle();
+#ifdef DEBUG
+			serial.write("Toggle Light\n\r");
+#endif
 		}
-		else if (encoder_movement != 0 && light_state()){
-			light_brightness += (double) encoder_movement / 100;
-			if (light_brightness < 0) {
-				light_brightness = 0;
+		else if (encoder_movement != 0){
+			if (light_state()){
+				light_brightness += (double) encoder_movement / 100;
+				if (light_brightness < 0) {
+					light_brightness = 0;
+				}
+				else if (light_brightness > 1){
+					light_brightness = 1;
+				}
 			}
-			else if (light_brightness > 1){
-				light_brightness = 1;
+			else {
+				if (encoder_movement > 0){
+					edit_item++;
+					if (edit_item >= 3){
+						edit_item = 0;
+					}
+				}
+				else {
+					edit_item--;
+					if (edit_item >= 3){
+						edit_item = 2;
+					}
+				}
 			}
-			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Light Brightness: %d\n\r", light_brightness));
 		}
 	}
 	else if (mode == MODE_MENU){
 		if (button.longPressEvent()){
 			mode = MODE_TIME;
-			serial.write("Return to Time\n\r");
 		}
 		else if (button.releaseEvent()){
 			mode = MODE_EDIT;
 			edit_item = 0;
-			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Editing Menu Item: %d\n\r", menu_item));
 		}
 		else if (encoder_movement != 0){
 			if (encoder_movement > 0){
@@ -99,14 +122,15 @@ void State::poll(){
 					menu_item = MENU_SIZE - 1;
 				}
 			}
-		serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Menu Item: %d\n\r", menu_item));
 		}
 	}
 	else if (mode == MODE_EDIT){
 		//Long press from edit commits and returns to main screen
 		if (button.longPressEvent()){
 			mode = MODE_TIME;
-
+#ifdef DEBUG
+			serial.write("Saving alarm state\n\r");
+#endif
 			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 		}
 
@@ -158,6 +182,24 @@ void State::poll(){
 			}
 		}
 	}
+
+	static uint32_t last_change = 0;
+	if (encoder_movement || button.getState()){	//Button press / turn
+		last_change = millis;
+	}
+	if (last_change > millis){	//Timer overflow
+		last_change = millis;
+	}
+	else if ((last_change + 30000) > millis){
+		mode = MODE_TIME;
+		edit_item = 0;
+	}
+	else if ((last_change + 10000) > millis){
+		display_brightness = 15;
+	}
+	else {
+		display_brightness = 0;
+	}
 }
 
 alarm_t State::get_alarm(uint8_t index){
@@ -165,13 +207,6 @@ alarm_t State::get_alarm(uint8_t index){
 		index = ALARM_COUNT - 1;
 	}
 	return alarm[index];
-}
-
-void State::set_alarm(uint8_t index, alarm_t alarm){
-	if (index >= ALARM_COUNT){
-		index = ALARM_COUNT - 1;
-	}
-	this->alarm[index] = alarm;
 }
 
 uint8_t State::get_mode(){
@@ -189,6 +224,6 @@ uint8_t State::get_edit_item(){
 	return this->edit_item;
 }
 
-int16_t State::get_light_brightness(){
-	return this->light_brightness;
+uint8_t State::get_display_brightness(){
+	return this->display_brightness;
 }
