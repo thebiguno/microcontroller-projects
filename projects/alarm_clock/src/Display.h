@@ -11,10 +11,10 @@
 #include "Buffer.h"
 #include "Light.h"
 #include "State.h"
-#include "font/f_clockface.h"
 #include "font/f_icon.h"
 #include "font/f_3x3.h"
 #include "font/f_3x5.h"
+#include "font/f_5x8.h"
 
 #define LIGHT_PORT			PORTD
 #define LIGHT_Y_PIN			PORTD5

@@ -28,11 +28,11 @@ void Display::update(State state){
 			//Time - default state
 			if (time.mode == TIME_MODE_24){
 				snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
-				buffer.write_string(temp, font_clockface, 0, 0);
+				buffer.write_string(temp, font_5x8, 0, 0);
 			}
 			else {
 				snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
-				buffer.write_string(temp, font_clockface, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
+				buffer.write_string(temp, font_5x8, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
 			}
 		}
 		else if (edit_item == 1){
@@ -61,17 +61,17 @@ void Display::update(State state){
 		if (menu_item == MENU_SET_ALARM_1){
 			buffer.write_string("SET", font_3x5, 2, 2);
 			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("1", font_clockface, 25, 0);
+			buffer.write_string("1", font_5x8, 25, 0);
 		}
 		else if (menu_item == MENU_SET_ALARM_2){
 			buffer.write_string("SET", font_3x5, 2, 2);
 			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("2", font_clockface, 25, 0);
+			buffer.write_string("2", font_5x8, 25, 0);
 		}
 		else if (menu_item == MENU_SET_ALARM_3){
 			buffer.write_string("SET", font_3x5, 2, 2);
 			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("3", font_clockface, 25, 0);
+			buffer.write_string("3", font_5x8, 25, 0);
 		}
 		else if (menu_item == MENU_SET_TIME){
 			buffer.write_string("SET", font_3x5, 5, 2);
@@ -130,12 +130,16 @@ void Display::update(State state){
 				buffer.write_string("UMTWHFS", font_3x5, 0, 0);
 			}
 			else if (edit_item == 9){
-				snprintf(temp, sizeof(temp), "Wake %d", alarm.lamp_speed);
-				buffer.write_string(temp, font_3x5, 0, 0);
+				buffer.write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
+				snprintf(temp, sizeof(temp), "%d", alarm.lamp_speed);
+				buffer.write_string(temp, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
+				buffer.write_string("min", font_3x5, 21, 3);
 			}
 			else if (edit_item == 10){
-				snprintf(temp, sizeof(temp), "Music %d", alarm.music_speed);
-				buffer.write_string(temp, font_3x5, 0, 0);
+				buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is music
+				snprintf(temp, sizeof(temp), "%d", alarm.lamp_speed);
+				buffer.write_string(temp, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
+				buffer.write_string("min", font_3x5, 21, 3);
 			}
 			else if (edit_item == 11){
 				snprintf(temp, sizeof(temp), "Index %d", alarm.music_index);
@@ -201,9 +205,5 @@ void Display::update(State state){
 
 	display.write_buffer(buffer.get_data());
 
-	static uint8_t last_display_brightness = 0;
-	if (last_display_brightness != state.get_display_brightness()){
-		last_display_brightness = state.get_display_brightness();
-		display.set_brightness(last_display_brightness);
-	}
+	display.set_brightness(state.get_display_brightness());
 }

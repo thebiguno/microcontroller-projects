@@ -158,10 +158,10 @@ void State::poll(){
 					alarm[alarm_index].enabled ^= _BV(edit_item - 2);
 				}
 				else if (edit_item == 9){
-					alarm[alarm_index].lamp_speed = (alarm[alarm_index].lamp_speed + encoder_movement) % 100;
+					alarm[alarm_index].lamp_speed = (alarm[alarm_index].lamp_speed + encoder_movement) % 30;
 				}
 				else if (edit_item == 10){
-					alarm[alarm_index].music_speed = (alarm[alarm_index].music_speed + encoder_movement) % 100;
+					alarm[alarm_index].music_speed = (alarm[alarm_index].music_speed + encoder_movement) % 30;
 				}
 				else if (edit_item == 11){
 					alarm[alarm_index].music_index = (alarm[alarm_index].music_index + encoder_movement) % 100;
@@ -187,15 +187,28 @@ void State::poll(){
 	if (encoder_movement || button.getState()){	//Button press / turn
 		last_change = millis;
 	}
-	if (last_change > millis){	//Timer overflow
+
+	if (last_change > millis){	//Handle timer overflow
 		last_change = millis;
 	}
-	else if ((last_change + 30000) < millis){
-		mode = MODE_TIME;
+	else if (mode == MODE_MENU && (last_change + 30000) < millis){
+		mode = MODE_TIME;		//Go back to time after 30 seconds without input in menu mode
 		edit_item = 0;
 	}
-	else if ((last_change + 10000) > millis){
-		display_brightness = 15;
+	else if (mode == MODE_EDIT && (last_change + 90000) < millis){
+		mode = MODE_TIME;		//Go back to time after 90 seconds without input in edit mode
+		edit_item = 0;
+	}
+	else if ((last_change + 5000) > millis){
+		if (display_brightness < 15){
+			display_brightness++;		//Fade up to high brightness when touching input
+		}
+		else {
+			display_brightness = 15;
+		}
+	}
+	else if ((last_change + 30000) > millis){
+		display_brightness = ((last_change + 30000) - millis) / 1000;		//Fade out to low brightness when not touching anything for a while
 	}
 	else {
 		display_brightness = 0;

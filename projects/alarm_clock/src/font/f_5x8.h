@@ -1,5 +1,5 @@
-#ifndef FONT_CLOCKFACE_H
-#define FONT_CLOCKFACE_H
+#ifndef FONT_5X8_H
+#define FONT_5X8_H
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -12,6 +12,6 @@
 #define PROGMEM __attribute__((section(".progmem.data")))
 #endif
 
-extern font_t font_clockface;
+extern font_t font_5x8;
 
 #endif

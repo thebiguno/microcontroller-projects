@@ -63,8 +63,9 @@ uint8_t time_is_leap_year(uint16_t year);
 //Returns the day of the week for a given date.  0 = Sunday, 1 = Monday, ... 6 = Saturday
 uint8_t time_get_day_of_week(dc_time_t time);
 
-#endif
 
 #if defined (__cplusplus)
 }
+#endif
+
 #endif
