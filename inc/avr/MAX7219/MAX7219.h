@@ -34,6 +34,7 @@ namespace digitalcave {
 
 			void write_buffer(uint8_t* buffer);
 
+			void set_brightness(uint8_t brightness);
 	};
 }
 #endif
