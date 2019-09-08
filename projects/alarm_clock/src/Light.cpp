@@ -15,6 +15,11 @@ volatile uint8_t lightPinMaskYellow = 0;
 volatile uint8_t lightPinMaskNeutral = 0;
 volatile uint8_t lightPinMaskBlue = 0;
 
+volatile uint16_t brightnessNeutralScaled = 0;
+volatile uint16_t brightnessYellowScaled = 0;
+volatile uint16_t brightnessBlueScaled = 0;
+
+
 void light_init(){
 	//Set light pins as output
 	*(&LIGHT_PORT - 0x01) |= _BV(LIGHT_Y_PIN);
@@ -85,7 +90,7 @@ void light_set(double brightness, double whiteBalance){
 
 	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
-	uint16_t brightnessNeutralScaled = pow(brightness * 32, 2);
+	brightnessNeutralScaled = pow(brightness * 32, 2);
 	uint16_t whiteBalanceScaled = pow(whiteBalance * 32, 2);
 
 
@@ -93,8 +98,8 @@ void light_set(double brightness, double whiteBalance){
 	//For the yellow LED, we subtract
 	//whiteBalanceScaled values when whiteBalance is greater than 0.  For blue, we subtract
 	//when values are less than 0.
-	uint16_t brightnessYellowScaled = brightnessNeutralScaled;
-	uint16_t brightnessBlueScaled = brightnessNeutralScaled;
+	brightnessYellowScaled = brightnessNeutralScaled;
+	brightnessBlueScaled = brightnessNeutralScaled;
 	if (whiteBalance < 0){
 		if (brightnessBlueScaled > whiteBalanceScaled){
 			brightnessBlueScaled -= whiteBalanceScaled;
@@ -131,10 +136,10 @@ void light_set(double brightness, double whiteBalance){
 		brightnessBlueScaled = PWM_MIN;
 	}
 
-	OCR1B = brightnessYellowScaled;
-	OCR1C = brightnessNeutralScaled;
-	OCR3B = brightnessBlueScaled;
-
+	// OCR1B = brightnessYellowScaled;
+	// OCR1C = brightnessNeutralScaled;
+	// OCR3B = brightnessBlueScaled;
+	//
 	lightPinMaskYellow = _BV(LIGHT_Y_PIN);
 	lightPinMaskNeutral = _BV(LIGHT_N_PIN);
 	lightPinMaskBlue = _BV(LIGHT_B_PIN);
@@ -157,10 +162,13 @@ ISR(TIMER3_OVF_vect){
 //Turn off pins on compare match
 ISR(TIMER1_COMPB_vect){
 	LIGHT_PORT &= ~_BV(LIGHT_Y_PIN);
+	OCR1B = brightnessYellowScaled;
 }
 ISR(TIMER1_COMPC_vect){
 	LIGHT_PORT &= ~_BV(LIGHT_N_PIN);
+	OCR1C = brightnessNeutralScaled;
 }
 ISR(TIMER3_COMPB_vect){
 	LIGHT_PORT &= ~_BV(LIGHT_B_PIN);
+	OCR3B = brightnessBlueScaled;
 }

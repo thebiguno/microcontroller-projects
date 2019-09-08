@@ -190,7 +190,7 @@ void State::poll(){
 	if (last_change > millis){	//Timer overflow
 		last_change = millis;
 	}
-	else if ((last_change + 30000) > millis){
+	else if ((last_change + 30000) < millis){
 		mode = MODE_TIME;
 		edit_item = 0;
 	}

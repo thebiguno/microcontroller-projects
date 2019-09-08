@@ -24,7 +24,7 @@ void Display::update(State state){
 
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
-		// if (edit_item == 0){
+		if (edit_item == 0){
 			//Time - default state
 			if (time.mode == TIME_MODE_24){
 				snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
@@ -34,28 +34,28 @@ void Display::update(State state){
 				snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
 				buffer.write_string(temp, font_clockface, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
 			}
-		// }
-		// else if (edit_item == 1){
-			// //Date
-			// char day_of_week;
-			// switch (time_get_day_of_week(time)){
-			// 	case 0: day_of_week = 'U'; break;
-			// 	case 1: day_of_week = 'M'; break;
-			// 	case 2: day_of_week = 'T'; break;
-			// 	case 3: day_of_week = 'W'; break;
-			// 	case 4: day_of_week = 'H'; break;
-			// 	case 5: day_of_week = 'F'; break;
-			// 	case 6: day_of_week = 'S'; break;
-			// 	default: day_of_week = ' '; break;
-			// }
-			// snprintf(temp, sizeof(temp), "%02d.%02d.%02d", time.year - 2000, time.month, time.day_of_month);
-			// buffer.write_string(temp, font_3x5, 0, 1);
-			// snprintf(temp, sizeof(temp), "%c", day_of_week);
-			// buffer.write_string(temp, font_3x5, 29, 1);
-		// }
-		// else if (edit_item == 2){
-		// 	//buffer.write_string("TODO", font_3x5, 8, 1);
-		// }
+		}
+		else if (edit_item == 1){
+			//Date
+			char day_of_week;
+			switch (time_get_day_of_week(time)){
+				case 0: day_of_week = 'U'; break;
+				case 1: day_of_week = 'M'; break;
+				case 2: day_of_week = 'T'; break;
+				case 3: day_of_week = 'W'; break;
+				case 4: day_of_week = 'H'; break;
+				case 5: day_of_week = 'F'; break;
+				case 6: day_of_week = 'S'; break;
+				default: day_of_week = ' '; break;
+			}
+			snprintf(temp, sizeof(temp), "%02d.%02d.%02d", time.year - 2000, time.month, time.day_of_month);
+			buffer.write_string(temp, font_3x5, 0, 1);
+			snprintf(temp, sizeof(temp), "%c", day_of_week);
+			buffer.write_string(temp, font_3x5, 29, 1);
+		}
+		else if (edit_item == 2){
+			buffer.write_string("TODO", font_3x5, 8, 1);
+		}
 	}
 	else if (mode == MODE_MENU){
 		if (menu_item == MENU_SET_ALARM_1){
