@@ -104,6 +104,7 @@ void State::poll(){
 	else if (mode == MODE_MENU){
 		if (button.longPressEvent()){
 			mode = MODE_TIME;
+			edit_item = 0;
 		}
 		else if (button.releaseEvent()){
 			mode = MODE_EDIT;
@@ -128,9 +129,8 @@ void State::poll(){
 		//Long press from edit commits and returns to main screen
 		if (button.longPressEvent()){
 			mode = MODE_TIME;
-#ifdef DEBUG
-			serial.write("Saving alarm state\n\r");
-#endif
+			edit_item = 0;
+
 			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 		}
 
@@ -170,13 +170,16 @@ void State::poll(){
 		}
 		else if (menu_item == MENU_SET_TIME){
 			if (button.releaseEvent()){
-				edit_item = (edit_item + 1) % 7;	//Here edit_item goes from 0 to 6.  0 - 5 map to TIME_FIELD_X; 6 is 12 / 24 hour
+				edit_item = (edit_item + 1) % 6;	//Here edit_item goes from 0 to 6.  0 - 4 map to TIME_FIELD_X; 5 is 12 / 24 hour
 			}
 			else if (encoder_movement != 0){
-				if (edit_item == 0x06){
+				if (edit_item == 0x05){
 					calendar.setTime(time_set_mode(time, TIME_MODE_24));
 				}
 				else {
+					if (edit_item == TIME_FIELD_MINUTE){
+						time.second = 0;		//Reset seconds to zero when changing minutes
+					}
 					calendar.setTime(time_add(time, edit_item, encoder_movement, 0));
 				}
 			}
@@ -190,6 +193,10 @@ void State::poll(){
 
 	if (last_change > millis){	//Handle timer overflow
 		last_change = millis;
+	}
+	else if (mode == MODE_TIME && (last_change + 10000) < millis){
+		mode = MODE_TIME;		//Go back to time after 10 seconds without input in time mode
+		edit_item = 0;
 	}
 	else if (mode == MODE_MENU && (last_change + 30000) < millis){
 		mode = MODE_TIME;		//Go back to time after 30 seconds without input in menu mode

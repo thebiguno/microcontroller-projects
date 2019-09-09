@@ -13,8 +13,74 @@ Display::Display() :
 
 }
 
+void Display::write_time(dc_time_t time, uint8_t flash_field){
+	if (time.mode == TIME_MODE_24){
+		//Write the hours
+		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
+			snprintf(temp, sizeof(temp), "%02d:", time.hour);
+			buffer.write_string(temp, font_5x8, 0, 0);
+		}
+
+		//Write the colon
+		buffer.write_string(":", font_5x8, 12, 0);
+
+		//Write the minutes
+		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
+			snprintf(temp, sizeof(temp), "%02d", time.minute);
+			buffer.write_string(temp, font_5x8, 15, 0);
+		}
+	}
+	else {
+		//Write the hours
+		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
+			snprintf(temp, sizeof(temp), "%d", time.hour);
+			buffer.write_string(temp, font_5x8, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
+		}
+
+		//Write the colon
+		buffer.write_string(":", font_5x8, 12, 0);
+
+		//Write the minutes
+		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
+			snprintf(temp, sizeof(temp), "%02d", time.minute);
+			buffer.write_string(temp, font_5x8, 15, 0);
+		}
+
+		//Write AM / PM
+		buffer.write_char((time.mode == TIME_MODE_AM ? 'A' : 'P'), font_5x8, 29, 0);
+	}
+}
+
+void Display::write_date(dc_time_t time, uint8_t flash_field){
+	//Write the day of week
+	switch (time_get_day_of_week(time)){
+		case 0: buffer.write_string("Su", font_5x8, 0, 0); break;
+		case 1: buffer.write_string("Mo", font_5x8, 0, 0); break;
+		case 2: buffer.write_string("Tu", font_5x8, 0, 0); break;
+		case 3: buffer.write_string("We", font_5x8, 0, 0); break;
+		case 4: buffer.write_string("Th", font_5x8, 0, 0); break;
+		case 5: buffer.write_string("Fr", font_5x8, 0, 0); break;
+		case 6: buffer.write_string("Sa", font_5x8, 0, 0); break;
+	}
+
+	//Write the month
+	if (flash_field != TIME_FIELD_MONTH || flash_timer > FLASH_TIMER_ON){
+		snprintf(temp, sizeof(temp), "%02d", time.month);
+		buffer.write_string(temp, font_5x8, 8, 0);
+	}
+
+	//Write the day of month
+	if (flash_field != TIME_FIELD_DAY_OF_MONTH || flash_timer > FLASH_TIMER_ON){
+		snprintf(temp, sizeof(temp), "%02d", time.day_of_month);
+		buffer.write_string(temp, font_5x8, 21, 0);
+	}
+
+}
+
 void Display::update(State state){
 	buffer.clear();
+
+	flash_timer = (flash_timer + 1) & 0x0F;
 
 	uint8_t mode = state.get_mode();
 	uint8_t menu_item = state.get_menu_item();
@@ -25,33 +91,10 @@ void Display::update(State state){
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
 		if (edit_item == 0){
-			//Time - default state
-			if (time.mode == TIME_MODE_24){
-				snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
-				buffer.write_string(temp, font_5x8, 0, 0);
-			}
-			else {
-				snprintf(temp, sizeof(temp), "%d:%02d %c", time.hour, time.minute, (time.mode == TIME_MODE_AM ? 'A' : 'P'));
-				buffer.write_string(temp, font_5x8, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
-			}
+			write_time(time, 0);
 		}
 		else if (edit_item == 1){
-			//Date
-			char day_of_week;
-			switch (time_get_day_of_week(time)){
-				case 0: day_of_week = 'U'; break;
-				case 1: day_of_week = 'M'; break;
-				case 2: day_of_week = 'T'; break;
-				case 3: day_of_week = 'W'; break;
-				case 4: day_of_week = 'H'; break;
-				case 5: day_of_week = 'F'; break;
-				case 6: day_of_week = 'S'; break;
-				default: day_of_week = ' '; break;
-			}
-			snprintf(temp, sizeof(temp), "%02d.%02d.%02d", time.year - 2000, time.month, time.day_of_month);
-			buffer.write_string(temp, font_3x5, 0, 1);
-			snprintf(temp, sizeof(temp), "%c", day_of_week);
-			buffer.write_string(temp, font_3x5, 29, 1);
+			write_date(time, 0);
 		}
 		else if (edit_item == 2){
 			buffer.write_string("TODO", font_3x5, 8, 1);
@@ -94,28 +137,11 @@ void Display::update(State state){
 
 			alarm_t alarm = state.get_alarm(alarm_index);
 
-			if (edit_item < 2){
-				//Draw the underline depending on what we are editing
-				if (edit_item == 0){
-					buffer.write_string("__", font_3x5, 0, 2);		//Hour
-					buffer.write_string("_", font_3x5, 1, 2);
-				}
-				else if (edit_item == 1){
-					buffer.write_string("__", font_3x5, 10, 2);		//Minute
-					buffer.write_string("_", font_3x5, 11, 2);
-				}
-
-				dc_time_t time = alarm.time;
-				if (time.mode == TIME_MODE_24){
-					snprintf(temp, sizeof(temp), "%02d:%02d", time.hour, time.minute);
-					buffer.write_string(temp, font_3x5, 0, 0);
-				}
-				else {
-					snprintf(temp, sizeof(temp), "%d:%02d", time.hour, time.minute);
-					buffer.write_string(temp, font_3x5, time.hour >= 10 ? 0 : 4, 0);
-					snprintf(temp, sizeof(temp), "%c", (time.mode == TIME_MODE_AM ? 'A' : 'P'));
-					buffer.write_string(temp, font_3x5, 29, 0);
-				}
+			if (edit_item == 0){
+				write_time(alarm.time, TIME_FIELD_HOUR);
+			}
+			else if (edit_item == 1){
+				write_time(alarm.time, TIME_FIELD_MINUTE);
 			}
 			else if (edit_item < 9){
 				for (uint8_t i = 0; i < 7; i++){
@@ -149,48 +175,23 @@ void Display::update(State state){
 		else if (menu_item == MENU_SET_TIME){
 			dc_time_t time = state.get_time();
 
-			//Draw the underline depending on what we are editing
-			if (edit_item == 0 || edit_item == 3){
-				buffer.write_string("__", font_3x5, 0, 2);		//Year / Hour
-				buffer.write_string("_", font_3x5, 1, 2);
-			}
-			else if (edit_item == 1 || edit_item == 4){
-				buffer.write_string("__", font_3x5, 10, 2);		//Month / Minute
-				buffer.write_string("_", font_3x5, 11, 2);
-			}
-			else if (edit_item == 2 || edit_item == 5){
-				buffer.write_string("__", font_3x5, 20, 2);		//Day / Second
-				buffer.write_string("_", font_3x5, 21, 2);
-			}
-
-			if (edit_item < 3){
-				char day_of_week;
-				switch (time_get_day_of_week(time)){
-					case 0: day_of_week = 'U'; break;
-					case 1: day_of_week = 'M'; break;
-					case 2: day_of_week = 'T'; break;
-					case 3: day_of_week = 'W'; break;
-					case 4: day_of_week = 'H'; break;
-					case 5: day_of_week = 'F'; break;
-					case 6: day_of_week = 'S'; break;
-					default: day_of_week = ' '; break;
+			if (edit_item == 0){
+				if (flash_timer > FLASH_TIMER_ON){
+					snprintf(temp, sizeof(temp), "%04d", time.year);
+					buffer.write_string(temp, font_5x8, 4, 0);
 				}
-				snprintf(temp, sizeof(temp), "%02d.%02d.%02d", time.year - 2000, time.month, time.day_of_month);
-				buffer.write_string(temp, font_3x5, 0, 0);
-				snprintf(temp, sizeof(temp), "%c", day_of_week);
-				buffer.write_string(temp, font_3x5, 29, 0);
 			}
-			else if (edit_item < 6){
-				if (time.mode == TIME_MODE_24){
-					snprintf(temp, sizeof(temp), "%02d:%02d:%02d", time.hour, time.minute, time.second);
-					buffer.write_string(temp, font_3x5, 0, 0);
-				}
-				else {
-					snprintf(temp, sizeof(temp), "%2d:%02d:%02d", time.hour, time.minute, time.second);
-					buffer.write_string(temp, font_3x5, 0, 0);
-					snprintf(temp, sizeof(temp), "%c", (time.mode == TIME_MODE_AM ? 'A' : 'P'));
-					buffer.write_string(temp, font_3x5, 29, 0);
-				}
+			else if (edit_item == 1){
+				write_date(time, TIME_FIELD_MONTH);
+			}
+			else if (edit_item == 2){
+				write_date(time, TIME_FIELD_DAY_OF_MONTH);
+			}
+			else if (edit_item == 3){
+				write_time(time, TIME_FIELD_HOUR);
+			}
+			else if (edit_item == 4){
+				write_time(time, TIME_FIELD_MINUTE);
 			}
 			else {
 				if (time.mode == TIME_MODE_24){

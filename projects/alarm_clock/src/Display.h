@@ -21,6 +21,8 @@
 #define LIGHT_N_PIN			PORTD6
 #define LIGHT_B_PIN			PORTD7
 
+#define FLASH_TIMER_ON		0x05
+
 namespace digitalcave {
 
 	class Display {
@@ -28,6 +30,14 @@ namespace digitalcave {
 			SPIStreamAVR spi;
 			MAX7219 display;
 			Buffer buffer;
+
+			uint8_t flash_timer = 0;
+
+			char temp[10];
+
+			void write_time(dc_time_t time, uint8_t flash_field);
+
+			void write_date(dc_time_t time, uint8_t flash_field);
 
 		public:
 			Display();
