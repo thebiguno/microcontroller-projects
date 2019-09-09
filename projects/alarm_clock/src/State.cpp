@@ -86,18 +86,7 @@ void State::poll(){
 				}
 			}
 			else {
-				if (encoder_movement > 0){
-					edit_item++;
-					if (edit_item >= 3){
-						edit_item = 0;
-					}
-				}
-				else {
-					edit_item--;
-					if (edit_item >= 3){
-						edit_item = 2;
-					}
-				}
+				edit_item ^= 0x01;
 			}
 		}
 	}
@@ -186,16 +175,18 @@ void State::poll(){
 		}
 	}
 
+	//Handle timeouts - fade to dimmer display, and go back to time after certain timeouts depending on mode
 	static uint32_t last_change = 0;
 	if (encoder_movement || button.getState()){	//Button press / turn
 		last_change = millis;
 	}
 
+	//Go back to time after timeouts
 	if (last_change > millis){	//Handle timer overflow
 		last_change = millis;
 	}
-	else if (mode == MODE_TIME && (last_change + 10000) < millis){
-		mode = MODE_TIME;		//Go back to time after 10 seconds without input in time mode
+	else if (mode == MODE_TIME && (last_change + 15000) < millis){
+		mode = MODE_TIME;		//Go back to time after 15 seconds without input in time mode
 		edit_item = 0;
 	}
 	else if (mode == MODE_MENU && (last_change + 30000) < millis){
@@ -206,9 +197,11 @@ void State::poll(){
 		mode = MODE_TIME;		//Go back to time after 90 seconds without input in edit mode
 		edit_item = 0;
 	}
-	else if ((last_change + 5000) > millis){
+
+	//Fade display brightness depending on user input
+	if ((last_change + 5000) > millis){
 		if (display_brightness < 15){
-			display_brightness++;		//Fade up to high brightness when touching input
+			display_brightness++;		//Quickly fade up to high brightness when touching input
 		}
 		else {
 			display_brightness = 15;

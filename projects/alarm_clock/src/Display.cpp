@@ -52,29 +52,68 @@ void Display::write_time(dc_time_t time, uint8_t flash_field){
 }
 
 void Display::write_date(dc_time_t time, uint8_t flash_field){
-	//Write the day of week
-	switch (time_get_day_of_week(time)){
-		case 0: buffer.write_string("Su", font_5x8, 0, 0); break;
-		case 1: buffer.write_string("Mo", font_5x8, 0, 0); break;
-		case 2: buffer.write_string("Tu", font_5x8, 0, 0); break;
-		case 3: buffer.write_string("We", font_5x8, 0, 0); break;
-		case 4: buffer.write_string("Th", font_5x8, 0, 0); break;
-		case 5: buffer.write_string("Fr", font_5x8, 0, 0); break;
-		case 6: buffer.write_string("Sa", font_5x8, 0, 0); break;
+	//Write the year
+	if (flash_field != TIME_FIELD_YEAR || flash_timer > FLASH_TIMER_ON){
+		snprintf(temp, sizeof(temp), "%04d", time.year);
+		buffer.write_string(temp, font_5x8, scroll_value + 0, 0);
 	}
+
+	buffer.write_char('-', font_5x8, scroll_value + 24, 0);
 
 	//Write the month
 	if (flash_field != TIME_FIELD_MONTH || flash_timer > FLASH_TIMER_ON){
 		snprintf(temp, sizeof(temp), "%02d", time.month);
-		buffer.write_string(temp, font_5x8, 8, 0);
+		buffer.write_string(temp, font_5x8, scroll_value + 28, 0);
 	}
+
+	buffer.write_char('-', font_5x8, scroll_value + 40, 0);
 
 	//Write the day of month
 	if (flash_field != TIME_FIELD_DAY_OF_MONTH || flash_timer > FLASH_TIMER_ON){
 		snprintf(temp, sizeof(temp), "%02d", time.day_of_month);
-		buffer.write_string(temp, font_5x8, 21, 0);
+		buffer.write_string(temp, font_5x8, scroll_value + 44, 0);
 	}
 
+	//Write the day of week
+	switch (time_get_day_of_week(time)){
+		case 0: buffer.write_string("Su", font_5x8, scroll_value + 58, 0); break;
+		case 1: buffer.write_string("Mo", font_5x8, scroll_value + 58, 0); break;
+		case 2: buffer.write_string("Tu", font_5x8, scroll_value + 58, 0); break;
+		case 3: buffer.write_string("We", font_5x8, scroll_value + 58, 0); break;
+		case 4: buffer.write_string("Th", font_5x8, scroll_value + 58, 0); break;
+		case 5: buffer.write_string("Fr", font_5x8, scroll_value + 58, 0); break;
+		case 6: buffer.write_string("Sa", font_5x8, scroll_value + 58, 0); break;
+	}
+
+	if (flash_timer & 0x01){
+		if (flash_field == NO_FLASH){		//If we are not flashing, we scroll the entire width
+			scroll_value += scroll_direction;
+			if (scroll_value < (58 + 7 - 32) * -1){
+				scroll_value = (58 + 7 - 32) * -1;
+				scroll_direction = 1;
+			}
+			else if (scroll_value > 0){
+				scroll_value = 0;
+				scroll_direction = -1;
+			}
+			else if ((scroll_value == (58 + 7 - 32) * -1) || (scroll_value == 0)){		//The 58 is the position of the day of week; the 7 is the width of the day of week; the 32 is the width of the display
+				scroll_direction *= -1;
+			}
+		}
+		else if (flash_field == TIME_FIELD_YEAR){
+			scroll_value = 0;
+		}
+		else if (flash_field == TIME_FIELD_MONTH){
+			if (scroll_value > -20){
+				scroll_value--;
+			}
+		}
+		else if (flash_field == TIME_FIELD_DAY_OF_MONTH){
+			if (scroll_value > -36){
+				scroll_value--;
+			}
+		}
+	}
 }
 
 void Display::update(State state){
@@ -91,14 +130,12 @@ void Display::update(State state){
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
 		if (edit_item == 0){
-			write_time(time, 0);
+			write_time(time, NO_FLASH);
 		}
 		else if (edit_item == 1){
-			write_date(time, 0);
+			write_date(time, NO_FLASH);
 		}
-		else if (edit_item == 2){
-			buffer.write_string("TODO", font_3x5, 8, 1);
-		}
+
 	}
 	else if (mode == MODE_MENU){
 		if (menu_item == MENU_SET_ALARM_1){
@@ -144,6 +181,23 @@ void Display::update(State state){
 				write_time(alarm.time, TIME_FIELD_MINUTE);
 			}
 			else if (edit_item < 9){
+				if (edit_item == 2){
+					scroll_offset = 0;
+				}
+				else if (flash_timer & 0x01){
+					if (scroll_offset < ((edit_item - 2) * -7) + 10){
+						scroll_offset--;
+					}
+				}
+
+				//TODO
+				if (flash_timer > FLASH_TIMER_ON || edit_item == 2){
+					buffer.write_string("Su", font_5x8, scroll_offset + 0, 0);
+				}
+				else if (flash_timer > FLASH_TIMER_ON || edit_item == 3){
+					buffer.write_string("Su", font_5x8, scroll_offset + (edit_item - 2) * 7), 0);
+				}
+				buffer.write_string("Su Mo Tu We Th Fr Sa", font_5x8, scroll_offset, 0);
 				for (uint8_t i = 0; i < 7; i++){
 					if (alarm.enabled & _BV(i)){
 						buffer.write_string("_", font_3x5, i * 4, 3);
@@ -153,7 +207,6 @@ void Display::update(State state){
 					}
 				}
 
-				buffer.write_string("UMTWHFS", font_3x5, 0, 0);
 			}
 			else if (edit_item == 9){
 				buffer.write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
@@ -176,10 +229,7 @@ void Display::update(State state){
 			dc_time_t time = state.get_time();
 
 			if (edit_item == 0){
-				if (flash_timer > FLASH_TIMER_ON){
-					snprintf(temp, sizeof(temp), "%04d", time.year);
-					buffer.write_string(temp, font_5x8, 4, 0);
-				}
+				write_date(time, TIME_FIELD_YEAR);
 			}
 			else if (edit_item == 1){
 				write_date(time, TIME_FIELD_MONTH);
@@ -194,11 +244,12 @@ void Display::update(State state){
 				write_time(time, TIME_FIELD_MINUTE);
 			}
 			else {
+				buffer.write_string("Mode:", font_3x5, 1, 3);
 				if (time.mode == TIME_MODE_24){
-					buffer.write_string("Mode: 24", font_3x5, 0, 0);
+					buffer.write_string("24", font_5x8, 20, 0);
 				}
 				else {
-					buffer.write_string("Mode: 12", font_3x5, 0, 0);
+					buffer.write_string("12", font_5x8, 20, 0);
 				}
 			}
 		}
