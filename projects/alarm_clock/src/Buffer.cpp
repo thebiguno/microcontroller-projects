@@ -55,7 +55,9 @@ int16_t Buffer::write_char(char c, font_t font, int16_t x, int16_t y){
 	if (glyph_index != 0xFF){
 		for (int16_t iy = y; iy < y + height; iy++){
 			for (int16_t ix = x; ix < x + width; ix++){
-				set_pixel(ix, iy, pgm_read_byte_near(font.font_data + (glyph_index * byteCount) + byteCounter) & _BV(bitCounter));
+				if (pgm_read_byte_near(font.font_data + (glyph_index * byteCount) + byteCounter) & _BV(bitCounter)){
+					set_pixel(ix, iy, 1);
+				}
 				if (bitCounter == 0){
 					byteCounter++;
 					bitCounter = 8;

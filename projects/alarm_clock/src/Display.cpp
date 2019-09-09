@@ -182,32 +182,24 @@ void Display::update(State state){
 			}
 			else if (edit_item < 9){
 				if (edit_item == 2){
-					scroll_offset = 0;
+					scroll_value = 0;
 				}
 				else if (flash_timer & 0x01){
-					if (scroll_offset < ((edit_item - 2) * -7) + 10){
-						scroll_offset--;
+					if (scroll_value > ((edit_item - 2) * -7) + 14 && scroll_value > -16){
+						scroll_value--;
 					}
 				}
 
-				//TODO We want to make this scrollable, with some nice way to show that a day is enabled.  Probably the best way is to move
-				// the Su, Mo, etc to the icons class instead of trying to use fonts.
-				if (flash_timer > FLASH_TIMER_ON || edit_item == 2){
-					buffer.write_string("Su", font_5x8, scroll_offset + 0, 0);
-				}
-				else if (flash_timer > FLASH_TIMER_ON || edit_item == 3){
-					buffer.write_string("Su", font_5x8, scroll_offset + (edit_item - 2) * 7), 0);
-				}
-				buffer.write_string("Su Mo Tu We Th Fr Sa", font_5x8, scroll_offset, 0);
 				for (uint8_t i = 0; i < 7; i++){
 					if (alarm.enabled & _BV(i)){
-						buffer.write_string("_", font_3x5, i * 4, 3);
+						//Draw the underline for days that are enabled
+						buffer.write_char((char) 0x48, font_icon, (i * 7) + scroll_value, 0);
 					}
-					if ((edit_item - 2) == i){
-						buffer.write_string("_", font_3x5, i * 4, 2);
+					if (flash_timer > FLASH_TIMER_ON || edit_item != (i + 2)){
+						//Write the days
+						buffer.write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);
 					}
 				}
-
 			}
 			else if (edit_item == 9){
 				buffer.write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
