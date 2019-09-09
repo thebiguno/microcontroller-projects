@@ -190,7 +190,8 @@ void Display::update(State state){
 					}
 				}
 
-				//TODO
+				//TODO We want to make this scrollable, with some nice way to show that a day is enabled.  Probably the best way is to move
+				// the Su, Mo, etc to the icons class instead of trying to use fonts.
 				if (flash_timer > FLASH_TIMER_ON || edit_item == 2){
 					buffer.write_string("Su", font_5x8, scroll_offset + 0, 0);
 				}
