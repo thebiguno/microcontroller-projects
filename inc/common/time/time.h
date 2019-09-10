@@ -15,6 +15,7 @@ extern "C" {
 #define TIME_MODE_AM			0
 #define TIME_MODE_PM			1
 #define TIME_MODE_24			2
+#define TIME_MODE_12			3
 
 #define TIME_FIELD_YEAR				0x00
 #define TIME_FIELD_MONTH			0x01

@@ -18,16 +18,16 @@ void Display::write_time(dc_time_t time, uint8_t flash_field){
 		//Write the hours
 		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
 			snprintf(temp, sizeof(temp), "%02d:", time.hour);
-			buffer.write_string(temp, font_5x8, 0, 0);
+			buffer.write_string(temp, font_5x8, 3, 0);
 		}
 
 		//Write the colon
-		buffer.write_string(":", font_5x8, 12, 0);
+		buffer.write_string(":", font_5x8, 15, 0);
 
 		//Write the minutes
 		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
 			snprintf(temp, sizeof(temp), "%02d", time.minute);
-			buffer.write_string(temp, font_5x8, 15, 0);
+			buffer.write_string(temp, font_5x8, 17, 0);
 		}
 	}
 	else {
@@ -43,7 +43,7 @@ void Display::write_time(dc_time_t time, uint8_t flash_field){
 		//Write the minutes
 		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
 			snprintf(temp, sizeof(temp), "%02d", time.minute);
-			buffer.write_string(temp, font_5x8, 15, 0);
+			buffer.write_string(temp, font_5x8, 14, 0);
 		}
 
 		//Write AM / PM
@@ -75,28 +75,20 @@ void Display::write_date(dc_time_t time, uint8_t flash_field){
 	}
 
 	//Write the day of week
-	switch (time_get_day_of_week(time)){
-		case 0: buffer.write_string("Su", font_5x8, scroll_value + 58, 0); break;
-		case 1: buffer.write_string("Mo", font_5x8, scroll_value + 58, 0); break;
-		case 2: buffer.write_string("Tu", font_5x8, scroll_value + 58, 0); break;
-		case 3: buffer.write_string("We", font_5x8, scroll_value + 58, 0); break;
-		case 4: buffer.write_string("Th", font_5x8, scroll_value + 58, 0); break;
-		case 5: buffer.write_string("Fr", font_5x8, scroll_value + 58, 0); break;
-		case 6: buffer.write_string("Sa", font_5x8, scroll_value + 58, 0); break;
-	}
+	buffer.write_char((char) (time_get_day_of_week(time) + 0x41), font_icon, scroll_value + 58, 2);		//In the icon font, Sunday is 'A' (0x41), Monday is 'B', etc.
 
 	if (flash_timer & 0x01){
 		if (flash_field == NO_FLASH){		//If we are not flashing, we scroll the entire width
 			scroll_value += scroll_direction;
-			if (scroll_value < (58 + 7 - 32) * -1){
-				scroll_value = (58 + 7 - 32) * -1;
+			if (scroll_value < (58 + 7 - 32) * -1 - 4){
+				scroll_value = (58 + 7 - 32) * -1 - 4;
 				scroll_direction = 1;
 			}
-			else if (scroll_value > 0){
+			else if (scroll_value > 2){
 				scroll_value = 0;
 				scroll_direction = -1;
 			}
-			else if ((scroll_value == (58 + 7 - 32) * -1) || (scroll_value == 0)){		//The 58 is the position of the day of week; the 7 is the width of the day of week; the 32 is the width of the display
+			else if ((scroll_value == (58 + 7 - 32) * -1 - 4) || (scroll_value == 4)){		//The 58 is the position of the day of week; the 7 is the width of the day of week; the 32 is the width of the display.  The 4 (in both comparisons) is to give a bit more room before bouncing.
 				scroll_direction *= -1;
 			}
 		}
@@ -130,6 +122,7 @@ void Display::update(State state){
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
 		if (edit_item == 0){
+			scroll_value = 4;
 			write_time(time, NO_FLASH);
 		}
 		else if (edit_item == 1){
@@ -138,24 +131,14 @@ void Display::update(State state){
 
 	}
 	else if (mode == MODE_MENU){
-		if (menu_item == MENU_SET_ALARM_1){
+		if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
 			buffer.write_string("SET", font_3x5, 2, 2);
-			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("1", font_5x8, 25, 0);
-		}
-		else if (menu_item == MENU_SET_ALARM_2){
-			buffer.write_string("SET", font_3x5, 2, 2);
-			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("2", font_5x8, 25, 0);
-		}
-		else if (menu_item == MENU_SET_ALARM_3){
-			buffer.write_string("SET", font_3x5, 2, 2);
-			buffer.write_string("0", font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_string("3", font_5x8, 25, 0);
+			buffer.write_char('0', font_icon, 16, 0);			//0 is alarm icon
+			buffer.write_char((char) (menu_item + 0x31), font_5x8, 25, 0);
 		}
 		else if (menu_item == MENU_SET_TIME){
 			buffer.write_string("SET", font_3x5, 5, 2);
-			buffer.write_string("1", font_icon, 19, 0);			//1 is clock icon
+			buffer.write_char('1', font_icon, 19, 0);			//1 is clock icon
 		}
 	}
 	else if (mode == MODE_EDIT){
@@ -197,7 +180,7 @@ void Display::update(State state){
 					}
 					if (flash_timer > FLASH_TIMER_ON || edit_item != (i + 2)){
 						//Write the days
-						buffer.write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);
+						buffer.write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);		//In the Icon font, we define Sunday as 'A' (0x41), Monday as 'B', etc.  So (i + 0x41) returns the day of the week.
 					}
 				}
 			}

@@ -130,7 +130,7 @@ dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_af
 }
 
 dc_time_t time_set_mode(dc_time_t time, uint8_t mode){
-	if (time.mode == TIME_MODE_24){			//Changing from 24 hour to 12 hour
+	if (mode != TIME_MODE_24 && time.mode == TIME_MODE_24){			//Changing from 24 hour to 12 hour
 		if (time.hour == 0){				//Midnight
 			time.hour = 12;
 			time.mode = TIME_MODE_AM;
@@ -143,7 +143,7 @@ dc_time_t time_set_mode(dc_time_t time, uint8_t mode){
 			time.mode = TIME_MODE_AM;
 		}
 	}
-	else {									//Changing from 12 hour to 24 hour
+	else if (mode == TIME_MODE_24 && time.mode != TIME_MODE_24) {	//Changing from 12 hour to 24 hour
 		if (time.hour == 12){				//Noon or midnight are special cases; subtract 12 (and if it is PM, later re-add 12)
 			time.hour = 0;
 		}

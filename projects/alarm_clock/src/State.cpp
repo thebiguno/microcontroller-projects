@@ -163,7 +163,11 @@ void State::poll(){
 			}
 			else if (encoder_movement != 0){
 				if (edit_item == 0x05){
-					calendar.setTime(time_set_mode(time, TIME_MODE_24));
+					uint8_t mode = time.mode == TIME_MODE_24 ? TIME_MODE_12 : TIME_MODE_24;
+					calendar.setTime(time_set_mode(time, mode));
+					for (uint8_t i = 0; i < ALARM_COUNT; i++){
+						alarm[i].time = time_set_mode(alarm[i].time, mode);
+					}
 				}
 				else {
 					if (edit_item == TIME_FIELD_MINUTE){
