@@ -4,6 +4,7 @@ using namespace digitalcave;
 
 #ifdef DEBUG
 extern SerialUSB serial;
+char buffer[64];
 #endif
 
 State::State() :
@@ -23,11 +24,12 @@ void State::poll(){
 	dc_time_t time = get_time();
 	uint32_t millis = timer_millis();
 
+#ifdef DEBUG
+	//serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "millis: %d\n\r", millis));
+#endif
+
 	button.sample(millis);
 	int8_t encoder_movement = encoder.get_encoder_movement();
-#ifdef DEBUG
-	char buffer[64];
-#endif
 
 	for (uint8_t i = 0; i < ALARM_COUNT; i++){
 		alarm_t a = alarm[i];
@@ -39,8 +41,8 @@ void State::poll(){
 				&& a.time.minute == time.minute
 				&& time.second == 0){
 			alarm_triggered |= _BV(i);
-			timer_init();		//Reset our timer; we will use this to track how long the light has been on
-			millis = 0;
+			//timer_init();		//Reset our timer; we will use this to track how long the light has been on
+			//millis = 0;
 			light_brightness = 0;
 			light_color = -1;
 			light_set(0, -1);
@@ -206,6 +208,9 @@ void State::poll(){
 	if ((last_change + 5000) > millis){
 		if (display_brightness < 15){
 			display_brightness++;		//Quickly fade up to high brightness when touching input
+#ifdef DEBUG
+			serial.write("Increase Brightness\n\r");
+#endif
 		}
 		else {
 			display_brightness = 15;
@@ -213,9 +218,15 @@ void State::poll(){
 	}
 	else if ((last_change + 30000) > millis){
 		display_brightness = ((last_change + 30000) - millis) / 1000;		//Fade out to low brightness when not touching anything for a while
+#ifdef DEBUG
+		serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: %d\n\r", display_brightness));
+#endif
 	}
 	else {
 		display_brightness = 0;
+#ifdef DEBUG
+		serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: 0\n\r"));
+#endif
 	}
 }
 
