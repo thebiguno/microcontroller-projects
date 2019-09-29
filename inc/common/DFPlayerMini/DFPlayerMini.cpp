@@ -19,7 +19,7 @@ DFPlayerMini::DFPlayerMini(Stream* serial) :
 	request[1] = 0xFF;	//Version info
 	request[2] = 0x06;	//Length (constant)
 	request[9] = 0xEF;	//End byte
-	delay_ms(500);
+	//delay_ms(500);
 	init();
 }
 
