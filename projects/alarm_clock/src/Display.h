@@ -45,7 +45,7 @@ namespace digitalcave {
 		public:
 			Display();
 
-			void update(State state);
+			void update();
 	};
 }
 

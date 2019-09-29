@@ -3,18 +3,19 @@
 using namespace digitalcave;
 
 #ifdef DEBUG
-SerialUSB serial;
+SerialUSB serialUSB;
 #endif
 
-int main(){
-	State state;
-	Display display;
+Display display;
+Sound sound;
+State state;
 
+int main(){
 	//Main program loop
 	while (1){
+		sound.poll();
 		state.poll();
-
-		display.update(state);
+		display.update();
 
 		delay_ms(50);	//No point in spinning the wheels too fast...
 	}

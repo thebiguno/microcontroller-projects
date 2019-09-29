@@ -3,6 +3,8 @@
 using namespace digitalcave;
 
 extern ButtonAVR button;
+extern Sound sound;
+extern State state;
 
 Display::Display() :
 	spi(),
@@ -12,6 +14,147 @@ Display::Display() :
 	buffer.clear();
 
 }
+
+void Display::update(){
+	buffer.clear();
+
+	flash_timer = (flash_timer + 1) & 0x0F;
+
+	uint8_t mode = state.get_mode();
+	uint8_t menu_item = state.get_menu_item();
+	uint8_t edit_item = state.get_edit_item();
+
+	char temp[10];
+
+	if (mode == MODE_TIME){
+		dc_time_t time = state.get_time();
+		if (edit_item == 0){
+			scroll_value = 4;
+			write_time(time, NO_FLASH);
+		}
+		else if (edit_item == 1){
+			write_date(time, NO_FLASH);
+		}
+
+	}
+	else if (mode == MODE_MENU){
+		if (menu_item == MENU_MUSIC){
+			buffer.write_string("2", font_icon, 2, 0);			//Icon 2 is music
+			buffer.write_string("Setup", font_3x5, 11, 3);
+		}
+		else if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
+			buffer.write_string("SET", font_3x5, 2, 2);
+			buffer.write_char('0', font_icon, 16, 0);			//0 is alarm icon
+			buffer.write_char((char) (menu_item + 0x31 - MENU_SET_ALARM_1), font_5x8, 25, 0);
+		}
+		else if (menu_item == MENU_SET_TIME){
+			buffer.write_string("SET", font_3x5, 5, 2);
+			buffer.write_char('1', font_icon, 19, 0);			//1 is clock icon
+		}
+	}
+	else if (mode == MODE_EDIT){
+		if (menu_item == MENU_MUSIC){
+			buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is music
+			buffer.write_string("VOL", font_3x5, 8, 3);
+			snprintf(temp, sizeof(temp), "%d", sound.getVolume());
+			buffer.write_string(temp, font_5x8, (sound.getVolume() < 10 ? 26 : 20), 0);
+		}
+		else if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
+			//Find alarm index
+			uint8_t alarm_index;
+			if (menu_item == MENU_SET_ALARM_1){
+				alarm_index = 0;
+			}
+			else if (menu_item == MENU_SET_ALARM_2){
+				alarm_index = 1;
+			}
+			else if (menu_item == MENU_SET_ALARM_3){
+				alarm_index = 2;
+			}
+
+			alarm_t alarm = state.get_alarm(alarm_index);
+
+			if (edit_item == 0){
+				write_time(alarm.time, TIME_FIELD_HOUR);
+			}
+			else if (edit_item == 1){
+				write_time(alarm.time, TIME_FIELD_MINUTE);
+			}
+			else if (edit_item < 9){
+				if (edit_item == 2){
+					scroll_value = 0;
+				}
+				else if (flash_timer & 0x01){
+					if (scroll_value > ((edit_item - 2) * -7) + 14 && scroll_value > -16){
+						scroll_value--;
+					}
+				}
+
+				for (uint8_t i = 0; i < 7; i++){
+					if (alarm.enabled & _BV(i)){
+						//Draw the underline for days that are enabled
+						buffer.write_char((char) 0x48, font_icon, (i * 7) + scroll_value, 0);
+					}
+					if (flash_timer > FLASH_TIMER_ON || edit_item != (i + 2)){
+						//Write the days
+						buffer.write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);		//In the Icon font, we define Sunday as 'A' (0x41), Monday as 'B', etc.  So (i + 0x41) returns the day of the week.
+					}
+				}
+			}
+			else if (edit_item == 9){
+				buffer.write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
+				snprintf(temp, sizeof(temp), "%d", alarm.lamp_speed);
+				buffer.write_string(temp, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
+				buffer.write_string("min", font_3x5, 21, 3);
+			}
+			else if (edit_item == 10){
+				buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is brightness
+				snprintf(temp, sizeof(temp), "%d", alarm.music_speed);
+				buffer.write_string(temp, font_5x8, (alarm.music_speed < 10 ? 15 : 9), 0);
+				buffer.write_string("min", font_3x5, 21, 3);
+			}
+			else if (edit_item == 11){
+				buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is music
+				buffer.write_string("VOL", font_3x5, 8, 3);
+				snprintf(temp, sizeof(temp), "%d", alarm.music_volume);
+				buffer.write_string(temp, font_5x8, (sound.getVolume() < 10 ? 26 : 20), 0);
+			}
+		}
+		else if (menu_item == MENU_SET_TIME){
+			dc_time_t time = state.get_time();
+
+			if (edit_item == 0){
+				write_date(time, TIME_FIELD_YEAR);
+			}
+			else if (edit_item == 1){
+				write_date(time, TIME_FIELD_MONTH);
+			}
+			else if (edit_item == 2){
+				write_date(time, TIME_FIELD_DAY_OF_MONTH);
+			}
+			else if (edit_item == 3){
+				write_time(time, TIME_FIELD_HOUR);
+			}
+			else if (edit_item == 4){
+				write_time(time, TIME_FIELD_MINUTE);
+			}
+			else {
+				buffer.write_string("Mode:", font_3x5, 1, 3);
+				if (time.mode == TIME_MODE_24){
+					buffer.write_string("24", font_5x8, 20, 0);
+				}
+				else {
+					buffer.write_string("12", font_5x8, 20, 0);
+				}
+			}
+		}
+	}
+
+	display.write_buffer(buffer.get_data());
+
+	display.set_brightness(state.get_display_brightness());
+}
+
 
 void Display::write_time(dc_time_t time, uint8_t flash_field){
 	if (time.mode == TIME_MODE_24){
@@ -106,132 +249,4 @@ void Display::write_date(dc_time_t time, uint8_t flash_field){
 			}
 		}
 	}
-}
-
-void Display::update(State state){
-	buffer.clear();
-
-	flash_timer = (flash_timer + 1) & 0x0F;
-
-	uint8_t mode = state.get_mode();
-	uint8_t menu_item = state.get_menu_item();
-	uint8_t edit_item = state.get_edit_item();
-
-	char temp[10];
-
-	if (mode == MODE_TIME){
-		dc_time_t time = state.get_time();
-		if (edit_item == 0){
-			scroll_value = 4;
-			write_time(time, NO_FLASH);
-		}
-		else if (edit_item == 1){
-			write_date(time, NO_FLASH);
-		}
-
-	}
-	else if (mode == MODE_MENU){
-		if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
-			buffer.write_string("SET", font_3x5, 2, 2);
-			buffer.write_char('0', font_icon, 16, 0);			//0 is alarm icon
-			buffer.write_char((char) (menu_item + 0x31), font_5x8, 25, 0);
-		}
-		else if (menu_item == MENU_SET_TIME){
-			buffer.write_string("SET", font_3x5, 5, 2);
-			buffer.write_char('1', font_icon, 19, 0);			//1 is clock icon
-		}
-	}
-	else if (mode == MODE_EDIT){
-		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
-			//Find alarm index
-			uint8_t alarm_index;
-			if (menu_item == MENU_SET_ALARM_1){
-				alarm_index = 0;
-			}
-			else if (menu_item == MENU_SET_ALARM_2){
-				alarm_index = 1;
-			}
-			else if (menu_item == MENU_SET_ALARM_3){
-				alarm_index = 2;
-			}
-
-			alarm_t alarm = state.get_alarm(alarm_index);
-
-			if (edit_item == 0){
-				write_time(alarm.time, TIME_FIELD_HOUR);
-			}
-			else if (edit_item == 1){
-				write_time(alarm.time, TIME_FIELD_MINUTE);
-			}
-			else if (edit_item < 9){
-				if (edit_item == 2){
-					scroll_value = 0;
-				}
-				else if (flash_timer & 0x01){
-					if (scroll_value > ((edit_item - 2) * -7) + 14 && scroll_value > -16){
-						scroll_value--;
-					}
-				}
-
-				for (uint8_t i = 0; i < 7; i++){
-					if (alarm.enabled & _BV(i)){
-						//Draw the underline for days that are enabled
-						buffer.write_char((char) 0x48, font_icon, (i * 7) + scroll_value, 0);
-					}
-					if (flash_timer > FLASH_TIMER_ON || edit_item != (i + 2)){
-						//Write the days
-						buffer.write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);		//In the Icon font, we define Sunday as 'A' (0x41), Monday as 'B', etc.  So (i + 0x41) returns the day of the week.
-					}
-				}
-			}
-			else if (edit_item == 9){
-				buffer.write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
-				snprintf(temp, sizeof(temp), "%d", alarm.lamp_speed);
-				buffer.write_string(temp, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
-				buffer.write_string("min", font_3x5, 21, 3);
-			}
-			else if (edit_item == 10){
-				buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is music
-				snprintf(temp, sizeof(temp), "%d", alarm.lamp_speed);
-				buffer.write_string(temp, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
-				buffer.write_string("min", font_3x5, 21, 3);
-			}
-			else if (edit_item == 11){
-				snprintf(temp, sizeof(temp), "Index %d", alarm.music_index);
-				buffer.write_string(temp, font_3x5, 0, 0);
-			}
-		}
-		else if (menu_item == MENU_SET_TIME){
-			dc_time_t time = state.get_time();
-
-			if (edit_item == 0){
-				write_date(time, TIME_FIELD_YEAR);
-			}
-			else if (edit_item == 1){
-				write_date(time, TIME_FIELD_MONTH);
-			}
-			else if (edit_item == 2){
-				write_date(time, TIME_FIELD_DAY_OF_MONTH);
-			}
-			else if (edit_item == 3){
-				write_time(time, TIME_FIELD_HOUR);
-			}
-			else if (edit_item == 4){
-				write_time(time, TIME_FIELD_MINUTE);
-			}
-			else {
-				buffer.write_string("Mode:", font_3x5, 1, 3);
-				if (time.mode == TIME_MODE_24){
-					buffer.write_string("24", font_5x8, 20, 0);
-				}
-				else {
-					buffer.write_string("12", font_5x8, 20, 0);
-				}
-			}
-		}
-	}
-
-	display.write_buffer(buffer.get_data());
-
-	display.set_brightness(state.get_display_brightness());
 }

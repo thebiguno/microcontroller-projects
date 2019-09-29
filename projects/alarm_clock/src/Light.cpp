@@ -8,7 +8,7 @@
 
 #ifdef DEBUG
 using namespace digitalcave;
-extern SerialUSB serial;
+extern SerialUSB serialUSB;
 #endif
 
 volatile uint8_t lightPinMaskYellow = 0;
@@ -146,7 +146,7 @@ void light_set(double brightness, double whiteBalance){
 
 #ifdef DEBUG
 	char temp[64];
-	serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled));
+	serialUSB.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled));
 #endif
 }
 

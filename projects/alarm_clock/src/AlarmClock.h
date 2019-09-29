@@ -7,6 +7,7 @@
 #include <timer/timer.h>
 
 #include "Display.h"
+#include "Sound.h"
 #include "State.h"
 
 #endif

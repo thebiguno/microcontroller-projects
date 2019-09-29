@@ -3,9 +3,11 @@
 using namespace digitalcave;
 
 #ifdef DEBUG
-extern SerialUSB serial;
+extern SerialUSB serialUSB;
 char buffer[64];
 #endif
+
+extern Sound sound;
 
 State::State() :
 	i2c(),
@@ -17,6 +19,10 @@ State::State() :
 	light_init();
 
 	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
+
+	//Randomize according to the current time.  We use random() during track selection playback
+	dc_time_t now = get_time();
+	srandom((uint32_t) now.year * now.month + now.day_of_week * now.day_of_month + now.hour * now.minute + now.second);
 }
 
 //The UI state machine.  Takes current state + input and moves between states.
@@ -25,7 +31,7 @@ void State::poll(){
 	uint32_t millis = timer_millis();
 
 #ifdef DEBUG
-	//serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "millis: %d\n\r", millis));
+	//serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "millis: %d\n\r", millis));
 #endif
 
 	button.sample(millis);
@@ -48,7 +54,7 @@ void State::poll(){
 			light_set(0, -1);
 			light_on();
 #ifdef DEBUG
-			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
+			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
 #endif
 		}
 
@@ -74,7 +80,7 @@ void State::poll(){
 			light_color = 0;
 			light_toggle();
 #ifdef DEBUG
-			serial.write("Toggle Light\n\r");
+			serialUSB.write("Toggle Light\n\r");
 #endif
 		}
 		else if (encoder_movement != 0){
@@ -125,7 +131,15 @@ void State::poll(){
 			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 		}
 
-		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
+		if (menu_item == MENU_MUSIC){
+			if (button.releaseEvent()){
+				sound.toggle();
+			}
+			else if (encoder_movement != 0){
+				sound.setVolume(sound.getVolume() + encoder_movement);
+			}
+		}
+		else if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
 			//Find alarm index
 			uint8_t alarm_index;
 			if (menu_item == MENU_SET_ALARM_1){
@@ -139,7 +153,19 @@ void State::poll(){
 			}
 
 			if (button.releaseEvent()){
-				edit_item = (edit_item + 1) % 12;	//Here edit_item goes from 0 to 13.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 and 10 are a time in minutes for lamp and music ramp-up.  11 is the index for music playback.
+				static uint8_t last_volume;
+				if (edit_item == 11){		//Turn off music when we are done from item 11
+					sound.stop();
+					sound.setVolume(last_volume);
+				}
+
+				edit_item = (edit_item + 1) % 12;	//Here edit_item goes from 0 to 9.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
+
+				if (edit_item == 11){		//Turn on music when we go to item 11 so we can hear the volume adjustments
+					last_volume = sound.getVolume();
+					sound.setVolume(alarm[alarm_index].music_volume);
+					sound.start();
+				}
 			}
 			else if (encoder_movement != 0){
 				if (edit_item < 2){
@@ -149,13 +175,38 @@ void State::poll(){
 					alarm[alarm_index].enabled ^= _BV(edit_item - 2);
 				}
 				else if (edit_item == 9){
-					alarm[alarm_index].lamp_speed = (alarm[alarm_index].lamp_speed + encoder_movement) % 30;
+					int8_t s = alarm[alarm_index].lamp_speed;
+					s += encoder_movement;
+					if (s < 0){
+						s = 0;
+					}
+					else if (2 > 30){
+						s = 30;
+					}
+					alarm[alarm_index].lamp_speed = s;
 				}
 				else if (edit_item == 10){
-					alarm[alarm_index].music_speed = (alarm[alarm_index].music_speed + encoder_movement) % 30;
+					int8_t s = alarm[alarm_index].music_speed;
+					s += encoder_movement;
+					if (s < 0){
+						s = 0;
+					}
+					else if (2 > 30){
+						s = 30;
+					}
+					alarm[alarm_index].music_speed = s;
 				}
 				else if (edit_item == 11){
-					alarm[alarm_index].music_index = (alarm[alarm_index].music_index + encoder_movement) % 100;
+					int8_t v = alarm[alarm_index].music_volume;
+					v += encoder_movement;
+					if (v < 0){
+						v = 0;
+					}
+					else if (v > 30){
+						v = 30;
+					}
+					alarm[alarm_index].music_volume = v;
+					sound.setVolume(v);
 				}
 			}
 		}
@@ -209,7 +260,7 @@ void State::poll(){
 		if (display_brightness < 15){
 			display_brightness++;		//Quickly fade up to high brightness when touching input
 #ifdef DEBUG
-			serial.write("Increase Brightness\n\r");
+			serialUSB.write("Increase Brightness\n\r");
 #endif
 		}
 		else {
@@ -219,13 +270,13 @@ void State::poll(){
 	else if ((last_change + 30000) > millis){
 		display_brightness = ((last_change + 30000) - millis) / 1000;		//Fade out to low brightness when not touching anything for a while
 #ifdef DEBUG
-		serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: %d\n\r", display_brightness));
+		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: %d\n\r", display_brightness));
 #endif
 	}
 	else {
 		display_brightness = 0;
 #ifdef DEBUG
-		serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: 0\n\r"));
+		//serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: 0\n\r"));
 #endif
 	}
 }

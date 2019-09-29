@@ -12,53 +12,44 @@ SerialUSB serialUSB;
 SerialAVR serialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
 
 int main (void){
+	delay_ms(2000);
+
 	//Do setup here
 	DFPlayerMini dfplayer(&serialAVR);
 	dfplayer.sendCommand(DFPLAYER_COMMAND_VOL_SET, 15);
-	dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 0);
+//	dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 0);
 
 	char buffer[64];
-	uint8_t* response;
+
+	uint8_t i = 1;
 
 	//Main program loop
 	while (1){
-		if (dfplayer.poll()){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Poll: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
+		serialUSB.write("Querying tracks...\n\r");
+		dfplayer.sendCommand(DFPLAYER_COMMAND_GET_FILE_COUNT, 0);
+		while(dfplayer.poll());
 
-		if (dfplayer.sendCommand(DFPLAYER_COMMAND_GET_SW_VER)){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Response: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
+		delay_ms(5000);
 
-		if (dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 0)){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "T0: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
-
-		_delay_ms(5000);
-
-		if (dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 1)){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "T1: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
-
-		_delay_ms(5000);
-
-		if (dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 2)){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "T2: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
-
-		_delay_ms(5000);
-
-		if (dfplayer.sendCommand(DFPLAYER_COMMAND_TRACK, 3)){
-			response = dfplayer.getResponse();
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "T3: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-		}
-
-		_delay_ms(5000);
+		// serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Requesting track %d\n\r", i));
+		dfplayer.sendCommand(DFPLAYER_COMMAND_VOL_SET, 10);
+		dfplayer.sendCommand(DFPLAYER_COMMAND_FOLDER_SET, 0x0100 + 14);
+		//
+		// while(dfplayer.poll());
+		//
+		// while(1){
+		// 	_delay_ms(5000);
+		// 	if (dfplayer.poll()){
+		// 		break;
+		// 	}
+		// }
+		//
+		// dfplayer.sendCommand(DFPLAYER_COMMAND_GET_STATUS, 0x00);
+		//
+		// i++;
+		// if (i > 12){
+		// 	i = 1;
+		// }
 	}
 }
 

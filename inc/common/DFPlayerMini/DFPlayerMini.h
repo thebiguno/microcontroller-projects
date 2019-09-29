@@ -29,6 +29,8 @@
 #define DFPLAYER_COMMAND_GAIN_SET		0x0A
 #define DFPLAYER_COMMAND_REPEAT_SET		0x0B
 
+#define DFPLAYER_RESPONSE_TRACK_DONE	0x3D
+#define DFPLAYER_COMMAND_GET_INIT_PARM	0x3F
 #define DFPLAYER_COMMAND_GET_STATUS		0x42
 #define DFPLAYER_COMMAND_GET_VOLUME		0x43
 #define DFPLAYER_COMMAND_GET_EQ			0x44
@@ -55,9 +57,10 @@ namespace digitalcave {
 			//Resets the module and
 			void init();
 
-			uint8_t* getResponse();
-			uint8_t sendCommand(uint8_t command, uint16_t arg = 0);
-			uint8_t poll();
+			uint8_t sendCommand(uint8_t command, uint16_t arg = 0x00);
+
+			//Looks for a response.  If there is one, return the response object.  Otherwise, return NULL.
+			uint8_t* poll();
 
 		private:
 			Stream* serial;
