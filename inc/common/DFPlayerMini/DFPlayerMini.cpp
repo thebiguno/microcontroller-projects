@@ -59,15 +59,16 @@ uint8_t DFPlayerMini::sendCommand(uint8_t command, uint16_t arg){
 #endif
 
 	delay_ms(20);	//Wait a bit longer if we are expecting a reply - at 9600 baud one message takes about 10 ms to send, and another 10 to recieve.  Give it an extra 10 for good measure.
-	poll();
-	if (response[3] == 0x40){
+	if (poll()){
+		if (response[3] == 0x40){
 #ifdef DEBUG
-		serialUSB.write("Resending command...\n\r");
+			serialUSB.write("Resending command...\n\r");
 #endif
-		sendCommand(command, arg);		//0x40 indicates the command should be re-sent
-	}
-	else if (response[3] == 0x41){
-		return 1;
+			sendCommand(command, arg);		//0x40 indicates the command should be re-sent
+		}
+		else if (response[3] == 0x41){
+			return 1;
+		}
 	}
 
 	return 0;

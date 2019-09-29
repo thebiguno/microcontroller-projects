@@ -22,6 +22,9 @@
 //The start of the EEPROM
 #define EEPROM_CALIBRATION_OFFSET		0x00
 
+//The minimum the light setpoint can go.  This should equal PWM_MIN / PWM_MAX (from Light.cpp)
+#define MIN_LIGHT						0.25
+
 //We use a FSM to move between different modes.  Each mode will have differences in display
 // and user interface.  The modes are listed below, along with comments describing what is
 // happening and how to move to different states.
@@ -66,7 +69,7 @@ namespace digitalcave {
 
 			//Alarm stuff
 			alarm_t alarm[ALARM_COUNT];			//The actual alarms
-			uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  WHen it is non-zero, we incrememnt light / music gradually.
+			uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  When it is non-zero, we incrememnt light / music gradually.
 			double light_brightness = 0;		//Keep track of light brightness...
 			double light_color = 0;				//... and light color temperature
 

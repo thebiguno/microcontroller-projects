@@ -17,6 +17,6 @@ int main(){
 		state.poll();
 		display.update();
 
-		delay_ms(50);	//No point in spinning the wheels too fast...
+		delay_ms(50);	//This defines the blink speed
 	}
 }

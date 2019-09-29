@@ -47,12 +47,13 @@ void State::poll(){
 				&& a.time.minute == time.minute
 				&& time.second == 0){
 			alarm_triggered |= _BV(i);
-			//timer_init();		//Reset our timer; we will use this to track how long the light has been on
-			//millis = 0;
-			light_brightness = 0;
+			timer_init();		//Reset our timer; we will use this to track how long the light has been on
+			millis = 0;
+			light_brightness = MIN_LIGHT;
 			light_color = -1;
 			light_set(0, -1);
 			light_on();
+			sound.start();
 #ifdef DEBUG
 			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
 #endif
@@ -63,6 +64,10 @@ void State::poll(){
 			light_brightness = (double) timer_millis() / 60 / 1000 / a.lamp_speed;			//Range 0 .. 1 over lamp_speed minutes
 			light_color = ((double) timer_millis() * 2 / 60 / 1000 / a.lamp_speed) - 1;		//Range -1 .. 1 over lamp_speed minutes
 			display_brightness = 15;
+			uint8_t volume = ((double) timer_millis() / 60 / 1000 / a.music_speed) * a.music_volume;	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume
+			if (volume != sound.getVolume()){
+				sound.setVolume(volume);
+			}
 		}
 	}
 
@@ -86,8 +91,8 @@ void State::poll(){
 		else if (encoder_movement != 0){
 			if (light_state()){
 				light_brightness += (double) encoder_movement / 100;
-				if (light_brightness < 0) {
-					light_brightness = 0;
+				if (light_brightness < MIN_LIGHT) {
+					light_brightness = MIN_LIGHT;
 				}
 				else if (light_brightness > 1){
 					light_brightness = 1;

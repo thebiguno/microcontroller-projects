@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 
-#define PWM_MIN		0x03
-#define PWM_MAX		0x3FF
+#define PWM_MIN		0x3F
+#define PWM_MAX		0xFF
 
 
 #ifdef DEBUG
@@ -33,13 +33,13 @@ void light_init(){
  * We assign LIGHT1 through LIGHT3 to OCR1B, OCR1C, OCR3B respectively
  */
 void light_on() {
-	//WGM mode 7 (Fast PWM, 10 bit)
-	TCCR1A = _BV(WGM11) | _BV(WGM10);
-	TCCR3A = _BV(WGM31) | _BV(WGM30);
+	//WGM mode 7 (Fast PWM, 8 bit)
+	TCCR1A = _BV(WGM10);
+	TCCR3A = _BV(WGM30);
 
-	//Enable timers with /64 prescaler
-	TCCR1B = _BV(CS11) | _BV(CS10) | _BV(WGM12);
-	TCCR3B = _BV(CS31) | _BV(CS30) | _BV(WGM32);
+	//Enable timers with /8 prescaler
+	TCCR1B = _BV(CS11) | _BV(WGM12);
+	TCCR3B = _BV(CS31) | _BV(WGM32);
 
 	TCCR1C = 0x00;
 	TCCR3C = 0x00;
@@ -90,8 +90,8 @@ void light_set(double brightness, double whiteBalance){
 
 	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
-	brightnessNeutralScaled = pow(brightness * 32, 2);
-	uint16_t whiteBalanceScaled = pow(whiteBalance * 32, 2);
+	brightnessNeutralScaled = pow(brightness * 16, 2);
+	uint16_t whiteBalanceScaled = pow(whiteBalance * 16, 2);
 
 
 	//The neutral LED is always mapped to brightness.
