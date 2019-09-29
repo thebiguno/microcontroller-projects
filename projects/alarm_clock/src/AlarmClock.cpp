@@ -6,6 +6,8 @@ using namespace digitalcave;
 SerialUSB serialUSB;
 #endif
 
+SerialAVR serialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
+
 Display display;
 Sound sound;
 State state;

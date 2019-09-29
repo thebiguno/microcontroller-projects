@@ -20,7 +20,7 @@ DFPlayerMini::DFPlayerMini(Stream* serial) :
 	request[2] = 0x06;	//Length (constant)
 	request[9] = 0xEF;	//End byte
 	delay_ms(500);
-	//init();
+	init();
 }
 
 void DFPlayerMini::init(){
