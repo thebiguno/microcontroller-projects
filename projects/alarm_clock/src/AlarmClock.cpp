@@ -21,4 +21,6 @@ int main(){
 
 		delay_ms(50);	//This defines the blink speed
 	}
+
+	return 0;
 }

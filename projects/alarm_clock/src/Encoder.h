@@ -19,7 +19,8 @@ namespace digitalcave {
 
 			Encoder();
 
-			int8_t get_encoder_movement();
+			int8_t get_lamp_encoder_movement();
+			int8_t get_music_encoder_movement();
 
 			friend void PCINT0_vect();
 	};
