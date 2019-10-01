@@ -48,8 +48,11 @@ uint8_t Sound::getVolume(){
 	return volume;
 }
 
-void Sound::setVolume(uint8_t volume){
-	if (volume > 30){
+void Sound::setVolume(int8_t volume){
+	if (volume < 0){
+		volume = 0;
+	}
+	else if (volume > 30){
 		volume = 30;
 	}
 	this->volume = volume;

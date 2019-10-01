@@ -28,21 +28,28 @@ void Display::update(){
 
 	if (mode == MODE_TIME){
 		dc_time_t time = state.get_time();
-		if (edit_item == 0){
+		if (edit_item == EDIT_TIME_TIME){
 			scroll_value = 4;
 			write_time(time, NO_FLASH);
 		}
-		else if (edit_item == 1){
+		else if (edit_item == EDIT_TIME_LAMP){
+			buffer.write_string("3", font_icon, 0, 0);                      //Icon 3 is brightness
+			snprintf(temp, sizeof(temp), "%d", (uint8_t) (state.get_lamp_brightness() * 99));
+			buffer.write_string(temp, font_5x8, ((state.get_lamp_brightness() * 99) < 10 ? 26 : 20), 0);
+		}
+		else if (edit_item ==EDIT_TIME_MUSIC){
+			buffer.write_string("2", font_icon, 0, 0);                      //Icon 2 is music
+			buffer.write_string("VOL", font_3x5, 8, 3);
+			snprintf(temp, sizeof(temp), "%d", sound.getVolume());
+			buffer.write_string(temp, font_5x8, (sound.getVolume() < 10 ? 26 : 20), 0);
+		}
+		else if (edit_item == EDIT_TIME_DATE){
 			write_date(time, NO_FLASH);
 		}
 
 	}
 	else if (mode == MODE_MENU){
-		if (menu_item == MENU_MUSIC){
-			buffer.write_string("2", font_icon, 2, 0);			//Icon 2 is music
-			buffer.write_string("Setup", font_3x5, 11, 3);
-		}
-		else if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
+		if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
 			buffer.write_string("SET", font_3x5, 2, 2);
 			buffer.write_char('0', font_icon, 16, 0);			//0 is alarm icon
 			buffer.write_char((char) (menu_item + 0x31 - MENU_SET_ALARM_1), font_5x8, 25, 0);
@@ -51,15 +58,13 @@ void Display::update(){
 			buffer.write_string("SET", font_3x5, 5, 2);
 			buffer.write_char('1', font_icon, 19, 0);			//1 is clock icon
 		}
+		else if (menu_item == MENU_DFU){
+			buffer.write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
+			buffer.write_string("UPLOAD", font_3x5, 8, 2);
+		}
 	}
 	else if (mode == MODE_EDIT){
-		if (menu_item == MENU_MUSIC){
-			buffer.write_string("2", font_icon, 0, 0);			//Icon 2 is music
-			buffer.write_string("VOL", font_3x5, 8, 3);
-			snprintf(temp, sizeof(temp), "%d", sound.getVolume());
-			buffer.write_string(temp, font_5x8, (sound.getVolume() < 10 ? 26 : 20), 0);
-		}
-		else if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
+		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
 			//Find alarm index
 			uint8_t alarm_index;
 			if (menu_item == MENU_SET_ALARM_1){
@@ -148,6 +153,10 @@ void Display::update(){
 				}
 			}
 		}
+		else if (menu_item == MENU_DFU){
+			buffer.write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
+			buffer.write_string("CLICK", font_3x5, 10, 2);
+		}
 	}
 
 	display.write_buffer(buffer.get_data());
@@ -190,7 +199,7 @@ void Display::write_time(dc_time_t time, uint8_t flash_field){
 		}
 
 		//Write AM / PM
-		buffer.write_char((time.mode == TIME_MODE_AM ? 'A' : 'P'), font_5x8, 29, 0);
+		buffer.write_char((time.mode == TIME_MODE_AM ? 'A' : 'P'), font_5x8, 28, 0);
 	}
 }
 

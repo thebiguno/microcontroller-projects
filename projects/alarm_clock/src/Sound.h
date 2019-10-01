@@ -36,7 +36,7 @@ namespace digitalcave {
 			void poll();
 
 			uint8_t getVolume();
-			void setVolume(uint8_t volume);
+			void setVolume(int8_t volume);
 
 			void start();
 			void stop();

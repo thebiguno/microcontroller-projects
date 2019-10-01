@@ -8,6 +8,7 @@
 #include <bootloader/bootloader.h>
 #include <Button/ButtonAVR.h>
 #include <timer/timer.h>
+#include <bootloader.h>
 #include <I2CAVR.h>
 #include <DS3231.h>
 
@@ -33,6 +34,11 @@
 // adjust light brightness.  Hold button to enter menu.
 #define MODE_TIME						0x00
 
+#define EDIT_TIME_TIME					0x00
+#define EDIT_TIME_LAMP					0x01
+#define EDIT_TIME_MUSIC					0x02
+#define EDIT_TIME_DATE					0x03
+
 //Menu mode: allow setting time, alarm, etc.
 #define MODE_MENU						0x01
 
@@ -40,11 +46,11 @@
 #define MODE_EDIT						0x02
 
 //The menu indices for various functions
-#define MENU_MUSIC						0x00
-#define MENU_SET_ALARM_1				0x01
-#define MENU_SET_ALARM_2				0x02
-#define MENU_SET_ALARM_3				0x03
-#define MENU_SET_TIME					0x04
+#define MENU_SET_ALARM_1				0x00
+#define MENU_SET_ALARM_2				0x01
+#define MENU_SET_ALARM_3				0x02
+#define MENU_SET_TIME					0x03
+#define MENU_DFU						0x04
 
 #define MENU_SIZE						0x05
 
@@ -65,7 +71,8 @@ namespace digitalcave {
 			I2CAVR i2c;
 			DS3231 calendar;
 			Encoder encoder;
-			ButtonAVR button;
+			ButtonAVR lampButton;
+			ButtonAVR musicButton;
 
 			//Alarm stuff
 			alarm_t alarm[ALARM_COUNT];			//The actual alarms
@@ -91,6 +98,7 @@ namespace digitalcave {
 			alarm_t get_alarm(uint8_t index);
 
 			uint8_t get_display_brightness();
+			double get_lamp_brightness();
 
 			uint8_t get_mode();
 			uint8_t get_menu_item();

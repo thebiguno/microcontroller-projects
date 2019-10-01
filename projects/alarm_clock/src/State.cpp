@@ -13,7 +13,8 @@ State::State() :
 	i2c(),
 	calendar(&i2c),
 	encoder(),
-	button(&PORTC, PORTC6, 30, 25, 800, 500)
+	lampButton(&PORTC, PORTC6, 30, 25, 800, 500),
+	musicButton(&PORTC, PORTC7, 30, 25, 800, 500)
 {
 	timer_init();
 	light_init();
@@ -34,8 +35,10 @@ void State::poll(){
 	//serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "millis: %d\n\r", millis));
 #endif
 
-	button.sample(millis);
+	lampButton.sample(millis);
+	musicButton.sample(millis);
 	int8_t lamp_encoder_movement = encoder.get_lamp_encoder_movement();
+	int8_t music_encoder_movement = encoder.get_music_encoder_movement();
 
 	for (uint8_t i = 0; i < ALARM_COUNT; i++){
 		alarm_t a = alarm[i];
@@ -76,39 +79,61 @@ void State::poll(){
 	}
 
 	if (mode == MODE_TIME){
-		if (button.longPressEvent()){
+		if (lampButton.longPressEvent()){
 			mode = MODE_MENU;
 			menu_item = 0;
 		}
-		else if (button.releaseEvent()){
+		else if (lampButton.releaseEvent()){
 			alarm_triggered = 0x00;
 			light_color = 0;
 			light_toggle();
-#ifdef DEBUG
-			serialUSB.write("Toggle Light\n\r");
-#endif
-		}
-		else if (lamp_encoder_movement != 0){
 			if (light_state()){
-				light_brightness += (double) lamp_encoder_movement / 100;
-				if (light_brightness < MIN_LIGHT) {
-					light_brightness = MIN_LIGHT;
-				}
-				else if (light_brightness > 1){
-					light_brightness = 1;
-				}
+				edit_item = EDIT_TIME_LAMP;
 			}
 			else {
-				edit_item ^= 0x01;
+				edit_item = EDIT_TIME_TIME;
+			}
+		}
+		else if (light_state() && lamp_encoder_movement != 0){
+			light_brightness += (double) lamp_encoder_movement / 100;
+			if (light_brightness < MIN_LIGHT) {
+				light_brightness = MIN_LIGHT;
+			}
+			else if (light_brightness > 1){
+				light_brightness = 1;
+			}
+		}
+		else if (musicButton.releaseEvent()){
+			alarm_triggered = 0x00;
+			sound.toggle();
+			if (sound.isPlaying()){
+				edit_item = EDIT_TIME_MUSIC;
+			}
+			else {
+				edit_item = EDIT_TIME_TIME;
+			}
+		}
+		else if (music_encoder_movement != 0 && sound.isPlaying()){
+#ifdef DEBUG
+			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "music_encoder_movement: %d\n\r", music_encoder_movement));
+#endif
+			sound.setVolume(sound.getVolume() + music_encoder_movement);
+		}
+		else if (lamp_encoder_movement != 0){
+			if (edit_item == EDIT_TIME_TIME){
+				edit_item = EDIT_TIME_DATE;
+			}
+			else {
+				edit_item = EDIT_TIME_TIME;
 			}
 		}
 	}
 	else if (mode == MODE_MENU){
-		if (button.longPressEvent()){
+		if (lampButton.longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
 		}
-		else if (button.releaseEvent()){
+		else if (lampButton.releaseEvent()){
 			mode = MODE_EDIT;
 			edit_item = 0;
 		}
@@ -128,60 +153,32 @@ void State::poll(){
 		}
 	}
 	else if (mode == MODE_EDIT){
-		//Long press from edit commits and returns to main screen
-		if (button.longPressEvent()){
+		//Long press from lamp commits and returns to main screen
+		if (lampButton.longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
 
 			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 		}
-
-		if (menu_item == MENU_MUSIC){
-			if (button.releaseEvent()){
-				sound.toggle();
-			}
-			else if (lamp_encoder_movement != 0){
-				sound.setVolume(sound.getVolume() + lamp_encoder_movement);
-			}
-		}
-		else if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
+		else if (menu_item >= MENU_SET_ALARM_1 && menu_item <= MENU_SET_ALARM_3){
 			//Find alarm index
-			uint8_t alarm_index;
-			if (menu_item == MENU_SET_ALARM_1){
-				alarm_index = 0;
-			}
-			else if (menu_item == MENU_SET_ALARM_2){
-				alarm_index = 1;
-			}
-			else if (menu_item == MENU_SET_ALARM_3){
-				alarm_index = 2;
-			}
+			uint8_t alarm_index = menu_item - MENU_SET_ALARM_3;
 
-			if (button.releaseEvent()){
-				static uint8_t last_volume;
-				if (edit_item == 11){		//Turn off music when we are done from item 11
-					sound.stop();
-					sound.setVolume(last_volume);
-				}
-
-				edit_item = (edit_item + 1) % 12;	//Here edit_item goes from 0 to 9.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
-
-				if (edit_item == 11){		//Turn on music when we go to item 11 so we can hear the volume adjustments
-					last_volume = sound.getVolume();
-					sound.setVolume(alarm[alarm_index].music_volume);
-					sound.start();
-				}
+			//Lamp encoder changes fields
+			if (lamp_encoder_movement != 0){
+				edit_item = (edit_item + lamp_encoder_movement) % 12;	//Here edit_item goes from 0 to 9.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
 			}
-			else if (lamp_encoder_movement != 0){
+			//Music encoder increments / decrements fields
+			else if (music_encoder_movement != 0){
 				if (edit_item < 2){
-					alarm[alarm_index].time = time_add(alarm[alarm_index].time, edit_item + 3, lamp_encoder_movement, 0);
+					alarm[alarm_index].time = time_add(alarm[alarm_index].time, edit_item + 3, music_encoder_movement, 0);
 				}
 				else if (edit_item < 9){
 					alarm[alarm_index].enabled ^= _BV(edit_item - 2);
 				}
 				else if (edit_item == 9){
 					int8_t s = alarm[alarm_index].lamp_speed;
-					s += lamp_encoder_movement;
+					s += music_encoder_movement;
 					if (s < 0){
 						s = 0;
 					}
@@ -192,7 +189,7 @@ void State::poll(){
 				}
 				else if (edit_item == 10){
 					int8_t s = alarm[alarm_index].music_speed;
-					s += lamp_encoder_movement;
+					s += music_encoder_movement;
 					if (s < 0){
 						s = 0;
 					}
@@ -203,7 +200,7 @@ void State::poll(){
 				}
 				else if (edit_item == 11){
 					int8_t v = alarm[alarm_index].music_volume;
-					v += lamp_encoder_movement;
+					v += music_encoder_movement;
 					if (v < 0){
 						v = 0;
 					}
@@ -216,10 +213,12 @@ void State::poll(){
 			}
 		}
 		else if (menu_item == MENU_SET_TIME){
-			if (button.releaseEvent()){
-				edit_item = (edit_item + 1) % 6;	//Here edit_item goes from 0 to 6.  0 - 4 map to TIME_FIELD_X; 5 is 12 / 24 hour
+			//Lamp encoder changes fields
+			if (lamp_encoder_movement != 0){
+				edit_item = (edit_item + lamp_encoder_movement) % 6;	//Here edit_item goes from 0 to 6.  0 - 4 map to TIME_FIELD_X; 5 is 12 / 24 hour
 			}
-			else if (lamp_encoder_movement != 0){
+			//Music encoder increments / decrements fields
+			else if (music_encoder_movement != 0){
 				if (edit_item == 0x05){
 					uint8_t mode = time.mode == TIME_MODE_24 ? TIME_MODE_12 : TIME_MODE_24;
 					calendar.setTime(time_set_mode(time, mode));
@@ -231,15 +230,20 @@ void State::poll(){
 					if (edit_item == TIME_FIELD_MINUTE){
 						time.second = 0;		//Reset seconds to zero when changing minutes
 					}
-					calendar.setTime(time_add(time, edit_item, lamp_encoder_movement, 0));
+					calendar.setTime(time_add(time, edit_item, music_encoder_movement, 0));
 				}
+			}
+		}
+		else if (menu_item == MENU_DFU){
+			if (lampButton.releaseEvent()){
+				bootloader_jump(BOOTLOADER_ATMEL);
 			}
 		}
 	}
 
 	//Handle timeouts - fade to dimmer display, and go back to time after certain timeouts depending on mode
 	static uint32_t last_change = 0;
-	if (lamp_encoder_movement || button.getState()){	//Button press / turn
+	if (lamp_encoder_movement || music_encoder_movement || lampButton.getState() || musicButton.getState()){	//buttons press / turn
 		last_change = millis;
 	}
 
@@ -310,4 +314,8 @@ uint8_t State::get_edit_item(){
 
 uint8_t State::get_display_brightness(){
 	return this->display_brightness;
+}
+
+double State::get_lamp_brightness(){
+	return this->light_brightness;
 }
