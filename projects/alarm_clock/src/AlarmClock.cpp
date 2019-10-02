@@ -11,6 +11,7 @@ SerialAVR serialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial p
 Display display;
 Sound sound;
 State state;
+Encoder encoder;
 
 int main(){
 	//Main program loop

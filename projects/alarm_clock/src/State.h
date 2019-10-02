@@ -70,7 +70,6 @@ namespace digitalcave {
 		private:
 			I2CAVR i2c;
 			DS3231 calendar;
-			Encoder encoder;
 			ButtonAVR lampButton;
 			ButtonAVR musicButton;
 

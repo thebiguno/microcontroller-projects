@@ -8,11 +8,11 @@ char buffer[64];
 #endif
 
 extern Sound sound;
+extern Encoder encoder;
 
 State::State() :
 	i2c(),
 	calendar(&i2c),
-	encoder(),
 	lampButton(&PORTC, PORTC6, 30, 25, 800, 500),
 	musicButton(&PORTC, PORTC7, 30, 25, 800, 500)
 {
