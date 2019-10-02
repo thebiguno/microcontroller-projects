@@ -23,9 +23,6 @@
 //The start of the EEPROM
 #define EEPROM_CALIBRATION_OFFSET		0x00
 
-//The minimum the light setpoint can go.  This should equal PWM_MIN / PWM_MAX (from Light.cpp)
-#define MIN_LIGHT						0.25
-
 //We use a FSM to move between different modes.  Each mode will have differences in display
 // and user interface.  The modes are listed below, along with comments describing what is
 // happening and how to move to different states.

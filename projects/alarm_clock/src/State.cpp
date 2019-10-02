@@ -52,7 +52,7 @@ void State::poll(){
 			alarm_triggered |= _BV(i);
 			timer_init();		//Reset our timer; we will use this to track how long the light has been on
 			millis = 0;
-			light_brightness = MIN_LIGHT;
+			light_brightness = 0;
 			light_color = -1;
 			light_set(0, -1);
 			light_on();
@@ -96,8 +96,8 @@ void State::poll(){
 		}
 		else if (light_state() && lamp_encoder_movement != 0){
 			light_brightness += (double) lamp_encoder_movement / 100;
-			if (light_brightness < MIN_LIGHT) {
-				light_brightness = MIN_LIGHT;
+			if (light_brightness < 0) {
+				light_brightness = 0;
 			}
 			else if (light_brightness > 1){
 				light_brightness = 1;

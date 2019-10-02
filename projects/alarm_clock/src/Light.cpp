@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#define PWM_MIN		0x3F
+#define PWM_MIN		0x0F
 #define PWM_MAX		0xFF
 
 
