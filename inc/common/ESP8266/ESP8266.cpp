@@ -124,11 +124,11 @@ uint8_t ESP8266::at_cipserver(uint8_t ssl, uint8_t en, uint16_t port) {
 }
 
 uint8_t ESP8266::at_cipserver_tcp(uint8_t en, uint16_t port) {
-    at_cipserver(0, en, port);
+    return at_cipserver(0, en, port);
 }
 
 uint8_t ESP8266::at_cipserver_ssl(uint8_t en, uint16_t port) {
-    at_cipserver(1, en, port);
+    return at_cipserver(1, en, port);
 }
 
 uint8_t ESP8266::at_mdns(uint8_t en, char* host_name, char* service_name, uint16_t port) {

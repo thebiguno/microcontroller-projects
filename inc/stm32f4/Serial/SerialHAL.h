@@ -14,6 +14,7 @@
 #define SERIAL_HAL_H
 
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_uart.h"
 
 #include <Stream.h>
 #include <ArrayStream.h>
