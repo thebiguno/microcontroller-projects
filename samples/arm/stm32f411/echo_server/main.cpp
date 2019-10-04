@@ -2,6 +2,7 @@
 
 #include <SerialHAL.h>
 #include <ESP8266.h>
+#include <ESP8266Stream.h>
 #include <TimerHAL.h>
 
 using namespace digitalcave;
@@ -29,11 +30,11 @@ void loop() {
 
 	ESP8266 wifi(serial);
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-	wifi.join((char*)"sloth", (char*)"password");
+	wifi.at_cwjap_cur((char*)"sloth", (char*)"password");
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-	wifi.start_server(1234);
+	wifi.at_cipserver_tcp(1, 1234);
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-	wifi.start_mdns((char*)"echoserver", (char*)"telnet", 1234);
+	wifi.at_mdns(1, (char*)"echoserver", (char*)"telnet", 1234);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
 
 	HAL_Delay(1000);
@@ -44,18 +45,18 @@ void loop() {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
 
 		uint8_t b = 0;
-		ESP8266Socket* socket = wifi.accept();
-		if (socket != NULL) {
+		ESP8266Stream* stream = wifi.accept();
+		if (stream != NULL) {
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
 			HAL_Delay(100);
 
-			socket->write("Hello Socket\n");
-			socket->flush();
-			while (!socket->is_closed()) {
-				if (socket->read(&b)) {
-					socket->write(b);
+			stream->write("Hello Socket\n");
+			stream->flush();
+			while (!stream->is_closed()) {
+				if (stream->read(&b)) {
+					stream->write(b);
 					if (b == '\n') {
-						socket->flush();
+						stream->flush();
 					}
 					HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
 				}
