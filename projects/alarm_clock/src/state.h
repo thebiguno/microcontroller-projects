@@ -61,45 +61,19 @@ typedef struct alarm {
 	uint8_t music_volume;	//Max volume of music, reached after music_speed minutes
 } alarm_t;
 
-namespace digitalcave {
+void state_init();
 
-	class State {
-		private:
-			I2CAVR i2c;
-			DS3231 calendar;
-			ButtonAVR lampButton;
-			ButtonAVR musicButton;
+void state_poll();
 
-			//Alarm stuff
-			alarm_t alarm[ALARM_COUNT];			//The actual alarms
-			uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  When it is non-zero, we incrememnt light / music gradually.
-			double light_brightness = 0;		//Keep track of light brightness...
-			double light_color = 0;				//... and light color temperature
+dc_time_t state_get_time();
 
-			//General stuff
-			uint8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
+alarm_t state_get_alarm(uint8_t index);
 
-			//Stuff for menus
-			uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
-			int8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
-			int8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like setting times and alarms.
+uint8_t state_get_display_brightness();
+double state_get_lamp_brightness();
 
-		public:
-			State();
-
-			void poll();
-
-			dc_time_t get_time();
-
-			alarm_t get_alarm(uint8_t index);
-
-			uint8_t get_display_brightness();
-			double get_lamp_brightness();
-
-			uint8_t get_mode();
-			uint8_t get_menu_item();
-			uint8_t get_edit_item();
-	};
-}
+uint8_t state_get_mode();
+uint8_t state_get_menu_item();
+uint8_t state_get_edit_item();
 
 #endif

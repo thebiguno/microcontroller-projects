@@ -7,12 +7,32 @@ extern SerialUSB serialUSB;
 char buffer[64];
 #endif
 
-State::State() :
-	i2c(),
-	calendar(&i2c),
-	lampButton(&PORTC, PORTC6, 30, 25, 800, 500),
-	musicButton(&PORTC, PORTC7, 30, 25, 800, 500)
-{
+static I2CAVR* i2c;
+static DS3231* calendar;
+static ButtonAVR* lampButton;
+static ButtonAVR* musicButton;
+
+//Alarm stuff
+static alarm_t alarm[ALARM_COUNT];		//The actual alarms
+static uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  When it is non-zero, we incrememnt light / music gradually.
+static double light_brightness = 0;		//Keep track of light brightness...
+static double light_color = 0;			//... and light color temperature
+
+//General stuff
+static uint8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
+
+//Stuff for menus
+static uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
+static int8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
+static int8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like setting times and alarms.
+
+
+void state_init(){
+	i2c = new I2CAVR();
+	calendar = new DS3231(i2c);
+	lampButton = new ButtonAVR(&PORTC, PORTC6, 30, 25, 800, 500);
+	musicButton = new ButtonAVR(&PORTC, PORTC7, 30, 25, 800, 500);
+
 	timer_init();
 	light_init();
 	encoder_init();
@@ -20,21 +40,21 @@ State::State() :
 	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 
 	//Randomize according to the current time.  We use random() during track selection playback
-	dc_time_t now = get_time();
+	dc_time_t now = state_get_time();
 	srandom((uint32_t) now.year * now.month + now.day_of_week * now.day_of_month + now.hour * now.minute + now.second);
 }
 
 //The UI state machine.  Takes current state + input and moves between states.
-void State::poll(){
-	dc_time_t time = get_time();
+void state_poll(){
+	dc_time_t time = state_get_time();
 	uint32_t millis = timer_millis();
 
 #ifdef DEBUG
 	//serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "millis: %d\n\r", millis));
 #endif
 
-	lampButton.sample(millis);
-	musicButton.sample(millis);
+	lampButton->sample(millis);
+	musicButton->sample(millis);
 	int8_t lamp_encoder_movement = encoder_get_movement_1();
 	int8_t music_encoder_movement = encoder_get_movement_2();
 
@@ -77,11 +97,11 @@ void State::poll(){
 	}
 
 	if (mode == MODE_TIME){
-		if (lampButton.longPressEvent()){
+		if (lampButton->longPressEvent()){
 			mode = MODE_MENU;
 			menu_item = 0;
 		}
-		else if (lampButton.releaseEvent()){
+		else if (lampButton->releaseEvent()){
 			alarm_triggered = 0x00;
 			light_color = 0;
 			light_toggle();
@@ -104,7 +124,7 @@ void State::poll(){
 				light_brightness = 1;
 			}
 		}
-		else if (musicButton.releaseEvent()){
+		else if (musicButton->releaseEvent()){
 			alarm_triggered = 0x00;
 			timer_init();		//Reset our timer; we will use this to track how long the music has been playing
 			music_toggle();
@@ -129,11 +149,11 @@ void State::poll(){
 		}
 	}
 	else if (mode == MODE_MENU){
-		if (lampButton.longPressEvent()){
+		if (lampButton->longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
 		}
-		else if (lampButton.releaseEvent()){
+		else if (lampButton->releaseEvent()){
 			mode = MODE_EDIT;
 			edit_item = 0;
 		}
@@ -149,7 +169,7 @@ void State::poll(){
 	}
 	else if (mode == MODE_EDIT){
 		//Long press from lamp commits and returns to main screen
-		if (lampButton.longPressEvent()){
+		if (lampButton->longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
 
@@ -222,7 +242,7 @@ void State::poll(){
 			else if (music_encoder_movement != 0){
 				if (edit_item == 0x05){
 					uint8_t mode = time.mode == TIME_MODE_24 ? TIME_MODE_12 : TIME_MODE_24;
-					calendar.setTime(time_set_mode(time, mode));
+					calendar->setTime(time_set_mode(time, mode));
 					for (uint8_t i = 0; i < ALARM_COUNT; i++){
 						alarm[i].time = time_set_mode(alarm[i].time, mode);
 					}
@@ -231,12 +251,12 @@ void State::poll(){
 					if (edit_item == TIME_FIELD_MINUTE){
 						time.second = 0;		//Reset seconds to zero when changing minutes
 					}
-					calendar.setTime(time_add(time, edit_item, music_encoder_movement, 0));
+					calendar->setTime(time_add(time, edit_item, music_encoder_movement, 0));
 				}
 			}
 		}
 		else if (menu_item == MENU_DFU){
-			if (lampButton.releaseEvent()){
+			if (lampButton->releaseEvent()){
 				bootloader_jump(BOOTLOADER_ATMEL);
 			}
 		}
@@ -244,7 +264,7 @@ void State::poll(){
 
 	//Handle timeouts - fade to dimmer display, and go back to time after certain timeouts depending on mode
 	static uint32_t last_change = 0;
-	if (lamp_encoder_movement || music_encoder_movement || lampButton.getState() || musicButton.getState()){	//buttons press / turn
+	if (lamp_encoder_movement || music_encoder_movement || lampButton->getState() || musicButton->getState()){	//buttons press / turn
 		last_change = millis;
 	}
 
@@ -296,32 +316,32 @@ void State::poll(){
 	}
 }
 
-alarm_t State::get_alarm(uint8_t index){
+alarm_t state_get_alarm(uint8_t index){
 	if (index >= ALARM_COUNT){
 		index = ALARM_COUNT - 1;
 	}
 	return alarm[index];
 }
 
-uint8_t State::get_mode(){
-	return this->mode;
+uint8_t state_get_mode(){
+	return mode;
 }
 
-dc_time_t State::get_time(){
-	return calendar.getTime();
+dc_time_t state_get_time(){
+	return calendar->getTime();
 }
-uint8_t State::get_menu_item(){
-	return this->menu_item;
-}
-
-uint8_t State::get_edit_item(){
-	return this->edit_item;
+uint8_t state_get_menu_item(){
+	return menu_item;
 }
 
-uint8_t State::get_display_brightness(){
-	return this->display_brightness;
+uint8_t state_get_edit_item(){
+	return edit_item;
 }
 
-double State::get_lamp_brightness(){
-	return this->light_brightness;
+uint8_t state_get_display_brightness(){
+	return display_brightness;
+}
+
+double state_get_lamp_brightness(){
+	return light_brightness;
 }

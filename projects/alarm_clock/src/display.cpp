@@ -2,10 +2,6 @@
 
 using namespace digitalcave;
 
-extern ButtonAVR button;
-extern State state;
-
-
 static Buffer display_buffer(32, 8);
 
 static uint8_t flash_timer = 0;
@@ -32,19 +28,19 @@ void display_update(){
 
 	flash_timer = (flash_timer + 1) & 0x0F;
 
-	uint8_t mode = state.get_mode();
-	uint8_t menu_item = state.get_menu_item();
-	uint8_t edit_item = state.get_edit_item();
+	uint8_t mode = state_get_mode();
+	uint8_t menu_item = state_get_menu_item();
+	uint8_t edit_item = state_get_edit_item();
 
 	if (mode == MODE_TIME){
-		dc_time_t time = state.get_time();
+		dc_time_t time = state_get_time();
 		if (edit_item == EDIT_TIME_TIME){
 			scroll_value = 4;
 			display_write_time(time, NO_FLASH);
 		}
 		else if (edit_item == EDIT_TIME_LAMP){
 			display_buffer.write_string("3", font_icon, 0, 0);                      //Icon 3 is brightness
-			uint8_t brightness = (uint8_t) ((state.get_lamp_brightness() * 99) + 1);
+			uint8_t brightness = (uint8_t) ((state_get_lamp_brightness() * 99) + 1);
 			snprintf(buffer, sizeof(buffer), "%d", brightness);
 			display_buffer.write_string(buffer, font_5x8, brightness < 10 ? 26 : (brightness < 100 ? 20 : 14), 0);
 		}
@@ -88,7 +84,7 @@ void display_update(){
 				alarm_index = 2;
 			}
 
-			alarm_t alarm = state.get_alarm(alarm_index);
+			alarm_t alarm = state_get_alarm(alarm_index);
 
 			if (edit_item == 0){
 				display_write_time(alarm.time, TIME_FIELD_HOUR);
@@ -137,7 +133,7 @@ void display_update(){
 			}
 		}
 		else if (menu_item == MENU_SET_TIME){
-			dc_time_t time = state.get_time();
+			dc_time_t time = state_get_time();
 
 			if (edit_item == 0){
 				display_write_date(time, TIME_FIELD_YEAR);
@@ -172,8 +168,8 @@ void display_update(){
 
 	max7219_write_buffer(display_buffer.get_data());
 
-	max7219_set_brightness(state.get_display_brightness());
-	if (state.get_display_brightness() == 0){
+	max7219_set_brightness(state_get_display_brightness());
+	if (state_get_display_brightness() == 0){
 		display_buffer.clear();
 		max7219_write_buffer(display_buffer.get_data());
 	}

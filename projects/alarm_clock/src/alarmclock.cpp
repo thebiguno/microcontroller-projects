@@ -6,8 +6,6 @@ using namespace digitalcave;
 SerialUSB serialUSB;
 #endif
 
-State state;
-
 int main(){
 	display_init();
 	encoder_init();
@@ -16,7 +14,7 @@ int main(){
 	//Main program loop
 	while (1){
 		music_poll();
-		state.poll();
+		state_poll();
 		display_update();
 
 		delay_ms(50);	//This defines the blink speed
