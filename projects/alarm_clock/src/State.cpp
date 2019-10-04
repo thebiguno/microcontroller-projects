@@ -8,7 +8,6 @@ char buffer[64];
 #endif
 
 extern Sound sound;
-extern Encoder encoder;
 
 State::State() :
 	i2c(),
@@ -18,6 +17,7 @@ State::State() :
 {
 	timer_init();
 	light_init();
+	encoder_init();
 
 	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 
@@ -37,8 +37,8 @@ void State::poll(){
 
 	lampButton.sample(millis);
 	musicButton.sample(millis);
-	int8_t lamp_encoder_movement = encoder.get_lamp_encoder_movement();
-	int8_t music_encoder_movement = encoder.get_music_encoder_movement();
+	int8_t lamp_encoder_movement = encoder_get_movement_1();
+	int8_t music_encoder_movement = encoder_get_movement_2();
 
 	for (uint8_t i = 0; i < ALARM_COUNT; i++){
 		alarm_t a = alarm[i];

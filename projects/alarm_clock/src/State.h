@@ -17,7 +17,7 @@
 #endif
 
 #include "light.h"
-#include "Encoder.h"
+#include "encoder.h"
 #include "Sound.h"
 
 //The start of the EEPROM
