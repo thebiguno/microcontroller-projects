@@ -1,7 +1,7 @@
 #
 # Include this file from your project-specific Makefile after setting up some key variables.
 # At a minimum, you must include the following:
-# 
+#
 # PROJECT=MyProjectName
 # MMCU=atmega168
 # F_CPU=20000000
@@ -34,7 +34,7 @@ ifndef AVRDUDE
 	AVRDUDE=avrdude
 endif
 ifndef PROGRAMMER
-	PROGRAMMER=stk500v1
+	PROGRAMMER=dfu
 endif
 ifndef OBJCOPY
 	OBJCOPY=avr-objcopy
@@ -89,7 +89,7 @@ endif
 ifeq 'arduino' '$(PROGRAMMER)'
 	ifndef AVRDUDE_PORT
 		ifeq 'Linux' '$(OS)'
-			AVRDUDE_PORT=/dev/ttyUSB0
+			AVRDUDE_PORT=/dev/ttyACM0
 		else
 			AVRDUDE_PORT=/dev/tty.usbserial*
 		endif
@@ -99,6 +99,19 @@ ifeq 'arduino' '$(PROGRAMMER)'
 		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
 	endif
 	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
+endif
+
+#This is the Pololu arduino bootloader; use avr109 as per http://pololu.com/docs/0J61/6.3
+ifeq 'avr109' '$(PROGRAMMER)'
+	ifndef AVRDUDE_PORT
+		ifeq 'Linux' '$(OS)'
+			AVRDUDE_PORT=/dev/ttyACM0
+		else
+			AVRDUDE_PORT=/dev/tty.usbserial*
+		endif
+	endif
+
+	AVRDUDE_ARGS += -P $(AVRDUDE_PORT)
 endif
 
 ifeq 'usbtiny' '$(PROGRAMMER)'
@@ -146,7 +159,7 @@ else
 	$(AVRDUDE_PREP_COMMANDS)
 	$(AVRDUDE) -F -p $(MMCU) -c $(PROGRAMMER) \
 		$(AVRDUDE_ARGS) $(AVRDUDE_SPEED)\
-		-U flash:w:$(PROJECT).hex 
+		-U flash:w:$(PROJECT).hex
 endif
 
 $(BUILDDIR)/%.o: %.S
@@ -201,7 +214,7 @@ else
 	echo "Cannor start in AVR Dude Programmer mode"
 endif
 
-readfuse: 
+readfuse:
 ifeq 'dfu' '$(PROGRAMMER)'
 	echo "Cannot read fuses in DFU Programmer mode"
 else
@@ -210,7 +223,7 @@ else
 		-U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h
 endif
 
-readeeprom: 
+readeeprom:
 ifeq 'dfu' '$(PROGRAMMER)'
 	$(DFU) $(MMCU) dump-eeprom --quiet | hexdump
 else

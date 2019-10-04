@@ -8,7 +8,7 @@ Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
 
 	//Set up /RST pin in output mode
 	*(resetPort - 0x01) |= _BV(resetPin);
-	
+
 	//Configure the Si4703 for 2-wire communcation
 	DDRC |= _BV(PORTC4);	//SDIO is connected to A4 for I2C
 	PORTC &= ~_BV(PORTC4); //A low SDIO indicates a 2-wire interface
@@ -18,7 +18,7 @@ Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
 	_delay_ms(1); //Allow Si4703 to come out of reset
 
 	//Configure the I2C connection
-	i2c_master_init(100); //Now that the unit is reset and I2C inteface mode, we need to begin I2C
+	twi_init(); //Now that the unit is reset and I2C inteface mode, we need to begin I2C
 
 	//Configure the si4703 to use the crystal
 	readRegisters(); //Read the current register set
@@ -40,7 +40,7 @@ Si4703_Breakout::Si4703_Breakout(volatile uint8_t *resetPort, uint8_t resetPin){
 
 	//Give the si4703 enough time to power up.
 	_delay_ms(110); //Max powerup time, from datasheet page 13
-	
+
 	readRegisters();
 }
 void Si4703_Breakout::powerOn()
@@ -72,17 +72,17 @@ void Si4703_Breakout::setChannel(uint16_t channel) {
 	updateRegisters();
 
 	//_delay_ms(60); //Wait 60ms - you can use or skip this delay
-	
+
 	//Poll to see if STC is set
 	while(1) {
 		readRegisters();
 		if( (si4703_registers[STATUSRSSI] & (1<<STC)) != 0) break; //Tuning complete!
 	}
-	
+
 	readRegisters();
 	si4703_registers[CHANNEL] &= ~(1<<TUNE); //Clear the tune after a tune has completed
 	updateRegisters();
-	
+
 	//Wait for the si4703 to clear the STC as well
 	while(1) {
 		readRegisters();
@@ -110,7 +110,7 @@ void Si4703_Breakout::setVolume(uint16_t volume)
   updateRegisters(); //Update
 }
 /*
-void Si4703_Breakout::readRDS(char* buffer, long timeout){ 
+void Si4703_Breakout::readRDS(char* buffer, long timeout){
 	long endTime = millis() + timeout;
   boolean completed[] = {false, false, false, false};
   int completedCount = 0;
@@ -154,14 +154,13 @@ void Si4703_Breakout::readRDS(char* buffer, long timeout){
 //Read the entire register control set from 0x00 to 0x0F
 //Re-written by Wyatt Olson to use i2c_master library instead of Arduino Wire library.
 void Si4703_Breakout::readRegisters(){
-	uint8_t message[33];	//32 uint8_ts, plus uint8_t 0 as address / direction
-	message[0] = SI4703_ADDRESS << 1 | I2C_READ;
+	uint8_t message[32];	//32 uint8_t
 
 	//Si4703 begins reading from register upper register of 0x0A and reads to 0x0F, then loops to 0x00. (see datasheet page 19)
 	// We want to read the entire register set from 0x0A to 0x09 = 32 uint8_ts.
-	i2c_start_transceiver_with_data(message, 33);
-	i2c_get_data_from_transceiver(message, 33);
-	
+	twi_read_from(SI4703_ADDRESS, message, 32, TWI_STOP);
+	//i2c_get_data_from_transceiver(message, 33);
+
 	//Remember, register 0x0A comes in first so we have to shuffle the array around a bit
 	uint8_t j = 1;
 	for (uint8_t i = 0x0A; ; i++) { //Read in these 32 uint8_ts
@@ -178,14 +177,13 @@ void Si4703_Breakout::readRegisters(){
 //The Si4703 assumes you are writing to 0x02 first, then increments
 //Re-written by Wyatt Olson to use i2c_master library instead of Arduino Wire library.
 uint8_t Si4703_Breakout::updateRegisters() {
-	uint8_t message[13];		//12 uint8_ts (registers 0x02..0x07, two uint8_ts each), plus uint8_t 0 as address / direction
-	message[0] = SI4703_ADDRESS << 1 | I2C_WRITE;
-	uint8_t j = 1;
+	uint8_t message[12];		//12 uint8_ts (registers 0x02..0x07, two uint8_ts each)
+	uint8_t j = 0;
 	for (uint8_t i = 0x02; i <= 0x07; i++){
 		message[j++] = this->si4703_registers[i] >> 8;
 		message[j++] = this->si4703_registers[i] & 0xFF;
 	}
-	i2c_start_transceiver_with_data(message, 13);
+	twi_write_to(SI4703_ADDRESS, message, 12, TWI_BLOCK, TWI_STOP);
 	return 1;
 }
 
@@ -232,4 +230,3 @@ uint16_t Si4703_Breakout::seek(uint8_t seekDirection){
 
   return getChannel();
 }
-

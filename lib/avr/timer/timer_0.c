@@ -1,5 +1,5 @@
 /*
- * Low resolution implementation of timer using a 8 bit clock with prescaler, 
+ * Low resolution implementation of timer using a 8 bit clock with prescaler,
  * etc.  Clicks approximately every millisecond.  Sub-millisecond resolution is available
  * on demand, and has approximately 12µs resolution at 20MHz.
  * You can use this file when you don't need high resolution timing, and don't care
@@ -16,20 +16,20 @@ static volatile uint32_t _timer_millis;
 static uint32_t _timer_micro_divisor;
 
 /*
- * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs 
+ * Initializes the timer, and resets the timer count to 0.  Sets up the ISRs
  * linked with timer0.
  */
 void timer_init(){
 	//Set up the timer to run at F_CPU / 256, in normal mode (we reset TCNT0 in the ISR)
 	TCCR0A = 0x0;
 	TCCR0B |= _BV(CS02);
-	
+
 	//Every _timer_micro_divisor clock ticks is one microsecond.
-	_timer_micro_divisor = F_CPU / 1000000; 
-	
+	_timer_micro_divisor = F_CPU / 1000000;
+
 	//Set compare value to be F_CPU / 1000 -- fire interrupt every millisecond
 	OCR0A = F_CPU / 256 / 1000;
-	
+
 	//Enable compare interrupt
 #if defined(__AVR_ATtiny13__)   || \
 	defined(__AVR_ATtiny24__)   || \
@@ -40,7 +40,7 @@ void timer_init(){
 	defined(__AVR_ATtiny85__)
 
 	TIMSK = _BV(OCIE0A);
-	
+
 #elif defined(__AVR_ATmega48__)   || \
     defined(__AVR_ATmega48P__)    || \
 	defined(__AVR_ATmega168__)   || \
@@ -50,19 +50,19 @@ void timer_init(){
 	defined(__AVR_ATmega644__)     || \
 	defined(__AVR_ATmega644P__)    || \
 	defined(__AVR_ATmega644PA__)   || \
-	defined(__AVR_ATmega1284P__)
+	defined(__AVR_ATmega1284P__)   || \
 	defined(__AVR_ATmega32U2__)    || \
 	defined(__AVR_ATmega16U4__)    || \
 	defined(__AVR_ATmega32U4__)
-	
+
 	TIMSK0 = _BV(OCIE0A);
-	
+
 #endif
-	
+
 
 	//Reset count variables
 	_timer_millis = 0;
-	
+
 	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
 #ifndef NO_INTERRUPT_ENABLE
 	sei();
@@ -70,7 +70,7 @@ void timer_init(){
 }
 
 /*
- * Returns the number of milliseconds which have elapsed since the 
+ * Returns the number of milliseconds which have elapsed since the
  * last time timer_init() was called.  Overflows after about 49 days.
  */
 #if TIMER_BITS == 64
@@ -82,7 +82,7 @@ uint32_t timer_millis(){
 }
 
 /*
- * Returns the number of microseconds which have elapsed since the 
+ * Returns the number of microseconds which have elapsed since the
  * last time timer_init() was called.  Overflows after about 71 minutes.
  */
 #if TIMER_BITS == 64
@@ -98,7 +98,7 @@ uint32_t timer_micros(){
 }
 
 
-/* 
+/*
  * The ISR for timer0 overflow.  Increment the _timer_count here, and do the calculcations
  * to increment _timer_millis as needed.
  */

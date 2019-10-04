@@ -4,5 +4,5 @@
 using namespace digitalcave;
 
 I2CAVR::I2CAVR() {
-	;
+	twi_init();
 }

@@ -1,0 +1,9 @@
+On / Off - Single push, fade on / off over 1 - 2 seconds
+Menu - Push + hold, enter state
+	- Turn for mode
+		- Set alarm time
+		- Set time
+		- Push to select mode
+			- Turn to set
+			- Hold to back out (or wait 20 seconds)
+	

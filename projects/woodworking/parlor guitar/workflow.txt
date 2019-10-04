@@ -1,0 +1,68 @@
+Rim assembly
+	Bend sides to match template
+	Make neck and tail blocks
+        Tail block: single piece of wood, 3" wide / 1" thick, grain parallel to sides, with 3 holes drilled downward (across grain) with dowels glued inside to prevent cracking
+        Neck block: Laminated bass wood, 3" wide / 1" thick, 3 layers, outer layers parallel side grain, inner layer perpendicular, with holes drilled for neck, reinforced with CA glue around holes
+	Glue neck and tail blocks to sides (http://www.kennethmichaelguitars.com/rim.html)
+		Ensure the butt joint is square and centered
+	Glue neck block (http://www.kennethmichaelguitars.com/rim2.html)
+	Install kerfed lining
+		Basswood, 5/8" tall, 1/4" thick
+	Install side reinforcements
+		Basswood, 1/8" thick 1/4" wide, vertical grain, spaced every 3 inches
+		Lining will be cut to accept these reinforcements
+	Radius top of rim using a 25' radius bar, and bottom of rim using 15' radius bar
+Top assembly
+	Join top
+	Cut out top slightly larger than needed
+	Install rosette
+	Thickness top
+	Cut soundhole
+	Cut bracing, radius to 25'
+	Glue bracing
+	Trim bracing (tap tones)
+	Trim lining to accept braces (http://www.kennethmichaelguitars.com/attachingtop.html)
+	Glue top to body
+	Sand (flapper discs?) top flush with sides
+Back assembly
+	Join back (https://www.jsbguitars.com/learn-guitar-making-techniques/plate-joining/)
+	Install decorative stripe inlays if desired
+	Thickness back
+	Glue center brace (spruce)
+	Cut ladder braces
+	Radius ladder braces (15')
+	Glue ladder braces on back
+	Plane back side of rim down to approximate desired contour (3" to 3.75"?  Depends on wood width).  Measure and mark lines then plane to lines.
+	Trim lining on body to accept braces (http://www.kennethmichaelguitars.com/attachback.html)
+	Glue back to body
+	Sand (flapper discs?) top flush with sides?  Router could work but is scary.
+Install ede graft wedge
+	Cut a slot (tapered)
+	Glue end graft in place, optionally with purfling
+Binding / Purfling on body
+	Cut rabbets in body top / back with router
+		Create a sort of sled for the body; some sort of shims to account for radiused top / bottom and keep everything flat.  Cork strips?
+		If purfling is to be used, use 3/16" groove, followed by deeper 1/8" groove.
+		If only binding is to be used, use 1/8" groove.
+		To miter the purfling on the end wedge, don't cut all the way to the wedge, then clean up with a chisel.  See https://www.youtube.com/watch?v=6haG-aDM-eg at about 7:30 for instructions.
+	Use a sizing mixture of 2:1 water:hide glue (or thin, super blonde shellac) to seal wood around channel and binding strips
+	Dry fit, with mitered purfling, starting at tail, making sure that the binding is exactly square
+	Use thin CA glue to glue binding in place
+	Thoroughly sand to remove any surface glue
+Rough neck assembly
+	Laminate strips (Sapele outside, veneer of walnut, maple center?  Perhaps just leave out the walnut?  Perhaps replace walnut with rosewood if there is enough left over?)
+	Cut to approx width (2"?)
+	Glue heel using same laminations
+	Cut scarf joint
+	Add to sides of headstock
+	Apply headstock veneer (Perhaps bookmatched rosewood outside and maple wedge to match end graft?  http://3.bp.blogspot.com/_n4VnkbsUaD0/SN1JeDszvjI/AAAAAAAAAS0/E_R8JxE_5yA/s320/234.jpg)
+	Shape heel and drill to accept captive nuts
+	
+Install binding + perfling on Neck
+	
+Attach neck (http://www.kennethmichaelguitars.com/neckfitpart1.html)
+	Cut mortise in body ???
+	Cut matching tenon on neck ???
+	
+
+	

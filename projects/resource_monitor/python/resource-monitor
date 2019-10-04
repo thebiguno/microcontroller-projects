@@ -108,13 +108,13 @@ def main():
 			#CPU Temperature:
 			for chip in sensors.iter_detected_chips():
 				for feature in chip:
-					if (feature.label == "Physical id 0"):
+					if (feature.label == "Physical id 0" or feature.label == "Package id 0"):
 						cpu_temp = int(feature.get_value())
 						if (cpu_temp > 99):
 							cpu_temp = 99
-						buf[27] = str(cpu_temp / 10)
-						buf[28] = str(cpu_temp % 10)
-						buf[29] = '\xDF'
+						buf[26] = str(cpu_temp / 10)
+						buf[27] = str(cpu_temp % 10)
+						buf[28] = '\xDF'
 
 			#GPU Temperature:
 			gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
@@ -216,14 +216,15 @@ if (__name__=="__main__"):
 	try:
 		while (True):
 			try:
-				ser = serial.Serial("/dev/tty.usbmodem12341", 19200)
+				ser = serial.Serial("/dev/ttyResourceMonitor", 19200)
 				main()
 			except serial.SerialException as e:
 				print(e)
-				sleep(1)
+				time.sleep(1)
 			finally:
-				if ("close" in dir(dev)):
-					dev.close()
+				if ("close" in dir(ser)):
+					ser.close()
+					print("Closing serial port")
 	except:
 		raise
 	finally:

@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name ubbb_32u4-rescue)(type Legacy)(uri ${KIPRJMOD}/ubbb_32u4-rescue.lib)(options "")(descr ""))
+  (lib (name custom)(type Legacy)(uri /Users/wyatt/Documents/Electronics/projects/lib/kicad/library/custom.lib)(options "")(descr ""))
+)
