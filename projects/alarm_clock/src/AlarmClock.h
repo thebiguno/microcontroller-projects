@@ -6,8 +6,8 @@
 
 #include <timer/timer.h>
 
-#include "Display.h"
-#include "Sound.h"
+#include "display.h"
+#include "music.h"
 #include "State.h"
 
 #endif

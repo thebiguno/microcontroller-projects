@@ -18,7 +18,7 @@
 
 #include "light.h"
 #include "encoder.h"
-#include "Sound.h"
+#include "music.h"
 
 //The start of the EEPROM
 #define EEPROM_CALIBRATION_OFFSET		0x00

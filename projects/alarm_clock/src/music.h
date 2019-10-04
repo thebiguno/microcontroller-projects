@@ -17,32 +17,16 @@
 // Real DFPlayerMinis can query the number of files, but the cheap Chinese clones don't.  Lame Amazon.
 #define SOUND_FILE_COUNT			12
 
-namespace digitalcave {
+void music_init();
 
-	class Sound {
-		private:
-			DFPlayerMini mp3;
+void music_poll();
 
-			uint8_t queue[SOUND_FILE_COUNT];
-			uint8_t playbackState;
-			uint8_t volume;
-			uint8_t currentFileIndex;
+uint8_t music_get_volume();
+void music_set_volume(int8_t volume);
 
-			void shuffleQueue();
-
-		public:
-			Sound();
-
-			void poll();
-
-			uint8_t getVolume();
-			void setVolume(int8_t volume);
-
-			void start();
-			void stop();
-			void toggle();
-			uint8_t isPlaying();
-	};
-}
+void music_start();
+void music_stop();
+void music_toggle();
+uint8_t music_is_playing();
 
 #endif

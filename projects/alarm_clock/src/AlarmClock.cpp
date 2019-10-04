@@ -6,18 +6,16 @@ using namespace digitalcave;
 SerialUSB serialUSB;
 #endif
 
-SerialAVR serialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
-
-Sound sound;
 State state;
 
 int main(){
 	display_init();
 	encoder_init();
+	music_init();
 
 	//Main program loop
 	while (1){
-		sound.poll();
+		music_poll();
 		state.poll();
 		display_update();
 

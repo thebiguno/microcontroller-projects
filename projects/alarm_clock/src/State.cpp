@@ -7,8 +7,6 @@ extern SerialUSB serialUSB;
 char buffer[64];
 #endif
 
-extern Sound sound;
-
 State::State() :
 	i2c(),
 	calendar(&i2c),
@@ -56,7 +54,7 @@ void State::poll(){
 			light_color = -1;
 			light_set(0, -1);
 			light_on();
-			sound.start();
+			music_start();
 #ifdef DEBUG
 			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
 #endif
@@ -68,8 +66,8 @@ void State::poll(){
 			light_color = ((double) timer_millis() * 2 / 60 / 1000 / a.lamp_speed) - 1;		//Range -1 .. 1 over lamp_speed minutes
 			display_brightness = 15;
 			uint8_t volume = ((double) timer_millis() / 60 / 1000 / a.music_speed) * a.music_volume;	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume
-			if (volume != sound.getVolume()){
-				sound.setVolume(volume);
+			if (volume != music_get_volume()){
+				music_set_volume(volume);
 			}
 		}
 	}
@@ -109,17 +107,17 @@ void State::poll(){
 		else if (musicButton.releaseEvent()){
 			alarm_triggered = 0x00;
 			timer_init();		//Reset our timer; we will use this to track how long the music has been playing
-			sound.toggle();
-			if (sound.isPlaying()){
+			music_toggle();
+			if (music_is_playing()){
 				edit_item = EDIT_TIME_MUSIC;
 			}
 			else {
 				edit_item = EDIT_TIME_TIME;
 			}
 		}
-		else if (music_encoder_movement != 0 && sound.isPlaying()){
+		else if (music_encoder_movement != 0 && music_is_playing()){
 			edit_item = EDIT_TIME_MUSIC;
-			sound.setVolume(sound.getVolume() + music_encoder_movement);
+			music_set_volume(music_get_volume() + music_encoder_movement);
 		}
 		else if (lamp_encoder_movement != 0){
 			if (edit_item == EDIT_TIME_TIME){
@@ -211,7 +209,7 @@ void State::poll(){
 						v = 30;
 					}
 					alarm[alarm_index].music_volume = v;
-					sound.setVolume(v);
+					music_set_volume(v);
 				}
 			}
 		}
@@ -251,8 +249,8 @@ void State::poll(){
 	}
 
 	//Turn off music after 2 hours
-	if (sound.isPlaying() && millis > 7200000){
-		sound.stop();
+	if (music_is_playing() && millis > 7200000){
+		music_stop();
 	}
 
 	//Go back to time after timeouts
