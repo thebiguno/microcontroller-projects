@@ -206,3 +206,23 @@ uint8_t time_get_day_of_week(dc_time_t time){
 	// }
 	// return (time.day_of_month + (int16_t) floor((13 * month_number - 1) / 5) + year + (int16_t) floor(year / 4) + (int16_t) floor(20 / 4) - 2 * 20) % 7;
 }
+
+uint8_t time_after(dc_time_t a, dc_time_t b){
+	a = time_set_mode(a, TIME_MODE_24);
+	b = time_set_mode(b, TIME_MODE_24);
+
+	if (a.hour > b.hour || (a.hour == b.hour && a.minute > b.minute) || (a.hour == b.hour && a.minute == b.minute && a.second > b.second)){
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t time_before(dc_time_t a, dc_time_t b){
+	a = time_set_mode(a, TIME_MODE_24);
+	b = time_set_mode(b, TIME_MODE_24);
+
+	if (a.hour < b.hour || (a.hour == b.hour && a.minute < b.minute) || (a.hour == b.hour && a.minute == b.minute && a.second < b.second)){
+		return 1;
+	}
+	return 0;
+}

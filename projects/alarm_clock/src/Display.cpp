@@ -34,8 +34,9 @@ void Display::update(){
 		}
 		else if (edit_item == EDIT_TIME_LAMP){
 			buffer.write_string("3", font_icon, 0, 0);                      //Icon 3 is brightness
-			snprintf(temp, sizeof(temp), "%d", (uint8_t) (state.get_lamp_brightness() * 99));
-			buffer.write_string(temp, font_5x8, ((state.get_lamp_brightness() * 99) < 10 ? 26 : 20), 0);
+			uint8_t brightness = (uint8_t) ((state.get_lamp_brightness() * 99) + 1);
+			snprintf(temp, sizeof(temp), "%d", brightness);
+			buffer.write_string(temp, font_5x8, brightness < 10 ? 26 : (brightness < 100 ? 20 : 14), 0);
 		}
 		else if (edit_item ==EDIT_TIME_MUSIC){
 			buffer.write_string("2", font_icon, 0, 0);                      //Icon 2 is music

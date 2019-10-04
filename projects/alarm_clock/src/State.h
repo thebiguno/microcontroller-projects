@@ -16,7 +16,7 @@
 #include <SerialUSB.h>
 #endif
 
-#include "Light.h"
+#include "light.h"
 #include "Encoder.h"
 #include "Sound.h"
 
@@ -81,8 +81,8 @@ namespace digitalcave {
 
 			//Stuff for menus
 			uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
-			uint8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
-			uint8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like setting times and alarms.
+			int8_t menu_item = 0;	//From 0 to MENU_COUNT - 1.  The currently selected menu item.
+			int8_t edit_item = 0;	//Functionality depends on edit item.  Stuff like setting times and alarms.
 
 		public:
 			State();

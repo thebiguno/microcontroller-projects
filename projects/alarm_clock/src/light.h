@@ -15,9 +15,9 @@
 #include <math.h>
 #include <stdlib.h>
 
-#ifdef DEBUG
-#include <SerialUSB.h>
-#endif
+// #ifdef DEBUG
+// #include <SerialUSB.h>
+// #endif
 
 #if defined (__cplusplus)
 extern "C" {

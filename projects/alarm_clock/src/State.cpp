@@ -88,13 +88,16 @@ void State::poll(){
 			light_color = 0;
 			light_toggle();
 			if (light_state()){
+				light_brightness = 0.5;
 				edit_item = EDIT_TIME_LAMP;
 			}
 			else {
+				light_brightness = 0.5;
 				edit_item = EDIT_TIME_TIME;
 			}
 		}
 		else if (light_state() && lamp_encoder_movement != 0){
+			edit_item = EDIT_TIME_LAMP;
 			light_brightness += (double) lamp_encoder_movement / 100;
 			if (light_brightness < 0) {
 				light_brightness = 0;
@@ -105,6 +108,7 @@ void State::poll(){
 		}
 		else if (musicButton.releaseEvent()){
 			alarm_triggered = 0x00;
+			timer_init();		//Reset our timer; we will use this to track how long the music has been playing
 			sound.toggle();
 			if (sound.isPlaying()){
 				edit_item = EDIT_TIME_MUSIC;
@@ -114,9 +118,7 @@ void State::poll(){
 			}
 		}
 		else if (music_encoder_movement != 0 && sound.isPlaying()){
-#ifdef DEBUG
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "music_encoder_movement: %d\n\r", music_encoder_movement));
-#endif
+			edit_item = EDIT_TIME_MUSIC;
 			sound.setVolume(sound.getVolume() + music_encoder_movement);
 		}
 		else if (lamp_encoder_movement != 0){
@@ -138,17 +140,12 @@ void State::poll(){
 			edit_item = 0;
 		}
 		else if (lamp_encoder_movement != 0){
-			if (lamp_encoder_movement > 0){
-				menu_item++;
-				if (menu_item >= MENU_SIZE){
-					menu_item = 0;
-				}
+			menu_item += lamp_encoder_movement;
+			if (menu_item < 0){
+				menu_item = MENU_SIZE - 1;
 			}
-			else {
-				menu_item--;
-				if (menu_item >= MENU_SIZE){
-					menu_item = MENU_SIZE - 1;
-				}
+			else if (menu_item >= MENU_SIZE){
+				menu_item = 0;
 			}
 		}
 	}
@@ -162,11 +159,17 @@ void State::poll(){
 		}
 		else if (menu_item >= MENU_SET_ALARM_1 && menu_item <= MENU_SET_ALARM_3){
 			//Find alarm index
-			uint8_t alarm_index = menu_item - MENU_SET_ALARM_3;
+			uint8_t alarm_index = menu_item;
 
 			//Lamp encoder changes fields
 			if (lamp_encoder_movement != 0){
-				edit_item = (edit_item + lamp_encoder_movement) % 12;	//Here edit_item goes from 0 to 9.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
+				edit_item += lamp_encoder_movement;	//Here edit_item goes from 0 to 11.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
+				if (edit_item < 0){
+					edit_item = 11;
+				}
+				else if (edit_item > 11){
+					edit_item = 0;
+				}
 			}
 			//Music encoder increments / decrements fields
 			else if (music_encoder_movement != 0){
@@ -247,6 +250,11 @@ void State::poll(){
 		last_change = millis;
 	}
 
+	//Turn off music after 2 hours
+	if (sound.isPlaying() && millis > 7200000){
+		sound.stop();
+	}
+
 	//Go back to time after timeouts
 	if (last_change > millis){	//Handle timer overflow
 		last_change = millis;
@@ -268,9 +276,6 @@ void State::poll(){
 	if ((last_change + 5000) > millis){
 		if (display_brightness < 15){
 			display_brightness++;		//Quickly fade up to high brightness when touching input
-#ifdef DEBUG
-			serialUSB.write("Increase Brightness\n\r");
-#endif
 		}
 		else {
 			display_brightness = 15;
@@ -278,15 +283,18 @@ void State::poll(){
 	}
 	else if ((last_change + 30000) > millis){
 		display_brightness = ((last_change + 30000) - millis) / 1000;		//Fade out to low brightness when not touching anything for a while
-#ifdef DEBUG
-		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: %d\n\r", display_brightness));
-#endif
 	}
 	else {
 		display_brightness = 0;
-#ifdef DEBUG
-		//serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "display_brightness: 0\n\r"));
-#endif
+	}
+
+	dc_time brightness_cutoff_early = {2000, 1, 1, 0, 6, 0, 0, TIME_MODE_24};	//6 AM
+	dc_time brightness_cutoff_late = {2000, 1, 1, 0, 20, 0, 0, TIME_MODE_24};	//8 PM
+	if (display_brightness < 5 && time_after(time, brightness_cutoff_early) && time_before(time, brightness_cutoff_late)){
+		display_brightness = 5;
+	}
+	else if (display_brightness < 10 && light_state()){
+		display_brightness = 10;
 	}
 }
 

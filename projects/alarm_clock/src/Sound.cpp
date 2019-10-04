@@ -6,7 +6,8 @@ extern SerialAVR serialAVR;
 
 Sound::Sound() :
 	mp3(&serialAVR),
-	playbackState(SOUND_STATE_STOP)
+	playbackState(SOUND_STATE_STOP),
+	volume(0)
 {
 	for (uint8_t i = 0; i < SOUND_FILE_COUNT; i++){
 		queue[i] = (i + 1);
@@ -60,6 +61,7 @@ void Sound::setVolume(int8_t volume){
 }
 
 void Sound::start(){
+	setVolume(volume);
 	shuffleQueue();
 	mp3.sendCommand(DFPLAYER_COMMAND_FOLDER_SET, (SOUND_FOLDER_NUMBER << 8) + queue[currentFileIndex]);
 	playbackState = SOUND_STATE_PLAY;

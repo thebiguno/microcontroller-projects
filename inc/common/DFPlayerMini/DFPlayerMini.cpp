@@ -1,15 +1,6 @@
 #include "DFPlayerMini.h"
 
-#ifdef DEBUG
-#include <SerialUSB.h>
-#include <stdio.h>
-#endif
-
 using namespace digitalcave;
-
-#ifdef DEBUG
-extern SerialUSB serialUSB;
-#endif
 
 DFPlayerMini::DFPlayerMini(Stream* serial) :
 	serial(serial)
@@ -53,17 +44,9 @@ uint8_t DFPlayerMini::sendCommand(uint8_t command, uint16_t arg){
 	serial->write(request, 10);
 	//serialUSB.write("done\n\r");
 
-#ifdef DEBUG
-	char temp[64];
-	serialUSB.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "Request: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", request[0], request[1], request[2], request[3], request[4], request[5], request[6], request[7], request[8], request[9]));
-#endif
-
 	delay_ms(20);	//Wait a bit longer if we are expecting a reply - at 9600 baud one message takes about 10 ms to send, and another 10 to recieve.  Give it an extra 10 for good measure.
 	if (poll()){
 		if (response[3] == 0x40){
-#ifdef DEBUG
-			serialUSB.write("Resending command...\n\r");
-#endif
 			sendCommand(command, arg);		//0x40 indicates the command should be re-sent
 		}
 		else if (response[3] == 0x41){
@@ -102,9 +85,5 @@ uint8_t* DFPlayerMini::poll(){
 	for (uint8_t i = 0; i < 10; i++){
 		response[i] = buffer[i];
 	}
-#ifdef DEBUG
-	char temp[64];
-	serialUSB.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "Response: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n\r", response[0], response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8], response[9]));
-#endif
 	return response;
 }

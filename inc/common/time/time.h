@@ -64,6 +64,11 @@ uint8_t time_is_leap_year(uint16_t year);
 //Returns the day of the week for a given date.  0 = Sunday, 1 = Monday, ... 6 = Saturday
 uint8_t time_get_day_of_week(dc_time_t time);
 
+//Returns 1 if a is after b.  Only looks at time fields, not date.
+uint8_t time_after(dc_time_t a, dc_time_t b);
+
+//Returns 1 if a is before b.  Only looks at time fields, not date.
+uint8_t time_before(dc_time_t a, dc_time_t b);
 
 #if defined (__cplusplus)
 }
