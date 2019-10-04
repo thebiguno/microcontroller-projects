@@ -6,8 +6,7 @@ extern ButtonAVR button;
 extern Sound sound;
 extern State state;
 
-static SPIStreamAVR spi;
-static MAX7219 display(&spi, 4);
+
 static Buffer buffer(32, 8);
 
 static uint8_t flash_timer = 0;
@@ -20,9 +19,15 @@ static void display_write_time(dc_time_t time, uint8_t flash_field);
 
 static void display_write_date(dc_time_t time, uint8_t flash_field);
 
+//This, in combination with the main loop speed, determines how fast things flash
+#define FLASH_TIMER_ON		0x05
+#define NO_FLASH			0xFF
+
 
 void display_init(){
 	buffer.clear();
+
+	max7219_init(4);
 }
 
 void display_update(){
@@ -170,9 +175,9 @@ void display_update(){
 		}
 	}
 
-	display.write_buffer(buffer.get_data());
+	max7219_write_buffer(buffer.get_data());
 
-	display.set_brightness(state.get_display_brightness());
+	max7219_set_brightness(state.get_display_brightness());
 }
 
 
