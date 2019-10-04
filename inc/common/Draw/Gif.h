@@ -2,6 +2,7 @@
 #define GIF_H
 
 #include <stdint.h>
+#include <string.h>
 #include <Draw.h>
 #include <Stream.h>
 
@@ -20,24 +21,28 @@ namespace digitalcave {
     class Gif {
     private:
         Stream* stream;
-        Draw* draw;
+
         // logical display size
         uint16_t width;
         uint16_t height;
         rgb_24 globalPalette[256];
+        uint8_t backgroundColorIndex;
 
         // image descriptor
+        uint8_t version;
         uint16_t x;
         uint16_t y;
         uint16_t w;
         uint16_t h;
+        uint8_t loop;
+        uint16_t loopCount;
         rgb_24 localPalette[256];
         uint8_t useLocalPalette;
         uint8_t useInterlace;
 
         // control extension
         uint8_t disposalMethod;
-        uint6_t delayTime;      // in 1/100 s
+        uint8_t delayTime;      // in 1/100 s
         uint8_t useTransparentIndex;
         uint8_t transparentIndex;
 
@@ -68,6 +73,16 @@ namespace digitalcave {
 
         /* Draws the icon using onto the draw context. Call repeatedly for animated Gifs. */
         void draw(Draw *draw, int16_t x, int16_t y, uint8_t orientation);
+
+    private:
+        void readHeader();
+        void readApplicationExtension();
+        void readGraphicControlExtension();
+        void readUnknownExtension();
+        void readImage(Draw *canvas, int16_t offset_x, int16_t offset_y, uint8_t orientation);
+        void decode(uint8_t startSize, Draw *canvas, int16_t offset_x, int16_t offset_y, uint8_t orientation);
+        int16_t getNextCode();
+
     };
 }
 

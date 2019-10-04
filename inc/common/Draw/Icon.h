@@ -44,11 +44,11 @@ namespace digitalcave {
 		void draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		void draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		void draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
-		void draw3(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
+		void draw3(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		void draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
 		void draw5(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
 		void draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
-		void draw7(Draw* draw, int16_t x, int16_t y, uint8_t* pixel);
+		void draw7(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel);
 		uint8_t bv(uint8_t bit);
         float hue2rgb(float p, float q, float t);
 

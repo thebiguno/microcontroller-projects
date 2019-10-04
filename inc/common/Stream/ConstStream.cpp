@@ -1,4 +1,4 @@
-#include "NullStream.h"
+#include "ConstStream.h"
 
 using namespace digitalcave;
 

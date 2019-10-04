@@ -10,7 +10,7 @@ Gif::Gif(Stream* stream) :
     stream(stream) {
 }
 
-void Gif::draw(Draw *draw, int16_t x, int16_t y, uint8_t orientation) {
+void Gif::draw(Draw *canvas, int16_t x, int16_t y, uint8_t orientation) {
     if (this->version == 0) {
         readHeader();
     }
@@ -20,7 +20,7 @@ void Gif::draw(Draw *draw, int16_t x, int16_t y, uint8_t orientation) {
         this->stream->read(&b);
 
         if (b == 0x2c) {
-            this->readImage(draw, x, y, orientation);
+            this->readImage(canvas, x, y, orientation);
             return;
         } else if (b == 0x21) {
             this->stream->read(&b);
@@ -44,8 +44,8 @@ void Gif::draw(Draw *draw, int16_t x, int16_t y, uint8_t orientation) {
 void Gif::readHeader() {
     this->stream->read(this->buf, 6);
 
-    if (strncmp(this->buf, "GIF87a", 6) == 0) this->version = 87;
-    else if (strncmp(this->buf, "GIF89a", 6) == 0) this->version = 89;
+    if (strncmp((char*) this->buf, "GIF87a", 6) == 0) this->version = 87;
+    else if (strncmp((char*) this->buf, "GIF89a", 6) == 0) this->version = 89;
     else this->version = 0;
 
     // logical screen descriptor
@@ -66,7 +66,7 @@ void Gif::readHeader() {
         // read the global palette
         uint16_t colorCount = 1 << ((packed & 0x07) + 1);  // 2, 4, 8, 16, 32, 64, 128, 256
         uint16_t colorTableBytes = sizeof(rgb_24) * colorCount; // 6 ~ 768
-        this->stream->read(this->globalPalette, colorTableBytes);
+        this->stream->read((uint8_t*) this->globalPalette, colorTableBytes);
     }
 }
 
@@ -77,8 +77,8 @@ void Gif::readApplicationExtension() {
         this->stream->read(this->buf, blockSize);   // read the block data
         this->stream->skip(1);                      // read the block terminator
 
-        if (strncmp(this->buf, "NETSCAPE2.0", 11) == 0
-            || strncmp(this->buf, "ANIMEXTS1.0", 11) == 0) {
+        if (strncmp((char*) this->buf, "NETSCAPE2.0", 11) == 0
+            || strncmp((char*) this->buf, "ANIMEXTS1.0", 11) == 0) {
             this->stream->read(&blockSize);
             this->stream->read(this->buf, blockSize);
 
@@ -107,14 +107,14 @@ void Gif::readGraphicControlExtension() {
     this->delayTime = (this->buf[2] << 8) | this->buf[3]; // in 1/100 s
 
     if (this->buf[1] & 0x01) {
-        this->useTransparentIndex = 1
+        this->useTransparentIndex = 1;
         this->transparentIndex = this->buf[4];
     } else {
         this->useTransparentIndex = 0;
     }
 }
 
-void Gif::readImage(Draw *draw, int16_t offset_x, int16_t offset_y, uint8_t orientation) {
+void Gif::readImage(Draw *canvas, int16_t offset_x, int16_t offset_y, uint8_t orientation) {
     this->stream->read(this->buf, 8);
 
     this->x = (this->buf[0] << 8) | this->buf[1];
@@ -130,32 +130,34 @@ void Gif::readImage(Draw *draw, int16_t offset_x, int16_t offset_y, uint8_t orie
         uint16_t colorTableBytes = sizeof(rgb_24) * colorCount; // 6 ~ 768
         this->useLocalPalette = packed >> 7;
         this->useInterlace = (packed >> 6) & 0x01;
-        this->stream->read(this->localPalette, colorTableBytes);
+        this->stream->read((uint8_t*) this->localPalette, colorTableBytes);
     }
 
     if (this->disposalMethod == DISPOSAL_BACKGROUND
         || this->disposalMethod == DISPOSAL_RESTORE) {
-        rgb_24 rgb = this->globalPalette[index];
-        draw->setRgb(rgb.red, rgb.green, rgb.blue);
+        rgb_24 rgb = this->globalPalette[this->backgroundColorIndex];
+        canvas->setColor(rgb.red, rgb.green, rgb.blue);
         for (uint16_t i = this->x; i < this->x + this->w; i++) {
             for (uint16_t j = this->y; j < this->y + this->h; j++) {
-                draw->setPixel(i, j);
+                canvas->setPixel(i, j);
             }
         }
     }
 
     uint8_t lzwCodeSize;    // minimum number of bits required to represent the set of pixel values
     this->stream->read(&lzwCodeSize);
-    this->decode(lzwCodeSize, draw, offset_x, offset_y, orientation);
+    this->decode(lzwCodeSize, canvas, offset_x, offset_y, orientation);
 }
 
-int16_t Gif:getNextCode() {
+int16_t Gif::getNextCode() {
     int16_t result;
+    uint8_t b;
 
     if (this->bitsLeft == 0) {
         if (this->availBytes < 0) {
             // read the next block
-            this->stream->read(&this->availBytes);           // read the block size
+            this->stream->read(&b);                          // read the block size
+            this->availBytes = b;
             this->stream->read(this->buf, this->availBytes); // read the block data
             this->stream->skip(1);                           // read the block terminator
             if (this->availBytes == 0) return -1;
@@ -170,7 +172,8 @@ int16_t Gif:getNextCode() {
     result = this->b >> (8 - this->bitsLeft);
     while (this->codeSize > this->bitsLeft) {
         if (this->availBytes <= 0) {
-            this->stream->read(&this->availBytes);           // read the block size
+            this->stream->read(&b);                          // read the block size
+            this->availBytes = b;
             this->stream->read(this->buf, this->availBytes); // read the block data
             this->stream->skip(1);                           // read the block terminator
             if (this->availBytes == 0) return -1;
@@ -184,9 +187,11 @@ int16_t Gif:getNextCode() {
         this->bitsLeft -= this->codeSize;
         return result & this->codeMask[this->codeSize];
     }
+
+    return result;
 }
 
-void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t orientation) {
+void Gif::decode(uint8_t startSize, Draw *canvas, int16_t offset_x, int16_t offset_y, uint8_t orientation) {
     // initialize instance state required by getNextCode()
     this->availBytes = 0;
     this->bitsLeft = 0;
@@ -198,7 +203,7 @@ void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t 
     uint16_t prefix[4096];                  // prefix table
 
     uint16_t clearCode = 1 << startSize;    // the value for the clear code
-    uint16_t stopCode = size + 1;           // the value for the stop code
+    uint16_t stopCode = clearCode + 1;      // the value for the stop code
     uint16_t firstCode = stopCode + 1;      // the first code value
     uint16_t topSlot = 1 << this->codeSize; // the highest code for the current code size
     uint16_t slot = firstCode;              // the current code value
@@ -215,7 +220,7 @@ void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t 
     while ((c = this->getNextCode()) != stopCode) {
         if (c < 0) return;
 
-        if (c == endCode) {
+        if (c == stopCode) {
             break;
         } else if (c == clearCode) {
             // re-initialize
@@ -271,7 +276,7 @@ void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t 
         uint16_t max_x = offset_x + this->w;
 
         // pop the decoded string of indexes and draw them
-        while (stackPtr > this->stack) {
+        while (stackPtr > stack) {
             if (this->useInterlace) {
             }
             uint8_t index = *(--stackPtr);
@@ -280,15 +285,15 @@ void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t 
                 ; // don't draw this pixel
             } else if (this->useLocalPalette) {
                 rgb_24 rgb = this->localPalette[index];
-                draw->setRgb(rgb.red, rgb.green, rgb.blue);
+                canvas->setColor(rgb.red, rgb.green, rgb.blue);
             } else {
                 rgb_24 rgb = this->globalPalette[index];
-                draw->setRgb(rgb.red, rgb.green, rgb.blue);
+                canvas->setColor(rgb.red, rgb.green, rgb.blue);
             }
 
             // TODO deal with interlaced images here
             // TODO deal with orientation here
-            draw->setPixel(x++, y);
+            canvas->setPixel(x++, y);
 
             if (x > max_x) {
                 x = offset_x + this->x;
@@ -298,7 +303,7 @@ void Gif::decode(uint8_t startSize, int16_t offset_x, int16_t offset_y, uint8_t 
     }
 }
 
-uint16_t Icon::getDelayMs() {
+uint16_t Gif::getDelayMs() {
     return this->delayTime * 100;
 }
 
@@ -381,3 +386,4 @@ da: 10___ (16 BWRG; 21=20|0 GBWRG|B) 10110 (22! BWRG_B; 22=16|0 BWRG|B) ____1
 00000050: 44a0 f187 1c1e 95c9 6273 e964 4aa3 54a8  D.......bs.dJ.T.
 00000060: f589 9d5e b559 5701 003b                 ...^.YW..;
 
+*/

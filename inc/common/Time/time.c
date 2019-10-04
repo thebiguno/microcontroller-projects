@@ -20,13 +20,13 @@ int64_t mktime(const struct tm* t) {
     uint16_t doy = (153*(m + (m > 2 ? -3 : 9)) + 2)/5 + d-1;  // [0, 365]
     uint32_t doe = yoe*365 + yoe/4 - yoe/100 + doy;           // [0, 146096]
 
-    return (era * 146097 + static_cast<int64_t>(doe) - 719468) * 86400 + (t->tm_hour * 3600) + (t->tm_min * 60) + t->tm_sec;
+    return (era * 146097 + doe - 719468) * 86400 + (t->tm_hour * 3600) + (t->tm_min * 60) + t->tm_sec;
 }
 
-tm gmtime(int64_t z) {
+struct tm gmtime(int64_t z) {
     uint32_t tmp = z % 86400;
 
-    tm t;
+    struct tm t;
     t.tm_hour = tmp / 3600;
     tmp -= t.tm_hour * 3600;
     t.tm_min = tmp / 60;

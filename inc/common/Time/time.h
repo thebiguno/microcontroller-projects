@@ -1,5 +1,6 @@
 #ifndef TIME_H
 #include <stdlib.h>
+#include <stdint.h>
 
 struct tm {
     uint8_t  tm_sec;    // 0-59
@@ -14,6 +15,6 @@ struct tm {
 };
 
 int64_t mktime(const struct tm* t);
-tm gmtime(int64_t z);
+struct tm gmtime(int64_t z);
 
 #endif

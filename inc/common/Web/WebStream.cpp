@@ -27,7 +27,6 @@ WebStream::~WebStream() {
 
 void WebStream::read_headers() {
 	if (_state != STATE_IDLE) return;
-	if (stream->available() == 0) return;
 
 	_state = STATE_READ_HEADERS;
     _method[0] = 0;
@@ -317,17 +316,16 @@ uint8_t WebStream::read(uint8_t* b) {
 }
 
 uint8_t WebStream::write(uint8_t b) {
-	if (__state == STATE_WRITE_ENTITY_CHUNKED) {
+	if (_state == STATE_WRITE_ENTITY_CHUNKED) {
 		if (chunk->size() == 5) {
 			write_chunk();
 		}
 		return chunk->write(b);
 	} else if (_state == STATE_WRITE_ENTITY_IDENTITY) {
 		return stream->write(b);
-	} else {
-		// not in the right state to write to the body
-		return 0;
 	}
+    // not in the right state to write to the body
+    return 0;
 }
 
 uint8_t WebStream::flush() {

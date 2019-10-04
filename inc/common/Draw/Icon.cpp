@@ -68,14 +68,14 @@ uint16_t Icon::getDelayMs() {
 void Icon::draw_(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t palette = 0x07 && this->config;
 	switch (palette) {
-		case 0: this->draw0(draw, x, y bit, pixel); break;
-		case 1: this->draw1(draw, bit, pixel); break;
-		case 2: this->draw2(draw, bit, pixel); break;
-		case 3: this->draw3(draw, pixel); break;
-		case 4: this->draw4(draw, pixel); break;
-		case 5: this->draw5(draw, pixel); break;
-		case 6: this->draw6(draw, pixel); break;
-		case 7: this->draw7(draw, pixel); break;
+		case 0: this->draw0(draw, x, y, bit, pixel); break;
+		case 1: this->draw1(draw, x, y, bit, pixel); break;
+		case 2: this->draw2(draw, x, y, bit, pixel); break;
+		case 3: this->draw3(draw, x, y, bit, pixel); break;
+		case 4: this->draw4(draw, x, y, pixel); break;
+		case 5: this->draw5(draw, x, y, pixel); break;
+		case 6: this->draw6(draw, x, y, pixel); break;
+		case 7: this->draw7(draw, x, y, bit, pixel); break;
 	}
 	if (palette > 0) {
 		draw->setPixel(x,y);
@@ -92,7 +92,7 @@ void Icon::draw0(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) 
 
 // 1: 4bpp = 4bit monochrome, (16 gray levels)
 // rgb hex values 00, 11, 22, ... FF
-void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw1(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t l3 = (pixel[0] & bv(bit--)) ? 8 : 0;
 	uint8_t l2 = (pixel[0] & bv(bit--)) ? 4 : 0;
 	uint8_t l1 = (pixel[0] & bv(bit--)) ? 2 : 0;
@@ -104,12 +104,13 @@ void Icon::draw1(Draw* draw, uint8_t bit, uint8_t* pixel) {
 }
 
 // 2: 4bpp RRGG
-void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw2(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
     uint8_t c = pixel[0];
 
+// TODO
     // 4-bit RRGG 16 color
-    uint8_t r = ((color >> 2) & 0x3);
-    uint8_t g = ((color >> 0) & 0x3);
+    uint8_t r = ((c >> 2) & 0x3);
+    uint8_t g = ((c >> 0) & 0x3);
     r = (r << 2) + r;
     g = (g << 2) + g;
     draw->setColor(r,g,0);
@@ -117,9 +118,10 @@ void Icon::draw2(Draw* draw, uint8_t bit, uint8_t* pixel) {
 
 // 4bpp IRGB
 // L = 0x00, 0xaa  H = 0x55, 0xff
-void Icon::draw3(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw3(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
     uint8_t c = pixel[0];
 
+// TODO
 	if (c == 6) {
 		// use an orange/brown instead of a dark yellow (just like CGA)
 		draw->setColor(0xaa, 0x55, 0x22);
@@ -142,7 +144,7 @@ void Icon::draw3(Draw* draw, uint8_t bit, uint8_t* pixel) {
 // L2 = 0x22, 0x66, 0xaa, 0xee
 // L3 = 0x33, 0x77, 0xbb, 0xff
 // this mode is irregular and requires a minimum of 8 bpp in a regular RGB framebuffer
-void Icon::draw4(Draw* draw, uint8_t* pixel) {
+void Icon::draw4(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	uint8_t i = ((pixel[0] >> 6) & 0x3) * 0x11;
 	uint8_t r = ((pixel[0] >> 4) & 0x3) * 0x44;
 	uint8_t g = ((pixel[0] >> 2) & 0x3) * 0x44;
@@ -152,7 +154,7 @@ void Icon::draw4(Draw* draw, uint8_t* pixel) {
 }
 
 // 8bpp RRRGGGBB (256 colours)
-void Icon::draw5(Draw* draw, uint8_t* pixel) {
+void Icon::draw5(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
 	// r & g have the values 0x11, 0x33, 0x55, 0x77, 0x99, 0xbb, 0xdd, 0xff
 	// b has the values            0x33,       0x77,       0xbb,       0xff
 	uint8_t r = pixel[0] >> 5;
@@ -164,7 +166,7 @@ void Icon::draw5(Draw* draw, uint8_t* pixel) {
 	draw->setColor(r,g,b);
 }
 
-float Icon::hue2rgb = function hue2rgb(float p, float q, float t) {
+float Icon::hue2rgb(float p, float q, float t) {
     if (t < 0) t += 1;
     if (t > 1) t -= 1;
     if (t < 1 / 6) return p + (q - p) * 6 * t;
@@ -177,9 +179,9 @@ float Icon::hue2rgb = function hue2rgb(float p, float q, float t) {
 // 30 hues, every 12 degrees, each with 30 lightness levels (240 colors)
 // primary and secondary colors are present (60 degrees divides by 12)
 // 16 grayscale levels
-void Icon::draw6(Draw* draw, uint8_t* pixel) {
+void Icon::draw6(Draw* draw, int16_t x, int16_t y, uint8_t* pixel) {
     uint8_t h = pixel[0] >> 3;
-    uint8_t l = pixel[0] & 0x07
+    uint8_t l = pixel[0] & 0x07;
 
     if (h == 0) {
         l *= 2;
@@ -191,21 +193,21 @@ void Icon::draw6(Draw* draw, uint8_t* pixel) {
         float hp = ((h - 1) / 30.0);
         float lp = (l / 11.0) + 0.2;
         float s = 1.0;
-        float q = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
-        float p = 2.0 * l - q;
-        uint8_t r = 0xf * hue2rgb(p, q, h + 1.0 / 3.0);
+        float q = lp < 0.5 ? lp * (1.0 + s) : lp + s - lp * s;
+        float p = 2.0 * lp - q;
+        uint8_t r = 0xf * hue2rgb(p, q, hp + 1.0 / 3.0);
         r = (r << 4) | r;
-        uint8_t g = 0xf * hue2rgb(p, q, h);
+        uint8_t g = 0xf * hue2rgb(p, q, hp);
         g = (g << 4) | g;
-        uint8_t b = 0xf * hue2rgb(p, q, h - 1.0 / 3.0);
+        uint8_t b = 0xf * hue2rgb(p, q, hp - 1.0 / 3.0);
         b = (g << 4) | b;
+        draw->setColor(r, g, b);
     }
-    draw->setColor(r, g, b);
 }
 
 // 12bpp RRRRGGGGBBBB (4096 colours)
 // this is like using web colors like #rgb instead of #rrggbb
-void Icon::draw7(Draw* draw, uint8_t bit, uint8_t* pixel) {
+void Icon::draw7(Draw* draw, int16_t x, int16_t y, uint8_t bit, uint8_t* pixel) {
 	uint8_t i = 0;
 	uint8_t r = (pixel[i] >> (bit == 7 ? 0 : 4)) & 0xf;
 	r = (r << 4) | r;

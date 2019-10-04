@@ -4,10 +4,11 @@
  * Don't use this on an AVR where you need to use PROGMEM instead.
  */
 
-#ifndef NULL_STREAM_H
-#define NULL_STREAM_H
+#ifndef CONST_STREAM_H
+#define CONST_STREAM_H
 
 #include <Stream.h>
+#include <stdint.h>
 
 namespace digitalcave {
 
@@ -20,7 +21,7 @@ namespace digitalcave {
 
 		public:
 			//Initialize specifying baud rate and all other optional parameters
-			ConstStream(const uint8_t*, const len);
+			ConstStream(const uint8_t* data, const uint8_t len);
 
 			// Implementation of virtual functions declared in superclass
 			uint8_t read(uint8_t *b);
