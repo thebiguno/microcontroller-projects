@@ -6,16 +6,26 @@ extern ButtonAVR button;
 extern Sound sound;
 extern State state;
 
-Display::Display() :
-	spi(),
-	display(&spi, 4),
-	buffer(32, 8)
-{
-	buffer.clear();
+static SPIStreamAVR spi;
+static MAX7219 display(&spi, 4);
+static Buffer buffer(32, 8);
 
+static uint8_t flash_timer = 0;
+static int8_t scroll_value = 0;			//Scrolling offset.  Start at 0 and then move negative every time flash_timer resets.
+static int8_t scroll_direction = -1;		//Scrolling direction.  Either -1 or 1
+
+static char temp[10];
+
+static void display_write_time(dc_time_t time, uint8_t flash_field);
+
+static void display_write_date(dc_time_t time, uint8_t flash_field);
+
+
+void display_init(){
+	buffer.clear();
 }
 
-void Display::update(){
+void display_update(){
 	buffer.clear();
 
 	flash_timer = (flash_timer + 1) & 0x0F;
@@ -30,7 +40,7 @@ void Display::update(){
 		dc_time_t time = state.get_time();
 		if (edit_item == EDIT_TIME_TIME){
 			scroll_value = 4;
-			write_time(time, NO_FLASH);
+			display_write_time(time, NO_FLASH);
 		}
 		else if (edit_item == EDIT_TIME_LAMP){
 			buffer.write_string("3", font_icon, 0, 0);                      //Icon 3 is brightness
@@ -45,7 +55,7 @@ void Display::update(){
 			buffer.write_string(temp, font_5x8, (sound.getVolume() < 10 ? 26 : 20), 0);
 		}
 		else if (edit_item == EDIT_TIME_DATE){
-			write_date(time, NO_FLASH);
+			display_write_date(time, NO_FLASH);
 		}
 
 	}
@@ -81,10 +91,10 @@ void Display::update(){
 			alarm_t alarm = state.get_alarm(alarm_index);
 
 			if (edit_item == 0){
-				write_time(alarm.time, TIME_FIELD_HOUR);
+				display_write_time(alarm.time, TIME_FIELD_HOUR);
 			}
 			else if (edit_item == 1){
-				write_time(alarm.time, TIME_FIELD_MINUTE);
+				display_write_time(alarm.time, TIME_FIELD_MINUTE);
 			}
 			else if (edit_item < 9){
 				if (edit_item == 2){
@@ -130,19 +140,19 @@ void Display::update(){
 			dc_time_t time = state.get_time();
 
 			if (edit_item == 0){
-				write_date(time, TIME_FIELD_YEAR);
+				display_write_date(time, TIME_FIELD_YEAR);
 			}
 			else if (edit_item == 1){
-				write_date(time, TIME_FIELD_MONTH);
+				display_write_date(time, TIME_FIELD_MONTH);
 			}
 			else if (edit_item == 2){
-				write_date(time, TIME_FIELD_DAY_OF_MONTH);
+				display_write_date(time, TIME_FIELD_DAY_OF_MONTH);
 			}
 			else if (edit_item == 3){
-				write_time(time, TIME_FIELD_HOUR);
+				display_write_time(time, TIME_FIELD_HOUR);
 			}
 			else if (edit_item == 4){
-				write_time(time, TIME_FIELD_MINUTE);
+				display_write_time(time, TIME_FIELD_MINUTE);
 			}
 			else {
 				buffer.write_string("Mode:", font_3x5, 1, 3);
@@ -166,7 +176,7 @@ void Display::update(){
 }
 
 
-void Display::write_time(dc_time_t time, uint8_t flash_field){
+static void display_write_time(dc_time_t time, uint8_t flash_field){
 	if (time.mode == TIME_MODE_24){
 		//Write the hours
 		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
@@ -204,7 +214,7 @@ void Display::write_time(dc_time_t time, uint8_t flash_field){
 	}
 }
 
-void Display::write_date(dc_time_t time, uint8_t flash_field){
+static void display_write_date(dc_time_t time, uint8_t flash_field){
 	//Write the year
 	if (flash_field != TIME_FIELD_YEAR || flash_timer > FLASH_TIMER_ON){
 		snprintf(temp, sizeof(temp), "%04d", time.year);

@@ -24,29 +24,8 @@
 
 #define NO_FLASH			0xFF
 
-namespace digitalcave {
+void display_init();
 
-	class Display {
-		private:
-			SPIStreamAVR spi;
-			MAX7219 display;
-			Buffer buffer;
-
-			uint8_t flash_timer = 0;
-			int8_t scroll_value = 0;			//Scrolling offset.  Start at 0 and then move negative every time flash_timer resets.
-			int8_t scroll_direction = -1;		//Scrolling direction.  Either -1 or 1
-
-			char temp[10];
-
-			void write_time(dc_time_t time, uint8_t flash_field);
-
-			void write_date(dc_time_t time, uint8_t flash_field);
-
-		public:
-			Display();
-
-			void update();
-	};
-}
+void display_update();
 
 #endif
