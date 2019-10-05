@@ -70,7 +70,7 @@ void light_set(float brightness){
 	float neutral = pow((brightness - 0.25) * 8.5, 3);
 	float blue = pow((brightness - 0.5) * 12.7, 3);
 
-	if (yellow < 1) yellow = 1;
+	if (yellow < 1) yellow = 1;		//At the dimmest, we have yellow on for 1/256 value
 	else if (yellow > PWM_MAX) yellow = PWM_MAX;
 
 	if (neutral < 0) neutral = 0;

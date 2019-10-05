@@ -105,11 +105,9 @@ void state_poll(){
 			alarm_triggered = 0x00;
 			light_toggle();
 			if (light_state()){
-				light_brightness = 0.5;
 				edit_item = EDIT_TIME_LAMP;
 			}
 			else {
-				light_brightness = 0.5;
 				edit_item = EDIT_TIME_TIME;
 			}
 		}
@@ -305,7 +303,7 @@ void state_poll(){
 		display_brightness = 0;
 	}
 
-	dc_time brightness_cutoff_early = {2000, 1, 1, 0, 6, 0, 0, TIME_MODE_24};	//6 AM
+	dc_time brightness_cutoff_early = {2000, 1, 1, 0, 8, 0, 0, TIME_MODE_24};	//8 AM
 	dc_time brightness_cutoff_late = {2000, 1, 1, 0, 20, 0, 0, TIME_MODE_24};	//8 PM
 	if (display_brightness < 5 && time_after(time, brightness_cutoff_early) && time_before(time, brightness_cutoff_late)){
 		display_brightness = 5;
@@ -313,6 +311,7 @@ void state_poll(){
 	else if (display_brightness < 10 && light_state()){
 		display_brightness = 10;
 	}
+	display_brightness = 0;		//TODO remove
 }
 
 alarm_t state_get_alarm(uint8_t index){
