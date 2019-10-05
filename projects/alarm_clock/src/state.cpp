@@ -66,6 +66,7 @@ void state_poll(){
 		//Trigger alarm if time matches
 		if (a.enabled & _BV(time_get_day_of_week(time))
 				&& (alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
+				&& a.time.mode == time.mode
 				&& a.time.hour == time.hour
 				&& a.time.minute == time.minute
 				&& time.second == 0){
@@ -83,9 +84,9 @@ void state_poll(){
 
 		//Increment the brightness by the alarm ramp-up values
 		if (alarm_triggered & _BV(i)){
-			light_brightness = (double) timer_millis() / 60 / 1000 / a.lamp_speed;			//Range 0 .. 1 over lamp_speed minutes
+			light_brightness = fmin((double) timer_millis() / 60 / 1000 / a.lamp_speed, 1);			//Range 0 .. 1 over lamp_speed minutes
 			display_brightness = 15;
-			uint8_t volume = ((double) timer_millis() / 60 / 1000 / a.music_speed) * a.music_volume;	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume
+			uint8_t volume = fmax((fmin(1, (double) timer_millis() / 60 / 1000 / a.music_speed) * a.music_volume), 1);	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume and add one (so that you always start at volume 1)
 			if (volume != music_get_volume()){
 				music_set_volume(volume);
 			}
@@ -311,7 +312,6 @@ void state_poll(){
 	else if (display_brightness < 10 && light_state()){
 		display_brightness = 10;
 	}
-	display_brightness = 0;		//TODO remove
 }
 
 alarm_t state_get_alarm(uint8_t index){

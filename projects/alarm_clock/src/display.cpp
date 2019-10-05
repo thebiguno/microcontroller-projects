@@ -12,7 +12,7 @@ static void display_write_time(dc_time_t time, uint8_t flash_field);
 static void display_write_date(dc_time_t time, uint8_t flash_field);
 
 //This, in combination with the main loop speed, determines how fast things flash
-#define FLASH_TIMER_ON		0x05
+#define FLASH_TIMER_ON		0x7F
 #define NO_FLASH			0xFF
 
 static char buffer[10];
@@ -27,7 +27,7 @@ void display_init(){
 void display_update(){
 	display_buffer->clear();
 
-	flash_timer = (flash_timer + 1) & 0x0F;
+	flash_timer = flash_timer + 1;
 
 	uint8_t mode = state_get_mode();
 	uint8_t menu_item = state_get_menu_item();
@@ -40,16 +40,16 @@ void display_update(){
 			display_write_time(time, NO_FLASH);
 		}
 		else if (edit_item == EDIT_TIME_LAMP){
-			display_buffer->write_string("3", font_icon, 0, 0);                      //Icon 3 is brightness
+			display_buffer->write_string("3", font_icon, 3, 0);                      //Icon 3 is brightness
 			uint8_t brightness = (uint8_t) ((state_get_lamp_brightness() * 99) + 1);
 			snprintf(buffer, sizeof(buffer), "%d", brightness);
-			display_buffer->write_string(buffer, font_5x8, brightness < 10 ? 26 : (brightness < 100 ? 20 : 14), 0);
+			display_buffer->write_string(buffer, font_5x8, brightness < 10 ? 23 : (brightness < 100 ? 17 : 12), 0);
 		}
 		else if (edit_item ==EDIT_TIME_MUSIC){
 			display_buffer->write_string("2", font_icon, 0, 0);                      //Icon 2 is music
-			display_buffer->write_string("VOL", font_3x5, 8, 3);
+			display_buffer->write_string("VOL", font_3x5, 9, 3);
 			snprintf(buffer, sizeof(buffer), "%d", music_get_volume());
-			display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 26 : 20), 0);
+			display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 27 : 21), 0);
 		}
 		else if (edit_item == EDIT_TIME_DATE){
 			display_write_date(time, NO_FLASH);
@@ -128,9 +128,9 @@ void display_update(){
 			}
 			else if (edit_item == 11){
 				display_buffer->write_string("2", font_icon, 0, 0);			//Icon 2 is music
-				display_buffer->write_string("VOL", font_3x5, 8, 3);
+				display_buffer->write_string("VOL", font_3x5, 9, 3);
 				snprintf(buffer, sizeof(buffer), "%d", alarm.music_volume);
-				display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 26 : 20), 0);
+				display_buffer->write_string(buffer, font_5x8, (alarm.music_volume < 10 ? 27 : 21), 0);
 			}
 		}
 		else if (menu_item == MENU_SET_TIME){

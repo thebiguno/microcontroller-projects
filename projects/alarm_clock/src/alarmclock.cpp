@@ -10,8 +10,6 @@ int main(){
 	while (1){
 		state_poll();
 		display_update();
-
-		delay_ms(50);	//This defines the blink speed
 	}
 
 	return 0;

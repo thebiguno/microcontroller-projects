@@ -2,7 +2,7 @@
 #define STATE_H
 
 #include <stdlib.h>
-
+#include <math.h>
 #include <avr/eeprom.h>
 
 #include <bootloader/bootloader.h>
