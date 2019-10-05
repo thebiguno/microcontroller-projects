@@ -2,6 +2,7 @@
 #define DISPLAY_H
 
 #include <stdio.h>
+#include <time.h>
 
 #include <font/font.h>
 #include <SPIStreamAVR.h>

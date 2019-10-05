@@ -10,6 +10,8 @@ int main(){
 	while (1){
 		state_poll();
 		display_update();
+
+		delay_ms(2);
 	}
 
 	return 0;

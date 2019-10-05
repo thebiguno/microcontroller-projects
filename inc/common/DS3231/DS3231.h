@@ -2,11 +2,13 @@
 #define DS3231_h
 
 #include <stdlib.h>
+#include <time.h>
 
-#include <time/time.h>
 #include <I2C.h>
 
 #define DS3231_ADDRESS			0x68
+
+typedef struct tm tm_t;
 
 namespace digitalcave {
 
@@ -15,9 +17,9 @@ namespace digitalcave {
 			//Inits the HMC5883L control object and sends the power up commands to the chip.
 			DS3231(I2C* i2c);
 
-			dc_time_t getTime();
+			void get(tm_t* tm);
 
-			void setTime(dc_time_t time);
+			void set(tm_t* tm);
 		private:
 			I2C* i2c;
 	};

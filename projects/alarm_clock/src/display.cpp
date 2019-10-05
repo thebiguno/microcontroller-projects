@@ -1,5 +1,13 @@
 #include "display.h"
 
+#define TIME_FIELD_YEAR				0x00
+#define TIME_FIELD_MONTH			0x01
+#define TIME_FIELD_DAY_OF_MONTH		0x02
+#define TIME_FIELD_HOUR				0x03
+#define TIME_FIELD_MINUTE			0x04
+#define TIME_FIELD_SECOND			0x05
+#define TIME_FIELD_DAY_OF_WEEK		0x06
+
 using namespace digitalcave;
 
 static Buffer* display_buffer;
@@ -8,12 +16,15 @@ static uint8_t flash_timer = 0;
 static int8_t scroll_value = 0;			//Scrolling offset.  Start at 0 and then move negative every time flash_timer resets.
 static int8_t scroll_direction = -1;		//Scrolling direction.  Either -1 or 1
 
-static void display_write_time(dc_time_t time, uint8_t flash_field);
-static void display_write_date(dc_time_t time, uint8_t flash_field);
+static void display_write_time(time_t time, uint8_t flash_field);
+static void display_write_date(time_t time, uint8_t flash_field);
 
 //This, in combination with the main loop speed, determines how fast things flash
 #define FLASH_TIMER_ON		0x7F
 #define NO_FLASH			0xFF
+
+static time_t currentTime;
+static tm_t tm;
 
 static char buffer[10];
 
@@ -33,11 +44,12 @@ void display_update(){
 	uint8_t menu_item = state_get_menu_item();
 	uint8_t edit_item = state_get_edit_item();
 
+	state_get_time(&currentTime, &tm);
+
 	if (mode == MODE_TIME){
-		dc_time_t time = state_get_time();
 		if (edit_item == EDIT_TIME_TIME){
 			scroll_value = 4;
-			display_write_time(time, NO_FLASH);
+			display_write_time(currentTime, NO_FLASH);
 		}
 		else if (edit_item == EDIT_TIME_LAMP){
 			display_buffer->write_string("3", font_icon, 3, 0);                      //Icon 3 is brightness
@@ -45,14 +57,14 @@ void display_update(){
 			snprintf(buffer, sizeof(buffer), "%d", brightness);
 			display_buffer->write_string(buffer, font_5x8, brightness < 10 ? 23 : (brightness < 100 ? 17 : 12), 0);
 		}
-		else if (edit_item ==EDIT_TIME_MUSIC){
+		else if (edit_item == EDIT_TIME_MUSIC){
 			display_buffer->write_string("2", font_icon, 0, 0);                      //Icon 2 is music
 			display_buffer->write_string("VOL", font_3x5, 9, 3);
 			snprintf(buffer, sizeof(buffer), "%d", music_get_volume());
 			display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 27 : 21), 0);
 		}
 		else if (edit_item == EDIT_TIME_DATE){
-			display_write_date(time, NO_FLASH);
+			display_write_date(currentTime, NO_FLASH);
 		}
 
 	}
@@ -87,11 +99,12 @@ void display_update(){
 
 			alarm_t alarm = state_get_alarm(alarm_index);
 
-			if (edit_item == 0){
-				display_write_time(alarm.time, TIME_FIELD_HOUR);
-			}
-			else if (edit_item == 1){
-				display_write_time(alarm.time, TIME_FIELD_MINUTE);
+			if (edit_item == 0 || edit_item == 1){
+				tm_t tm;
+				localtime_r(&currentTime, &tm);
+				tm.tm_hour = alarm.hour;
+				tm.tm_min = alarm.minute;
+				display_write_time(mktime(&tm), edit_item + 3);
 			}
 			else if (edit_item < 9){
 				if (edit_item == 2){
@@ -134,31 +147,22 @@ void display_update(){
 			}
 		}
 		else if (menu_item == MENU_SET_TIME){
-			dc_time_t time = state_get_time();
+			state_get_time(&currentTime, &tm);
 
 			if (edit_item == 0){
-				display_write_date(time, TIME_FIELD_YEAR);
+				display_write_date(currentTime, TIME_FIELD_YEAR);
 			}
 			else if (edit_item == 1){
-				display_write_date(time, TIME_FIELD_MONTH);
+				display_write_date(currentTime, TIME_FIELD_MONTH);
 			}
 			else if (edit_item == 2){
-				display_write_date(time, TIME_FIELD_DAY_OF_MONTH);
+				display_write_date(currentTime, TIME_FIELD_DAY_OF_MONTH);
 			}
 			else if (edit_item == 3){
-				display_write_time(time, TIME_FIELD_HOUR);
+				display_write_time(currentTime, TIME_FIELD_HOUR);
 			}
 			else if (edit_item == 4){
-				display_write_time(time, TIME_FIELD_MINUTE);
-			}
-			else {
-				display_buffer->write_string("Mode:", font_3x5, 1, 3);
-				if (time.mode == TIME_MODE_24){
-					display_buffer->write_string("24", font_5x8, 20, 0);
-				}
-				else {
-					display_buffer->write_string("12", font_5x8, 20, 0);
-				}
+				display_write_time(currentTime, TIME_FIELD_MINUTE);
 			}
 		}
 		else if (menu_item == MENU_DFU){
@@ -177,48 +181,42 @@ void display_update(){
 }
 
 
-static void display_write_time(dc_time_t time, uint8_t flash_field){
-	if (time.mode == TIME_MODE_24){
-		//Write the hours
-		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
-			snprintf(buffer, sizeof(buffer), "%02d:", time.hour);
-			display_buffer->write_string(buffer, font_5x8, 3, 0);
-		}
+static void display_write_time(time_t time, uint8_t flash_field){
+	tm_t tm;
+	localtime_r(&time, &tm);
+	//
+	// strftime(buffer, sizeof(buffer), "%l:%M%p", &tm);
+	// display_buffer->write_string(buffer, font_5x8, 0, 0);
 
-		//Write the colon
-		display_buffer->write_string(":", font_5x8, 15, 0);
-
-		//Write the minutes
-		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
-			snprintf(buffer, sizeof(buffer), "%02d", time.minute);
-			display_buffer->write_string(buffer, font_5x8, 17, 0);
-		}
+	//Write the hours
+	if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
+		uint8_t hour = tm.tm_hour;
+		if (hour == 0) hour = 12;
+		else if (hour > 12) hour -= 12;
+		snprintf(buffer, sizeof(buffer), "%d", hour);
+		display_buffer->write_string(buffer, font_5x8, (hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
 	}
-	else {
-		//Write the hours
-		if (flash_field != TIME_FIELD_HOUR || flash_timer > FLASH_TIMER_ON){
-			snprintf(buffer, sizeof(buffer), "%d", time.hour);
-			display_buffer->write_string(buffer, font_5x8, (time.hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
-		}
 
-		//Write the colon
-		display_buffer->write_string(":", font_5x8, 12, 0);
+	//Write the colon
+	display_buffer->write_string(":", font_5x8, 12, 0);
 
-		//Write the minutes
-		if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
-			snprintf(buffer, sizeof(buffer), "%02d", time.minute);
-			display_buffer->write_string(buffer, font_5x8, 14, 0);
-		}
-
-		//Write AM / PM
-		display_buffer->write_char((time.mode == TIME_MODE_AM ? 'A' : 'P'), font_5x8, 28, 0);
+	//Write the minutes
+	if (flash_field != TIME_FIELD_MINUTE || flash_timer > FLASH_TIMER_ON){
+		snprintf(buffer, sizeof(buffer), "%02d", tm.tm_min);
+		display_buffer->write_string(buffer, font_5x8, 14, 0);
 	}
+
+	//Write AM / PM
+	display_buffer->write_char((tm.tm_hour < 12 ? 'A' : 'P'), font_5x8, 28, 0);
 }
 
-static void display_write_date(dc_time_t time, uint8_t flash_field){
+static void display_write_date(time_t time, uint8_t flash_field){
+	tm_t tm;
+	localtime_r(&time, &tm);
+
 	//Write the year
 	if (flash_field != TIME_FIELD_YEAR || flash_timer > FLASH_TIMER_ON){
-		snprintf(buffer, sizeof(buffer), "%04d", time.year);
+		snprintf(buffer, sizeof(buffer), "%04d", tm.tm_year + 1900);
 		display_buffer->write_string(buffer, font_5x8, scroll_value + 0, 0);
 	}
 
@@ -226,7 +224,7 @@ static void display_write_date(dc_time_t time, uint8_t flash_field){
 
 	//Write the month
 	if (flash_field != TIME_FIELD_MONTH || flash_timer > FLASH_TIMER_ON){
-		snprintf(buffer, sizeof(buffer), "%02d", time.month);
+		snprintf(buffer, sizeof(buffer), "%02d", tm.tm_mon + 1);
 		display_buffer->write_string(buffer, font_5x8, scroll_value + 28, 0);
 	}
 
@@ -234,12 +232,12 @@ static void display_write_date(dc_time_t time, uint8_t flash_field){
 
 	//Write the day of month
 	if (flash_field != TIME_FIELD_DAY_OF_MONTH || flash_timer > FLASH_TIMER_ON){
-		snprintf(buffer, sizeof(buffer), "%02d", time.day_of_month);
+		snprintf(buffer, sizeof(buffer), "%02d", tm.tm_mday);
 		display_buffer->write_string(buffer, font_5x8, scroll_value + 44, 0);
 	}
 
 	//Write the day of week
-	display_buffer->write_char((char) (time_get_day_of_week(time) + 0x41), font_icon, scroll_value + 58, 2);		//In the icon font, Sunday is 'A' (0x41), Monday is 'B', etc.
+	display_buffer->write_char((char) (tm.tm_wday + 0x41), font_icon, scroll_value + 58, 2);		//In the icon font, Sunday is 'A' (0x41), Monday is 'B', etc.
 
 	if (flash_timer & 0x01){
 		if (flash_field == NO_FLASH){		//If we are not flashing, we scroll the entire width

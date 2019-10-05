@@ -16,7 +16,10 @@ Button::Button(uint16_t pressTime, uint16_t releaseTime, uint16_t longPressTime,
 	pressCounter(0x00),
 	releaseCounter(0xFFFF),
 	longPressCounter(0x00),
-	repeatPressCounter(0x00){
+	repeatPressCounter(0x00),
+	eventState(0),
+	pressedState(0){
+		;
 }
 
 uint8_t Button::sample(uint32_t time) {

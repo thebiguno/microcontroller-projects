@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include <avr/eeprom.h>
 
 #include <bootloader/bootloader.h>
@@ -54,7 +55,8 @@
 #define ALARM_COUNT						3
 
 typedef struct alarm {
-	dc_time_t time;
+	uint8_t hour;			//Hour for alarm (0-23)
+	uint8_t minute;			//Minute for alarm (0-59)
 	uint8_t enabled;		//Bit mask for which days are enabled.  Defined as _BV(DAY), where DAY 0 is Sunday, 1 is Monday, etc.  _BV(7) is the global enabled flag, allowing you to turn off an alarm without changing the days it is active for.
 	uint8_t lamp_speed;		//Time to go from 0 to full brightness, in minutes
 	uint8_t music_speed;	//Time to go from 0 to music_volume, in minutes
@@ -65,7 +67,7 @@ void state_init();
 
 void state_poll();
 
-dc_time_t state_get_time();
+void state_get_time(time_t* time, tm_t* tm);
 
 alarm_t state_get_alarm(uint8_t index);
 

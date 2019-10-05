@@ -16,7 +16,7 @@ static inline uint8_t bcd_to_decimal(uint8_t bcd){
 	return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
-dc_time_t DS3231::getTime(){
+void DS3231::get(tm_t* tm){
 	uint8_t data[7];
 	data[0] = 0x00;
 	I2CMessage message(data, sizeof(data));
@@ -26,46 +26,40 @@ dc_time_t DS3231::getTime(){
 	message.setLength(7);
 	i2c->read(DS3231_ADDRESS, &message);
 
-	dc_time_t result;
-	result.year = bcd_to_decimal(data[6]) + 2000;
-	result.month = bcd_to_decimal(data[5]);
-	result.day_of_month = bcd_to_decimal(data[4]);
-	result.day_of_week = bcd_to_decimal(data[3]);
-	if (data[2] & (1 << 6)){		//12 hour mode
-		if (data[2] & (1 << 5)){
-			result.mode = TIME_MODE_PM;
-		}
-		else {
-			result.mode = TIME_MODE_AM;
-		}
-		data[2] &= ~((1 << 6) | (1 << 5));
-	}
-	else {
-		result.mode = TIME_MODE_24;
-	}
-	result.hour = bcd_to_decimal(data[2]);
-	result.minute = bcd_to_decimal(data[1]);
-	result.second = bcd_to_decimal(data[0]);
+	//This struct expects year as 'years past 1900'.  The RTC provides it as century + 0-99, so we can put it in directly.
+	tm->tm_year = bcd_to_decimal(data[6]) + (data[5] & (1 << 7) ? 100 : 0);
 
-	return result;
+	//This struct expects month as 0 - 11.  The RTC provides it as 1 - 12, so we subtract 1.
+	tm->tm_mon = bcd_to_decimal(data[5]) - 1;
+
+	//The struct and RTC match on these two.
+	tm->tm_mday = bcd_to_decimal(data[4]);
+	tm->tm_wday = bcd_to_decimal(data[3]);
+
+	//We assume that the clock is in 24 hour mode.  When we set it, we set it as such.
+	tm->tm_hour = bcd_to_decimal(data[2]);
+	tm->tm_min = bcd_to_decimal(data[1]);
+	tm->tm_sec = bcd_to_decimal(data[0]);
 }
 
-void DS3231::setTime(dc_time_t time){
+void DS3231::set(tm_t* tm){
+	if (tm->tm_year > 1900){
+		tm->tm_year -= 1900;		//We expect time to be between 0 and 199.
+	}
 	uint8_t data[8];
 	data[0] = 0x00;		//Register address
-	data[1] = decimal_to_bcd(time.second);
-	data[2] = decimal_to_bcd(time.minute);
-	data[3] = decimal_to_bcd(time.hour);
-	if (time.mode == TIME_MODE_AM){
-		data[3] |= (1 << 6);	//Set the 12 hour flag (6)
+	data[1] = decimal_to_bcd(tm->tm_sec);
+	data[2] = decimal_to_bcd(tm->tm_min);
+	data[3] = decimal_to_bcd(tm->tm_hour);
+	//Without setting the 12 hour flag, it is in 24 hour mode
+	data[4] = decimal_to_bcd(tm->tm_wday);
+	data[5] = decimal_to_bcd(tm->tm_mday);
+	data[6] = decimal_to_bcd(tm->tm_mon + 1);
+	if (tm->tm_year >= 100){
+		data[6] |= (1 << 7);	//Set the century flag
+		tm->tm_year -= 100;
 	}
-	else if (time.mode == TIME_MODE_PM){
-		data[3] |= (1 << 6) | (1 << 5);	//Set the 12 hour flag (6) and the PM flag (5)
-	}
-	data[4] = decimal_to_bcd(time.day_of_week);
-	data[5] = decimal_to_bcd(time.day_of_month);
-	data[6] = decimal_to_bcd(time.month);
-	data[7] = decimal_to_bcd(time.year - 2000);
+	data[7] = decimal_to_bcd(tm->tm_year);
 	I2CMessage message(data, sizeof(data));
 	i2c->write(DS3231_ADDRESS, &message);
 }

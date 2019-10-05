@@ -1,4 +1,4 @@
-#include "time.h"
+#include "dc_time.h"
 
 dc_time_t time_add(dc_time_t time, uint8_t field, int8_t amount, uint8_t time_affects_date){
 	uint8_t mode = time.mode;				//Remember the current mode
