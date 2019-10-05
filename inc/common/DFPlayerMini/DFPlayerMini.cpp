@@ -2,35 +2,43 @@
 
 using namespace digitalcave;
 
-DFPlayerMini::DFPlayerMini(Stream* serial) :
-	serial(serial)
-{
+static Stream* _serial = NULL;
+static ArrayStream buffer(64);
+
+static uint8_t request[10];
+static uint8_t response[10];
+
+
+void dfplayermini_init(Stream* serial){
+	_serial = serial;
+
 	//Constant data bytes in request
 	request[0] = 0x7E;	//Start byte
 	request[1] = 0xFF;	//Version info
 	request[2] = 0x06;	//Length (constant)
 	request[9] = 0xEF;	//End byte
-	//delay_ms(500);
-	init();
-}
 
-void DFPlayerMini::init(){
-	//Wait until the module comes online, for a max of 5 seconds (200 * 25ms)
-	for (uint8_t i = 0; i < 200; i++){
-		if (sendCommand(DFPLAYER_COMMAND_GET_INIT_PARM)){
+	//Wait until the module comes online, for a max of 2 seconds (20 * 50ms)
+	for (uint8_t i = 0; i < 40; i++){
+		//We can either wait for it to send a 0x3F init command...
+		if (dfplayermini_poll() && response[3] == DFPLAYER_COMMAND_GET_INIT_PARM){
 			break;
 		}
-		delay_ms(25);
+		//.. or we can ask for it and get a 0x41 success command back
+		else if (dfplayermini_send_command(DFPLAYER_COMMAND_GET_INIT_PARM)){
+			break;
+		}
+		delay_ms(50);
 	}
 
 	//Finish initializing the module
-	sendCommand(DFPLAYER_COMMAND_STANDBY_OFF);		//Turn off standby
-	sendCommand(DFPLAYER_COMMAND_VOL_SET, 0);		//Volume 0
-	sendCommand(DFPLAYER_COMMAND_EQ_SET, 0);		//Normal EQ
-	sendCommand(DFPLAYER_COMMAND_MODE_SET, 0);		//Repeat
+	dfplayermini_send_command(DFPLAYER_COMMAND_STANDBY_OFF);		//Turn off standby
+	dfplayermini_send_command(DFPLAYER_COMMAND_VOL_SET, 0);		//Volume 0
+	dfplayermini_send_command(DFPLAYER_COMMAND_EQ_SET, 0);		//Normal EQ
+	dfplayermini_send_command(DFPLAYER_COMMAND_MODE_SET, 0);		//Repeat
 }
 
-uint8_t DFPlayerMini::sendCommand(uint8_t command, uint16_t arg){
+uint8_t dfplayermini_send_command(uint8_t command, uint16_t arg){
 	uint8_t feedback = 0x01;	//(command >= 0x3C ? 0x01 : 0x00);		//Commands over 0x3C have a return code
 
 	request[3] = command;
@@ -40,16 +48,14 @@ uint8_t DFPlayerMini::sendCommand(uint8_t command, uint16_t arg){
 	uint16_t checksum = 0 - (request[1] + request[2] + request[3] + request[4] + request[5] + request[6]);
 	request[7] = (checksum >> 8) & 0xFF;
 	request[8] = checksum & 0xFF;
-	//serialUSB.write("writing command... ");
-	serial->write(request, 10);
-	//serialUSB.write("done\n\r");
+	_serial->write(request, 10);
 
-	delay_ms(20);	//Wait a bit longer if we are expecting a reply - at 9600 baud one message takes about 10 ms to send, and another 10 to recieve.  Give it an extra 10 for good measure.
-	if (poll()){
+	delay_ms(20);	//Wait a bit longer - at 9600 baud one message takes about 10 ms to send, and another 10 to recieve.  Give it an extra 10 for good measure.
+	while (dfplayermini_poll() != NULL){
 		if (response[3] == 0x40){
-			sendCommand(command, arg);		//0x40 indicates the command should be re-sent
+			dfplayermini_send_command(command, arg);		//0x40 indicates the command should be re-sent
 		}
-		else if (response[3] == 0x41){
+		else if (response[3] == 0x41){		//0x41 is success
 			return 1;
 		}
 	}
@@ -57,33 +63,27 @@ uint8_t DFPlayerMini::sendCommand(uint8_t command, uint16_t arg){
 	return 0;
 }
 
-uint8_t* DFPlayerMini::poll(){
-	uint8_t buffer[10];
-	buffer[0] = 0x00;
-	//Discard bytes until we find the start byte
-	while (serial->read(buffer)){
-		if (buffer[0] == 0x7E){
-			break;
+uint8_t* dfplayermini_poll(){
+	uint8_t b = 0;
+	//Read anything from the serial port into a buffer
+	while (_serial->read(&b)){
+		buffer.write(b);
+	}
+
+	//Discard bytes until we have less than 2 messages, and find a start byte
+	while ((buffer.peek(&b) && b != 0x7E) || buffer.size() > 20){
+		buffer.read(&b);
+	}
+
+	if (buffer.size() > 10){
+		//Copy 10 bytes of buffer to response
+		for (uint8_t i = 0; i < 10; i++){
+			buffer.read(&b);
+			response[i] = b;
 		}
+		return response;
 	}
-
-	if (buffer[0] != 0x7E){
-		return NULL;	//Nothing in the queue
+	else {
+		return NULL;	//Not a full message in the queue
 	}
-
-	//Once we started receiving a command, we can wait up to 5ms for each byte to recieve the rest of it.
-	for (uint8_t i = 1; i < 10; i++){
-		if (!serial->read(&buffer[i])){
-			delay_ms(5);
-			if (!serial->read(&buffer[i])){
-				return NULL;	//Timed out
-			}
-		}
-	}
-
-	//Copy buffer to the response
-	for (uint8_t i = 0; i < 10; i++){
-		response[i] = buffer[i];
-	}
-	return response;
 }

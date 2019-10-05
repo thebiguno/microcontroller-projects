@@ -4,10 +4,6 @@
 #include <Serial/SerialAVR.h>
 #include <DFPlayerMini.h>
 
-#ifdef DEBUG
-#include <SerialUSB.h>
-#endif
-
 #define SOUND_STATE_STOP			0
 #define SOUND_STATE_PLAY			1
 

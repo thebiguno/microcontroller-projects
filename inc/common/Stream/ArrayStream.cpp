@@ -23,7 +23,7 @@ uint8_t ArrayStream::remaining() {
 }
 
 uint8_t ArrayStream::size() {
-	return (head > tail) ? head - tail : capacity - tail + head;
+	return (head >= tail) ? head - tail : capacity - tail + head;
 }
 
 uint8_t ArrayStream::isEmpty(){
@@ -32,6 +32,13 @@ uint8_t ArrayStream::isEmpty(){
 
 uint8_t ArrayStream::isFull(){
 	return ((head + 1) % capacity == tail);
+}
+
+uint8_t ArrayStream::peek(uint8_t *b){
+	if (isEmpty()) return 0;
+	*b = data[tail];
+	return 1;
+
 }
 
 uint8_t ArrayStream::read(uint8_t* b){

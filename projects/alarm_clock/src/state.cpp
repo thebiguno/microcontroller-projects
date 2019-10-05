@@ -1,9 +1,9 @@
-#include "State.h"
+#include "state.h"
 
 using namespace digitalcave;
 
 #ifdef DEBUG
-extern SerialUSB serialUSB;
+SerialUSB serialUSB;
 char buffer[64];
 #endif
 
@@ -36,6 +36,7 @@ void state_init(){
 	timer_init();
 	light_init();
 	encoder_init();
+	music_init();
 
 	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
 
@@ -46,6 +47,8 @@ void state_init(){
 
 //The UI state machine.  Takes current state + input and moves between states.
 void state_poll(){
+	music_poll();
+
 	dc_time_t time = state_get_time();
 	uint32_t millis = timer_millis();
 
@@ -76,7 +79,7 @@ void state_poll(){
 			light_on();
 			music_start();
 #ifdef DEBUG
-			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
+//			serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Alarm %d Triggered\n\r", i));
 #endif
 		}
 

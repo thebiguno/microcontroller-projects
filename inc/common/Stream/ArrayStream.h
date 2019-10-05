@@ -23,6 +23,8 @@ namespace digitalcave {
 			uint8_t read(uint8_t *b);
 			uint8_t write(uint8_t b);
 
+			uint8_t peek(uint8_t *b);
+
 			void clear();
 			uint8_t remaining();
 			uint8_t size();

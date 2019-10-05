@@ -8,6 +8,6 @@
 
 #include "display.h"
 #include "music.h"
-#include "State.h"
+#include "state.h"
 
 #endif

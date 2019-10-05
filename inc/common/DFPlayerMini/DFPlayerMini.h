@@ -9,6 +9,7 @@
 #include <math.h>
 #include <dctypes.h>
 #include <dcutil/delay.h>
+#include <Stream/ArrayStream.h>
 #include <Stream/Stream.h>
 
 #define DFPLAYER_COMMAND_NEXT			0x01
@@ -38,36 +39,12 @@
 #define DFPLAYER_COMMAND_GET_SW_VER		0x46
 #define DFPLAYER_COMMAND_GET_FILE_COUNT	0x47
 
+//Resets the module and performs initial setup
+void dfplayermini_init(digitalcave::Stream* serial);
 
-namespace digitalcave {
+uint8_t dfplayermini_send_command(uint8_t command, uint16_t arg = 0x00);
 
-	class DFPlayerMini{
-		public:
-			//Inits the DFPlayer Mini chip
-			DFPlayerMini(Stream* serial);
-			//
-			// void playRandom();
-			// void playNext();
-			// void playPrevious();
-			// void setPlaybackMode(uint8_t playback_mode);
-			// void setEqMode(uint8_t eq_mode);
-			// void setVolume(uint8_t volume);
-			// void setStandby(uint8_t standby);
+//Looks for a response.  If there is one, return the response object.  Otherwise, return NULL.
+uint8_t* dfplayermini_poll();
 
-			//Resets the module and
-			void init();
-
-			uint8_t sendCommand(uint8_t command, uint16_t arg = 0x00);
-
-			//Looks for a response.  If there is one, return the response object.  Otherwise, return NULL.
-			uint8_t* poll();
-
-		private:
-			Stream* serial;
-
-			uint8_t request[10];
-			uint8_t response[10];
-
-	};
-}
 #endif

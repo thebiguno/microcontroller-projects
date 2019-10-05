@@ -1,19 +1,13 @@
-#include "AlarmClock.h"
+#include "alarmclock.h"
 
 using namespace digitalcave;
 
-#ifdef DEBUG
-SerialUSB serialUSB;
-#endif
-
 int main(){
+	state_init();
 	display_init();
-	encoder_init();
-	music_init();
 
 	//Main program loop
 	while (1){
-		music_poll();
 		state_poll();
 		display_update();
 

@@ -86,6 +86,11 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 
 	//Enable Rx (interrupt) / Tx (blocking)
 	*UCSRB |= _BV(RXEN) | _BV(TXEN) | _BV(RXCIE);
+
+	//Enable interrupts if the NO_INTERRUPT_ENABLE define is not set.  If it is, you need to call sei() elsewhere.
+#ifndef NO_INTERRUPT_ENABLE
+	sei();
+#endif
 }
 
 uint8_t SerialAVR::read(uint8_t *c){

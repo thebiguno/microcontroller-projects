@@ -2,8 +2,7 @@
 
 using namespace digitalcave;
 
-static SerialAVR* serialAVR;
-static DFPlayerMini* dfplayermini;
+static SerialAVR* serialAVR = NULL;
 
 static uint8_t playbackState;
 static uint8_t queue[SOUND_FILE_COUNT];
@@ -15,7 +14,7 @@ void music_shuffle_queue();
 
 void music_init(){
 	serialAVR = new SerialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
-	dfplayermini = new DFPlayerMini(serialAVR),
+	dfplayermini_init(serialAVR);
 	playbackState = SOUND_STATE_STOP;
 	volume = 0;
 
@@ -43,14 +42,14 @@ void music_shuffle_queue(){
 }
 
 void music_poll(){
-	while (uint8_t* response = dfplayermini->poll()){
+	while (uint8_t* response = dfplayermini_poll()){
 		if (playbackState == SOUND_STATE_PLAY && response[3] == DFPLAYER_RESPONSE_TRACK_DONE){
 			currentFileIndex++;
 			if (currentFileIndex >= SOUND_FILE_COUNT){
 				currentFileIndex = 0;
 			}
 
-			dfplayermini->sendCommand(DFPLAYER_COMMAND_FOLDER_SET, (SOUND_FOLDER_NUMBER << 8) + queue[currentFileIndex]);
+			dfplayermini_send_command(DFPLAYER_COMMAND_FOLDER_SET, (SOUND_FOLDER_NUMBER << 8) + queue[currentFileIndex]);
 		}
 	}
 }
@@ -67,18 +66,18 @@ void music_set_volume(int8_t _volume){
 		_volume = 30;
 	}
 	volume = _volume;
-	dfplayermini->sendCommand(DFPLAYER_COMMAND_VOL_SET, volume);
+	dfplayermini_send_command(DFPLAYER_COMMAND_VOL_SET, volume);
 }
 
 void music_start(){
 	music_set_volume(volume);
 	music_shuffle_queue();
-	dfplayermini->sendCommand(DFPLAYER_COMMAND_FOLDER_SET, (SOUND_FOLDER_NUMBER << 8) + queue[currentFileIndex]);
+	dfplayermini_send_command(DFPLAYER_COMMAND_FOLDER_SET, (SOUND_FOLDER_NUMBER << 8) + queue[currentFileIndex]);
 	playbackState = SOUND_STATE_PLAY;
 }
 
 void music_stop(){
-	dfplayermini->sendCommand(DFPLAYER_COMMAND_PAUSE);
+	dfplayermini_send_command(DFPLAYER_COMMAND_PAUSE);
 	playbackState = SOUND_STATE_STOP;
 }
 
@@ -96,5 +95,7 @@ uint8_t music_is_playing(){
 }
 
 ISR(USART1_RX_vect){
-	serialAVR->isr();
+	if (serialAVR != NULL){
+		serialAVR->isr();
+	}
 }

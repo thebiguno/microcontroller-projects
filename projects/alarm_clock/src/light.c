@@ -115,11 +115,6 @@ void light_set(double brightness, double whiteBalance){
 	OCR1C = brightnessBlueScaled;
 
 	lightMask = (brightnessYellowScaled ? _BV(LIGHT_Y_PIN) : 0) | (brightnessNeutralScaled ? _BV(LIGHT_N_PIN) : 0) | (brightnessBlueScaled ? _BV(LIGHT_B_PIN) : 0);
-
-// #ifdef DEBUG
-// 	char temp[64];
-// 	serialUSB.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "%6.5f, %6.5f, %d, %d, %d\n\r", brightness, whiteBalance, brightnessYellowScaled, brightnessNeutralScaled, brightnessBlueScaled));
-// #endif
 }
 
 //Turn on pins at overflow
