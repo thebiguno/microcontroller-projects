@@ -12,6 +12,10 @@ static uint8_t response[10];
 void dfplayermini_init(Stream* serial){
 	_serial = serial;
 
+	//Empty the serial buffer
+	uint8_t b;
+	while(_serial->read(&b));
+
 	//Constant data bytes in request
 	request[0] = 0x7E;	//Start byte
 	request[1] = 0xFF;	//Version info

@@ -14,7 +14,6 @@ void music_shuffle_queue();
 
 void music_init(){
 	serialAVR = new SerialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
-	dfplayermini_init(serialAVR);
 	playbackState = SOUND_STATE_STOP;
 	volume = 0;
 
@@ -23,6 +22,7 @@ void music_init(){
 	}
 
 	music_shuffle_queue();
+	dfplayermini_init(serialAVR);
 }
 
 void music_shuffle_queue(){
