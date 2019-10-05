@@ -2,35 +2,17 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_pwr.h
   * @author  MCD Application Team
-  * @version V1.7.1
-  * @date    14-April-2017
   * @brief   Header file of PWR HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   */ 
@@ -169,7 +151,7 @@ typedef struct
   */
 
 /** @brief  Check PWR flag is set or not.
-  * @param  __FLAG__: specifies the flag to check.
+  * @param  __FLAG__ specifies the flag to check.
   *           This parameter can be one of the following values:
   *            @arg PWR_FLAG_WU: Wake Up flag. This flag indicates that a wakeup event 
   *                  was received from the WKUP pin or from the RTC alarm (Alarm A 
@@ -192,7 +174,7 @@ typedef struct
 #define __HAL_PWR_GET_FLAG(__FLAG__) ((PWR->CSR & (__FLAG__)) == (__FLAG__))
 
 /** @brief  Clear the PWR's pending flags.
-  * @param  __FLAG__: specifies the flag to clear.
+  * @param  __FLAG__ specifies the flag to clear.
   *          This parameter can be one of the following values:
   *            @arg PWR_FLAG_WU: Wake Up flag
   *            @arg PWR_FLAG_SB: StandBy flag
@@ -375,16 +357,16 @@ void HAL_PWR_DisableSEVOnPend(void);
   */
 /* --- CR Register ---*/
 /* Alias word address of DBP bit */
-#define DBP_BIT_NUMBER   POSITION_VAL(PWR_CR_DBP)
+#define DBP_BIT_NUMBER   PWR_CR_DBP_Pos
 #define CR_DBP_BB        (uint32_t)(PERIPH_BB_BASE + (PWR_CR_OFFSET_BB * 32U) + (DBP_BIT_NUMBER * 4U))
 
 /* Alias word address of PVDE bit */
-#define PVDE_BIT_NUMBER  POSITION_VAL(PWR_CR_PVDE)
+#define PVDE_BIT_NUMBER  PWR_CR_PVDE_Pos
 #define CR_PVDE_BB       (uint32_t)(PERIPH_BB_BASE + (PWR_CR_OFFSET_BB * 32U) + (PVDE_BIT_NUMBER * 4U))
 
-/* Alias word address of PMODE bit */
-#define PMODE_BIT_NUMBER  POSITION_VAL(PWR_CR_PMODE)
-#define CR_PMODE_BB      (uint32_t)(PERIPH_BB_BASE + (PWR_CR_OFFSET_BB * 32U) + (PMODE_BIT_NUMBER * 4U))
+/* Alias word address of VOS bit */
+#define VOS_BIT_NUMBER  PWR_CR_VOS_Pos
+#define CR_VOS_BB      (uint32_t)(PERIPH_BB_BASE + (PWR_CR_OFFSET_BB * 32U) + (VOS_BIT_NUMBER * 4U))
 /**
   * @}
   */
@@ -394,7 +376,7 @@ void HAL_PWR_DisableSEVOnPend(void);
   */
 /* --- CSR Register ---*/
 /* Alias word address of EWUP bit */
-#define EWUP_BIT_NUMBER  POSITION_VAL(PWR_CSR_EWUP)
+#define EWUP_BIT_NUMBER  PWR_CSR_EWUP_Pos
 #define CSR_EWUP_BB      (PERIPH_BB_BASE + (PWR_CSR_OFFSET_BB * 32U) + (EWUP_BIT_NUMBER * 4U))
 /**
   * @}

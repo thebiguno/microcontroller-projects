@@ -3,7 +3,7 @@
 #include <math.h>
 
 //See http://forum.43oh.com/topic/7119-issue-with-sqrt/
-int __errno;
+//int __errno;
 
 //In this library, we pass in / pass out angles in radians.  Internally, we use a custom measurement which maps
 // 90 degrees (PI / 2 radians) into 256 segments (hereafter this unit is called a 'segment', or 'seg').

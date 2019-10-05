@@ -58,14 +58,15 @@ LS_FILES1 := $(shell find -L "./inc/common" -name '*.s') $(shell find -L "./inc/
 LS_FILES2 := $(shell find -L "./inc/common" -name '*.S') $(shell find -L "./inc/arm" -name '*.S') $(shell find -L "./inc/stm32f4" -name '*.S' ! -path "./inc/stm32f4/drivers/CMSIS/Device/ST/*")
 LC_FILES := $(shell find -L "./inc/common" -name '*.c') $(shell find -L "./inc/arm" -name '*.c') $(shell find -L "./inc/stm32f4" -name '*.c')
 LCPP_FILES := $(shell find -L "./inc/common" -name '*.cpp') $(shell find -L "./inc/arm" -name '*.cpp') $(shell find -L "./inc/stm32f4" -name '*.cpp')
-S_FILES := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./cubemx/Drivers/*" ! -path "./build/*") $(shell find -L . -name '*.s' ! -path "./cubemx/Drivers/*" ! -path "./inc/*" ! -path "./build/*")
+S_FILES_1 := $(shell find -L . -name '*.s' ! -path "./inc/*" ! -path "./cubemx/Drivers/*" ! -path "./build/*")
+S_FILES_2 := $(shell find -L . -name '*.S' ! -path "./inc/*" ! -path "./cubemx/Drivers/*" ! -path "./build/*")
 C_FILES := $(shell find -L . -name '*.c' ! -path "./inc/*" ! -path "./cubemx/Drivers/*" ! -path "./build/*")
 CPP_FILES := $(shell find -L . -name '*.cpp' ! -path "./inc/*" ! -path "./cubemx/Drivers/*" ! -path "./build/*")
 
 # include paths for libraries
 L_INC := $(foreach lib,$(shell find -L "./inc/common" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/arm" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./inc/stm32f4" -type d), -I$(lib)) $(foreach lib,$(shell find -L "./cubemx" -type d ! -path "./cubemx/Drivers/"), -I$(lib))
 
-SOURCES := $(STARTUP_FILES:.s=.o) $(S_FILES:.S=.o) $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LS_FILES1:.s=.o) $(LS_FILES2:.S=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
+SOURCES := $(S_FILES_1:.s=.o) $(S_FILES2:.S=.o) $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(LS_FILES1:.s=.o) $(LS_FILES2:.S=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
 #$(info $(SOURCES))
 
@@ -105,7 +106,7 @@ $(BUILDDIR)/%.o: %.cpp
 
 $(PROJECT).elf: $(OBJS)
 	@echo "[LD]\t$@"
-	@$(CC) $(LDFLAGS) -o "$@" $(OBJS)
+	@$(CXX) $(LDFLAGS) -o "$@" $(OBJS)
 
 $(PROJECT).asm: $(PROJECT).elf
 	@$(OBJDUMP) -C -d $(PROJECT).elf
