@@ -4,11 +4,6 @@
 
 volatile uint8_t lightMask = 0;
 
-volatile uint16_t brightnessNeutralScaled = 0;
-volatile uint16_t brightnessYellowScaled = 0;
-volatile uint16_t brightnessBlueScaled = 0;
-
-
 void light_init(){
 	//Set light pins as output
 	*(&LIGHT_PORT - 0x01) |= _BV(LIGHT_Y_PIN);
@@ -63,58 +58,32 @@ void light_toggle(){
 	}
 }
 
-void light_set(double brightness, double whiteBalance){
+void light_set(float brightness){
 	//brightness is a float between 0 and 1.
-	//whiteBalance is a float between -1 and 1.
 	if (brightness < 0) brightness = 0;
 	else if (brightness > 1) brightness = 1;
-	if (whiteBalance < -1) whiteBalance = -1;
-	else if (whiteBalance > 1) whiteBalance = 1;
 
 	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
-	brightnessNeutralScaled = pow(brightness * 16, 2);
-	uint16_t whiteBalanceScaled = pow(whiteBalance * 16, 2);
+	// The brighter the light, the more blue there is in it.
+	float yellow = pow(brightness * 16, 2);
+	float neutral = pow((brightness - 0.25) * 8.5, 3);
+	float blue = pow((brightness - 0.5) * 12.7, 3);
 
+	if (yellow < 1) yellow = 1;
+	else if (yellow > PWM_MAX) yellow = PWM_MAX;
 
-	//The neutral LED is always mapped to brightness.
-	//For the yellow LED, we subtract
-	//whiteBalanceScaled values when whiteBalance is greater than 0.  For blue, we subtract
-	//when values are less than 0.
-	brightnessYellowScaled = brightnessNeutralScaled;
-	brightnessBlueScaled = brightnessNeutralScaled;
-	if (whiteBalance < 0){
-		if (brightnessBlueScaled > whiteBalanceScaled){
-			brightnessBlueScaled -= whiteBalanceScaled;
-		}
-		else {
-			brightnessBlueScaled = 0;
-		}
-	}
-	else if (whiteBalance > 0){
-		if (brightnessYellowScaled > whiteBalanceScaled){
-			brightnessYellowScaled -= whiteBalanceScaled;
-		}
-		else {
-			brightnessYellowScaled = 0;
-		}
-	}
+	if (neutral < 0) neutral = 0;
+	else if (neutral > PWM_MAX) neutral = PWM_MAX;
 
-	if (brightnessYellowScaled > PWM_MAX){
-		brightnessYellowScaled = PWM_MAX;
-	}
-	if (brightnessNeutralScaled > PWM_MAX){
-		brightnessNeutralScaled = PWM_MAX;
-	}
-	if (brightnessBlueScaled > PWM_MAX){
-		brightnessBlueScaled = PWM_MAX;
-	}
+	if (blue < 0) blue = 0;
+	else if (blue > PWM_MAX) blue = PWM_MAX;
 
-	OCR1A = brightnessYellowScaled;
-	OCR1B = brightnessNeutralScaled;
-	OCR1C = brightnessBlueScaled;
+	OCR1A = (uint16_t) yellow;
+	OCR1B = (uint16_t) neutral;
+	OCR1C = (uint16_t) blue;
 
-	lightMask = (brightnessYellowScaled ? _BV(LIGHT_Y_PIN) : 0) | (brightnessNeutralScaled ? _BV(LIGHT_N_PIN) : 0) | (brightnessBlueScaled ? _BV(LIGHT_B_PIN) : 0);
+	lightMask = (OCR1A ? _BV(LIGHT_Y_PIN) : 0) | (OCR1B ? _BV(LIGHT_N_PIN) : 0) | (OCR1C ? _BV(LIGHT_B_PIN) : 0);
 }
 
 //Turn on pins at overflow

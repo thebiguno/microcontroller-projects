@@ -30,10 +30,9 @@ extern "C" {
 void light_init();
 
 /*
- * Sets the brightness and white balance for the lights.  Brightness ranges from 0 to 1.  White balance
- * ranges from -1 (yellow) to 0 (neutral) to 1 (blue).
+ * Sets the brightness for the lights.  Brightness ranges from 0 to 1.
  */
-void light_set(double brightness, double whiteBalance);
+void light_set(float brightness);
 
 /*
  * Turns on the timer clock.

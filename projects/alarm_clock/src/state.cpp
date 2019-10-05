@@ -16,7 +16,6 @@ static ButtonAVR* musicButton;
 static alarm_t alarm[ALARM_COUNT];		//The actual alarms
 static uint8_t alarm_triggered = 0;		//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we make any changes to the light, this is reset to 0.  When it is non-zero, we incrememnt light / music gradually.
 static double light_brightness = 0;		//Keep track of light brightness...
-static double light_color = 0;			//... and light color temperature
 
 //General stuff
 static uint8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
@@ -74,8 +73,7 @@ void state_poll(){
 			timer_init();		//Reset our timer; we will use this to track how long the light has been on
 			millis = 0;
 			light_brightness = 0;
-			light_color = -1;
-			light_set(0, -1);
+			light_set(0);
 			light_on();
 			music_start();
 #ifdef DEBUG
@@ -86,7 +84,6 @@ void state_poll(){
 		//Increment the brightness by the alarm ramp-up values
 		if (alarm_triggered & _BV(i)){
 			light_brightness = (double) timer_millis() / 60 / 1000 / a.lamp_speed;			//Range 0 .. 1 over lamp_speed minutes
-			light_color = ((double) timer_millis() * 2 / 60 / 1000 / a.lamp_speed) - 1;		//Range -1 .. 1 over lamp_speed minutes
 			display_brightness = 15;
 			uint8_t volume = ((double) timer_millis() / 60 / 1000 / a.music_speed) * a.music_volume;	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume
 			if (volume != music_get_volume()){
@@ -96,7 +93,7 @@ void state_poll(){
 	}
 
 	if (light_state()){
-		light_set(light_brightness, light_color);
+		light_set(light_brightness);
 	}
 
 	if (mode == MODE_TIME){
@@ -106,7 +103,6 @@ void state_poll(){
 		}
 		else if (lampButton->releaseEvent()){
 			alarm_triggered = 0x00;
-			light_color = 0;
 			light_toggle();
 			if (light_state()){
 				light_brightness = 0.5;
