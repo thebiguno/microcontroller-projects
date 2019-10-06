@@ -2,10 +2,16 @@
 
 using namespace digitalcave;
 
+#include <SerialUSB.h>
+SerialUSB serialUSB;
+char buffer[60];
+
+//Hardware
 static I2CAVR* i2c;
 static DS3231* calendar;
 static ButtonAVR* lampButton;
 static ButtonAVR* musicButton;
+uint8_t analog_pins[1];
 
 extern time_t now;
 extern tm_t now_tm;
@@ -19,6 +25,7 @@ static int8_t lamp_brightness = 50;			//Lamp brightness.  Between 1 and 100 incl
 //General stuff
 static config_t config;						//System config
 static int8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
+static float min_brightness = 0;
 
 //Menu state
 static uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
@@ -45,7 +52,9 @@ void state_init(){
 	calendar = new DS3231(i2c);
 	lampButton = new ButtonAVR(&PORTC, PORTC6, 30, 25, 800, 500);
 	musicButton = new ButtonAVR(&PORTC, PORTC7, 30, 25, 800, 500);
+	analog_pins[0] = 0;	//Pin F0 = ADC0
 
+	analog_init(analog_pins, 1, ANALOG_AVCC);
 	timer_init();
 	light_init();
 	encoder_init();
@@ -73,6 +82,9 @@ void state_poll(){
 	uint8_t update_display = get_update_display();
 	if (update_display){
 		update_time(&now, &now_tm);
+		uint8_t analog_value = (analog_read_p(0) >> 4);
+		min_brightness = ((min_brightness * 7) + analog_value) / 8;
+		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "min_brightness: %d, analog_value: %d\n\r", (uint8_t) min_brightness, analog_value));
 	}
 
 	lampButton->sample(timer_millis());
@@ -333,7 +345,6 @@ void state_poll(){
 	}
 
 	//Set the LED matrix brightness (0 - 15).  0 is further reduced in display.cpp by turning off the display for most of the duty cycle.
-	uint8_t min_brightness = light_state() ? 5 : ((now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20) ? 1 : 0);	//The min brightness is 5 (if light is on), 1 (if daytime), or 0 (if night).
 	if (seconds_since_last_input < 5){
 		display_brightness = 15;
 	}

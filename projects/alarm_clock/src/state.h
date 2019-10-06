@@ -7,6 +7,7 @@
 #include <dctime.h>
 #include <avr/eeprom.h>
 
+#include <analog.h>
 #include <bootloader/bootloader.h>
 #include <Button/ButtonAVR.h>
 #include <timer/timer.h>
