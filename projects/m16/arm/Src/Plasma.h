@@ -9,6 +9,8 @@ namespace digitalcave {
     private:
         uint8_t frame;
 
+        uint8_t width;
+        uint8_t height;
         const float k = 10.0;
         float v;
         float xx;

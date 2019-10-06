@@ -77,6 +77,7 @@ static void MX_TIM3_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
+void setup();
 void loop();
 
 /* USER CODE END PFP */
@@ -127,7 +128,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  loop();
+  setup();
 
   /* USER CODE END 2 */
 

@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 Dma.Request0=TIM3_CH4/UP
 Dma.RequestsNb=1
-Dma.TIM3_CH4/UP.0.Direction=DMA_PERIPH_TO_MEMORY
+Dma.TIM3_CH4/UP.0.Direction=DMA_MEMORY_TO_PERIPH
 Dma.TIM3_CH4/UP.0.FIFOMode=DMA_FIFOMODE_ENABLE
 Dma.TIM3_CH4/UP.0.FIFOThreshold=DMA_FIFO_THRESHOLD_FULL
 Dma.TIM3_CH4/UP.0.Instance=DMA1_Stream2

@@ -1,7 +1,6 @@
 #include "Plasma.h"
 #include "Matrix.h"
 #include <stdlib.h>
-#include <util/delay.h>
 #include <math.h>
 
 using namespace digitalcave;
