@@ -48,7 +48,7 @@
 #define MENU_SET_ALARM_2				0x01
 #define MENU_SET_ALARM_3				0x02
 #define MENU_SET_TIME					0x03
-#define MENU_DFU						0x04
+#define MENU_CONFIG						0x04
 
 #define MENU_SIZE						0x05
 
@@ -62,15 +62,22 @@ typedef struct alarm {
 	uint8_t lamp_brightness;	//Full brightness for this alarm, from 1 - 100
 	uint8_t music_speed;		//Time to go from 0 to music_volume, in minutes
 	uint8_t music_volume;		//Max volume of music, reached after music_speed minutes
-	// uint8_t music_folder;		//Folder to play this alarm from.  Must be a named folder on the SD card.  Can pick from 00 to 08.
-	// uint8_t music_count;		//Number of files in the specified folder.  Would not be needed for a real DFPlayerMini, but the clones can't read the file count.
+	uint8_t music_folder;		//Folder to play this alarm from.  Must be a named folder on the SD card.  Can pick from 01 to 08.
 } alarm_t;
+
+typedef struct config {
+	uint8_t music_folder;		//Folder to play when manually turning on music.  Must be a named folder on the SD card.  Can pick from 01 to 08.
+	uint8_t music_count[8];		//Number of files in the specified folder.  Folder is index + 1.  Value 0-99 is valid.  0 Means the folder is not there / is empty, and will make music_play into a nop.  (Would not be needed for a real DFPlayerMini, but the clones can't read the file count.)
+	uint8_t lamp_brightness;	//Lamp brightness (saved automatically)
+	uint8_t volume;				//Volume (saved automatically)
+} config_t;
 
 void state_init();
 
 void state_poll();
 
 alarm_t state_get_alarm(uint8_t index);
+config_t state_get_config();
 
 uint8_t state_get_display_brightness();
 uint8_t state_get_lamp_brightness();

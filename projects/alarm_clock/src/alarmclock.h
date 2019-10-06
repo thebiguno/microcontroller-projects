@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 #include <timer/timer.h>
 #include <max7219.h>

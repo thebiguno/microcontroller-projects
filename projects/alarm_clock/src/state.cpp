@@ -17,7 +17,8 @@ static uint8_t music_alarm_triggered = 0;	//_BV(alarm_index) is set when alarm[a
 static int8_t lamp_brightness = 50;			//Lamp brightness.  Between 1 and 100 inclusive.
 
 //General stuff
-static uint8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
+static config_t config;						//System config
+static int8_t display_brightness = 0;		//The brightness for the LED matrix.  0 - 15.
 
 //Menu state
 static uint8_t mode = 0;					//Main modes.  TIME, MENU, EDIT
@@ -31,7 +32,11 @@ static time_t last_alarm_trigger_time = 0;	//Time that the alarm was triggered
 
 static volatile uint8_t update_display = 0;	//This is triggered in the ISR by the RTC at 1Hz, and indicates that it is time to update the time fields
 
-static void state_get_time(time_t* time, tm_t* tm);
+static void eeprom_store();
+static void eeprom_load();
+
+static uint8_t get_update_display();
+static void update_time(time_t* time, tm_t* tm);
 static void range_loop(int8_t* value, uint8_t min, uint8_t max);
 static void range_constrain(int8_t* value, uint8_t min, uint8_t max);
 
@@ -46,10 +51,12 @@ void state_init(){
 	encoder_init();
 	music_init();
 
-	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
+	eeprom_load();
+
+	lamp_brightness = config.lamp_brightness;
 
 	//Randomize according to the current time.  We use random() during track selection playback
-	state_get_time(&now, &now_tm);
+	update_time(&now, &now_tm);
 	srandom(now);
 
 	last_input_time = now;
@@ -63,8 +70,9 @@ void state_init(){
 void state_poll(){
 	music_poll();
 
+	uint8_t update_display = get_update_display();
 	if (update_display){
-		state_get_time(&now, &now_tm);
+		update_time(&now, &now_tm);
 	}
 
 	lampButton->sample(timer_millis());
@@ -72,6 +80,7 @@ void state_poll(){
 	int8_t lamp_encoder_movement = encoder_get_movement_1();
 	int8_t music_encoder_movement = encoder_get_movement_2();
 
+	//Trigger alarms and adjust brightness / volume of triggered alarms
 	for (uint8_t i = 0; i < ALARM_COUNT; i++){
 		alarm_t a = alarm[i];
 
@@ -87,24 +96,24 @@ void state_poll(){
 			last_alarm_trigger_time = now;
 			light_set(0);
 			light_on();
-			music_start();
+			music_start(a.music_folder, config.music_count[a.music_folder - 1]);
 		}
 
 		//Increment the brightness by the alarm ramp-up values
-		if (lamp_alarm_triggered & _BV(i)){
-			lamp_brightness = fmin(1, (double) (now - last_alarm_trigger_time) / 60 / a.lamp_speed) * 100;			//Range 0 .. 1 over lamp_speed minutes, then multiple by 100
-			range_constrain(&lamp_brightness, 1, 100);
+		if (update_display && lamp_alarm_triggered & _BV(i)){
+			lamp_brightness = fmin(1, (double) (now - last_alarm_trigger_time) / 60 / a.lamp_speed) * a.lamp_brightness;		//Number of minutes since the alarm was triggered, divided by the lamp speed, multiplied by lamp brightness
+			range_constrain(&lamp_brightness, 1, a.lamp_brightness);
+			light_set(lamp_brightness);
 		}
 		//Increment the music volume by the alarm ramp-up values
-		if (music_alarm_triggered & _BV(i)){
-			int8_t volume = fmin(1, (double) (now - last_alarm_trigger_time) / 60 / a.music_speed) * a.music_volume;	//Range 0 .. 1 over music_speed minutes, then multiply by music_volume
+		if (update_display && music_alarm_triggered & _BV(i)){
+			int8_t volume = fmin(1, (double) (now - last_alarm_trigger_time) / 60 / a.music_speed) * a.music_volume;			//Number of minutes since the alarm was triggered, divided by music speed, multiplied by max volulme
 			range_constrain(&volume, 1, 30);
-			if (volume != music_get_volume()){
-				music_set_volume(volume);
-			}
+			music_set_volume(volume);
 		}
 	}
 
+	//Time mode - this is what shows 99% of the time.
 	if (mode == MODE_TIME){
 		if (lampButton->longPressEvent()){
 			mode = MODE_MENU;
@@ -121,6 +130,7 @@ void state_poll(){
 			}
 			else {
 				edit_item = EDIT_TIME_TIME;
+				eeprom_store();
 			}
 		}
 		else if (light_state() && lamp_encoder_movement != 0){
@@ -128,24 +138,32 @@ void state_poll(){
 			lamp_brightness += lamp_encoder_movement;
 			range_constrain(&lamp_brightness, 1, 100);
 			light_set(lamp_brightness);
+			config.lamp_brightness = lamp_brightness;
 		}
 		else if (musicButton->releaseEvent()){
 			music_alarm_triggered = 0x00;
-			music_toggle();
+			music_set_volume(config.volume);
+			music_toggle(config.music_folder, config.music_count[config.music_folder - 1]);
 			if (music_is_playing()){
 				edit_item = EDIT_TIME_MUSIC;
 				music_turned_on_time = now;
 			}
 			else {
 				edit_item = EDIT_TIME_TIME;
+				eeprom_store();
 			}
 		}
 		else if (music_encoder_movement != 0 && music_is_playing()){
 			edit_item = EDIT_TIME_MUSIC;
 			music_alarm_triggered = 0x00;
-			music_set_volume(music_get_volume() + music_encoder_movement);
+			int8_t volume = config.volume + music_encoder_movement;
+			range_constrain(&volume, 1, 30);
+			music_set_volume(volume);
+			config.volume = volume;
 		}
 	}
+
+	//Menu mode - pick a menu item
 	else if (mode == MODE_MENU){
 		if (lampButton->longPressEvent()){
 			mode = MODE_TIME;
@@ -160,13 +178,14 @@ void state_poll(){
 			range_loop(&menu_item, 0, MENU_SIZE - 1);
 		}
 	}
+
+	//Edit mode - edit a menu item
 	else if (mode == MODE_EDIT){
 		//Long press from lamp commits and returns to main screen
 		if (lampButton->longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
-
-			eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
+			eeprom_store();
 		}
 		else if (menu_item >= MENU_SET_ALARM_1 && menu_item <= MENU_SET_ALARM_3){
 			//Find alarm index
@@ -174,44 +193,52 @@ void state_poll(){
 
 			//Lamp encoder changes fields
 			if (lamp_encoder_movement != 0){
-				edit_item += lamp_encoder_movement;
-				range_loop(&edit_item, 0, 12);
+				edit_item += (lamp_encoder_movement > 0 ? 1 : -1);
+				range_loop(&edit_item, 0, 14);
 			}
 			//Music encoder increments / decrements fields
 			else if (music_encoder_movement != 0){
 				if (edit_item == 0){
+					//Global enable flag
+					alarm[alarm_index].enabled ^= _BV(7);
+				}
+				else if (edit_item == 1){
 					int8_t h = alarm[alarm_index].hour + music_encoder_movement;
 					range_loop(&h, 0, 23);
 					alarm[alarm_index].hour = h;
 				}
-				else if (edit_item == 1){
+				else if (edit_item == 2){
 					int8_t m = alarm[alarm_index].minute + music_encoder_movement;
 					range_loop(&m, 0, 59);
 					alarm[alarm_index].minute = m;
 				}
-				else if (edit_item < 9){
-					alarm[alarm_index].enabled ^= _BV(edit_item - 2);
-				}
-				else if (edit_item == 9){
-					int8_t s = alarm[alarm_index].lamp_speed + music_encoder_movement;
-					range_constrain(&s, 0, 60);
-					alarm[alarm_index].lamp_speed = s;
-				}
-				else if (edit_item == 10){
+				else if (edit_item == 3){
 					int8_t b = alarm[alarm_index].lamp_brightness + music_encoder_movement;
 					range_constrain(&b, 1, 100);
 					alarm[alarm_index].lamp_brightness = b;
 				}
-				else if (edit_item == 11){
+				else if (edit_item == 4){
+					int8_t s = alarm[alarm_index].lamp_speed + music_encoder_movement;
+					range_constrain(&s, 0, 60);
+					alarm[alarm_index].lamp_speed = s;
+				}
+				else if (edit_item == 5){
+					int8_t v = alarm[alarm_index].music_volume + music_encoder_movement;
+					range_constrain(&v, 0, 30);
+					alarm[alarm_index].music_volume = v;
+				}
+				else if (edit_item == 6){
 					int8_t s = alarm[alarm_index].music_speed + music_encoder_movement;
 					range_constrain(&s, 0, 60);
 					alarm[alarm_index].music_speed = s;
 				}
-				else if (edit_item == 12){
-					int8_t v = alarm[alarm_index].music_volume + music_encoder_movement;
-					range_constrain(&v, 0, 30);
-					alarm[alarm_index].music_volume = v;
-					music_set_volume(v);
+				else if (edit_item == 7){
+					int8_t f = alarm[alarm_index].music_folder + music_encoder_movement;
+					range_constrain(&f, 1, 8);
+					alarm[alarm_index].music_folder = f;
+				}
+				else {
+					alarm[alarm_index].enabled ^= _BV(edit_item - 8);
 				}
 			}
 		}
@@ -249,13 +276,30 @@ void state_poll(){
 				now = mktime(&now_tm);			//Calculate the time_t from the tm_t struct
 				localtime_r(&now, &now_tm);		//Re-populate the tm_t struct from time_t
 				calendar->set(&now_tm);			//Set the RTC with the updated tm_t struct
-//				state_get_time(&now, &now_tm);	//Read the RTC to re-populate time_t and tm_t - this can help prevent some bugs and ensure that everything is correct
 
-				last_input_time = now;	//Prevent time travel
+				last_input_time = now;			//Prevent time travel
 			}
 		}
-		else if (menu_item == MENU_DFU){
-			if (lampButton->releaseEvent()){
+		else if (menu_item == MENU_CONFIG){
+			//Lamp encoder changes fields
+			if (lamp_encoder_movement != 0){
+				edit_item += lamp_encoder_movement;	//Here edit_item goes from 0 to 10.  0 = music folder, 1-8 = file count / folder, 9 = DFU
+				range_loop(&edit_item, 0, 9);
+			}
+			//Music encoder increments / decrements fields
+			else if (music_encoder_movement != 0){
+				if (edit_item == 0){
+					int8_t f = config.music_folder + music_encoder_movement;
+					range_constrain(&f, 1, 8);
+					config.music_folder = f;
+				}
+				else if (edit_item <= 8){
+					int8_t c = config.music_count[edit_item - 1] + music_encoder_movement;
+					range_constrain(&c, 0, 99);
+					config.music_count[edit_item - 1] = c;
+				}
+			}
+			else if (edit_item == 9 && lampButton->releaseEvent()){
 				bootloader_jump(BOOTLOADER_ATMEL);
 			}
 		}
@@ -274,9 +318,10 @@ void state_poll(){
 	}
 
 	//Go back to time after timeouts
-	if (mode == MODE_TIME && seconds_since_last_input > 15){
+	if (mode == MODE_TIME && seconds_since_last_input > 15 && edit_item != EDIT_TIME_TIME){
 		mode = MODE_TIME;		//Go back to time after 15 seconds without input in time mode
 		edit_item = 0;
+		eeprom_store();
 	}
 	else if (mode == MODE_MENU && seconds_since_last_input > 30){
 		mode = MODE_TIME;		//Go back to time after 30 seconds without input in menu mode
@@ -287,16 +332,18 @@ void state_poll(){
 		edit_item = 0;
 	}
 
-	//Determine the LED matrix brightness
+	//Set the LED matrix brightness (0 - 15).  0 is further reduced in display.cpp by turning off the display for most of the duty cycle.
+	uint8_t min_brightness = light_state() ? 5 : ((now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20) ? 1 : 0);	//The min brightness is 5 (if light is on), 1 (if daytime), or 0 (if night).
 	if (seconds_since_last_input < 5){
 		display_brightness = 15;
 	}
 	else if (seconds_since_last_input < 20){
-		//Fade out to low brightness when not touching anything for a while.  The min brightness is 5 (if light is on), 3 (if daytime), or 0 (otherwise).
-		display_brightness = fmax(20 - seconds_since_last_input, light_state() ? 5 : ((now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20) ? 3 : 0));
+		//Fade out to low brightness when not touching anything for a while.
+		display_brightness = 20 - seconds_since_last_input;
+		range_constrain(&display_brightness, min_brightness, 15);
 	}
 	else {
-		display_brightness = light_state() ? 5 : (now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20 ? 1 : 0);
+		display_brightness = min_brightness;
 	}
 }
 
@@ -305,6 +352,10 @@ alarm_t state_get_alarm(uint8_t index){
 		index = ALARM_COUNT - 1;
 	}
 	return alarm[index];
+}
+
+config_t state_get_config(){
+	return config;
 }
 
 uint8_t state_get_mode(){
@@ -327,15 +378,26 @@ uint8_t state_get_lamp_brightness(){
 	return lamp_brightness;
 }
 
-uint8_t state_update_display(){
+static void eeprom_store(){
+	eeprom_update_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
+	eeprom_update_block(&config, (void*) (EEPROM_CALIBRATION_OFFSET + sizeof(alarm)), sizeof(config));
+}
+
+static void eeprom_load(){
+	//Read persisted variables
+	eeprom_read_block(alarm, EEPROM_CALIBRATION_OFFSET, sizeof(alarm));
+	eeprom_read_block(&config, (const void*) (EEPROM_CALIBRATION_OFFSET + sizeof(alarm)), sizeof(config));
+}
+
+static void update_time(time_t* time, tm_t* now_tm){
+	calendar->get(now_tm);
+	*time = mktime(now_tm);
+}
+
+static uint8_t get_update_display(){
 	uint8_t result = update_display;
 	update_display = 0;
 	return result;
-}
-
-static void state_get_time(time_t* time, tm_t* now_tm){
-	calendar->get(now_tm);
-	*time = mktime(now_tm);
 }
 
 static void range_loop(int8_t* value, uint8_t min, uint8_t max){
