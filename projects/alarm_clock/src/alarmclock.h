@@ -5,6 +5,7 @@
 #include <util/delay.h>
 
 #include <timer/timer.h>
+#include <max7219.h>
 
 #include "display.h"
 #include "music.h"

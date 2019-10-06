@@ -32,7 +32,7 @@ void light_init();
 /*
  * Sets the brightness for the lights.  Brightness ranges from 0 to 1.
  */
-void light_set(float brightness);
+void light_set(uint8_t brightness);
 
 /*
  * Turns on the timer clock.

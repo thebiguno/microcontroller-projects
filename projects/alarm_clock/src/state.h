@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <dctime.h>
 #include <avr/eeprom.h>
 
 #include <bootloader/bootloader.h>
@@ -35,7 +36,6 @@
 #define EDIT_TIME_TIME					0x00
 #define EDIT_TIME_LAMP					0x01
 #define EDIT_TIME_MUSIC					0x02
-#define EDIT_TIME_DATE					0x03
 
 //Menu mode: allow setting time, alarm, etc.
 #define MODE_MENU						0x01

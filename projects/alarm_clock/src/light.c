@@ -58,8 +58,9 @@ void light_toggle(){
 	}
 }
 
-void light_set(float brightness){
-	//brightness is a float between 0 and 1.
+void light_set(uint8_t brightnessi){
+	//brightnessi is an unsigned int between 1 and 100.  Convert to a float for doing math.
+	float brightness = brightnessi / 100.0;
 	if (brightness < 0) brightness = 0;
 	else if (brightness > 1) brightness = 1;
 

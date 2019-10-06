@@ -15,21 +15,21 @@ void max7219_init(uint8_t display_count){
 	}
 	_display_count = display_count;
 
-	max7219_write_command(MAX7219_SCAN_LIMIT, 0x07, _display_count);
-	max7219_write_command(MAX7219_DECODE, 0x00, _display_count);
-	max7219_write_command(MAX7219_SHUTDOWN, 0x01, _display_count);
-	max7219_write_command(MAX7219_DISPLAY_TEST, 0x00, _display_count);
+	max7219_write_command(MAX7219_SCAN_LIMIT, 0x07);
+	max7219_write_command(MAX7219_DECODE, 0x00);
+	max7219_write_command(MAX7219_SHUTDOWN, 0x01);
+	max7219_write_command(MAX7219_DISPLAY_TEST, 0x00);
 	for (uint8_t i = 0; i < 8; i++){
-		max7219_write_command(i + 1, 0x00, _display_count);
+		max7219_write_command(i + 1, 0x00);
 	}
-	max7219_write_command(MAX7219_INTENSITY, 0x00, _display_count);
+	max7219_write_command(MAX7219_INTENSITY, 0x00);
 }
 
 void max7219_set_brightness(uint8_t brightness){
 	if (brightness > 0x0F){
 		brightness = 0x0F;
 	}
-	max7219_write_command(MAX7219_INTENSITY, brightness, _display_count);
+	max7219_write_command(MAX7219_INTENSITY, brightness);
 }
 
 void max7219_write_buffer(uint8_t* buffer){
@@ -50,10 +50,10 @@ void max7219_write_row(uint8_t row, uint8_t* buffer){
 	PORTB |= _BV(DD_SS);
 }
 
-void max7219_write_command(uint8_t reg, uint8_t data, uint8_t repeat){
+void max7219_write_command(uint8_t reg, uint8_t data){
 	PORTB |= _BV(DD_SS);
 
-	for (uint8_t i = 0; i < repeat; i++){
+	for (uint8_t i = 0; i < _display_count; i++){
 		_spi->write(reg);
 		_spi->write(data);
 	}

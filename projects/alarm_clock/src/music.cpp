@@ -15,7 +15,7 @@ void music_shuffle_queue();
 void music_init(){
 	serialAVR = new SerialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
 	playbackState = SOUND_STATE_STOP;
-	volume = 0;
+	volume = 1;
 
 	for (uint8_t i = 0; i < SOUND_FILE_COUNT; i++){
 		queue[i] = (i + 1);
@@ -59,8 +59,8 @@ uint8_t music_get_volume(){
 }
 
 void music_set_volume(int8_t _volume){
-	if (_volume < 0){
-		_volume = 0;
+	if (_volume < 1){
+		_volume = 1;
 	}
 	else if (_volume > 30){
 		_volume = 30;

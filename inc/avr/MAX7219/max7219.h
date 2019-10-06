@@ -20,7 +20,7 @@
 //Inits the MAX7219 control object
 void max7219_init(uint8_t display_count);
 
-void max7219_write_command(uint8_t register, uint8_t data, uint8_t repeat);
+void max7219_write_command(uint8_t register, uint8_t data);
 
 void max7219_write_row(uint8_t row, uint8_t* data);
 
