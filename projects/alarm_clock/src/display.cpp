@@ -166,11 +166,8 @@ void display_update(){
 
 	if (state_get_display_brightness() == 0){
 		max7219_write_command(MAX7219_SHUTDOWN, 0x00);
+		delay_ms(2);	//Leave the display off for a bit longer than normal to make it dimmer, but not so long that it flickers
 	}
-	// 	//max7219_write_command(
-	// 	display_buffer->clear();
-	// 	max7219_write_buffer(display_buffer->get_data());
-	// }
 }
 
 
