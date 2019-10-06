@@ -15,9 +15,9 @@ void Matrix::setColor(Rgb rgb) {
 
 void Matrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
     // use the top 5 bits
-    uint16_t red = (r & 0xf0) >> 5;
-    uint16_t green = (b & 0xf0) >> 5;
-    uint8_t blue = (b & 0xf0) >> 5;
+    uint16_t red = (r & 0xf0) >> 3;
+    uint16_t green = (b & 0xf0) >> 3;
+    uint8_t blue = (b & 0xf0) >> 3;
 
     color = (red << 10) | (green << 5) | blue;
 }

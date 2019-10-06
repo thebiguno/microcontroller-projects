@@ -2,19 +2,26 @@
 
 #include "main.h"
 #include "Src/ph42121rgb16s.h"
-
-//using namespace digitalcave;
+#include "Src/App.h"
+#include "Src/Matrix.h"
 
 extern "C" {
-	void loop();
-	void setup();
+	void run();
 }
 
-void setup() {
+using namespace digitalcave;
+
+void run() {
     ph42121rgb16s_init();
+
+    App app = App();
+
+    while (1) {
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        HAL_Delay(1000);
+
+        app.run();
+    }
 }
 
-void loop() {
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    HAL_Delay(1000);
-}
+extern "C" void __cxa_pure_virtual() { while (1); }

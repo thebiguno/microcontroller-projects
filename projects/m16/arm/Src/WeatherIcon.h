@@ -6,13 +6,13 @@
 
 namespace digitalcave {
     class WeatherIcon : public Module {
-    private:
-        char* icon;
-
     public:
         WeatherIcon(char* i);
         ~WeatherIcon();
         void paint();
+    private:
+        char* icon;
+        uint8_t frame;
     };
 }
 

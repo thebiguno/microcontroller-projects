@@ -1,6 +1,7 @@
 #include "WeatherIcon.h"
 #include "Matrix.h"
 #include <stdlib.h>
+#include <string.h>
 
 using namespace digitalcave;
 
@@ -12,10 +13,10 @@ WeatherIcon::WeatherIcon(char* i) : icon(i) {
 WeatherIcon::~WeatherIcon() {
 }
 
-void Clock::paint() {
+void WeatherIcon::paint() {
     if (frame > 0) {
         frame--;
-    else {
+    } else {
         frame = 25; // repaint every 250 ms
 
         matrix.setColor(0, 0, 0);

@@ -1,15 +1,12 @@
-#ifndef MAIN_H
-#define MAIN_H
-
-#include "Matrix.h"
+#ifndef App_H
+#define App_H
 
 namespace digitalcave {
     class App {
-        
     public:
         App();
         ~App();
-        
+
         void run();
     };
 }

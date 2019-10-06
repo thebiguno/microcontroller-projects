@@ -14,6 +14,7 @@ State::~State() {
 }
 
 void State::readEeprom() {
+/*
     uint16_t DevAddress;
     uint16_t MemAddress;
     uint16_t MemAddSize;
@@ -57,9 +58,11 @@ void State::readEeprom() {
         HAL_Delay(EEPROM_WRITE);
     }
     return Result;
+*/
 }
 
 void State::writeEeprom() {
+/*
     I2C_HandleTypeDef hi2c;
     hi2c.Instance = I2C1;
     hi2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -71,20 +74,24 @@ void State::writeEeprom() {
     hi2c.Init.OwnAddress1 = 0;
     hi2c.Init.OwnAddress2 = 0;
     I2CHAL(&hi2c);
+*/
 }
 
-void State::readRtc(RTC_DateTypeDef *date, RTC_TimeTypeDef *time) {
+void State::readRtc() {
+/*
     RTC_HandleTypeDef hrtc;
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BCD);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BCD);
+*/
 }
 
-void State::writeRtc(RTC_DateTypeDef *date, RTC_TimeTypeDef *time) {
+void State::writeRtc() {
+/*
     RTC_HandleTypeDef hrtc;
-
-    sTime.TimeFormat = RTC_HourFormat_24;
+    sTime.TimeFormat = RTC_HOURFORMAT_24;
     sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
     sTime.StoreOperation = RTC_STOREOPERATION_SET;
     HAL_RTC_SetTime(&hrtc, time, RTC_FORMAT_BCD);
     HAL_RTC_SetDate(&hrtc, date, RTC_FORMAT_BCD);
+*/
 }

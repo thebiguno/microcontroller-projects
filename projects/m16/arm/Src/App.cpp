@@ -1,22 +1,31 @@
 #include "App.h"
 #include "Life.h"
-#include "main.h"
+#include "Matrix.h"
 
 using namespace digitalcave;
 
 Matrix matrix = Matrix();
-Life life = Life(32, 64);
+Hsv hsv = Hsv(0,0xff,0x1f);
+
+void App::run() {
 //Darksky darksky = Darksky(&wifi, &state);
 //SerialHAL serial = SerialHAL(&huart, 2048);
 //ESP8266 wifi = ESP8266(&serial);
 //State state = State();
+    Life life = Life(32, 64);
+    while(1) {
+        life.paint();
 
-void run() {
-    srandom(0);
+        //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        //HAL_Delay(1000);
+    }
+}
 
-    //wifi.at_cipserver_tcp(1, 80);
+    /*
 
-    //int mode = 0;
+    wifi.at_cipserver_tcp(1, 80);
+
+    int mode = 0;
     while (1) {
         // blink
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
@@ -27,17 +36,19 @@ void run() {
         // handle buttons
 
         // accept wifi requests
-//        auto acceptor = [](Stream* s) { accept(WebStream(s)); };
-//        wifi.accept(&acceptor);
+        auto acceptor = [](Stream* s) { accept(WebStream(s)); };
+        wifi.accept(&acceptor);
 
         // accept serial requests (debug / bluetooth)
 
         // fetch weather updates
-//        if (darksky.stale()) {
-//            darksky.update(&state);
-//        }
+        if (darksky.stale()) {
+            darksky.update(&state);
+        }
     }
-}
+
+    */
+
 
     /*
 void accept(WebStream* s) {
@@ -58,8 +69,8 @@ void accept(WebStream* s) {
 }
     */
 
-void paint() {
     /*
+void paint() {
 
     // only paint every 10 ms
     if (time - last_paint < 10) return;
@@ -93,7 +104,5 @@ void paint() {
         // sunrise / sunset
     }
 
-    */
 }
-
-extern "C" void __cxa_pure_virtual() { while (1); }
+    */
