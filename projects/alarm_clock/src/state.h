@@ -55,27 +55,30 @@
 #define ALARM_COUNT						3
 
 typedef struct alarm {
-	uint8_t hour;			//Hour for alarm (0-23)
-	uint8_t minute;			//Minute for alarm (0-59)
-	uint8_t enabled;		//Bit mask for which days are enabled.  Defined as _BV(DAY), where DAY 0 is Sunday, 1 is Monday, etc.  _BV(7) is the global enabled flag, allowing you to turn off an alarm without changing the days it is active for.
-	uint8_t lamp_speed;		//Time to go from 0 to full brightness, in minutes
-	uint8_t music_speed;	//Time to go from 0 to music_volume, in minutes
-	uint8_t music_volume;	//Max volume of music, reached after music_speed minutes
+	uint8_t hour;				//Hour for alarm (0-23)
+	uint8_t minute;				//Minute for alarm (0-59)
+	uint8_t enabled;			//Bit mask for which days are enabled.  Defined as _BV(DAY), where DAY 0 is Sunday, 1 is Monday, etc.  _BV(7) is the global enabled flag, allowing you to turn off an alarm without changing the days it is active for.
+	uint8_t lamp_speed;			//Time to go from 0 to full brightness, in minutes
+	uint8_t lamp_brightness;	//Full brightness for this alarm, from 1 - 100
+	uint8_t music_speed;		//Time to go from 0 to music_volume, in minutes
+	uint8_t music_volume;		//Max volume of music, reached after music_speed minutes
+	// uint8_t music_folder;		//Folder to play this alarm from.  Must be a named folder on the SD card.  Can pick from 00 to 08.
+	// uint8_t music_count;		//Number of files in the specified folder.  Would not be needed for a real DFPlayerMini, but the clones can't read the file count.
 } alarm_t;
 
 void state_init();
 
 void state_poll();
 
-void state_get_time(time_t* time, tm_t* tm);
-
 alarm_t state_get_alarm(uint8_t index);
 
 uint8_t state_get_display_brightness();
-double state_get_lamp_brightness();
+uint8_t state_get_lamp_brightness();
 
 uint8_t state_get_mode();
 uint8_t state_get_menu_item();
 uint8_t state_get_edit_item();
+
+uint8_t state_update_display();
 
 #endif

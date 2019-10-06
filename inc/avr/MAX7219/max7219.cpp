@@ -11,7 +11,7 @@ static uint8_t _display_count = 0;
 
 void max7219_init(uint8_t display_count){
 	if (_spi == NULL){
-		_spi = new SPIStreamAVR();
+		_spi = new SPIStreamAVR(2);
 	}
 	_display_count = display_count;
 

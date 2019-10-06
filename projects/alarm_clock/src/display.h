@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <dcutil/delay.h>
 #include <font/font.h>
 #include <SPIStreamAVR.h>
 #include <max7219.h>

@@ -26,8 +26,8 @@ namespace digitalcave {
 
 
 		public:
-			//Initialize specifying baud rate and all other optional parameters
-			SPIStreamAVR();
+			//Initialize, specifying the clock divider.  Valid values are 2, 4, 8, 16, 32, 64, 128.  Anything else will assume 128 (slowest) as a default.
+			SPIStreamAVR(uint8_t clkdiv);
 
 			// Implementation of virtual functions declared in superclass
 			uint8_t read(uint8_t *b);

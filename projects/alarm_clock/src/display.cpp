@@ -18,8 +18,9 @@ static uint8_t flash_timer = 0;
 static uint8_t scroll_timer = 0;
 static int8_t scroll_value = 0;
 
-static time_t now;
-static tm_t now_tm;
+//These exist in state.cpp
+extern time_t now;
+extern tm_t now_tm;
 
 static char buffer[10];
 
@@ -31,143 +32,165 @@ void display_init(){
 }
 
 void display_update(){
-	display_buffer->clear();
+	uint8_t update_display = state_update_display();
+	if (update_display || state_get_lamp_brightness()){
+		display_buffer->clear();
 
-	flash_timer++;
-	if (flash_timer > FLASH_TIMER_PERIOD){
-		flash_timer = 0;
-	}
-
-	scroll_timer++;
-	if (scroll_timer > SCROLL_TIMER_PERIOD){
-		scroll_timer = 0;
-	}
-
-	uint8_t mode = state_get_mode();
-	uint8_t menu_item = state_get_menu_item();
-	uint8_t edit_item = state_get_edit_item();
-
-	state_get_time(&now, &now_tm);
-
-	if (mode == MODE_TIME){
-		if (edit_item == EDIT_TIME_TIME){
-			scroll_value = 4;
-			display_write_time(now, -1);
+		flash_timer++;
+		if (flash_timer > FLASH_TIMER_PERIOD){
+			flash_timer = 0;
 		}
-		else if (edit_item == EDIT_TIME_LAMP){
-			display_buffer->write_string("3", font_icon, 3, 0);                      //Icon 3 is brightness
-			uint8_t brightness = state_get_lamp_brightness();
-			snprintf(buffer, sizeof(buffer), "%d", brightness);
-			display_buffer->write_string(buffer, font_5x8, brightness < 10 ? 23 : (brightness < 100 ? 17 : 12), 0);
-		}
-		else if (edit_item == EDIT_TIME_MUSIC){
-			display_buffer->write_string("2", font_icon, 0, 0);                      //Icon 2 is music
-			display_buffer->write_string("VOL", font_3x5, 9, 3);
-			snprintf(buffer, sizeof(buffer), "%d", music_get_volume());
-			display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 27 : 21), 0);
-		}
-	}
-	else if (mode == MODE_MENU){
-		if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
-			display_buffer->write_string("SET", font_3x5, 2, 2);
-			display_buffer->write_char('0', font_icon, 16, 0);			//0 is alarm icon
-			display_buffer->write_char((char) (menu_item + 0x31 - MENU_SET_ALARM_1), font_5x8, 25, 0);
-		}
-		else if (menu_item == MENU_SET_TIME){
-			display_buffer->write_string("SET", font_3x5, 5, 2);
-			display_buffer->write_char('1', font_icon, 19, 0);			//1 is clock icon
-		}
-		else if (menu_item == MENU_DFU){
-			display_buffer->write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
-			display_buffer->write_string("UPLOAD", font_3x5, 8, 2);
-		}
-	}
-	else if (mode == MODE_EDIT){
-		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
-			//Find alarm index
-			uint8_t alarm_index;
-			if (menu_item == MENU_SET_ALARM_1){
-				alarm_index = 0;
-			}
-			else if (menu_item == MENU_SET_ALARM_2){
-				alarm_index = 1;
-			}
-			else if (menu_item == MENU_SET_ALARM_3){
-				alarm_index = 2;
-			}
 
-			alarm_t alarm = state_get_alarm(alarm_index);
+		scroll_timer++;
+		if (scroll_timer > SCROLL_TIMER_PERIOD){
+			scroll_timer = 0;
+		}
 
-			if (edit_item == 0 || edit_item == 1){
-				tm_t now_tm;
-				localtime_r(&now, &now_tm);
-				now_tm.tm_hour = alarm.hour;
-				now_tm.tm_min = alarm.minute;
-				display_write_time(mktime(&now_tm), edit_item);
-			}
-			else if (edit_item < 9){
-				if (edit_item == 2){
-					scroll_value = 0;
-				}
-				else if (flash_timer & 0x01){
-					if (scroll_value > ((edit_item - 2) * -7) + 14 && scroll_value > -16){
-						scroll_value--;
-					}
-				}
+		uint8_t mode = state_get_mode();
+		uint8_t menu_item = state_get_menu_item();
+		uint8_t edit_item = state_get_edit_item();
 
-				for (uint8_t i = 0; i < 7; i++){
-					if (alarm.enabled & _BV(i)){
-						//Draw the underline for days that are enabled
-						display_buffer->write_char((char) 0x48, font_icon, (i * 7) + scroll_value, 0);
-					}
-					if (flash_timer > FLASH_TIMER_PHASE || edit_item != (i + 2)){
-						//Write the days
-						display_buffer->write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);		//In the Icon font, we define Sunday as 'A' (0x41), Monday as 'B', etc.  So (i + 0x41) returns the day of the week.
-					}
-				}
+		if (mode == MODE_TIME){
+			if (edit_item == EDIT_TIME_TIME){
+				scroll_value = 4;
+				display_write_time(now, -1);
 			}
-			else if (edit_item == 9){
-				display_buffer->write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
-				snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_speed);
-				display_buffer->write_string(buffer, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
-				display_buffer->write_string("min", font_3x5, 21, 3);
+			else if (edit_item == EDIT_TIME_LAMP){
+				display_buffer->write_string("3", font_icon, 3, 0);                      //Icon 3 is brightness
+				uint8_t brightness = state_get_lamp_brightness();
+				snprintf(buffer, sizeof(buffer), "%d", brightness);
+				display_buffer->write_string(buffer, font_5x8, brightness < 10 ? 23 : (brightness < 100 ? 17 : 12), 0);
 			}
-			else if (edit_item == 10){
-				display_buffer->write_string("2", font_icon, 0, 0);			//Icon 2 is brightness
-				snprintf(buffer, sizeof(buffer), "%d", alarm.music_speed);
-				display_buffer->write_string(buffer, font_5x8, (alarm.music_speed < 10 ? 15 : 9), 0);
-				display_buffer->write_string("min", font_3x5, 21, 3);
-			}
-			else if (edit_item == 11){
-				display_buffer->write_string("2", font_icon, 0, 0);			//Icon 2 is music
+			else if (edit_item == EDIT_TIME_MUSIC){
+				display_buffer->write_string("2", font_icon, 0, 0);                      //Icon 2 is music
 				display_buffer->write_string("VOL", font_3x5, 9, 3);
-				snprintf(buffer, sizeof(buffer), "%d", alarm.music_volume);
-				display_buffer->write_string(buffer, font_5x8, (alarm.music_volume < 10 ? 27 : 21), 0);
+				snprintf(buffer, sizeof(buffer), "%d", music_get_volume());
+				display_buffer->write_string(buffer, font_5x8, (music_get_volume() < 10 ? 27 : 21), 0);
 			}
 		}
-		else if (menu_item == MENU_SET_TIME){
-			state_get_time(&now, &now_tm);
-			if (edit_item <= 2){
-				display_write_date(now, edit_item);
+		else if (mode == MODE_MENU){
+			if (menu_item <= MENU_SET_ALARM_3){		//Alarm 1, 2, or 3
+				display_buffer->write_string("SET", font_3x5, 2, 2);
+				display_buffer->write_char('0', font_icon, 16, 0);			//0 is alarm icon
+				display_buffer->write_char((char) (menu_item + 0x31 - MENU_SET_ALARM_1), font_5x8, 25, 0);
 			}
-			else {
-				display_write_time(now, edit_item - 3);
+			else if (menu_item == MENU_SET_TIME){
+				display_buffer->write_string("SET", font_3x5, 5, 2);
+				display_buffer->write_char('1', font_icon, 19, 0);			//1 is clock icon
+			}
+			else if (menu_item == MENU_DFU){
+				display_buffer->write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
+				display_buffer->write_string("UPLOAD", font_3x5, 8, 2);
 			}
 		}
-		else if (menu_item == MENU_DFU){
-			display_buffer->write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
-			display_buffer->write_string("CLICK", font_3x5, 10, 2);
+		else if (mode == MODE_EDIT){
+			if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
+				//Find alarm index
+				uint8_t alarm_index;
+				if (menu_item == MENU_SET_ALARM_1){
+					alarm_index = 0;
+				}
+				else if (menu_item == MENU_SET_ALARM_2){
+					alarm_index = 1;
+				}
+				else if (menu_item == MENU_SET_ALARM_3){
+					alarm_index = 2;
+				}
+
+				alarm_t alarm = state_get_alarm(alarm_index);
+
+				if (edit_item == 0 || edit_item == 1){
+					tm_t now_tm;
+					localtime_r(&now, &now_tm);
+					now_tm.tm_hour = alarm.hour;
+					now_tm.tm_min = alarm.minute;
+					display_write_time(mktime(&now_tm), edit_item);
+				}
+				else if (edit_item < 9){
+					if (edit_item == 2){
+						scroll_value = 0;
+					}
+					else if (flash_timer & 0x01){
+						if (scroll_value > ((edit_item - 2) * -7) + 14 && scroll_value > -16){
+							scroll_value--;
+						}
+					}
+
+					for (uint8_t i = 0; i < 7; i++){
+						if (alarm.enabled & _BV(i)){
+							//Draw the underline for days that are enabled
+							display_buffer->write_char((char) 0x48, font_icon, (i * 7) + scroll_value, 0);
+						}
+						if (flash_timer > FLASH_TIMER_PHASE || edit_item != (i + 2)){
+							//Write the days
+							display_buffer->write_char((char) (i + 0x41), font_icon, (i * 7) + scroll_value, 0);		//In the Icon font, we define Sunday as 'A' (0x41), Monday as 'B', etc.  So (i + 0x41) returns the day of the week.
+						}
+					}
+				}
+				else if (edit_item == 9){
+					display_buffer->write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
+					snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_speed);
+					display_buffer->write_string(buffer, font_5x8, (alarm.lamp_speed < 10 ? 15 : 9), 0);
+					display_buffer->write_string("min", font_3x5, 21, 3);
+				}
+				else if (edit_item == 10){
+					display_buffer->write_string("3", font_icon, 0, 0);			//Icon 3 is brightness
+					if (alarm.lamp_brightness < 100){
+						display_buffer->write_string("MAX", font_3x5, 9, 3);
+						snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_brightness);
+						display_buffer->write_string(buffer, font_5x8, (alarm.lamp_brightness < 10 ? 27 : 21), 0);
+					}
+					else {
+						display_buffer->write_string("MX", font_3x5, 9, 3);
+						snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_brightness);
+						display_buffer->write_string(buffer, font_5x8, 15, 0);
+					}
+				}
+				else if (edit_item == 11){
+					display_buffer->write_string("2", font_icon, 0, 0);			//Icon 2 is brightness
+					snprintf(buffer, sizeof(buffer), "%d", alarm.music_speed);
+					display_buffer->write_string(buffer, font_5x8, (alarm.music_speed < 10 ? 15 : 9), 0);
+					display_buffer->write_string("min", font_3x5, 21, 3);
+				}
+				else if (edit_item == 12){
+					display_buffer->write_string("2", font_icon, 0, 0);			//Icon 2 is music
+					display_buffer->write_string("VOL", font_3x5, 9, 3);
+					snprintf(buffer, sizeof(buffer), "%d", alarm.music_volume);
+					display_buffer->write_string(buffer, font_5x8, (alarm.music_volume < 10 ? 27 : 21), 0);
+				}
+			}
+			else if (menu_item == MENU_SET_TIME){
+				if (edit_item <= 2){
+					display_write_date(now, edit_item);
+				}
+				else {
+					display_write_time(now, edit_item - 3);
+				}
+			}
+			else if (menu_item == MENU_DFU){
+				display_buffer->write_string("4", font_icon, 0, 0);			//Icon 4 is DFU Upload
+				display_buffer->write_string("CLICK", font_3x5, 10, 2);
+			}
 		}
+
+		max7219_write_buffer(display_buffer->get_data());
+
+		max7219_set_brightness(state_get_display_brightness());
+	}
+	else {
+		delay_ms(3);
 	}
 
+	PORTF |= _BV(PORTF4);
 	max7219_write_command(MAX7219_SHUTDOWN, 0x01);
-	max7219_set_brightness(state_get_display_brightness());
-	max7219_write_buffer(display_buffer->get_data());
+	delay_us(100);
+	PORTF &= ~_BV(PORTF4);
 
 	if (state_get_display_brightness() == 0){
 		max7219_write_command(MAX7219_SHUTDOWN, 0x00);
-		delay_ms(2);	//Leave the display off for a bit longer than normal to make it dimmer, but not so long that it flickers
 	}
+
+	delay_ms(2);
 }
 
 
@@ -179,25 +202,25 @@ static void display_write_time(time_t time, int8_t flash_field){
 	// display_buffer->write_string(buffer, font_5x8, 0, 0);
 
 	//Write the hours
+	uint8_t hour = now_tm.tm_hour;
+	if (hour == 0) hour = 12;
+	else if (hour > 12) hour -= 12;
 	if (flash_field != 0 || flash_timer > FLASH_TIMER_PHASE){
-		uint8_t hour = now_tm.tm_hour;
-		if (hour == 0) hour = 12;
-		else if (hour > 12) hour -= 12;
 		snprintf(buffer, sizeof(buffer), "%d", hour);
-		display_buffer->write_string(buffer, font_5x8, (hour >= 10 ? 0 : 6), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
+		display_buffer->write_string(buffer, font_5x8, (hour >= 10 ? 1 : 5), 0);	//Variable width fonts don't allow for using printf's spacing, so we do it manually
 	}
 
 	//Write the colon
-	display_buffer->write_string(":", font_5x8, 12, 0);
+	display_buffer->write_string(":", font_5x8, (hour >= 10 ? 13 : 11), 0);
 
 	//Write the minutes
 	if (flash_field != 1 || flash_timer > FLASH_TIMER_PHASE){
 		snprintf(buffer, sizeof(buffer), "%02d", now_tm.tm_min);
-		display_buffer->write_string(buffer, font_5x8, 14, 0);
+		display_buffer->write_string(buffer, font_5x8, (hour >= 10 ? 15 : 13), 0);
 	}
 
 	//Write AM / PM
-	display_buffer->write_char((now_tm.tm_hour < 12 ? 'A' : 'P'), font_5x8, 28, 0);
+	display_buffer->write_char((now_tm.tm_hour < 12 ? 'A' : 'P'), font_5x8, (hour >= 10 ? 28 : 26), 0);
 }
 
 static void display_write_date(time_t time, int8_t flash_field){

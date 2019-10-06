@@ -2,19 +2,13 @@
 
 using namespace digitalcave;
 
-#include <stdio.h>
-#include <SerialUSB.h>
-SerialUSB serialUSB;
-static char buffer[64];
-
 static I2CAVR* i2c;
 static DS3231* calendar;
 static ButtonAVR* lampButton;
 static ButtonAVR* musicButton;
 
-//Current time
-static time_t now;
-static tm_t now_tm;
+extern time_t now;
+extern tm_t now_tm;
 
 //Alarm stuff
 static alarm_t alarm[ALARM_COUNT];			//The actual alarms
@@ -35,25 +29,11 @@ static time_t lamp_turned_on_time = 0;		//Time that the lamp was turned on
 static time_t music_turned_on_time = 0;		//Time that the music was started
 static time_t last_alarm_trigger_time = 0;	//Time that the alarm was triggered
 
-static volatile uint8_t updateTime = 0;		//This is triggered in the ISR, and indicates that it is time to update the time fields
+static volatile uint8_t update_display = 0;	//This is triggered in the ISR by the RTC at 1Hz, and indicates that it is time to update the time fields
 
-static void range_loop(int8_t* value, uint8_t min, uint8_t max){
-	if (*value < min){
-		*value = max;
-	}
-	else if (*value > max){
-		*value = min;
-	}
-}
-
-static void range_constrain(int8_t* value, uint8_t min, uint8_t max){
-	if (*value < min){
-		*value = min;
-	}
-	else if (*value > max){
-		*value = max;
-	}
-}
+static void state_get_time(time_t* time, tm_t* tm);
+static void range_loop(int8_t* value, uint8_t min, uint8_t max);
+static void range_constrain(int8_t* value, uint8_t min, uint8_t max);
 
 void state_init(){
 	i2c = new I2CAVR();
@@ -83,9 +63,8 @@ void state_init(){
 void state_poll(){
 	music_poll();
 
-	if (updateTime){
+	if (update_display){
 		state_get_time(&now, &now_tm);
-		updateTime = 0;
 	}
 
 	lampButton->sample(timer_millis());
@@ -195,8 +174,8 @@ void state_poll(){
 
 			//Lamp encoder changes fields
 			if (lamp_encoder_movement != 0){
-				edit_item += lamp_encoder_movement;	//Here edit_item goes from 0 to 11.  0 - 1 map to TIME_FIELD_HOURS and TIME_FIELD_MINUTES.  2 - 8 map to the bit mask for enabled days.  9 is a time in minutes for lamp ramp-up.
-				range_loop(&edit_item, 0, 11);
+				edit_item += lamp_encoder_movement;
+				range_loop(&edit_item, 0, 12);
 			}
 			//Music encoder increments / decrements fields
 			else if (music_encoder_movement != 0){
@@ -219,11 +198,16 @@ void state_poll(){
 					alarm[alarm_index].lamp_speed = s;
 				}
 				else if (edit_item == 10){
+					int8_t b = alarm[alarm_index].lamp_brightness + music_encoder_movement;
+					range_constrain(&b, 1, 100);
+					alarm[alarm_index].lamp_brightness = b;
+				}
+				else if (edit_item == 11){
 					int8_t s = alarm[alarm_index].music_speed + music_encoder_movement;
 					range_constrain(&s, 0, 60);
 					alarm[alarm_index].music_speed = s;
 				}
-				else if (edit_item == 11){
+				else if (edit_item == 12){
 					int8_t v = alarm[alarm_index].music_volume + music_encoder_movement;
 					range_constrain(&v, 0, 30);
 					alarm[alarm_index].music_volume = v;
@@ -297,12 +281,10 @@ void state_poll(){
 	else if (mode == MODE_MENU && seconds_since_last_input > 30){
 		mode = MODE_TIME;		//Go back to time after 30 seconds without input in menu mode
 		edit_item = 0;
-		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "reset1:  %lu, %lu, %lu\n\r", now, last_input_time, seconds_since_last_input));
 	}
 	else if (mode == MODE_EDIT && seconds_since_last_input > 90){
 		mode = MODE_TIME;		//Go back to time after 90 seconds without input in edit mode
 		edit_item = 0;
-		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "reset2:  %lu, %lu, %lu\n\r", now, last_input_time, seconds_since_last_input));
 	}
 
 	//Determine the LED matrix brightness
@@ -314,7 +296,7 @@ void state_poll(){
 		display_brightness = fmax(20 - seconds_since_last_input, light_state() ? 5 : ((now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20) ? 3 : 0));
 	}
 	else {
-		display_brightness = light_state() ? 5 : (now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20 ? 3 : 0);
+		display_brightness = light_state() ? 5 : (now_tm.tm_hour >= 8 && now_tm.tm_hour <= 20 ? 1 : 0);
 	}
 }
 
@@ -329,10 +311,6 @@ uint8_t state_get_mode(){
 	return mode;
 }
 
-void state_get_time(time_t* time, tm_t* now_tm){
-	calendar->get(now_tm);
-	*time = mktime(now_tm);
-}
 uint8_t state_get_menu_item(){
 	return menu_item;
 }
@@ -345,10 +323,40 @@ uint8_t state_get_display_brightness(){
 	return display_brightness;
 }
 
-double state_get_lamp_brightness(){
+uint8_t state_get_lamp_brightness(){
 	return lamp_brightness;
 }
 
+uint8_t state_update_display(){
+	uint8_t result = update_display;
+	update_display = 0;
+	return result;
+}
+
+static void state_get_time(time_t* time, tm_t* now_tm){
+	calendar->get(now_tm);
+	*time = mktime(now_tm);
+}
+
+static void range_loop(int8_t* value, uint8_t min, uint8_t max){
+	if (*value < min){
+		*value = max;
+	}
+	else if (*value > max){
+		*value = min;
+	}
+}
+
+static void range_constrain(int8_t* value, uint8_t min, uint8_t max){
+	if (*value < min){
+		*value = min;
+	}
+	else if (*value > max){
+		*value = max;
+	}
+}
+
+
 ISR(INT6_vect){
-	updateTime = 1;
+	update_display = 1;
 }
