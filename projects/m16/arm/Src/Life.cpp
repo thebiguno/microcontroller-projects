@@ -7,10 +7,12 @@ using namespace digitalcave;
 extern Matrix matrix;
 extern Hsv hsv;
 
-Life::Life(uint8_t w, uint8_t h): width(w), height(h), state[w][h], tempstate[w][h] {
+Life::Life(uint8_t w, uint8_t h): width(w), height(h) {
+    state = new uint8_t[width * height];
 }
 
 Life::~Life() {
+    delete [] state;
 }
 
 void Life::paint() {
@@ -19,36 +21,38 @@ void Life::paint() {
     } else if (frame > 0) {
         frame--;
     } else {
+        uint8_t tempstate[width * height];
+
         frame = 5;  // repaint every 50 ms
 
         for (uint8_t x = 0; x < width; x++) {
             for (uint8_t y = 0; y < height; y++) {
-                tempstate[x][y] = state[x][y];
+                tempstate[x * width + y] = state[x * width + y];
             }
         }
         for (uint8_t x = 0; x < width; x++) {
             for (uint8_t y = 0; y < height; y++) {
                 uint8_t count = getNeighborCount(x, y);
-                if (state[x][y] > 0) {
+                if (state[x * width + y] > 0) {
                     // alive
                     if (count == 2 || count == 3) {
                         // staying alive; do nothing
-                        tempstate[x][y] = 0x01;
+                        tempstate[x * width + y] = 0x01;
                     }
                     else {
                         // overpopulation or underpopulation
-                        tempstate[x][y] = 0x00;
+                        tempstate[x * width + y] = 0x00;
                     }
                 }
                 else if (count == 3) {
                     // birth
-                    tempstate[x][y] = 0x01;
+                    tempstate[x * width + y] = 0x01;
                 }
             }
         }
         for (uint8_t x = 0; x < width; x++) {
             for (uint8_t y = 0; y < height; y++) {
-                state[x][y] = tempstate[x][y];
+                state[x * width + y] = tempstate[x * width + y];
             }
         }
 
@@ -81,7 +85,7 @@ uint8_t Life::getState(int8_t x, int8_t y) {
     else if (x > width - 1) x = 0;
     if (y < 0) y = height - 1;
     else if (y > height - 1) y = 0;
-    return state[x][y];
+    return state[x * width + y];
 }
 
 uint8_t Life::getNeighborCount(int8_t x, int8_t y) {
@@ -101,7 +105,7 @@ uint32_t Life::getStateHash() {
     uint32_t hash = 0;
     for (uint8_t x = 0; x < width; x++) {
         for (uint8_t y = 0; y < height; y++) {
-            hash += x * y * (state[x][y] ? 1 : 0);
+            hash += x * y * (state[x * width + y] ? 1 : 0);
         }
     }
     return hash;
@@ -112,7 +116,7 @@ void Life::flush() {
     Rgb rgb = Rgb(hsv);
     for (uint8_t x = 0; x < width; x++) {
         for (uint8_t y = 0; y < height; y++) {
-            if (state[x][y] > 0) {
+            if (state[x * width + y] > 0) {
                 matrix.setColor(rgb);
             } else {
                 matrix.setColor(0,0,0);
@@ -133,9 +137,9 @@ void Life::reset() {
     for (uint8_t x = 0; x < width; x++) {
         for (uint8_t y = 0; y < height; y++) {
             if ((random() & 0x3) == 0x3) {        //25% chance
-                state[x][y] = 0x01;
+                state[x * width + y] = 0x01;
             } else {
-                state[x][y] = 0x00;
+                state[x * width + y] = 0x00;
             }
         }
     }

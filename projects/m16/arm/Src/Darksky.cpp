@@ -1,9 +1,9 @@
 #include "Darksky.h"
+#include "JsonParser.h"
 #include <stdlib.h>
+#include <string.h>
 
 using namespace digitalcave;
-
-extern State *state;
 
 Darksky::Darksky(WebStream* w, char* lat, char* lon, char* key) :
 web(w),
@@ -23,15 +23,15 @@ void Darksky::update() {
     strcat(url, latitude);
     strcat(url, ",");
     strcat(url, longitude);
-    strcat(url, "?units=ca&exclude=minutely,hourly,alerts,flags")
-    web.request("GET", url, NULL);
-    web.header("Accept", "application/json");
-    web.body("");
+    strcat(url, "?units=ca&exclude=minutely,hourly,alerts,flags");
+    web->request((char*) "GET", url, (char*) NULL);
+    web->header("Accept", "application/json");
+    web->body("");
 
     char key[16];
     char value[20];
     uint8_t token;
-    JsonParser parser = JsonParser(web);
+    JsonParser parser = JsonParser(web, 64);
     while ((token = parser.nextToken()) != TOKEN_EOF) {
         if (token == TOKEN_KEY) {
             if (strcmp("currently", key) == 0) {
@@ -44,34 +44,34 @@ void Darksky::update() {
                             time = atol(value);
                         } else if (strcmp("icon", key) == 0) {
                             parser.getValue(value);
-                            currently.icon = parse_icon(value)
+                            curr.icon = parse_icon(value);
                         } else if (strcmp("temperature", key) == 0) {
                             parser.getValue(value); // °C
-                            currently.temperature = atof(value);
-                        } else if (strcmp("dewPoint"), key) == 0) {
+                            curr.temperature = atof(value);
+                        } else if (strcmp("dewPoint", key) == 0) {
                             parser.getValue(value); // °C
-                            currently.dewPoint = atof(value);
+                            curr.dewPoint = atof(value);
                         } else if (strcmp("humidity", key) == 0) {
                             parser.getValue(value); // %
-                            currently.humidity = atof(value);
+                            curr.humidity = atof(value);
                         } else if (strcmp("cloudCover", key) == 0) {
                             parser.getValue(value); // %
-                            currently.humidity = atof(value);
+                            curr.humidity = atof(value);
                         } else if (strcmp("pressure", key) == 0) {
                             parser.getValue(value); // hPa
-                            currently.pressure = atof(value);
+                            curr.pressure = atof(value);
                         } else if (strcmp("windSpeed", key) == 0) {
                             parser.getValue(value); // km/h
-                            currently.windSpeed = atof(value);
+                            curr.windSpeed = atof(value);
                         } else if (strcmp("windGust", key) == 0) {
                             parser.getValue(value); // km/h
-                            currently.windGust = atof(value);
+                            curr.windGust = atof(value);
                         } else if (strcmp("windBearing", key) == 0) {
                             parser.getValue(value); // degrees
-                            currently.windBearing = atol(value);
+                            curr.windBearing = atol(value);
                         } else if (strcmp("uvIndex", key) == 0) {
                             parser.getValue(value);
-                            currently.uvIndex = atoi(value);
+                            curr.uvIndex = atoi(value);
                         }
                     }
                 }
@@ -83,19 +83,19 @@ void Darksky::update() {
                             parser.nextToken();
                             if (strcmp("sunriseTime", key) == 0) {
                                 parser.getValue(value); // unix time
-                                daily[i].sunriseTime = atol(value);
+                                days[i].sunriseTime = atol(value);
                             } else if (strcmp("sunsetTime", key) == 0) {
                                 parser.getValue(value);
-                                daily[i].sunsetTime = atol(value);
+                                days[i].sunsetTime = atol(value);
                             } else if (strcmp("moonPhase", key) == 0) {
                                 parser.getValue(value);
-                                daily[i].moonPhase = atof(value);
+                                days[i].moonPhase = atof(value);
                             } else if (strcmp("temperatureLow", key) == 0) {
                                 parser.getValue(value);
-                                daily[i].temperatureLow = atof(value);
+                                days[i].temperatureLow = atof(value);
                             } else if (strcmp("temperatureHigh", key) == 0) {
                                 parser.getValue(value);
-                                daily[i].temperatureHigh = atof(value);
+                                days[i].temperatureHigh = atof(value);
                             }
                         }
                     }
@@ -122,10 +122,10 @@ uint8_t Darksky::parse_icon(char* str) {
     else return ICON_UNKNOWN;
 }
 
-Currently* Darksky::currently {
-    return this.currently;
+Currently Darksky::currently() {
+    return this->curr;
 }
 
-Daily* Darksky::daily(uint8_t index) {
-    return this.daily[index];
+Daily Darksky::daily(uint8_t index) {
+    return this->days[index];
 }

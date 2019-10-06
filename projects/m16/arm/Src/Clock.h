@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include <stdint.h>
+#include "stm32f4xx_hal_rtc.h"
 
 namespace digitalcave {
     class Clock : public Module {

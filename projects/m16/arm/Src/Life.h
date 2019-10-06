@@ -12,12 +12,11 @@ namespace digitalcave {
     private:
         uint8_t width;
         uint8_t height;
-        uint8_t state[][];
-        uint8_t tempstate[][];
         uint32_t hashes[LIFE_HASH_COUNT];
         uint8_t matches;
         uint8_t frame;
         uint8_t pause;
+        uint8_t* state;
 
     public:
         Life(uint8_t width, uint8_t height);

@@ -9,13 +9,14 @@ using namespace digitalcave;
 extern Hsv hsv;
 extern Matrix matrix;
 
-Clock::Clock(State *s) : state(s) {
+Clock::Clock() {
 }
 
 Clock::~Clock() {
 }
 
 void Clock::paint() {
+/*
     if (frame > 0) {
         frame--;
     else {
@@ -64,4 +65,5 @@ void Clock::paint() {
 
         matrix.flush();
     }
+*/
 }

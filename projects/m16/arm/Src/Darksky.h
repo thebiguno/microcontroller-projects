@@ -2,6 +2,7 @@
 #define DARKSKY_H
 
 #include <stdint.h>
+#include "WebStream.h"
 
 #define ICON_UNKNOWN 0
 #define ICON_CLEAR_DAY 1
@@ -26,7 +27,7 @@ namespace digitalcave {
         uint32_t sunriseTime;
         uint32_t sunsetTime;
         float moonPhase;
-    }
+    };
 
     struct Currently {
         uint8_t icon;
@@ -39,32 +40,29 @@ namespace digitalcave {
         float windGust;
         uint16_t windBearing;
         uint8_t uvIndex;
-    }
+    };
 
     class Darksky {
+    public:
+        Darksky(WebStream* w, char* latitude, char* longitude, char* apiKey);
+        ~Darksky();
+
+        void update();
+        Currently currently();
+        Daily daily(uint8_t index);
+
     private:
-        Webstream* web;
+        WebStream* web;
 
         char* latitude;
         char* longitude;
         char* apiKey;
 
         uint32_t time;          // the time that the data was refreshed
-        Currently currently;    //
-        Daily[3] daily;         // today, tomorrow, the next day
+        Currently curr;         //
+        Daily days[3];          // today, tomorrow, the next day
 
         uint8_t parse_icon(char* str);
-
-    public:
-        Darksky(Webstream* w, char* latitude, char* longitude, char* apiKey);
-        ~Darksky();
-
-        void update();
-        Currently* currently();
-        Daily* daily(uint8_t index);
-
-    private:
-
     };
 }
 

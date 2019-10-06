@@ -1,5 +1,6 @@
 #include "Matrix.h"
 
+#include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_tim.h"
 #include "stm32f4xx_hal_dma.h"
@@ -23,12 +24,12 @@ void Matrix::setColor(uint8_t r, uint8_t g, uint8_t b) {
     uint16_t green = (b & 0xf0) >> 5;
     uint8_t blue = (b & 0xf0) >> 5;
 
-    color = (red << 10) | (green << 5) | blue
+    color = (red << 10) | (green << 5) | blue;
 }
 
 void Matrix::setPixel(int16_t x, int16_t y) {
-    x += this->translate_x;
-    y += this->translate_y;
+    x += translate_x;
+    y += translate_y;
 
     int16_t i = (x & 0x01) ? (x * MATRIX_WIDTH + MATRIX_HEIGHT - 1 - y) : (x * MATRIX_HEIGHT + y);
     //int16_t i = (x * 12) + y;
@@ -63,7 +64,7 @@ void Matrix::flush(){
 uint8_t Matrix::msb(uint8_t b) {
     uint8_t r = 0;
     while (b > 0) {
-        x = x >> 1
+        b = b >> 1;
         r++;
     }
     return r;
@@ -74,7 +75,7 @@ void Matrix::buffer_to_bam() {
         for (uint16_t y = 0; y < MATRIX_HEIGHT / 2; y++) {
             if (x == MATRIX_WIDTH) {
                 // add a latch at the end of every row
-                for (uint8_t t = 0; t < 8; i++) {
+                for (uint8_t t = 0; t < 8; t++) {
                     bam[x*y*t] = 0x0010;        // strobe
                 }
             } else {
@@ -87,19 +88,19 @@ void Matrix::buffer_to_bam() {
                 uint8_t g1 = gamma[(c1 >> 5) & 0x1f];
                 uint8_t b1 = gamma[(c1 >> 0) & 0x1f];
 
-                for (uint8_t t = 0; t < 8; i++) {
+                for (uint8_t t = 0; t < 8; t++) {
                     uint8_t bvt = _bv(t);
 
                     // [x:x:x:b1:g1:r1:ck:b0:g0:r0:oe:st:d:c:b:a]
                     bam[x*y*t] = x                 // x == abcd
                     | 0x0020                       // output enable
-                    | ((bvt & r0) >> i) << 0x0040  // red 0
-                    | ((bvt & g0) >> i) << 0x0080  // green 0
-                    | ((bvt & b0) >> i) << 0x0100  // blue 0
+                    | ((bvt & r0) >> t) << 0x0040  // red 0
+                    | ((bvt & g0) >> t) << 0x0080  // green 0
+                    | ((bvt & b0) >> t) << 0x0100  // blue 0
                                                    // ck is driven directly by the timer
-                    | ((bvt & r1) >> i) << 0x0400  // red 1
-                    | ((bvt & g1) >> i) << 0x0800  // green 1
-                    | ((bvt & b1) >> i) << 0x1000; // blue 1
+                    | ((bvt & r1) >> t) << 0x0400  // red 1
+                    | ((bvt & g1) >> t) << 0x0800  // green 1
+                    | ((bvt & b1) >> t) << 0x1000; // blue 1
 
                     // each bam time index maps to a bit in the color value
                     // bam[x*y*0] has bit 1 of the color
@@ -123,11 +124,11 @@ void Matrix::initHardware() {
 
     // Configure GPIOC to output push/pull open drain
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-    GPIO_InitStruct.Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     // Configure Timer 4 to drive DMA and GPIOC9
     __HA3_RCC_TIM3_CLK_ENABLE();
