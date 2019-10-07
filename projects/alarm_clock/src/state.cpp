@@ -324,9 +324,14 @@ void state_poll(){
 
 	uint32_t seconds_since_last_input = now - last_input_time;
 
-	//Turn off music after 2 hours
-	if (music_is_playing() && seconds_since_last_input > (60 * 60 * 2)){
-		music_stop();
+	//Turn off light and music after 2 hours of no input
+	if (seconds_since_last_input > (60 * 60 * 2)){}
+		if (light_state() && ){
+			light_off();
+		}
+		if (music_is_playing()){
+			music_stop();
+		}
 	}
 
 	//Go back to time after timeouts
