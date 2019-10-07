@@ -82,8 +82,9 @@ void state_poll(){
 	uint8_t update_display = get_update_display();
 	if (update_display){
 		update_time(&now, &now_tm);
-		uint8_t analog_value = (analog_read_p(0) >> 4);
-		min_brightness = ((min_brightness * 7) + analog_value) / 8;
+		int8_t analog_value = (analog_read_p(0) >> 4) - 1;
+		range_constrain(&analog_value, 0, 3);
+		min_brightness = ((min_brightness * 15) + analog_value) / 16.0;
 		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "min_brightness: %d, analog_value: %d\n\r", (uint8_t) min_brightness, analog_value));
 	}
 
