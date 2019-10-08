@@ -107,6 +107,7 @@ void state_poll(){
 			lamp_alarm_triggered |= _BV(i);
 			music_alarm_triggered |= _BV(i);
 			last_alarm_trigger_time = now;
+			last_input_time = now;		//Workaround so that we don't immediately turn off the alarm when it triggers due to lack of input
 			light_set(0);
 			light_on();
 			music_start(a.music_folder, config.music_count[a.music_folder - 1]);
@@ -289,8 +290,6 @@ void state_poll(){
 				now = mktime(&now_tm);			//Calculate the time_t from the tm_t struct
 				localtime_r(&now, &now_tm);		//Re-populate the tm_t struct from time_t
 				calendar->set(&now_tm);			//Set the RTC with the updated tm_t struct
-
-				last_input_time = now;			//Prevent time travel
 			}
 		}
 		else if (menu_item == MENU_CONFIG){
@@ -325,9 +324,9 @@ void state_poll(){
 
 	uint32_t seconds_since_last_input = now - last_input_time;
 
-	//Turn off light and music after 2 hours of no input
-	if (seconds_since_last_input > (60 * 60 * 2)){}
-		if (light_state() && ){
+	//Turn off light and music after 1 hour of no input
+	if (seconds_since_last_input > (60 * 60)){
+		if (light_state()){
 			light_off();
 		}
 		if (music_is_playing()){
