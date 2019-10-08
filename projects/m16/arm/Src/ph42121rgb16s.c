@@ -1,5 +1,4 @@
 #include "ph42121rgb16s.h"
-
 // see http://www.batsocks.co.uk/readme/art_bcm_3.htm for information on BAM
 // see https://esdblog.org/how-to-drive-4096-rgb-leds-each-24bit-rgb-brightness-with-one-stm32-microcontroller-without-much-cpu-load/
 
@@ -22,7 +21,7 @@ const uint8_t gamma[32] = {
     145, 159, 173, 188, 204, 220, 237, 255
 };
 
-void h4212rgb16s_flush(uint16_t* buffer) {
+void ph42121rgb16s_flush(uint16_t* buffer) {
     for (uint16_t x = 0; x < MATRIX_WIDTH + 1; x++) {
         for (uint16_t y = 0; y < MATRIX_HEIGHT / 2; y++) {
             if (x == MATRIX_WIDTH) {
@@ -64,7 +63,7 @@ void h4212rgb16s_flush(uint16_t* buffer) {
     }
 }
 
-void ph4212rgb16s_init() {
+void ph42121rgb16s_init() {
     // Timer 3 is used to drive DMA Str
 
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -147,16 +146,16 @@ uint8_t ph4212rgb16s_msb0(uint8_t b) {
     return r;
 }
 
-void ph4212rgb16s_data_transmitted_handler_m0(DMA_HandleTypeDef* handle) {
+void ph42121rgb16s_data_transmitted_handler_m0(DMA_HandleTypeDef* handle) {
     uint8_t i = ph4212rgb16s_msb0(time_index++);
     HAL_DMAEx_ChangeMemory(handle, (uint32_t) &bam[BAM_SIZE * i], MEMORY0);
 }
 
-void ph4212rgb16s_data_transmitted_handler_m1(DMA_HandleTypeDef* handle) {
+void ph42121rgb16s_data_transmitted_handler_m1(DMA_HandleTypeDef* handle) {
     uint8_t i = ph4212rgb16s_msb0(time_index++);
     HAL_DMAEx_ChangeMemory(handle, (uint32_t) &bam[BAM_SIZE * i], MEMORY1);
 }
 
-void ph4212rgb16s_transmit_error_handler(DMA_HandleTypeDef* hdma) {
+void ph42121rgb16s_transmit_error_handler(DMA_HandleTypeDef* hdma) {
     __HAL_TIM_DISABLE(&htim3);
 }

@@ -1,23 +1,28 @@
 #include "App.h"
-#include "Life.h"
-#include "Matrix.h"
+#include "main.h"
 
 using namespace digitalcave;
 
 Matrix matrix = Matrix();
 Hsv hsv = Hsv(0,0xff,0x1f);
-
-void App::run() {
 //Darksky darksky = Darksky(&wifi, &state);
 //SerialHAL serial = SerialHAL(&huart, 2048);
 //ESP8266 wifi = ESP8266(&serial);
 //State state = State();
+
+App::App() {
+}
+
+App::~App() {
+}
+
+void App::run() {
     Life life = Life(32, 64);
     while(1) {
         life.paint();
 
-        //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-        //HAL_Delay(1000);
+        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        HAL_Delay(100);
     }
 }
 
