@@ -2,10 +2,6 @@
 
 using namespace digitalcave;
 
-#include <SerialUSB.h>
-SerialUSB serialUSB;
-char buffer[60];
-
 //Hardware
 static I2CAVR* i2c;
 static DS3231* calendar;
@@ -82,10 +78,6 @@ void state_poll(){
 	uint8_t update_display = get_update_display();
 	if (update_display){
 		update_time(&now, &now_tm);
-		int8_t analog_value = (analog_read_p(0) >> 4) - 1;
-		range_constrain(&analog_value, 0, 3);
-		min_brightness = ((min_brightness * 15) + analog_value) / 16.0;
-		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "min_brightness: %d, analog_value: %d\n\r", (uint8_t) min_brightness, analog_value));
 	}
 
 	lampButton->sample(timer_millis());
@@ -129,10 +121,12 @@ void state_poll(){
 
 	//Time mode - this is what shows 99% of the time.
 	if (mode == MODE_TIME){
+		//Enter menu
 		if (lampButton->longPressEvent()){
 			mode = MODE_MENU;
 			menu_item = 0;
 		}
+		//Turn on lamp
 		else if (lampButton->releaseEvent()){
 			lamp_alarm_triggered = 0x00;
 			light_toggle();
@@ -147,13 +141,7 @@ void state_poll(){
 				eeprom_store();
 			}
 		}
-		else if (light_state() && lamp_encoder_movement != 0){
-			edit_item = EDIT_TIME_LAMP;
-			lamp_brightness += lamp_encoder_movement;
-			range_constrain(&lamp_brightness, 1, 100);
-			light_set(lamp_brightness);
-			config.lamp_brightness = lamp_brightness;
-		}
+		//Turn on music
 		else if (musicButton->releaseEvent()){
 			music_alarm_triggered = 0x00;
 			music_set_volume(config.volume);
@@ -167,12 +155,26 @@ void state_poll(){
 				eeprom_store();
 			}
 		}
-		else if (music_encoder_movement != 0 && music_is_playing()){
+		//Adjust lamp brightness; can happen when light is on or off
+		else if (lamp_encoder_movement != 0){
+			lamp_alarm_triggered = 0x00;		//Turn off any alarms currently enabled
+			edit_item = EDIT_TIME_LAMP;
+			lamp_brightness += lamp_encoder_movement;
+			range_constrain(&lamp_brightness, 1, 100);
+			if (light_state()){
+				light_set(lamp_brightness);
+			}
+			config.lamp_brightness = lamp_brightness;
+		}
+		//Adjust music volume; can happen when music is on or off
+		else if (music_encoder_movement != 0){
+			music_alarm_triggered = 0x00;		//Turn off any alarms currently enabled
 			edit_item = EDIT_TIME_MUSIC;
-			music_alarm_triggered = 0x00;
 			int8_t volume = config.volume + music_encoder_movement;
 			range_constrain(&volume, 1, 30);
-			music_set_volume(volume);
+			if (music_is_playing()){
+				music_set_volume(volume);
+			}
 			config.volume = volume;
 		}
 	}
@@ -348,6 +350,11 @@ void state_poll(){
 		mode = MODE_TIME;		//Go back to time after 90 seconds without input in edit mode
 		edit_item = 0;
 	}
+
+	//Adjust the minimum brightness of the LED display based on ambient light levels
+	int8_t analog_value = (analog_read_p(0) >> 4) - 1;
+	range_constrain(&analog_value, 0, 3);
+	min_brightness = ((min_brightness * 63) + analog_value) / 64.0;
 
 	//Set the LED matrix brightness (0 - 15).  0 is further reduced in display.cpp by turning off the display for most of the duty cycle.
 	if (seconds_since_last_input < 5){
