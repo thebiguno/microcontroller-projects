@@ -36,7 +36,7 @@ static time_t last_alarm_trigger_time = 0;	//Time that the alarm was triggered
 
 static volatile uint8_t update_display = 0;	//This is triggered in the ISR by the RTC at 1Hz, and indicates that it is time to update the time fields
 
-static volatile uint8_t raw_analog_value = 0;
+static volatile uint8_t analog_value = 0;
 
 static void eeprom_store();
 static void eeprom_load();
@@ -108,12 +108,13 @@ void state_poll(){
 		alarm_t a = alarm[i];
 
 		//Trigger alarm if time matches
-		if (a.enabled & _BV(now_tm.tm_wday)
+		if (a.enabled & _BV(7)									//Ensure the global alarm flag is enabled
+				&& a.enabled & _BV(now_tm.tm_wday)				//Check the day flag
 				&& (lamp_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
 				&& (music_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
-				&& a.hour == now_tm.tm_hour
-				&& a.minute == now_tm.tm_min
-				&& 0 == now_tm.tm_sec){
+				&& a.hour == now_tm.tm_hour						//Check the hour
+				&& a.minute == now_tm.tm_min					//Check the minute
+				&& 0 == now_tm.tm_sec){							//Trigger on 0 seconds
 			lamp_alarm_triggered |= _BV(i);
 			music_alarm_triggered |= _BV(i);
 			last_alarm_trigger_time = now;
@@ -370,13 +371,11 @@ void state_poll(){
 	}
 
 	//Adjust the minimum brightness of the LED display based on ambient light levels.  Use hysteresis to keep from flickering back and forth.
-	int8_t analog_value = (raw_analog_value >> 2) - 1;
-	range_constrain(&analog_value, 0, 3);
 	analog_value_running_average = ((analog_value_running_average * 15) + analog_value) / 16.0;
-	if (min_brightness == 0 && analog_value_running_average >= 2.0){
+	if (min_brightness == 0 && analog_value_running_average >= 50){
 		min_brightness = 1;
 	}
-	else if (min_brightness == 1 && analog_value_running_average <= 1.0){
+	else if (min_brightness == 1 && analog_value_running_average <= 30){
 		min_brightness = 0;
 	}
 
@@ -472,7 +471,7 @@ ISR(INT6_vect){
 
 ISR(ADC_vect){
 	//Read the 8 MSB of the value
-	raw_analog_value = ADCH;
+	analog_value = ADCH;
 
 	//Start ADC again
 	ADCSRA |= _BV(ADSC);
