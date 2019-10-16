@@ -372,10 +372,10 @@ void state_poll(){
 
 	//Adjust the minimum brightness of the LED display based on ambient light levels.  Use hysteresis to keep from flickering back and forth.
 	analog_value_running_average = ((analog_value_running_average * 15) + analog_value) / 16.0;
-	if (min_brightness == 0 && analog_value_running_average >= 50){
+	if (min_brightness == 0 && analog_value_running_average >= 14){
 		min_brightness = 1;
 	}
-	else if (min_brightness == 1 && analog_value_running_average <= 30){
+	else if (min_brightness == 1 && analog_value_running_average <= 10){
 		min_brightness = 0;
 	}
 
