@@ -2,11 +2,6 @@
 
 using namespace digitalcave;
 
-#include <stdio.h>
-#include <SerialUSB.h>
-static SerialUSB serialUSB;
-char buffer[60];
-
 static SerialAVR* serialAVR = NULL;
 
 static uint8_t playbackState;
@@ -51,8 +46,6 @@ void music_shuffle_queue(uint8_t file_count){
 	}
 
 	currentFileIndex = 0;
-
-	serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "queue: [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n\r", queue[0], queue[1], queue[2], queue[3], queue[4], queue[5], queue[6], queue[7], queue[8], queue[9], queue[10], queue[11], queue[12]));
 }
 
 //This should not be called more than once every 50ms or so.  Calling it from the 1Hz update in state.cpp is fine.
@@ -61,7 +54,6 @@ void music_poll(){
 	while (dfplayermini_poll());
 
 	if (playbackState == SOUND_STATE_PLAY && (PINF & _BV(PINF1))){		//If we are supposed to be playing, but PINF1 has gone high (meaning the last song is finished), we go to the next one.
-		serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "Playing folder %02d, file %03d.mp3\n\r", current_folder, queue[currentFileIndex]));
 		dfplayermini_send_command(DFPLAYER_COMMAND_FOLDER_SET, (current_folder << 8) + queue[currentFileIndex]);
 
 		//Increment the file pointer for next time.
@@ -85,8 +77,6 @@ void music_set_volume(int8_t volume){
 void music_start(uint8_t folder, uint8_t file_count){
 	current_folder = folder;
 	current_file_count = file_count;
-
-	serialUSB.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "File count: %d\n\r", current_file_count));
 
 	music_shuffle_queue(file_count);
 	playbackState = SOUND_STATE_PLAY;
