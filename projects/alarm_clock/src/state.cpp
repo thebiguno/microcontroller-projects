@@ -91,11 +91,11 @@ void state_init(){
 
 //The UI state machine.  Takes current state + input and moves between states.
 void state_poll(){
-	music_poll();
-
 	uint8_t update_display = get_update_display();
 	if (update_display){
 		update_time(&now, &now_tm);
+
+		music_poll();
 	}
 
 	lampButton->sample(timer_millis());
