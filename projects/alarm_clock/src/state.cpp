@@ -152,6 +152,7 @@ void state_poll(){
 			if (light_state()){
 				edit_item = EDIT_TIME_LAMP;
 				lamp_turned_on_time = now;
+				lamp_brightness = config.lamp_brightness;
 				range_constrain(&lamp_brightness, 1, 100);
 				light_set(lamp_brightness);
 			}
