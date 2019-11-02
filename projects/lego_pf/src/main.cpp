@@ -29,6 +29,10 @@ using namespace digitalcave;
 //Arduino pin A3
 #define MOTOR_BLUE_B		PORTC3
 
+#define SERVO_PORT			PORTC
+#define SERVO_DDR			DDRC
+#define SERVO_PIN			PORTC0
+
 //Pin that the LED is connected to
 #define LED_PORT			PORTB
 #define LED_DDR			DDRB
@@ -63,6 +67,9 @@ int main(){
 	MOTOR_RED_DDR |= _BV(MOTOR_RED_PWM) | _BV(MOTOR_RED_A) | _BV(MOTOR_RED_B);
 	MOTOR_BLUE_DDR |= _BV(MOTOR_BLUE_PWM) | _BV(MOTOR_BLUE_A) | _BV(MOTOR_BLUE_B);
 
+	//Enable servo pin
+	SERVO_DDR |= _BV(SERVO_PIN);
+
 	//Enable LED
 	LED_DDR |= _BV(LED_PIN);
 
@@ -70,17 +77,23 @@ int main(){
 	PCICR |= _BV(PCIE0);														//Enable pin change interrupts for encoders
 	PCMSK0 |= _BV(PCINT1);														//Enable bit 1 for pin change interrupts
 
-	//Set up TIMER1 for reading sensor
-	TCCR1A = 0x0;
-	//Enable overflow interrupt - this signals timeout.
-	TIMSK1 = _BV(TOIE1);
-
-	//Set up TIMER0 for PWM
+	//Set up TIMER0 for motor PWM
 	TCCR0A = 0x00;	//Normal mode
 	TCCR0B = _BV(CS02) | _BV(CS00);		//CLK div 1024
 	//Enable both compares and overflow interrupts.  We turn on the motor at overflow, and turn it off in the individual compare matches
 	TIMSK0 = _BV(OCIE0B) | _BV(OCIE0A) | _BV(TOIE0);
 
+	//Set up TIMER1 for reading sensor
+	TCCR1A = 0x0;
+	//Enable overflow interrupt - this signals timeout.
+	TIMSK1 = _BV(TOIE1);
+
+	//Set up TIMER2 for servo PWM
+	TCCR2A = _BV(WGM20);		//PWM Phase Correct mode, /1024 prescaler
+	TCCR2B = _BV(WGM22) | _BV(CS22) | _BV(CS21) | _BV(CS20);
+	//Enable both compare interrupts.  We reset the counter and turn the pin high on A, and then turn the pin low on B.
+	TIMSK2 = _BV(OCIE2B) | _BV(OCIE2A);
+	OCR2A = 0xFF;
 
 	sei();
 
@@ -181,6 +194,8 @@ int main(){
 			MOTOR_RED_PORT |= _BV(MOTOR_RED_PWM);
 			MOTOR_BLUE_PORT |= _BV(MOTOR_BLUE_PWM);
 
+			OCR2B = (motor_blue_speed * 2) + 22;
+
 #ifdef DEBUG
 			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "message: [t:%d e:%d c:%d a:%d m:0x%02X d:0x%02X]\n\r", message.toggle, message.escape, message.channel, message.address, message.mode, message.data));
 			serial.write((uint8_t*) buffer, (uint16_t) snprintf(buffer, sizeof(buffer), "red: %d, blue: %d\n\r", motor_red_speed, motor_blue_speed));
@@ -247,4 +262,15 @@ ISR(TIMER1_OVF_vect){
 	}
 
 	raw_message = 0;
+}
+
+ISR(TIMER2_COMPA_vect){
+	//Turn on the servo pin and restart the timer counter
+	SERVO_PORT |= _BV(SERVO_PIN);
+	TCNT2 = 0;
+}
+
+ISR(TIMER2_COMPB_vect){
+	//Turn off the servo pin
+	SERVO_PORT &= ~_BV(SERVO_PIN);
 }
