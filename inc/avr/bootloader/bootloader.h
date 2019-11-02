@@ -5,9 +5,6 @@
 #define BOOTLOADER_LUFA			1
 
 #if defined(__AVR_ATmega32U4__)
-#else
-#error Jump to Bootloader is not currently supported for this hardware.
-#endif
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -23,6 +20,8 @@ void bootloader_jump(uint8_t bootloader);
 
 #if defined (__cplusplus)
 }
+#endif
+
 #endif
 
 #endif

@@ -1,6 +1,7 @@
 #include "bootloader.h"
 #include <avr/wdt.h>
 
+#if defined(__AVR_ATmega32U4__)
 void bootloader_jump(uint8_t bootloader){
 	//Jump to bootloader.  Copied from http://www.pjrc.com/teensy/jump_to_bootloader.html
 	cli();
@@ -29,3 +30,4 @@ void bootloader_jump(uint8_t bootloader){
 	//TODO There are potentially two other sizes of bootloaders possible - 1024 and 2048 bytes.  If we find other bootloaders that fit in these
 	// sizes, we can add 0x7C00 and 0x7800 jump addresses respectively.
 }
+#endif

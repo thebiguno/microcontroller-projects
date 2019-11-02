@@ -56,9 +56,10 @@ SerialAVR::SerialAVR(uint32_t baud, uint8_t dataBits, uint8_t parity, uint8_t st
 
 	//Set baud rate
 	uint16_t calculated_baud = (F_CPU / 4 / baud - 1) / 2;
-	*UCSRA |= _BV(U2X1);
+
+	*UCSRA |= _BV(U2X);
 	if (((F_CPU == 16000000UL) && (baud == 57600)) || (calculated_baud > 4095)){
-		*UCSRA &= ~_BV(U2X1);
+		*UCSRA &= ~_BV(U2X);
 		calculated_baud = (F_CPU / 8 / baud - 1) / 2;
 	}
 	*UBRRH = calculated_baud >> 8;

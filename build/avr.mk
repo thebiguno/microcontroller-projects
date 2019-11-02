@@ -95,10 +95,14 @@ ifeq 'arduino' '$(PROGRAMMER)'
 		endif
 	endif
 
+	ifndef AVRDUDE_BAUD
+		AVRDUDE_BAUD = 115200
+	endif
+
 	ifeq 'Linux' '$(OS)'
 		AVRDUDE_PREP_COMMANDS=stty -F $(AVRDUDE_PORT) hupcl
 	endif
-	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b 115200
+	AVRDUDE_ARGS += -P $(AVRDUDE_PORT) -b $(AVRDUDE_BAUD)
 endif
 
 #This is the Pololu arduino bootloader; use avr109 as per http://pololu.com/docs/0J61/6.3
