@@ -31,13 +31,16 @@ int main (void){
 	rda5807.setStation(969);
 
 	//Main program loop
-	uint8_t volume = 0x00;
+	rda5807.setStation(969);
+	rda5807.setVolume(1);
+	uint8_t i = 0x00;
 	while (1){
-		rda5807.setVolume(volume);
-		volume = (volume + 1) & 0x0F;
+		i = (i + 1) & 0x0F;
+		if (i == 0x00){
+			rda5807.doScan();
+		}
 
-		rda5807.readRegisters();
-		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "value: %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X\n\r", rda5807.getRegister(0x02), rda5807.getRegister(0x03), rda5807.getRegister(0x04), rda5807.getRegister(0x05), rda5807.getRegister(0x06), rda5807.getRegister(0x07), rda5807.getRegister(0x0A), rda5807.getRegister(0x0B), rda5807.getRegister(0x0C), rda5807.getRegister(0x0D), rda5807.getRegister(0x0E), rda5807.getRegister(0x0F)));
+		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "volume: %X station: %d\n\r", rda5807.getVolume(), rda5807.getStation()));
 
 		PORTB ^= _BV(PORTB5);
 
