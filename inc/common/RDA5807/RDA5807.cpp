@@ -28,7 +28,7 @@ uint16_t RDA5807::getRegister(uint8_t registerNumber){
 	message.setLength(2);
 	i2c->read(RDA5807_ADDRESS, &message);
 
-	return (data[0] << 8) | data[1];
+	return (((uint16_t) data[0]) << 8) | data[1];
 }
 
 void RDA5807::setRegister(uint8_t registerNumber, uint16_t value){
@@ -45,7 +45,8 @@ void RDA5807::setRegister(uint8_t registerNumber, uint16_t value){
 }
 
 uint16_t RDA5807::getStation(){
-	return (getRegister(0x0A) & 0x003F) + MIN_STATION;
+	return ((getRegister(0x03) & 0xFFC0) >> 6) + MIN_STATION;
+	//return (getRegister(0x0A) & 0x003F) + MIN_STATION;
 }
 
 void RDA5807::setStation(uint16_t station){
@@ -68,4 +69,12 @@ void RDA5807::setVolume(uint8_t volume){
 		volume = 0x0F;
 	}
 	setRegister(0x05, (getRegister(0x05) & 0xFFF0) | volume);
+}
+
+uint8_t RDA5807::getMute(){
+	return (getRegister(0x02) & 0x4000) >> 14;
+}
+void RDA5807::setMute(uint8_t mute_on){
+	//The FM chip negates it, calling it "mute_disable", so we compare with mute_on == 0.
+	setRegister(0x02, (getRegister(0x02) & ~0x4000) | (((uint16_t) (mute_on == 0)) << 14));
 }

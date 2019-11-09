@@ -113,20 +113,20 @@ namespace digitalcave {
 			//Inits the RDA5807 control object and sends the power up commands to the chip.
 			RDA5807(I2C* i2c);
 
-			//Gets the current station.  Station is specified in 100kHz; e.g. 102.1 is shown as 1021.  Returns 0 if scanning / not set.
+			//Gets / Sets the current station.  Station is specified in 100kHz; e.g. 102.1 is shown as 1021.
 			uint16_t getStation();
-
-			//Tune to the specified station.  Station is specified in 100kHz; e.g. 102.1 is passed as 1021.
 			void setStation(uint16_t station);
 
 			//Starts scanning.  Poll getStation() to get results.
 			void doScan();
 
-			//Returns the current volume, from 0x00 to 0x0F.
+			//Gets / Sets the current volume, from 0x00 to 0x0F.
 			uint8_t getVolume();
-
-			//Set the volume, from 0x00 to 0x0F.
 			void setVolume(uint8_t volume);
+
+			//Gets / Sets hard mute
+			uint8_t getMute();
+			void setMute(uint8_t mute_on);
 	};
 }
 #endif

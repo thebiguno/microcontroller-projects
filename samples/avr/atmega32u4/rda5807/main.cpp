@@ -38,9 +38,14 @@ int main (void){
 		i = (i + 1) & 0x0F;
 		if (i == 0x00){
 			rda5807.doScan();
+			rda5807.setMute(1);
+		}
+		else if (i == 7){
+			rda5807.setMute(0);
 		}
 
-		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "volume: %X station: %d\n\r", rda5807.getVolume(), rda5807.getStation()));
+
+		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "station: %d\n\r", rda5807.getStation()));
 
 		PORTB ^= _BV(PORTB5);
 
