@@ -78,3 +78,7 @@ void RDA5807::setMute(uint8_t mute_on){
 	//The FM chip negates it, calling it "mute_disable", so we compare with mute_on == 0.
 	setRegister(0x02, (getRegister(0x02) & ~0x4000) | (((uint16_t) (mute_on == 0)) << 14));
 }
+
+uint8_t RDA5807::getSignalStrength(){
+	return (getRegister(0x0B) & 0xFE00) >> 9;
+}

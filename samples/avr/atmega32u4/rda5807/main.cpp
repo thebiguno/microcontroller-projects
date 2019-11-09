@@ -32,20 +32,20 @@ int main (void){
 
 	//Main program loop
 	rda5807.setStation(969);
-	rda5807.setVolume(1);
-	uint8_t i = 0x00;
+	rda5807.setVolume(15);
+//	uint8_t i = 0x00;
 	while (1){
-		i = (i + 1) & 0x0F;
-		if (i == 0x00){
-			rda5807.doScan();
-			rda5807.setMute(1);
-		}
-		else if (i == 7){
-			rda5807.setMute(0);
-		}
+		// i = (i + 1) & 0x0F;
+		// if (i == 0x00){
+		// 	rda5807.doScan();
+		// rda5807.setMute(1);
+		// }
+		// else if (i == 7){
+		// rda5807.setMute(0);
+		// }
 
 
-		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "station: %d\n\r", rda5807.getStation()));
+		serial.write((uint8_t*) temp, (uint16_t) snprintf(temp, sizeof(temp), "station: %d, signal: %d\n\r", rda5807.getStation(), rda5807.getSignalStrength()));
 
 		PORTB ^= _BV(PORTB5);
 

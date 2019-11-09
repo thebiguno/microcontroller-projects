@@ -3,7 +3,7 @@
 using namespace digitalcave;
 
 //Hardware
-static I2CAVR* i2c;
+extern I2CAVR* i2c;
 static DS3231* calendar;
 static ButtonAVR* lampButton;
 static ButtonAVR* musicButton;

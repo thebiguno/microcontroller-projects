@@ -6,6 +6,7 @@ using namespace digitalcave;
 time_t now;
 tm_t now_tm;
 
+I2CAVR* i2c;
 
 void get_mcusr(void) __attribute__((naked))  __attribute__((section(".init3")));
 void get_mcusr(void) {

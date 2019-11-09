@@ -127,6 +127,9 @@ namespace digitalcave {
 			//Gets / Sets hard mute
 			uint8_t getMute();
 			void setMute(uint8_t mute_on);
+
+			//Returns the raw signal strength.
+			uint8_t getSignalStrength();
 	};
 }
 #endif
