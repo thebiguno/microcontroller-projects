@@ -81,16 +81,12 @@ void music_set_volume(int8_t volume){
 	}
 }
 
-uint8_t music_get_source(){
-	return musicSource;
-}
-
 void music_start(uint8_t folder, config_t config){
 	music_stop();
 	playbackState = SOUND_STATE_PLAY;
 	if (folder & _BV(7)){
-		rda5807->setStation(config.music_fm_channel);
 		rda5807->setMute(0);
+		rda5807->setStation(config.music_fm_channel);
 		musicSource = SOUND_SOURCE_FM;
 	}
 	else {
@@ -100,6 +96,7 @@ void music_start(uint8_t folder, config_t config){
 		music_shuffle_queue(current_file_count);
 		musicSource = SOUND_SOURCE_DFPLAYER;
 	}
+	music_set_volume(config.volume);
 }
 
 uint16_t music_fm_channel(){

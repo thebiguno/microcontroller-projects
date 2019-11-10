@@ -128,6 +128,18 @@ namespace digitalcave {
 			uint8_t getMute();
 			void setMute(uint8_t mute_on);
 
+			//Gets / Sets Hi Z output
+			uint8_t getHiZ();
+			void setHiZ(uint8_t hi_z);
+
+			//Gets / Sets Enabled
+			uint8_t getEnabled();
+			void setEnabled(uint8_t enabled);
+
+			//Gets / Sets Soft Reset
+			uint8_t getReset();
+			void setReset(uint8_t reset);
+
 			//Returns the raw signal strength.
 			uint8_t getSignalStrength();
 	};

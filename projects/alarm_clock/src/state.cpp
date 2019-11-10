@@ -133,6 +133,7 @@ void state_poll(){
 				source = _BV(7);
 			}
 			music_start(source, config);
+			music_set_volume(0);
 		}
 
 		//Increment the brightness by the alarm ramp-up values
@@ -185,7 +186,6 @@ void state_poll(){
 		else if (musicButton->releaseEvent()){
 			music_alarm_triggered = 0x00;
 			music_toggle(config.source, config);
-			music_set_volume(config.volume);
 
 			if (music_is_playing()){
 				edit_item = EDIT_TIME_MUSIC;
@@ -245,7 +245,7 @@ void state_poll(){
 
 	//Music menu mode - tune FM station, and pick folder
 	else if (mode == MODE_MUSIC_MENU){
-		if (update_display){
+		if (update_display && config.source & _BV(7)){
 			config.music_fm_channel = music_fm_channel();
 		}
 
@@ -255,6 +255,7 @@ void state_poll(){
 			#ifdef DEBUG
 			serial.write("Exit Music Menu\n\r");
 			#endif
+			eeprom_store();
 		}
 		//Enter main menu
 		else if (lampButton->longPressEvent()){
@@ -263,11 +264,11 @@ void state_poll(){
 			#ifdef DEBUG
 			serial.write("Enter Main Menu\n\r");
 			#endif
+			eeprom_store();
 		}
 		else if (lampButton->releaseEvent()){
 			music_alarm_triggered = 0x00;
 			music_toggle(config.source, config);
-			music_set_volume(config.volume);
 			if (music_is_playing()){
 				music_turned_on_time = now;
 			}
@@ -437,6 +438,10 @@ void state_poll(){
 		mode = MODE_TIME;		//Go back to time after 15 seconds without input in time mode
 		edit_item = 0;
 		eeprom_store();
+	}
+	else if (mode == MODE_MUSIC_MENU && seconds_since_last_input > 30){
+		mode = MODE_TIME;		//Go back to time after 30 seconds without input in music menu mode
+		edit_item = 0;
 	}
 	else if (mode == MODE_MENU && seconds_since_last_input > 30){
 		mode = MODE_TIME;		//Go back to time after 30 seconds without input in menu mode

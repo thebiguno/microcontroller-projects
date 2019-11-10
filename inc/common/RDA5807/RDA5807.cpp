@@ -77,11 +77,35 @@ void RDA5807::setVolume(uint8_t volume){
 }
 
 uint8_t RDA5807::getMute(){
-	return (getRegister(0x02) & 0x4000) >> 14;
+	return (getRegister(0x02) & 0x4000) ? 0 : 1;
 }
 void RDA5807::setMute(uint8_t mute_on){
 	//The FM chip negates it, calling it "mute_disable", so we compare with mute_on == 0.
-	setRegister(0x02, (getRegister(0x02) & ~0x4000) | (((uint16_t) (mute_on == 0)) << 14));
+	setRegister(0x02, ((getRegister(0x02) & ~0x4000) | (mute_on ? 0x0000 : 0x4000)));
+}
+
+uint8_t RDA5807::getHiZ(){
+	return (getRegister(0x02) & 0x8000) ? 0 : 1;
+}
+void RDA5807::setHiZ(uint8_t hi_z){
+	//The FM chip negates it, calling it "1 = not hi z", so we compare with hi_z == 0.
+	setRegister(0x02, ((getRegister(0x02) & ~0x8000) | (hi_z ? 0x0000 : 0x8000)));
+}
+
+uint8_t RDA5807::getEnabled(){
+	return (getRegister(0x02) & 0x0001);
+}
+
+void RDA5807::setEnabled(uint8_t enabled){
+	setRegister(0x02, ((getRegister(0x02) & ~0x0001) | (enabled ? 0x0001 : 0x0000)));
+}
+
+uint8_t RDA5807::getReset(){
+	return (getRegister(0x02) & 0x0002) ? 1 : 0;
+}
+
+void RDA5807::setReset(uint8_t reset){
+	setRegister(0x02, ((getRegister(0x02) & ~0x0002) | (reset ? 0x0002 : 0x0000)));
 }
 
 uint8_t RDA5807::getSignalStrength(){
