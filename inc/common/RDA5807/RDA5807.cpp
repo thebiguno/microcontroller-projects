@@ -45,8 +45,8 @@ void RDA5807::setRegister(uint8_t registerNumber, uint16_t value){
 }
 
 uint16_t RDA5807::getStation(){
-	return ((getRegister(0x03) & 0xFFC0) >> 6) + MIN_STATION;
-	//return (getRegister(0x0A) & 0x003F) + MIN_STATION;
+	//return ((getRegister(0x03) & 0xFFC0) >> 6) + MIN_STATION;
+	return (getRegister(0x0A) & 0x03FF) + MIN_STATION;
 }
 
 void RDA5807::setStation(uint16_t station){
@@ -56,8 +56,13 @@ void RDA5807::setStation(uint16_t station){
 	setRegister(0x03, ((station - MIN_STATION) << 6) | 0x10);	//Set the station as the top 10 bits in register 3, with 0x10 to indicate we want to start a tuning operation
 }
 
-void RDA5807::doScan(){
-	setRegister(0x02, 0xC301);		//Start seeking up
+void RDA5807::doScan(uint8_t direction){
+	if (direction){
+		setRegister(0x02, 0xC301);		//Start seeking up
+	}
+	else {
+		setRegister(0x02, 0xC101);		//Start seeking down
+	}
 }
 
 uint8_t RDA5807::getVolume(){

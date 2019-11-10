@@ -2,6 +2,11 @@
 
 using namespace digitalcave;
 
+#ifdef DEBUG
+SerialUSB serial;
+char buffer[100];
+#endif
+
 //Current time.  Updated in state.cpp and used by display.cpp
 time_t now;
 tm_t now_tm;

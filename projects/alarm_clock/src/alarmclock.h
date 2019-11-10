@@ -8,6 +8,10 @@
 #include <timer/timer.h>
 #include <max7219.h>
 
+#ifdef DEBUG
+#include <SerialUSB.h>
+#endif
+
 #include "display.h"
 #include "music.h"
 #include "state.h"

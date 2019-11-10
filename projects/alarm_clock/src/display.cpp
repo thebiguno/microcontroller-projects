@@ -81,6 +81,21 @@ void display_update(){
 			display_buffer->write_string("CONFIG", font_3x5, 9, 2);
 		}
 	}
+	else if (mode == MODE_MUSIC_MENU){
+		if (config.source & _BV(7)){
+			display_buffer->write_string("FM", font_3x5, 2, 3);
+			snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel / 10);
+			display_buffer->write_string(buffer, font_5x8, config.music_fm_channel > 999 ? 11 : 14, 0);
+			snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel % 10);
+			display_buffer->write_string(buffer, font_3x5, config.music_fm_channel > 999 ? 29 : 26, 0);
+		}
+		else {
+			display_buffer->write_char('K', font_icon, 0, 0);			//Music
+			display_buffer->write_char('P', font_icon, 9, 0);			//Folders
+			snprintf(buffer, sizeof(buffer), "%02d", config.source);
+			display_buffer->write_string(buffer, font_5x8, 21, 0);
+		}
+	}
 	else if (mode == MODE_EDIT){
 		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
 			//Find alarm index
@@ -110,13 +125,13 @@ void display_update(){
 				display_write_time(mktime(&now_tm), edit_item - 1);
 			}
 			else if (edit_item == 3){										//Lamp brightness
-				display_buffer->write_char('M', font_icon, 2, 0);			//Icon 3 is brightness
+				display_buffer->write_char('M', font_icon, 2, 0);			//Brightness
 				snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_brightness);
 				display_buffer->write_string(buffer, font_5x8, alarm.lamp_brightness < 10 ? 26 : (alarm.lamp_brightness < 100 ? 20 : 14), 0);
 			}
 			else if (edit_item == 4){										//Lamp rampup time
 				display_buffer->write_char('M', font_icon, 2, 0);			//Brightness
-				display_buffer->write_char('1', font_icon, 11, 0);			//Clock
+				display_buffer->write_char('J', font_icon, 11, 0);			//Clock
 				snprintf(buffer, sizeof(buffer), "%d", alarm.lamp_speed);
 				display_buffer->write_string(buffer, font_5x8, (alarm.lamp_speed < 10 ? 26 : 20), 0);
 			}
@@ -133,9 +148,17 @@ void display_update(){
 			}
 			else if (edit_item == 7){										//Music folder number
 				display_buffer->write_char('K', font_icon, 2, 0);			//Icon 2 is music
-				display_buffer->write_char('P', font_icon, 11, 0);			//Icon 5 is folders
-				snprintf(buffer, sizeof(buffer), "%02d", alarm.music_folder);
-				display_buffer->write_string(buffer, font_5x8, 20, 0);
+				if (alarm.music_source > 0){
+					display_buffer->write_char('P', font_icon, 11, 0);			//Icon 5 is folders
+					snprintf(buffer, sizeof(buffer), "%02d", alarm.music_source);
+					display_buffer->write_string(buffer, font_5x8, 20, 0);
+				}
+				else {
+					snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel / 10);
+					display_buffer->write_string(buffer, font_5x8, config.music_fm_channel > 999 ? 11 : 14, 0);
+					snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel % 10);
+					display_buffer->write_string(buffer, font_3x5, config.music_fm_channel > 999 ? 29 : 26, 0);
+				}
 			}
 			else {
 				int8_t day_index = edit_item - 8;
@@ -165,19 +188,13 @@ void display_update(){
 			}
 		}
 		else if (menu_item == MENU_CONFIG){
-			if (edit_item == 0){											//Default folder number
-				display_buffer->write_char('K', font_icon, 0, 0);			//Music
-				display_buffer->write_char('P', font_icon, 9, 0);			//Folders
-				snprintf(buffer, sizeof(buffer), "%02d", config.music_folder);
-				display_buffer->write_string(buffer, font_5x8, 21, 0);
-			}
-			else if (edit_item <= 8){										//Config file count in each folder
+			if (edit_item <= 7){										//Config file count in each folder
 				display_buffer->write_char('Q', font_icon, 1, 0);			//Files
-				display_buffer->write_char((char) (edit_item + 0x30), font_5x8, 11, 0);
-				snprintf(buffer, sizeof(buffer), "%d", config.music_count[edit_item - 1]);
-				display_buffer->write_string(buffer, font_5x8, (config.music_count[edit_item - 1] < 10 ? 26 : 20), 0);
+				display_buffer->write_char((char) (edit_item + 0x31), font_5x8, 11, 0);
+				snprintf(buffer, sizeof(buffer), "%d", config.music_count[edit_item]);
+				display_buffer->write_string(buffer, font_5x8, (config.music_count[edit_item] < 10 ? 26 : 20), 0);
 			}
-			else if (edit_item == 9){
+			else if (edit_item == 8){
 				display_buffer->write_string("O", font_icon, 0, 0);			//DFU Upload
 				display_buffer->write_string("UPLOAD", font_3x5, 8, 2);
 			}

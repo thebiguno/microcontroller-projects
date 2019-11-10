@@ -12,6 +12,11 @@ uint8_t analog_pins[1];
 extern time_t now;
 extern tm_t now_tm;
 
+#ifdef DEBUG
+extern SerialUSB serial;
+extern char* buffer;
+#endif
+
 //Alarm stuff
 static alarm_t alarm[ALARM_COUNT];			//The actual alarms
 static uint8_t lamp_alarm_triggered = 0;	//_BV(alarm_index) is set when alarm[alarm_index] is triggered.  If we turn the light off or adjust the brightness, this is reset to 0.  When it is non-zero, we increment light gradually.
@@ -60,6 +65,8 @@ void state_init(){
 	eeprom_load();
 
 	lamp_brightness = config.lamp_brightness;
+
+	music_stop();
 
 	//Randomize according to the current time.  We use random() during track selection playback
 	update_time(&now, &now_tm);
@@ -110,8 +117,8 @@ void state_poll(){
 		//Trigger alarm if time matches
 		if (a.enabled & _BV(7)									//Ensure the global alarm flag is enabled
 				&& a.enabled & _BV(now_tm.tm_wday)				//Check the day flag
-				&& (lamp_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
-				&& (music_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
+//				&& (lamp_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
+//				&& (music_alarm_triggered & _BV(i)) == 0x00		//Don't trigger multiple times for the same alarm
 				&& a.hour == now_tm.tm_hour						//Check the hour
 				&& a.minute == now_tm.tm_min					//Check the minute
 				&& 0 == now_tm.tm_sec){							//Trigger on 0 seconds
@@ -121,7 +128,11 @@ void state_poll(){
 			last_input_time = now;		//Workaround so that we don't immediately turn off the alarm when it triggers due to lack of input
 			light_set(0);
 			light_on();
-			music_start(a.music_folder, config.music_count[a.music_folder - 1]);
+			uint8_t source = a.music_source;
+			if (source == 0){
+				source = _BV(7);
+			}
+			music_start(source, config);
 		}
 
 		//Increment the brightness by the alarm ramp-up values
@@ -140,10 +151,19 @@ void state_poll(){
 
 	//Time mode - this is what shows 99% of the time.
 	if (mode == MODE_TIME){
-		//Enter menu
+		//Enter main menu
 		if (lampButton->longPressEvent()){
 			mode = MODE_MENU;
 			menu_item = 0;
+		}
+		//Enter music menu
+		else if (musicButton->longPressEvent()){
+			mode = MODE_MUSIC_MENU;
+			music_start(config.source, config);
+			menu_item = 0;
+			#ifdef DEBUG
+			serial.write("Enter Music Menu\n\r");
+			#endif
 		}
 		//Turn on lamp
 		else if (lampButton->releaseEvent()){
@@ -164,8 +184,9 @@ void state_poll(){
 		//Turn on music
 		else if (musicButton->releaseEvent()){
 			music_alarm_triggered = 0x00;
+			music_toggle(config.source, config);
 			music_set_volume(config.volume);
-			music_toggle(config.music_folder, config.music_count[config.music_folder - 1]);
+
 			if (music_is_playing()){
 				edit_item = EDIT_TIME_MUSIC;
 				music_turned_on_time = now;
@@ -177,7 +198,7 @@ void state_poll(){
 		}
 		//Adjust lamp brightness; can happen when light is on or off
 		else if (lamp_encoder_movement != 0){
-			lamp_alarm_triggered = 0x00;		//Turn off any alarms currently enabled
+			lamp_alarm_triggered = 0x00;		//Turn off any lamp alarms currently triggered
 			edit_item = EDIT_TIME_LAMP;
 			lamp_brightness += lamp_encoder_movement;
 			range_constrain(&lamp_brightness, 1, 100);
@@ -188,13 +209,11 @@ void state_poll(){
 		}
 		//Adjust music volume; can happen when music is on or off
 		else if (music_encoder_movement != 0){
-			music_alarm_triggered = 0x00;		//Turn off any alarms currently enabled
+			music_alarm_triggered = 0x00;		//Turn off any music alarms currently triggered
 			edit_item = EDIT_TIME_MUSIC;
 			int8_t volume = config.volume + music_encoder_movement;
 			range_constrain(&volume, 1, 30);
-			if (music_is_playing()){
-				music_set_volume(volume);
-			}
+			music_set_volume(volume);
 			config.volume = volume;
 		}
 	}
@@ -205,6 +224,15 @@ void state_poll(){
 			mode = MODE_TIME;
 			edit_item = 0;
 		}
+		else if (musicButton->longPressEvent()){
+			mode = MODE_MUSIC_MENU;
+			music_start(config.source, config);
+			music_turned_on_time = now;
+			menu_item = 0;
+			#ifdef DEBUG
+			serial.write("Enter Music Menu\n\r");
+			#endif
+		}
 		else if (lampButton->releaseEvent()){
 			mode = MODE_EDIT;
 			edit_item = 0;
@@ -212,6 +240,59 @@ void state_poll(){
 		else if (lamp_encoder_movement != 0){
 			menu_item += lamp_encoder_movement;
 			range_loop(&menu_item, 0, MENU_SIZE - 1);
+		}
+	}
+
+	//Music menu mode - tune FM station, and pick folder
+	else if (mode == MODE_MUSIC_MENU){
+		if (update_display){
+			config.music_fm_channel = music_fm_channel();
+		}
+
+		if (musicButton->longPressEvent()){
+			mode = MODE_TIME;
+			edit_item = 0;
+			#ifdef DEBUG
+			serial.write("Exit Music Menu\n\r");
+			#endif
+		}
+		//Enter main menu
+		else if (lampButton->longPressEvent()){
+			mode = MODE_MENU;
+			menu_item = 0;
+			#ifdef DEBUG
+			serial.write("Enter Main Menu\n\r");
+			#endif
+		}
+		else if (lampButton->releaseEvent()){
+			music_alarm_triggered = 0x00;
+			music_toggle(config.source, config);
+			music_set_volume(config.volume);
+			if (music_is_playing()){
+				music_turned_on_time = now;
+			}
+		}
+		else if (musicButton->releaseEvent()){
+			config.source ^= _BV(7);
+			music_start(config.source, config);
+		}
+		//Adjust music volume; can happen when music is on or off.  We use the 'wrong' dial here, as the music dial is used for tuning / selecting folders
+		else if (lamp_encoder_movement != 0){
+			int8_t volume = config.volume + lamp_encoder_movement;
+			range_constrain(&volume, 1, 30);
+			music_set_volume(volume);
+			config.volume = volume;
+		}
+		else if (music_encoder_movement != 0){
+			if (config.source & _BV(7)){
+				music_fm_scan(music_encoder_movement > 0);
+			}
+			else {
+				int8_t f = config.source + music_encoder_movement;
+				range_constrain(&f, 1, 8);
+				config.source = f;
+				music_start(config.source, config);
+			}
 		}
 	}
 
@@ -269,9 +350,9 @@ void state_poll(){
 					alarm[alarm_index].music_speed = s;
 				}
 				else if (edit_item == 7){
-					int8_t f = alarm[alarm_index].music_folder + music_encoder_movement;
-					range_constrain(&f, 1, 8);
-					alarm[alarm_index].music_folder = f;
+					int8_t f = alarm[alarm_index].music_source + music_encoder_movement;
+					range_constrain(&f, 0, 8);
+					alarm[alarm_index].music_source = f;
 				}
 				else {
 					alarm[alarm_index].enabled ^= _BV(edit_item - 8);
@@ -317,23 +398,18 @@ void state_poll(){
 		else if (menu_item == MENU_CONFIG){
 			//Lamp encoder changes fields
 			if (lamp_encoder_movement != 0){
-				edit_item += lamp_encoder_movement;	//Here edit_item goes from 0 to 10.  0 = music folder, 1-8 = file count / folder, 9 = DFU
-				range_loop(&edit_item, 0, 9);
+				edit_item += lamp_encoder_movement;	//Here edit_item goes from 0 to 8.  0-7 = file count / folder, 8 = DFU
+				range_loop(&edit_item, 0, 8);
 			}
 			//Music encoder increments / decrements fields
 			else if (music_encoder_movement != 0){
-				if (edit_item == 0){
-					int8_t f = config.music_folder + music_encoder_movement;
-					range_constrain(&f, 1, 8);
-					config.music_folder = f;
-				}
-				else if (edit_item <= 8){
-					int8_t c = config.music_count[edit_item - 1] + music_encoder_movement;
+				if (edit_item <= 7){
+					int8_t c = config.music_count[edit_item] + music_encoder_movement;
 					range_constrain(&c, 0, 99);
-					config.music_count[edit_item - 1] = c;
+					config.music_count[edit_item] = c;
 				}
 			}
-			else if (edit_item == 9 && lampButton->releaseEvent()){
+			else if (edit_item == 8 && lampButton->releaseEvent()){
 				bootloader_jump(BOOTLOADER_ATMEL);
 			}
 		}

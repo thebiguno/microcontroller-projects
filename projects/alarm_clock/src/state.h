@@ -18,6 +18,7 @@
 #include <SerialUSB.h>
 #endif
 
+#include "config.h"
 #include "light.h"
 #include "encoder.h"
 #include "music.h"
@@ -40,8 +41,11 @@
 //Menu mode: allow setting time, alarm, etc.
 #define MODE_MENU						0x01
 
+//Music menu mode: allow picking FM station
+#define MODE_MUSIC_MENU					0x02
+
 //Edit whatever menu item you are currently in
-#define MODE_EDIT						0x02
+#define MODE_EDIT						0x03
 
 //The menu indices for various functions
 #define MENU_SET_ALARM_1				0x00
@@ -62,15 +66,8 @@ typedef struct alarm {
 	uint8_t lamp_brightness;	//Full brightness for this alarm, from 1 - 100
 	uint8_t music_speed;		//Time to go from 0 to music_volume, in minutes
 	uint8_t music_volume;		//Max volume of music, reached after music_speed minutes
-	uint8_t music_folder;		//Folder to play this alarm from.  Must be a named folder on the SD card.  Can pick from 01 to 08.
+	uint8_t music_source;		//Source (Folder or FM) to play this alarm from.  Must be a named folder on the SD card (or zero for FM).  Can pick from 00 (FM) or 01 to 08 (Folders).
 } alarm_t;
-
-typedef struct config {
-	uint8_t music_folder;		//Folder to play when manually turning on music.  Must be a named folder on the SD card.  Can pick from 01 to 08.
-	uint8_t music_count[8];		//Number of files in the specified folder.  Folder is index + 1.  Value 0-99 is valid.  0 Means the folder is not there / is empty, and will make music_play into a nop.  (Would not be needed for a real DFPlayerMini, but the clones can't read the file count.)
-	uint8_t lamp_brightness;	//Lamp brightness (saved automatically)
-	uint8_t volume;				//Volume (saved automatically)
-} config_t;
 
 void state_init();
 

@@ -118,7 +118,7 @@ namespace digitalcave {
 			void setStation(uint16_t station);
 
 			//Starts scanning.  Poll getStation() to get results.
-			void doScan();
+			void doScan(uint8_t direction);
 
 			//Gets / Sets the current volume, from 0x00 to 0x0F.
 			uint8_t getVolume();
