@@ -732,4 +732,34 @@ Wire Wire Line
 	6100 1850 6100 1800
 Text Label 6100 1800 1    50   ~ 0
 LED_COOL
+$Comp
+L Device:D_Photo D?
+U 1 1 5DD6C98B
+P 1150 3650
+F 0 "D?" H 1100 3949 50  0000 C CNN
+F 1 "D_Photo" H 1100 3856 50  0000 C CNN
+F 2 "" H 1100 3650 50  0001 C CNN
+F 3 "~" H 1100 3650 50  0001 C CNN
+	1    1150 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5DD6DFF0
+P 850 3750
+F 0 "#PWR?" H 850 3500 50  0001 C CNN
+F 1 "GND" H 855 3575 50  0000 C CNN
+F 2 "" H 850 3750 50  0001 C CNN
+F 3 "" H 850 3750 50  0001 C CNN
+	1    850  3750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	850  3750 850  3650
+Wire Wire Line
+	850  3650 950  3650
+Text Label 3400 3550 0    50   ~ 0
+LIGHT_SENSOR
+Text Label 1250 3650 0    50   ~ 0
+LIGHT_SENSOR
 $EndSCHEMATC
