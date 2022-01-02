@@ -59,10 +59,10 @@ void light_toggle(){
 }
 
 void light_set(uint8_t brightnessi){
-	//brightnessi is an unsigned int between 1 and 100.  Convert to a float for doing math.
-	float brightness = brightnessi / 100.0;
+	//brightnessi is an unsigned int between 1 and 100.  Convert to a float for doing math.  We max out at 90% so we don't melt the lamp.
+	float brightness = brightnessi / 100.0 * 0.9;
 	if (brightness < 0) brightness = 0;
-	else if (brightness > 1) brightness = 1;
+	else if (brightness > 0.9) brightness = 0.9;
 
 	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
