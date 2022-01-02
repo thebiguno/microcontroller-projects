@@ -78,6 +78,13 @@ void music_set_volume(int8_t volume){
 	}
 }
 
+uint8_t music_get_volume(){
+	if (music_is_playing()){
+		return lastVolume;
+	}
+	return 0;
+}
+
 void music_start(uint8_t folder, config_t config){
 	music_stop();
 	playbackState = SOUND_STATE_PLAY;

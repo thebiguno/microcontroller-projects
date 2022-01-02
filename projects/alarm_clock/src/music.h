@@ -20,6 +20,7 @@ void music_init();
 void music_poll();
 
 void music_set_volume(int8_t volume);
+uint8_t music_get_volume();
 
 void music_start(uint8_t source, config_t config);
 void music_toggle(uint8_t source, config_t config);

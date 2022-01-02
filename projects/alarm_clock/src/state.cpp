@@ -406,10 +406,26 @@ void state_poll(){
 	//Turn off light and music (whether it was started by an alarm or a person) after 2 hours of no input
 	if (seconds_since_last_input > (60 * 60 * 2)){
 		if (light_state()){
-			light_off();
+			lamp_brightness = light_get() - 1;
+			if (lamp_brightness <= 1){
+				light_off();
+			}
+			else {
+				//Fade out (quickly)
+				range_constrain(&lamp_brightness, 1, 100);
+				light_set(lamp_brightness);
+			}
 		}
 		if (music_is_playing()){
-			music_stop();
+			int8_t music_volume = music_get_volume() - 1;
+			if (music_volume <= 1){
+				music_stop();
+			}
+			else {
+				//Fade out (quickly)
+				range_constrain(&music_volume, 1, 30);
+				music_set_volume(music_volume);
+			}
 		}
 	}
 
