@@ -1,0 +1,12 @@
+In my enclosure I find that it works best to normalize audio to -15dB.
+You can do this via Audacity:
+	1) Open file
+	2) Effects -> Normalize, -15dB
+	3) Export as MP3, fixed rate 44100, 16 bit, 128k/s, stereo
+
+Or you can do this via sox:
+	sox -r 44100 <input file> --norm=-15 00x.mp3
+
+01 - 8
+02 - 9
+03 - 48
