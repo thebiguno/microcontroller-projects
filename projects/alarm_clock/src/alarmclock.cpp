@@ -4,8 +4,9 @@ using namespace digitalcave;
 
 #ifdef DEBUG
 SerialUSB serial;
-char buffer[100];
 #endif
+
+char buffer[100];
 
 //Current time.  Updated in state.cpp and used by display.cpp
 time_t now;
@@ -27,7 +28,7 @@ int main(){
 	state_init();
 	display_init();
 
-	DDRF |= _BV(PORTF4);	//Debugging to determine main loop frequency
+	//DDRF |= _BV(PORTF4);	//Debugging to determine main loop frequency
 
 	//Main program loop
 	while (1){
