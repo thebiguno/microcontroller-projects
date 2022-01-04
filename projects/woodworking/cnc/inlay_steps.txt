@@ -1,0 +1,4 @@
+1 - Create the pocket.  10 degree vcarve bit, start at 0, 4mm deep.
+2 - Duplicate the design, and draw boarder around it
+3 - Mirror the design X axis
+4 - Toolpath Advanced VCarve with roughing.  Start at 1, 4mm deep.
