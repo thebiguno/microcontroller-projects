@@ -3,8 +3,6 @@
 using namespace digitalcave;
 
 static SerialAVR* serialAVR = NULL;
-static RDA5807* rda5807 = NULL;
-extern I2CAVR* i2c;
 
 static uint8_t playbackState = SOUND_STATE_STOP;
 static uint8_t musicSource = SOUND_SOURCE_DFPLAYER;
@@ -12,14 +10,18 @@ static uint8_t current_folder = 1;
 static uint8_t current_file_count = MAX_SOUND_FILE_COUNT;
 static uint8_t queue[MAX_SOUND_FILE_COUNT];
 static uint8_t currentFileIndex;
+static uint8_t lastVolume = 0;
+
+#ifdef DEBUG
+extern SerialUSB serial;
+extern char* buffer;
+#endif
 
 void music_shuffle_queue(uint8_t file_count);
 
 
 void music_init(){
 	serialAVR = new SerialAVR(9600, 8, 0, 1, 1);		//Serial Port 1 is the hardware serial port
-
-	rda5807 = new RDA5807(i2c);		//Init FM
 
 	dfplayermini_init(serialAVR);	//Init MP3
 }
@@ -49,6 +51,18 @@ void music_shuffle_queue(uint8_t file_count){
 		queue[j] = temp;
 	}
 
+	#ifdef DEBUG
+		serial.write("music_shuffle_queue folder: ");
+		serial.write(current_folder + 48);
+		serial.write("files:");
+		for (uint8_t i = 0; i < file_count; i++){
+			serial.write(" ");
+			serial.write(queue[i] / 10 + 48);
+			serial.write(queue[i] % 10 + 48);
+		}
+		serial.write("\n\r");
+	#endif
+
 	currentFileIndex = 0;
 }
 
@@ -58,6 +72,15 @@ void music_poll(){
 	while (dfplayermini_poll());
 
 	if (playbackState == SOUND_STATE_PLAY && musicSource == SOUND_SOURCE_DFPLAYER && (PINF & _BV(PINF1))){		//If we are supposed to be playing MP3s, but PINF1 has gone high (meaning the last song is finished), we go to the next one.
+		#ifdef DEBUG
+		serial.write("playing folder: ");
+		serial.write(current_folder + 48);
+		serial.write(", file: ");
+		serial.write(queue[currentFileIndex] / 10 + 48);
+		serial.write(queue[currentFileIndex] % 10 + 48);
+		serial.write("\n\r");
+		#endif
+
 		dfplayermini_send_command(DFPLAYER_COMMAND_FOLDER_SET, (current_folder << 8) + queue[currentFileIndex]);
 
 		//Increment the file pointer for next time.
@@ -75,45 +98,34 @@ void music_set_volume(int8_t volume){
 	else if (volume > 30){
 		volume = 30;
 	}
-	if (playbackState == SOUND_STATE_PLAY){
+	if (playbackState == SOUND_STATE_PLAY && lastVolume != volume){
 		dfplayermini_send_command(DFPLAYER_COMMAND_VOL_SET, volume);
-		rda5807->setVolume(volume >> 1);
+		lastVolume = volume;
 	}
+}
+
+uint8_t music_get_volume(){
+	if (music_is_playing()){
+		return lastVolume;
+	}
+	return 0;
 }
 
 void music_start(uint8_t folder, config_t config){
 	music_stop();
 	playbackState = SOUND_STATE_PLAY;
-	if (folder & _BV(7)){
-		rda5807->setMute(0);
-		rda5807->setStation(config.music_fm_channel);
-		musicSource = SOUND_SOURCE_FM;
-	}
-	else {
-		current_folder = folder;
-		current_file_count = config.music_count[folder];
+	current_folder = folder;
+	current_file_count = config.music_count[folder - 1];	//Folder is 1 based, so subtract 1 to get the config index
 
-		music_shuffle_queue(current_file_count);
-		musicSource = SOUND_SOURCE_DFPLAYER;
-	}
+	music_shuffle_queue(current_file_count);
+	musicSource = SOUND_SOURCE_DFPLAYER;
 	music_set_volume(config.volume);
-}
-
-uint16_t music_fm_channel(){
-	return rda5807->getStation();
-}
-
-void music_fm_scan(uint8_t direction){
-	rda5807->doScan(direction);
-	if (playbackState != SOUND_STATE_PLAY){
-		rda5807->setMute(1);
-	}
 }
 
 void music_stop(){
 	dfplayermini_send_command(DFPLAYER_COMMAND_PAUSE);
-	rda5807->setMute(1);
 	playbackState = SOUND_STATE_STOP;
+	lastVolume = 0;
 }
 
 void music_toggle(uint8_t folder, config_t config){

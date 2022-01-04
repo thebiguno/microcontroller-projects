@@ -1,0 +1,22 @@
+In my enclosure I find that it works best to normalize audio to -15dB.
+You can do this via Audacity:
+	1) Open file
+	2) Effects -> Normalize, -15dB
+	3) Export as MP3, fixed rate 44100, 16 bit, 128k/s, stereo
+
+Or you can do this via sox:
+	sox -r 44100 <input file> --norm=-15 00x.mp3
+
+A couple bash scripts which can help to copy, number, and convert files is as follows:
+
+Copy and number:
+i=79; ls --color=no ~/Music/Library/Artist/Album/* | while read X; do echo $X; cp "$X" $i.mp3; ((i=i+1)); done
+(set the i=79 to be the starting number; the path for ls is where you are copying from)
+
+Convert and re-number with leading zero:
+ls --color=no * | grep -v ^0 | while read X; do sox -r 44100 --norm=-15 $X 0$X; rm $X; done
+
+
+01 - 8
+02 - 9
+03 - 84

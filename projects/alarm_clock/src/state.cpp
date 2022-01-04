@@ -129,9 +129,7 @@ void state_poll(){
 			light_set(0);
 			light_on();
 			uint8_t source = a.music_source;
-			if (source == 0){
-				source = _BV(7);
-			}
+			range_constrain((int8_t*) &source, 1, 8);
 			music_start(source, config);
 			music_set_volume(0);
 		}
@@ -243,12 +241,8 @@ void state_poll(){
 		}
 	}
 
-	//Music menu mode - tune FM station, and pick folder
+	//Music menu mode - pick folder
 	else if (mode == MODE_MUSIC_MENU){
-		if (update_display && config.source & _BV(7)){
-			config.music_fm_channel = music_fm_channel();
-		}
-
 		if (musicButton->longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
@@ -266,34 +260,20 @@ void state_poll(){
 			#endif
 			eeprom_store();
 		}
-		else if (lampButton->releaseEvent()){
-			music_alarm_triggered = 0x00;
-			music_toggle(config.source, config);
-			if (music_is_playing()){
-				music_turned_on_time = now;
-			}
-		}
-		else if (musicButton->releaseEvent()){
-			config.source ^= _BV(7);
-			music_start(config.source, config);
-		}
-		//Adjust music volume; can happen when music is on or off.  We use the 'wrong' dial here, as the music dial is used for tuning / selecting folders
-		else if (lamp_encoder_movement != 0){
-			int8_t volume = config.volume + lamp_encoder_movement;
+
+		//Adjust music volume; can happen when music is on or off.
+		else if (music_encoder_movement != 0){
+			int8_t volume = config.volume + music_encoder_movement;
 			range_constrain(&volume, 1, 30);
 			music_set_volume(volume);
 			config.volume = volume;
 		}
-		else if (music_encoder_movement != 0){
-			if (config.source & _BV(7)){
-				music_fm_scan(music_encoder_movement > 0);
-			}
-			else {
-				int8_t f = config.source + music_encoder_movement;
-				range_constrain(&f, 1, 8);
-				config.source = f;
-				music_start(config.source, config);
-			}
+		//Use the lamp dial to adjust current playback folder
+		else if (lamp_encoder_movement != 0){
+			int8_t f = config.source + lamp_encoder_movement;
+			range_constrain(&f, 1, 8);
+			config.source = f;
+			music_start(config.source, config);
 		}
 	}
 
@@ -352,7 +332,7 @@ void state_poll(){
 				}
 				else if (edit_item == 7){
 					int8_t f = alarm[alarm_index].music_source + music_encoder_movement;
-					range_constrain(&f, 0, 8);
+					range_constrain(&f, 1, 8);
 					alarm[alarm_index].music_source = f;
 				}
 				else {
@@ -426,10 +406,26 @@ void state_poll(){
 	//Turn off light and music (whether it was started by an alarm or a person) after 2 hours of no input
 	if (seconds_since_last_input > (60 * 60 * 2)){
 		if (light_state()){
-			light_off();
+			lamp_brightness = light_get() - 1;
+			if (lamp_brightness <= 1){
+				light_off();
+			}
+			else {
+				//Fade out (quickly)
+				range_constrain(&lamp_brightness, 1, 100);
+				light_set(lamp_brightness);
+			}
 		}
 		if (music_is_playing()){
-			music_stop();
+			int8_t music_volume = music_get_volume() - 1;
+			if (music_volume <= 1){
+				music_stop();
+			}
+			else {
+				//Fade out (quickly)
+				range_constrain(&music_volume, 1, 30);
+				music_set_volume(music_volume);
+			}
 		}
 	}
 
@@ -454,7 +450,7 @@ void state_poll(){
 
 	//Adjust the minimum brightness of the LED display based on ambient light levels.  Use hysteresis to keep from flickering back and forth.
 	analog_value_running_average = ((analog_value_running_average * 15) + analog_value) / 16.0;
-	if (min_brightness == 0 && analog_value_running_average >= 13){
+	if (min_brightness == 0 && analog_value_running_average >= 12){
 		min_brightness = 1;
 	}
 	else if (min_brightness == 1 && analog_value_running_average <= 11){

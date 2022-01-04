@@ -30,9 +30,14 @@ extern "C" {
 void light_init();
 
 /*
- * Sets the brightness for the lights.  Brightness ranges from 0 to 1.
+ * Sets the brightness for the lights.  Brightness ranges from 0 to 100.
  */
 void light_set(uint8_t brightness);
+
+/*
+ * Gets the last brightness set in light_set, or 0 if light_state is 0.
+ */
+uint8_t light_get();
 
 /*
  * Turns on the timer clock.

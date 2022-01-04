@@ -3,6 +3,7 @@
 #define PWM_MAX		0xFF
 
 volatile uint8_t lightMask = 0;
+static uint8_t lastBrightness = 0;		//The last value set in light_set
 
 void light_init(){
 	//Set light pins as output
@@ -59,10 +60,12 @@ void light_toggle(){
 }
 
 void light_set(uint8_t brightnessi){
-	//brightnessi is an unsigned int between 1 and 100.  Convert to a float for doing math.
-	float brightness = brightnessi / 100.0;
+	lastBrightness = brightnessi;
+
+	//brightnessi is an unsigned int between 1 and 100.  Convert to a float for doing math.  We max out at 90% so we don't melt the lamp.
+	float brightness = brightnessi / 100.0 * 0.9;
 	if (brightness < 0) brightness = 0;
-	else if (brightness > 1) brightness = 1;
+	else if (brightness > 0.9) brightness = 0.9;
 
 	//We use an exponential function to map the brightness to percieved brightness,
 	// since human vision is logarithmic.  Brightness should vary from 0 to PWM_MAX.
@@ -85,6 +88,13 @@ void light_set(uint8_t brightnessi){
 	OCR1C = (uint16_t) blue;
 
 	lightMask = (OCR1A ? _BV(LIGHT_Y_PIN) : 0) | (OCR1B ? _BV(LIGHT_N_PIN) : 0) | (OCR1C ? _BV(LIGHT_B_PIN) : 0);
+}
+
+uint8_t light_get(){
+	if (light_state()){
+		return lastBrightness;
+	}
+	return 0;
 }
 
 //Turn on pins at overflow

@@ -1,0 +1,7 @@
+To upload to the polulu board, disable modem manager first:
+
+sudo systemctl stop ModemManager.service
+
+After, press the reset button twice to put it in bootloader mode, then execute:
+
+/opt/arduino-1.8.13/hardware/tools/avr/bin/avrdude -C/opt/arduino-1.8.13/hardware/tools/avr/etc/avrdude.conf -v -p atmega32u4 -c avr109 -P /dev/ttyACM1 -U flash:w:alarmclock.hex:i

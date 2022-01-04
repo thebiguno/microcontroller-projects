@@ -82,19 +82,10 @@ void display_update(){
 		}
 	}
 	else if (mode == MODE_MUSIC_MENU){
-		if (config.source & _BV(7)){
-			display_buffer->write_string("FM", font_3x5, 2, 3);
-			snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel / 10);
-			display_buffer->write_string(buffer, font_5x8, config.music_fm_channel > 999 ? 11 : 14, 0);
-			snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel % 10);
-			display_buffer->write_string(buffer, font_3x5, config.music_fm_channel > 999 ? 29 : 26, 0);
-		}
-		else {
-			display_buffer->write_char('K', font_icon, 0, 0);			//Music
-			display_buffer->write_char('P', font_icon, 9, 0);			//Folders
-			snprintf(buffer, sizeof(buffer), "%02d", config.source);
-			display_buffer->write_string(buffer, font_5x8, 21, 0);
-		}
+		display_buffer->write_char('K', font_icon, 0, 0);			//Music
+		display_buffer->write_char('P', font_icon, 9, 0);			//Folders
+		snprintf(buffer, sizeof(buffer), "%02d", config.source);
+		display_buffer->write_string(buffer, font_5x8, 21, 0);
 	}
 	else if (mode == MODE_EDIT){
 		if (menu_item == MENU_SET_ALARM_1 || menu_item == MENU_SET_ALARM_2 || menu_item == MENU_SET_ALARM_3){
@@ -148,17 +139,9 @@ void display_update(){
 			}
 			else if (edit_item == 7){										//Music folder number
 				display_buffer->write_char('K', font_icon, 2, 0);			//Icon 2 is music
-				if (alarm.music_source > 0){
-					display_buffer->write_char('P', font_icon, 11, 0);			//Icon 5 is folders
-					snprintf(buffer, sizeof(buffer), "%02d", alarm.music_source);
-					display_buffer->write_string(buffer, font_5x8, 20, 0);
-				}
-				else {
-					snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel / 10);
-					display_buffer->write_string(buffer, font_5x8, config.music_fm_channel > 999 ? 11 : 14, 0);
-					snprintf(buffer, sizeof(buffer), "%d", config.music_fm_channel % 10);
-					display_buffer->write_string(buffer, font_3x5, config.music_fm_channel > 999 ? 29 : 26, 0);
-				}
+				display_buffer->write_char('P', font_icon, 11, 0);			//Icon 5 is folders
+				snprintf(buffer, sizeof(buffer), "%02d", alarm.music_source);
+				display_buffer->write_string(buffer, font_5x8, 20, 0);
 			}
 			else {
 				int8_t day_index = edit_item - 8;
