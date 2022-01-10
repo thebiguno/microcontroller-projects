@@ -187,11 +187,14 @@ void display_update(){
 	max7219_write_buffer(display_buffer->get_data());
 
 	max7219_set_brightness(state_get_display_brightness());
-
+	#ifdef DEBUG
 	PORTF |= _BV(PORTF4);
+	#endif
 	max7219_write_command(MAX7219_SHUTDOWN, 0x01);
-	delay_us(100);
+	delay_us(100);	//This value will (somewhat) determine how dim the LED matrix is when "brightness == 0".
+	#ifdef DEBUG
 	PORTF &= ~_BV(PORTF4);
+	#endif
 
 	if (state_get_display_brightness() == 0){
 		max7219_write_command(MAX7219_SHUTDOWN, 0x00);

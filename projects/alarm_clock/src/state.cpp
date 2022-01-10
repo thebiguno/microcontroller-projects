@@ -46,6 +46,8 @@ static volatile uint8_t analog_value = 0;
 static void eeprom_store();
 static void eeprom_load();
 
+static int16_t eepmrom_store_timer = 0;		//This is a countdown timer that is decremented each iteration of state_poll.  On times where it goes from 1 to 0, we call eeprom_store().  When we want to initiate a new persistence event, we set this timer to 1000.  That gives a short delay before saving, which should decrease the times it is actually stored.
+
 static uint8_t get_update_display();
 static void update_time(time_t* time, tm_t* tm);
 static void range_loop(int8_t* value, uint8_t min, uint8_t max);
@@ -177,7 +179,8 @@ void state_poll(){
 			}
 			else {
 				edit_item = EDIT_TIME_TIME;
-				eeprom_store();
+				eepmrom_store_timer = 1000;
+				//eeprom_store();
 			}
 		}
 		//Turn on music
@@ -191,7 +194,8 @@ void state_poll(){
 			}
 			else {
 				edit_item = EDIT_TIME_TIME;
-				eeprom_store();
+				eepmrom_store_timer = 1000;
+				//eeprom_store();
 			}
 		}
 		//Adjust lamp brightness; can happen when light is on or off
@@ -249,7 +253,8 @@ void state_poll(){
 			#ifdef DEBUG
 			serial.write("Exit Music Menu\n\r");
 			#endif
-			eeprom_store();
+			eepmrom_store_timer = 1000;
+			//eeprom_store();
 		}
 		//Enter main menu
 		else if (lampButton->longPressEvent()){
@@ -258,7 +263,8 @@ void state_poll(){
 			#ifdef DEBUG
 			serial.write("Enter Main Menu\n\r");
 			#endif
-			eeprom_store();
+			eepmrom_store_timer = 1000;
+			//eeprom_store();
 		}
 
 		//Adjust music volume; can happen when music is on or off.
@@ -283,7 +289,8 @@ void state_poll(){
 		if (lampButton->longPressEvent()){
 			mode = MODE_TIME;
 			edit_item = 0;
-			eeprom_store();
+			eepmrom_store_timer = 1000;
+			//eeprom_store();
 		}
 		else if (menu_item >= MENU_SET_ALARM_1 && menu_item <= MENU_SET_ALARM_3){
 			//Find alarm index
@@ -433,7 +440,8 @@ void state_poll(){
 	if (mode == MODE_TIME && seconds_since_last_input > 15 && edit_item != EDIT_TIME_TIME){
 		mode = MODE_TIME;		//Go back to time after 15 seconds without input in time mode
 		edit_item = 0;
-		eeprom_store();
+		eepmrom_store_timer = 1000;
+		//eeprom_store();
 	}
 	else if (mode == MODE_MUSIC_MENU && seconds_since_last_input > 30){
 		mode = MODE_TIME;		//Go back to time after 30 seconds without input in music menu mode
@@ -453,8 +461,16 @@ void state_poll(){
 	if (min_brightness == 0 && analog_value_running_average >= 12){
 		min_brightness = 1;
 	}
-	else if (min_brightness == 1 && analog_value_running_average <= 11){
+	else if (min_brightness == 1 && analog_value_running_average <= 10){
 		min_brightness = 0;
+	}
+	
+	//Persist to eeprom if we have set the eepmrom_store_timer
+	if (eepmrom_store_timer == 1){
+		eeprom_store();
+	}
+	if (eepmrom_store_timer > 0){
+		eepmrom_store_timer--;
 	}
 
 	//Set the LED matrix brightness (0 - 15).  0 is further reduced in display.cpp by turning off the display for most of the duty cycle.

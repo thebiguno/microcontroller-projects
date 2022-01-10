@@ -28,7 +28,9 @@ int main(){
 	state_init();
 	display_init();
 
-	//DDRF |= _BV(PORTF4);	//Debugging to determine main loop frequency
+	#ifdef DEBUG
+	DDRF |= _BV(PORTF4);	//Debugging to determine main loop frequency
+	#endif
 
 	//Main program loop
 	while (1){
