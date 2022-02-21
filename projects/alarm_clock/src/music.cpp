@@ -57,6 +57,7 @@ void music_shuffle_queue(uint8_t file_count){
 		serial.write("files:");
 		for (uint8_t i = 0; i < file_count; i++){
 			serial.write(" ");
+			//TODO This won't work for values over 100.  It's just debug so I don't care too much.
 			serial.write(queue[i] / 10 + 48);
 			serial.write(queue[i] % 10 + 48);
 		}

@@ -17,7 +17,7 @@
 
 //The total number of files.  Files should be named with three digits, starting at 001.mp3, etc.
 // Real DFPlayerMinis can query the number of files, but the cheap Chinese clones don't.  Lame Amazon.
-#define MAX_SOUND_FILE_COUNT		99
+#define MAX_SOUND_FILE_COUNT		255
 
 void music_init();
 

@@ -52,6 +52,7 @@ static uint8_t get_update_display();
 static void update_time(time_t* time, tm_t* tm);
 static void range_loop(int8_t* value, uint8_t min, uint8_t max);
 static void range_constrain(int8_t* value, uint8_t min, uint8_t max);
+static void range_constrain_16(int16_t* value, int16_t min, int16_t max);
 
 void state_init(){
 	i2c = new I2CAVR();
@@ -392,8 +393,8 @@ void state_poll(){
 			//Music encoder increments / decrements fields
 			else if (music_encoder_movement != 0){
 				if (edit_item <= 7){
-					int8_t c = config.music_count[edit_item] + music_encoder_movement;
-					range_constrain(&c, 0, 99);
+					int16_t c = config.music_count[edit_item] + music_encoder_movement;
+					range_constrain_16(&c, 0, 255);
 					config.music_count[edit_item] = c;
 				}
 			}
@@ -464,7 +465,7 @@ void state_poll(){
 	else if (min_brightness == 1 && analog_value_running_average <= 10){
 		min_brightness = 0;
 	}
-	
+
 	//Persist to eeprom if we have set the eepmrom_store_timer
 	if (eepmrom_store_timer == 1){
 		eeprom_store();
@@ -550,6 +551,15 @@ static void range_loop(int8_t* value, uint8_t min, uint8_t max){
 }
 
 static void range_constrain(int8_t* value, uint8_t min, uint8_t max){
+	if (*value < min){
+		*value = min;
+	}
+	else if (*value > max){
+		*value = max;
+	}
+}
+
+static void range_constrain_16(int16_t* value, int16_t min, int16_t max){
 	if (*value < min){
 		*value = min;
 	}
