@@ -461,7 +461,7 @@ void state_poll(){
 	if (min_brightness == 0 && analog_value_running_average >= 12){
 		min_brightness = 1;
 	}
-	else if (min_brightness == 1 && analog_value_running_average <= 10){
+	else if (min_brightness == 1 && analog_value_running_average <= 8){
 		min_brightness = 0;
 	}
 	
