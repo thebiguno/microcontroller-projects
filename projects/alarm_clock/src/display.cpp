@@ -175,7 +175,10 @@ void display_update(){
 				display_buffer->write_char('Q', font_icon, 1, 0);			//Files
 				display_buffer->write_char((char) (edit_item + 0x31), font_5x8, 11, 0);
 				snprintf(buffer, sizeof(buffer), "%d", config.music_count[edit_item]);
-				display_buffer->write_string(buffer, font_5x8, (config.music_count[edit_item] < 10 ? 26 : 20), 0);
+				display_buffer->write_string(buffer,
+					(config.music_count[edit_item] < 100 ? font_5x8 : font_3x5),	//Font - smaller for >= 100
+					(config.music_count[edit_item] < 10 ? 26 : 20),					//Horizontal Position - right justify for < 10
+					(config.music_count[edit_item] < 100 ? 0 : 2));					//Vertical Postion - move down for >= 100
 			}
 			else if (edit_item == 8){
 				display_buffer->write_string("O", font_icon, 0, 0);			//DFU Upload
