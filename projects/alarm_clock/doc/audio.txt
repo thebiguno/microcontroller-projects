@@ -10,7 +10,7 @@ Or you can do this via sox:
 A couple bash scripts which can help to copy, number, and convert files is as follows:
 
 
-i=0; ls * | while read X; do echo $X; cp "$X" $(printf "%03d" $i).mp3; sox --norm=-1 $(printf "%03d" $i).mp3 temp.mp3; mv temp.mp3 $(printf "%03d" $i).mp3; ((i=i+1)); done
+i=0; ls * | while read X; do echo $X; cp "$X" $(printf "%03d" $i).mp3; sox --norm=-1 $(printf "%03d" $i).mp3 temp.mp3 remix 1,2 ; mv temp.mp3 $(printf "%03d" $i).mp3; ((i=i+1)); done
 	-Run this from a folder which contains all the songs you want converted
 	-Set the i=0 to be the starting number
 	-The output will be songs numbered 000.mp3, 001.mp3, etc, all normalized to -1dB
