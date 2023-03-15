@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Resource monitor - client-side daemon
 #
 # Uses psutil to monitor system resources, and updates the data over USB serial port
@@ -15,7 +15,8 @@ import os
 import sys
 import time
 
-buf = list("CXXXXMX RXWXUXDXRXHXDXBX  dd\xDFdd\xDF")
+buf = bytearray.fromhex('43 58 58 58 58 4D 58 20 52 58 57 58 55 58 44 58 52 58 48 58 44 58 42 58 20 20 64 64 DF 64 64 DF')	#"CXXXXMX RXWXUXDXRXHXDXBX  dd\xDFdd\xDF"
+
 ser = 0
 
 def __escape_byte(message, b):
@@ -26,16 +27,19 @@ def __escape_byte(message, b):
 		message.append(b);
 
 def fsp_write(command, data):
-	message = [0x7e]
+	message = bytearray()
+	message.append(0x7e)
 	__escape_byte(message, len(data) + 1)
 	__escape_byte(message, command)
 	checksum = command
+	#print(data.hex(' '))   #This is the raw data, not including command and escape characters
 	for b in data:
-		b = ord(b)
+		#b = ord(b)
 		__escape_byte(message, b)
 		checksum = (checksum + b) & 0xFF
 	__escape_byte(message, (0xFF - checksum) % 0xFF)
-	return ''.join(chr(b) for b in message)		#This is a string of raw byte values which can be written to the serial port
+	#print(message.hex(' '))     #This is the actual bytes which are being sent
+	return message
 
 def main():
 	state = {
@@ -58,17 +62,17 @@ def main():
 		last10 = state["cpu"][-10:]
 		last60 = state["cpu"][-60:]
 
-		buf[1] = writeBarGraph(state["cpu"][-1])
-		buf[2] = writeBarGraph(sum(last10) / len(last10))
-		buf[3] = writeBarGraph(sum(last60) / len(last60))
-		buf[4] = writeBarGraph(sum(state["cpu"]) / len(state["cpu"]))
+		buf[1] = writeBarGraph(int(state["cpu"][-1]))
+		buf[2] = writeBarGraph(int(sum(last10) / len(last10)))
+		buf[3] = writeBarGraph(int(sum(last60) / len(last60)))
+		buf[4] = writeBarGraph(int(sum(state["cpu"]) / len(state["cpu"])))
 
 		#Memory Usage:
 		state["memory"].append(int(psutil.virtual_memory().percent / 11))
 		if (len(state["memory"]) > 10):
 			state["memory"].pop(0)
 		buf[6] = writeBarGraph(state["memory"][-1])
-		buf[7] = writeBarGraph(sum(state["memory"]) / len(state["memory"]))
+		buf[7] = writeBarGraph((int) (sum(state["memory"]) / len(state["memory"])))
 
 		#Disk I/O:
 		disk = psutil.disk_io_counters()
@@ -83,8 +87,8 @@ def main():
 		if (len(state["disk_write"]) > 10):
 			state["disk_write"].pop(0)
 
-		buf[9] = writeBarGraph(scaleDisk(sum(state["disk_read"]) / len(state["disk_read"])))
-		buf[11] = writeBarGraph(scaleDisk(sum(state["disk_write"]) / len(state["disk_write"])))
+		buf[9] = writeBarGraph(scaleDisk((int) (sum(state["disk_read"]) / len(state["disk_read"]))))
+		buf[11] = writeBarGraph(scaleDisk((int) (sum(state["disk_write"]) / len(state["disk_write"]))))
 
 
 		#Network I/O:
@@ -100,8 +104,8 @@ def main():
 		if (len(state["net_upload"]) > 10):
 			state["net_upload"].pop(0)
 
-		buf[13] = writeBarGraph(scaleNetwork(sum(state["net_upload"]) / len(state["net_upload"])))
-		buf[15] = writeBarGraph(scaleNetwork(sum(state["net_download"]) / len(state["net_download"])))
+		buf[13] = writeBarGraph(scaleNetwork((int) (sum(state["net_upload"]) / len(state["net_upload"]))))
+		buf[15] = writeBarGraph(scaleNetwork((int) (sum(state["net_download"]) / len(state["net_download"]))))
 
 
 		if temp_time == 0:
@@ -112,24 +116,25 @@ def main():
 						cpu_temp = int(feature.get_value())
 						if (cpu_temp > 99):
 							cpu_temp = 99
-						buf[26] = str(cpu_temp / 10)
-						buf[27] = str(cpu_temp % 10)
-						buf[28] = '\xDF'
+						buf[26] = int(cpu_temp / 10) + 0x30	#0x30 is ASCII offset for digits
+						buf[27] = int(cpu_temp % 10) + 0x30
+						buf[28] = 0xDF
 
 			#GPU Temperature:
 			gpuHandle = pynvml.nvmlDeviceGetHandleByIndex(0)	#If you have multiple GPUs, iterate over them here and average the results
 			gpu_temp = pynvml.nvmlDeviceGetTemperature(gpuHandle, pynvml.NVML_TEMPERATURE_GPU)
 			if (gpu_temp > 99):
 				gpu_temp = 99
-			buf[29] = str(gpu_temp / 10)
-			buf[30] = str(gpu_temp % 10)
-			buf[31] = '\xDF'
+			buf[29] = int(gpu_temp / 10) + 0x30	#0x30 is ASCII offset for digits
+			buf[30] = int(gpu_temp % 10) + 0x30
+			buf[31] = 0xDF
+			#buf[31] = 0x20
 		else:
-			time_string = time.strftime("%I:%M%p")
+			time_string = bytes(time.strftime("%I:%M%p"), 'UTF-8')
 			if time_string[0] != '0':
 				buf[26] = time_string[0]
 			else:
-				buf[26] = ' '
+				buf[26] = 0x20
 			buf[27] = time_string[1]
 			buf[28] = time_string[2]
 			buf[29] = time_string[3]
@@ -202,11 +207,11 @@ def scaleDisk(value):
 
 def writeBarGraph(value):
 	if (value <= 0):
-		return ' '
+		return 0x20
 	elif (value >= 8):
-		return '\xff'
+		return 0xff
 	else:
-		return chr(value)
+		return value
 
 ########## Main startup hooks here ##########
 if (__name__=="__main__"):
