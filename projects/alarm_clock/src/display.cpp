@@ -194,7 +194,7 @@ void display_update(){
 	PORTF |= _BV(PORTF4);
 	#endif
 	max7219_write_command(MAX7219_SHUTDOWN, 0x01);
-	delay_us(100);	//This value will (somewhat) determine how dim the LED matrix is when "brightness == 0".
+	delay_us(1);	//This value combined with the next global delay will (somewhat) determine how dim the LED matrix is when "brightness == 0".
 	#ifdef DEBUG
 	PORTF &= ~_BV(PORTF4);
 	#endif
@@ -203,7 +203,7 @@ void display_update(){
 		max7219_write_command(MAX7219_SHUTDOWN, 0x00);
 	}
 
-	delay_ms(2);
+	delay_us(1500);
 }
 
 
